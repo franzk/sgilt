@@ -1,47 +1,21 @@
 <template>
-  <AppHeader />
-
-  <section id="initial-search">
-    <p class="event-date">
-      <span>Date de votre évènement</span>
-      <input type="date" />
-    </p>
-    <p class="event-type">
-      <span>Qu'est-ce qu'on fête ?</span>
-      <select>
-        <option>Mariage</option>
-        <option>Fête d'entreprise</option>
-        <option>Fête d'anniversaire</option>
-      </select>
-    </p>
-  </section>
+  <HomeSearchBox class="home-search-box" />
+  <HomePartnerSection class="home-partner-section" />
 </template>
 
 <script setup lang="ts">
-import AppHeader from '@/components/TheHeader.vue'
+import HomeSearchBox from '@/components/HomeSearchBox.vue'
+import HomePartnerSection from '@/components/HomePartnerSection.vue'
 </script>
 
 <style lang="scss" scoped>
-#initial-search {
-  flex: 1;
-  margin-top: 250px;
-
-  margin-left: auto;
-  margin-right: auto;
-
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-  gap: 3rem;
-
-  border: 1px solid black;
-  padding: 0 4rem;
-  border-radius: 0.5rem;
-
-  p {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
+.home-search-box {
+  margin-top: 150px;
+}
+.home-partner-section {
+  background-color: white;
+  margin-top: 100px;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 </style>
