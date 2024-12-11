@@ -1,7 +1,7 @@
 <template>
   <header>
     <h1>S'gilt !!</h1>
-    <p>Recherchez, réservez, célébrez !!</p>
+    <p>Découvrez, réservez, célébrez !!</p>
   </header>
 </template>
 
@@ -13,7 +13,7 @@ header {
   top: 0;
   left: 0;
 
-  background-color: $color-light;
+  background-color: $color-secondary;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
   display: flex;

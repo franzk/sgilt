@@ -17,7 +17,7 @@ import { ref } from 'vue'
 const props = defineProps<{
   options: string[]
   default?: string
-  tabindex: number
+  tabindex?: number
 }>()
 
 const emit = defineEmits(['input'])
@@ -38,10 +38,10 @@ const click = (option: string) => {
 </script>
 
 <style lang="scss" scoped>
-$color-1: $color-white; // bg
-$color-2: $color-dark; // border & bg hover
-$color-3: $color-text;
-$color-4: $color-dark; // border not selected
+$color-1: white; // bg
+$color-2: $color-accent; // border & bg hover
+$color-3: $color-primary;
+$color-4: $color-secondary; // border not selected
 
 .custom-select {
   position: relative;
