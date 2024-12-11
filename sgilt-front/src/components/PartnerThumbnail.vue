@@ -4,7 +4,7 @@
     <h3>{{ titre }}</h3>
     <p>{{ description }}</p>
     <p class="last-line">
-      <span>{{ entryPrice }} €</span>
+      <span>A partir de {{ entryPrice }} €</span>
       <button>Voir le profil</button>
     </p>
   </div>
@@ -22,6 +22,8 @@ defineProps<{
 <style lang="scss" scoped>
 .partner-thumbnail {
   display: flex;
+  background: $color-secondary;
+  color: $color-primary;
   flex-direction: column;
   gap: 0.5rem;
   border: 1px solid black;

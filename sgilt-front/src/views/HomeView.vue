@@ -1,7 +1,9 @@
 <template>
   <div class="home-view">
-    <HomeSearchBox class="home-search-box" />
-    <HomePartnerSection class="home-partner-section" />
+    <div class="search">
+      <HomeSearchBox />
+    </div>
+    <HomePartnerSection />
   </div>
 </template>
 
@@ -12,16 +14,16 @@ import HomePartnerSection from '@/components/HomePartnerSection.vue'
 
 <style lang="scss" scoped>
 .home-view {
-  //background: url('@/assets/images/home_bg.png');
-  //box-shadow: inset 0 0 0 2000px rgba(200, 200, 200, 0.2);
+  background: url('@/assets/images/home_bg.jpg') no-repeat;
+  background-size: cover;
   display: flex;
   flex-direction: column;
+  .search {
+    flex: 0 0 90%;
+    justify-content: center;
 
-  .home-partner-section {
-    background-color: white;
-    //margin-top: 80px;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    display: flex;
+    flex-direction: column;
   }
 }
 </style>
