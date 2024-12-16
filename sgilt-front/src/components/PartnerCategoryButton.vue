@@ -1,6 +1,6 @@
 <template>
   <div class="partner-category-button">
-    <p class="icon">{{ icon }}</p>
+    <p class="icon"><alarm-icon :size="36" class="icon" /></p>
     <p class="label">{{ category }}</p>
   </div>
 </template>
