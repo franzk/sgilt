@@ -10,28 +10,25 @@
         <PartnerCategoryButton category="Photographie" icon="" />
       </div>
 
-      <div class="highligthed-partners">
-        <h3>Ils pourraient vous plaire...</h3>
-        <div class="highligthed-partners-list">
-          <PartnerThumbnail
-            imageUrl="https://picsum.photos/300/125"
-            titre="Partenaire 1"
-            description="Lorem ipsum ..."
-            entryPrice="250"
-          />
-          <PartnerThumbnail
-            imageUrl="https://picsum.photos/300/125"
-            titre="Partenaire 2"
-            description="Lorem ipsum ..."
-            entryPrice="500"
-          />
-          <PartnerThumbnail
-            imageUrl="https://picsum.photos/300/125"
-            titre="Partenaire 3"
-            description="Lorem ipsum ..."
-            entryPrice="600"
-          />
-        </div>
+      <div class="highligthed-partners-list">
+        <PartnerThumbnail
+          imageUrl="https://picsum.photos/300/250"
+          titre="Partenaire 1"
+          description="Lorem ipsum ..."
+          entryPrice="250"
+        />
+        <PartnerThumbnail
+          imageUrl="https://picsum.photos/300/250"
+          titre="Partenaire 2"
+          description="Lorem ipsum ..."
+          entryPrice="500"
+        />
+        <PartnerThumbnail
+          imageUrl="https://picsum.photos/300/250"
+          titre="Partenaire 3"
+          description="Lorem ipsum ..."
+          entryPrice="600"
+        />
       </div>
     </div>
   </section>
@@ -43,15 +40,17 @@ import PartnerThumbnail from '@/components/PartnerThumbnail.vue'
 </script>
 
 <style lang="scss" scoped>
-.partner-section-body {
-  display: flex;
-  flex-direction: row;
-}
-
 .partner-section {
   background-color: $color-accent;
   color: $color-secondary;
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.partner-section-body {
+  display: flex;
+  flex-direction: row;
 }
 
 .categories {
@@ -69,15 +68,12 @@ import PartnerThumbnail from '@/components/PartnerThumbnail.vue'
 }
 
 .highligthed-partners-list {
+  flex: 1;
   display: flex;
   flex-direction: row;
-  //gap: 1rem;
-  //padding: 1rem;
-  //margin-left: 1rem;
-  //margin-right: 1rem;
   justify-content: space-evenly;
   .partner-thumbnail {
-    flex-basis: 20%;
+    flex-basis: 28%;
   }
 }
 </style>

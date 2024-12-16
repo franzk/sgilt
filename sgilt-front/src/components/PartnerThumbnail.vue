@@ -27,6 +27,8 @@ defineProps<{
   flex-direction: column;
   gap: 0.5rem;
   border: 1px solid black;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
   img {
     width: 100%;
     height: auto;
