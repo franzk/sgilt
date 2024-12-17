@@ -1,20 +1,17 @@
 <template>
   <div class="partner-thumbnail">
     <img :src="imageUrl" alt="Partenaire 1" />
-    <h3>{{ titre }}</h3>
-    <p>{{ description }}</p>
-    <p class="last-line">
-      <span>A partir de {{ entryPrice }} €</span>
-      <button>Voir le profil</button>
-    </p>
+    <h3>{{ title }}</h3>
+    <p class="partner-category">Catégorie : {{ category }}</p>
+    <p class="partner-enter-price">A partir de {{ entryPrice }} €</p>
   </div>
 </template>
 
 <script setup lang="ts">
 defineProps<{
   imageUrl: string
-  titre: string
-  description: string
+  title: string
+  category: string
   entryPrice: number
 }>()
 </script>
@@ -22,36 +19,33 @@ defineProps<{
 <style lang="scss" scoped>
 .partner-thumbnail {
   display: flex;
+  flex-direction: column;
+
+  padding: 0.5rem;
+
   background: $color-secondary;
   color: $color-primary;
-  flex-direction: column;
-  gap: 0.5rem;
-  border: 1px solid black;
-  border-radius: 0.5rem;
-  padding: 0.5rem;
+
   img {
     width: 100%;
     height: auto;
+    border-radius: 0.5rem;
+    cursor: pointer;
   }
+
   h3,
   p {
     margin: 0;
-    padding: 0.5rem;
+    padding: 0.1rem;
   }
-  .last-line {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5rem;
-    // button at the end
-    button {
-      background-color: #f1c40f;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 0.5rem;
-      color: white;
-      margin-left: auto;
-    }
+
+  .partner-category {
+    font-weight: 300;
+    font-style: italic;
+  }
+
+  .partner-enter-price {
+    font-weight: 300;
   }
 }
 </style>

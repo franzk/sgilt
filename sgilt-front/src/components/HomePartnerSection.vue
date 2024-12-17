@@ -1,33 +1,35 @@
 <template>
   <section class="partner-section">
-    <h2>Découvrez les partenaires de votre évènement</h2>
-
-    <div class="partner-section-body">
+    <div class="partner-section-header">
+      <h2>Découvrez les partenaires de votre évènement</h2>
       <div class="categories">
-        <PartnerCategoryButton category="Musique" icon="" />
-        <PartnerCategoryButton category="Restauration" icon="" />
-        <PartnerCategoryButton category="Lieux" icon="" />
-        <PartnerCategoryButton category="Photographie" icon="" />
+        <PartnerCategoryButton category="Musique" icon="music" />
+        <PartnerCategoryButton category="Restauration" icon="food" />
+        <PartnerCategoryButton category="Lieux" icon="place" />
+        <PartnerCategoryButton category="Photographie" icon="photo" />
       </div>
+    </div>
+    <div class="partner-section-body">
+      <h2>La sélection du moment</h2>
 
       <div class="highligthed-partners-list">
         <PartnerThumbnail
           imageUrl="https://picsum.photos/300/250"
-          titre="Partenaire 1"
-          description="Lorem ipsum ..."
-          entryPrice="250"
+          title="Partenaire 1"
+          category="Musique"
+          :entryPrice="250"
         />
         <PartnerThumbnail
           imageUrl="https://picsum.photos/300/250"
-          titre="Partenaire 2"
-          description="Lorem ipsum ..."
-          entryPrice="500"
+          title="Partenaire 2"
+          category="Restauration"
+          :entryPrice="500"
         />
         <PartnerThumbnail
           imageUrl="https://picsum.photos/300/250"
-          titre="Partenaire 3"
-          description="Lorem ipsum ..."
-          entryPrice="600"
+          title="Partenaire 3"
+          category="Lieu"
+          :entryPrice="600"
         />
       </div>
     </div>
@@ -41,16 +43,25 @@ import PartnerThumbnail from '@/components/PartnerThumbnail.vue'
 
 <style lang="scss" scoped>
 .partner-section {
-  background-color: $color-accent;
-  color: $color-secondary;
-  padding: 1rem;
   display: flex;
   flex-direction: column;
+  background-color: $color-accent;
+  color: $color-secondary;
+}
+
+.partner-section-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 1rem;
 }
 
 .partner-section-body {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  background-color: $color-secondary;
+  color: $color-primary;
+  align-items: center;
 }
 
 .categories {
@@ -58,22 +69,16 @@ import PartnerThumbnail from '@/components/PartnerThumbnail.vue'
   flex-direction: row;
   flex-wrap: wrap;
   gap: 1rem;
-  padding: 1rem;
-
-  .partner-category-button {
-    //flex-basis: 25%;
-    flex: 0 0 40%; /* Chaque cellule occupe 50% de la largeur parent */
-    box-sizing: border-box;
-  }
 }
 
 .highligthed-partners-list {
   flex: 1;
+  width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
   .partner-thumbnail {
-    flex-basis: 28%;
+    flex-basis: 25%;
   }
 }
 </style>

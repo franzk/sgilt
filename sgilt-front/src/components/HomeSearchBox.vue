@@ -1,6 +1,9 @@
 <template>
   <section id="home-searchbox">
-    <div class="title">Qu'est-ce qu'on FÊTE ?</div>
+    <div class="title">
+      <span class="title-thin">Qu'est-ce qu'on</span>
+      <span class="title-bold"> FÊTE ?</span>
+    </div>
     <div class="search-fields">
       <datepicker></datepicker>
       <SgiltSelect :options="options" class="select-event" />
@@ -22,17 +25,23 @@ const options = ['Votre évènement', 'Mariage', "Fête d'entreprise", "Fête d'
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
   gap: 1rem;
+  padding: 2rem;
 
   background-color: rgba(20, 20, 0, 0.2);
   color: $color-secondary;
-  padding: 2rem;
 }
 
 .title {
   font-size: 3rem;
-  font-weight: bold;
   line-height: 3rem;
+  .title-thin {
+    font-weight: 300;
+  }
+  .title-bold {
+    font-weight: bold;
+  }
 }
 
 .search-fields {
