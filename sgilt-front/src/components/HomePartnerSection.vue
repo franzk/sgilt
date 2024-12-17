@@ -17,18 +17,21 @@
           imageUrl="https://picsum.photos/300/250"
           title="Partenaire 1"
           category="Musique"
+          icon="music"
           :entryPrice="250"
         />
         <PartnerThumbnail
           imageUrl="https://picsum.photos/300/250"
           title="Partenaire 2"
           category="Restauration"
+          icon="food"
           :entryPrice="500"
         />
         <PartnerThumbnail
           imageUrl="https://picsum.photos/300/250"
           title="Partenaire 3"
           category="Lieu"
+          icon="place"
           :entryPrice="600"
         />
       </div>

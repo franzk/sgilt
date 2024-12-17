@@ -10,6 +10,7 @@
 <style lang="scss" scoped>
 header {
   position: sticky;
+  z-index: 1;
   top: 0;
   left: 0;
 
