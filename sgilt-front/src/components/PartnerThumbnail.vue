@@ -26,6 +26,8 @@ defineProps<{
   background: $color-secondary;
   color: $color-primary;
 
+  font-size: 0.8rem;
+
   img {
     width: 100%;
     height: auto;
@@ -37,6 +39,11 @@ defineProps<{
   p {
     margin: 0;
     padding: 0.1rem;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+    font-weight: 500;
   }
 
   .partner-category {
