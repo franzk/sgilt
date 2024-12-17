@@ -1,7 +1,7 @@
 <template>
   <section class="partner-section">
     <div class="partner-section-header">
-      <h2>Découvrez les partenaires de votre évènement</h2>
+      <h2 class="discover-title">Découvrez les partenaires de votre évènement</h2>
       <div class="categories">
         <PartnerCategoryButton category="Musique" icon="music" />
         <PartnerCategoryButton category="Restauration" icon="food" />
@@ -56,7 +56,12 @@ import PartnerThumbnail from '@/components/PartnerThumbnail.vue'
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 1rem;
+  padding: 2rem 0 3rem 0;
+}
+
+.discover-title {
+  margin: 0 0 1rem 0;
+  line-height: 2rem;
 }
 
 .partner-section-body {
@@ -65,6 +70,9 @@ import PartnerThumbnail from '@/components/PartnerThumbnail.vue'
   background-color: $color-secondary;
   color: $color-primary;
   align-items: center;
+  h2 {
+    margin: 2rem 0 2rem 0;
+  }
 }
 
 .categories {

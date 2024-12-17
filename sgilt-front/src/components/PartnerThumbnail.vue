@@ -7,6 +7,7 @@
 
     <h3>{{ title }}</h3>
 
+    <p class="partner-description">Description</p>
     <p class="partner-enter-price">A partir de {{ entryPrice }} €</p>
   </div>
 </template>
