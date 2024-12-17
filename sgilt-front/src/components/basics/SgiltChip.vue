@@ -19,11 +19,12 @@ defineProps<{
   display: flex;
   flex-direction: row;
   align-items: center;
+  align-content: center;
 
-  gap: 0.5rem;
-  padding: 0.2rem 0.5rem;
+  gap: 0.5em;
+  padding: 0.2em 0.5em;
 
-  border-radius: 10rem;
+  border-radius: 10em;
 
   p {
     margin: 0;
@@ -34,10 +35,8 @@ defineProps<{
   .icon {
     margin: 0;
     padding: 0;
-    svg {
-      width: 1rem;
-      height: 1rem;
-    }
+    width: 1.5em;
+    height: 1.5em;
   }
 }
 </style>
