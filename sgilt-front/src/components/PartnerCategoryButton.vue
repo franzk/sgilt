@@ -1,11 +1,21 @@
 <template>
   <div class="partner-category-button">
-    <p class="icon"><alarm-icon :size="36" class="icon" /></p>
+    <p class="icon">
+      <IconFood v-if="icon === 'food'" />
+      <IconMusic v-if="icon === 'music'" />
+      <IconPlace v-if="icon === 'place'" />
+      <IconPhoto v-if="icon === 'photo'" />
+    </p>
     <p class="label">{{ category }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
+import IconFood from '@/assets/icons/IconFood.vue'
+import IconMusic from '@/assets/icons/IconMusic.vue'
+import IconPlace from '@/assets/icons/IconPlace.vue'
+import IconPhoto from '@/assets/icons/IconPhoto.vue'
+
 defineProps<{
   category: string
   icon: string
@@ -15,13 +25,30 @@ defineProps<{
 <style lang="scss" scoped>
 .partner-category-button {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  border: 1px solid black;
-  .icon {
-    font-size: 2rem;
+
+  gap: 0.5rem;
+  padding: 0.5rem;
+
+  background: $color-secondary;
+  color: $color-accent;
+
+  border-radius: 10rem;
+
+  p {
     margin: 0;
+    padding: 0;
+    font-weight: 600;
+  }
+
+  .icon {
+    margin: 0;
+    padding: 0;
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
   }
 }
 </style>
