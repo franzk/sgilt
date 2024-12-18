@@ -3,10 +3,12 @@
     <div class="partner-section-header">
       <h2 class="discover-title">Découvrez les partenaires de votre évènement</h2>
       <div class="categories">
-        <PartnerCategoryButton category="Musique" icon="music" />
-        <PartnerCategoryButton category="Restauration" icon="food" />
-        <PartnerCategoryButton category="Lieux" icon="place" />
-        <PartnerCategoryButton category="Photographie" icon="photo" />
+        <CategoryChip
+          v-for="(category, index) of categories"
+          :key="index"
+          :category="category"
+          class="partner-category-chip"
+        />
       </div>
     </div>
     <div class="partner-section-body">
@@ -40,8 +42,9 @@
 </template>
 
 <script setup lang="ts">
-import PartnerCategoryButton from '@/components/PartnerCategoryButton.vue'
 import PartnerThumbnail from '@/components/PartnerThumbnail.vue'
+import CategoryChip from './basics/CategoryChip.vue'
+const categories = ['music', 'food', 'place', 'photography']
 </script>
 
 <style lang="scss" scoped>
@@ -91,5 +94,10 @@ import PartnerThumbnail from '@/components/PartnerThumbnail.vue'
   .partner-thumbnail {
     flex-basis: 25%;
   }
+}
+
+.partner-category-chip {
+  background: $color-secondary;
+  color: $color-accent;
 }
 </style>
