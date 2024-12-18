@@ -1,5 +1,5 @@
 <template>
-  <SgiltChip :label="label">
+  <SgiltChip :label="$t(`categories.${category}`)">
     <CategoryIcon :category="category" class="icon" />
   </SgiltChip>
 </template>
@@ -9,7 +9,6 @@ import SgiltChip from '@/components/basics/SgiltChip.vue'
 import CategoryIcon from '@/components/basics/CategoryIcon.vue'
 
 defineProps<{
-  label: string
   category: string
 }>()
 </script>

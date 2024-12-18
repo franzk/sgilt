@@ -1,7 +1,7 @@
 <template>
   <div class="partner-thumbnail">
     <div class="partner-category">
-      <CategoryChip :label="category" :category="icon" class="category-chip" />
+      <CategoryChip :category="icon" class="category-chip" />
     </div>
     <img :src="imageUrl" alt="Partenaire 1" />
 
