@@ -33,24 +33,25 @@ defineProps<{
   background: $color-secondary;
   color: $color-primary;
 
-  font-size: 0.8rem;
+  font-size: $font-size-s;
 
   img {
     width: 100%;
     height: auto;
-    border-radius: 0.5rem;
+    border-radius: $border-radius-s;
     cursor: pointer;
   }
 
   h3,
   p {
     margin: 0;
-    padding: 0.1rem;
+    padding: $spacing-xxs;
   }
 
   h3 {
-    font-size: 1.2rem;
+    font-size: $font-size-l;
     font-weight: 500;
+    margin-top: $spacing-xs;
   }
 
   .partner-enter-price {
@@ -63,14 +64,14 @@ defineProps<{
 
     width: 100%;
     display: flex;
-    border-radius: 0.5rem 0.5rem 0 0;
+    border-radius: $border-radius-s $border-radius-s 0 0;
 
     .category-chip {
       color: $color-secondary;
-      background-color: rgba(20, 20, 0, 0.2);
-      border: 2px solid $color-secondary;
-      gap: 0.2rem;
-      margin: 0.5rem;
+      background-color: $shadow;
+      border: $border-width-s solid $color-secondary;
+      gap: $spacing-xs;
+      margin: $spacing-s;
     }
   }
 }

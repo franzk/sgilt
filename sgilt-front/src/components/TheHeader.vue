@@ -15,11 +15,11 @@ header {
   left: 0;
 
   background-color: $color-secondary;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px $shadow;
 
   display: flex;
   flex: 1;
-  gap: 2rem;
+  gap: $spacing-l;
   align-content: center;
   flex-wrap: wrap;
 

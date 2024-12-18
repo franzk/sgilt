@@ -13,5 +13,3 @@ defineProps<{
   category: string
 }>()
 </script>
-
-<style lang="scss" scoped></style>

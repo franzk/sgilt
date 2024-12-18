@@ -26,16 +26,16 @@ const options = ['Votre évènement', 'Mariage', "Fête d'entreprise", "Fête d'
   align-items: center;
   justify-content: center;
 
-  gap: 1rem;
-  padding: 2rem;
+  gap: $spacing-m;
+  padding: $spacing-l;
 
-  background-color: rgba(20, 20, 0, 0.2);
+  background-color: $shadow;
   color: $color-secondary;
 }
 
 .title {
-  font-size: 3rem;
-  line-height: 3rem;
+  font-size: $font-size-xxl;
+  line-height: $line-height-xl;
   .title-thin {
     font-weight: 300;
   }
@@ -47,7 +47,7 @@ const options = ['Votre évènement', 'Mariage', "Fête d'entreprise", "Fête d'
 .search-fields {
   display: flex;
   flex-direction: row;
-  gap: 2rem;
+  gap: $spacing-xl;
   .select-event {
     width: 14rem;
   }
@@ -57,9 +57,9 @@ const options = ['Votre évènement', 'Mariage', "Fête d'entreprise", "Fête d'
   background-color: $color-accent;
   color: $color-secondary;
   border: none;
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
+  border-radius: $border-radius-s;
+  padding: $spacing-s $spacing-m;
+  font-size: $font-size-m;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s;

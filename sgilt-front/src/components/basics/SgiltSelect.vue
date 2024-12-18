@@ -27,9 +27,6 @@ const selected = ref(
 )
 const open = ref(false)
 
-/*mounted() {
-    this.$emit('input', this.selected)
-  },*/
 const click = (option: string) => {
   selected.value = option
   open.value = false
