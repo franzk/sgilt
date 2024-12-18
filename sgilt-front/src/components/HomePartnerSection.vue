@@ -56,12 +56,12 @@ import PartnerThumbnail from '@/components/PartnerThumbnail.vue'
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem 0 3rem 0;
+  padding: $spacing-l 0 $spacing-xl 0;
 }
 
 .discover-title {
-  margin: 0 0 1rem 0;
-  line-height: 2rem;
+  margin: 0 0 $spacing-m 0;
+  line-height: $line-height-l;
 }
 
 .partner-section-body {
@@ -71,7 +71,7 @@ import PartnerThumbnail from '@/components/PartnerThumbnail.vue'
   color: $color-primary;
   align-items: center;
   h2 {
-    margin: 2rem 0 2rem 0;
+    margin: $spacing-l 0 $spacing-l 0;
   }
 }
 
@@ -79,7 +79,7 @@ import PartnerThumbnail from '@/components/PartnerThumbnail.vue'
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: $spacing-m;
 }
 
 .highligthed-partners-list {

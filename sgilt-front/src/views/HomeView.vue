@@ -19,7 +19,7 @@ import HomePartnerSection from '@/components/HomePartnerSection.vue'
   display: flex;
   flex-direction: column;
   .search {
-    flex: 0 0 90%;
+    flex: 0 0 85%;
     justify-content: center;
 
     display: flex;
