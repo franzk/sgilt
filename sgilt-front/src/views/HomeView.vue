@@ -8,8 +8,8 @@
 </template>
 
 <script setup lang="ts">
-import HomeSearchBox from '@/components/HomeSearchBox.vue'
-import HomePartnerSection from '@/components/HomePartnerSection.vue'
+import HomeSearchBox from '@/components/homepage/HomeSearchBox.vue'
+import HomePartnerSection from '@/components/homepage/HomePartnerSection.vue'
 </script>
 
 <style lang="scss" scoped>
