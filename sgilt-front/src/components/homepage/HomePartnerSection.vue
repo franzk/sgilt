@@ -1,16 +1,6 @@
 <template>
   <section class="partner-section">
-    <div class="partner-section-header">
-      <h2 class="discover-title">Découvrez les partenaires de votre évènement</h2>
-      <div class="categories">
-        <CategoryChip
-          v-for="(category, index) of categories"
-          :key="index"
-          :category="category"
-          class="partner-category-chip"
-        />
-      </div>
-    </div>
+    <HomeCategoriesBanner />
     <div class="partner-section-body">
       <h2>La sélection du moment</h2>
 
@@ -42,9 +32,8 @@
 </template>
 
 <script setup lang="ts">
-import PartnerThumbnail from '@/components/PartnerThumbnail.vue'
-import CategoryChip from './basics/CategoryChip.vue'
-const categories = ['music', 'food', 'place', 'photography']
+import PartnerThumbnail from '@/components/partner/PartnerThumbnail.vue'
+import HomeCategoriesBanner from '@/components/homepage/HomeCategoriesBanner.vue'
 </script>
 
 <style lang="scss" scoped>
@@ -53,18 +42,7 @@ const categories = ['music', 'food', 'place', 'photography']
   flex-direction: column;
   background-color: $color-accent;
   color: $color-secondary;
-}
-
-.partner-section-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: $spacing-l 0 $spacing-xl 0;
-}
-
-.discover-title {
-  margin: 0 0 $spacing-m 0;
-  line-height: $line-height-l;
+  box-shadow: 0 -4px 6px $ghost;
 }
 
 .partner-section-body {
@@ -78,13 +56,6 @@ const categories = ['music', 'food', 'place', 'photography']
   }
 }
 
-.categories {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: $spacing-m;
-}
-
 .highligthed-partners-list {
   flex: 1;
   width: 100%;
@@ -94,10 +65,5 @@ const categories = ['music', 'food', 'place', 'photography']
   .partner-thumbnail {
     flex-basis: 25%;
   }
-}
-
-.partner-category-chip {
-  background: $color-secondary;
-  color: $color-accent;
 }
 </style>
