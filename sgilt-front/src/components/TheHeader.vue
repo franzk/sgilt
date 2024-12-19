@@ -1,7 +1,9 @@
 <template>
   <header>
-    <h1>S'gilt !!</h1>
-    <p>Découvrez, réservez, célébrez !!</p>
+    <h1>
+      <router-link :to="{ name: 'home' }">{{ $t('app-header.app-name') }}</router-link>
+    </h1>
+    <p>{{ $t('app-header.slogan') }}</p>
   </header>
 </template>
 
@@ -24,6 +26,11 @@ header {
   flex-wrap: wrap;
 
   padding-left: 1rem;
+
+  h1 a {
+    text-decoration: none;
+    color: $color-primary;
+  }
 
   p {
     padding: 0;

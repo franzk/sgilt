@@ -1,26 +1,23 @@
 <template>
   <div class="partner-thumbnail">
     <div class="partner-category">
-      <CategoryChip :category="icon" class="category-chip" />
+      <CategoryChip :category="partner.category" class="category-chip" />
     </div>
-    <img :src="imageUrl" alt="Partenaire 1" />
+    <img :src="partner.imageUrl" alt="Partenaire 1" />
 
-    <h3>{{ title }}</h3>
+    <h3>{{ partner.title }}</h3>
 
-    <p class="partner-description">Description</p>
-    <p class="partner-enter-price">A partir de {{ entryPrice }} €</p>
+    <p class="partner-description">{{ partner.description }}</p>
+    <p class="partner-enter-price">A partir de {{ partner.entryPrice }} €</p>
   </div>
 </template>
 
 <script setup lang="ts">
 import CategoryChip from '@/components/basics/CategoryChip.vue'
+import type { Partner } from '@/domain/Partner'
 
 defineProps<{
-  imageUrl: string
-  title: string
-  category: string
-  icon: string
-  entryPrice: number
+  partner: Partner
 }>()
 </script>
 

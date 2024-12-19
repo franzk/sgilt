@@ -1,26 +1,26 @@
 <template>
-  <section id="home-searchbox">
+  <section id="search-banner">
     <div class="title">
-      <span class="title-thin">Qu'est-ce qu'on</span>
-      <span class="title-bold"> FÊTE ?</span>
+      <span class="title-thin">{{ $t('home.search-banner.title-part-1') }}</span>
+      <span class="title-bold">{{ $t('home.search-banner.title-part-2') }}</span>
     </div>
     <div class="search-fields">
       <datepicker language="fr" class="date-event"></datepicker>
       <SgiltSelect :options="options" class="select-event" />
-      <button class="go">C'est Party !!</button>
+      <button class="submit-button">{{ $t('home.search-banner.button') }}</button>
     </div>
-    <div class="valid-search"></div>
   </section>
 </template>
 
 <script setup lang="ts">
 import datepicker from 'vuejs3-datepicker'
 import SgiltSelect from '@/components/basics/SgiltSelect.vue'
+
 const options = ['Votre évènement', 'Mariage', "Fête d'entreprise", "Fête d'anniversaire"]
 </script>
 
 <style lang="scss">
-#home-searchbox {
+#search-banner {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -65,7 +65,7 @@ const options = ['Votre évènement', 'Mariage', "Fête d'entreprise", "Fête d'
   }
 }
 
-.go {
+.submit-button {
   background-color: $color-accent;
   color: $color-secondary;
   border: none;

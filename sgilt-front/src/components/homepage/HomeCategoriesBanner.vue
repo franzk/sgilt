@@ -1,6 +1,6 @@
 <template>
   <div class="categories-banner">
-    <h2 class="title">Découvrez les partenaires de votre évènement</h2>
+    <h2 class="title">{{ $t('home.categories-banner.title') }}</h2>
     <div class="categories">
       <CategoryChip
         v-for="(category, index) of categories"
@@ -14,7 +14,9 @@
 
 <script setup lang="ts">
 import CategoryChip from '@/components/basics/CategoryChip.vue'
-const categories = ['music', 'food', 'place', 'photography']
+import type { Category } from '@/domain/Partner'
+
+const categories: Category[] = ['music', 'food', 'place', 'photo']
 </script>
 
 <style lang="scss" scoped>

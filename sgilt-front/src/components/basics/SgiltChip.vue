@@ -3,7 +3,7 @@
     <p class="icon">
       <slot />
     </p>
-    <p class="label">{{ label }}</p>
+    <p>{{ label }}</p>
   </div>
 </template>
 
@@ -33,8 +33,6 @@ defineProps<{
   }
 
   .icon {
-    margin: 0;
-    padding: 0;
     width: 1.5em;
     height: 1.5em;
   }
