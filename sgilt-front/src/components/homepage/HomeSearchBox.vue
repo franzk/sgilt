@@ -5,7 +5,7 @@
       <span class="title-bold"> FÊTE ?</span>
     </div>
     <div class="search-fields">
-      <datepicker></datepicker>
+      <datepicker language="fr" class="date-event"></datepicker>
       <SgiltSelect :options="options" class="select-event" />
       <button class="go">C'est Party !!</button>
     </div>
@@ -19,7 +19,7 @@ import SgiltSelect from '@/components/basics/SgiltSelect.vue'
 const options = ['Votre évènement', 'Mariage', "Fête d'entreprise", "Fête d'anniversaire"]
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 #home-searchbox {
   display: flex;
   flex-direction: column;
@@ -48,8 +48,20 @@ const options = ['Votre évènement', 'Mariage', "Fête d'entreprise", "Fête d'
   display: flex;
   flex-direction: row;
   gap: $spacing-xl;
+
   .select-event {
+    line-height: 45px;
     width: 14rem;
+  }
+
+  .date-event {
+    .vuejs3-datepicker__value {
+      border-color: white;
+      padding: 11px 16px 14xpx;
+      .vuejs3-datepicker__content {
+        padding-top: 3px;
+      }
+    }
   }
 }
 
