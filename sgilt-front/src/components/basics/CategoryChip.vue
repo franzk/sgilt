@@ -1,6 +1,6 @@
 <template>
   <SgiltChip :label="$t(`categories.${category}`)">
-    <component :is="cmp" class="icon" />
+    <component :is="icon" class="icon" />
   </SgiltChip>
 </template>
 
@@ -15,7 +15,7 @@ const props = defineProps<{
   category: 'food' | 'music' | 'place' | 'photography'
 }>()
 
-const cmp = {
+const icon = {
   food: IconFood,
   music: IconMusic,
   place: IconPlace,

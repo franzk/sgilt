@@ -23,6 +23,9 @@ const categories = ['music', 'food', 'place', 'photography']
   flex-direction: column;
   align-items: center;
   padding: $spacing-l 0 $spacing-xl 0;
+  background-color: $color-accent;
+  color: $color-secondary;
+  box-shadow: 0 -4px 6px $ghost;
 }
 
 .title {

@@ -1,15 +1,19 @@
 <template>
   <div class="home-view">
-    <div class="search">
-      <HomeSearchBox />
+    <div class="search-banner">
+      <HomeSearchBanner />
     </div>
+
+    <HomeCategoriesBanner />
+
     <HomePartnerSection />
   </div>
 </template>
 
 <script setup lang="ts">
-import HomeSearchBox from '@/components/homepage/HomeSearchBox.vue'
+import HomeSearchBanner from '@/components/homepage/HomeSearchBanner.vue'
 import HomePartnerSection from '@/components/homepage/HomePartnerSection.vue'
+import HomeCategoriesBanner from '@/components/homepage/HomeCategoriesBanner.vue'
 </script>
 
 <style lang="scss" scoped>
@@ -18,7 +22,7 @@ import HomePartnerSection from '@/components/homepage/HomePartnerSection.vue'
   background-size: cover;
   display: flex;
   flex-direction: column;
-  .search {
+  .search-banner {
     flex: 0 0 85%;
     justify-content: center;
 
