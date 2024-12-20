@@ -12,7 +12,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import VueDatePicker from '@vuepic/vue-datepicker'
-// import '@vuepic/vue-datepicker/dist/main.css'
 import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
 

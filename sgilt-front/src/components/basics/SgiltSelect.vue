@@ -40,6 +40,8 @@ $color-2: $color-accent; // border & bg hover
 $color-3: $color-primary;
 $color-4: $color-secondary; // border not selected
 
+$br: $input-border-radius;
+
 .custom-select {
   position: relative;
   width: 100%;
@@ -50,7 +52,7 @@ $color-4: $color-secondary; // border not selected
 
   .selected {
     background-color: $color-1;
-    border-radius: 6px;
+    border-radius: $br;
     border: 1px solid $color-4;
     color: $color-3;
     padding-left: 1em;
@@ -59,7 +61,7 @@ $color-4: $color-secondary; // border not selected
 
     &.open {
       border: 1px solid $color-2;
-      border-radius: 6px 6px 0px 0px;
+      border-radius: $br $br 0px 0px;
     }
 
     &:after {
@@ -76,7 +78,7 @@ $color-4: $color-secondary; // border not selected
 
   .items {
     color: $color-3;
-    border-radius: 0px 0px 6px 6px;
+    border-radius: 0px 0px $br $br;
     overflow: hidden;
     border-right: 1px solid $color-2;
     border-left: 1px solid $color-2;

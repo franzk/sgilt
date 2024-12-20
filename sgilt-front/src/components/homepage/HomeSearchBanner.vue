@@ -7,7 +7,7 @@
     <div class="search-fields">
       <SgiltDatePicker />
       <SgiltSelect :options="options" class="select-event" />
-      <button class="submit-button">{{ $t('home.search-banner.button') }}</button>
+      <button class="submit-button" @click="search">{{ $t('home.search-banner.button') }}</button>
     </div>
   </section>
 </template>
@@ -15,8 +15,13 @@
 <script setup lang="ts">
 import SgiltDatePicker from '@/components/basics/SgiltDatePicker.vue'
 import SgiltSelect from '@/components/basics/SgiltSelect.vue'
+import router from '@/router'
 
 const options = ['Votre évènement', 'Mariage', "Fête d'entreprise", "Fête d'anniversaire"]
+
+const search = () => {
+  router.push({ path: '/search' })
+}
 </script>
 
 <style lang="scss">
@@ -53,7 +58,7 @@ const options = ['Votre évènement', 'Mariage', "Fête d'entreprise", "Fête d'
 
   .select-event {
     line-height: 45px;
-    width: 14rem;
+    width: 17rem;
   }
 }
 

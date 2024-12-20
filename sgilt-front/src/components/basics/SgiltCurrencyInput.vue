@@ -21,8 +21,9 @@ defineEmits(['update:modelValue'])
 </script>
 
 <style scoped lang="scss">
-$br: $border-radius-m;
+$br: $input-border-radius;
 $bw: $border-width-s;
+$bc: $shadow;
 
 p {
   margin: 0;
@@ -47,11 +48,13 @@ input[type='number'] {
   flex-direction: row;
   align-content: center;
 
+  height: 2.5rem;
+
   input {
     font-size: $font-size-m;
     width: 5rem;
     border-radius: $br 0 0 $br;
-    border: $bw solid $color-primary;
+    border: $bw solid $bc;
     outline-color: $color-primary;
   }
 
@@ -61,7 +64,7 @@ input[type='number'] {
     align-content: center;
     padding: $spacing-s;
     border-radius: 0 $br $br 0;
-    border: 1px solid $color-primary;
+    border: bw solid $bc;
     border-left: none;
     background-color: white;
   }
