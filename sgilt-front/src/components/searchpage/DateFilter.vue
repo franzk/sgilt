@@ -1,13 +1,6 @@
 <template>
   <div class="filter-date">
-    <div class="filter-date-from">
-      <span>De</span>
-      <datepicker language="fr" class="date-event"></datepicker>
-    </div>
-    <div class="filter-date-to">
-      <span>À</span>
-      <datepicker language="fr" class="date-event"></datepicker>
-    </div>
+    <datepicker language="fr" class="date-event"></datepicker>
   </div>
 </template>
 
