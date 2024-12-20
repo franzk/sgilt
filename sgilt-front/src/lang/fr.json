@@ -1,0 +1,26 @@
+{
+  "app-header": {
+    "app-name": "S'gilt !!",
+    "slogan": "Découvrez, réservez, célébrez !!"
+  },
+  "categories": {
+    "music": "Musique",
+    "food": "Restauration",
+    "place": "Lieu",
+    "places": "Lieux",
+    "photo": "Photographie"
+  },
+  "home": {
+    "search-banner": {
+      "title-part-1": "Qu'est-ce qu'on ",
+      "title-part-2": "FÊTE ?",
+      "button": "C'est Party !!"
+    },
+    "categories-banner": {
+      "title": "Découvrez les partenaires de votre évènement"
+    },
+    "partners-section": {
+      "title": "La sélection du moment"
+    }
+  }
+}
