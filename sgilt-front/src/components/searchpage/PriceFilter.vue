@@ -1,22 +1,27 @@
 <template>
-  <h2>Tarif</h2>
-  <div class="price-range">
-    <div class="price-range-min">
-      <span>Minimum </span><input type="range" min="0" class="slider" id="min" v-model="minPrice" />
+  <div class="price-filter">
+    <div class="price-range">
+      <SgiltCurrencyInput v-model="minPrice" placeholder="Minimum" />
+      <SgiltCurrencyInput v-model="maxPrice" placeholder="Maximum" />
     </div>
-    <div class="price-range-max">
-      <span>Maximum </span
-      ><input type="range" min="0" max="10000" class="slider" id="max" v-model="maxPrice" />
-    </div>
-    <p>De {{ minPrice }} à {{ maxPrice }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import SgiltCurrencyInput from '@/components/basics/SgiltCurrencyInput.vue'
 
-const minPrice = ref(0)
-const maxPrice = ref(0)
+const minPrice = ref('')
+const maxPrice = ref('')
 </script>
 
-<style></style>
+<style scoped lang="scss">
+.price-range {
+  display: flex;
+  flex-direction: row;
+  gap: $spacing-m;
+
+  margin: 0;
+  padding: 0;
+}
+</style>

@@ -2,8 +2,8 @@
   <div class="filters">
     <div class="filters-title">Rechercher</div>
     <DateFilter class="filters-date" />
-    <CategoryTagsFilter />
     <PriceFilter />
+    <CategoryTagsFilter />
   </div>
 </template>
 
