@@ -1,15 +1,17 @@
 <template>
   <section class="search-view">
-    <div class="search-bar">
-      <p>SEARCH</p>
-    </div>
+    <aside class="search-bar">
+      <SearchBar />
+    </aside>
     <div class="search-results">
       <p>RESULTS</p>
     </div>
   </section>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import SearchBar from '@/components/searchpage/SearchBar.vue'
+</script>
 
 <style scoped lang="scss">
 .search-view {
@@ -18,7 +20,7 @@
 
   .search-bar {
     flex: 0 0 20rem;
-    background-color: $shadow;
+    background-color: $ghost;
     padding: $spacing-m;
   }
 
