@@ -15,6 +15,8 @@ import SearchBar from '@/components/searchpage/SearchBar.vue'
 
 <style scoped lang="scss">
 .search-view {
+  flex: 1;
+
   display: flex;
   flex-direction: row;
 
