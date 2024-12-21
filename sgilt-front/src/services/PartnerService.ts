@@ -8,7 +8,7 @@ export class PartnerService {
         title: 'Partner 1',
         description: 'Description 1',
         imageUrl: 'https://picsum.photos/300/250',
-        category: 'music',
+        category: { name: 'music', tags: [] },
         entryPrice: 100,
       },
       {
@@ -16,7 +16,7 @@ export class PartnerService {
         title: 'Partner 2',
         description: 'Description 2',
         imageUrl: 'https://picsum.photos/300/250',
-        category: 'food',
+        category: { name: 'food', tags: [] },
         entryPrice: 200,
       },
       {
@@ -24,7 +24,7 @@ export class PartnerService {
         title: 'Partner 3',
         description: 'Description 3',
         imageUrl: 'https://picsum.photos/300/250',
-        category: 'place',
+        category: { name: 'place', tags: [] },
         entryPrice: 300,
       },
     ]

@@ -1,11 +1,10 @@
 <template>
-  <SgiltChip :label="$t(`categories.${category.name}`)">
+  <SgiltChip :label="$t(`categories.${categoryName}`)">
     <component :is="icon" class="icon" />
   </SgiltChip>
 </template>
 
 <script setup lang="ts">
-import type { Category } from '@/domain/Category'
 import SgiltChip from '@/components/basics/SgiltChip.vue'
 import IconFood from '@/components/icons/IconFood.vue'
 import IconMusic from '@/components/icons/IconMusic.vue'
@@ -14,7 +13,7 @@ import IconPhoto from '@/components/icons/IconPhoto.vue'
 import type { Component } from 'vue'
 
 const props = defineProps<{
-  category: Category
+  categoryName: string
 }>()
 
 const icons: Record<string, Component> = {
@@ -24,5 +23,5 @@ const icons: Record<string, Component> = {
   photo: IconPhoto,
 }
 
-const icon = icons[props.category.name]
+const icon = icons[props.categoryName]
 </script>

@@ -19,7 +19,6 @@ defineProps<{
   display: flex;
   flex-direction: row;
   align-items: center;
-  align-content: center;
 
   gap: 0.5em;
   padding: 0.2em 0.5em;

@@ -5,7 +5,7 @@
       <CategoryChip
         v-for="(category, index) of categories"
         :key="index"
-        :category="category"
+        :categoryName="category.name"
         class="category-chip"
       />
     </div>

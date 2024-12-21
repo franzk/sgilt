@@ -13,9 +13,8 @@ export const useCategorysStore = defineStore('alerts', () => {
 
   // actions
   const fetchTags = () => {
-    console.log('fetchTags')
     if (categories.value.some((category) => category.tags.length > 0)) return
-    console.log('fetchTags 2')
+
     categories.value
       .find((category) => category.name === 'music')
       ?.tags.push(
@@ -51,7 +50,6 @@ export const useCategorysStore = defineStore('alerts', () => {
           { id: '11', name: 'photobooth' },
         ],
       )
-    console.log('fetchTags 3', categories.value)
   }
   return { categories, fetchTags }
 })
