@@ -1,11 +1,11 @@
 <template>
-  <SgiltChip :label="$t(`categories.${category}`)">
+  <SgiltChip :label="$t(`categories.${category.name}`)">
     <component :is="icon" class="icon" />
   </SgiltChip>
 </template>
 
 <script setup lang="ts">
-import type { Category } from '@/domain/Partner'
+import type { Category } from '@/domain/Category'
 import SgiltChip from '@/components/basics/SgiltChip.vue'
 import IconFood from '@/components/icons/IconFood.vue'
 import IconMusic from '@/components/icons/IconMusic.vue'
@@ -17,12 +17,12 @@ const props = defineProps<{
   category: Category
 }>()
 
-const icons: Record<Category, Component> = {
+const icons: Record<string, Component> = {
   food: IconFood,
   music: IconMusic,
   place: IconPlace,
   photo: IconPhoto,
 }
 
-const icon = icons[props.category]
+const icon = icons[props.category.name]
 </script>

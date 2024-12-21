@@ -14,9 +14,9 @@
 
 <script setup lang="ts">
 import CategoryChip from '@/components/basics/CategoryChip.vue'
-import type { Category } from '@/domain/Partner'
+import { useCategorysStore } from '@/stores/category.store'
 
-const categories: Category[] = ['music', 'food', 'place', 'photo']
+const categories = useCategorysStore().categories
 </script>
 
 <style lang="scss" scoped>

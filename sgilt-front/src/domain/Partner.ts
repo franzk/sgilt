@@ -1,3 +1,5 @@
+import type { Category } from '@/domain/Category'
+
 export interface Partner {
   id: string
   title: string
@@ -6,5 +8,3 @@ export interface Partner {
   category: Category
   entryPrice: number
 }
-
-export type Category = 'music' | 'food' | 'place' | 'photo'
