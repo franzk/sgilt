@@ -3,11 +3,22 @@
     <div class="category" v-for="category in categories" :key="category.name">
       <!-- chip & selection -->
       <div class="category-filter">
-        <CategoryChip
+        <!--CategoryChip
           :categoryName="category.name"
           class="category-chip"
+          :class="{ 'category-selected': category.selection.length > 0 }"
           @click="category.tagListExpanded = !category.tagListExpanded"
-        />
+        /-->
+        <span
+          class="category-entry-wrapper"
+          @click="category.tagListExpanded = !category.tagListExpanded"
+        >
+          <span v-if="!category.tagListExpanded">&#x25B9;</span>
+          <span v-if="category.tagListExpanded">&#x25BF;</span>
+          <span class="category-name">
+            {{ category.name.toUpperCase() }}
+          </span>
+        </span>
         <span class="selection-tags-list">{{
           category.selection
             .sort((a, b) => a.id.localeCompare(b.id))
@@ -27,7 +38,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import CategoryChip from '@/components/basics/CategoryChip.vue'
+// import CategoryChip from '@/components/basics/CategoryChip.vue'
 import TagsListFilter from '@/components/searchpage/TagsListFilter.vue'
 import { useCategorysStore } from '@/stores/category.store'
 import type { SearchCategory, SearchCategoryTag } from '@/types/SearchCategory'
@@ -60,12 +71,25 @@ onMounted(() => {
   flex-direction: row;
   align-items: center;
 
-  gap: 1rem;
+  gap: $spacing-m;
 
-  .category-chip {
+  /*.category-chip {
     color: $color-primary;
-    border: $border-width-s solid $color-primary;
-    gap: $spacing-xs;
+    border: $border-width-s solid $shadow;
+    gap: $spacing-m;
+  }*/
+
+  .category-entry-wrapper {
+    cursor: pointer;
+    .category-name {
+      margin-left: $spacing-s;
+      font-weight: 600;
+    }
+  }
+
+  .category-selected {
+    border-color: $color-accent;
+    border-width: $border-width-m;
   }
 
   .selection-tags-list {
