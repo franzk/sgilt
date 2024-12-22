@@ -1,23 +1,16 @@
 <template>
   <p class="currency-input">
-    <input
-      type="number"
-      :value="modelValue"
-      :placeholder="placeholder"
-      size="2"
-      @input="$emit('update:modelValue', $event.target.value)"
-    />
+    <input type="number" v-model="model" :placeholder="placeholder" />
     <span>€</span>
   </p>
 </template>
 
 <script setup lang="ts">
+const model = defineModel()
+
 defineProps({
-  modelValue: String,
   placeholder: String,
 })
-
-defineEmits(['update:modelValue'])
 </script>
 
 <style scoped lang="scss">
