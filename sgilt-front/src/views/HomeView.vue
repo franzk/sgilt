@@ -1,13 +1,13 @@
 <template>
-  <div class="home-view">
-    <div class="search-banner">
+  <main class="home-view">
+    <div class="search-banner-wrapper">
       <HomeSearchBanner />
     </div>
 
     <HomeCategoriesBanner />
 
     <HomePartnersSection />
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">
@@ -24,7 +24,7 @@ import HomeCategoriesBanner from '@/components/homepage/HomeCategoriesBanner.vue
   background: url('@/assets/images/home_bg.jpg') no-repeat;
   background-size: cover;
 
-  .search-banner {
+  .search-banner-wrapper {
     flex: 0 0 85%;
     justify-content: center;
 

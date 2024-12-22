@@ -1,12 +1,12 @@
 <template>
-  <section class="search-view">
+  <div class="search-view">
     <aside class="search-bar">
       <SearchBar />
     </aside>
-    <div class="search-results">
+    <main class="search-results">
       <p>RESULTS</p>
-    </div>
-  </section>
+    </main>
+  </div>
 </template>
 
 <script setup lang="ts">
