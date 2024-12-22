@@ -19,7 +19,7 @@ defineProps<{
 </script>
 
 <style scoped lang="scss">
-.filter-tags-list {
+/*.filter-tags-list {
   margin: 0;
   padding: 0;
   font-size: $font-size-s;
@@ -33,7 +33,10 @@ defineProps<{
   flex-direction: column;
   gap: 1rem;
   .tag {
-    margin-left: $spacing-m;
+    margin: $spacing-m;
   }
+}*/
+.tag {
+  margin: $spacing-s $spacing-m 0 $spacing-m;
 }
 </style>

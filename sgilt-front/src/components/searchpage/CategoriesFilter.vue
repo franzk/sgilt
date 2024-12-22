@@ -15,7 +15,10 @@
         >
           <span v-if="!category.tagListExpanded">&#x25B9;</span>
           <span v-if="category.tagListExpanded">&#x25BF;</span>
-          <span class="category-name">
+          <span
+            class="category-name"
+            :class="{ 'category-selected': category.selection.length > 0 }"
+          >
             {{ category.name.toUpperCase() }}
           </span>
         </span>
@@ -83,19 +86,19 @@ onMounted(() => {
     cursor: pointer;
     .category-name {
       margin-left: $spacing-s;
-      font-weight: 600;
+      font-weight: 500;
     }
-  }
-
-  .category-selected {
-    border-color: $color-accent;
-    border-width: $border-width-m;
+    .category-selected {
+      font-weight: 700;
+    }
   }
 
   .selection-tags-list {
     margin: 0;
     padding: 0;
     font-size: $font-size-s;
+    font-style: italic;
+    text-decoration: underline;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
