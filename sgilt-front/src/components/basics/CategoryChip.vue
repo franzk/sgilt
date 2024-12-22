@@ -1,5 +1,9 @@
 <template>
-  <SgiltChip :label="$t(`categories.${categoryName}`)">
+  <SgiltChip
+    :label="$t(`categories.${categoryName}`)"
+    @click="$emit('click')"
+    class="category-chip"
+  >
     <component :is="icon" class="icon" />
   </SgiltChip>
 </template>
@@ -16,6 +20,8 @@ const props = defineProps<{
   categoryName: string
 }>()
 
+defineEmits(['click'])
+
 const icons: Record<string, Component> = {
   food: IconFood,
   music: IconMusic,
@@ -25,3 +31,9 @@ const icons: Record<string, Component> = {
 
 const icon = icons[props.categoryName]
 </script>
+
+<style scoped lang="scss">
+.category-chip {
+  cursor: pointer;
+}
+</style>

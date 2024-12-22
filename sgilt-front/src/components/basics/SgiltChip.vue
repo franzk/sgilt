@@ -1,5 +1,5 @@
 <template>
-  <div class="sgilt-chip">
+  <div class="sgilt-chip" @click="$emit('click')">
     <p class="icon">
       <slot />
     </p>
@@ -12,6 +12,8 @@ defineProps<{
   label: string
   link?: string
 }>()
+
+defineEmits(['click'])
 </script>
 
 <style lang="scss" scoped>

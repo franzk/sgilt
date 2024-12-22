@@ -3,13 +3,13 @@
     <div class="filters-title">Rechercher</div>
     <DateFilter class="filters-date" />
     <PriceFilter />
-    <CategoryTagsFilter />
+    <CategoriesFilter />
   </div>
 </template>
 
 <script setup lang="ts">
 import DateFilter from '@/components/searchpage/DateFilter.vue'
-import CategoryTagsFilter from '@/components/searchpage/CategoryTagsFilter.vue'
+import CategoriesFilter from '@/components/searchpage/CategoriesFilter.vue'
 import PriceFilter from '@/components/searchpage/PriceFilter.vue'
 </script>
 

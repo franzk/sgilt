@@ -1,5 +1,11 @@
 export interface SearchCategory {
   name: string
-  tags: string[]
-  selection: string[]
+  tags: SearchCategoryTag[]
+  selection: SearchCategoryTag[]
+  tagListExpanded: boolean
+}
+
+export interface SearchCategoryTag {
+  id: string
+  name: string
 }
