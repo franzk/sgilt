@@ -4,6 +4,7 @@
       <SgiltCurrencyInput v-model="minPrice" placeholder="Minimum" />
       <SgiltCurrencyInput v-model="maxPrice" placeholder="Maximum" />
     </div>
+    <div>{{ minPrice }} - {{ maxPrice }}</div>
   </div>
 </template>
 
@@ -11,8 +12,8 @@
 import { ref } from 'vue'
 import SgiltCurrencyInput from '@/components/basics/SgiltCurrencyInput.vue'
 
-const minPrice = ref('')
-const maxPrice = ref('')
+const minPrice = ref(0)
+const maxPrice = ref(0)
 </script>
 
 <style scoped lang="scss">

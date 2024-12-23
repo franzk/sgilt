@@ -10,12 +10,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
 
-const date = ref()
+const date = defineModel<Date>()
 
 const format = (date: Date) => dayjs(date).locale('fr').format('dddd DD MMM YYYY')
 </script>

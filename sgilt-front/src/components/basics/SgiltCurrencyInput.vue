@@ -1,16 +1,27 @@
+import { computed } from "vue"
+<!-- TODO limiter à 2 chiffres après la virgule -->
 <template>
   <p class="currency-input">
-    <input type="number" v-model="model" :placeholder="placeholder" />
+    <input type="number" v-model="formattedValue" :placeholder="placeholder" @input="modelChange" />
     <span>€</span>
   </p>
 </template>
 
 <script setup lang="ts">
-const model = defineModel()
+import { computed } from 'vue'
+
+const model = defineModel<number>()
 
 defineProps({
   placeholder: String,
 })
+
+const formattedValue = computed(() => model.value || '')
+
+const modelChange = (event: Event) => {
+  const value = (event.target as HTMLInputElement).value
+  model.value = value ? parseFloat(value.replace(',', '.')) : 0
+}
 </script>
 
 <style scoped lang="scss">
