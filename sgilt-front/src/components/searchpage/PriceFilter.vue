@@ -5,15 +5,23 @@
       <SgiltCurrencyInput v-model="maxPrice" placeholder="Maximum" />
     </div>
     <div>{{ minPrice }} - {{ maxPrice }}</div>
+    <div>
+      <NewCurInput v-model="value" :options="{ currency: 'EUR' }" />
+      <p>
+        Number value: <code>{{ value }}</code>
+      </p>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import SgiltCurrencyInput from '@/components/basics/SgiltCurrencyInput.vue'
+import NewCurInput from '../basics/newCurInput.vue'
 
 const minPrice = ref(0)
 const maxPrice = ref(0)
+const value = ref(0)
 </script>
 
 <style scoped lang="scss">

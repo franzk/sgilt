@@ -2,7 +2,13 @@ import { computed } from "vue"
 <!-- TODO limiter à 2 chiffres après la virgule -->
 <template>
   <p class="currency-input">
-    <input type="number" v-model="formattedValue" :placeholder="placeholder" @input="modelChange" />
+    <input
+      type="number"
+      v-model="formattedValue"
+      :placeholder="placeholder"
+      @beforeinput="beforeInput"
+      @input="modelChange"
+    />
     <span>€</span>
   </p>
 </template>
@@ -18,9 +24,20 @@ defineProps({
 
 const formattedValue = computed(() => model.value || '')
 
+let valueBeforeChange = model.value
+
+const beforeInput = (event: Event) => {
+  console.log('beforeInput', (event.target as HTMLInputElement).validity.valid)
+  valueBeforeChange = model.value
+}
+
 const modelChange = (event: Event) => {
-  const value = (event.target as HTMLInputElement).value
-  model.value = value ? parseFloat(value.replace(',', '.')) : 0
+  if (!(event.target as HTMLInputElement).validity.valid) {
+    model.value = valueBeforeChange
+  } else {
+    const value = (event.target as HTMLInputElement).value
+    model.value = value ? parseFloat(value.replace(',', '.')) : 0
+  }
 }
 </script>
 
