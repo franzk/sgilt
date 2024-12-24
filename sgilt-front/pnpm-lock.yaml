@@ -20,9 +20,6 @@ dependencies:
   vue:
     specifier: ^3.5.13
     version: 3.5.13(typescript@5.6.3)
-  vue-currency-input:
-    specifier: ^3.1.0
-    version: 3.1.0(vue@3.5.13)
   vue-i18n:
     specifier: 11.0.0-beta.2
     version: 11.0.0-beta.2(vue@3.5.13)
@@ -4034,14 +4031,6 @@ packages:
   /vue-component-type-helpers@2.1.10:
     resolution: {integrity: sha512-lfgdSLQKrUmADiSV6PbBvYgQ33KF3Ztv6gP85MfGaGaSGMTXORVaHT1EHfsqCgzRNBstPKYDmvAV9Do5CmJ07A==}
     dev: true
-
-  /vue-currency-input@3.1.0(vue@3.5.13):
-    resolution: {integrity: sha512-XZ8bg61zRNJjRDo7I4K0UAah9qtkipexRcn/h9MzEqZQ9gVZWABObgN+042UchmCTiwSfsjGOd6DZGzd/TUUMA==}
-    peerDependencies:
-      vue: ^2.7 || ^3.0.0
-    dependencies:
-      vue: 3.5.13(typescript@5.6.3)
-    dev: false
 
   /vue-demi@0.14.10(vue@3.5.13):
     resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}
