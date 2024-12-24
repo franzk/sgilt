@@ -1,42 +1,31 @@
-import { computed } from "vue"
-<!-- TODO limiter à 2 chiffres après la virgule -->
 <template>
   <p class="currency-input">
-    <input
-      type="number"
-      v-model="formattedValue"
-      :placeholder="placeholder"
-      @beforeinput="beforeInput"
-      @input="modelChange"
-    />
+    <input ref="inputRef" type="number" :value="displayValue" @input="onInput" @blur="onBlur" />
     <span>€</span>
   </p>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
+import { truncateDecimals, formatCurrency } from '@/utils/CurrencyUtils'
 
 const model = defineModel<number>()
+const inputRef = ref<HTMLInputElement | null>(null)
 
-defineProps({
-  placeholder: String,
-})
+// Calcul de la valeur affichée dans le champ
+const displayValue = computed(() => (model.value === 0 ? '' : model.value?.toString()))
 
-const formattedValue = computed(() => model.value || '')
-
-let valueBeforeChange = model.value
-
-const beforeInput = (event: Event) => {
-  console.log('beforeInput', (event.target as HTMLInputElement).validity.valid)
-  valueBeforeChange = model.value
+// Gérer la saisie dans l'input
+const onInput = (event: Event) => {
+  let value = (event.target as HTMLInputElement).value
+  value = truncateDecimals(value, 2)
+  model.value = parseFloat(value) || 0
 }
 
-const modelChange = (event: Event) => {
-  if (!(event.target as HTMLInputElement).validity.valid) {
-    model.value = valueBeforeChange
-  } else {
-    const value = (event.target as HTMLInputElement).value
-    model.value = value ? parseFloat(value.replace(',', '.')) : 0
+// Formater la saisie au blur
+const onBlur = () => {
+  if (inputRef.value) {
+    inputRef.value.value = formatCurrency(model.value)
   }
 }
 </script>
