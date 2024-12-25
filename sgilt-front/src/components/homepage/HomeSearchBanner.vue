@@ -13,8 +13,8 @@
 </template>
 
 <script setup lang="ts">
-import SgiltDatePicker from '@/components/basics/SgiltDatePicker.vue'
-import SgiltSelect from '@/components/basics/SgiltSelect.vue'
+import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
+import SgiltSelect from '@/components/basics/inputs/SgiltSelect.vue'
 import router from '@/router'
 
 const options = ['Votre évènement', 'Mariage', "Fête d'entreprise", "Fête d'anniversaire"]

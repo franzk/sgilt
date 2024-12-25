@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import SgiltCurrencyInput from '@/components/basics/SgiltCurrencyInput.vue'
+import SgiltCurrencyInput from '@/components/basics/inputs/SgiltCurrencyInput.vue'
 
 const minPrice = ref(0)
 const maxPrice = ref(0)

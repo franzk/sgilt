@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import SgiltDatePicker from '@/components/basics/SgiltDatePicker.vue'
+import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
 
 const date = defineModel<Date>()
 </script>

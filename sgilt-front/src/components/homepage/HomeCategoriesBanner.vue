@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import CategoryChip from '@/components/basics/CategoryChip.vue'
+import CategoryChip from '@/components/basics/chips/CategoryChip.vue'
 import { useCategorysStore } from '@/stores/category.store'
 
 const categories = useCategorysStore().categories

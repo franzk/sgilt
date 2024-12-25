@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import SgiltChip from '@/components/basics/SgiltChip.vue'
+import SgiltChip from '@/components/basics/chips/SgiltChip.vue'
 import IconFood from '@/components/icons/IconFood.vue'
 import IconMusic from '@/components/icons/IconMusic.vue'
 import IconPlace from '@/components/icons/IconPlace.vue'
