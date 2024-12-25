@@ -7,7 +7,6 @@
         :key="index"
         :categoryName="category.name"
         class="category-chip"
-        @click="console.log('Category clicked:', category)"
       />
     </div>
   </div>

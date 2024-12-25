@@ -11,11 +11,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import SgiltCurrencyInput from '@/components/basics/SgiltCurrencyInput.vue'
-//import NewCurInput from '../basics/newCurInput.vue'
 
 const minPrice = ref(0)
 const maxPrice = ref(0)
-const value = ref(0)
 </script>
 
 <style scoped lang="scss">
