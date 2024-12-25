@@ -1,6 +1,13 @@
 <template>
   <p class="currency-input">
-    <input ref="inputRef" type="number" :value="displayValue" @input="onInput" @blur="onBlur" />
+    <input
+      ref="inputRef"
+      type="number"
+      :value="displayValue"
+      @input="onInput"
+      @blur="onBlur"
+      :placeholder="placeholder"
+    />
     <span>€</span>
   </p>
 </template>
@@ -9,20 +16,27 @@
 import { ref, computed } from 'vue'
 import { truncateDecimals, formatCurrency } from '@/utils/CurrencyUtils'
 
+// Props
 const model = defineModel<number>()
+
+defineProps<{
+  placeholder?: string
+}>()
+
+// Refs
 const inputRef = ref<HTMLInputElement | null>(null)
 
-// Calcul de la valeur affichée dans le champ
+// show empty string if value is 0
 const displayValue = computed(() => (model.value === 0 ? '' : model.value?.toString()))
 
-// Gérer la saisie dans l'input
+// input event
 const onInput = (event: Event) => {
   let value = (event.target as HTMLInputElement).value
   value = truncateDecimals(value, 2)
   model.value = parseFloat(value) || 0
 }
 
-// Formater la saisie au blur
+// format on blur
 const onBlur = () => {
   if (inputRef.value) {
     inputRef.value.value = formatCurrency(model.value)

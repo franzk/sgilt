@@ -4,7 +4,6 @@
       <SgiltCurrencyInput v-model="minPrice" placeholder="Minimum" />
       <SgiltCurrencyInput v-model="maxPrice" placeholder="Maximum" />
     </div>
-    <div>{{ minPrice }} - {{ maxPrice }}</div>
   </div>
 </template>
 

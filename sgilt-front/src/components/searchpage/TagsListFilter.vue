@@ -19,23 +19,6 @@ defineProps<{
 </script>
 
 <style scoped lang="scss">
-/*.filter-tags-list {
-  margin: 0;
-  padding: 0;
-  font-size: $font-size-s;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.category-tags-filter {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  .tag {
-    margin: $spacing-m;
-  }
-}*/
 .tag {
   margin: $spacing-s $spacing-m 0 $spacing-m;
 }

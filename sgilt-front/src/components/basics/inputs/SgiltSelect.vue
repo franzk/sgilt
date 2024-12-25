@@ -20,7 +20,7 @@ const props = defineProps<{
   tabindex?: number
 }>()
 
-const emit = defineEmits(['input'])
+const emit = defineEmits(['selection'])
 
 const selected = ref(
   props.default ? props.default : props.options.length > 0 ? props.options[0] : null,
@@ -30,7 +30,7 @@ const open = ref(false)
 const click = (option: string) => {
   selected.value = option
   open.value = false
-  emit('input', option)
+  emit('selection', option)
 }
 </script>
 
