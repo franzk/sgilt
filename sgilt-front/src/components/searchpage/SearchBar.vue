@@ -1,6 +1,6 @@
 <template>
   <div class="filters">
-    <div class="filters-title">Rechercher</div>
+    <div class="filters-title">{{ $t('texts.rechercher') }}</div>
     <DateFilter class="filters-date" />
     <PriceFilter />
     <CategoriesFilter />

@@ -22,5 +22,11 @@
     "partners-section": {
       "title": "La sélection du moment"
     }
+  },
+  "texts": {
+    "a-partir-de": "À partir de",
+    "minimum": "Minimum",
+    "maximum": "Maximum",
+    "rechercher": "Rechercher"
   }
 }

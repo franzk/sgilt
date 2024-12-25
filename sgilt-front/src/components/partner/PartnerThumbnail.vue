@@ -8,7 +8,7 @@
     <h3>{{ partner.title }}</h3>
 
     <p class="partner-description">{{ partner.description }}</p>
-    <p class="partner-enter-price">A partir de {{ partner.entryPrice }} €</p>
+    <p class="partner-enter-price">{{ `${$t('texts.a-partir-de')}  ${partner.entryPrice}` }} €</p>
   </div>
 </template>
 

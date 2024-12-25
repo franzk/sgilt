@@ -1,8 +1,8 @@
 <template>
   <div class="price-filter">
     <div class="price-range">
-      <SgiltPriceInput v-model="minPrice" placeholder="Minimum" />
-      <SgiltPriceInput v-model="maxPrice" placeholder="Maximum" />
+      <SgiltPriceInput v-model="minPrice" :placeholder="$t('texts.minimum')" />
+      <SgiltPriceInput v-model="maxPrice" :placeholder="$t('texts.maximum')" />
     </div>
   </div>
 </template>
