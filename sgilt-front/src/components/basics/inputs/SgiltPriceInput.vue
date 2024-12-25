@@ -1,20 +1,19 @@
 <template>
-  <p class="currency-input">
+  <p class="price-input">
     <input
-      ref="inputRef"
       type="number"
+      step="1"
       :value="displayValue"
-      @input="onInput"
-      @blur="onBlur"
       :placeholder="placeholder"
+      @beforeinput="beforeInput"
+      @input="onInput"
     />
     <span>€</span>
   </p>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { truncateDecimals, formatCurrency } from '@/utils/CurrencyUtils'
+import { computed } from 'vue'
 
 // Props
 const model = defineModel<number>()
@@ -23,23 +22,19 @@ defineProps<{
   placeholder?: string
 }>()
 
-// Refs
-const inputRef = ref<HTMLInputElement | null>(null)
-
 // show empty string if value is 0
 const displayValue = computed(() => (model.value === 0 ? '' : model.value?.toString()))
 
-// input event
+// onInput handler : update model.value
 const onInput = (event: Event) => {
-  let value = (event.target as HTMLInputElement).value
-  value = truncateDecimals(value, 2)
-  model.value = parseFloat(value) || 0
+  const value = (event.target as HTMLInputElement).value
+  model.value = value ? parseFloat(value) : 0
 }
 
-// format on blur
-const onBlur = () => {
-  if (inputRef.value) {
-    inputRef.value.value = formatCurrency(model.value)
+// beforeInput handler : prevent input of decimal separator
+const beforeInput = (event: Event) => {
+  if (['.', ','].includes((event as InputEvent).data || '')) {
+    event.preventDefault()
   }
 }
 </script>
@@ -67,7 +62,7 @@ input[type='number'] {
   padding: $spacing-m;
 }
 
-.currency-input {
+.price-input {
   display: flex;
   flex-direction: row;
   align-content: center;
