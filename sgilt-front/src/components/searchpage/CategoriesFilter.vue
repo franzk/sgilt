@@ -28,6 +28,7 @@
         :tags="category.tags"
         :visible="category.tagListExpanded"
         v-model="category.selection"
+        class="tags-list"
       />
     </div>
   </div>
@@ -62,6 +63,10 @@ onMounted(() => {
   gap: $spacing-m;
 }
 
+.tags-list {
+  margin-top: $spacing-s;
+}
+
 .category-filter {
   display: flex;
   flex-direction: row;
@@ -73,6 +78,7 @@ onMounted(() => {
     cursor: pointer;
     background: none;
     border: none;
+    border-radius: $border-radius-m;
     .category-name {
       margin-left: $spacing-s;
       font-size: $font-size-m;

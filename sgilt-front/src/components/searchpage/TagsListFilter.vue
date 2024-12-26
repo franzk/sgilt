@@ -1,14 +1,14 @@
 <template>
-  <template v-if="visible">
+  <div v-if="visible" class="tags-list">
     <div class="tag" v-for="tag in tags" :key="tag.id">
-      <input type="checkbox" :id="tag.id" :value="tag" v-model="selection" />
-      <label :for="tag.id">{{ tag.name }}</label>
+      <SgiltCheckbox v-model="selection" :id="tag.id" :value="tag" :label="tag.name" />
     </div>
-  </template>
+  </div>
 </template>
 
 <script setup lang="ts">
 import type { SearchCategoryTag } from '@/types/SearchCategory'
+import SgiltCheckbox from '@/components/basics/inputs/SgiltCheckbox.vue'
 
 const selection = defineModel<SearchCategoryTag[]>()
 
@@ -19,7 +19,16 @@ defineProps<{
 </script>
 
 <style scoped lang="scss">
+.tags-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 .tag {
-  margin: $spacing-s $spacing-m 0 $spacing-m;
+  margin: 0 $spacing-m 0 $spacing-m;
+}
+
+input[type='checkbox'] {
+  background-color: $color-accent;
 }
 </style>
