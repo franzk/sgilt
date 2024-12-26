@@ -74,7 +74,7 @@ input[type='number'] {
     width: 5rem;
     border-radius: $br 0 0 $br;
     border: $bw solid $bc;
-    outline-color: $color-primary;
+    // outline-color: $color-primary;
   }
 
   span {

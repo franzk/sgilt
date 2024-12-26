@@ -4,7 +4,7 @@
       <SearchBar />
     </aside>
     <main class="search-results">
-      <p>RESULTS</p>
+      <p>RESULTS: !!!! régler les problèmes de outline</p>
     </main>
   </div>
 </template>

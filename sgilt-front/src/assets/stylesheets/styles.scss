@@ -34,3 +34,8 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+*:focus {
+  outline: 2px solid $color-accent; /* Définit un contour bleu personnalisé */
+  outline-offset: 2px; /* Ajoute un espacement pour plus de clarté */
+}
