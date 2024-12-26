@@ -22,9 +22,8 @@ import SearchBar from '@/components/searchpage/SearchBar.vue'
   overflow: hidden;
 
   .search-bar {
-    flex: 0 0 20rem;
+    flex: 0 0 21rem;
     border-right: $border-width-s solid $color-accent;
-    padding: $spacing-m;
     display: flex;
     overflow: hidden;
   }

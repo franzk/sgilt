@@ -38,6 +38,7 @@ import IconSearch from '@/components/icons/IconSearch.vue'
   display: flex;
   flex-direction: column;
   gap: $spacing-m;
+  padding: $spacing-m;
   overflow: scroll;
 }
 
@@ -62,6 +63,6 @@ hr {
 }
 
 .submit-button {
-  // to come
+  padding: $spacing-m;
 }
 </style>
