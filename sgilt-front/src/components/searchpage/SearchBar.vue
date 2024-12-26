@@ -3,8 +3,8 @@
     <div class="filters">
       <div class="bar-title">
         <div class="filters-title">
-          <div class="icon"><IconSearch /></div>
-          <p>{{ $t('texts.rechercher') }}</p>
+          <div class="icon"><IconFilters /></div>
+          <p>{{ $t('texts.filtres') }}</p>
         </div>
         <hr />
       </div>
@@ -23,7 +23,7 @@ import DateFilter from '@/components/searchpage/DateFilter.vue'
 import CategoriesFilter from '@/components/searchpage/CategoriesFilter.vue'
 import PriceFilter from '@/components/searchpage/PriceFilter.vue'
 import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue'
-import IconSearch from '@/components/icons/IconSearch.vue'
+import IconFilters from '@/components/icons/IconFilters.vue'
 </script>
 
 <style scoped lang="scss">
@@ -53,6 +53,9 @@ import IconSearch from '@/components/icons/IconSearch.vue'
   .icon {
     height: 24px;
     width: 24px;
+  }
+  p {
+    font-weight: bold;
   }
 }
 

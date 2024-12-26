@@ -3,7 +3,7 @@
     <label>
       <input type="checkbox" v-model="selection" :id="id" :value="value" />
       <span class="checkbox"></span>
-      <label :for="id">{{ label }}</label>
+      <label :for="id" class="checkbox-label">{{ label }}</label>
     </label>
   </div>
 </template>
@@ -88,5 +88,12 @@ defineProps<{
   background: var(--checkColor);
   transition: transform 200ms ease-out 200ms;
   margin-left: 2px;
+}
+
+.checkbox-wrapper .checkbox-label {
+  &:hover {
+    color: $color-accent;
+    font-weight: 700;
+  }
 }
 </style>
