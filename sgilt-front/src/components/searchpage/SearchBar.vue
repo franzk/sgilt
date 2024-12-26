@@ -31,6 +31,7 @@ import IconFilters from '@/components/icons/IconFilters.vue'
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background-color: white;
 }
 
 .filters {
@@ -67,5 +68,8 @@ hr {
 
 .submit-button {
   padding: $spacing-m;
+  button {
+    width: 100%;
+  }
 }
 </style>
