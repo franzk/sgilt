@@ -21,6 +21,7 @@ const format = (date: Date) => dayjs(date).locale('fr').format('dddd DD MMM YYYY
 
 <style lang="scss">
 @import '@vuepic/vue-datepicker/dist/main.css';
+
 .sgilt-date-picker {
   width: 17rem;
 }
@@ -35,7 +36,7 @@ const format = (date: Date) => dayjs(date).locale('fr').format('dddd DD MMM YYYY
 }
 
 .dp__input:focus {
-  outline: 2px solid $color-accent;
-  outline-offset: 2px;
+  outline: $focus-outline;
+  outline-offset: $focus-outline-offset;
 }
 </style>

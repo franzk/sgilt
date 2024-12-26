@@ -1,19 +1,19 @@
 <template>
   <div class="categories-banner">
-    <h2 class="title">{{ $t('home.categories-banner.title') }}</h2>
+    <h2 class="categories-title">{{ $t('home.categories-banner.title') }}</h2>
     <div class="categories">
-      <CategoryChip
+      <CategoryCard
         v-for="(category, index) of categories"
         :key="index"
         :categoryName="category.name"
-        class="category-chip"
+        class="category-card"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import CategoryChip from '@/components/basics/chips/CategoryChip.vue'
+import CategoryCard from '@/components/basics/cards/CategoryCard.vue'
 import { useCategorysStore } from '@/stores/category.store'
 
 const categories = useCategorysStore().categories
@@ -30,22 +30,23 @@ const categories = useCategorysStore().categories
   box-shadow: 0 -4px 6px $ghost;
 }
 
-.title {
+.categories-title {
   margin: 0 0 $spacing-m 0;
-  line-height: $line-height-l;
 }
 
 .categories {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: $spacing-m;
+  margin: 0 $spacing-m;
 }
 
-.category-chip {
+.category-card {
   background: $color-secondary;
   color: $color-accent;
   box-shadow: 0 1px 3px $ghost;
+  margin: $spacing-m;
+  width: 12rem;
   border: 2px solid $color-secondary;
 }
 </style>

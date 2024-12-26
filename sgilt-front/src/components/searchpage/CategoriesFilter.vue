@@ -83,6 +83,10 @@ onMounted(() => {
       margin-left: $spacing-s;
       font-size: $font-size-m;
       font-weight: 500;
+      &:hover {
+        color: $color-accent;
+        font-weight: 700;
+      }
     }
     .category-selected {
       font-weight: 700;

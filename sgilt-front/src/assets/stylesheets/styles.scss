@@ -27,6 +27,10 @@ body {
     width: 100%;
     height: 100%;
   }
+  h2 {
+    font-size: $font-size-l;
+    font-weight: 600;
+  }
 }
 
 #app {
@@ -35,7 +39,7 @@ body {
   flex-direction: column;
 }
 
-*:focus {
-  outline: 2px solid $color-accent; /* Définit un contour  personnalisé */
-  outline-offset: 2px; /* Ajoute un espacement pour plus de clarté */
+*:focus-visible {
+  outline: $focus-outline;
+  outline-offset: $focus-outline-offset;
 }

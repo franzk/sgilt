@@ -88,9 +88,10 @@ input[type='number'] {
 
   height: 2.5rem;
 
-  &:focus-within {
-    outline: 2px solid $color-accent;
-    outline-offset: 2px;
+  //&:focus-within {
+  &:has(input:focus-visible) {
+    outline: $focus-outline;
+    outline-offset: $focus-outline-offset;
     border-radius: $br;
   }
 
