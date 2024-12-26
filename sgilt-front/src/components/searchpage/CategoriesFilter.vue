@@ -70,10 +70,12 @@ onMounted(() => {
   gap: $spacing-m;
 
   .category-entry-button {
+    cursor: pointer;
     background: none;
     border: none;
     .category-name {
       margin-left: $spacing-s;
+      font-size: $font-size-m;
       font-weight: 500;
     }
     .category-selected {
