@@ -4,13 +4,14 @@
       <SearchBar />
     </aside>
     <main class="search-results">
-      <p>RESULTS</p>
+      <SearchResults />
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import SearchBar from '@/components/pagecomponents/searchpage/searchbar/SearchBar.vue'
+import SearchBar from '@/components/search/SearchBar.vue'
+import SearchResults from '@/components/search/SearchResults.vue'
 </script>
 
 <style scoped lang="scss">

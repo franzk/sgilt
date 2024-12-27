@@ -19,9 +19,9 @@
 </template>
 
 <script setup lang="ts">
-import DateFilter from '@/components/pagecomponents/searchpage/searchbar/filters/DateFilter.vue'
-import CategoriesFilter from '@/components/pagecomponents/searchpage/searchbar/filters/CategoriesFilter.vue'
-import PriceFilter from '@/components/pagecomponents/searchpage/searchbar/filters/PriceFilter.vue'
+import DateFilter from '@/components/search/filters/DateFilter.vue'
+import CategoriesFilter from '@/components/search/filters/CategoriesFilter.vue'
+import PriceFilter from '@/components/search/filters/PriceFilter.vue'
 import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue'
 import IconFilters from '@/components/icons/IconFilters.vue'
 </script>
