@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SearchCategoryTag } from '@/types/SearchCategory'
+import type { SearchCategoryTag } from '@/types/CategoryFilter'
 
 const selection = defineModel<SearchCategoryTag[]>()
 

@@ -38,10 +38,10 @@
 import { onMounted, ref } from 'vue'
 import TagsListFilter from '@/components/search/filters/TagsListFilter.vue'
 import { useCategorysStore } from '@/stores/category.store'
-import type { SearchCategory, SearchCategoryTag } from '@/types/SearchCategory'
+import type { CategoryFilter, CategoryTagFilter } from '@/types/CategoryFilter'
 
 // -- Data --
-const categories = ref<SearchCategory[]>([])
+const categories = ref<CategoryFilter[]>([])
 
 onMounted(() => {
   // fetch data
@@ -50,7 +50,7 @@ onMounted(() => {
   categories.value = useCategorysStore().categories.map((category) => ({
     name: category.name,
     tags: category.tags,
-    selection: [] as SearchCategoryTag[],
+    selection: [] as CategoryTagFilter[],
     tagListExpanded: false,
   }))
 })

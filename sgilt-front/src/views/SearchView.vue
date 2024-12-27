@@ -33,6 +33,7 @@ import SearchResults from '@/components/search/SearchResults.vue'
     flex: 1;
     background-color: $color-secondary;
     padding: $spacing-m;
+    overflow: auto;
   }
 }
 </style>

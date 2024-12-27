@@ -27,16 +27,27 @@ defineProps<{
   flex-direction: column;
   position: relative;
 
+  cursor: pointer;
+
   background: $color-secondary;
   color: $color-primary;
 
   font-size: $font-size-s;
 
+  &:hover {
+    img {
+      transform: scale(1.01);
+      filter: brightness(0.8);
+    }
+  }
+
   img {
     width: 100%;
     height: auto;
     border-radius: $border-radius-s;
-    cursor: pointer;
+    transition:
+      transform 0.3s ease,
+      filter 0.3s ease;
   }
 
   h3,
@@ -58,6 +69,7 @@ defineProps<{
   .partner-category {
     position: absolute;
     justify-content: end;
+    z-index: 1;
 
     width: 100%;
     display: flex;

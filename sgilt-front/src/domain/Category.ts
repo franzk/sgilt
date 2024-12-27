@@ -1,6 +1,5 @@
 export interface Category {
   name: string
-  description: string
   tags: Tag[]
 }
 

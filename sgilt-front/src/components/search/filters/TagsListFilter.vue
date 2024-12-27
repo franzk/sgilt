@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SearchCategoryTag } from '@/types/SearchCategory'
+import type { SearchCategoryTag } from '@/types/CategoryFilter'
 import SgiltCheckbox from '@/components/basics/inputs/SgiltCheckbox.vue'
 
 const selection = defineModel<SearchCategoryTag[]>()
