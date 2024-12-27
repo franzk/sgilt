@@ -114,7 +114,7 @@ input[type='number'] {
     border-radius: 0 $br $br 0;
     border: bw solid $bc;
     border-left: none;
-    background-color: white;
+    background-color: $color-white;
   }
 }
 </style>

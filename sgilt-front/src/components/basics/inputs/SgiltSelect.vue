@@ -35,7 +35,7 @@ const click = (option: string) => {
 </script>
 
 <style lang="scss" scoped>
-$color-1: white; // bg
+$color-1: $color-white; // bg
 $color-2: $color-accent; // border & bg hover
 $color-3: $color-primary;
 $color-4: $color-secondary; // border not selected
@@ -97,7 +97,7 @@ $br: $input-border-radius;
 
       &:hover {
         background-color: $color-2;
-        color: white;
+        color: $color-white;
       }
     }
   }

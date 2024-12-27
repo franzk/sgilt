@@ -31,7 +31,7 @@ import IconFilters from '@/components/icons/IconFilters.vue'
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background-color: white;
+  background-color: $color-white;
 }
 
 .filters {
