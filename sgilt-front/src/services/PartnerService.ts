@@ -3,8 +3,9 @@ import type { PartnerQuery } from '@/types/PartnerQuery'
 
 export class PartnerService {
   static getHihglightedPartners = (): Partner[] => {
-    // TODO renvoyer 3 partenaires au hasard
-    return this.partners.slice(0, 3)
+    // TODO renvoyer 3 partenaires tirés au hasard
+    const shuffled = [...this.partners].sort(() => Math.random() - 0.5)
+    return shuffled.slice(0, 3)
   }
 
   static search = async (query: PartnerQuery): Promise<Partner[]> => {

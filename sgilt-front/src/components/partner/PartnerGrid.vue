@@ -1,24 +1,18 @@
 <template>
-  {{ searchResults.length }} résultats
   <div class="search-results">
-    <div v-for="result in searchResults" :key="result.id" class="thumbnail">
-      <PartnerThumbnail :partner="result" />
+    <div v-for="partner in partners" :key="partner.id" class="thumbnail">
+      <PartnerCard :partner="partner" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useSearchStore } from '@/stores/search.store'
-import { onMounted, ref } from 'vue'
-import PartnerThumbnail from './PartnerThumbnail.vue'
+import type { Partner } from '@/domain/Partner'
+import PartnerCard from './PartnerCard.vue'
 
-const searchStore = useSearchStore()
-
-const searchResults = ref(searchStore.results)
-
-onMounted(() => {
-  searchStore.search({})
-})
+defineProps<{
+  partners: Partner[]
+}>()
 </script>
 
 <style scoped lang="scss">
@@ -28,7 +22,7 @@ onMounted(() => {
   padding: 1rem;
   grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
 
-  // Centrer les éléments si moins de colonnes
+  // center if there is only one column
   justify-content: center;
 }
 </style>

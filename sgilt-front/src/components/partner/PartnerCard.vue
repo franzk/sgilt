@@ -3,7 +3,7 @@
     <div class="partner-category">
       <CategoryChip :categoryName="partner.category.name" class="category-chip" />
     </div>
-    <img :src="partner.imageUrl" alt="Partenaire 1" />
+    <img :src="partner.imageUrl" :alt="partner.title" />
 
     <h3>{{ partner.title }}</h3>
 
@@ -57,9 +57,9 @@ defineProps<{
   }
 
   h3 {
-    font-size: $font-size-l;
+    font-size: $font-size-m;
+    line-height: $line-height-m;
     font-weight: 500;
-    margin-top: $spacing-xs;
   }
 
   .partner-enter-price {
