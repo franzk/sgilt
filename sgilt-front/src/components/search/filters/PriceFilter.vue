@@ -8,11 +8,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import SgiltPriceInput from '@/components/basics/inputs/SgiltPriceInput.vue'
 
-const minPrice = ref(0)
-const maxPrice = ref(0)
+const minPrice = defineModel('minPrice', { type: Number, required: true })
+const maxPrice = defineModel('maxPrice', { type: Number, required: true })
 </script>
 
 <style scoped lang="scss">

@@ -2,21 +2,42 @@ import type { Partner } from '@/domain/Partner'
 import type { PartnerQuery } from '@/types/PartnerQuery'
 
 export class PartnerService {
+  /**
+   *
+   * @returns 3 random partners
+   */
   static getHihglightedPartners = (): Partner[] => {
-    // TODO renvoyer 3 partenaires tirés au hasard
+    // moke API to return 3 random partners
     const shuffled = [...this.partners].sort(() => Math.random() - 0.5)
     return shuffled.slice(0, 3)
   }
 
+  /**
+   * query partners
+   * @param query the query to search partners
+   * @returns a list of partners matching the query
+   */
   static search = async (query: PartnerQuery): Promise<Partner[]> => {
-    console.log('Searching partners with query:', query)
+    // moke API to search partners
     const results = PartnerService.partners
-    // return promise
+      .filter((partner) => partner.entryPrice >= (query.minPrice || 0))
+      .filter((partner) => partner.entryPrice <= (query.maxPrice || Number.MAX_VALUE))
+      .filter(
+        (partner) =>
+          !query.categoryTags ||
+          query.categoryTags.length === 0 ||
+          query.categoryTags.some((queriedTag) =>
+            partner.category.tags.some((partnerTag) => partnerTag.id === queriedTag.id),
+          ),
+      )
     return new Promise((resolve) => {
       resolve(results)
     })
   }
 
+  /**
+   * Mock data
+   */
   private static partners: Partner[] = [
     // Category: Music
     {
@@ -39,7 +60,7 @@ export class PartnerService {
         name: 'music',
         tags: [{ id: '2', name: 'Pop-Rock' }],
       },
-      entryPrice: 1500,
+      entryPrice: 800,
     },
     {
       id: '3',
@@ -50,7 +71,7 @@ export class PartnerService {
         name: 'music',
         tags: [{ id: '3', name: 'D.J.' }],
       },
-      entryPrice: 800,
+      entryPrice: 600,
     },
     {
       id: '4',
@@ -72,7 +93,7 @@ export class PartnerService {
         name: 'music',
         tags: [{ id: '2', name: 'Pop-Rock' }],
       },
-      entryPrice: 2000,
+      entryPrice: 1500,
     },
 
     // Category: Food
@@ -85,7 +106,7 @@ export class PartnerService {
         name: 'food',
         tags: [{ id: '4', name: 'Traiteur' }],
       },
-      entryPrice: 30,
+      entryPrice: 400,
     },
     {
       id: '7',
@@ -96,7 +117,7 @@ export class PartnerService {
         name: 'food',
         tags: [{ id: '5', name: 'Food Truck' }],
       },
-      entryPrice: 20,
+      entryPrice: 300,
     },
     {
       id: '8',
@@ -107,7 +128,7 @@ export class PartnerService {
         name: 'food',
         tags: [{ id: '6', name: 'Boissons' }],
       },
-      entryPrice: 15,
+      entryPrice: 150,
     },
     {
       id: '9',
@@ -118,7 +139,7 @@ export class PartnerService {
         name: 'food',
         tags: [{ id: '4', name: 'Traiteur' }],
       },
-      entryPrice: 50,
+      entryPrice: 400,
     },
     {
       id: '10',
@@ -129,7 +150,7 @@ export class PartnerService {
         name: 'food',
         tags: [{ id: '5', name: 'Food Truck' }],
       },
-      entryPrice: 10,
+      entryPrice: 200,
     },
 
     // Category: Place
@@ -175,7 +196,7 @@ export class PartnerService {
         name: 'place',
         tags: [{ id: '9', name: 'Restaurant' }],
       },
-      entryPrice: 50,
+      entryPrice: 2000,
     },
     {
       id: '15',
@@ -199,7 +220,7 @@ export class PartnerService {
         name: 'photo',
         tags: [{ id: '10', name: 'Photographe' }],
       },
-      entryPrice: 1500,
+      entryPrice: 350,
     },
     {
       id: '17',
@@ -210,7 +231,7 @@ export class PartnerService {
         name: 'photo',
         tags: [{ id: '11', name: 'Photobooth' }],
       },
-      entryPrice: 600,
+      entryPrice: 400,
     },
     {
       id: '18',

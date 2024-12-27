@@ -1,10 +1,12 @@
 <template>
-  <button class="sgilt-simple-button">
+  <button class="sgilt-simple-button" @click="$emit('click')">
     <slot></slot>
   </button>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+defineEmits(['click'])
+</script>
 
 <style scoped lang="scss">
 .sgilt-simple-button {

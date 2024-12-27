@@ -35,13 +35,15 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted } from 'vue'
 import TagsListFilter from '@/components/search/filters/TagsListFilter.vue'
 import { useCategorysStore } from '@/stores/category.store'
 import type { CategoryFilter, CategoryTagFilter } from '@/types/CategoryFilter'
 
+const categories = defineModel<CategoryFilter[]>()
+
 // -- Data --
-const categories = ref<CategoryFilter[]>([])
+//const categories = ref<CategoryFilter[]>([])
 
 onMounted(() => {
   // fetch data

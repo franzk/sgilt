@@ -4,5 +4,5 @@ export interface PartnerQuery {
   dateFilter?: Date
   minPrice?: number
   maxPrice?: number
-  categroryTags?: CategoryTagFilter[]
+  categoryTags?: CategoryTagFilter[]
 }

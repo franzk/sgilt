@@ -9,21 +9,43 @@
         <hr />
       </div>
       <DateFilter class="filters-date" />
-      <PriceFilter class="price-filter" />
-      <CategoriesFilter class="categories-filter" />
+      <PriceFilter v-model:min-price="minPrice" v-model:max-price="maxPrice" class="price-filter" />
+      <CategoriesFilter v-model="categoriesFilter" class="categories-filter" />
     </div>
     <div class="submit-button">
-      <SgiltSimpleButton>{{ $t('texts.rechercher') }}</SgiltSimpleButton>
+      <SgiltSimpleButton @click="search">{{ $t('texts.rechercher') }}</SgiltSimpleButton>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import DateFilter from '@/components/search/filters/DateFilter.vue'
 import CategoriesFilter from '@/components/search/filters/CategoriesFilter.vue'
 import PriceFilter from '@/components/search/filters/PriceFilter.vue'
 import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue'
 import IconFilters from '@/components/icons/IconFilters.vue'
+import type { PartnerQuery } from '@/types/PartnerQuery'
+import type { CategoryFilter } from '@/types/CategoryFilter'
+
+const minPrice = ref(0)
+const maxPrice = ref(0)
+const categoriesFilter = ref<CategoryFilter[]>([])
+
+const emit = defineEmits<{
+  search: [query: PartnerQuery]
+}>()
+
+const search = () => {
+  console.log('search')
+  const query: PartnerQuery = {
+    dateFilter: DateFilter.date,
+    minPrice: minPrice.value,
+    maxPrice: maxPrice.value,
+    categoryTags: categoriesFilter.value.flatMap((category) => category.selection),
+  }
+  emit('search', query)
+}
 </script>
 
 <style scoped lang="scss">
