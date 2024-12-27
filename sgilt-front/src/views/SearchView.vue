@@ -4,13 +4,13 @@
       <SearchBar />
     </aside>
     <main class="search-results">
-      <p>RESULTS: !!!! régler les problèmes de outline</p>
+      <p>RESULTS</p>
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import SearchBar from '@/components/searchpage/SearchBar.vue'
+import SearchBar from '@/components/searchpage/searchbar/SearchBar.vue'
 </script>
 
 <style scoped lang="scss">
