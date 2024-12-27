@@ -11,9 +11,9 @@
 </template>
 
 <script setup lang="ts">
-import HomeSearchBanner from '@/components/homepage/HomeSearchBanner.vue'
-import HomePartnersSection from '@/components/homepage/HomePartnersSection.vue'
-import HomeCategoriesBanner from '@/components/homepage/HomeCategoriesBanner.vue'
+import HomeSearchBanner from '@/components/pagecomponents/homepage/HomeSearchBanner.vue'
+import HomePartnersSection from '@/components/pagecomponents/homepage/HomePartnersSection.vue'
+import HomeCategoriesBanner from '@/components/pagecomponents/homepage/HomeCategoriesBanner.vue'
 </script>
 
 <style lang="scss" scoped>

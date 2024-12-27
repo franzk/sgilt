@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import TagsListFilter from '@/components/searchpage/searchbar/filters/TagsListFilter.vue'
+import TagsListFilter from '@/components/pagecomponents/searchpage/searchbar/filters/TagsListFilter.vue'
 import { useCategorysStore } from '@/stores/category.store'
 import type { SearchCategory, SearchCategoryTag } from '@/types/SearchCategory'
 

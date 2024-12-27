@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import SearchBar from '@/components/searchpage/searchbar/SearchBar.vue'
+import SearchBar from '@/components/pagecomponents/searchpage/searchbar/SearchBar.vue'
 </script>
 
 <style scoped lang="scss">
