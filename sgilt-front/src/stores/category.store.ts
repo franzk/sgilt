@@ -5,10 +5,10 @@ import type { Category } from '@/domain/Category'
 export const useCategorysStore = defineStore('alerts', () => {
   // reactive state
   const categories = ref<Category[]>([
-    { name: 'music', tags: [] },
-    { name: 'food', tags: [] },
-    { name: 'place', tags: [] },
-    { name: 'photo', tags: [] },
+    { name: 'music', imageUrl: './images/music.jpg', tags: [] },
+    { name: 'food', imageUrl: './images/food.jpg', tags: [] },
+    { name: 'place', imageUrl: './images/place.jpg', tags: [] },
+    { name: 'photo', imageUrl: './images/photo.jpg', tags: [] },
   ])
 
   // actions

@@ -1,7 +1,7 @@
 <template>
   <div class="category-card">
     <div class="category-card-image">
-      <img src="https://picsum.photos/150/100" alt="Category image" />
+      <img :src="imageUrl" alt="Category image" />
     </div>
     <div class="category-card-content">
       <p><CategoryIcon :categoryName="categoryName" /></p>
@@ -15,6 +15,7 @@ import CategoryIcon from '@/components/basics/icons/CategoryIcon.vue'
 
 defineProps<{
   categoryName: string
+  imageUrl: string
 }>()
 </script>
 
@@ -31,11 +32,22 @@ $br: $border-radius-xs;
 
   cursor: pointer;
 
+  &:hover {
+    img {
+      transform: scale(1.01);
+      filter: brightness(0.8);
+    }
+  }
+
   .category-card-image {
     img {
       width: 100%;
-      height: auto;
+      aspect-ratio: 1.4;
+      object-fit: cover;
       border-radius: $br $br 0 0;
+      transition:
+        transform 0.3s ease,
+        filter 0.3s ease;
     }
   }
 

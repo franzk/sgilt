@@ -6,6 +6,7 @@
         v-for="(category, index) of categories"
         :key="index"
         :categoryName="category.name"
+        :imageUrl="category.imageUrl"
         class="category-card"
       />
     </div>
