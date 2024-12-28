@@ -42,8 +42,8 @@ defineProps<{
   }
 
   img {
-    width: 100%;
-    height: auto;
+    aspect-ratio: 1.3;
+    object-fit: cover;
     border-radius: $border-radius-s;
     transition:
       transform 0.3s ease,
