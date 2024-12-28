@@ -1,11 +1,11 @@
 <template>
   <div class="custom-select" :tabindex="tabindex" @blur="open = false">
     <div class="selected" :class="{ open: open }" @click="open = !open">
-      {{ selected }}
+      {{ selectedLabel }}
     </div>
     <div class="items" :class="{ selectHide: !open }">
       <div v-for="(option, i) of options" :key="i" @click="click(option)">
-        {{ option }}
+        {{ option.label }}
       </div>
     </div>
   </div>
@@ -14,23 +14,32 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+const selectedValue = defineModel<string>()
+
+export interface SgiltSelectOption {
+  value: string
+  label: string
+}
+
 const props = defineProps<{
-  options: string[]
+  options: SgiltSelectOption[]
   default?: string
   tabindex?: number
 }>()
 
-const emit = defineEmits(['selection'])
-
-const selected = ref(
-  props.default ? props.default : props.options.length > 0 ? props.options[0] : null,
+// display the selected label
+const selectedLabel = ref(
+  props.default ? props.default : props.options.length > 0 ? props.options[0].label : null,
 )
+
+// is the select opened ?
 const open = ref(false)
 
-const click = (option: string) => {
-  selected.value = option
-  open.value = false
-  emit('selection', option)
+// when an option is clicked
+const click = (option: SgiltSelectOption) => {
+  selectedLabel.value = option.label // update the selected label
+  selectedValue.value = option.value // update the model
+  open.value = false // close the select
 }
 </script>
 

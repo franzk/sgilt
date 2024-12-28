@@ -5,11 +5,12 @@
       <span class="title-bold">{{ $t('home.search-banner.title-part-2') }}</span>
     </div>
     <div class="search-fields">
-      <SgiltDatePicker />
-      <SgiltSelect :options="options" class="select-event" />
+      <SgiltDatePicker v-model="date" />
+      <SgiltSelect :options="options" v-model="selectedValue" class="select-event" />
       <SgiltSimpleButton @click="search">{{ $t('home.search-banner.button') }}</SgiltSimpleButton>
     </div>
   </section>
+  {{}}
 </template>
 
 <script setup lang="ts">
@@ -18,11 +19,31 @@ import SgiltSelect from '@/components/basics/inputs/SgiltSelect.vue'
 import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue'
 
 import router from '@/router'
+import { ref } from 'vue'
+import type { LocationQueryRaw } from 'vue-router'
+import { useEventStore } from '@/stores/event.store'
+import dayjs from 'dayjs'
 
-const options = ['Votre évènement', 'Mariage', "Fête d'entreprise", "Fête d'anniversaire"]
+// Filtre date
+const date = ref<Date>()
 
+// Types d'événements
+const options = useEventStore().events.map((eventType) => ({
+  value: eventType.id,
+  label: eventType.name,
+}))
+const selectedValue = ref<string>()
+
+// Recherche
 const search = () => {
-  router.push({ path: '/search' })
+  const query: LocationQueryRaw = {}
+  if (date.value) {
+    query.date = dayjs(date.value).format('YYYY-MM-DD')
+  }
+  if (selectedValue.value) {
+    query.event = selectedValue.value
+  }
+  router.push({ path: '/search', query })
 }
 </script>
 
