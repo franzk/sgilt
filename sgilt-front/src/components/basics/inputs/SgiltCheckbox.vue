@@ -9,13 +9,11 @@
 </template>
 
 <script setup lang="ts">
-import type { CategoryTagFilter } from '@/types/CategoryFilter'
-
-const selection = defineModel<CategoryTagFilter[]>()
+const selection = defineModel()
 
 defineProps<{
   id: string
-  value: CategoryTagFilter
+  value: object
   label: string
 }>()
 </script>
