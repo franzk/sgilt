@@ -42,7 +42,7 @@ export class PartnerService {
     // Category: Music
     {
       id: '1',
-      title: 'Jazz & Swing Band',
+      title: 'Gypsy Reed Ensemble',
       description: 'Un groupe de jazz parfait pour animer vos soirées.',
       imageUrl: './images/jazz-band.jpg',
       category: {
@@ -53,7 +53,7 @@ export class PartnerService {
     },
     {
       id: '2',
-      title: 'Pop-Rock Vibes',
+      title: 'Starlight Pulse',
       description: 'Un groupe pop-rock énergique pour une ambiance inoubliable.',
       imageUrl: './images/pop-rock-band.jpg',
       category: {
@@ -75,7 +75,7 @@ export class PartnerService {
     },
     {
       id: '4',
-      title: 'Jazz Quartet',
+      title: 'Swing Spark',
       description: 'Un quatuor de jazz pour une ambiance feutrée.',
       imageUrl: './images/jazz-quartet.jpg',
       category: {
@@ -86,7 +86,7 @@ export class PartnerService {
     },
     {
       id: '5',
-      title: 'Rock & Roll Band',
+      title: 'The Jive Rebels ',
       description: 'Un groupe rock pour faire vibrer votre public.',
       imageUrl: './images/rock-band.jpg',
       category: {
@@ -99,7 +99,7 @@ export class PartnerService {
     // Category: Food
     {
       id: '6',
-      title: 'Traiteur Gourmet',
+      title: 'Éclat Gourmet',
       description: 'Un service traiteur haut de gamme pour vos événements.',
       imageUrl: './images/traiteur-gourmet.jpg',
       category: {
@@ -156,7 +156,7 @@ export class PartnerService {
     // Category: Place
     {
       id: '11',
-      title: 'Salle des Fêtes',
+      title: 'Salle des Fêtes de Rathsamhausen',
       description: 'Une salle spacieuse pour vos événements.',
       imageUrl: './images/salle-fetes.png',
       category: {
@@ -178,7 +178,7 @@ export class PartnerService {
     },
     {
       id: '13',
-      title: 'Hébergement de Groupe',
+      title: 'Gîte de la mangouste',
       description: 'Un hébergement confortable pour vos invités.',
       imageUrl: './images/hebergement-groupe.jpg',
       category: {
@@ -189,7 +189,7 @@ export class PartnerService {
     },
     {
       id: '14',
-      title: 'Restaurant Privé',
+      title: 'Restaurant À la Couronne',
       description: 'Un restaurant privatisé pour vos réceptions.',
       imageUrl: './images/restaurant-prive.jpg',
       category: {
@@ -213,7 +213,7 @@ export class PartnerService {
     // Category: Photo
     {
       id: '16',
-      title: 'Photographe de Mariage',
+      title: 'Léo Clairmont Photographe',
       description: 'Des souvenirs inoubliables pour votre grand jour.',
       imageUrl: './images/photographe-mariage.jpg',
       category: {
