@@ -12,8 +12,8 @@
       <PriceFilter v-model:min-price="minPrice" v-model:max-price="maxPrice" class="price-filter" />
       <CategoriesFilter v-model="categoriesFilter" class="categories-filter" />
     </div>
-    <div class="reset-button">Réinitialisez les filtres</div>
     <div class="submit-button">
+      <span class="reset" @click="resetFilters">Réinitialisez les filtres</span>
       <SgiltSimpleButton @click="search">{{ $t('texts.rechercher') }}</SgiltSimpleButton>
     </div>
   </div>
@@ -50,6 +50,15 @@ const search = () => {
     categoryTags: categoriesFilter.value.flatMap((category) => category.selection),
   }
   emit('search', query)
+}
+
+const resetFilters = () => {
+  dateFilter.value = undefined
+  minPrice.value = 0
+  maxPrice.value = 0
+  categoriesFilter.value.forEach((category) => {
+    category.selection = []
+  })
 }
 </script>
 
@@ -94,7 +103,16 @@ hr {
 }
 
 .submit-button {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-m;
   padding: $spacing-m;
+  span {
+    text-align: center;
+    font-size: $font-size-s;
+    text-decoration: underline;
+    cursor: pointer;
+  }
   button {
     width: 100%;
   }
