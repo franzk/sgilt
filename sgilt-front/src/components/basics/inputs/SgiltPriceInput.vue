@@ -61,7 +61,7 @@ const focusDiv = () => {
 <style scoped lang="scss">
 $br: $input-border-radius;
 $bw: $border-width-s;
-$bc: $shadow;
+$bc: $shadow-m;
 
 p {
   margin: 0;

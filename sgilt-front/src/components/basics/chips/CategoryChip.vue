@@ -35,5 +35,11 @@ const icon = icons[props.categoryName]
 <style scoped lang="scss">
 .category-chip {
   cursor: pointer;
+  color: $color-secondary;
+  font-size: $font-size-s;
+  background-color: $shadow-l;
+  border: $border-width-s solid $color-secondary;
+  gap: $spacing-xs;
+  margin: $spacing-s;
 }
 </style>

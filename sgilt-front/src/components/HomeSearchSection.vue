@@ -57,7 +57,7 @@ const search = () => {
   gap: $spacing-m;
   padding: $spacing-l;
 
-  background-color: $shadow;
+  background-color: $shadow-m;
   color: $color-secondary;
 }
 

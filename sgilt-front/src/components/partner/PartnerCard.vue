@@ -1,7 +1,7 @@
 <template>
   <div class="partner-card">
     <div class="partner-category">
-      <CategoryChip :categoryName="partner.category.name" class="category-chip" />
+      <CategoryChip :categoryName="partner.category.name" />
     </div>
     <img :src="partner.imageUrl" :alt="partner.title" />
 
@@ -67,21 +67,11 @@ defineProps<{
   }
 
   .partner-category {
+    display: flex;
     position: absolute;
     justify-content: end;
     z-index: 1;
-
     width: 100%;
-    display: flex;
-    border-radius: $border-radius-s $border-radius-s 0 0;
-
-    .category-chip {
-      color: $color-secondary;
-      background-color: $shadow;
-      border: $border-width-s solid $color-secondary;
-      gap: $spacing-xs;
-      margin: $spacing-s;
-    }
   }
 }
 </style>

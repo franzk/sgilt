@@ -1,17 +1,21 @@
 <template>
   <div class="category-card">
     <div class="category-card-image">
+      <div class="category-card-chip">
+        <CategoryChip :categoryName="categoryName" />
+      </div>
+
       <img :src="imageUrl" alt="Category image" />
     </div>
     <div class="category-card-content">
-      <p><CategoryIcon :categoryName="categoryName" /></p>
-      <h3 class="category-card-title">{{ $t(`categories.${categoryName}.title`) }}</h3>
+      <p class="category-card-description">{{ $t(`categories.${categoryName}.description`) }}</p>
+      <span>&#8594;</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import CategoryIcon from '@/components/basics/icons/CategoryIcon.vue'
+import CategoryChip from '@/components/basics/chips/CategoryChip.vue'
 
 defineProps<{
   categoryName: string
@@ -20,17 +24,16 @@ defineProps<{
 </script>
 
 <style scoped lang="scss">
-$br: $border-radius-xs;
+$br: $border-radius-s;
 
 .category-card {
   display: flex;
+  position: relative;
   flex-direction: column;
-  gap: $spacing-m;
-
-  box-shadow: 0 1px 3px $ghost;
-  border-radius: $br;
+  gap: $spacing-s;
 
   cursor: pointer;
+  color: $color-primary;
 
   &:hover {
     img {
@@ -39,39 +42,30 @@ $br: $border-radius-xs;
     }
   }
 
+  .category-card-chip {
+    display: flex;
+    position: absolute;
+    justify-content: end;
+    z-index: 1;
+    width: 100%;
+  }
+
   .category-card-image {
     img {
       width: 100%;
       aspect-ratio: 1.4;
       object-fit: cover;
-      border-radius: $br $br 0 0;
+      border-radius: $br $br;
       transition:
         transform 0.3s ease,
         filter 0.3s ease;
     }
   }
 
-  .category-card-content {
-    display: flex;
-    flex-direction: row;
-    line-height: 0;
-    gap: $spacing-s;
-    justify-content: center;
-    align-items: center;
-
-    padding: 0 $spacing-m $spacing-m $spacing-m;
-
-    p {
-      margin: 0;
-    }
-
-    .category-card-title {
-      margin: 0;
-    }
-
-    .category-card-description {
-      margin: 0;
-    }
+  .category-card-description {
+    margin: 0;
+    line-height: $line-height-m;
+    font-size: $font-size-m;
   }
 }
 </style>

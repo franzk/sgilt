@@ -28,7 +28,7 @@ const categories = useCategorysStore().categories
   padding: $spacing-l 0 $spacing-xl 0;
   background-color: $color-accent;
   color: $color-secondary;
-  box-shadow: 0 -4px 6px $ghost;
+  box-shadow: 0 -4px 6px $shadow-s;
 }
 
 .categories-title {
@@ -43,11 +43,7 @@ const categories = useCategorysStore().categories
 }
 
 .category-card {
-  background: $color-secondary;
-  color: $color-accent;
-  box-shadow: 0 1px 3px $ghost;
   margin: $spacing-m;
-  width: 12rem;
-  border: 2px solid $color-secondary;
+  width: 14rem;
 }
 </style>

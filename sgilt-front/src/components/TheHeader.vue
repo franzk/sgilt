@@ -22,7 +22,7 @@ header {
   z-index: 1;
 
   background-color: $color-secondary;
-  box-shadow: 0 4px 6px $shadow;
+  box-shadow: 0 4px 6px $shadow-m;
 
   gap: $spacing-l;
   align-content: center;
