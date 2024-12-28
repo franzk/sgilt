@@ -34,7 +34,7 @@ const partners: Partner[] = PartnerService.getHihglightedPartners()
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
-  .partner-thumbnail {
+  .partner-card {
     width: 15rem;
   }
 }

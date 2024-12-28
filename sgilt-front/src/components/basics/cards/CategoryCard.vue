@@ -5,7 +5,7 @@
     </div>
     <div class="category-card-content">
       <p><CategoryIcon :categoryName="categoryName" /></p>
-      <h3 class="category-card-title">{{ $t(`categories.${categoryName}`) }}</h3>
+      <h3 class="category-card-title">{{ $t(`categories.${categoryName}.title`) }}</h3>
     </div>
   </div>
 </template>

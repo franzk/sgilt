@@ -1,6 +1,6 @@
 <template>
   <SgiltChip
-    :label="$t(`categories.${categoryName}`)"
+    :label="$t(`categories.${categoryName}.title`)"
     @click="$emit('click')"
     class="category-chip"
   >

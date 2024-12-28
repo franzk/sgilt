@@ -4,11 +4,22 @@
     "slogan": "Découvrez, réservez, célébrez !!"
   },
   "categories": {
-    "music": "Musique",
-    "food": "Restauration",
-    "place": "Lieu",
-    "places": "Lieux",
-    "photo": "Photographie"
+    "music": {
+      "title": "Musique",
+      "description": "Offrez une ambiance unique avec la musique idéale."
+    },
+    "food": {
+      "title": "Restauration",
+      "description": "Régalez vos convives avec des menus sur mesure."
+    },
+    "place": {
+      "title": "Lieu",
+      "description": "Des lieux d’exception pour sublimer vos événements."
+    },
+    "photo": {
+      "title": "Photographie",
+      "description": "Immortalisez chaque instant avec des clichés inoubliables."
+    }
   },
   "home": {
     "search-banner": {

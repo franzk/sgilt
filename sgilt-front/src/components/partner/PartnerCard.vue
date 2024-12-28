@@ -1,5 +1,5 @@
 <template>
-  <div class="partner-thumbnail">
+  <div class="partner-card">
     <div class="partner-category">
       <CategoryChip :categoryName="partner.category.name" class="category-chip" />
     </div>
@@ -22,7 +22,7 @@ defineProps<{
 </script>
 
 <style lang="scss" scoped>
-.partner-thumbnail {
+.partner-card {
   display: flex;
   flex-direction: column;
   position: relative;

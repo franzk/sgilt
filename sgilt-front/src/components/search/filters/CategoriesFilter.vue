@@ -13,7 +13,7 @@
             class="category-name"
             :class="{ 'category-selected': category.selection.length > 0 }"
           >
-            {{ $t(`categories.${category.name}`).toUpperCase() }}
+            {{ $t(`categories.${category.name}.title`).toUpperCase() }}
           </span>
         </button>
         <span class="selection-tags-list">{{
