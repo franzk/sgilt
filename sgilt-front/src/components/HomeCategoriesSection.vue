@@ -1,15 +1,16 @@
 <template>
   <div class="categories-banner">
     <h2 class="categories-title">{{ $t('home.categories-banner.title') }}</h2>
-    <div class="categories">
-      <CategoryCard
-        v-for="(category, index) of categories"
-        :key="index"
-        :categoryName="category.name"
-        :imageUrl="category.imageUrl"
-        class="category-card"
-      />
-    </div>
+    <ul class="categories">
+      <li v-for="(category, index) of categories" :key="index">
+        <router-link
+          :to="{ name: 'search', query: { category: category.name } }"
+          class="category-card"
+        >
+          <CategoryCard :categoryName="category.name" :imageUrl="category.imageUrl" />
+        </router-link>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -40,10 +41,12 @@ const categories = useCategorysStore().categories
   flex-direction: row;
   flex-wrap: wrap;
   margin: 0 $spacing-m;
+  list-style-type: none;
 }
 
 .category-card {
   margin: $spacing-l;
   width: 14rem;
+  text-decoration: none;
 }
 </style>
