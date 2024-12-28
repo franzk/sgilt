@@ -8,10 +8,11 @@
         </div>
         <hr />
       </div>
-      <DateFilter class="filters-date" />
+      <DateFilter class="filters-date" v-model="dateFilter" />
       <PriceFilter v-model:min-price="minPrice" v-model:max-price="maxPrice" class="price-filter" />
       <CategoriesFilter v-model="categoriesFilter" class="categories-filter" />
     </div>
+    <div class="reset-button">Réinitialisez les filtres</div>
     <div class="submit-button">
       <SgiltSimpleButton @click="search">{{ $t('texts.rechercher') }}</SgiltSimpleButton>
     </div>
@@ -28,6 +29,11 @@ import IconFilters from '@/components/icons/IconFilters.vue'
 import type { PartnerQuery } from '@/types/PartnerQuery'
 import type { CategoryFilter } from '@/types/CategoryFilter'
 
+const props = defineProps<{
+  dateFilter?: Date
+}>()
+
+const dateFilter = ref(props.dateFilter)
 const minPrice = ref(0)
 const maxPrice = ref(0)
 const categoriesFilter = ref<CategoryFilter[]>([])
@@ -37,9 +43,8 @@ const emit = defineEmits<{
 }>()
 
 const search = () => {
-  console.log('search')
   const query: PartnerQuery = {
-    dateFilter: DateFilter.date,
+    dateFilter: dateFilter.value,
     minPrice: minPrice.value,
     maxPrice: maxPrice.value,
     categoryTags: categoriesFilter.value.flatMap((category) => category.selection),

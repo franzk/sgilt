@@ -43,7 +43,7 @@ const categories = useCategorysStore().categories
 }
 
 .category-card {
-  margin: $spacing-m;
+  margin: $spacing-l;
   width: 14rem;
 }
 </style>

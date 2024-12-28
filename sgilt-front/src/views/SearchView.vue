@@ -1,7 +1,7 @@
 <template>
   <div class="search-view">
     <aside class="search-bar">
-      <SearchBar @search="search" />
+      <SearchBar @search="search" :dateFilter="dateFilter" />
     </aside>
     <main class="search-results">
       <SearchResults />
@@ -14,12 +14,22 @@ import SearchBar from '@/components/search/SearchBar.vue'
 import SearchResults from '@/components/search/SearchResults.vue'
 import { useSearchStore } from '@/stores/search.store'
 import type { PartnerQuery } from '@/types/PartnerQuery'
+import dayjs from 'dayjs'
+import { useRoute } from 'vue-router'
 
 const searchStore = useSearchStore()
 
+// get params from route
+const route = useRoute()
+
+const dateFilter = route.query?.date ? dayjs(route.query.date as string).toDate() : undefined
+const eventType = (route.query.event || '') as string
+console.log('eventType', eventType)
+
 // initial search
-const query = {}
-searchStore.search(query)
+const searchQuery: PartnerQuery = {}
+if (dateFilter) searchQuery.dateFilter = dateFilter
+searchStore.search(searchQuery)
 
 // handle search event
 const search = (query: PartnerQuery) => {
