@@ -2,6 +2,9 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Category } from '@/domain/Category'
 
+/**
+ *
+ */
 export const useCategorysStore = defineStore('categories', () => {
   // reactive state
   const categories = ref<Category[]>([

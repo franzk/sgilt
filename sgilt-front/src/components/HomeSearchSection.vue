@@ -21,14 +21,14 @@ import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue
 import router from '@/router'
 import { ref } from 'vue'
 import type { LocationQueryRaw } from 'vue-router'
-import { useEventStore } from '@/stores/event.store'
+import { useEventTypeStore } from '@/stores/event-type.store'
 import dayjs from 'dayjs'
 
 // Filtre date
 const date = ref<Date>()
 
 // Types d'événements
-const options = useEventStore().events.map((eventType) => ({
+const options = useEventTypeStore().events.map((eventType) => ({
   value: eventType.id,
   label: eventType.name,
 }))

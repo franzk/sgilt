@@ -4,6 +4,10 @@ import type { PartnerQuery } from '@/types/PartnerQuery'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
+/**
+ * Search store
+ * contains search results and search action
+ */
 export const useSearchStore = defineStore('search', () => {
   // reactive state
   const results = ref<Partner[]>([])

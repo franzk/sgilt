@@ -39,6 +39,7 @@
     "minimum": "Minimum",
     "maximum": "Maximum",
     "rechercher": "Rechercher",
-    "filtres": "Filtres"
+    "filtres": "Filtres",
+    "resultats": "Aucun résultat. | 1 résultat | {count} résultats"
   }
 }

@@ -1,6 +1,6 @@
 <template>
   <main class="home-view">
-    <div class="search-banner-wrapper">
+    <div class="search-section-wrapper">
       <HomeSearchSection />
     </div>
 
@@ -24,7 +24,7 @@ import HomeCategoriesSection from '@/components/HomeCategoriesSection.vue'
   background: url('@/assets/images/home_bg.jpg') no-repeat;
   background-size: cover;
 
-  .search-banner-wrapper {
+  .search-section-wrapper {
     flex: 0 0 85%;
     justify-content: center;
 

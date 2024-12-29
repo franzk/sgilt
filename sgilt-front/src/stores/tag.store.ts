@@ -2,6 +2,9 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Tag } from '@/domain/Tag'
 
+/**
+ * Tags store with mock data
+ */
 export const useTagsStore = defineStore('tags', () => {
   // reactive state
   const tags = ref<Tag[]>([

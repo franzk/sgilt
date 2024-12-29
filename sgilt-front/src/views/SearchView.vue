@@ -24,9 +24,8 @@ const searchStore = useSearchStore()
 
 // get params from route
 const route = useRoute()
-
 const dateFilter = route.query?.date ? dayjs(route.query.date as string).toDate() : undefined
-// TODO : const eventType = (route.query.event || '') as string
+// TODO : eventType param
 const category = (route.query?.category || '') as string
 const tagsFilter = ref<TagFilter[]>(
   useTagsStore()
@@ -34,7 +33,7 @@ const tagsFilter = ref<TagFilter[]>(
     .map((tag) => ({ id: tag.id, name: tag.name, category: tag.category })),
 )
 
-// filters : herited from route
+// filters  herited from route
 const searchQuery: PartnerQuery = {}
 if (dateFilter) {
   searchQuery.dateFilter = dateFilter

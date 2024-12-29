@@ -10,7 +10,7 @@
       </div>
       <DateFilter class="filters-date" v-model="dateFilter" />
       <PriceFilter v-model:min-price="minPrice" v-model:max-price="maxPrice" class="price-filter" />
-      <TagsFilter v-model="tagsFilter" class="categories-filter" />
+      <TagsFilter v-model="tagsFilter" />
     </div>
     <div class="submit-button">
       <span class="reset" @click="resetFilters">Réinitialisez les filtres</span>

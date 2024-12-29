@@ -1,4 +1,3 @@
-// import type { Category } from '@/domain/Category'
 import type { Tag } from '@/domain/Tag'
 
 export interface Partner {

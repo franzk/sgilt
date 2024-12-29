@@ -1,5 +1,5 @@
 <template>
-  <div>{{ searchStore.results.length }} résultat(s)</div>
+  <div>{{ $t('texts.resultats', { count: searchStore.results.length }) }}</div>
   <PartnerGrid :partners="searchStore.results" />
 </template>
 

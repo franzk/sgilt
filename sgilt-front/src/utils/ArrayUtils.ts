@@ -1,16 +1,10 @@
-type KeyOf<T> = keyof T
-
-export const groupBy = <T>(array: T[], key: KeyOf<T>): Record<string, T[]> => {
-  return array.reduce((result: Record<string, T[]>, item: T) => {
-    const groupKey = String(item[key])
-    if (!result[groupKey]) {
-      result[groupKey] = []
-    }
-    result[groupKey].push(item)
-    return result
-  }, {})
-}
-
+/**
+ * returns an array of distinct values from an array of objects by a key
+ * example: distinctByKey([{a: 1, b: 23}, {a: 2, b: 25}, {a: 1, b: 27}], 'a') => [1, 2]
+ * @param array array of objects
+ * @param key key to filter by
+ * @returns array of distinct values
+ */
 export const distinctByKey = <T>(array: T[], key: keyof T): T[keyof T][] => {
   const seen = new Set<T[keyof T]>()
 

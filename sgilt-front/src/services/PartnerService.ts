@@ -1,6 +1,9 @@
 import type { Partner } from '@/domain/Partner'
 import type { PartnerQuery } from '@/types/PartnerQuery'
 
+/**
+ * Partner service : communicate with the mocked API to fetch partners
+ */
 export class PartnerService {
   /**
    *
@@ -34,7 +37,7 @@ export class PartnerService {
   }
 
   /**
-   * Mock data
+   * Mocked data
    */
   private static partners: Partner[] = [
     // Category: Music
