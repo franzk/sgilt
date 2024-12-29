@@ -10,7 +10,7 @@
       </div>
       <DateFilter class="filters-date" v-model="dateFilter" />
       <PriceFilter v-model:min-price="minPrice" v-model:max-price="maxPrice" class="price-filter" />
-      <CategoriesFilter v-model="categoriesFilter" class="categories-filter" />
+      <CategoriesFilter v-model="tagsFilter" class="categories-filter" />
     </div>
     <div class="submit-button">
       <span class="reset" @click="resetFilters">Réinitialisez les filtres</span>
@@ -27,27 +27,32 @@ import PriceFilter from '@/components/search/filters/PriceFilter.vue'
 import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue'
 import IconFilters from '@/components/icons/IconFilters.vue'
 import type { PartnerQuery } from '@/types/PartnerQuery'
-import type { CategoryFilter } from '@/types/CategoryFilter'
+import type { TagFilter } from '@/types/TagFilter'
 
+// props
 const props = defineProps<{
   dateFilter?: Date
+  tagsFilter?: TagFilter[]
 }>()
 
+// filters
 const dateFilter = ref(props.dateFilter)
 const minPrice = ref(0)
 const maxPrice = ref(0)
-const categoriesFilter = ref<CategoryFilter[]>([])
+const tagsFilter = ref<TagFilter[]>(props.tagsFilter ?? [])
 
+// emits
 const emit = defineEmits<{
   search: [query: PartnerQuery]
 }>()
 
+// methods
 const search = () => {
   const query: PartnerQuery = {
     dateFilter: dateFilter.value,
     minPrice: minPrice.value,
     maxPrice: maxPrice.value,
-    categoryTags: categoriesFilter.value.flatMap((category) => category.selection),
+    tagsId: tagsFilter.value.map((tag) => tag.id),
   }
   emit('search', query)
 }
@@ -56,9 +61,7 @@ const resetFilters = () => {
   dateFilter.value = undefined
   minPrice.value = 0
   maxPrice.value = 0
-  categoriesFilter.value.forEach((category) => {
-    category.selection = []
-  })
+  tagsFilter.value = []
 }
 </script>
 

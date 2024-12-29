@@ -1,20 +1,26 @@
 <template>
-  <div v-if="visible" class="tags-list">
+  <div class="tags-list">
     <div class="tag" v-for="tag in tags" :key="tag.id">
-      <SgiltCheckbox v-model="selection" :id="tag.id" :value="tag" :label="tag.name" />
+      <SgiltCheckbox
+        v-model="selection"
+        :id="tag.id"
+        :value="tag"
+        :label="`${tag.name} - ${tag.category}`"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { CategoryTagFilter } from '@/types/CategoryFilter'
 import SgiltCheckbox from '@/components/basics/inputs/SgiltCheckbox.vue'
+import type { TagFilter } from '@/types/TagFilter'
 
-const selection = defineModel<CategoryTagFilter[]>()
+const selection = defineModel<TagFilter[]>()
+
+console.log('selection', selection.value)
 
 defineProps<{
-  tags: CategoryTagFilter[]
-  visible: boolean
+  tags: TagFilter[]
 }>()
 </script>
 

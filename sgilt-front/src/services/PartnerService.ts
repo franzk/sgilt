@@ -24,11 +24,9 @@ export class PartnerService {
       .filter((partner) => partner.entryPrice <= (query.maxPrice || Number.MAX_VALUE))
       .filter(
         (partner) =>
-          !query.categoryTags ||
-          query.categoryTags.length === 0 ||
-          query.categoryTags.some((queriedTag) =>
-            partner.category.tags.some((partnerTag) => partnerTag.id === queriedTag.id),
-          ),
+          !query.tagsId ||
+          query.tagsId.length === 0 ||
+          partner.tags.some((tag) => query.tagsId?.includes(tag.id)),
       )
     return new Promise((resolve) => {
       resolve(results)
@@ -45,10 +43,7 @@ export class PartnerService {
       title: 'Gypsy Reed Ensemble',
       description: 'Un groupe de jazz parfait pour animer vos soirées.',
       imageUrl: './images/jazz-band.jpg',
-      category: {
-        name: 'music',
-        tags: [{ id: '1', name: 'Jazz' }],
-      },
+      tags: [{ id: '1', name: 'Jazz', category: 'music' }],
       entryPrice: 1200,
     },
     {
@@ -56,10 +51,7 @@ export class PartnerService {
       title: 'Starlight Pulse',
       description: 'Un groupe pop-rock énergique pour une ambiance inoubliable.',
       imageUrl: './images/pop-rock-band.jpg',
-      category: {
-        name: 'music',
-        tags: [{ id: '2', name: 'Pop-Rock' }],
-      },
+      tags: [{ id: '2', name: 'Pop-Rock', category: 'music' }],
       entryPrice: 800,
     },
     {
@@ -67,10 +59,7 @@ export class PartnerService {
       title: 'DJ Animation',
       description: 'Un DJ professionnel pour rythmer vos soirées.',
       imageUrl: './images/dj-animation.jpg',
-      category: {
-        name: 'music',
-        tags: [{ id: '3', name: 'D.J.' }],
-      },
+      tags: [{ id: '3', name: 'D.J.', category: 'music' }],
       entryPrice: 600,
     },
     {
@@ -78,10 +67,7 @@ export class PartnerService {
       title: 'Swing Spark',
       description: 'Un quatuor de jazz pour une ambiance feutrée.',
       imageUrl: './images/jazz-quartet.jpg',
-      category: {
-        name: 'music',
-        tags: [{ id: '1', name: 'Jazz' }],
-      },
+      tags: [{ id: '1', name: 'Jazz', category: 'music' }],
       entryPrice: 1000,
     },
     {
@@ -89,10 +75,7 @@ export class PartnerService {
       title: 'The Jive Rebels ',
       description: 'Un groupe rock pour faire vibrer votre public.',
       imageUrl: './images/rock-band.jpg',
-      category: {
-        name: 'music',
-        tags: [{ id: '2', name: 'Pop-Rock' }],
-      },
+      tags: [{ id: '2', name: 'Pop-Rock', category: 'music' }],
       entryPrice: 1500,
     },
 
@@ -102,10 +85,7 @@ export class PartnerService {
       title: 'Éclat Gourmet',
       description: 'Un service traiteur haut de gamme pour vos événements.',
       imageUrl: './images/traiteur-gourmet.jpg',
-      category: {
-        name: 'food',
-        tags: [{ id: '4', name: 'Traiteur' }],
-      },
+      tags: [{ id: '4', name: 'Traiteur', category: 'food' }],
       entryPrice: 400,
     },
     {
@@ -113,10 +93,7 @@ export class PartnerService {
       title: 'Food Truck Burgers',
       description: 'Des burgers gourmands pour régaler vos invités.',
       imageUrl: './images/food-truck-burgers.jpg',
-      category: {
-        name: 'food',
-        tags: [{ id: '5', name: 'Food Truck' }],
-      },
+      tags: [{ id: '5', name: 'Food Truck', category: 'food' }],
       entryPrice: 300,
     },
     {
@@ -124,10 +101,7 @@ export class PartnerService {
       title: 'Bar à Cocktails',
       description: 'Un bar à cocktails pour une expérience unique.',
       imageUrl: './images/bar-cocktails.jpg',
-      category: {
-        name: 'food',
-        tags: [{ id: '6', name: 'Boissons' }],
-      },
+      tags: [{ id: '6', name: 'Boissons', category: 'food' }],
       entryPrice: 150,
     },
     {
@@ -135,10 +109,7 @@ export class PartnerService {
       title: 'Buffet de Cuisine Française',
       description: 'Un buffet raffiné pour sublimer vos réceptions.',
       imageUrl: './images/cuisine-francaise.jpg',
-      category: {
-        name: 'food',
-        tags: [{ id: '4', name: 'Traiteur' }],
-      },
+      tags: [{ id: '4', name: 'Traiteur', category: 'food' }],
       entryPrice: 400,
     },
     {
@@ -146,10 +117,7 @@ export class PartnerService {
       title: 'Camion Pizza',
       description: 'Une délicieuse pizza cuite au feu de bois sur place.',
       imageUrl: './images/pizza-truck.jpg',
-      category: {
-        name: 'food',
-        tags: [{ id: '5', name: 'Food Truck' }],
-      },
+      tags: [{ id: '5', name: 'Food Truck', category: 'food' }],
       entryPrice: 200,
     },
 
@@ -159,10 +127,7 @@ export class PartnerService {
       title: 'Salle des Fêtes de Rathsamhausen',
       description: 'Une salle spacieuse pour vos événements.',
       imageUrl: './images/salle-fetes.png',
-      category: {
-        name: 'place',
-        tags: [{ id: '7', name: 'Salle' }],
-      },
+      tags: [{ id: '7', name: 'Salle', category: 'place' }],
       entryPrice: 1000,
     },
     {
@@ -170,10 +135,7 @@ export class PartnerService {
       title: 'Château pour Mariage',
       description: 'Un cadre enchanteur pour célébrer votre union.',
       imageUrl: './images/chateau-mariage.jpg',
-      category: {
-        name: 'place',
-        tags: [{ id: '7', name: 'Salle' }],
-      },
+      tags: [{ id: '7', name: 'Salle', category: 'place' }],
       entryPrice: 5000,
     },
     {
@@ -181,10 +143,7 @@ export class PartnerService {
       title: 'Gîte de la mangouste',
       description: 'Un hébergement confortable pour vos invités.',
       imageUrl: './images/hebergement-groupe.jpg',
-      category: {
-        name: 'place',
-        tags: [{ id: '8', name: 'Hébergement' }],
-      },
+      tags: [{ id: '8', name: 'Hébergement', category: 'place' }],
       entryPrice: 300,
     },
     {
@@ -192,10 +151,7 @@ export class PartnerService {
       title: 'Restaurant À la Couronne',
       description: 'Un restaurant privatisé pour vos réceptions.',
       imageUrl: './images/restaurant-prive.jpg',
-      category: {
-        name: 'place',
-        tags: [{ id: '9', name: 'Restaurant' }],
-      },
+      tags: [{ id: '9', name: 'Restaurant', category: 'place' }],
       entryPrice: 2000,
     },
     {
@@ -203,10 +159,7 @@ export class PartnerService {
       title: 'Salle de Séminaire',
       description: 'Une salle équipée pour vos séminaires et conférences.',
       imageUrl: './images/salle-seminaire.jpg',
-      category: {
-        name: 'place',
-        tags: [{ id: '7', name: 'Salle' }],
-      },
+      tags: [{ id: '7', name: 'Salle', category: 'place' }],
       entryPrice: 1200,
     },
 
@@ -216,10 +169,7 @@ export class PartnerService {
       title: 'Léo Clairmont Photographe',
       description: 'Des souvenirs inoubliables pour votre grand jour.',
       imageUrl: './images/photographe-mariage.jpg',
-      category: {
-        name: 'photo',
-        tags: [{ id: '10', name: 'Photographe' }],
-      },
+      tags: [{ id: '10', name: 'Photographe', category: 'photo' }],
       entryPrice: 350,
     },
     {
@@ -227,10 +177,7 @@ export class PartnerService {
       title: 'Photobooth Vintage',
       description: 'Un photobooth original pour des photos funs.',
       imageUrl: './images/photobooth-vintage.jpg',
-      category: {
-        name: 'photo',
-        tags: [{ id: '11', name: 'Photobooth' }],
-      },
+      tags: [{ id: '11', name: 'Photobooth', category: 'photo' }],
       entryPrice: 400,
     },
     {
@@ -238,10 +185,7 @@ export class PartnerService {
       title: 'Studio Photo Mobile',
       description: 'Un studio photo pour des portraits professionnels.',
       imageUrl: './images/studio-photo-mobile.jpg',
-      category: {
-        name: 'photo',
-        tags: [{ id: '10', name: 'Photographe' }],
-      },
+      tags: [{ id: '10', name: 'Photographe', category: 'photo' }],
       entryPrice: 800,
     },
   ]

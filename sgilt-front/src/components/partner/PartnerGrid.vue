@@ -1,6 +1,6 @@
 <template>
   <div class="search-results">
-    <div v-for="partner in partners" :key="partner.id" class="thumbnail">
+    <div v-for="partner in partners" :key="partner.id">
       <PartnerCard :partner="partner" />
     </div>
   </div>

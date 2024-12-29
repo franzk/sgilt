@@ -1,10 +1,11 @@
-import type { Category } from '@/domain/Category'
+// import type { Category } from '@/domain/Category'
+import type { Tag } from '@/domain/Tag'
 
 export interface Partner {
   id: string
   title: string
   description: string
   imageUrl: string
-  category: Category
+  tags: Tag[]
   entryPrice: number
 }

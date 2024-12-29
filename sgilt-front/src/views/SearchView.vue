@@ -1,7 +1,7 @@
 <template>
   <div class="search-view">
     <aside class="search-bar">
-      <SearchBar @search="search" :dateFilter="dateFilter" />
+      <SearchBar @search="search" :dateFilter="dateFilter" :tagsFilter="tagsFilter" />
     </aside>
     <main class="search-results">
       <SearchResults />
@@ -12,10 +12,10 @@
 <script setup lang="ts">
 import SearchBar from '@/components/search/SearchBar.vue'
 import SearchResults from '@/components/search/SearchResults.vue'
-import { useCategorysStore } from '@/stores/category.store'
 import { useSearchStore } from '@/stores/search.store'
-import type { CategoryTagFilter } from '@/types/CategoryFilter'
+import { useTagsStore } from '@/stores/tag.store'
 import type { PartnerQuery } from '@/types/PartnerQuery'
+import type { TagFilter } from '@/types/TagFilter'
 import dayjs from 'dayjs'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -27,21 +27,23 @@ const route = useRoute()
 
 const dateFilter = route.query?.date ? dayjs(route.query.date as string).toDate() : undefined
 // TODO : const eventType = (route.query.event || '') as string
-const categoryFilter = (route.query?.category || '') as string
-const tagsFilter = ref<CategoryTagFilter[]>(
-  useCategorysStore().categories.find((category) => category.name === categoryFilter)?.tags || [],
+const category = (route.query?.category || '') as string
+const tagsFilter = ref<TagFilter[]>(
+  useTagsStore()
+    .tags.filter((tag) => tag.category === category)
+    .map((tag) => ({ id: tag.id, name: tag.name, category: tag.category })),
 )
 
-console.log('tagsFilter', tagsFilter.value)
-
-// filters herited from route
+// filters : herited from route
 const searchQuery: PartnerQuery = {}
 if (dateFilter) {
   searchQuery.dateFilter = dateFilter
 }
 if (tagsFilter.value.length > 0) {
-  searchQuery.categoryTags = tagsFilter.value
+  searchQuery.tagsId = tagsFilter.value.map((tag) => tag.id)
 }
+
+// initial search with route params
 searchStore.search(searchQuery)
 
 // handle search event

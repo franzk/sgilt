@@ -1,7 +1,7 @@
 <template>
   <div class="partner-card">
     <div class="partner-category">
-      <CategoryChip :categoryName="partner.category.name" />
+      <CategoryChip :categoryName="partner.tags[0]?.category || ''" />
     </div>
     <img :src="partner.imageUrl" :alt="partner.title" />
 
