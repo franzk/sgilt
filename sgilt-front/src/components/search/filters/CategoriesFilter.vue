@@ -3,19 +3,17 @@
     <div class="category" v-for="category in categories" :key="category.name">
       <!-- category & tag selection -->
       <div class="category-filter">
-        <button
-          class="category-entry-button"
-          @click="category.tagListExpanded = !category.tagListExpanded"
-        >
-          <span v-if="!category.tagListExpanded">&#x25B9;</span>
-          <span v-if="category.tagListExpanded">&#x25BF;</span>
+        <button class="category-entry-button" @click="toggleCategory(category.name)">
+          <span v-if="isCategoryExpanded(category.name)">&#x25B9;</span>
+          <span v-if="!isCategoryExpanded(category.name)">&#x25BF;</span>
           <span
             class="category-name"
-            :class="{ 'category-selected': category.selection.length > 0 }"
+            :class="{ 'category-selected': categoryHasSelection(category) }"
           >
             {{ $t(`categories.${category.name}.title`).toUpperCase() }}
           </span>
         </button>
+        <!-- selection tags ordered like they are in the category object -->
         <span class="selection-tags-list">{{
           category.selection
             .sort((a, b) => a.id.localeCompare(b.id))
@@ -23,10 +21,10 @@
             .join(', ')
         }}</span>
       </div>
-      <!-- tags list -->
+      <!-- tags checkboxes list -->
       <TagsListFilter
         :tags="category.tags"
-        :visible="category.tagListExpanded"
+        :visible="isCategoryExpanded(category.name)"
         v-model="category.selection"
         class="tags-list"
       />
@@ -35,15 +33,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import TagsListFilter from '@/components/search/filters/TagsListFilter.vue'
 import { useCategorysStore } from '@/stores/category.store'
 import type { CategoryFilter, CategoryTagFilter } from '@/types/CategoryFilter'
 
 const categories = defineModel<CategoryFilter[]>()
 
-// -- Data --
-//const categories = ref<CategoryFilter[]>([])
+const expandedCategories = ref<string[]>([])
 
 onMounted(() => {
   // fetch data
@@ -53,9 +50,19 @@ onMounted(() => {
     name: category.name,
     tags: category.tags,
     selection: [] as CategoryTagFilter[],
-    tagListExpanded: false,
   }))
 })
+
+const toggleCategory = (categoryName: string) => {
+  if (expandedCategories.value.includes(categoryName)) {
+    expandedCategories.value.splice(expandedCategories.value.indexOf(categoryName), 1)
+  } else {
+    expandedCategories.value.push(categoryName)
+  }
+}
+
+const isCategoryExpanded = (categoryName: string) => expandedCategories.value.includes(categoryName)
+const categoryHasSelection = (category: CategoryFilter) => category.selection.length > 0
 </script>
 
 <style scoped lang="scss">
