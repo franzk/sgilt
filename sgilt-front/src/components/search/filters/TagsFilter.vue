@@ -1,6 +1,12 @@
 <template>
   <div v-for="(category, index) in categories" :key="index" class="category">
-    <p class="category-title" @click="toogleCategory(category)">
+    <div
+      class="category-title"
+      tabindex="0"
+      @click="toogleCategory(category)"
+      @keydown.space="toogleCategory(category)"
+      @keydown.enter="toogleCategory(category)"
+    >
       <span :class="{ 'category-selected': tagsSelectedInCategoryCount(category) > 0 }">
         {{ $t(`categories.${category}.title`) }}
         {{
@@ -9,7 +15,7 @@
       </span>
       <span v-if="!isCategoryExpanded(category)" class="expand-category">&#8897;</span>
       <span v-if="isCategoryExpanded(category)" class="collapse-category">&#8896;</span>
-    </p>
+    </div>
 
     <div v-if="isCategoryExpanded(category)" class="tags-list">
       <div class="tag" v-for="tag in tags.filter((tag) => tag.category === category)" :key="tag.id">
@@ -82,6 +88,11 @@ onMounted(() => {
   .expand-category,
   .collapse-category {
     color: $color-accent;
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-width: $border-width-m;
   }
 }
 
