@@ -14,13 +14,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+// selected value
 const selectedValue = defineModel<string>()
 
+// option interface
 export interface SgiltSelectOption {
   value: string
   label: string
 }
 
+// props
 const props = defineProps<{
   options: SgiltSelectOption[]
   default?: string
