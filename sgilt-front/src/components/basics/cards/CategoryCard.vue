@@ -6,6 +6,7 @@
       </div>
 
       <img :src="imageUrl" alt="Category image" />
+      <!-- TODO : Add a fallback image et partout où y a des images -->
     </div>
     <div class="category-card-content">
       <p class="category-card-description">{{ $t(`categories.${categoryName}.description`) }}</p>
@@ -19,7 +20,7 @@ import CategoryChip from '@/components/basics/chips/CategoryChip.vue'
 
 defineProps<{
   categoryName: string
-  imageUrl: string
+  imageUrl?: string
 }>()
 </script>
 

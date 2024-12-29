@@ -28,7 +28,7 @@ const categories = useCategorysStore().categories
   align-items: center;
   padding: $spacing-l 0 $spacing-xl 0;
   background-color: $color-accent;
-  color: $color-secondary;
+  color: $color-primary;
   box-shadow: 0 -4px 6px $shadow-s;
 }
 
