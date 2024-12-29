@@ -10,7 +10,7 @@
       </div>
       <DateFilter class="filters-date" v-model="dateFilter" />
       <PriceFilter v-model:min-price="minPrice" v-model:max-price="maxPrice" class="price-filter" />
-      <CategoriesFilter v-model="tagsFilter" class="categories-filter" />
+      <TagsFilter v-model="tagsFilter" class="categories-filter" />
     </div>
     <div class="submit-button">
       <span class="reset" @click="resetFilters">Réinitialisez les filtres</span>
@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import DateFilter from '@/components/search/filters/DateFilter.vue'
-import CategoriesFilter from '@/components/search/filters/CategoriesFilter.vue'
+import TagsFilter from '@/components/search/filters/TagsFilter.vue'
 import PriceFilter from '@/components/search/filters/PriceFilter.vue'
 import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue'
 import IconFilters from '@/components/icons/IconFilters.vue'
