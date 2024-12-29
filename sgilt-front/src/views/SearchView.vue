@@ -12,9 +12,12 @@
 <script setup lang="ts">
 import SearchBar from '@/components/search/SearchBar.vue'
 import SearchResults from '@/components/search/SearchResults.vue'
+import { useCategorysStore } from '@/stores/category.store'
 import { useSearchStore } from '@/stores/search.store'
+import type { CategoryTagFilter } from '@/types/CategoryFilter'
 import type { PartnerQuery } from '@/types/PartnerQuery'
 import dayjs from 'dayjs'
+import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 const searchStore = useSearchStore()
@@ -23,12 +26,22 @@ const searchStore = useSearchStore()
 const route = useRoute()
 
 const dateFilter = route.query?.date ? dayjs(route.query.date as string).toDate() : undefined
-const eventType = (route.query.event || '') as string
-console.log('eventType', eventType)
+// TODO : const eventType = (route.query.event || '') as string
+const categoryFilter = (route.query?.category || '') as string
+const tagsFilter = ref<CategoryTagFilter[]>(
+  useCategorysStore().categories.find((category) => category.name === categoryFilter)?.tags || [],
+)
 
-// initial search
+console.log('tagsFilter', tagsFilter.value)
+
+// filters herited from route
 const searchQuery: PartnerQuery = {}
-if (dateFilter) searchQuery.dateFilter = dateFilter
+if (dateFilter) {
+  searchQuery.dateFilter = dateFilter
+}
+if (tagsFilter.value.length > 0) {
+  searchQuery.categoryTags = tagsFilter.value
+}
 searchStore.search(searchQuery)
 
 // handle search event

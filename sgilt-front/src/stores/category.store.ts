@@ -5,51 +5,42 @@ import type { Category } from '@/domain/Category'
 export const useCategorysStore = defineStore('alerts', () => {
   // reactive state
   const categories = ref<Category[]>([
-    { name: 'music', imageUrl: './images/music.jpg', tags: [] },
-    { name: 'food', imageUrl: './images/food.jpg', tags: [] },
-    { name: 'place', imageUrl: './images/place.jpg', tags: [] },
-    { name: 'photo', imageUrl: './images/photo.jpg', tags: [] },
+    {
+      name: 'music',
+      imageUrl: './images/music.jpg',
+      tags: [
+        { id: '1', name: 'Jazz' },
+        { id: '2', name: 'Pop-Rock' },
+        { id: '3', name: 'D.J.' },
+      ],
+    },
+    {
+      name: 'food',
+      imageUrl: './images/food.jpg',
+      tags: [
+        { id: '4', name: 'Traiteur' },
+        { id: '5', name: 'Food Truck' },
+        { id: '6', name: 'Boissons' },
+      ],
+    },
+    {
+      name: 'place',
+      imageUrl: './images/place.jpg',
+      tags: [
+        { id: '7', name: 'Salle' },
+        { id: '8', name: 'Hébergement' },
+        { id: '9', name: 'Restaurant' },
+      ],
+    },
+    {
+      name: 'photo',
+      imageUrl: './images/photo.jpg',
+      tags: [
+        { id: '10', name: 'Photographe' },
+        { id: '11', name: 'Photobooth' },
+      ],
+    },
   ])
 
-  // actions
-  const fetchTags = () => {
-    if (categories.value.some((category) => category.tags.length > 0)) return
-
-    categories.value
-      .find((category) => category.name === 'music')
-      ?.tags.push(
-        ...[
-          { id: '1', name: 'Jazz' },
-          { id: '2', name: 'Pop-Rock' },
-          { id: '3', name: 'D.J.' },
-        ],
-      )
-    categories.value
-      .find((category) => category.name === 'food')
-      ?.tags.push(
-        ...[
-          { id: '4', name: 'Traiteur' },
-          { id: '5', name: 'Food Truck' },
-          { id: '6', name: 'Boissons' },
-        ],
-      )
-    categories.value
-      .find((category) => category.name === 'place')
-      ?.tags.push(
-        ...[
-          { id: '7', name: 'Salle' },
-          { id: '8', name: 'Hébergement' },
-          { id: '9', name: 'Restaurant' },
-        ],
-      )
-    categories.value
-      .find((category) => category.name === 'photo')
-      ?.tags.push(
-        ...[
-          { id: '10', name: 'Photographe' },
-          { id: '11', name: 'Photobooth' },
-        ],
-      )
-  }
-  return { categories, fetchTags }
+  return { categories }
 })

@@ -43,8 +43,6 @@ const categories = defineModel<CategoryFilter[]>()
 const expandedCategories = ref<string[]>([])
 
 onMounted(() => {
-  // fetch data
-  useCategorysStore().fetchTags()
   // map data
   categories.value = useCategorysStore().categories.map((category) => ({
     name: category.name,
