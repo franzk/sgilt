@@ -1,16 +1,16 @@
 <template>
   <div class="categories-banner">
     <h2 class="categories-title">{{ $t('home.categories-banner.title') }}</h2>
-    <ul class="categories">
-      <li v-for="(category, index) of categories" :key="index">
+    <div class="categories">
+      <div v-for="(category, index) of categories" :key="index">
         <router-link
           :to="{ name: 'search', query: { category: category.name } }"
           class="category-card"
         >
           <CategoryCard :categoryName="category.name" :imageUrl="category.imageUrl" />
         </router-link>
-      </li>
-    </ul>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -37,15 +37,30 @@ const categories = useCategorysStore().categories
 }
 
 .categories {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  margin: 0 $spacing-m;
-  list-style-type: none;
+  display: grid;
+  gap: $spacing-l;
+
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+
+  @media (min-width: 63rem) {
+    // 4 columns
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @media (max-width: 62.9rem) and (min-width: 40rem) {
+    // 2 columns
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, auto);
+  }
+
+  @media (max-width: 39.9rem) {
+    // 1 column
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, auto);
+  }
 }
 
 .category-card {
-  margin: $spacing-l;
   width: 14rem;
   text-decoration: none;
 }
