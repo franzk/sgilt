@@ -67,9 +67,13 @@ $br: $input-border-radius;
     border-radius: $br;
     border: 1px solid $color-4;
     color: $color-3;
-    padding-left: 1em;
+
     cursor: pointer;
     user-select: none;
+
+    text-align: center;
+    padding-left: 1em;
+    padding-right: 2rem;
 
     &.open {
       border: 1px solid $color-2;

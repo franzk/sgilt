@@ -35,6 +35,11 @@ const format = (date: Date) => dayjs(date).locale('fr').format('dddd DD MMM YYYY
   --dp-primary-color: #{$color-accent};
 }
 
+.dp__input {
+  text-align: center;
+  padding-right: 2.5rem;
+}
+
 .dp__input:focus {
   outline: $focus-outline;
   outline-offset: $focus-outline-offset;

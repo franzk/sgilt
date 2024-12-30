@@ -47,7 +47,7 @@ const categories = useCategorysStore().categories
     grid-template-columns: repeat(4, 1fr);
   }
 
-  @media (max-width: 62.9rem) and (min-width: 40rem) {
+  @media (max-width: 70rem) and (min-width: 40rem) {
     // 2 columns
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, auto);
