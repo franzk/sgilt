@@ -62,8 +62,8 @@ const search = () => {
 }
 
 .title {
-  font-size: $font-size-xxl;
-  line-height: $line-height-xl;
+  font-size: calc($font-size-base * 3);
+  line-height: calc($line-height-base * 3);
   .title-thin {
     font-weight: 300;
   }

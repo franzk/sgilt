@@ -65,8 +65,6 @@ $br: $border-radius-s;
 
   .category-card-description {
     margin: 0;
-    line-height: $line-height-m;
-    font-size: $font-size-m;
   }
 }
 </style>

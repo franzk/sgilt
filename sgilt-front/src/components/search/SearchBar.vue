@@ -13,7 +13,7 @@
       <TagsFilter v-model="tagsFilter" />
     </div>
     <div class="submit-button">
-      <span class="reset" @click="resetFilters">Réinitialisez les filtres</span>
+      <span class="reset small-font" @click="resetFilters">Réinitialisez les filtres</span>
       <SgiltSimpleButton @click="search">{{ $t('texts.rechercher') }}</SgiltSimpleButton>
     </div>
   </div>
@@ -112,11 +112,11 @@ hr {
   padding: $spacing-m;
   span {
     text-align: center;
-    font-size: $font-size-s;
     text-decoration: underline;
     cursor: pointer;
   }
   button {
+    line-height: calc($line-height-base * 2);
     width: 100%;
   }
 }

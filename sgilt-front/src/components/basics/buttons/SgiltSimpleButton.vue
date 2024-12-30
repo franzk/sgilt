@@ -12,8 +12,8 @@ defineEmits(['click'])
 .sgilt-simple-button {
   cursor: pointer;
 
-  font-size: $font-size-m;
-  line-height: $line-height-l;
+  font-size: $font-size-base;
+  // line-height: $line-height-l;
   font-weight: bold;
 
   background-color: $color-accent;

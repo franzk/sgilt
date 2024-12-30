@@ -96,7 +96,7 @@ input[type='number'] {
   }
 
   input {
-    font-size: $font-size-m;
+    font-size: $font-size-base;
     width: 5rem;
     border-radius: $br 0 0 $br;
     border: $bw solid $bc;
@@ -107,12 +107,11 @@ input[type='number'] {
   }
 
   span {
-    border: $bw solid #ccc;
-    font-size: $font-size-m;
+    font-size: $font-size-base;
     align-content: center;
     padding: $spacing-s;
     border-radius: 0 $br $br 0;
-    border: bw solid $bc;
+    border: $bw solid $bc;
     border-left: none;
     background-color: $color-white;
   }

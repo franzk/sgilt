@@ -32,8 +32,6 @@ defineProps<{
   background: $color-secondary;
   color: $color-primary;
 
-  font-size: $font-size-s;
-
   &:hover {
     img {
       transform: scale(1.01);
@@ -57,8 +55,6 @@ defineProps<{
   }
 
   h3 {
-    font-size: $font-size-m;
-    line-height: $line-height-m;
     font-weight: 500;
   }
 
