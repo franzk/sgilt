@@ -11,16 +11,19 @@
 
 <style lang="scss" scoped>
 header {
-  position: sticky;
-  z-index: 1;
-  top: 0;
-  left: 0;
-
-  background-color: $color-secondary;
-  box-shadow: 0 4px 6px $shadow;
+  flex: 0 0 2rem;
 
   display: flex;
-  flex: 1;
+  flex-direction: row;
+
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 1;
+
+  background-color: $color-secondary;
+  box-shadow: 0 4px 6px $shadow-m;
+
   gap: $spacing-l;
   align-content: center;
   flex-wrap: wrap;

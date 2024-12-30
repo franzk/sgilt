@@ -1,11 +1,11 @@
 <template>
   <div class="custom-select" :tabindex="tabindex" @blur="open = false">
     <div class="selected" :class="{ open: open }" @click="open = !open">
-      {{ selected }}
+      {{ selectedLabel }}
     </div>
     <div class="items" :class="{ selectHide: !open }">
       <div v-for="(option, i) of options" :key="i" @click="click(option)">
-        {{ option }}
+        {{ option.label }}
       </div>
     </div>
   </div>
@@ -14,31 +14,45 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+// selected value
+const selectedValue = defineModel<string>()
+
+// option interface
+export interface SgiltSelectOption {
+  value: string
+  label: string
+}
+
+// props
 const props = defineProps<{
-  options: string[]
+  options: SgiltSelectOption[]
   default?: string
   tabindex?: number
 }>()
 
-const emit = defineEmits(['input'])
-
-const selected = ref(
-  props.default ? props.default : props.options.length > 0 ? props.options[0] : null,
+// display the selected label
+const selectedLabel = ref(
+  props.default ? props.default : props.options.length > 0 ? props.options[0].label : null,
 )
+
+// is the select opened ?
 const open = ref(false)
 
-const click = (option: string) => {
-  selected.value = option
-  open.value = false
-  emit('input', option)
+// when an option is clicked
+const click = (option: SgiltSelectOption) => {
+  selectedLabel.value = option.label // update the selected label
+  selectedValue.value = option.value // update the model
+  open.value = false // close the select
 }
 </script>
 
 <style lang="scss" scoped>
-$color-1: white; // bg
+$color-1: $color-white; // bg
 $color-2: $color-accent; // border & bg hover
 $color-3: $color-primary;
 $color-4: $color-secondary; // border not selected
+
+$br: $input-border-radius;
 
 .custom-select {
   position: relative;
@@ -50,16 +64,20 @@ $color-4: $color-secondary; // border not selected
 
   .selected {
     background-color: $color-1;
-    border-radius: 6px;
+    border-radius: $br;
     border: 1px solid $color-4;
     color: $color-3;
-    padding-left: 1em;
+
     cursor: pointer;
     user-select: none;
 
+    text-align: center;
+    padding-left: 1em;
+    padding-right: 2rem;
+
     &.open {
       border: 1px solid $color-2;
-      border-radius: 6px 6px 0px 0px;
+      border-radius: $br $br 0px 0px;
     }
 
     &:after {
@@ -76,7 +94,7 @@ $color-4: $color-secondary; // border not selected
 
   .items {
     color: $color-3;
-    border-radius: 0px 0px 6px 6px;
+    border-radius: 0px 0px $br $br;
     overflow: hidden;
     border-right: 1px solid $color-2;
     border-left: 1px solid $color-2;
@@ -95,7 +113,7 @@ $color-4: $color-secondary; // border not selected
 
       &:hover {
         background-color: $color-2;
-        color: white;
+        color: $color-white;
       }
     }
   }

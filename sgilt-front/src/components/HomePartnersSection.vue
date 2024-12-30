@@ -3,13 +3,13 @@
     <h2>{{ $t('home.partners-section.title') }}</h2>
 
     <div class="highligthed-partners-list">
-      <PartnerThumbnail v-for="partner in partners" :key="partner.id" :partner="partner" />
+      <PartnerCard v-for="partner in partners" :key="partner.id" :partner="partner" />
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import PartnerThumbnail from '@/components/partner/PartnerThumbnail.vue'
+import PartnerCard from '@/components/partner/PartnerCard.vue'
 import type { Partner } from '@/domain/Partner'
 import { PartnerService } from '@/services/PartnerService'
 
@@ -34,8 +34,8 @@ const partners: Partner[] = PartnerService.getHihglightedPartners()
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
-  .partner-thumbnail {
-    flex-basis: 25%;
+  .partner-card {
+    width: 15rem;
   }
 }
 </style>

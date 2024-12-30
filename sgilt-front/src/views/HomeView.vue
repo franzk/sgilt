@@ -1,19 +1,19 @@
 <template>
-  <div class="home-view">
-    <div class="search-banner">
-      <HomeSearchBanner />
+  <main class="home-view">
+    <div class="search-section-wrapper">
+      <HomeSearchSection />
     </div>
 
-    <HomeCategoriesBanner />
+    <HomeCategoriesSection />
 
     <HomePartnersSection />
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">
-import HomeSearchBanner from '@/components/homepage/HomeSearchBanner.vue'
-import HomePartnersSection from '@/components/homepage/HomePartnersSection.vue'
-import HomeCategoriesBanner from '@/components/homepage/HomeCategoriesBanner.vue'
+import HomeSearchSection from '@/components/HomeSearchSection.vue'
+import HomePartnersSection from '@/components/HomePartnersSection.vue'
+import HomeCategoriesSection from '@/components/HomeCategoriesSection.vue'
 </script>
 
 <style lang="scss" scoped>
@@ -24,7 +24,7 @@ import HomeCategoriesBanner from '@/components/homepage/HomeCategoriesBanner.vue
   background: url('@/assets/images/home_bg.jpg') no-repeat;
   background-size: cover;
 
-  .search-banner {
+  .search-section-wrapper {
     flex: 0 0 85%;
     justify-content: center;
 
