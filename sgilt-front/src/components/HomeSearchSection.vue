@@ -75,6 +75,12 @@ const search = () => {
 .search-fields {
   display: flex;
   flex-direction: row;
+
+  @include respond-to(tablet) {
+    flex-direction: column;
+    align-items: center;
+  }
+
   gap: $spacing-xl;
   width: 100%;
   justify-content: center;

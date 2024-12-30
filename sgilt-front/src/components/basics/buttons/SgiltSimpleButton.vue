@@ -13,7 +13,6 @@ defineEmits(['click'])
   cursor: pointer;
 
   font-size: $font-size-base;
-  // line-height: $line-height-l;
   font-weight: bold;
 
   background-color: $color-accent;
@@ -22,7 +21,7 @@ defineEmits(['click'])
   border: none;
   border-radius: $border-radius-s;
 
-  padding: $spacing-s $spacing-m;
+  padding: $spacing-mm $spacing-l;
 
   &:hover {
     background-color: lighten($color-accent, 10%);

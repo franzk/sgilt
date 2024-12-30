@@ -33,6 +33,8 @@ const partners: Partner[] = PartnerService.getHihglightedPartners()
   width: 100%;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
+  gap: $spacing-m;
   justify-content: space-evenly;
   .partner-card {
     width: 15rem;

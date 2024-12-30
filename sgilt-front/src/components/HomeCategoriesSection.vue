@@ -61,7 +61,7 @@ const categories = useCategorysStore().categories
 }
 
 .category-card {
-  width: 14rem;
+  width: 16rem;
   text-decoration: none;
 }
 </style>
