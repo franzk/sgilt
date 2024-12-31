@@ -60,7 +60,7 @@ const search = () => {
   align-items: center;
   justify-content: center;
 
-  padding: $spacing-m;
+  // padding: $spacing-m;
 
   background-color: $shadow-m;
   @include respond-to(mobile) {
@@ -129,8 +129,10 @@ const search = () => {
   display: flex;
   flex-direction: row;
 
-  width: 100%;
   justify-content: center;
+
+  padding: 0 $spacing-m;
+  margin-bottom: $spacing-m;
 
   .select-event {
     line-height: 45px;
@@ -145,9 +147,10 @@ const search = () => {
   gap: $spacing-xl;
   @include respond-to(mobile) {
     gap: $spacing-m;
+    padding: 0;
+    align-items: initial;
     .date-picker,
     .select-event {
-      width: 95%;
       margin: 0;
       padding: 0;
     }

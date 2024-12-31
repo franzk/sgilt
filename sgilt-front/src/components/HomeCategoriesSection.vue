@@ -40,7 +40,7 @@ const categories = useCategorysStore().categories
 .categories {
   display: grid;
 
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  // grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
   gap: $spacing-xl;
   padding: 0 $spacing-xl;
 

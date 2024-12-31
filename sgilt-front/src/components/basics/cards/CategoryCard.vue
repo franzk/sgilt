@@ -12,7 +12,6 @@
       <h3 class="category-card-description">
         {{ $t(`categories.${categoryName}.description`) }} &#8594;
       </h3>
-      <!--span>&#8594;</!--span -->
     </div>
   </div>
 </template>

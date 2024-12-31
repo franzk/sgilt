@@ -9,10 +9,10 @@ export class PartnerService {
    *
    * @returns 3 random partners
    */
-  static getHihglightedPartners = (): Partner[] => {
+  static getHihglightedPartners = (partnerCount: number): Partner[] => {
     // moke API to return 3 random partners
     const shuffled = [...this.partners].sort(() => Math.random() - 0.5)
-    return shuffled.slice(0, 3)
+    return shuffled.slice(0, partnerCount)
   }
 
   /**

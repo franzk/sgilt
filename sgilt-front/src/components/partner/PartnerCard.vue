@@ -40,6 +40,7 @@ defineProps<{
   }
 
   img {
+    width: 100%;
     aspect-ratio: 1.3;
     object-fit: cover;
     border-radius: $border-radius-s;
