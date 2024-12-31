@@ -34,6 +34,7 @@ const categories = useCategorysStore().categories
 
 .categories-title {
   margin: 0 0 $spacing-m 0;
+  text-align: center;
 }
 
 .categories {

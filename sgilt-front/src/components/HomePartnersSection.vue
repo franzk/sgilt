@@ -25,6 +25,7 @@ const partners: Partner[] = PartnerService.getHihglightedPartners()
   align-items: center;
   h2 {
     margin: $spacing-l 0 $spacing-l 0;
+    text-align: center;
   }
 }
 

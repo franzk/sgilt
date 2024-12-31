@@ -87,7 +87,7 @@ const search = () => {
 
   .select-event {
     line-height: 45px;
-    width: 17rem;
+    width: 17em;
   }
 }
 </style>
