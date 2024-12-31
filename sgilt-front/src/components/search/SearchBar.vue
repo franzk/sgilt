@@ -5,6 +5,7 @@
         <div class="filters-title">
           <div class="icon"><IconFilters /></div>
           <p>{{ $t('texts.filtres') }}</p>
+          <span @click="$emit('close')">&lt;&lt;</span>
         </div>
         <hr />
       </div>
@@ -35,16 +36,17 @@ const props = defineProps<{
   tagsFilter?: TagFilter[]
 }>()
 
+// emits
+const emit = defineEmits<{
+  search: [query: PartnerQuery]
+  close: void
+}>()
+
 // filters
 const dateFilter = ref(props.dateFilter)
 const minPrice = ref(0)
 const maxPrice = ref(0)
 const tagsFilter = ref<TagFilter[]>(props.tagsFilter ?? [])
-
-// emits
-const emit = defineEmits<{
-  search: [query: PartnerQuery]
-}>()
 
 // methods
 const search = () => {
@@ -89,13 +91,21 @@ const resetFilters = () => {
   padding: 0;
   line-height: 0;
   align-items: center;
+  justify-content: space-between;
   gap: $spacing-s;
+
   .icon {
     height: 24px;
     width: 24px;
   }
+
   p {
     font-weight: bold;
+    flex: 1;
+  }
+
+  span {
+    cursor: pointer;
   }
 }
 

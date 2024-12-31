@@ -1,7 +1,15 @@
 <template>
   <div class="search-view">
-    <aside class="search-bar">
-      <SearchBar @search="search" :dateFilter="dateFilter" :tagsFilter="tagsFilter" />
+    <aside v-show="searchBarOpened" class="search-bar">
+      <SearchBar
+        @search="search"
+        @close="searchBarOpened = false"
+        :dateFilter="dateFilter"
+        :tagsFilter="tagsFilter"
+      />
+    </aside>
+    <aside v-if="!searchBarOpened" class="reduced-search-bar">
+      <div @click="searchBarOpened = true">&gt;&gt;</div>
     </aside>
     <main class="search-results">
       <SearchResults />
@@ -21,6 +29,8 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 const searchStore = useSearchStore()
+
+const searchBarOpened = ref(true)
 
 // get params from route
 const route = useRoute()
@@ -59,11 +69,27 @@ const search = (query: PartnerQuery) => {
   flex-direction: row;
   overflow: hidden;
 
+  aside {
+    border-right: $border-width-s solid $color-accent;
+  }
+
   .search-bar {
     flex: 0 0 21rem;
-    border-right: $border-width-s solid $color-accent;
     display: flex;
     overflow: hidden;
+  }
+
+  .reduced-search-bar {
+    display: flex;
+    justify-content: center;
+    background-color: $color-secondary;
+    cursor: pointer;
+    padding: $spacing-ml $spacing-m;
+    div {
+      height: $spacing-m;
+      padding-bottom: $spacing-m;
+      border-bottom: $border-width-s solid $color-accent;
+    }
   }
 
   .search-results {
