@@ -48,7 +48,7 @@ const props = defineProps<{
 // emits
 const emit = defineEmits<{
   search: [query: PartnerQuery]
-  close: void
+  close: []
 }>()
 
 // filters
