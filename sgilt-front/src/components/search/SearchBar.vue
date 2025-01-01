@@ -5,13 +5,13 @@
         <div class="filters-title">
           <div class="icon"><IconFilters /></div>
           <p>{{ $t('texts.filtres') }}</p>
-          <span @click="$emit('close')">&lt;&lt;</span>
+          <span @click="$emit('close')">{{ reduceOrCloseSymbol }}</span>
         </div>
         <hr />
       </div>
       <DateFilter class="filters-date" v-model="dateFilter" />
       <PriceFilter v-model:min-price="minPrice" v-model:max-price="maxPrice" class="price-filter" />
-      <TagsFilter v-model="tagsFilter" />
+      <TagsFilter v-model="tagsFilter" class="tags-filter" />
     </div>
     <div class="submit-button">
       <span class="reset small-font" @click="resetFilters">Réinitialisez les filtres</span>
@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import DateFilter from '@/components/search/filters/DateFilter.vue'
 import TagsFilter from '@/components/search/filters/TagsFilter.vue'
 import PriceFilter from '@/components/search/filters/PriceFilter.vue'
@@ -29,6 +29,7 @@ import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue
 import IconFilters from '@/components/icons/IconFilters.vue'
 import type { PartnerQuery } from '@/types/PartnerQuery'
 import type { TagFilter } from '@/types/TagFilter'
+import { mobileView } from '@/utils/StyleUtils'
 
 // props
 const props = defineProps<{
@@ -47,6 +48,9 @@ const dateFilter = ref(props.dateFilter)
 const minPrice = ref(0)
 const maxPrice = ref(0)
 const tagsFilter = ref<TagFilter[]>(props.tagsFilter ?? [])
+
+// computed
+const reduceOrCloseSymbol = computed(() => (mobileView ? '✕' : '<<'))
 
 // methods
 const search = () => {
@@ -70,9 +74,17 @@ const resetFilters = () => {
 <style scoped lang="scss">
 .search-bar-wrapper {
   display: flex;
+  width: 100%;
   flex-direction: column;
   overflow: hidden;
   background-color: $color-white;
+  @include respond-to(mobile) {
+    .filters-date,
+    .price-filter {
+      display: flex;
+      justify-content: center;
+    }
+  }
 }
 
 .filters {

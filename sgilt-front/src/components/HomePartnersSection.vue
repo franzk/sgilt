@@ -17,10 +17,7 @@
 import PartnerCard from '@/components/partner/PartnerCard.vue'
 import type { Partner } from '@/domain/Partner'
 import { PartnerService } from '@/services/PartnerService'
-import { getCssVariable } from '@/utils/StyleUtils'
-
-const mobileBreakpoint = parseInt(getCssVariable('--breakpoint-mobile'))
-const mobileView = window.matchMedia(`(max-width: ${mobileBreakpoint}px)`).matches
+import { mobileView } from '@/utils/StyleUtils'
 
 const partners: Partner[] = PartnerService.getHihglightedPartners(mobileView ? 2 : 3)
 </script>

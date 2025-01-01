@@ -8,11 +8,11 @@
         :tagsFilter="tagsFilter"
       />
     </aside>
-    <aside v-if="!searchBarOpened" class="reduced-search-bar">
+    <aside v-if="!searchBarOpened && !mobileView" class="reduced-search-bar">
       <div @click="searchBarOpened = true">&gt;&gt;</div>
     </aside>
-    <main class="search-results">
-      <SearchResults />
+    <main v-if="!mobileView || !searchBarOpened" class="search-results">
+      <SearchResults @open-filter="searchBarOpened = true" />
     </main>
   </div>
 </template>
@@ -27,6 +27,7 @@ import type { TagFilter } from '@/types/TagFilter'
 import dayjs from 'dayjs'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { mobileView } from '@/utils/StyleUtils'
 
 const searchStore = useSearchStore()
 
@@ -58,6 +59,9 @@ searchStore.search(searchQuery)
 // handle search event
 const search = (query: PartnerQuery) => {
   searchStore.search(query)
+  if (mobileView) {
+    searchBarOpened.value = false
+  }
 }
 </script>
 
@@ -77,6 +81,10 @@ const search = (query: PartnerQuery) => {
     flex: 0 0 21rem;
     display: flex;
     overflow: hidden;
+    @include respond-to(mobile) {
+      flex: 1;
+      overflow: initial;
+    }
   }
 
   .reduced-search-bar {

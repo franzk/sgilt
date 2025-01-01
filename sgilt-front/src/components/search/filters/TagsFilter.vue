@@ -70,7 +70,6 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .category {
-  margin: 0 $spacing-l 0 0;
   padding: 0;
 }
 
