@@ -9,6 +9,7 @@
       @beforeinput="beforeInput"
       @input="onInput"
       @keydown="handleKeyDown"
+      @blur="$emit('blur')"
     />
     <span>€</span>
   </p>
@@ -22,6 +23,10 @@ const model = defineModel<number>()
 
 defineProps<{
   placeholder?: string
+}>()
+
+defineEmits<{
+  blur: void
 }>()
 
 // show empty string if value is 0

@@ -51,7 +51,7 @@ if (dateFilter) {
 }
 if (tagsFilter.value.length > 0) {
   searchQuery.tagsId = tagsFilter.value.map((tag) => tag.id)
-  searchBarOpened.value = false
+  searchBarOpened.value = !mobileView // close search bar on mobile if filters are set in route
 }
 
 // initial search with route params
@@ -60,9 +60,6 @@ searchStore.search(searchQuery)
 // handle search event
 const search = (query: PartnerQuery) => {
   searchStore.search(query)
-  if (mobileView) {
-    searchBarOpened.value = false
-  }
 }
 </script>
 

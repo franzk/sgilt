@@ -9,13 +9,20 @@
         </div>
         <hr />
       </div>
-      <DateFilter class="filters-date" v-model="dateFilter" />
-      <PriceFilter v-model:min-price="minPrice" v-model:max-price="maxPrice" class="price-filter" />
-      <TagsFilter v-model="tagsFilter" class="tags-filter" />
+      <DateFilter class="filters-date" v-model="dateFilter" @update:model-value="search" />
+      <PriceFilter
+        v-model:min-price="minPrice"
+        v-model:max-price="maxPrice"
+        class="price-filter"
+        @blur="search"
+      />
+      <TagsFilter v-model="tagsFilter" class="tags-filter" @update:model-value="search" />
     </div>
     <div class="submit-button">
       <span class="reset small-font" @click="resetFilters">Réinitialisez les filtres</span>
-      <SgiltSimpleButton @click="search">{{ $t('texts.rechercher') }}</SgiltSimpleButton>
+      <SgiltSimpleButton v-if="mobileView" @click="submit">{{
+        $t('texts.rechercher')
+      }}</SgiltSimpleButton>
     </div>
   </div>
 </template>
@@ -68,6 +75,17 @@ const resetFilters = () => {
   minPrice.value = 0
   maxPrice.value = 0
   tagsFilter.value = []
+  search()
+}
+
+const submit = () => {
+  if (minPrice.value && maxPrice.value && minPrice.value > maxPrice.value) {
+    const temp = minPrice.value
+    minPrice.value = maxPrice.value
+    maxPrice.value = temp
+  }
+  search()
+  emit('close')
 }
 </script>
 
