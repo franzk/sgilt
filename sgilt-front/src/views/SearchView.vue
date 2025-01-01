@@ -36,7 +36,7 @@ const searchBarOpened = ref(true)
 // get params from route
 const route = useRoute()
 const dateFilter = route.query?.date ? dayjs(route.query.date as string).toDate() : undefined
-// TODO : eventType param
+// TODO : handle eventType param
 const category = (route.query?.category || '') as string
 const tagsFilter = ref<TagFilter[]>(
   useTagsStore()
@@ -51,6 +51,7 @@ if (dateFilter) {
 }
 if (tagsFilter.value.length > 0) {
   searchQuery.tagsId = tagsFilter.value.map((tag) => tag.id)
+  searchBarOpened.value = false
 }
 
 // initial search with route params
