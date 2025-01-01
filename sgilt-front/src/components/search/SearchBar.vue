@@ -1,5 +1,6 @@
 <template>
   <div class="search-bar-wrapper">
+    {{ useSearchStore().results.length }}
     <div class="filters">
       <div class="bar-title">
         <div class="filters-title">
@@ -21,7 +22,7 @@
     <div class="submit-button">
       <span class="reset small-font" @click="resetFilters">Réinitialisez les filtres</span>
       <SgiltSimpleButton v-if="mobileView" @click="submit">{{
-        $t('texts.rechercher')
+        $t('texts.voir-resultats', { count: useSearchStore().results.length })
       }}</SgiltSimpleButton>
     </div>
   </div>
@@ -37,6 +38,7 @@ import IconFilters from '@/components/icons/IconFilters.vue'
 import type { PartnerQuery } from '@/types/PartnerQuery'
 import type { TagFilter } from '@/types/TagFilter'
 import { mobileView } from '@/utils/StyleUtils'
+import { useSearchStore } from '@/stores/search.store'
 
 // props
 const props = defineProps<{

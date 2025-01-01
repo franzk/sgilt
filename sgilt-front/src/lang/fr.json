@@ -40,6 +40,7 @@
     "maximum": "Maximum",
     "rechercher": "Rechercher",
     "filtres": "Filtres",
-    "resultats": "Aucun résultat. | 1 résultat | {count} résultats"
+    "resultats": "Aucun résultat. | 1 résultat | {count} résultats",
+    "voir-resultats": "Aucun résultat | Voir le résultat | Voir les {count} résultats"
   }
 }
