@@ -1,6 +1,5 @@
 <template>
   <div class="search-bar-wrapper">
-    {{ useSearchStore().results.length }}
     <div class="filters">
       <div class="bar-title">
         <div class="filters-title">
