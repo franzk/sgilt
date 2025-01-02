@@ -44,5 +44,11 @@
     "resultats": "Aucun résultat. | 1 résultat | {count} résultats",
     "voir-resultats": "Aucun résultat | Voir le résultat | Voir les {count} résultats",
     "effacer-filtres": "Tout effacer"
+  },
+  "errors": {
+    "404": {
+      "title": "Oups !!",
+      "message": "La page que vous recherchez n'existe pas."
+    }
   }
 }
