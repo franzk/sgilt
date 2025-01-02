@@ -36,17 +36,19 @@ defineProps<{
 }
 
 .checkbox-wrapper input[type='checkbox'] {
+  position: relative;
   -webkit-appearance: none;
   appearance: none;
   vertical-align: middle;
   background: var(--BackgroundColor);
-  font-size: 1.8em;
+
   border-radius: 0.125em;
   display: inline-block;
   border: var(--borderWidth) solid var(--borderColor);
-  width: 0.8em;
-  height: 0.8em;
-  position: relative;
+
+  font-size: $font-size-base;
+  width: 1.3rem;
+  height: 1.3rem;
 }
 .checkbox-wrapper input[type='checkbox']:before,
 .checkbox-wrapper input[type='checkbox']:after {

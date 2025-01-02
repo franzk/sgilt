@@ -1,10 +1,18 @@
 <template>
   <div class="search-view">
-    <aside class="search-bar">
-      <SearchBar @search="search" :dateFilter="dateFilter" :tagsFilter="tagsFilter" />
+    <aside v-show="searchBarOpened" class="search-bar">
+      <SearchBar
+        @search="search"
+        @close="searchBarOpened = false"
+        :dateFilter="dateFilter"
+        :tagsFilter="tagsFilter"
+      />
     </aside>
-    <main class="search-results">
-      <SearchResults />
+    <aside v-if="!searchBarOpened && !mobileView" class="reduced-search-bar">
+      <div @click="searchBarOpened = true">&gt;&gt;</div>
+    </aside>
+    <main v-if="!mobileView || !searchBarOpened" class="search-results">
+      <SearchResults @open-filter="searchBarOpened = true" />
     </main>
   </div>
 </template>
@@ -19,13 +27,16 @@ import type { TagFilter } from '@/types/TagFilter'
 import dayjs from 'dayjs'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { mobileView } from '@/utils/StyleUtils'
 
 const searchStore = useSearchStore()
+
+const searchBarOpened = ref(true)
 
 // get params from route
 const route = useRoute()
 const dateFilter = route.query?.date ? dayjs(route.query.date as string).toDate() : undefined
-// TODO : eventType param
+// TODO : handle eventType param
 const category = (route.query?.category || '') as string
 const tagsFilter = ref<TagFilter[]>(
   useTagsStore()
@@ -40,6 +51,7 @@ if (dateFilter) {
 }
 if (tagsFilter.value.length > 0) {
   searchQuery.tagsId = tagsFilter.value.map((tag) => tag.id)
+  searchBarOpened.value = !mobileView // close search bar on mobile if filters are set in route
 }
 
 // initial search with route params
@@ -59,11 +71,31 @@ const search = (query: PartnerQuery) => {
   flex-direction: row;
   overflow: hidden;
 
+  aside {
+    border-right: $border-width-s solid $color-accent;
+  }
+
   .search-bar {
     flex: 0 0 21rem;
-    border-right: $border-width-s solid $color-accent;
     display: flex;
     overflow: hidden;
+    @include respond-to(mobile) {
+      flex: 1;
+      overflow: initial;
+    }
+  }
+
+  .reduced-search-bar {
+    display: flex;
+    justify-content: center;
+    background-color: $color-secondary;
+    cursor: pointer;
+    padding: $spacing-ml $spacing-m;
+    div {
+      height: $spacing-m;
+      padding-bottom: $spacing-m;
+      border-bottom: $border-width-s solid $color-accent;
+    }
   }
 
   .search-results {

@@ -1,11 +1,14 @@
 <template>
   <section id="search-banner">
     <div class="title">
-      <span class="title-thin">{{ $t('home.search-banner.title-part-1') }}</span>
-      <span class="title-bold">{{ $t('home.search-banner.title-part-2') }}</span>
+      <img src="@/assets/images/home_bg.jpg" class="bg-mobile" />
+      <div class="title-text">
+        <span class="title-thin">{{ $t('home.search-banner.title-part-1') }}</span>
+        <span class="title-bold">{{ $t('home.search-banner.title-part-2') }}</span>
+      </div>
     </div>
     <div class="search-fields">
-      <SgiltDatePicker v-model="date" />
+      <SgiltDatePicker v-model="date" class="date-picker" />
       <SgiltSelect :options="options" v-model="selectedValue" class="select-event" />
       <SgiltSimpleButton @click="search">{{ $t('home.search-banner.button') }}</SgiltSimpleButton>
     </div>
@@ -51,19 +54,69 @@ const search = () => {
 #search-banner {
   display: flex;
   flex-direction: column;
+  gap: $spacing-m;
+  position: relative;
+
   align-items: center;
   justify-content: center;
 
-  gap: $spacing-m;
-  padding: $spacing-l;
+  // padding: $spacing-m;
 
   background-color: $shadow-m;
+  @include respond-to(mobile) {
+    background-color: $color-secondary;
+  }
+
   color: $color-secondary;
 }
 
 .title {
-  font-size: $font-size-xxl;
-  line-height: $line-height-xl;
+  text-align: center;
+  font-size: 3em;
+  line-height: 2em;
+  position: relative;
+
+  // Region title in mobile view
+  .bg-mobile {
+    display: none;
+    @include respond-to(mobile) {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  @include respond-to(mobile) {
+    .title-text {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      gap: $spacing-s;
+      flex-direction: column;
+      justify-content: center;
+      background-color: $shadow-m;
+      color: $color-white;
+      padding: $spacing-m;
+      .title-thin {
+        font-size: 0.5em;
+        line-height: 1em;
+      }
+      .title-bold {
+        font-size: 1em;
+        line-height: 1em;
+      }
+    }
+  }
+  // End region title in mobile view
+
+  .title-text {
+    padding: 0;
+    margin: 0;
+  }
+
   .title-thin {
     font-weight: 300;
   }
@@ -75,13 +128,32 @@ const search = () => {
 .search-fields {
   display: flex;
   flex-direction: row;
-  gap: $spacing-xl;
-  width: 100%;
+
   justify-content: center;
+
+  padding: 0 $spacing-m;
+  margin-bottom: $spacing-m;
 
   .select-event {
     line-height: 45px;
-    width: 17rem;
+    width: 17em;
+  }
+
+  @include respond-to(tablet) {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  gap: $spacing-xl;
+  @include respond-to(mobile) {
+    gap: $spacing-m;
+    padding: 0;
+    align-items: initial;
+    .date-picker,
+    .select-event {
+      margin: 0;
+      padding: 0;
+    }
   }
 }
 </style>

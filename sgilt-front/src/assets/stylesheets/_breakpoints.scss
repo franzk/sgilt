@@ -1,6 +1,11 @@
 $breakpoint-mobile: 600px;
 $breakpoint-tablet: 1280px;
 
+:root {
+  --breakpoint-mobile: #{$breakpoint-mobile};
+  --breakpoint-tablet: #{$breakpoint-tablet};
+}
+
 @mixin respond-to($device) {
   @if $device == mobile {
     @media (max-width: #{$breakpoint-mobile}) {

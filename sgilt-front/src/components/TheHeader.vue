@@ -39,6 +39,9 @@ header {
     padding: 0;
     margin: 0;
     align-content: inherit;
+    @include respond-to(mobile) {
+      display: none;
+    }
   }
 }
 </style>

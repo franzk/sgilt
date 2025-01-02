@@ -34,34 +34,32 @@ const categories = useCategorysStore().categories
 
 .categories-title {
   margin: 0 0 $spacing-m 0;
+  text-align: center;
 }
 
 .categories {
   display: grid;
-  gap: $spacing-l;
 
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  // grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: $spacing-xl;
+  padding: 0 $spacing-xl;
 
-  @media (min-width: 63rem) {
-    // 4 columns
-    grid-template-columns: repeat(4, 1fr);
+  // 4 columns
+  grid-template-columns: repeat(4, 1fr);
+
+  @include respond-to(tablet) {
+    gap: $spacing-m;
+    padding: 0 $spacing-m;
   }
 
-  @media (max-width: 70rem) and (min-width: 40rem) {
-    // 2 columns
+  @include respond-to(mobile) {
+    // 2 X 2
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, auto);
-  }
-
-  @media (max-width: 39.9rem) {
-    // 1 column
-    grid-template-columns: 1fr;
-    grid-template-rows: repeat(4, auto);
   }
 }
 
 .category-card {
-  width: 14rem;
   text-decoration: none;
 }
 </style>

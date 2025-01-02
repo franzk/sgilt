@@ -2,7 +2,7 @@
   <SgiltChip
     :label="$t(`categories.${categoryName}.title`)"
     @click="$emit('click')"
-    class="category-chip"
+    class="category-chip small-font"
   >
     <component :is="icon" class="icon" />
   </SgiltChip>
@@ -36,7 +36,6 @@ const icon = icons[props.categoryName]
 .category-chip {
   cursor: pointer;
   color: $color-secondary;
-  font-size: $font-size-s;
   background-color: $shadow-l;
   border: $border-width-s solid $color-secondary;
   gap: $spacing-xs;

@@ -3,7 +3,6 @@
   height: 100%;
 
   font-family: 'Poppins', sans-serif;
-  line-height: $line-height-m;
   font-weight: 400;
 
   color: $color-primary;
@@ -22,14 +21,62 @@ html {
 body {
   flex: 1;
   margin: 0;
+
   display: flex;
+
   svg {
     width: 100%;
     height: 100%;
   }
+
+  font-size: $font-size-base;
+  line-height: $line-height-base;
+
+  h1 {
+    font-size: $font-size-h1;
+    line-height: $line-height-h1;
+  }
+
   h2 {
-    font-size: $font-size-l;
-    font-weight: 600;
+    font-size: $font-size-h2;
+    line-height: $line-height-h2;
+  }
+
+  h3 {
+    font-size: $font-size-h3;
+    line-height: $line-height-h3;
+    font-weight: 500;
+  }
+
+  .small-font {
+    font-size: calc($font-size-base * 0.8);
+    line-height: calc($line-height-base * 0.8);
+  }
+
+  @include respond-to(tablet) {
+    font-size: calc($font-size-base * 1.2);
+    line-height: calc($line-height-base * 1.2);
+
+    h1 {
+      font-size: calc($font-size-h1 * 1.4);
+    }
+
+    h2 {
+      font-size: calc($font-size-h2 * 1.1);
+      line-height: calc($line-height-h2 * 1.1);
+    }
+  }
+
+  @include respond-to(mobile) {
+    h1 {
+      font-size: calc($font-size-h1 * 1);
+      line-height: calc($line-height-h1 * 1);
+    }
+
+    h2 {
+      font-size: calc($font-size-h2 * 0.7);
+      line-height: calc($line-height-h2 * 0.7);
+    }
   }
 }
 

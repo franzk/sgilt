@@ -1,6 +1,6 @@
 <template>
   <div v-for="(category, index) in categories" :key="index" class="category">
-    <div
+    <h3
       class="category-title"
       tabindex="0"
       @click="toogleCategory(category)"
@@ -8,14 +8,14 @@
       @keydown.enter="toogleCategory(category)"
     >
       <span :class="{ 'category-selected': tagsSelectedInCategoryCount(category) > 0 }">
-        {{ $t(`categories.${category}.title`) }}
+        {{ $t(`categories.${category}.title`).toUpperCase() }}
         {{
           tagsSelectedInCategoryCount(category) ? `(${tagsSelectedInCategoryCount(category)})` : ''
         }}
       </span>
       <span v-if="!isCategoryExpanded(category)" class="expand-category">&#8897;</span>
       <span v-if="isCategoryExpanded(category)" class="collapse-category">&#8896;</span>
-    </div>
+    </h3>
 
     <div v-if="isCategoryExpanded(category)" class="tags-list">
       <div class="tag" v-for="tag in tags.filter((tag) => tag.category === category)" :key="tag.id">
@@ -70,7 +70,6 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .category {
-  margin: 0 $spacing-l 0 0;
   padding: 0;
 }
 
@@ -100,6 +99,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  margin-top: $spacing-s;
 }
 .tag {
   margin: 0 $spacing-m 0 $spacing-m;

@@ -9,8 +9,9 @@
       <!-- TODO : Add a fallback image et partout où y a des images -->
     </div>
     <div class="category-card-content">
-      <p class="category-card-description">{{ $t(`categories.${categoryName}.description`) }}</p>
-      <span>&#8594;</span>
+      <h3 class="category-card-description">
+        {{ $t(`categories.${categoryName}.description`) }} &#8594;
+      </h3>
     </div>
   </div>
 </template>
@@ -65,8 +66,6 @@ $br: $border-radius-s;
 
   .category-card-description {
     margin: 0;
-    line-height: $line-height-m;
-    font-size: $font-size-m;
   }
 }
 </style>

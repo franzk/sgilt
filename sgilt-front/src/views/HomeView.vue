@@ -23,9 +23,17 @@ import HomeCategoriesSection from '@/components/HomeCategoriesSection.vue'
 
   background: url('@/assets/images/home_bg.jpg') no-repeat;
   background-size: cover;
+  @include respond-to(tablet) {
+    background-size: contain;
+  }
 
   .search-section-wrapper {
     flex: 0 0 85%;
+    @include respond-to(tablet) {
+      flex: 0;
+      aspect-ratio: 2;
+    }
+
     justify-content: center;
 
     display: flex;

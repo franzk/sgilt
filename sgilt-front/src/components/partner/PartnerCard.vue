@@ -32,8 +32,6 @@ defineProps<{
   background: $color-secondary;
   color: $color-primary;
 
-  font-size: $font-size-s;
-
   &:hover {
     img {
       transform: scale(1.01);
@@ -42,6 +40,7 @@ defineProps<{
   }
 
   img {
+    width: 100%;
     aspect-ratio: 1.3;
     object-fit: cover;
     border-radius: $border-radius-s;
@@ -57,8 +56,6 @@ defineProps<{
   }
 
   h3 {
-    font-size: $font-size-m;
-    line-height: $line-height-m;
     font-weight: 500;
   }
 
