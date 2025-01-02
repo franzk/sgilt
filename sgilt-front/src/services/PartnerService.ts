@@ -36,6 +36,18 @@ export class PartnerService {
     })
   }
 
+  static getPartnerBySlug = async (slug: string): Promise<Partner> => {
+    // moke API to get a partner by id
+    const partner = PartnerService.partners.find((partner) => partner.slug === slug)
+    return new Promise((resolve, reject) => {
+      if (!partner) {
+        reject(new Error('Partner not found'))
+      } else {
+        resolve(partner)
+      }
+    })
+  }
+
   /**
    * Mocked data
    */
@@ -44,6 +56,7 @@ export class PartnerService {
     {
       id: '1',
       title: 'Gypsy Reed Ensemble',
+      slug: 'gypsy-reed-ensemble',
       description: 'Un groupe de jazz parfait pour animer vos soirées.',
       imageUrl: './images/jazz-band.jpg',
       tags: [{ id: '1', name: 'Jazz', category: 'music' }],
@@ -52,6 +65,7 @@ export class PartnerService {
     {
       id: '2',
       title: 'Starlight Pulse',
+      slug: 'starlight-pulse',
       description: 'Un groupe pop-rock énergique pour une ambiance inoubliable.',
       imageUrl: './images/pop-rock-band.jpg',
       tags: [{ id: '2', name: 'Pop-Rock', category: 'music' }],
@@ -60,6 +74,7 @@ export class PartnerService {
     {
       id: '3',
       title: 'DJ Animation',
+      slug: 'dj-animation',
       description: 'Un DJ professionnel pour rythmer vos soirées.',
       imageUrl: './images/dj-animation.jpg',
       tags: [{ id: '3', name: 'D.J.', category: 'music' }],
@@ -68,6 +83,7 @@ export class PartnerService {
     {
       id: '4',
       title: 'Swing Spark',
+      slug: 'swing-spark',
       description: 'Un quatuor de jazz pour une ambiance feutrée.',
       imageUrl: './images/jazz-quartet.jpg',
       tags: [{ id: '1', name: 'Jazz', category: 'music' }],
@@ -76,6 +92,7 @@ export class PartnerService {
     {
       id: '5',
       title: 'The Jive Rebels ',
+      slug: 'the-jive-rebels',
       description: 'Un groupe rock pour faire vibrer votre public.',
       imageUrl: './images/rock-band.jpg',
       tags: [{ id: '2', name: 'Pop-Rock', category: 'music' }],
@@ -86,6 +103,7 @@ export class PartnerService {
     {
       id: '6',
       title: 'Éclat Gourmet',
+      slug: 'eclat-gourmet',
       description: 'Un service traiteur haut de gamme pour vos événements.',
       imageUrl: './images/traiteur-gourmet.jpg',
       tags: [{ id: '4', name: 'Traiteur', category: 'food' }],
@@ -94,6 +112,7 @@ export class PartnerService {
     {
       id: '7',
       title: 'Food Truck Burgers',
+      slug: 'food-truck-burgers',
       description: 'Des burgers gourmands pour régaler vos invités.',
       imageUrl: './images/food-truck-burgers.jpg',
       tags: [{ id: '5', name: 'Food Truck', category: 'food' }],
@@ -102,6 +121,7 @@ export class PartnerService {
     {
       id: '8',
       title: 'Bar à Cocktails',
+      slug: 'bar-a-cocktails',
       description: 'Un bar à cocktails pour une expérience unique.',
       imageUrl: './images/bar-cocktails.jpg',
       tags: [{ id: '6', name: 'Boissons', category: 'food' }],
@@ -110,6 +130,7 @@ export class PartnerService {
     {
       id: '9',
       title: 'Buffet de Cuisine Française',
+      slug: 'buffet-cuisine-francaise',
       description: 'Un buffet raffiné pour sublimer vos réceptions.',
       imageUrl: './images/cuisine-francaise.jpg',
       tags: [{ id: '4', name: 'Traiteur', category: 'food' }],
@@ -118,6 +139,7 @@ export class PartnerService {
     {
       id: '10',
       title: 'Camion Pizza',
+      slug: 'camion-pizza',
       description: 'Une délicieuse pizza cuite au feu de bois sur place.',
       imageUrl: './images/pizza-truck.jpg',
       tags: [{ id: '5', name: 'Food Truck', category: 'food' }],
@@ -128,6 +150,7 @@ export class PartnerService {
     {
       id: '11',
       title: 'Salle des Fêtes de Rathsamhausen',
+      slug: 'salle-des-fetes-rathsamhausen',
       description: 'Une salle spacieuse pour vos événements.',
       imageUrl: './images/salle-fetes.png',
       tags: [{ id: '7', name: 'Salle', category: 'place' }],
@@ -136,6 +159,7 @@ export class PartnerService {
     {
       id: '12',
       title: 'Château pour Mariage',
+      slug: 'chateau-pour-mariage',
       description: 'Un cadre enchanteur pour célébrer votre union.',
       imageUrl: './images/chateau-mariage.jpg',
       tags: [{ id: '7', name: 'Salle', category: 'place' }],
@@ -144,6 +168,7 @@ export class PartnerService {
     {
       id: '13',
       title: 'Gîte de la mangouste',
+      slug: 'gite-de-la-mangouste',
       description: 'Un hébergement confortable pour vos invités.',
       imageUrl: './images/hebergement-groupe.jpg',
       tags: [{ id: '8', name: 'Hébergement', category: 'place' }],
@@ -152,6 +177,7 @@ export class PartnerService {
     {
       id: '14',
       title: 'Restaurant À la Couronne',
+      slug: 'restaurant-a-la-couronne',
       description: 'Un restaurant privatisé pour vos réceptions.',
       imageUrl: './images/restaurant-prive.jpg',
       tags: [{ id: '9', name: 'Restaurant', category: 'place' }],
@@ -160,6 +186,7 @@ export class PartnerService {
     {
       id: '15',
       title: 'Salle de Séminaire',
+      slug: 'salle-de-seminaire',
       description: 'Une salle équipée pour vos séminaires et conférences.',
       imageUrl: './images/salle-seminaire.jpg',
       tags: [{ id: '7', name: 'Salle', category: 'place' }],
@@ -170,6 +197,7 @@ export class PartnerService {
     {
       id: '16',
       title: 'Léo Clairmont Photographe',
+      slug: 'leo-clairmont-photographe',
       description: 'Des souvenirs inoubliables pour votre grand jour.',
       imageUrl: './images/photographe-mariage.jpg',
       tags: [{ id: '10', name: 'Photographe', category: 'photo' }],
@@ -178,6 +206,7 @@ export class PartnerService {
     {
       id: '17',
       title: 'Photobooth Vintage',
+      slug: 'photobooth-vintage',
       description: 'Un photobooth original pour des photos funs.',
       imageUrl: './images/photobooth-vintage.jpg',
       tags: [{ id: '11', name: 'Photobooth', category: 'photo' }],
@@ -186,6 +215,7 @@ export class PartnerService {
     {
       id: '18',
       title: 'Studio Photo Mobile',
+      slug: 'studio-photo-mobile',
       description: 'Un studio photo pour des portraits professionnels.',
       imageUrl: './images/studio-photo-mobile.jpg',
       tags: [{ id: '10', name: 'Photographe', category: 'photo' }],

@@ -1,14 +1,16 @@
 <template>
   <div class="partner-card">
-    <div class="partner-category">
-      <CategoryChip :categoryName="partner.tags[0]?.category || ''" />
-    </div>
-    <img :src="partner.imageUrl" :alt="partner.title" />
+    <RouterLink :to="{ name: 'partner', params: { id: partner.slug || 'aa' } }">
+      <div class="partner-category">
+        <CategoryChip :categoryName="partner.tags[0]?.category || ''" />
+      </div>
+      <img :src="partner.imageUrl" :alt="partner.title" />
 
-    <h3>{{ partner.title }}</h3>
+      <h3>{{ partner.title }}</h3>
 
-    <p class="partner-description">{{ partner.description }}</p>
-    <p class="partner-enter-price">{{ `${$t('texts.a-partir-de')}  ${partner.entryPrice}` }} €</p>
+      <p class="partner-description">{{ partner.description }}</p>
+      <p class="partner-enter-price">{{ `${$t('texts.a-partir-de')}  ${partner.entryPrice}` }} €</p>
+    </RouterLink>
   </div>
 </template>
 
