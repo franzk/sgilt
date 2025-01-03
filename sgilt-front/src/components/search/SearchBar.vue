@@ -19,10 +19,12 @@
       <TagsFilter v-model="tagsFilter" class="tags-filter" @update:model-value="search" />
     </div>
     <div class="submit-button">
-      <span class="reset small-font" @click="resetFilters">Réinitialisez les filtres</span>
-      <SgiltSimpleButton v-if="mobileView" @click="submit">{{
-        $t('texts.voir-resultats', { count: useSearchStore().results.length })
-      }}</SgiltSimpleButton>
+      <SgiltSimpleButton @click="resetFilters" variant="secondary">
+        {{ $t('texts.effacer-filtres') }}
+      </SgiltSimpleButton>
+      <SgiltSimpleButton v-if="mobileView" @click="submit">
+        {{ $t('texts.voir-resultats', { count: useSearchStore().results.length }) }}
+      </SgiltSimpleButton>
     </div>
   </div>
 </template>
@@ -148,7 +150,7 @@ hr {
 
 .submit-button {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: $spacing-m;
   padding: $spacing-m;
   span {
