@@ -128,8 +128,11 @@ $overlay: $shadow-l;
 .tagline {
   text-align: center;
   font-weight: 400;
-  font-style: italic;
   margin: 0;
+
+  @include respond-to(desktop) {
+    margin: $spacing-m 0;
+  }
 }
 
 .search-fields {
