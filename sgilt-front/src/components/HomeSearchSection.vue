@@ -5,6 +5,7 @@
       <div class="title-text">
         <span class="title-thin">{{ $t('home.search-banner.title-part-1') }}</span>
         <span class="title-bold">{{ $t('home.search-banner.title-part-2') }}</span>
+        <h3 class="tagline">{{ $t('home.search-banner.tagline') }}</h3>
       </div>
     </div>
     <div class="search-fields">
@@ -13,7 +14,6 @@
       <SgiltSimpleButton @click="search">{{ $t('home.search-banner.button') }}</SgiltSimpleButton>
     </div>
   </section>
-  {{}}
 </template>
 
 <script setup lang="ts">
@@ -51,6 +51,8 @@ const search = () => {
 </script>
 
 <style lang="scss">
+$overlay: $shadow-l;
+
 #search-banner {
   display: flex;
   flex-direction: column;
@@ -60,9 +62,7 @@ const search = () => {
   align-items: center;
   justify-content: center;
 
-  // padding: $spacing-m;
-
-  background-color: $shadow-m;
+  background-color: $overlay;
   @include respond-to(mobile) {
     background-color: $color-secondary;
   }
@@ -97,7 +97,7 @@ const search = () => {
       gap: $spacing-s;
       flex-direction: column;
       justify-content: center;
-      background-color: $shadow-m;
+      background-color: $overlay;
       color: $color-white;
       padding: $spacing-m;
       .title-thin {
@@ -123,6 +123,13 @@ const search = () => {
   .title-bold {
     font-weight: bold;
   }
+}
+
+.tagline {
+  text-align: center;
+  font-weight: 400;
+  font-style: italic;
+  margin: 0;
 }
 
 .search-fields {
