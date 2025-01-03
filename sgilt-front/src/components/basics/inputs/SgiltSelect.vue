@@ -1,8 +1,12 @@
 <template>
   <div class="custom-select" :tabindex="tabindex" @blur="open = false">
     <div class="selected" :class="{ open: open }" @click="open = !open">
-      {{ selectedLabel }}
+      <div class="left-icon"><IconRocket /></div>
+      <div class="selected-text">{{ selectedLabel }}</div>
+      <div class="right-icon" v-if="open">&#x25B2;</div>
+      <div class="right-icon" v-else>&#x25BC;</div>
     </div>
+
     <div class="items" :class="{ selectHide: !open }">
       <div v-for="(option, i) of options" :key="i" @click="click(option)">
         {{ option.label }}
@@ -13,6 +17,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import IconRocket from '@/components/icons/IconRocket.vue'
 
 // selected value
 const selectedValue = defineModel<string>()
@@ -52,43 +57,44 @@ $color-2: $color-accent; // border & bg hover
 $color-3: $color-primary;
 $color-4: $color-secondary; // border not selected
 
-$br: $input-border-radius;
+$br: calc($input-border-radius * 0.75);
+$bc: $input-border-color;
 
 .custom-select {
   position: relative;
-  width: 100%;
   text-align: left;
   outline: none;
-  height: 47px;
-  line-height: 47px;
 
   .selected {
+    display: flex;
+    flex-direction: row;
+
     background-color: $color-1;
     border-radius: $br;
-    border: 1px solid $color-4;
+    border: 1px solid $bc;
     color: $color-3;
 
     cursor: pointer;
     user-select: none;
 
-    text-align: center;
-    padding-left: 1em;
-    padding-right: 2rem;
+    .selected-text {
+      flex: 1;
+      text-align: center;
+    }
+
+    .left-icon {
+      padding-left: 0.5em;
+    }
+
+    .right-icon {
+      padding-right: 1em;
+      font-size: $font-size-base;
+    }
 
     &.open {
       border: 1px solid $color-2;
+      border-bottom: none;
       border-radius: $br $br 0px 0px;
-    }
-
-    &:after {
-      position: absolute;
-      content: '';
-      top: 22px;
-      right: 1em;
-      width: 0;
-      height: 0;
-      border: 5px solid transparent;
-      border-color: $color-3 transparent transparent transparent;
     }
   }
 

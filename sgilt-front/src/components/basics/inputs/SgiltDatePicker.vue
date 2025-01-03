@@ -28,11 +28,13 @@ const format = (date: Date) => dayjs(date).locale('fr').format('dddd DD MMM YYYY
 
 .dp__theme_light {
   --dp-border-radius: #{$input-border-radius};
+  --dp-border-color: #{$shadow-m};
   --dp-input-padding: 0.65rem;
-  --dp-font-size: 1em; //#{$font-size-base};
+  --dp-font-size: 1em;
   --dp-text-color: #{$color-primary};
 
   --dp-primary-color: #{$color-accent};
+  --dp-icon-color: #{$color-primary};
 }
 
 .dp__input {
