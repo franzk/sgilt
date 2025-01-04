@@ -83,7 +83,6 @@ defineProps<{
   }
 
   .partner-description {
-    // color: #6a6a6a;
     font-weight: 300;
   }
 }
