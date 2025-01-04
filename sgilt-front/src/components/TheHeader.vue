@@ -42,6 +42,8 @@ header {
     @include respond-to(mobile) {
       display: none;
     }
+    -webkit-align-self: center;
+    align-self: center;
   }
 }
 </style>
