@@ -5,7 +5,15 @@
         <div class="filters-title">
           <div class="icon"><IconFilters /></div>
           <p>{{ $t('texts.filtres') }}</p>
-          <span @click="$emit('close')">{{ reduceOrCloseSymbol }}</span>
+          <div
+            @click="$emit('close')"
+            @keydown.space="$emit('close')"
+            @keydown.enter="$emit('close')"
+            tabindex="0"
+            class="close-button"
+          >
+            {{ reduceOrCloseSymbol }}
+          </div>
         </div>
         <hr />
       </div>
@@ -19,10 +27,12 @@
       <TagsFilter v-model="tagsFilter" class="tags-filter" @update:model-value="search" />
     </div>
     <div class="submit-button">
-      <span class="reset small-font" @click="resetFilters">Réinitialisez les filtres</span>
-      <SgiltSimpleButton v-if="mobileView" @click="submit">{{
-        $t('texts.voir-resultats', { count: useSearchStore().results.length })
-      }}</SgiltSimpleButton>
+      <SgiltSimpleButton @click="resetFilters" variant="secondary">
+        {{ $t('texts.effacer-filtres') }}
+      </SgiltSimpleButton>
+      <SgiltSimpleButton v-if="mobileView" @click="submit">
+        {{ $t('texts.voir-resultats', { count: useSearchStore().results.length }) }}
+      </SgiltSimpleButton>
     </div>
   </div>
 </template>
@@ -120,10 +130,17 @@ const submit = () => {
   flex-direction: row;
   margin: 0;
   padding: 0;
-  line-height: 0;
+
   align-items: center;
   justify-content: space-between;
   gap: $spacing-s;
+
+  .close-button {
+    cursor: pointer;
+    line-height: 1rem;
+  }
+
+  line-height: 0;
 
   .icon {
     height: 24px;
@@ -133,10 +150,6 @@ const submit = () => {
   p {
     font-weight: bold;
     flex: 1;
-  }
-
-  span {
-    cursor: pointer;
   }
 }
 
@@ -148,7 +161,7 @@ hr {
 
 .submit-button {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: $spacing-m;
   padding: $spacing-m;
   span {

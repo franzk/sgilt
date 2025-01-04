@@ -34,6 +34,10 @@ import HomeCategoriesSection from '@/components/HomeCategoriesSection.vue'
       aspect-ratio: 2;
     }
 
+    @include respond-to(mobile) {
+      aspect-ratio: initial;
+    }
+
     justify-content: center;
 
     display: flex;

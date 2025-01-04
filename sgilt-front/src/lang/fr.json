@@ -25,7 +25,8 @@
     "search-banner": {
       "title-part-1": "Qu'est-ce qu'on ",
       "title-part-2": "FÊTE ?",
-      "button": "C'est Party !!"
+      "tagline": "Trouvez les meilleurs prestataires pour votre évènement",
+      "button": "C'est Party !"
     },
     "categories-banner": {
       "title": "Découvrez les partenaires de votre évènement"
@@ -41,6 +42,7 @@
     "rechercher": "Rechercher",
     "filtres": "Filtres",
     "resultats": "Aucun résultat. | 1 résultat | {count} résultats",
-    "voir-resultats": "Aucun résultat | Voir le résultat | Voir les {count} résultats"
+    "voir-resultats": "Aucun résultat | Voir le résultat | Voir les {count} résultats",
+    "effacer-filtres": "Tout effacer"
   }
 }

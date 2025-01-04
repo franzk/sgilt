@@ -8,7 +8,10 @@
     <h3>{{ partner.title }}</h3>
 
     <p class="partner-description">{{ partner.description }}</p>
-    <p class="partner-enter-price">{{ `${$t('texts.a-partir-de')}  ${partner.entryPrice}` }} €</p>
+    <div class="partner-enter-price">
+      <p>{{ $t('texts.a-partir-de') }}</p>
+      <p class="price">{{ partner.entryPrice }} €</p>
+    </div>
   </div>
 </template>
 
@@ -56,11 +59,18 @@ defineProps<{
   }
 
   h3 {
-    font-weight: 500;
+    margin-top: $spacing-xs;
+    font-weight: 600;
   }
 
   .partner-enter-price {
     font-weight: 300;
+    display: flex;
+    flex-direction: row;
+    .price {
+      font-weight: 600;
+      margin-left: $spacing-xs;
+    }
   }
 
   .partner-category {
@@ -69,6 +79,11 @@ defineProps<{
     justify-content: end;
     z-index: 1;
     width: 100%;
+  }
+
+  .partner-description {
+    // color: #6a6a6a;
+    font-weight: 300;
   }
 }
 </style>

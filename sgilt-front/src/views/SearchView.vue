@@ -9,7 +9,16 @@
       />
     </aside>
     <aside v-if="!searchBarOpened && !mobileView" class="reduced-search-bar">
-      <div @click="searchBarOpened = true">&gt;&gt;</div>
+      <div
+        @click="searchBarOpened = true"
+        @keydown.space="searchBarOpened = true"
+        @keydown.enter="searchBarOpened = true"
+        tabindex="0"
+        class="open-button"
+      >
+        &gt;&gt;
+      </div>
+      <div class="separator"></div>
     </aside>
     <main v-if="!mobileView || !searchBarOpened" class="search-results">
       <SearchResults @open-filter="searchBarOpened = true" />
@@ -87,14 +96,18 @@ const search = (query: PartnerQuery) => {
 
   .reduced-search-bar {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     background-color: $color-secondary;
     cursor: pointer;
     padding: $spacing-ml $spacing-m;
-    div {
+    .open-button {
       height: $spacing-m;
-      padding-bottom: $spacing-m;
-      border-bottom: $border-width-s solid $color-accent;
+      margin-bottom: $spacing-m;
+    }
+    .separator {
+      flex: 1;
+      border-top: $border-width-s solid $color-accent;
     }
   }
 

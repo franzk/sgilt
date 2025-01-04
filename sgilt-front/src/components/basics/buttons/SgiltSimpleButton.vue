@@ -1,11 +1,20 @@
+import { defineProps } from "vue"
+
 <template>
-  <button class="sgilt-simple-button" @click="$emit('click')">
+  <button
+    class="sgilt-simple-button"
+    :class="{ secondary: variant === 'secondary' }"
+    @click="$emit('click')"
+  >
     <slot></slot>
   </button>
 </template>
 
 <script setup lang="ts">
 defineEmits(['click'])
+defineProps<{
+  variant?: string
+}>()
 </script>
 
 <style scoped lang="scss">
@@ -25,6 +34,16 @@ defineEmits(['click'])
 
   &:hover {
     background-color: lighten($color-accent, 10%);
+  }
+}
+
+.secondary {
+  background-color: white;
+  color: $color-accent;
+  border: $border-width-s solid $color-accent;
+
+  &:hover {
+    background-color: darken($color-secondary, 10%);
   }
 }
 </style>

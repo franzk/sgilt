@@ -19,7 +19,7 @@ header {
   position: sticky;
   top: 0;
   left: 0;
-  z-index: 1;
+  z-index: 2;
 
   background-color: $color-secondary;
   box-shadow: 0 4px 6px $shadow-m;
@@ -42,6 +42,8 @@ header {
     @include respond-to(mobile) {
       display: none;
     }
+    -webkit-align-self: center;
+    align-self: center;
   }
 }
 </style>
