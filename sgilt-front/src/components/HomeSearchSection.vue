@@ -142,7 +142,7 @@ $overlay: $shadow-l;
   justify-content: center;
 
   padding: 0 $spacing-m;
-  margin-bottom: $spacing-m;
+  margin-bottom: $spacing-xl;
 
   .select-event {
     line-height: 45px;
@@ -158,6 +158,7 @@ $overlay: $shadow-l;
   @include respond-to(mobile) {
     gap: $spacing-m;
     padding: 0;
+    margin-bottom: $spacing-m;
     align-items: initial;
     .date-picker,
     .select-event {
