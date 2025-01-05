@@ -1,49 +1,58 @@
 <template>
-  <VueDatePicker
-    v-model="date"
-    :auto-apply="true"
-    :enable-time-picker="false"
-    locale="fr"
-    :format="format"
-    class="sgilt-date-picker"
-  />
+  <VDatePicker v-model="date">
+    <template #default="{ togglePopover }">
+      <div class="sgilt-date-picker" @click="togglePopover">
+        <div class="left-icon"><IconRocket /></div>
+        <div class="selected-date">{{ formattedDate }}</div>
+      </div>
+    </template>
+  </VDatePicker>
 </template>
 
 <script setup lang="ts">
-import VueDatePicker from '@vuepic/vue-datepicker'
 import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
+import { computed } from 'vue'
+import IconRocket from '@/components/icons/IconRocket.vue'
 
 const date = defineModel<Date>()
 
 const format = (date: Date) => dayjs(date).locale('fr').format('dddd DD MMM YYYY')
+
+const formattedDate = computed(() => (date.value ? format(date.value) : 'Select a date'))
 </script>
 
 <style lang="scss">
-@import '@vuepic/vue-datepicker/dist/main.css';
-
 .sgilt-date-picker {
   width: 17em;
-}
-
-.dp__theme_light {
-  --dp-border-radius: #{$input-border-radius};
-  --dp-border-color: #{$shadow-m};
-  --dp-input-padding: 0.75rem;
-  --dp-font-size: 1em;
-  --dp-text-color: #{$color-primary};
-
-  --dp-primary-color: #{$color-accent};
-  --dp-icon-color: #{$color-primary};
-}
-
-.dp__input {
+  line-height: 3em;
+  border-radius: $input-border-radius;
+  color: $color-primary;
+  background-color: $color-white;
   text-align: center;
-  padding-right: 2.5rem;
-}
 
-.dp__input:focus {
-  outline: $focus-outline;
-  outline-offset: $focus-outline-offset;
+  display: flex;
+  flex-direction: row;
+
+  cursor: pointer;
+
+  &:focus {
+    outline: $focus-outline;
+    outline-offset: $focus-outline-offset;
+  }
+
+  .left-icon {
+    display: flex;
+    padding-left: 0.5em;
+    svg {
+      width: initial;
+      height: initial;
+    }
+  }
+
+  .selected-date {
+    flex: 1;
+    padding-right: 2.5em;
+  }
 }
 </style>
