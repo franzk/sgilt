@@ -1,16 +1,28 @@
 <template>
   <div class="partner-view" v-if="partner">
     <aside class="partner-left">
-      <h1>{{ partner.title }}</h1>
-      <img :src="partner.imageUrl" />
-      <p>CALENDAR</p>
+      <div class="partner-image">
+        <img :src="partner.imageUrl" />
+      </div>
+      <h1 class="partner-title">{{ partner.title }}</h1>
+      <div class="actions">
+        <SgiltSimpleButton>Contacter</SgiltSimpleButton>
+      </div>
+      <div class="calendar">
+        <VueDatePicker
+          :inline="true"
+          :enable-time-picker="false"
+          locale="fr"
+          class="calendar-component"
+        >
+          <template #action-buttons>
+            <SgiltSimpleButton @click="selectDate">Réserver</SgiltSimpleButton>
+          </template>
+        </VueDatePicker>
+      </div>
       <div>
         <h3>Tarifs</h3>
         <p>1000€</p>
-      </div>
-      <div class="actions">
-        <SgiltSimpleButton>Contacter</SgiltSimpleButton>
-        <SgiltSimpleButton>Réserver une option</SgiltSimpleButton>
       </div>
     </aside>
     <main class="partner-main">
@@ -32,6 +44,7 @@
 
 <script setup lang="ts">
 import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue'
+import VueDatePicker from '@vuepic/vue-datepicker'
 import { PartnerService } from '@/services/PartnerService'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -58,14 +71,34 @@ onMounted(async () => {
 
   display: flex;
   flex-direction: row;
-  overflow: hidden;
+
+  .partner-image {
+    display: flex;
+    margin-bottom: 0;
+    img {
+      width: 100%;
+    }
+  }
+
+  .partner-title {
+    margin: 0;
+  }
+
+  .calendar {
+    margin-top: $spacing-m;
+    .dp__flex_display {
+      display: block;
+    }
+  }
 
   .partner-left {
     border-right: $border-width-s solid $color-accent;
-    flex: 0 0 21rem;
+    flex: 0 0 20rem;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    padding: $spacing-m;
+
     @include respond-to(mobile) {
       flex: 1;
       overflow: initial;

@@ -45,10 +45,6 @@ const onChange = (value: Date[]) => {
 <style lang="scss">
 @import '@vuepic/vue-datepicker/dist/main.css';
 
-.sgilt-date-picker {
-  width: 17em;
-}
-
 .dp__theme_light {
   --dp-border-radius: #{$input-border-radius};
   --dp-border-color: #{$shadow-m};

@@ -8,11 +8,12 @@
 
       <h3>{{ partner.title }}</h3>
 
-    <p class="partner-description">{{ partner.description }}</p>
-    <div class="partner-enter-price">
-      <p>{{ $t('texts.a-partir-de') }}</p>
-      <p class="price">{{ partner.entryPrice }} €</p>
-    </div>
+      <p class="partner-description">{{ partner.description }}</p>
+      <div class="partner-enter-price">
+        <p>{{ $t('texts.a-partir-de') }}</p>
+        <p class="price">{{ partner.entryPrice }} €</p>
+      </div>
+    </RouterLink>
   </div>
 </template>
 

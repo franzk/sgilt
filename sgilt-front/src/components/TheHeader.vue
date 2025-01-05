@@ -30,9 +30,12 @@ header {
 
   padding-left: 1rem;
 
-  h1 a {
-    text-decoration: none;
-    color: $color-primary;
+  h1 {
+    line-height: 1rem;
+    a {
+      text-decoration: none;
+      color: $color-primary;
+    }
   }
 
   p {
