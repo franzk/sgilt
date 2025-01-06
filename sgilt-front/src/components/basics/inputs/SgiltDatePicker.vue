@@ -1,11 +1,13 @@
 <template>
   <VueDatePicker
-    v-model="date"
+    v-model="model"
     :auto-apply="true"
+    multi-dates
     :enable-time-picker="false"
     locale="fr"
     :format="format"
     class="sgilt-date-picker"
+    @update:model-value="onChange"
   />
 </template>
 
@@ -13,10 +15,23 @@
 import VueDatePicker from '@vuepic/vue-datepicker'
 import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
+import { ref } from 'vue'
 
 const date = defineModel<Date>()
 
+const model = ref(date.value ? [date.value] : [])
+
 const format = (date: Date) => dayjs(date).locale('fr').format('dddd DD MMM YYYY')
+
+const onChange = (value: Date[]) => {
+  if (!value || value.length === 0) {
+    date.value = undefined
+  } else {
+    const selectedDate = value[value.length - 1]
+    date.value = selectedDate
+    model.value = [selectedDate]
+  }
+}
 </script>
 
 <style lang="scss">
