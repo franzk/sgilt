@@ -10,7 +10,7 @@
     </div>
     <div class="search-fields">
       <SgiltDatePicker v-model="date" class="date-picker" />
-      <SgiltSelect :options="options" v-model="selectedValue" class="select-event" />
+      <SgiltSelect :options="options" v-model="selectedValue" class="select-event-type" />
       <SgiltSimpleButton @click="search">{{ $t('home.search-banner.button') }}</SgiltSimpleButton>
     </div>
   </section>
@@ -144,7 +144,13 @@ $overlay: $shadow-l;
   padding: 0 $spacing-m;
   margin-bottom: $spacing-xl;
 
-  .select-event {
+  .date-picker {
+    flex: 1;
+    width: 17em;
+  }
+
+  .select-event-type {
+    flex:1;
     line-height: 45px;
     width: 17em;
   }
@@ -161,7 +167,7 @@ $overlay: $shadow-l;
     margin-bottom: $spacing-m;
     align-items: initial;
     .date-picker,
-    .select-event {
+    .select-event-type {
       margin: 0;
       padding: 0;
     }
