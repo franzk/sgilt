@@ -1,7 +1,7 @@
 <template>
   <VueDatePicker
     v-model="model"
-    :auto-apply="true"
+    auto-apply
     multi-dates
     :enable-time-picker="false"
     locale="fr"
@@ -23,6 +23,14 @@ const model = ref(date.value ? [date.value] : [])
 
 const format = (date: Date) => dayjs(date).locale('fr').format('dddd DD MMM YYYY')
 
+/**
+ * Workaround solution that works with iOS Safari
+ * (at this time, the VueDatePicker component does not work properly with iOS Safari)
+ * problem : the click event does not work on the VueDatePicker component with iOS Safari
+ * solution : it works with the multi-dates option
+ * so we use the multi-dates option and we select the last date
+ * @param value
+ */
 const onChange = (value: Date[]) => {
   if (!value || value.length === 0) {
     date.value = undefined
