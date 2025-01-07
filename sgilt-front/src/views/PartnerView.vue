@@ -9,16 +9,7 @@
         <SgiltSimpleButton>Contacter</SgiltSimpleButton>
       </div>
       <div class="calendar">
-        <VueDatePicker
-          :inline="true"
-          :enable-time-picker="false"
-          locale="fr"
-          class="calendar-component"
-        >
-          <template #action-buttons>
-            <SgiltSimpleButton @click="selectDate">Réserver</SgiltSimpleButton>
-          </template>
-        </VueDatePicker>
+        <SgiltCalendar @select-date="book" />
       </div>
       <div>
         <h3>Tarifs</h3>
@@ -44,7 +35,7 @@
 
 <script setup lang="ts">
 import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue'
-import VueDatePicker from '@vuepic/vue-datepicker'
+import SgiltCalendar from '@/components/basics/inputs/SgiltCalendar.vue'
 import { PartnerService } from '@/services/PartnerService'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -63,6 +54,10 @@ onMounted(async () => {
       router.push('/404')
     })
 })
+
+const book = () => {
+  console.log('Booking')
+}
 </script>
 
 <style lang="scss" scoped>
