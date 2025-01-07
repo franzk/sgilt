@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@intlify/unplugin-vue-i18n": "^6.0.1",
-    "@vuepic/vue-datepicker": "^10.0.0",
+    "@vuepic/vue-datepicker": "^11.0.0",
     "dayjs": "^1.11.13",
     "pinia": "^2.2.6",
     "vue": "^3.5.13",
