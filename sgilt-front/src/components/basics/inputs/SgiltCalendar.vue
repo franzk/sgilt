@@ -22,3 +22,5 @@ const date = ref(null)
 // define an emit function to emit the select-date event with the date value
 defineEmits<{ 'select-date': [Date] }>()
 </script>
+
+<style lang="scss" scoped></style>

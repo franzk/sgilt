@@ -1,41 +1,28 @@
 <template>
   <div class="partner-view" v-if="partner">
-    <aside class="partner-left">
-      <div class="partner-image">
-        <img :src="partner.imageUrl" />
+    <div class="partner-left">
+      <div class="partner-identity">
+        <img :src="partner.imageUrl" alt="Partner image" class="partner-image" />
+        <h1 class="partner-title">{{ partner.title }}</h1>
+        <SgiltSimpleButton @click="contact" class="partner-contact">Contact</SgiltSimpleButton>
       </div>
-      <h1 class="partner-title">{{ partner.title }}</h1>
-      <div class="actions">
-        <SgiltSimpleButton>Contacter</SgiltSimpleButton>
-      </div>
-      <div class="calendar">
+    </div>
+    <div class="partner-middle">
+      <SgiltVideo youtubeId="_A6w3ECkN4k" class="partner-video" />
+      <div class="line-2">
         <SgiltCalendar @select-date="book" />
+        <div class="partner-description">
+          <p>{{ partner.description }}</p>
+        </div>
       </div>
-      <div>
-        <h3>Tarifs</h3>
-        <p>1000€</p>
-      </div>
-    </aside>
-    <main class="partner-main">
-      <p>PRESENTATION LONGUE</p>
-      <div>VIDEO</div>
-      <div>GALERIE PHOTOS</div>
-    </main>
-    <aside class="partner-right">
-      <p>⭐ 4.8/5 - 22 avis</p>
-      <ul>
-        <li>“Une prestation exceptionnelle, tout le monde était ravi !”</li>
-        <li>“Très professionnel et ponctuel. À recommander !”</li>
-      </ul>
-      <SgiltSimpleButton>Voir tous les avis</SgiltSimpleButton>
-      <p>réseaux sociaux</p>
-    </aside>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue'
 import SgiltCalendar from '@/components/basics/inputs/SgiltCalendar.vue'
+import SgiltVideo from '@/components/basics/media/SgiltVideo.vue'
 import { PartnerService } from '@/services/PartnerService'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -55,65 +42,60 @@ onMounted(async () => {
     })
 })
 
-const book = () => {
-  console.log('Booking')
+const book = (date: Date) => {
+  console.log('Booking', date)
+}
+
+const contact = () => {
+  console.log('Contacting')
 }
 </script>
 
 <style lang="scss" scoped>
 .partner-view {
-  flex: 1;
-
   display: flex;
   flex-direction: row;
+  gap: $spacing-m;
+  padding: $spacing-m;
+}
+.partner-left {
+  flex: 0 0 20rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  //border-right: 1px solid #000;
 
-  .partner-image {
-    display: flex;
-    margin-bottom: 0;
-    img {
-      width: 100%;
-    }
-  }
-
-  .partner-title {
-    margin: 0;
-  }
-
-  .calendar {
-    margin-top: $spacing-m;
-    .dp__flex_display {
-      display: block;
-    }
-  }
-
-  .partner-left {
-    border-right: $border-width-s solid $color-accent;
-    flex: 0 0 20rem;
+  .partner-identity {
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    padding: $spacing-m;
-
-    @include respond-to(mobile) {
-      flex: 1;
-      overflow: initial;
+    .partner-image {
+      border-radius: $border-radius-m;
+    }
+    .partner-title {
+      margin: 0;
+      font-size: $font-size-h2;
     }
   }
-
-  .partner-right {
-    border-left: $border-width-s solid $color-accent;
-    display: flex;
-    flex-direction: column;
-    flex: 0 0 15rem;
+}
+.partner-middle {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-m;
+  .partner-video {
+    margin-bottom: $spacing-m;
+    width: 100%;
+    aspect-ratio: 2;
   }
-
-  .partner-main {
-    flex: 1;
+  .line-2 {
     display: flex;
-    flex-direction: column;
-    background-color: $color-secondary;
-    padding: $spacing-m;
-    overflow: auto;
+    flex-direction: row;
+    gap: $spacing-m;
+    .partner-description {
+      p {
+        margin: 0;
+      }
+    }
   }
 }
 </style>
