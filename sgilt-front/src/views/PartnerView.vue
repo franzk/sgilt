@@ -1,21 +1,62 @@
+import { onMounted } from "vue"
+
 <template>
-  <div class="partner-view" v-if="partner">
-    <div class="partner-left">
-      <div class="partner-identity">
-        <img :src="partner.imageUrl" alt="Partner image" class="partner-image" />
-        <h1 class="partner-title">{{ partner.title }}</h1>
-        <SgiltSimpleButton @click="contact" class="partner-contact">Contact</SgiltSimpleButton>
-      </div>
-    </div>
-    <div class="partner-middle">
-      <SgiltVideo youtubeId="_A6w3ECkN4k" class="partner-video" />
-      <div class="line-2">
-        <SgiltCalendar @select-date="book" />
-        <div class="partner-description">
-          <p>{{ partner.description }}</p>
+  <div class="fiche-partner" v-if="partner">
+    <!-- Header -->
+    <header class="partner-header">
+      <div class="header-left">
+        <img :src="partner.imageUrl" alt="Photo du partner" class="photo-profil" />
+        <div>
+          <h1>{{ partner.title }}</h1>
+          <p class="slogan">{{ partner.description }}</p>
         </div>
       </div>
-    </div>
+    </header>
+
+    <!-- First section -->
+    <section class="partner-grid">
+      <div class="partner-video">
+        <SgiltVideo youtubeId="_A6w3ECkN4k" />
+      </div>
+      <div class="partner-calendar">
+        <SgiltCalendar />
+      </div>
+
+      <div class="partner-description">
+        <h2>À propos de {{ partner.title }}</h2>
+        <p>{{ partner.longDescription }}</p>
+      </div>
+      <div class="partner-tarifs">
+        <h2>Tarifs</h2>
+        <!--ul class="tarifs">
+            <li v-for="tarif in tarifs" :key="tarif.nom">
+              <h3>{{ tarif.nom }}</h3>
+              <p>{{ tarif.description }}</p>
+              <span class="prix">{{ tarif.prix }} €</span>
+            </li>
+          </!--ul-->
+      </div>
+    </section>
+
+    <!-- Galerie photos -->
+    <section class="galerie-section">
+      <h2>Galerie Photos</h2>
+      <!--div class="galerie">
+        <img v-for="photo in photos" :src="photo" :alt="`Photo de ${nompartner}`" />
+      </!--div-->
+    </section>
+
+    <!-- Avis clients -->
+    <section class="avis-section">
+      <h2>Ce que disent nos clients</h2>
+      <div class="avis-grid">
+        <!--div v-for="avis in avisClients" class="avis-client">
+          <h3>{{ avis.nomClient }}</h3>
+          <p>{{ avis.commentaire }}</p>
+          <p class="note">Note : {{ avis.note }}/5</p>
+        </!--div-->
+      </div>
+    </section>
   </div>
 </template>
 
@@ -41,61 +82,80 @@ onMounted(async () => {
       router.push('/404')
     })
 })
-
-const book = (date: Date) => {
-  console.log('Booking', date)
-}
-
-const contact = () => {
-  console.log('Contacting')
-}
 </script>
 
-<style lang="scss" scoped>
-.partner-view {
-  display: flex;
-  flex-direction: row;
-  gap: $spacing-m;
-  padding: $spacing-m;
+<style scoped lang="scss">
+.fiche-partner {
+  padding: $spacing-s;
 }
-.partner-left {
-  flex: 0 0 20rem;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  //border-right: 1px solid #000;
 
-  .partner-identity {
+/* Header */
+.partner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #eee;
+  padding-bottom: $spacing-l;
+
+  .header-left {
     display: flex;
-    flex-direction: column;
-    .partner-image {
-      border-radius: $border-radius-m;
-    }
-    .partner-title {
-      margin: 0;
-      font-size: $font-size-h2;
-    }
+    align-items: center;
+    gap: $spacing-l;
+  }
+
+  .photo-profil {
+    width: 7em;
+    height: 7em;
+    border-radius: 50%;
+  }
+
+  .slogan {
+    font-style: italic;
+    color: #666;
   }
 }
-.partner-middle {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+
+/* Première section */
+.partner-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
   gap: $spacing-m;
-  .partner-video {
-    margin-bottom: $spacing-m;
-    width: 100%;
-    aspect-ratio: 2;
-  }
-  .line-2 {
-    display: flex;
-    flex-direction: row;
-    gap: $spacing-m;
-    .partner-description {
-      p {
-        margin: 0;
-      }
-    }
-  }
+  margin-top: $spacing-m;
+  justify-items: center;
+}
+
+.partner-video,
+.partner-calendar {
+  align-content: center;
+}
+
+/* Galerie */
+.galerie {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+}
+.galerie img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Avis */
+.avis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+.avis-client {
+  border: 1px solid #eee;
+  padding: 15px;
+  border-radius: 8px;
+}
+.note {
+  color: #fcb900;
 }
 </style>

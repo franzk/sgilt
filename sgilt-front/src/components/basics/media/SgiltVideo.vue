@@ -1,5 +1,5 @@
 <template>
-  <vue-plyr v-if="youtubeId">
+  <vue-plyr v-if="youtubeId" class="video-player">
     <div class="plyr__video-embed">
       <iframe
         :src="`https://www.youtube-nocookie.com/embed/${youtubeId}`"
@@ -19,18 +19,15 @@ defineProps<{
 }>()
 </script>
 
-<style lang="scss" scoped>
-.video-placeholder {
-  width: 100%;
-  height: calc(100vw * 9 / 16);
-}
+<style lang="scss">
+
 .plyr__video-embed {
-  height: 100%;
+  width: 60vw;
+  aspect-ratio: 1.78;
 }
 
 .video-iframe {
-  border-radius: $border-radius-s;
-  width: 100%;
   height: 100%;
+  width: 100%;
 }
 </style>

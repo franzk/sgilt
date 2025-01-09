@@ -2,6 +2,7 @@
   <VueDatePicker
     v-model="date"
     inline
+    six-weeks
     :enable-time-picker="false"
     locale="fr"
     class="calendar-component"
@@ -23,4 +24,5 @@ const date = ref(null)
 defineEmits<{ 'select-date': [Date] }>()
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss">
+</style>

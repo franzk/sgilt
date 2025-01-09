@@ -27,7 +27,7 @@ const format = (date: Date) => dayjs(date).locale('fr').format('dddd DD MMM YYYY
 }
 
 .dp__theme_light {
-  --dp-border-radius: #{$input-border-radius};
+  --dp-border-radius: 1em;
   --dp-border-color: #{$shadow-m};
   --dp-input-padding: 0.75rem;
   --dp-font-size: 1em;

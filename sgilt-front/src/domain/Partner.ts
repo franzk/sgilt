@@ -5,6 +5,7 @@ export interface Partner {
   title: string
   slug: string
   description: string
+  longDescription: string
   imageUrl: string
   tags: Tag[]
   entryPrice: number
