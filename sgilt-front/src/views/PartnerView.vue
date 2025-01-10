@@ -14,37 +14,44 @@ import { onMounted } from "vue"
     </header>
 
     <!-- First section -->
-    <section class="partner-grid">
+    <section class="partner-first-section">
       <div class="partner-video">
         <SgiltVideo youtubeId="_A6w3ECkN4k" />
       </div>
-      <div class="partner-calendar">
-        <SgiltCalendar />
+
+      <div class="partner-booking">
+        <h3>Réserver</h3>
+        <SgiltDatePicker />
+        <PriceForm />
+        <SgiltSimpleButton>Réserver</SgiltSimpleButton>
       </div>
 
+      <!--div class="partner-calendar">
+        <SgiltCalendar />
+      </!--div>
+
+      <div-- class="partner-prices">
+        <PriceForm />
+      </div-->
+    </section>
+
+    <section class="partner-second-section">
       <div class="partner-description">
-        <h2>À propos de {{ partner.title }}</h2>
+        <h3>À propos de {{ partner.title }}</h3>
         <p>{{ partner.longDescription }}</p>
       </div>
-      <div class="partner-tarifs">
-        <h2>Tarifs</h2>
-        <!--ul class="tarifs">
-            <li v-for="tarif in tarifs" :key="tarif.nom">
-              <h3>{{ tarif.nom }}</h3>
-              <p>{{ tarif.description }}</p>
-              <span class="prix">{{ tarif.prix }} €</span>
-            </li>
-          </!--ul-->
+      <div class="partner-gallery">
+        <h3>Galerie photos</h3>
       </div>
     </section>
 
     <!-- Galerie photos -->
-    <section class="galerie-section">
+    <!--section class="galerie-section">
       <h2>Galerie Photos</h2>
       <!--div class="galerie">
         <img v-for="photo in photos" :src="photo" :alt="`Photo de ${nompartner}`" />
-      </!--div-->
-    </section>
+      </!--div>
+    </!--section-->
 
     <!-- Avis clients -->
     <section class="avis-section">
@@ -62,8 +69,9 @@ import { onMounted } from "vue"
 
 <script setup lang="ts">
 import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue'
-import SgiltCalendar from '@/components/basics/inputs/SgiltCalendar.vue'
+import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
 import SgiltVideo from '@/components/basics/media/SgiltVideo.vue'
+import PriceForm from '@/components/partner/PriceForm.vue'
 import { PartnerService } from '@/services/PartnerService'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -116,17 +124,69 @@ onMounted(async () => {
 }
 
 /* Première section */
-.partner-grid {
+.partner-first-section {
+  display: flex;
+  flex-direction: row;
+  gap: $spacing-l;
+  margin-top: $spacing-l;
+}
+
+/*.partner-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: $spacing-m;
   margin-top: $spacing-m;
   justify-items: center;
+}*/
+
+.partner-video {
+  flex: 2;
+  max-height: 100%; // Limite la hauteur à celle du conteneur parent
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 40rem;
+  //width: 100%;
+
+  /*> div {
+    width: 100%;
+    aspect-ratio: 16 / 9; // Maintient l'aspect ratio
+    max-height: 100%; // Limite la hauteur
+    overflow: hidden;
+
+    iframe,
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; // Ajuste l'intérieur sans déformer l'aspect
+    }
+  }*/
 }
 
-.partner-video,
+.partner-booking {
+  flex: 1;
+  max-width: 15rem;
+  background: white;
+  padding: $spacing-l;
+}
+
 .partner-calendar {
+  flex: 1;
   align-content: center;
+  justify-content: center;
+  align-items: center;
+  height: auto; // Garde la hauteur naturelle
+}
+
+.partner-prices {
+  flex: 1;
+}
+
+.partner-second-section {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-l;
+  margin-top: $spacing-l;
 }
 
 /* Galerie */

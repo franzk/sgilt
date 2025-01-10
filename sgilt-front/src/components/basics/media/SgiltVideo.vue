@@ -20,9 +20,12 @@ defineProps<{
 </script>
 
 <style lang="scss">
+.video-player {
+  width: 100%;
+}
 
 .plyr__video-embed {
-  width: 60vw;
+  // width: 60vw;
   aspect-ratio: 1.78;
 }
 

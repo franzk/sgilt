@@ -10,7 +10,11 @@
     </div>
     <div class="search-fields">
       <SgiltDatePicker v-model="date" class="date-picker" />
-      <SgiltSelect :options="options" v-model="selectedValue" class="select-event-type" />
+      <SgiltSelect :options="options" v-model="selectedValue" focusable class="select-event-type">
+        <template v-slot:left-icon>
+          <IconRocket />
+        </template>
+      </SgiltSelect>
       <SgiltSimpleButton @click="search">{{ $t('home.search-banner.button') }}</SgiltSimpleButton>
     </div>
   </section>
@@ -26,6 +30,7 @@ import { ref } from 'vue'
 import type { LocationQueryRaw } from 'vue-router'
 import { useEventTypeStore } from '@/stores/event-type.store'
 import dayjs from 'dayjs'
+import IconRocket from './icons/IconRocket.vue'
 
 // Filtre date
 const date = ref<Date>()
@@ -150,8 +155,7 @@ $overlay: $shadow-l;
   }
 
   .select-event-type {
-    flex:1;
-    line-height: 45px;
+    flex: 1;
     width: 17em;
   }
 

@@ -1,7 +1,8 @@
 <template>
-  <div class="custom-select" :tabindex="tabindex" @blur="open = false">
+  <!-- TODO : implement keyboard navigation -->
+  <div class="custom-select" :tabindex="focusable ? 0 : -1" @blur="open = false">
     <div class="selected" :class="{ open: open }" @click="open = !open">
-      <div class="left-icon"><IconRocket /></div>
+      <div class="left-icon"><slot name="left-icon" /></div>
       <div class="selected-text">{{ selectedLabel }}</div>
       <div class="right-icon" v-if="open">&#x25B2;</div>
       <div class="right-icon" v-else>&#x25BC;</div>
@@ -17,7 +18,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import IconRocket from '@/components/icons/IconRocket.vue'
 
 // selected value
 const selectedValue = defineModel<string>()
@@ -31,14 +31,11 @@ export interface SgiltSelectOption {
 // props
 const props = defineProps<{
   options: SgiltSelectOption[]
-  default?: string
-  tabindex?: number
+  focusable?: boolean
 }>()
 
 // display the selected label
-const selectedLabel = ref(
-  props.default ? props.default : props.options.length > 0 ? props.options[0].label : null,
-)
+const selectedLabel = ref(props.options[0]?.label || '')
 
 // is the select opened ?
 const open = ref(false)
@@ -63,7 +60,14 @@ $bc: $input-border-color;
 .custom-select {
   position: relative;
   text-align: left;
+  line-height: 45px;
   outline: none;
+
+  &:focus-visible {
+    outline: $focus-outline;
+    outline-offset: $focus-outline-offset;
+    border-radius: $br;
+  }
 
   .selected {
     display: flex;

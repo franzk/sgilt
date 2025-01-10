@@ -25,4 +25,7 @@ defineEmits<{ 'select-date': [Date] }>()
 </script>
 
 <style lang="scss">
+.dp__flex_display {
+  display: block;
+}
 </style>
