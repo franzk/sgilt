@@ -17,19 +17,21 @@
       <p class="description">{{ partner.longDescription }}</p>
 
       <!-- CTA -->
-      <div class="cta-buttons">
+      <!--div class="cta-buttons">
         <SgiltSimpleButton>Contacter</SgiltSimpleButton>
-      </div>
+      </!--div-->
 
-      <!-- Book form -->
-      <div class="book-block">
+      <!-- Reservation form -->
+      <!--div class="book-block">
         <h2>Réserver</h2>
         <div class="book-form">
           <SgiltDatePicker v-model="selectedDate" />
           <PriceForm class="price-form" />
           <SgiltSimpleButton>Réserver</SgiltSimpleButton>
         </div>
-      </div>
+      </!--div>
+    </div-->
+      <ReservationForm />
     </div>
 
     <!-- right content : media -->
@@ -51,9 +53,9 @@
 
 <script setup lang="ts">
 import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue'
-import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
 import SgiltVideo from '@/components/basics/media/SgiltVideo.vue'
-import PriceForm from '@/components/partner/PriceForm.vue'
+import ReservationForm from '@/components/partner/ReservationForm.vue'
+import IconMail from '@/components/icons/IconMail.vue'
 import { PartnerService } from '@/services/PartnerService'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -61,7 +63,6 @@ import { useRoute, useRouter } from 'vue-router'
 const route = useRoute()
 const router = useRouter()
 const partner = ref()
-const selectedDate = ref()
 
 const photos = ref([
   'https://picsum.photos/200/200',
@@ -137,6 +138,11 @@ $profile-picture-size: 8em;
   .slogan {
     font-style: italic;
     color: #666;
+  }
+
+  .contact-icon {
+    margin-top: 10px;
+    text-align: left;
   }
 }
 
