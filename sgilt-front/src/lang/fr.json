@@ -1,7 +1,11 @@
 {
   "app-header": {
-    "app-name": "S'gilt !!",
-    "slogan": "Découvrez, réservez, célébrez !!"
+    "app-name": "S'GILT",
+    "tagline": {
+      "decouvrez": "DÉCOUVREZ, ",
+      "reservez": "RÉSERVEZ, ",
+      "celebrez": "CÉLÉBREZ !!"
+    }
   },
   "categories": {
     "music": {
