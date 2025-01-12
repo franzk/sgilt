@@ -59,9 +59,9 @@ $bc: $input-border-color;
 
 .custom-select {
   position: relative;
-  text-align: left;
   line-height: 45px;
   outline: none;
+  width: 100%;
 
   &:focus-visible {
     outline: $focus-outline;
@@ -87,11 +87,18 @@ $bc: $input-border-color;
     }
 
     .left-icon {
-      padding-left: 0.5em;
+      width: 2.5em;
+      align-content: center;
+      text-align: center;
+      * {
+        width: 1.5em;
+      }
     }
 
     .right-icon {
-      padding-right: 1em;
+      width: 2.5em;
+      text-align: center;
+      align-content: center;
       font-size: $font-size-base;
     }
 

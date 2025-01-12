@@ -151,12 +151,12 @@ $overlay: $shadow-l;
 
   .date-picker {
     flex: 1;
-    width: 17em;
+    // width: 17em;
   }
 
   .select-event-type {
     flex: 1;
-    width: 17em;
+    // width: 17em;
   }
 
   @include respond-to(tablet) {
