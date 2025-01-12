@@ -149,19 +149,22 @@ $overlay: $shadow-l;
   padding: 0 $spacing-m;
   margin-bottom: $spacing-xl;
 
-  .date-picker {
-    flex: 1;
-    // width: 17em;
-  }
-
+  .date-picker,
   .select-event-type {
     flex: 1;
-    // width: 17em;
+  }
+
+  @include respond-to(desktop) {
+    .date-picker,
+    .select-event-type {
+      width: 18em;
+    }
   }
 
   @include respond-to(tablet) {
     flex-direction: column;
     align-items: center;
+    width: 20rem;
   }
 
   gap: $spacing-xl;
