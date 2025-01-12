@@ -33,5 +33,7 @@ defineProps<{
 .video-iframe {
   height: 100%;
   width: 100%;
+  border-radius: $border-radius-s;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 </style>

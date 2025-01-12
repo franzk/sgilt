@@ -1,7 +1,9 @@
 <template>
   <div class="partner-prices-form">
     <SgiltSelect :options="pricesOptions" v-model="selectedOption" />
-    <div class="price">{{ prices.find((price) => price.id === selectedOption)?.price }} €</div>
+    <div class="price">
+      Tarif estimé : {{ prices.find((price) => price.id === selectedOption)?.price }} €
+    </div>
   </div>
 </template>
 
@@ -24,3 +26,12 @@ const pricesOptions = prices.map((price) => ({
   label: price.description,
 }))
 </script>
+
+<style lang="scss" scoped>
+.partner-prices-form {
+  display: flex;
+  flex-direction: column;
+
+  gap: 1rem;
+}
+</style>

@@ -26,7 +26,7 @@
         <h2>Réserver</h2>
         <div class="book-form">
           <SgiltDatePicker v-model="selectedDate" />
-          <PriceForm />
+          <PriceForm class="price-form" />
           <SgiltSimpleButton>Réserver</SgiltSimpleButton>
         </div>
       </div>
@@ -61,6 +61,7 @@ import { useRoute, useRouter } from 'vue-router'
 const route = useRoute()
 const router = useRouter()
 const partner = ref()
+const selectedDate = ref()
 
 const photos = ref([
   'https://picsum.photos/200/200',
@@ -128,6 +129,11 @@ $profile-picture-size: 8em;
     border-radius: 50%;
   }
 
+  h1 {
+    border-bottom: 2px solid $color-accent;
+    padding-bottom: $spacing-s;
+  }
+
   .slogan {
     font-style: italic;
     color: #666;
@@ -137,6 +143,11 @@ $profile-picture-size: 8em;
 .description {
   margin: $spacing-m 0;
   line-height: $line-height-h3;
+}
+
+.price-form {
+  margin: $spacing-m 0;
+  width: 16rem;
 }
 
 /* right column */
