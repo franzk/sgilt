@@ -1,69 +1,51 @@
-import { onMounted } from "vue"
-
 <template>
-  <div class="fiche-partner" v-if="partner">
-    <!-- Header -->
-    <header class="partner-header">
-      <div class="header-left">
-        <img :src="partner.imageUrl" alt="Photo du partner" class="photo-profil" />
-        <div>
-          <h1>{{ partner.title }}</h1>
-          <p class="slogan">{{ partner.description }}</p>
+  <div class="split-screen-layout" v-if="partner">
+    <!-- left content : texts & actions -->
+    <div class="left-content">
+      <!-- Header -->
+      <header class="partner-header">
+        <div class="header-left">
+          <img :src="partner.imageUrl" alt="Photo du partner" class="profile-picture" />
+          <div>
+            <h1>{{ partner.title }}</h1>
+            <p class="slogan">{{ partner.description }}</p>
+          </div>
+        </div>
+      </header>
+
+      <!-- Description -->
+      <p class="description">{{ partner.longDescription }}</p>
+
+      <!-- CTA -->
+      <div class="cta-buttons">
+        <SgiltSimpleButton>Contacter</SgiltSimpleButton>
+      </div>
+
+      <!-- Book form -->
+      <div class="book-block">
+        <h2>Réserver</h2>
+        <div class="book-form">
+          <SgiltDatePicker v-model="selectedDate" />
+          <PriceForm />
+          <SgiltSimpleButton>Réserver</SgiltSimpleButton>
         </div>
       </div>
-    </header>
+    </div>
 
-    <!-- First section -->
-    <section class="partner-first-section">
-      <div class="partner-video">
-        <SgiltVideo youtubeId="_A6w3ECkN4k" />
+    <!-- right content : media -->
+    <div class="right-content">
+      <!-- Video -->
+      <div class="partner-video"><SgiltVideo youtubeId="_A6w3ECkN4k" /></div>
+
+      <!-- Photo gallery -->
+      <div class="photo-gallery">
+        <ul class="gallery-grid">
+          <li v-for="(photo, index) in photos" :key="index" class="gallery-item">
+            <img :src="photo" :alt="`Photo ${index + 1}`" />
+          </li>
+        </ul>
       </div>
-
-      <div class="partner-booking">
-        <h3>Réserver</h3>
-        <SgiltDatePicker />
-        <PriceForm />
-        <SgiltSimpleButton>Réserver</SgiltSimpleButton>
-      </div>
-
-      <!--div class="partner-calendar">
-        <SgiltCalendar />
-      </!--div>
-
-      <div-- class="partner-prices">
-        <PriceForm />
-      </div-->
-    </section>
-
-    <section class="partner-second-section">
-      <div class="partner-description">
-        <h3>À propos de {{ partner.title }}</h3>
-        <p>{{ partner.longDescription }}</p>
-      </div>
-      <div class="partner-gallery">
-        <h3>Galerie photos</h3>
-      </div>
-    </section>
-
-    <!-- Galerie photos -->
-    <!--section class="galerie-section">
-      <h2>Galerie Photos</h2>
-      <!--div class="galerie">
-        <img v-for="photo in photos" :src="photo" :alt="`Photo de ${nompartner}`" />
-      </!--div>
-    </!--section-->
-
-    <!-- Avis clients -->
-    <section class="avis-section">
-      <h2>Ce que disent nos clients</h2>
-      <div class="avis-grid">
-        <!--div v-for="avis in avisClients" class="avis-client">
-          <h3>{{ avis.nomClient }}</h3>
-          <p>{{ avis.commentaire }}</p>
-          <p class="note">Note : {{ avis.note }}/5</p>
-        </!--div-->
-      </div>
-    </section>
+    </div>
   </div>
 </template>
 
@@ -80,6 +62,13 @@ const route = useRoute()
 const router = useRouter()
 const partner = ref()
 
+const photos = ref([
+  'https://picsum.photos/200/200',
+  'https://picsum.photos/200/201',
+  'https://picsum.photos/200/202',
+  'https://picsum.photos/200/203',
+])
+
 onMounted(async () => {
   const partnerSlug = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
   PartnerService.getPartnerBySlug(partnerSlug)
@@ -93,11 +82,33 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-.fiche-partner {
-  padding: $spacing-s;
+$left-column-width: 40rem;
+$profile-picture-size: 8em;
+
+/* Split Screen Layout */
+.split-screen-layout {
+  display: grid;
+  grid-template-columns: $left-column-width 1fr;
+  gap: $spacing-m;
+  padding: $spacing-m;
+  height: 100vh;
 }
 
-/* Header */
+/* left column */
+.left-content {
+  display: flex;
+  flex-direction: column;
+  padding: $spacing-m;
+  background: $color-white;
+  border-radius: $border-radius-m;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+  h1 {
+    font-size: $font-size-h1;
+    margin-bottom: $spacing-s;
+  }
+}
+
 .partner-header {
   display: flex;
   justify-content: space-between;
@@ -111,9 +122,9 @@ onMounted(async () => {
     gap: $spacing-l;
   }
 
-  .photo-profil {
-    width: 7em;
-    height: 7em;
+  .profile-picture {
+    width: $profile-picture-size;
+    height: $profile-picture-size;
     border-radius: 50%;
   }
 
@@ -123,99 +134,74 @@ onMounted(async () => {
   }
 }
 
-/* Première section */
-.partner-first-section {
-  display: flex;
-  flex-direction: row;
-  gap: $spacing-l;
-  margin-top: $spacing-l;
+.description {
+  margin: $spacing-m 0;
+  line-height: $line-height-h3;
 }
 
-/*.partner-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: $spacing-m;
-  margin-top: $spacing-m;
-  justify-items: center;
-}*/
-
-.partner-video {
-  flex: 2;
-  max-height: 100%; // Limite la hauteur à celle du conteneur parent
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  max-width: 40rem;
-  //width: 100%;
-
-  /*> div {
-    width: 100%;
-    aspect-ratio: 16 / 9; // Maintient l'aspect ratio
-    max-height: 100%; // Limite la hauteur
-    overflow: hidden;
-
-    iframe,
-    video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover; // Ajuste l'intérieur sans déformer l'aspect
-    }
-  }*/
-}
-
-.partner-booking {
-  flex: 1;
-  max-width: 15rem;
-  background: white;
-  padding: $spacing-l;
-}
-
-.partner-calendar {
-  flex: 1;
-  align-content: center;
-  justify-content: center;
-  align-items: center;
-  height: auto; // Garde la hauteur naturelle
-}
-
-.partner-prices {
-  flex: 1;
-}
-
-.partner-second-section {
+/* right column */
+.right-content {
   display: flex;
   flex-direction: column;
-  gap: $spacing-l;
-  margin-top: $spacing-l;
 }
 
-/* Galerie */
-.galerie {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 10px;
-  margin-top: 20px;
-}
-.galerie img {
+.partner-video {
   width: 100%;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 8px;
+  display: flex;
+  justify-content: center;
 }
 
-/* Avis */
-.avis-grid {
+.gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-  margin-top: 20px;
+  gap: $spacing-m;
+  padding: $spacing-m;
+  grid-template-columns: repeat(4, 1fr); /* 4 colonnes de largeur égale */
+  align-content: center;
+  margin-top: 0;
+
+  .gallery-item {
+    list-style: none;
+    text-align: center;
+
+    img {
+      width: 100%;
+      max-width: 30rem;
+      aspect-ratio: 1.3;
+      object-fit: cover;
+      border-radius: $border-radius-s;
+      transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+      cursor: pointer;
+      &:hover {
+        transform: scale(1.01);
+        filter: brightness(0.8);
+      }
+    }
+  }
 }
-.avis-client {
-  border: 1px solid #eee;
-  padding: 15px;
-  border-radius: 8px;
+
+/* book form */
+.book-block {
+  margin-top: $spacing-l;
+  background: $color-white;
+  padding: 0 $spacing-l $spacing-l $spacing-l;
+  border-radius: $border-radius-m;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+  h2 {
+    font-size: $font-size-h2;
+    margin-bottom: $spacing-m;
+  }
 }
-.note {
-  color: #fcb900;
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .split-screen-layout {
+    grid-template-columns: 1fr;
+  }
+  .right-content {
+    margin-top: 20px;
+  }
 }
 </style>
