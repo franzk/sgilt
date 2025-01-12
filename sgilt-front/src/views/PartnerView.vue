@@ -16,22 +16,7 @@
       <!-- Description -->
       <p class="description">{{ partner.longDescription }}</p>
 
-      <!-- CTA -->
-      <!--div class="cta-buttons">
-        <SgiltSimpleButton>Contacter</SgiltSimpleButton>
-      </!--div-->
-
-      <!-- Reservation form -->
-      <!--div class="book-block">
-        <h2>Réserver</h2>
-        <div class="book-form">
-          <SgiltDatePicker v-model="selectedDate" />
-          <PriceForm class="price-form" />
-          <SgiltSimpleButton>Réserver</SgiltSimpleButton>
-        </div>
-      </!--div>
-    </div-->
-      <ReservationForm />
+      <ReservationForm v-model:selected-date="selectedDate" :prices="prices" />
     </div>
 
     <!-- right content : media -->
@@ -52,10 +37,10 @@
 </template>
 
 <script setup lang="ts">
-import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue'
+import type { SgiltSelectOption } from '@/components/basics/inputs/SgiltSelect.vue'
 import SgiltVideo from '@/components/basics/media/SgiltVideo.vue'
 import ReservationForm from '@/components/partner/ReservationForm.vue'
-import IconMail from '@/components/icons/IconMail.vue'
+import type { Price } from '@/domain/Partner'
 import { PartnerService } from '@/services/PartnerService'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -63,13 +48,6 @@ import { useRoute, useRouter } from 'vue-router'
 const route = useRoute()
 const router = useRouter()
 const partner = ref()
-
-const photos = ref([
-  'https://picsum.photos/200/200',
-  'https://picsum.photos/200/201',
-  'https://picsum.photos/200/202',
-  'https://picsum.photos/200/203',
-])
 
 onMounted(async () => {
   const partnerSlug = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
@@ -81,6 +59,24 @@ onMounted(async () => {
       router.push('/404')
     })
 })
+
+const selectedDate = ref<Date>()
+
+// mock data
+const photos = ref([
+  'https://picsum.photos/200/200',
+  'https://picsum.photos/200/201',
+  'https://picsum.photos/200/202',
+  'https://picsum.photos/200/203',
+])
+
+const prices: Price[] = [
+  { id: '1', title: 'Concert de 1h', price: 100 },
+  { id: '2', title: 'Concert de 2h', price: 200 },
+  { id: '3', title: 'Concert de 3h', price: 300 },
+  { id: '4', title: 'Concert de 4h', price: 400 },
+  { id: '5', title: 'Concert de 5h', price: 500 },
+]
 </script>
 
 <style scoped lang="scss">

@@ -20,7 +20,7 @@
 import { ref } from 'vue'
 
 // selected value
-const selectedValue = defineModel<string>()
+const selectedOption = defineModel<SgiltSelectOption>()
 
 // option interface
 export interface SgiltSelectOption {
@@ -35,15 +35,15 @@ const props = defineProps<{
 }>()
 
 // display the selected label
-const selectedLabel = ref(props.options[0]?.label || '')
+const selectedLabel = ref(props.options?.[0]?.label || '')
 
 // is the select opened ?
 const open = ref(false)
 
 // when an option is clicked
 const click = (option: SgiltSelectOption) => {
-  selectedLabel.value = option.label // update the selected label
-  selectedValue.value = option.value // update the model
+  selectedOption.value = option // update the model
+  selectedLabel.value = option.label // update the label
   open.value = false // close the select
 }
 </script>

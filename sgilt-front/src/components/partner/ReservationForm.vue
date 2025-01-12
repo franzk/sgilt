@@ -17,7 +17,7 @@
       <!-- Select options -->
       <div class="form-group">
         <p>Choisissez un service :</p>
-        <SgiltSelect :options="options" v-model="selectedOption" />
+        <SgiltSelect :options="pricesOptions" v-model="selectedOption" />
       </div>
 
       <!-- Pricing -->
@@ -36,25 +36,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
-import SgiltSelect from '@/components/basics/inputs/SgiltSelect.vue'
+import SgiltSelect, { type SgiltSelectOption } from '@/components/basics/inputs/SgiltSelect.vue'
 import SgiltSimpleButton from '../basics/buttons/SgiltSimpleButton.vue'
+import type { Price } from '@/domain/Partner'
 
-// Reactive data
-const selectedDate = ref<string | null>(null) // Stores the selected date
-const selectedOption = ref<{ label: string; price: number } | null>(null) // Stores the selected service
+const selectedDate = defineModel<Date>('selected-date')
+const selectedPrice = defineModel<Price>('selected-price')
 
-// Service options with pricing
-const options = ref([
-  { label: '1-hour concert', price: 100 },
-  { label: '2-hour concert', price: 200 },
-  { label: 'Full-day service', price: 500 },
-])
+const props = defineProps<{
+  prices: Price[]
+}>()
+
+const selectedOption = ref<SgiltSelectOption>()
+selectedPrice.value = props.prices?.[0] || {}
+
+const pricesOptions = props.prices.map((price) => ({
+  value: price.id,
+  label: price.title,
+}))
+
+watch(
+  () => selectedOption.value,
+  (newValue) => {
+    selectedPrice.value = props.prices.find((price) => price.id === newValue?.value)
+  },
+)
 
 // Computed property to calculate the price
 const calculatedPrice = computed(() => {
-  return selectedOption.value ? selectedOption.value.price : 0
+  return selectedPrice.value?.price || 0
 })
 
 // Booking submission logic

@@ -10,7 +10,12 @@
     </div>
     <div class="search-fields">
       <SgiltDatePicker v-model="date" class="date-picker" />
-      <SgiltSelect :options="options" v-model="selectedValue" focusable class="select-event-type">
+      <SgiltSelect
+        :options="options"
+        v-model="selectedEventTypeOption"
+        focusable
+        class="select-event-type"
+      >
         <template v-slot:left-icon>
           <IconRocket />
         </template>
@@ -22,7 +27,7 @@
 
 <script setup lang="ts">
 import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
-import SgiltSelect from '@/components/basics/inputs/SgiltSelect.vue'
+import SgiltSelect, { type SgiltSelectOption } from '@/components/basics/inputs/SgiltSelect.vue'
 import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue'
 
 import router from '@/router'
@@ -40,7 +45,7 @@ const options = useEventTypeStore().events.map((eventType) => ({
   value: eventType.id,
   label: eventType.name,
 }))
-const selectedValue = ref<string>()
+const selectedEventTypeOption = ref<SgiltSelectOption>()
 
 // Recherche
 const search = () => {
@@ -48,8 +53,8 @@ const search = () => {
   if (date.value) {
     query.date = dayjs(date.value).format('YYYY-MM-DD')
   }
-  if (selectedValue.value) {
-    query.event = selectedValue.value
+  if (selectedEventTypeOption.value) {
+    query.event = selectedEventTypeOption.value.value
   }
   router.push({ path: '/search', query })
 }
