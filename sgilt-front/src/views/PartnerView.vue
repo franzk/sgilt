@@ -1,4 +1,13 @@
 <template>
+  <!-- TODO
+    - styliser la vue mobile :
+      - pleine largeur
+      - photos en mosaique
+      - "voir plus" pour la description longue
+
+    - éventuellement créer un composant header
+  -->
+
   <div class="split-screen-layout" v-if="partner">
     <!-- left content : texts & actions -->
     <div class="left-content">
@@ -16,31 +25,24 @@
       <!-- Description -->
       <p class="partner-description">{{ partner.longDescription }}</p>
 
+      <PartnerMedia :photos="photos" v-if="tabletView" />
+
       <ReservationForm v-model:selected-date="selectedDate" :prices="prices" />
     </div>
 
     <!-- right content : media -->
-    <div class="right-content">
-      <!-- Video -->
-      <div class="partner-video"><SgiltVideo youtubeId="_A6w3ECkN4k" /></div>
-
-      <!-- Photo gallery -->
-      <div class="photo-gallery">
-        <ul class="gallery-grid">
-          <li v-for="(photo, index) in photos" :key="index" class="gallery-item">
-            <img :src="photo" :alt="`Photo ${index + 1}`" />
-          </li>
-        </ul>
-      </div>
+    <div class="right-content" v-if="!tabletView">
+      <PartnerMedia :photos="photos" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import SgiltVideo from '@/components/basics/media/SgiltVideo.vue'
 import ReservationForm from '@/components/partner/ReservationForm.vue'
+import PartnerMedia from '@/components/partner/PartnerMedia.vue'
 import type { Price } from '@/domain/Partner'
 import { PartnerService } from '@/services/PartnerService'
+import { tabletView } from '@/utils/StyleUtils'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -152,77 +154,11 @@ $profile-picture-size: 8em;
   flex-direction: column;
 }
 
-.partner-video {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.gallery-grid {
-  display: grid;
-  gap: $spacing-m;
-  padding: $spacing-m;
-  grid-template-columns: repeat(4, 1fr); /* 4 colonnes de largeur égale */
-  align-content: center;
-  margin-top: 0;
-
-  .gallery-item {
-    list-style: none;
-    text-align: center;
-
-    img {
-      width: 100%;
-      max-width: 30rem;
-      aspect-ratio: 1.3;
-      object-fit: cover;
-      border-radius: $border-radius-s;
-      transition:
-        transform 0.3s ease,
-        box-shadow 0.3s ease;
-      cursor: pointer;
-      &:hover {
-        transform: scale(1.01);
-        filter: brightness(0.8);
-      }
-    }
-  }
-}
-
-/* book form */
-.book-block {
-  margin-top: $spacing-l;
-  background: $color-white;
-  padding: 0 $spacing-l $spacing-l $spacing-l;
-  border-radius: $border-radius-m;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-
-  h2 {
-    font-size: $font-size-h2;
-    margin-bottom: $spacing-m;
-  }
-}
-
 /* Responsive */
 @include respond-to(tablet) {
   .split-screen-layout {
     display: flex;
-    flex-direction: column; /* Empile les blocs verticalement */
-  }
-
-  .partner-header {
-    order: 1; /* Place la description longue en haut */
-  }
-
-  .partner-description {
-    order: 2; /* Description après le header */
-  }
-
-  .right-content {
-    order: 3; /* Galerie après la vidéo */
-  }
-
-  .reservation-form {
-    order: 4; /* Réservation en dernier */
+    flex-direction: column;
   }
 }
 </style>
