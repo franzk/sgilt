@@ -14,7 +14,7 @@
       </header>
 
       <!-- Description -->
-      <p class="description">{{ partner.longDescription }}</p>
+      <p class="partner-description">{{ partner.longDescription }}</p>
 
       <ReservationForm v-model:selected-date="selectedDate" :prices="prices" />
     </div>
@@ -37,7 +37,6 @@
 </template>
 
 <script setup lang="ts">
-import type { SgiltSelectOption } from '@/components/basics/inputs/SgiltSelect.vue'
 import SgiltVideo from '@/components/basics/media/SgiltVideo.vue'
 import ReservationForm from '@/components/partner/ReservationForm.vue'
 import type { Price } from '@/domain/Partner'
@@ -142,14 +141,9 @@ $profile-picture-size: 8em;
   }
 }
 
-.description {
+.partner-description {
   margin: $spacing-m 0;
   line-height: $line-height-h3;
-}
-
-.price-form {
-  margin: $spacing-m 0;
-  width: 16rem;
 }
 
 /* right column */
@@ -209,12 +203,26 @@ $profile-picture-size: 8em;
 }
 
 /* Responsive */
-@media screen and (max-width: 768px) {
+@include respond-to(tablet) {
   .split-screen-layout {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column; /* Empile les blocs verticalement */
   }
+
+  .partner-header {
+    order: 1; /* Place la description longue en haut */
+  }
+
+  .partner-description {
+    order: 2; /* Description après le header */
+  }
+
   .right-content {
-    margin-top: 20px;
+    order: 3; /* Galerie après la vidéo */
+  }
+
+  .reservation-form {
+    order: 4; /* Réservation en dernier */
   }
 }
 </style>

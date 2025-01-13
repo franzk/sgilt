@@ -39,6 +39,20 @@
       "title": "La sélection du moment"
     }
   },
+  "reservation": {
+    "title": "Réservez maintenant",
+    "subtitle": "Validez votre réservation en quelques clics !",
+    "form": {
+      "date-label": "Choisissez une date :",
+      "options-label": "Choisissez un service :",
+      "pricing": "Tarif estimé:"
+    },
+    "button": "Réserver",
+    "help": {
+      "need": "Besoin d'assistance ?",
+      "contact": "Contactez-nous"
+    }
+  },
   "texts": {
     "a-partir-de": "À partir de",
     "minimum": "Minimum",

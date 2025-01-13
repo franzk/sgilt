@@ -2,21 +2,21 @@
   <div class="reservation-form">
     <!-- Header Section -->
     <div class="reservation-header">
-      <h2>Réservez maintenant</h2>
-      <p class="subtitle">Validez votre réservation en quelques clics !</p>
+      <h2>{{ $t('reservation.title') }}</h2>
+      <p class="subtitle">{{ $t('reservation.subtitle') }}</p>
     </div>
 
     <!-- Body Section -->
     <div class="reservation-body">
       <!-- Datepicker -->
       <div class="form-group">
-        <p>Choisissez une date :</p>
+        <p>{{ $t('reservation.form.date-label') }}</p>
         <SgiltDatePicker v-model="selectedDate" />
       </div>
 
       <!-- Select options -->
       <div class="form-group">
-        <p>Choisissez un service :</p>
+        <p>{{ $t('reservation.form.options-label') }}</p>
         <SgiltSelect :options="pricesOptions" v-model="selectedOption">
           <template v-slot:left-icon>
             <IconList />
@@ -26,15 +26,19 @@
 
       <!-- Pricing -->
       <div class="pricing">
-        <p>💰 Tarif estimé :</p>
+        <p>{{ $t('reservation.form.pricing') }}</p>
         <p class="price">{{ calculatedPrice }} €</p>
       </div>
     </div>
 
     <!-- Footer Section -->
     <div class="reservation-footer">
-      <SgiltSimpleButton @click="handleBooking">Réserver</SgiltSimpleButton>
-      <div class="contact">Besoin d'assistance ?&nbsp;<u>Contactez-nous</u></div>
+      <SgiltSimpleButton @click="handleBooking">
+        {{ $t('reservation.button') }}
+      </SgiltSimpleButton>
+      <div class="contact">
+        {{ $t('reservation.help.need') }}&nbsp;<u>{{ $t('reservation.help.contact') }}</u>
+      </div>
     </div>
   </div>
 </template>
