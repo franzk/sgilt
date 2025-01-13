@@ -17,7 +17,11 @@
       <!-- Select options -->
       <div class="form-group">
         <p>Choisissez un service :</p>
-        <SgiltSelect :options="pricesOptions" v-model="selectedOption" />
+        <SgiltSelect :options="pricesOptions" v-model="selectedOption">
+          <template v-slot:left-icon>
+            <IconList />
+          </template>
+        </SgiltSelect>
       </div>
 
       <!-- Pricing -->
@@ -39,7 +43,8 @@
 import { computed, ref, watch } from 'vue'
 import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
 import SgiltSelect, { type SgiltSelectOption } from '@/components/basics/inputs/SgiltSelect.vue'
-import SgiltSimpleButton from '../basics/buttons/SgiltSimpleButton.vue'
+import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue'
+import IconList from '@/components/icons/IconList.vue'
 import type { Price } from '@/domain/Partner'
 
 const selectedDate = defineModel<Date>('selected-date')

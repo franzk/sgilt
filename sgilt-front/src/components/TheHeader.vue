@@ -33,7 +33,7 @@ header {
   align-content: center;
   flex-wrap: wrap;
 
-  padding: $spacing-m;
+  padding: $spacing-mm;
 
   h1 {
     margin: 0 0 0 $spacing-xs;

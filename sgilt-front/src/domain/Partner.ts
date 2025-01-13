@@ -9,4 +9,11 @@ export interface Partner {
   imageUrl: string
   tags: Tag[]
   entryPrice: number
+  prices: Price[]
+}
+
+export interface Price {
+  id: string
+  title: string
+  price: number
 }
