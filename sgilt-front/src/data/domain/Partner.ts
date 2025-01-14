@@ -1,4 +1,4 @@
-import type { Tag } from '@/domain/Tag'
+import type { Tag } from '@/data/domain/Tag'
 
 export interface Partner {
   id: string
@@ -9,7 +9,7 @@ export interface Partner {
   imageUrl: string
   tags: Tag[]
   entryPrice: number
-  prices: Price[]
+  prices?: Price[]
 }
 
 export interface Price {

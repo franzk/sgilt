@@ -42,8 +42,8 @@
 <script setup lang="ts">
 import ReservationForm from '@/components/partner/ReservationForm.vue'
 import PartnerMedia from '@/components/partner/PartnerMedia.vue'
-import type { Price } from '@/domain/Partner'
-import { PartnerService } from '@/services/PartnerService'
+import type { Price } from '@/data/domain/Partner'
+import { getPartnerBySlug } from '@/data/services/PartnerService'
 import { tabletView } from '@/utils/StyleUtils'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -54,7 +54,7 @@ const partner = ref()
 
 onMounted(async () => {
   const partnerSlug = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
-  PartnerService.getPartnerBySlug(partnerSlug)
+  getPartnerBySlug(partnerSlug)
     .then((p) => {
       partner.value = p
     })

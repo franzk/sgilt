@@ -11,9 +11,9 @@
 </template>
 
 <script setup lang="ts">
-import HomeSearchSection from '@/components/HomeSearchSection.vue'
-import HomePartnersSection from '@/components/HomePartnersSection.vue'
-import HomeCategoriesSection from '@/components/HomeCategoriesSection.vue'
+import HomeSearchSection from '@/components/home/HomeSearchSection.vue'
+import HomePartnersSection from '@/components/home/HomePartnersSection.vue'
+import HomeCategoriesSection from '@/components/home/HomeCategoriesSection.vue'
 </script>
 
 <style lang="scss" scoped>

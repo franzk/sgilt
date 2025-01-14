@@ -35,7 +35,7 @@ import { ref } from 'vue'
 import type { LocationQueryRaw } from 'vue-router'
 import { useEventTypeStore } from '@/stores/event-type.store'
 import dayjs from 'dayjs'
-import IconRocket from './icons/IconRocket.vue'
+import IconRocket from '@/components/icons/IconRocket.vue'
 
 // Filtre date
 const date = ref<Date>()
