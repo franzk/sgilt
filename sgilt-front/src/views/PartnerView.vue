@@ -163,8 +163,15 @@ $profile-picture-size: 8em;
       }
     }
     .reservation-form {
-      width: 80%;
+      width: 70%;
+      max-width: 30rem;
     }
+  }
+}
+
+@include respond-to(tablet) {
+  .split-screen-layout .reservation-form {
+    width: 80%;
   }
 }
 </style>

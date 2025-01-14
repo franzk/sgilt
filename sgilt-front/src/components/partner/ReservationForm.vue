@@ -87,11 +87,10 @@ function handleBooking() {
 <style scoped lang="scss">
 /* Main container */
 .reservation-form {
-  background: #ffffff;
-  padding: 30px;
-  border-radius: 15px; /* Rounded corners */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  max-width: 450px;
+  background: $color-white;
+  padding: $spacing-l;
+  border-radius: $border-radius-m;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   margin: $spacing-m auto; /* Centered */
 
   h2 {
