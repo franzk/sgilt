@@ -1,9 +1,10 @@
 <template>
   <!-- TODO
     - styliser la vue mobile :
-      - pleine largeur
       - photos en mosaique
       - "voir plus" pour la description longue
+      - largeur formulaire de réservation
+      - skeletons pour le chargement
 
     - éventuellement créer un composant header
   -->
@@ -159,6 +160,15 @@ $profile-picture-size: 8em;
   .split-screen-layout {
     display: flex;
     flex-direction: column;
+    padding: 0;
+
+    .left-content {
+      padding: 0;
+      .partner-header,
+      .partner-description {
+        padding: $spacing-m;
+      }
+    }
   }
 }
 </style>

@@ -6,6 +6,7 @@
         allowfullscreen
         allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
         class="video-iframe"
+        :class="{ rounded }"
       >
       </iframe>
     </div>
@@ -16,6 +17,7 @@
 <script setup lang="ts">
 defineProps<{
   youtubeId: string
+  rounded?: boolean
 }>()
 </script>
 
@@ -33,7 +35,11 @@ defineProps<{
 .video-iframe {
   height: 100%;
   width: 100%;
-  border-radius: $border-radius-s;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border: none;
+}
+
+.rounded {
+  border-radius: $border-radius-s;
 }
 </style>
