@@ -54,4 +54,11 @@ defineProps<{
     }
   }
 }
+
+/* responsive */
+@include respond-to(tablet) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 </style>
