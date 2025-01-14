@@ -49,7 +49,7 @@ import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
 import SgiltSelect, { type SgiltSelectOption } from '@/components/basics/inputs/SgiltSelect.vue'
 import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 import IconList from '@/components/icons/IconList.vue'
-import type { Price } from '@/domain/Partner'
+import type { Price } from '@/data/domain/Partner'
 
 const selectedDate = defineModel<Date>('selected-date')
 const selectedPrice = defineModel<Price>('selected-price')

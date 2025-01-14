@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Partner } from '@/domain/Partner'
+import type { Partner } from '@/data/domain/Partner'
 import PartnerCard from './PartnerCard.vue'
 
 defineProps<{

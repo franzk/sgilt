@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import CategoryChip from '@/components/basics/chips/CategoryChip.vue'
-import type { Partner } from '@/domain/Partner'
+import type { Partner } from '@/data/domain/Partner'
 
 defineProps<{
   partner: Partner
