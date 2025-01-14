@@ -1,11 +1,7 @@
 <template>
   <!-- TODO
     - styliser la vue mobile :
-      - photos en mosaique
-      - "voir plus" pour la description longue
-      - largeur formulaire de réservation
       - skeletons pour le chargement
-
     - éventuellement créer un composant header
   -->
 
@@ -28,7 +24,11 @@
 
       <PartnerMedia :photos="photos" v-if="tabletView" />
 
-      <ReservationForm v-model:selected-date="selectedDate" :prices="prices" />
+      <ReservationForm
+        v-model:selected-date="selectedDate"
+        :prices="prices"
+        class="reservation-form"
+      />
     </div>
 
     <!-- right content : media -->
@@ -168,6 +168,9 @@ $profile-picture-size: 8em;
       .partner-description {
         padding: $spacing-m;
       }
+    }
+    .reservation-form {
+      width: 80%;
     }
   }
 }
