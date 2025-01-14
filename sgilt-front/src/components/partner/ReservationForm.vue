@@ -144,4 +144,12 @@ function handleBooking() {
     }
   }
 }
+/* Responsive */
+@include respond-to(tablet) {
+  .reservation-header {
+    h2 {
+      font-size: $font-size-h1;
+    }
+  }
+}
 </style>

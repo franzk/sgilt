@@ -57,8 +57,16 @@ defineProps<{
 
 /* responsive */
 @include respond-to(tablet) {
+  .photo-gallery {
+    margin-top: $spacing-s;
+  }
   .gallery-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+@include respond-to(mobile) {
+  .photo-gallery {
+    margin-top: initial;
   }
 }
 </style>

@@ -2,7 +2,8 @@
   <!-- TODO
     - styliser la vue mobile :
       - skeletons pour le chargement
-    - éventuellement créer un composant header
+      - éventuellement créer un composant header
+      - créer une modale pour afficher les photos en grand
   -->
 
   <div class="split-screen-layout" v-if="partner">
@@ -102,11 +103,6 @@ $profile-picture-size: 8em;
   background: $color-white;
   border-radius: $border-radius-m;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-
-  h1 {
-    font-size: $font-size-h1;
-    margin-bottom: $spacing-s;
-  }
 }
 
 .partner-header {
@@ -130,17 +126,13 @@ $profile-picture-size: 8em;
 
   h1 {
     border-bottom: 2px solid $color-accent;
+    margin-bottom: $spacing-s;
     padding-bottom: $spacing-s;
   }
 
   .slogan {
     font-style: italic;
     color: #666;
-  }
-
-  .contact-icon {
-    margin-top: 10px;
-    text-align: left;
   }
 }
 
@@ -158,6 +150,7 @@ $profile-picture-size: 8em;
 /* Responsive */
 @include respond-to(tablet) {
   .split-screen-layout {
+    // let's move to a 1 column layout on tablet & mobile
     display: flex;
     flex-direction: column;
     padding: 0;
