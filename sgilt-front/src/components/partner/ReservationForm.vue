@@ -95,17 +95,17 @@ function handleBooking() {
 
   h2 {
     font-size: 24px;
-    color: #333;
-    margin: 0 0 20px 0;
+    color: $color-primary;
+    margin: 0 0 $spacing-m 0;
   }
 
   /* Form groups */
   .form-group {
-    margin-bottom: 20px;
+    margin-bottom: $spacing-l;
 
     p {
       font-weight: bold;
-      margin-bottom: 8px;
+      margin-bottom: $spacing-s;
       display: block;
     }
   }
@@ -113,11 +113,11 @@ function handleBooking() {
   /* Pricing section */
   .pricing {
     text-align: left;
-    margin-bottom: 20px;
+    margin-bottom: $spacing-m;
 
     .price {
       font-size: 24px;
-      color: #fcb900;
+      color: $color-accent;
       font-weight: bold;
     }
   }
@@ -130,17 +130,12 @@ function handleBooking() {
 
   /* Contact link */
   .contact {
-    margin-top: 10px;
-    color: #333;
-    font-size: 14px;
+    margin-top: $spacing-m;
+    color: $color-primary;
     cursor: pointer;
     display: flex;
     align-items: center;
     font-style: italic;
-
-    svg {
-      margin-right: 5px;
-    }
   }
 }
 /* Responsive */
