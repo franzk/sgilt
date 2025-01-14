@@ -29,7 +29,7 @@ defineProps<{
   display: grid;
   gap: $spacing-m;
   padding: $spacing-m;
-  grid-template-columns: repeat(4, 1fr); /* 4 colonnes de largeur égale */
+  grid-template-columns: repeat(4, 1fr);
   align-content: center;
   margin-top: 0;
 
