@@ -8,14 +8,14 @@
     class="calendar-component"
   >
     <template #action-buttons>
-      <SgiltSimpleButton @click="$emit('select-date', date!)">Réserver</SgiltSimpleButton>
+      <SgiltButton @click="$emit('select-date', date!)">Réserver</SgiltButton>
     </template>
   </VueDatePicker>
 </template>
 
 <script setup lang="ts">
 import VueDatePicker from '@vuepic/vue-datepicker'
-import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue'
+import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 import { ref } from 'vue'
 
 const date = ref(null)

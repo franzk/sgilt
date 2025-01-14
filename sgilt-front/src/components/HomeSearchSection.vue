@@ -20,7 +20,7 @@
           <IconRocket />
         </template>
       </SgiltSelect>
-      <SgiltSimpleButton @click="search">{{ $t('home.search-banner.button') }}</SgiltSimpleButton>
+      <SgiltButton @click="search">{{ $t('home.search-banner.button') }}</SgiltButton>
     </div>
   </section>
 </template>
@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
 import SgiltSelect, { type SgiltSelectOption } from '@/components/basics/inputs/SgiltSelect.vue'
-import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue'
+import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 
 import router from '@/router'
 import { ref } from 'vue'

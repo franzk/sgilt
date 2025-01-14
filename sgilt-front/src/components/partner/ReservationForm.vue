@@ -33,9 +33,9 @@
 
     <!-- Footer Section -->
     <div class="reservation-footer">
-      <SgiltSimpleButton @click="handleBooking">
+      <SgiltButton @click="handleBooking">
         {{ $t('reservation.button') }}
-      </SgiltSimpleButton>
+      </SgiltButton>
       <div class="contact">
         {{ $t('reservation.help.need') }}&nbsp;<u>{{ $t('reservation.help.contact') }}</u>
       </div>
@@ -47,7 +47,7 @@
 import { computed, ref, watch } from 'vue'
 import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
 import SgiltSelect, { type SgiltSelectOption } from '@/components/basics/inputs/SgiltSelect.vue'
-import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue'
+import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 import IconList from '@/components/icons/IconList.vue'
 import type { Price } from '@/domain/Partner'
 

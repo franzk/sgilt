@@ -1,6 +1,6 @@
 <template>
   <div v-if="mobileView" @click="$emit('open-filter')" class="filter-button">
-    <SgiltSimpleButton>{{ `${$t('texts.filtres')}${filtersCount}` }}</SgiltSimpleButton>
+    <SgiltButton>{{ `${$t('texts.filtres')}${filtersCount}` }}</SgiltButton>
   </div>
   <div class="results-count">
     {{ $t('texts.resultats', { count: searchStore.results.length }) }}
@@ -12,7 +12,7 @@
 import PartnerGrid from '@/components/partner/PartnerGrid.vue'
 import { useSearchStore } from '@/stores/search.store'
 import { mobileView } from '@/utils/StyleUtils'
-import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue'
+import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 import { computed } from 'vue'
 
 const searchStore = useSearchStore()
