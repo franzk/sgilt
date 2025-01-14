@@ -24,7 +24,7 @@ header {
   position: sticky;
   top: 0;
   left: 0;
-  z-index: 2;
+  z-index: $z-app-header;
 
   background-color: $color-secondary;
   box-shadow: $box-shadow;

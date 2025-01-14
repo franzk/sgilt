@@ -120,7 +120,7 @@ $bc: $input-border-color;
     background-color: $color-1;
     left: 0;
     right: 0;
-    z-index: 1;
+    z-index: $z-app-absolute-element;
 
     div {
       color: $color-3;
