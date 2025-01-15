@@ -1,4 +1,5 @@
 import type { Partner } from '@/data/domain/Partner'
+import type { PartnerQuery } from '@/data/api/query/PartnerQuery'
 
 /**
  * Get all partners
