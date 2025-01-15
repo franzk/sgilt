@@ -1,11 +1,4 @@
 <template>
-  <!-- TODO
-    - styliser la vue mobile :
-      - skeletons pour le chargement
-      - éventuellement créer un composant header
-      - créer une modale pour afficher les photos en grand
-  -->
-
   <div class="split-screen-layout" v-if="partner">
     <!-- left content : texts & actions -->
     <div class="left-content">
@@ -23,8 +16,10 @@
       <!-- Description -->
       <p class="partner-description">{{ partner.longDescription }}</p>
 
+      <!-- Video & photo gallery place here in tablet & mobile view -->
       <PartnerMedia :photos="photos" v-if="tabletView" />
 
+      <!-- Reservation form -->
       <ReservationForm
         v-model:selected-date="selectedDate"
         :prices="prices"
@@ -32,7 +27,7 @@
       />
     </div>
 
-    <!-- right content : media -->
+    <!-- right content : video & photo here on desktop view -->
     <div class="right-content" v-if="!tabletView">
       <PartnerMedia :photos="photos" />
     </div>
