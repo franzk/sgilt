@@ -161,13 +161,14 @@ onUnmounted(() => {
   }
 
   .progression {
-    font-size: 1.5em;
+    font-size: 2.5em;
     flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
     span {
       cursor: pointer;
+      padding: 0 $spacing-s;
     }
   }
 }
@@ -197,12 +198,12 @@ onUnmounted(() => {
         height: auto;
       }
     }
-    .progression {
+    /*.progression {
       font-size: 2.5em;
       span {
         padding-right: $spacing-s;
       }
-    }
+    }*/
   }
 }
 
