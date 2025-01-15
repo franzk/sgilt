@@ -174,17 +174,8 @@ onUnmounted(() => {
 
 /* responsive */
 @include respond-to(tablet) {
-  .photo .progression {
-    font-size: 2.5em;
-    span {
-      padding-right: $spacing-s;
-    }
-  }
-}
-
-@include respond-to(mobile) {
   .banner {
-    height: 40%;
+    height: 50%;
     padding: 0;
   }
 
@@ -200,11 +191,24 @@ onUnmounted(() => {
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      // width: 100%;
       img {
         width: 100%;
         height: auto;
       }
     }
+    .progression {
+      font-size: 2.5em;
+      span {
+        padding-right: $spacing-s;
+      }
+    }
+  }
+}
+
+@include respond-to(mobile) {
+  .banner {
+    height: 40%;
   }
 }
 </style>
