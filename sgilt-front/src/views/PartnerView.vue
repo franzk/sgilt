@@ -67,10 +67,10 @@ const selectedDate = ref<Date>()
 
 // mock data
 const photos = ref([
-  'https://picsum.photos/200/200',
-  'https://picsum.photos/200/201',
-  'https://picsum.photos/200/202',
-  'https://picsum.photos/200/203',
+  'https://picsum.photos/520/400',
+  'https://picsum.photos/520/401',
+  'https://picsum.photos/520/402',
+  'https://picsum.photos/520/403',
 ])
 
 const prices: Price[] = [

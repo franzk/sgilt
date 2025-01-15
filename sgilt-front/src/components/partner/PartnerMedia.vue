@@ -5,17 +5,24 @@
   <div class="photo-gallery">
     <ul class="gallery-grid">
       <li v-for="(photo, index) in photos" :key="index" class="gallery-item">
-        <img :src="photo" :alt="`Photo ${index + 1}`" />
+        <img :src="photo" :alt="`Photo ${index + 1}`" @click="displayedPhoto = photo" />
       </li>
     </ul>
   </div>
+
+  <SgiltModalGallery v-model="displayedPhoto" :photos="photos" />
 </template>
 
 <script setup lang="ts">
 import SgiltVideo from '@/components/basics/media/SgiltVideo.vue'
+import SgiltModalGallery from '@/components/basics/media/SgiltModalGallery.vue'
+
+import { ref } from 'vue'
 defineProps<{
   photos: string[]
 }>()
+
+const displayedPhoto = ref()
 </script>
 
 <style scoped lang="scss">
