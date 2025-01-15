@@ -198,12 +198,6 @@ onUnmounted(() => {
         height: auto;
       }
     }
-    /*.progression {
-      font-size: 2.5em;
-      span {
-        padding-right: $spacing-s;
-      }
-    }*/
   }
 }
 
