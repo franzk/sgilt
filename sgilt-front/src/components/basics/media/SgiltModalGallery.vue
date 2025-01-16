@@ -88,122 +88,163 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .sgilt-modal {
-  background-color: rgba(0, 0, 0, 0.8);
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  background-color: rgba(0, 0, 0, 0.85); // Background légèrement transparent
   z-index: 1000;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.banner {
-  width: 100%;
-  height: 60%;
-  background-color: $color-secondary;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: row;
   overflow: hidden;
-  justify-content: center;
-  position: relative;
-  align-items: center;
-}
 
-.close {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: $spacing-s;
-  font-size: 3rem;
-  color: $color-accent;
-  cursor: pointer;
-}
-
-.previous,
-.next {
-  width: 10%;
-  height: 80%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 5rem;
-  color: $color-accent;
-  cursor: pointer;
-
-  &:has(span):hover {
-    background-color: $shadow-s;
-  }
-}
-
-.photo {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-
-  .spacer {
-    flex: 1;
-  }
-
-  .displayed-photo {
-    flex: 0 0 80%;
-    overflow: hidden;
-    img {
-      height: 100%;
-    }
-  }
-
-  .progression {
-    font-size: 2.5em;
-    flex: 1;
+  .banner {
+    position: relative;
+    width: 90%;
+    max-width: 900px;
+    height: 60%;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     display: flex;
     justify-content: center;
     align-items: center;
-    span {
+    overflow: hidden;
+
+    // Close button
+    .close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 2rem;
+      color: #666;
       cursor: pointer;
-      padding: 0 $spacing-s;
+      transition: transform 0.2s ease;
+
+      &:hover {
+        transform: scale(1.2);
+        color: #000;
+      }
     }
-  }
-}
 
-/* responsive */
-@include respond-to(tablet) {
-  .banner {
-    height: 50%;
-    padding: 0;
-  }
+    // Previous button
+    .previous,
+    .next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 3rem;
+      color: #999;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.3s ease;
 
-  .close {
-    padding-top: $spacing-xs;
-    padding-right: $spacing-xxs;
-  }
+      &:hover {
+        color: #000;
+      }
 
-  .photo {
-    .displayed-photo {
+      span {
+        display: inline-block;
+      }
+    }
+
+    .previous {
+      left: 1rem;
+    }
+
+    .next {
+      right: 1rem;
+    }
+
+    // Photo container
+    .photo {
+      flex: 1;
       display: flex;
-      overflow: hidden;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      // width: 100%;
-      img {
-        width: 100%;
-        height: auto;
+
+      .spacer {
+        flex: 1;
+      }
+
+      .displayed-photo {
+        flex: 5;
+        max-height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: cover;
+          border-radius: 4px;
+          transition:
+            opacity 0.5s ease-in-out,
+            transform 0.5s ease-in-out;
+        }
+      }
+
+      // Progression dots
+      .progression {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+
+        span {
+          font-size: 1.5rem;
+          color: #ddd;
+          cursor: pointer;
+          transition:
+            color 0.3s ease,
+            transform 0.3s ease;
+
+          &:hover {
+            color: #000;
+            transform: scale(1.2);
+          }
+
+          &.active {
+            color: #000;
+          }
+        }
       }
     }
   }
-}
 
-@include respond-to(mobile) {
-  .banner {
-    height: 40%;
+  // Animations
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  // Apply animation
+  animation: fadeIn 0.3s ease;
+
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    .banner {
+      width: 100%;
+      height: 70%;
+
+      .previous,
+      .next {
+        font-size: 2rem;
+      }
+
+      .photo .progression span {
+        font-size: 1rem;
+      }
+    }
   }
 }
 </style>
