@@ -2,34 +2,47 @@
   <div class="reservation-modal" v-if="showModal" @click.self="closeModal">
     <div class="modal-content">
       <!-- Title -->
-      <h2>Réservez votre prestataire en quelques secondes</h2>
-      <p class="subtitle">Choisissez une méthode pour continuer :</p>
+      <h2>{{ $t('first-reservation-modal.title') }}</h2>
+      <p class="subtitle">{{ $t('first-reservation-modal.subtitle') }}</p>
 
       <!-- SSO Options -->
       <div class="sso-options">
         <button class="sso-btn google" @click="connectWithSSO('google')">
-          <img src="" alt="Google" /> Continuer avec Google
+          {{ $t('first-reservation-modal.sso.google') }}
         </button>
         <button class="sso-btn facebook" @click="connectWithSSO('facebook')">
-          <img src="" alt="Facebook" /> Continuer avec Facebook
+          {{ $t('first-reservation-modal.sso.facebook') }}
         </button>
         <button class="sso-btn apple" @click="connectWithSSO('apple')">
-          <img src="" alt="Apple" /> Continuer avec Apple
+          {{ $t('first-reservation-modal.sso.apple') }}
         </button>
       </div>
 
       <!-- Or Email -->
-      <p class="divider">Ou utilisez votre email :</p>
+      <p class="divider">{{ $t('first-reservation-modal.email.title') }}</p>
       <div class="email-form">
-        <input type="email" v-model="email" placeholder="Votre email" @keydown="emailError = ''" />
-        <button class="email-btn" @click="connectWithEmail">Continuer</button>
+        <input
+          type="email"
+          v-model="email"
+          :placeholder="$t('first-reservation-modal.email.placeholder')"
+          @keydown="emailError = ''"
+        />
+        <button class="email-btn" @click="connectWithEmail">
+          {{ $t('first-reservation-modal.email.button') }}
+        </button>
       </div>
       <p class="error-msg">{{ emailError }}&nbsp;</p>
 
+      <!-- Already have an account -->
+      <p class="already-account">
+        {{ $t('first-reservation-modal.already-account.title') }}
+        <a href="/login" class="link">{{ $t('first-reservation-modal.already-account.link') }}</a>
+      </p>
+
       <!-- Link to detailed page -->
       <p class="extra-info">
-        <span>Découvrez tous les avantages d’un compte Sgilt.</span>
-        <a href="/signup-info" class="link">En savoir plus</a>
+        <span>{{ $t('first-reservation-modal.extra-info.title') }}</span>
+        <a href="/signup-info" class="link">{{ $t('first-reservation-modal.extra-info.link') }}</a>
       </p>
 
       <!-- Close Button -->
@@ -42,7 +55,7 @@
 import { ref } from 'vue'
 
 // Props or parent control
-const props = defineProps<{
+defineProps<{
   showModal: boolean
 }>()
 
@@ -85,37 +98,36 @@ const connectWithEmail = () => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: $modal-overlay;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: $z-modal;
 }
 
 /* Modal Content */
 .modal-content {
-  background-color: $color-secondary; /* Background clair */
+  background-color: $color-secondary;
   padding: 2rem;
-  border-radius: 8px;
+  border-radius: 8px; // TODO mettre ce border-radius partout
   max-width: 500px;
   width: 90%;
-  box-shadow: 0 10px 30px $shadow-l; /* Ombre douce */
+  box-shadow: 0 10px 30px $shadow-l;
   position: relative;
   text-align: center;
 }
 
 /* Title */
 h2 {
-  font-size: 1.8rem;
-  color: $color-primary; /* Titre en noir profond */
-  margin-bottom: 1rem;
+  color: $color-primary;
+  margin-bottom: $spacing-m;
 }
 
 /* Subtitle */
 .subtitle {
   font-size: 1rem;
   color: $color-subtext;
-  margin-bottom: 1.5rem;
+  margin-bottom: $spacing-l;
 }
 
 /* SSO Buttons */
@@ -214,15 +226,31 @@ h2 {
   }
 }
 
+.already-account {
+  margin-top: 1.5rem;
+  font-size: 0.9rem; /* Texte discret */
+  color: #666; /* Gris subtil pour rester secondaire */
+  text-align: center;
+
+  .link {
+    color: $color-accent; /* Jaune accent pour le lien */
+    text-decoration: none;
+    font-weight: bold;
+
+    &:hover {
+      text-decoration: underline; /* Style au hover */
+    }
+  }
+}
+
 /* Link to detailed page */
 .extra-info {
   font-size: 0.9rem;
   color: $color-subtext;
-  margin-top: 2em;
   margin-bottom: 0;
+  font-style: italic;
 
   span {
-    font-style: italic;
     margin-right: $spacing-s;
   }
 
@@ -239,6 +267,7 @@ h2 {
 
 /* Close Button */
 .close-btn {
+  // TODO mettre ce style sur sgiltbutton
   position: absolute;
   top: 1rem;
   right: 1rem;
@@ -250,17 +279,18 @@ h2 {
   transition: transform 0.2s ease;
 
   &:hover {
+    // sauf ça qui est mieux sur sgiltbutton
     transform: scale(1.2);
-    color: $color-primary; /* Noir profond au hover */
+    color: $color-primary;
   }
 }
 
-/* Message d'erreur */
+/* Error message */
 .error-msg {
-  color: #ff4d4f; /* Rouge clair pour alerter */
+  color: $color-error;
   font-size: 0.875rem; /* Texte discret */
-  margin-top: 0.5rem;
+  margin-top: $spacing-xs;
   text-align: left;
-  margin-left: 1em;
+  margin-left: $spacing-m;
 }
 </style>

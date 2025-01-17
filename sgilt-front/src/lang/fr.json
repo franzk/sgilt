@@ -54,6 +54,28 @@
       "contact": "Contactez-nous"
     }
   },
+  "first-reservation-modal": {
+    "title": "Réservez votre prestataire en quelques secondes",
+    "subtitle": "Choisissez une méthode pour continuer :",
+    "sso": {
+      "facebook": "Continuer avec Facebook",
+      "google": "Continuer avec Google",
+      "apple": "Continuer avec Apple"
+    },
+    "email": {
+      "title": "Ou utilisez votre email :",
+      "placeholder": "Votre email",
+      "button": "Continuer"
+    },
+    "already-account": {
+      "title": "Vous avez déjà un compte ?",
+      "link": "Connectez-vous"
+    },
+    "extra-info": {
+      "title": "Découvrez tous les avantages d’un compte Sgilt.",
+      "link": "En savoir plus"
+    }
+  },
   "texts": {
     "a-partir-de": "À partir de",
     "minimum": "Minimum",
