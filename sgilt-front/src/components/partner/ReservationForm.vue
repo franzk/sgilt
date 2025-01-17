@@ -12,6 +12,7 @@
       <div class="form-group">
         <p>{{ $t('reservation.form.date-label') }}</p>
         <SgiltDatePicker v-model="selectedDate" />
+        <p class="error-msg">{{ dateError }}&nbsp;</p>
       </div>
 
       <!-- Select options -->
@@ -41,6 +42,13 @@
       </div>
     </div>
   </div>
+
+  <FirsReservationModal
+    :showModal="showFirstReservationModal"
+    @close="showFirstReservationModal = false"
+    @connect-email="newUserConnected"
+    @connect-s-s-o="newUserConnected"
+  />
 </template>
 
 <script setup lang="ts">
@@ -48,23 +56,38 @@ import { computed, ref, watch } from 'vue'
 import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
 import SgiltSelect, { type SgiltSelectOption } from '@/components/basics/inputs/SgiltSelect.vue'
 import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
+import FirsReservationModal from '@/components/event/FirstReservationModal.vue'
 import IconList from '@/components/icons/IconList.vue'
 import type { Price } from '@/data/domain/Partner'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const selectedDate = defineModel<Date>('selected-date')
 const selectedPrice = defineModel<Price>('selected-price')
+const showFirstReservationModal = ref<boolean>(false)
 
 const props = defineProps<{
   prices: Price[]
 }>()
 
-const selectedOption = ref<SgiltSelectOption>()
-selectedPrice.value = props.prices?.[0] || {}
+// -- date --
+const dateError = ref<string>('')
+watch(
+  () => selectedDate.value,
+  (newValue) => {
+    if (newValue) dateError.value = ''
+  },
+)
 
+// -- price --
 const pricesOptions = props.prices.map((price) => ({
   value: price.id,
   label: price.title,
 }))
+
+const selectedOption = ref<SgiltSelectOption>()
+selectedPrice.value = props.prices?.[0] || {}
 
 watch(
   () => selectedOption.value,
@@ -73,14 +96,21 @@ watch(
   },
 )
 
-// Computed property to calculate the price
 const calculatedPrice = computed(() => {
   return selectedPrice.value?.price || 0
 })
 
-// Booking submission logic
-function handleBooking() {
-  console.log('Booking submitted!')
+// -- booking --
+const handleBooking = () => {
+  if (!selectedDate.value) {
+    dateError.value = t('reservation.form.date-error')
+  } else {
+    showFirstReservationModal.value = true // Open first reservation modal
+  }
+}
+// -> back from first reservation modal
+const newUserConnected = (email: string) => {
+  console.log('New user connected with email:', email)
 }
 </script>
 
@@ -91,10 +121,9 @@ function handleBooking() {
   padding: $spacing-l;
   border-radius: $border-radius-m;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  margin: $spacing-m auto; /* Centered */
+  margin: $spacing-m auto;
 
   h2 {
-    font-size: 24px;
     color: $color-primary;
     margin: 0 0 $spacing-m 0;
   }
@@ -102,6 +131,13 @@ function handleBooking() {
   /* Form groups */
   .form-group {
     margin-bottom: $spacing-l;
+
+    .error-msg {
+      color: $color-error;
+      font-size: $font-size-base;
+      margin-top: $spacing-s;
+      font-weight: 500;
+    }
 
     p {
       font-weight: bold;
@@ -125,7 +161,7 @@ function handleBooking() {
   .reservation-footer {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centre les boutons */
+    align-items: center;
   }
 
   /* Contact link */

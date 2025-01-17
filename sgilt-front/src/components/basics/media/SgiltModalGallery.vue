@@ -119,7 +119,7 @@ onUnmounted(() => {
       top: 1rem;
       right: 1rem;
       font-size: 2rem;
-      color: #666;
+      color: $color-subtext;
       cursor: pointer;
       transition: transform 0.2s ease;
 

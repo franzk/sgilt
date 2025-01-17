@@ -44,6 +44,7 @@
     "subtitle": "Validez votre réservation en quelques clics !",
     "form": {
       "date-label": "Choisissez une date :",
+      "date-error": "Veuillez sélectionner une date avant de continuer.",
       "options-label": "Choisissez un service :",
       "pricing": "Tarif estimé:"
     },

@@ -127,7 +127,7 @@ $profile-picture-size: 8em;
 
   .slogan {
     font-style: italic;
-    color: #666;
+    color: $color-subtext;
   }
 }
 
