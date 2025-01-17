@@ -34,7 +34,7 @@
 
     <!-- Footer Section -->
     <div class="reservation-footer">
-      <SgiltButton @click="handleBooking">
+      <SgiltButton @click="handleBooking" class="button">
         {{ $t('reservation.button') }}
       </SgiltButton>
       <div class="contact">
@@ -119,7 +119,7 @@ const newUserConnected = (email: string) => {
 .reservation-form {
   background: $color-white;
   padding: $spacing-l;
-  border-radius: $border-radius-m;
+  border-radius: $border-radius-s;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   margin: $spacing-m auto;
 
@@ -162,6 +162,9 @@ const newUserConnected = (email: string) => {
     display: flex;
     flex-direction: column;
     align-items: center;
+    .button {
+      line-height: 1.5em;
+    }
   }
 
   /* Contact link */

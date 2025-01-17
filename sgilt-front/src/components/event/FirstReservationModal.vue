@@ -27,9 +27,11 @@
           :placeholder="$t('first-reservation-modal.email.placeholder')"
           @keydown="emailError = ''"
         />
-        <button class="email-btn" @click="connectWithEmail">
+        <!--button class="email-btn" @click="connectWithEmail"-->
+        <SgiltButton @click="connectWithEmail">
           {{ $t('first-reservation-modal.email.button') }}
-        </button>
+        </SgiltButton>
+        <!--button-->
       </div>
       <p class="error-msg">{{ emailError }}&nbsp;</p>
 
@@ -53,6 +55,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 
 // Props or parent control
 defineProps<{
@@ -67,13 +70,9 @@ const emailError = ref<string | null>(null)
 const emit = defineEmits(['close', 'connectSSO', 'connectEmail'])
 
 // Methods
-const closeModal = () => {
-  emit('close')
-}
+const closeModal = () => emit('close')
 
-const connectWithSSO = (provider: string) => {
-  emit('connectSSO', provider)
-}
+const connectWithSSO = (provider: string) => emit('connectSSO', provider)
 
 const validateEmail = () => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -108,8 +107,8 @@ const connectWithEmail = () => {
 /* Modal Content */
 .modal-content {
   background-color: $color-secondary;
-  padding: 2rem;
-  border-radius: 8px; // TODO mettre ce border-radius partout
+  padding: $spacing-l;
+  border-radius: $border-radius-s;
   max-width: 500px;
   width: 90%;
   box-shadow: 0 10px 30px $shadow-l;
@@ -134,8 +133,8 @@ h2 {
 .sso-options {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: $spacing-m;
+  margin-bottom: $spacing-l;
 
   .sso-btn {
     display: flex;
@@ -180,24 +179,24 @@ h2 {
 
 /* Divider */
 .divider {
-  font-size: 0.9rem;
+  font-size: $font-size-base;
   color: $color-subtext;
-  margin: 1rem 0;
+  margin: $spacing-m 0;
 }
 
 /* Email Form */
 .email-form {
   display: flex;
-  gap: 0.5rem;
+  gap: $spacing-s;
 
   input {
     flex: 1;
-    padding: 0.8rem;
+    padding: $spacing-mm;
     font-size: 1rem;
-    border: 1px solid $shadow-s; /* Bord léger */
-    border-radius: 5px;
-    color: $color-primary; /* Texte principal */
-    background-color: $color-white; /* Fond clair */
+    border: 1px solid $shadow-s;
+    border-radius: $border-radius-xs;
+    color: $color-primary;
+    background-color: $color-white;
 
     &::placeholder {
       color: $color-subtext;
@@ -205,47 +204,47 @@ h2 {
 
     &:focus {
       outline: none;
-      border: 1px solid $color-accent; /* Accentuation */
-      box-shadow: 0 0 4px $color-accent; /* Lueur subtile */
+      border: 1px solid $color-accent;
+      box-shadow: 0 0 4px $color-accent;
     }
   }
 
   .email-btn {
-    background-color: $color-accent; /* Bouton accent jaune */
-    color: $color-white; /* Texte blanc */
+    background-color: $color-accent;
+    color: $color-white;
     border: none;
-    padding: 0.8rem 1rem;
-    border-radius: 5px;
+    padding: $spacing-mm $spacing-m;
+    border-radius: $border-radius-xs;
     font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
 
     &:hover {
-      background-color: darken($color-accent, 10%); /* Jaune légèrement assombri */
+      background-color: darken($color-accent, 10%);
     }
   }
 }
 
 .already-account {
-  margin-top: 1.5rem;
-  font-size: 0.9rem; /* Texte discret */
-  color: #666; /* Gris subtil pour rester secondaire */
+  margin-top: $spacing-ml;
+  font-size: $font-size-base;
+  color: $color-subtext;
   text-align: center;
 
   .link {
-    color: $color-accent; /* Jaune accent pour le lien */
+    color: $color-accent;
     text-decoration: none;
     font-weight: bold;
 
     &:hover {
-      text-decoration: underline; /* Style au hover */
+      text-decoration: underline;
     }
   }
 }
 
 /* Link to detailed page */
 .extra-info {
-  font-size: 0.9rem;
+  font-size: $font-size-base;
   color: $color-subtext;
   margin-bottom: 0;
   font-style: italic;
@@ -255,7 +254,7 @@ h2 {
   }
 
   .link {
-    color: $color-accent; /* Jaune accent */
+    color: $color-accent;
     text-decoration: none;
     font-weight: bold;
 
@@ -267,10 +266,9 @@ h2 {
 
 /* Close Button */
 .close-btn {
-  // TODO mettre ce style sur sgiltbutton
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: $spacing-s;
+  right: $spacing-s;
   font-size: 2rem;
   color: $color-subtext;
   background: none;
@@ -279,7 +277,6 @@ h2 {
   transition: transform 0.2s ease;
 
   &:hover {
-    // sauf ça qui est mieux sur sgiltbutton
     transform: scale(1.2);
     color: $color-primary;
   }
@@ -288,7 +285,7 @@ h2 {
 /* Error message */
 .error-msg {
   color: $color-error;
-  font-size: 0.875rem; /* Texte discret */
+  font-size: $font-size-base;
   margin-top: $spacing-xs;
   text-align: left;
   margin-left: $spacing-m;
