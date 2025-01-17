@@ -1,29 +1,32 @@
 <template>
-  <div class="sgilt-modal" v-if="displayedPhoto" @click="closeModal">
-    <div class="banner" @click.stop>
-      <!-- Close button -->
-      <div class="close" @click="closeModal">&times;</div>
+  <div class="sgilt-modal" v-if="displayedPhoto" @click.self="closeModal">
+    <div class="modal-overlay">
+      <!-- Close Button -->
+      <button class="close-btn" @click="closeModal">&times;</button>
 
-      <!-- Previous button -->
-      <div class="previous" @click.stop="previousPhoto">
-        <span v-if="!isFirstPhoto">&lt;</span>
-      </div>
+      <!-- Previous Button -->
+      <button class="nav-btn previous" @click.stop="previousPhoto" v-if="!isFirstPhoto">
+        <span>&lt;</span>
+      </button>
 
-      <!-- Photo & progression -->
-      <div class="photo">
-        <div class="spacer"></div>
-        <div class="displayed-photo">
-          <img :src="displayedPhoto" alt="Selected photo" />
-        </div>
+      <!-- Photo Section -->
+      <div class="photo-container" @click.stop>
+        <img :src="displayedPhoto" class="photo" />
         <div class="progression">
-          <span v-for="(photo, index) in photos" :key="index" @click="displayedPhoto = photo">
-            {{ photo === displayedPhoto ? '●' : '○' }}
-          </span>
+          <span
+            v-for="(photo, index) in photos"
+            :key="index"
+            class="dot"
+            :class="{ active: photo === displayedPhoto }"
+            @click="displayedPhoto = photo"
+          ></span>
         </div>
       </div>
 
-      <!-- Next button -->
-      <div class="next" @click.stop="nextPhoto"><span v-if="!isLastPhoto">&gt;</span></div>
+      <!-- Next Button -->
+      <button class="nav-btn next" @click.stop="nextPhoto" v-if="!isLastPhoto">
+        <span>&gt;</span>
+      </button>
     </div>
   </div>
 </template>
@@ -41,210 +44,202 @@ const displayedPhotoIndex = computed(() =>
   displayedPhoto.value ? props.photos.indexOf(displayedPhoto.value) : -1,
 )
 
-// computed properties
 const isFirstPhoto = computed(() => displayedPhotoIndex.value === 0)
 const isLastPhoto = computed(() => displayedPhotoIndex.value === props.photos.length - 1)
 
-// actions
 const previousPhoto = () => {
-  if (props.photos.length > 0) {
-    const previousIndex = displayedPhotoIndex.value - 1
-    if (previousIndex >= 0) {
-      displayedPhoto.value = props.photos[previousIndex]
-    }
+  if (!isFirstPhoto.value) {
+    displayedPhoto.value = props.photos[displayedPhotoIndex.value - 1]
   }
 }
 
 const nextPhoto = () => {
-  const nextIndex = displayedPhotoIndex.value + 1
-  if (nextIndex < props.photos.length) {
-    displayedPhoto.value = props.photos[nextIndex]
+  if (!isLastPhoto.value) {
+    displayedPhoto.value = props.photos[displayedPhotoIndex.value + 1]
   }
 }
 
-const closeModal = () => {
-  displayedPhoto.value = ''
-}
+const closeModal = () => (displayedPhoto.value = '')
 
-// keyboard navigation
 const handleKeydown = (event: KeyboardEvent) => {
-  if (event.key === 'ArrowLeft') {
-    previousPhoto()
-  } else if (event.key === 'ArrowRight') {
-    nextPhoto()
-  } else if (event.key === 'Escape') {
-    closeModal()
-  }
+  if (event.key === 'ArrowLeft') previousPhoto()
+  if (event.key === 'ArrowRight') nextPhoto()
+  if (event.key === 'Escape') closeModal()
 }
-// add and remove event listeners
-onMounted(() => {
-  window.addEventListener('keydown', handleKeydown)
-})
 
-onUnmounted(() => {
-  window.removeEventListener('keydown', handleKeydown)
-})
+onMounted(() => window.addEventListener('keydown', handleKeydown))
+onUnmounted(() => window.removeEventListener('keydown', handleKeydown))
 </script>
 
 <style scoped lang="scss">
+/* Main Modal */
 .sgilt-modal {
   position: fixed;
+  z-index: $z-modal;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.85); // Background légèrement transparent
-  z-index: 1000;
+
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
 
-  .banner {
+  background-color: $modal-overlay;
+
+  .modal-overlay {
     position: relative;
-    width: 90%;
-    max-width: 900px;
-    height: 60%;
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+
+    width: 100%;
+    height: auto;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    background-color: $color-secondary;
+  }
+}
+
+/* Photo Container - Full Width */
+.photo-container {
+  position: relative;
+
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  max-width: none;
+  height: 60vh;
+
+  background-color: $color-secondary;
+
+  .photo {
+    max-height: 100%;
+    width: auto;
+    border-radius: none;
+    transition:
+      transform 0.3s ease,
+      opacity 0.3s ease;
+  }
+
+  .progression {
+    position: absolute;
+    bottom: $spacing-m;
+
+    width: 100%;
+
     display: flex;
     justify-content: center;
-    align-items: center;
-    overflow: hidden;
+    gap: $spacing-s;
 
-    // Close button
-    .close {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      font-size: 2rem;
-      color: $color-subtext;
+    .dot {
+      width: 1rem;
+      height: 1rem;
+      background-color: $shadow-s;
+      border-radius: 50%;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      transition: background-color 0.3s ease;
+
+      &.active {
+        background-color: $color-accent;
+      }
 
       &:hover {
-        transform: scale(1.2);
-        color: #000;
-      }
-    }
-
-    // Previous button
-    .previous,
-    .next {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 3rem;
-      color: #999;
-      cursor: pointer;
-      user-select: none;
-      transition: all 0.3s ease;
-
-      &:hover {
-        color: #000;
-      }
-
-      span {
-        display: inline-block;
-      }
-    }
-
-    .previous {
-      left: 1rem;
-    }
-
-    .next {
-      right: 1rem;
-    }
-
-    // Photo container
-    .photo {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-
-      .spacer {
-        flex: 1;
-      }
-
-      .displayed-photo {
-        flex: 5;
-        max-height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        img {
-          max-width: 100%;
-          max-height: 100%;
-          object-fit: cover;
-          border-radius: 4px;
-          transition:
-            opacity 0.5s ease-in-out,
-            transform 0.5s ease-in-out;
-        }
-      }
-
-      // Progression dots
-      .progression {
-        flex: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 0.5rem;
-
-        span {
-          font-size: 1.5rem;
-          color: #ddd;
-          cursor: pointer;
-          transition:
-            color 0.3s ease,
-            transform 0.3s ease;
-
-          &:hover {
-            color: #000;
-            transform: scale(1.2);
-          }
-
-          &.active {
-            color: #000;
-          }
-        }
+        background-color: lighten($color-accent, 10%);
       }
     }
   }
+}
 
-  // Animations
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+/* Navigation Buttons */
+.nav-btn {
+  position: absolute;
+  z-index: $z-modal;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 50px;
+  height: 50px;
+
+  background-color: $color-primary;
+  color: $color-white;
+  border: none;
+
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 10px $shadow-s;
+
+  transition:
+    transform 0.2s ease,
+    background-color 0.3s ease;
+
+  &:hover {
+    background-color: $color-accent;
+    transform: scale(1.1);
   }
 
-  // Apply animation
-  animation: fadeIn 0.3s ease;
+  &.previous {
+    left: $spacing-l;
+  }
 
-  // Responsive adjustments
-  @media (max-width: 768px) {
-    .banner {
-      width: 100%;
-      height: 70%;
+  &.next {
+    right: $spacing-l;
+  }
+}
 
-      .previous,
-      .next {
-        font-size: 2rem;
-      }
+/* Close Button */
+.close-btn {
+  position: absolute;
 
-      .photo .progression span {
-        font-size: 1rem;
-      }
+  top: $spacing-m;
+  right: $spacing-m;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: $color-subtext;
+  cursor: pointer;
+  transition:
+    transform 0.3s ease,
+    color 0.3s ease;
+
+  &:hover {
+    transform: scale(1.2);
+    color: $color-accent;
+  }
+}
+
+/* Responsive */
+@include respond-to(tablet) {
+  .photo-container {
+    height: 40vh;
+  }
+
+  .nav-btn {
+    width: 40px;
+    height: 40px;
+    &.previous {
+      left: $spacing-m;
     }
+    &.next {
+      right: $spacing-m;
+    }
+  }
+}
+
+@include respond-to(mobile) {
+  .photo-container {
+    height: 40vh;
+  }
+
+  .nav-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 1.2rem;
   }
 }
 </style>
