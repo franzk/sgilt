@@ -15,11 +15,16 @@
 
 <script setup lang="ts">
 import PartnerCard from '@/components/partner/PartnerCard.vue'
-import type { Partner } from '@/domain/Partner'
-import { PartnerService } from '@/services/PartnerService'
+import type { Partner } from '@/data/domain/Partner'
+import { getHihglightedPartners } from '@/data/services/PartnerService'
 import { mobileView } from '@/utils/StyleUtils'
+import { ref } from 'vue'
 
-const partners: Partner[] = PartnerService.getHihglightedPartners(mobileView ? 2 : 3)
+const partners = ref<Partner[]>()
+
+getHihglightedPartners(mobileView ? 2 : 3).then((p) => {
+  partners.value = p
+})
 </script>
 
 <style lang="scss" scoped>

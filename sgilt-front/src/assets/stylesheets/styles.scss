@@ -29,6 +29,12 @@ body {
     height: 100%;
   }
 
+  a {
+    color: inherit;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
   font-size: $font-size-base;
   line-height: $line-height-base;
 
@@ -59,6 +65,7 @@ body {
 
     h1 {
       font-size: calc($font-size-h1 * 1.4);
+      line-height: calc($line-height-h1 * 1.4);
     }
 
     h2 {

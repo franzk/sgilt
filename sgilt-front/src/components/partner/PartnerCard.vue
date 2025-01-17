@@ -1,23 +1,25 @@
 <template>
   <div class="partner-card">
-    <div class="partner-category">
-      <CategoryChip :categoryName="partner.tags[0]?.category || ''" />
-    </div>
-    <img :src="partner.imageUrl" :alt="partner.title" />
+    <RouterLink :to="{ name: 'partner', params: { id: partner.slug || 'aa' } }">
+      <div class="partner-category">
+        <CategoryChip :categoryName="partner.tags[0]?.category || ''" />
+      </div>
+      <img :src="partner.imageUrl" :alt="partner.title" />
 
-    <h3>{{ partner.title }}</h3>
+      <h3>{{ partner.title }}</h3>
 
-    <p class="partner-description">{{ partner.description }}</p>
-    <div class="partner-enter-price">
-      <p>{{ $t('texts.a-partir-de') }}</p>
-      <p class="price">{{ partner.entryPrice }} €</p>
-    </div>
+      <p class="partner-description">{{ partner.description }}</p>
+      <div class="partner-enter-price">
+        <p>{{ $t('texts.a-partir-de') }}</p>
+        <p class="price">{{ partner.entryPrice }} €</p>
+      </div>
+    </RouterLink>
   </div>
 </template>
 
 <script setup lang="ts">
 import CategoryChip from '@/components/basics/chips/CategoryChip.vue'
-import type { Partner } from '@/domain/Partner'
+import type { Partner } from '@/data/domain/Partner'
 
 defineProps<{
   partner: Partner
@@ -77,12 +79,11 @@ defineProps<{
     display: flex;
     position: absolute;
     justify-content: end;
-    z-index: 1;
+    z-index: $z-app-absolute-element;
     width: 100%;
   }
 
   .partner-description {
-    // color: #6a6a6a;
     font-weight: 300;
   }
 }

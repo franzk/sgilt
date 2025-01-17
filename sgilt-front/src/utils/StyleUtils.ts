@@ -6,5 +6,7 @@ export const getCssVariable = (variable: string): string => {
 export const mobileView = window.matchMedia(
   `(max-width: ${parseInt(getCssVariable('--breakpoint-mobile'))}px)`,
 ).matches
-//const mobileBreakpoint = parseInt(getCssVariable('--breakpoint-mobile'))
-//const mobileView = window.matchMedia(`(max-width: ${mobileBreakpoint}px)`).matches
+
+export const tabletView = window.matchMedia(
+  `(max-width: ${parseInt(getCssVariable('--breakpoint-tablet'))}px)`,
+).matches

@@ -48,7 +48,7 @@ $br: $border-radius-s;
     display: flex;
     position: absolute;
     justify-content: end;
-    z-index: 1;
+    z-index: $z-app-absolute-element;
     width: 100%;
   }
 

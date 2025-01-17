@@ -1,7 +1,8 @@
 <template>
-  <div class="custom-select" :tabindex="tabindex" @blur="open = false">
+  <!-- TODO : implement keyboard navigation -->
+  <div class="custom-select" :tabindex="focusable ? 0 : -1" @blur="open = false">
     <div class="selected" :class="{ open: open }" @click="open = !open">
-      <div class="left-icon"><IconRocket /></div>
+      <div class="left-icon"><slot name="left-icon" /></div>
       <div class="selected-text">{{ selectedLabel }}</div>
       <div class="right-icon" v-if="open">&#x25B2;</div>
       <div class="right-icon" v-else>&#x25BC;</div>
@@ -17,10 +18,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import IconRocket from '@/components/icons/IconRocket.vue'
 
 // selected value
-const selectedValue = defineModel<string>()
+const selectedOption = defineModel<SgiltSelectOption>()
 
 // option interface
 export interface SgiltSelectOption {
@@ -31,22 +31,19 @@ export interface SgiltSelectOption {
 // props
 const props = defineProps<{
   options: SgiltSelectOption[]
-  default?: string
-  tabindex?: number
+  focusable?: boolean
 }>()
 
 // display the selected label
-const selectedLabel = ref(
-  props.default ? props.default : props.options.length > 0 ? props.options[0].label : null,
-)
+const selectedLabel = ref(props.options?.[0]?.label || '')
 
 // is the select opened ?
 const open = ref(false)
 
 // when an option is clicked
 const click = (option: SgiltSelectOption) => {
-  selectedLabel.value = option.label // update the selected label
-  selectedValue.value = option.value // update the model
+  selectedOption.value = option // update the model
+  selectedLabel.value = option.label // update the label
   open.value = false // close the select
 }
 </script>
@@ -62,8 +59,15 @@ $bc: $input-border-color;
 
 .custom-select {
   position: relative;
-  text-align: left;
+  line-height: 45px;
   outline: none;
+  width: 100%;
+
+  &:focus-visible {
+    outline: $focus-outline;
+    outline-offset: $focus-outline-offset;
+    border-radius: $br;
+  }
 
   .selected {
     display: flex;
@@ -83,11 +87,18 @@ $bc: $input-border-color;
     }
 
     .left-icon {
-      padding-left: 0.5em;
+      width: 2.5em;
+      align-content: center;
+      text-align: center;
+      * {
+        width: 1.5em;
+      }
     }
 
     .right-icon {
-      padding-right: 1em;
+      width: 2.5em;
+      text-align: center;
+      align-content: center;
       font-size: $font-size-base;
     }
 
@@ -109,7 +120,7 @@ $bc: $input-border-color;
     background-color: $color-1;
     left: 0;
     right: 0;
-    z-index: 1;
+    z-index: $z-app-absolute-element;
 
     div {
       color: $color-3;

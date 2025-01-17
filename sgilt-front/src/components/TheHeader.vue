@@ -1,9 +1,14 @@
 <template>
   <header>
     <h1>
-      <router-link :to="{ name: 'home' }">{{ $t('app-header.app-name') }}</router-link>
+      <router-link :to="{ name: 'home' }"><img src="@/assets/images/sgilt.png" /></router-link>
+      <!-- TODO resize image -->
     </h1>
-    <p>{{ $t('app-header.slogan') }}</p>
+    <p class="tagline">
+      {{ $t('app-header.tagline.decouvrez') }}
+      {{ $t('app-header.tagline.reservez') }}
+      <span class="bold">{{ $t('app-header.tagline.celebrez') }}</span>
+    </p>
   </header>
 </template>
 
@@ -11,7 +16,7 @@
 
 <style lang="scss" scoped>
 header {
-  flex: 0 0 2rem;
+  flex: 0;
 
   display: flex;
   flex-direction: row;
@@ -19,31 +24,43 @@ header {
   position: sticky;
   top: 0;
   left: 0;
-  z-index: 2;
+  z-index: $z-app-header;
 
   background-color: $color-secondary;
-  box-shadow: 0 4px 6px $shadow-m;
+  box-shadow: $box-shadow;
 
   gap: $spacing-l;
   align-content: center;
   flex-wrap: wrap;
 
-  padding-left: 1rem;
+  padding: $spacing-mm;
 
-  h1 a {
-    text-decoration: none;
-    color: $color-primary;
+  h1 {
+    margin: 0 0 0 $spacing-xs;
+    img {
+      height: 3rem;
+      margin-bottom: $spacing-xs;
+    }
+
+    a {
+      text-decoration: none;
+      color: $color-primary;
+      display: flex;
+    }
   }
 
-  p {
-    padding: 0;
+  .tagline {
+    padding-top: 0.8em;
     margin: 0;
-    align-content: inherit;
     @include respond-to(mobile) {
       display: none;
     }
     -webkit-align-self: center;
     align-self: center;
+
+    .bold {
+      font-weight: bold;
+    }
   }
 }
 </style>

@@ -2,7 +2,7 @@ import { defineProps } from "vue"
 
 <template>
   <button
-    class="sgilt-simple-button"
+    class="sgilt-button"
     :class="{ secondary: variant === 'secondary' }"
     @click="$emit('click')"
   >
@@ -18,7 +18,7 @@ defineProps<{
 </script>
 
 <style scoped lang="scss">
-.sgilt-simple-button {
+.sgilt-button {
   cursor: pointer;
 
   font-size: 1em;

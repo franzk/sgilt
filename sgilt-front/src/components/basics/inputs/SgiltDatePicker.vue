@@ -23,11 +23,11 @@ const format = (date: Date) => dayjs(date).locale('fr').format('dddd DD MMM YYYY
 @import '@vuepic/vue-datepicker/dist/main.css';
 
 .sgilt-date-picker {
-  width: 17em;
+  width: 100%;
 }
 
 .dp__theme_light {
-  --dp-border-radius: #{$input-border-radius};
+  --dp-border-radius: 1em;
   --dp-border-color: #{$shadow-m};
   --dp-input-padding: 0.75rem;
   --dp-font-size: 1em;

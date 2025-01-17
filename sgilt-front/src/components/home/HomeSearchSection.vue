@@ -10,22 +10,32 @@
     </div>
     <div class="search-fields">
       <SgiltDatePicker v-model="date" class="date-picker" />
-      <SgiltSelect :options="options" v-model="selectedValue" class="select-event" />
-      <SgiltSimpleButton @click="search">{{ $t('home.search-banner.button') }}</SgiltSimpleButton>
+      <SgiltSelect
+        :options="options"
+        v-model="selectedEventTypeOption"
+        focusable
+        class="select-event-type"
+      >
+        <template v-slot:left-icon>
+          <IconRocket />
+        </template>
+      </SgiltSelect>
+      <SgiltButton @click="search">{{ $t('home.search-banner.button') }}</SgiltButton>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
 import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
-import SgiltSelect from '@/components/basics/inputs/SgiltSelect.vue'
-import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue'
+import SgiltSelect, { type SgiltSelectOption } from '@/components/basics/inputs/SgiltSelect.vue'
+import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 
 import router from '@/router'
 import { ref } from 'vue'
 import type { LocationQueryRaw } from 'vue-router'
 import { useEventTypeStore } from '@/stores/event-type.store'
 import dayjs from 'dayjs'
+import IconRocket from '@/components/icons/IconRocket.vue'
 
 // Filtre date
 const date = ref<Date>()
@@ -35,7 +45,7 @@ const options = useEventTypeStore().events.map((eventType) => ({
   value: eventType.id,
   label: eventType.name,
 }))
-const selectedValue = ref<string>()
+const selectedEventTypeOption = ref<SgiltSelectOption>()
 
 // Recherche
 const search = () => {
@@ -43,8 +53,8 @@ const search = () => {
   if (date.value) {
     query.date = dayjs(date.value).format('YYYY-MM-DD')
   }
-  if (selectedValue.value) {
-    query.event = selectedValue.value
+  if (selectedEventTypeOption.value) {
+    query.event = selectedEventTypeOption.value.value
   }
   router.push({ path: '/search', query })
 }
@@ -144,14 +154,22 @@ $overlay: $shadow-l;
   padding: 0 $spacing-m;
   margin-bottom: $spacing-xl;
 
-  .select-event {
-    line-height: 45px;
-    width: 17em;
+  .date-picker,
+  .select-event-type {
+    flex: 1;
+  }
+
+  @include respond-to(desktop) {
+    .date-picker,
+    .select-event-type {
+      width: 18em;
+    }
   }
 
   @include respond-to(tablet) {
     flex-direction: column;
     align-items: center;
+    width: 20rem;
   }
 
   gap: $spacing-xl;
@@ -161,7 +179,7 @@ $overlay: $shadow-l;
     margin-bottom: $spacing-m;
     align-items: initial;
     .date-picker,
-    .select-event {
+    .select-event-type {
       margin: 0;
       padding: 0;
     }

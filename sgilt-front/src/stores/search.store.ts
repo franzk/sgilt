@@ -1,6 +1,6 @@
-import type { Partner } from '@/domain/Partner'
-import { PartnerService } from '@/services/PartnerService'
-import type { PartnerQuery } from '@/types/PartnerQuery'
+import type { Partner } from '@/data/domain/Partner'
+import { searchPartners } from '@/data/services/PartnerService'
+import type { PartnerQuery } from '@/data/api/query/PartnerQuery'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -21,7 +21,7 @@ export const useSearchStore = defineStore('search', () => {
       (query.tagsId?.length || 0)
 
     // fetch partners from the API
-    results.value = await PartnerService.search(query)
+    results.value = await searchPartners(query)
   }
 
   return { results, filtersCount, search }

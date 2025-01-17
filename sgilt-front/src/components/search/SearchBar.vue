@@ -27,12 +27,12 @@
       <TagsFilter v-model="tagsFilter" class="tags-filter" @update:model-value="search" />
     </div>
     <div class="submit-button">
-      <SgiltSimpleButton @click="resetFilters" variant="secondary">
+      <SgiltButton @click="resetFilters" variant="secondary">
         {{ $t('texts.effacer-filtres') }}
-      </SgiltSimpleButton>
-      <SgiltSimpleButton v-if="mobileView" @click="submit">
+      </SgiltButton>
+      <SgiltButton v-if="mobileView" @click="submit">
         {{ $t('texts.voir-resultats', { count: useSearchStore().results.length }) }}
-      </SgiltSimpleButton>
+      </SgiltButton>
     </div>
   </div>
 </template>
@@ -42,9 +42,9 @@ import { computed, ref } from 'vue'
 import DateFilter from '@/components/search/filters/DateFilter.vue'
 import TagsFilter from '@/components/search/filters/TagsFilter.vue'
 import PriceFilter from '@/components/search/filters/PriceFilter.vue'
-import SgiltSimpleButton from '@/components/basics/buttons/SgiltSimpleButton.vue'
+import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 import IconFilters from '@/components/icons/IconFilters.vue'
-import type { PartnerQuery } from '@/types/PartnerQuery'
+import type { PartnerQuery } from '@/data/api/query/PartnerQuery'
 import type { TagFilter } from '@/types/TagFilter'
 import { mobileView } from '@/utils/StyleUtils'
 import { useSearchStore } from '@/stores/search.store'
