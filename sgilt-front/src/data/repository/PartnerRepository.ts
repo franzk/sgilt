@@ -65,6 +65,27 @@ export const partnerCalendar = async (id: string): Promise<CalendarEntry[]> => {
   })
 }
 
+export const relatedPartners = async (id: string): Promise<Partner[]> => {
+  const partner = partners.find((partner) => partner.id === id)
+  return new Promise((resolve, reject) => {
+    if (!partner) {
+      reject(new Error('Partner not found'))
+    } else {
+      const tagRelated = partners.filter(
+        (p) =>
+          p.id !== partner.id && p.tags.some((tag) => partner.tags.some((t) => t.id === tag.id)),
+      )
+      const categoryRelated = partners.filter(
+        (p) =>
+          p.id !== partner.id &&
+          !tagRelated.includes(p) &&
+          p.tags.some((tag) => partner.tags.some((t) => t.category === tag.category)),
+      )
+      resolve([...tagRelated, ...categoryRelated])
+    }
+  })
+}
+
 // Mock data
 const partners: Partner[] = [
   // Category: Music

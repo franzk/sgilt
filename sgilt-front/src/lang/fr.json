@@ -50,7 +50,11 @@
       "date-label": "Choisissez une date :",
       "date-error": "Veuillez sélectionner une date avant de continuer.",
       "options-label": "Choisissez un service :",
-      "pricing": "Tarif estimé:"
+      "pricing": "Tarif estimé:",
+      "booked": {
+        "title": "🛑 Oups ! { partnerName } est déjà réservé ce jour-là.",
+        "subtitle": "Pas de souci, nous avons sélectionné pour vous des prestataires similaires disponibles à cette date."
+      }
     },
     "button": "Réserver",
     "help": {

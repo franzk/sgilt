@@ -24,6 +24,7 @@ import VueDatePicker from '@vuepic/vue-datepicker'
 import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
 import { computed } from 'vue'
+import { dateArrayContains } from '@/utils/ArrayUtils'
 
 const date = defineModel<Date>()
 const format = (date: Date) => dayjs(date).locale('fr').format('dddd DD MMM YYYY')
@@ -35,8 +36,8 @@ const props = defineProps<{
 }>()
 
 const getDayClass = (date: Date) => {
-  if (props.bookedDates?.some((d) => dayjs(d).isSame(date, 'day'))) return 'date booked'
-  if (props.optionDates?.some((d) => dayjs(d).isSame(date, 'day'))) return 'date option'
+  if (dateArrayContains(props.bookedDates || [], date)) return 'date booked'
+  if (dateArrayContains(props.optionDates || [], date)) return 'date option'
   return ''
 }
 
@@ -45,8 +46,8 @@ const showExtraInfo = computed(
 )
 
 const choiceState = computed(() => {
-  if (date.value && props.bookedDates?.some((d) => dayjs(d).isSame(date.value, 'day'))) return false
-  if (date.value && props.optionDates?.some((d) => dayjs(d).isSame(date.value, 'day'))) return true
+  if (date.value && dateArrayContains(props.bookedDates || [], date.value)) return false
+  if (date.value && dateArrayContains(props.optionDates || [], date.value)) return true
   return undefined
 })
 </script>

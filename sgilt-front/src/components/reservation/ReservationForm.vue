@@ -20,7 +20,7 @@
       </div>
 
       <!-- Select options -->
-      <div class="form-group">
+      <div class="form-group" v-if="chosenDateState !== 'booked'">
         <p>{{ $t('reservation.form.options-label') }}</p>
         <SgiltSelect :options="pricesOptions" v-model="selectedOption">
           <template v-slot:left-icon>
@@ -30,15 +30,22 @@
       </div>
 
       <!-- Pricing -->
-      <div class="pricing">
+      <div class="pricing" v-if="chosenDateState !== 'booked'">
         <p>{{ $t('reservation.form.pricing') }}</p>
         <p class="price">{{ calculatedPrice }} €</p>
       </div>
     </div>
 
+    <!-- if booked -->
+    <AlreadyBooked
+      v-if="chosenDateState === 'booked'"
+      :partnerName="partnerName"
+      :partnerId="partnerId"
+    />
+
     <!-- Footer Section -->
     <div class="reservation-footer">
-      <SgiltButton @click="handleBooking" class="button">
+      <SgiltButton @click="handleBooking" class="button" v-if="chosenDateState !== 'booked'">
         {{ $t('reservation.button') }}
       </SgiltButton>
       <div class="contact">
@@ -64,6 +71,8 @@ import FirsReservationModal from '@/components/event/FirstReservationModal.vue'
 import IconList from '@/components/icons/IconList.vue'
 import type { CalendarEntry, Price } from '@/data/domain/Partner'
 import { useI18n } from 'vue-i18n'
+import { dateArrayContains } from '@/utils/ArrayUtils'
+import AlreadyBooked from '@/components/reservation/AlreadyBooked.vue'
 
 const { t } = useI18n()
 
@@ -72,6 +81,8 @@ const selectedPrice = defineModel<Price>('selected-price')
 const showFirstReservationModal = ref<boolean>(false)
 
 const props = defineProps<{
+  partnerName: string
+  partnerId: string
   prices: Price[]
   calendar: CalendarEntry[]
 }>()
@@ -84,6 +95,15 @@ watch(
     if (newValue) dateError.value = ''
   },
 )
+
+const chosenDateState = computed(() => {
+  const date = selectedDate.value
+  if (!date) return 'empty'
+  if (bookedDates.value.includes(date)) return 'booked'
+  if (dateArrayContains(bookedDates.value, date)) return 'booked'
+  if (dateArrayContains(optionDates.value, date)) return 'option'
+  return 'available'
+})
 
 // -- price --
 const pricesOptions = props.prices.map((price) => ({
@@ -129,6 +149,7 @@ const newUserConnected = (email: string) => {
 <style scoped lang="scss">
 /* Main container */
 .reservation-form {
+  width: 20rem;
   background: $color-white;
   padding: $spacing-l;
   border-radius: $border-radius-s;
@@ -191,10 +212,18 @@ const newUserConnected = (email: string) => {
 }
 /* Responsive */
 @include respond-to(tablet) {
+  .reservation-form {
+    width: 30rem;
+  }
   .reservation-header {
     h2 {
       font-size: $font-size-h1;
     }
+  }
+}
+@include respond-to(mobile) {
+  .reservation-form {
+    width: initial;
   }
 }
 </style>

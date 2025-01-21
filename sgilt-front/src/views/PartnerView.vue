@@ -22,6 +22,8 @@
       <!-- Reservation form -->
       <ReservationForm
         v-model:selected-date="selectedDate"
+        :partnerName="partner.title"
+        :partnerId="partner.id"
         :prices="prices"
         :calendar="calendar"
         class="reservation-form"
@@ -36,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import ReservationForm from '@/components/partner/ReservationForm.vue'
+import ReservationForm from '@/components/reservation/ReservationForm.vue'
 import PartnerMedia from '@/components/partner/PartnerMedia.vue'
 import type { CalendarEntry, Price } from '@/data/domain/Partner'
 import { getPartnerBySlug, getPartnerCalendar } from '@/data/services/PartnerService'

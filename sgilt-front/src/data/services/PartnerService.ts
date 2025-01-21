@@ -5,6 +5,7 @@ import {
   queryPartners,
   findPartnerBySlug,
   partnerCalendar,
+  relatedPartners,
 } from '@/data/repository/PartnerRepository'
 
 /**
@@ -45,4 +46,13 @@ export const getPartnerBySlug = async (slug: string): Promise<Partner> => {
  */
 export const getPartnerCalendar = async (partnerId: string): Promise<CalendarEntry[]> => {
   return partnerCalendar(partnerId)
+}
+
+/**
+ * get releated partners
+ * @param partnerId
+ * @returns partners that are releated to the given partner
+ */
+export const getReleatedPartners = async (partnerId: string): Promise<Partner[]> => {
+  return relatedPartners(partnerId)
 }
