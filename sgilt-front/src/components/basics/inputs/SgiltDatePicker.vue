@@ -1,16 +1,17 @@
 <template>
   <VueDatePicker
     v-model="date"
-    :auto-apply="true"
+    auto-apply
     :enable-time-picker="false"
     locale="fr"
     :format="format"
     class="sgilt-date-picker"
     :day-class="getDayClass"
   >
-    <template #action-extra="">
-      <p class="extra-info">
-        <span class="dot booked" /> réservé <span class="dot option" /> sous option
+    <template #action-extra>
+      <p class="extra-info" v-if="showExtraInfo">
+        <span class="dot booked" /> {{ $t('date-picker.booked') }} <span class="dot option" />
+        {{ $t('date-picker.option') }}
       </p>
     </template>
   </VueDatePicker>
@@ -20,8 +21,9 @@
 import VueDatePicker from '@vuepic/vue-datepicker'
 import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
+import { computed, ref } from 'vue'
 
-const date = defineModel<Date>()
+const date = ref<Date | null>(null)
 const format = (date: Date) => dayjs(date).locale('fr').format('dddd DD MMM YYYY')
 
 // dates to highlight
@@ -32,10 +34,14 @@ const props = defineProps<{
 
 const getDayClass = (date: Date) => {
   const date_ = dayjs(date)
-  if (props.bookedDates?.some((d) => dayjs(d).isSame(date_, 'day'))) return 'booked date'
-  if (props.optionDates?.some((d) => dayjs(d).isSame(date_, 'day'))) return 'option date'
+  if (props.bookedDates?.some((d) => dayjs(d).isSame(date_, 'day'))) return 'date booked'
+  if (props.optionDates?.some((d) => dayjs(d).isSame(date_, 'day'))) return 'date option'
   return ''
 }
+
+const showExtraInfo = computed(
+  () => (props.bookedDates?.length || 0) > 0 || (props.optionDates?.length || 0) > 0,
+)
 </script>
 
 <style lang="scss">

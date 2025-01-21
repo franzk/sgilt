@@ -7,6 +7,10 @@
       "celebrez": "CÉLÉBREZ !!"
     }
   },
+  "date-picker": {
+    "booked": "Réservé",
+    "option": "Sous option"
+  },
   "categories": {
     "music": {
       "title": "Musique",
