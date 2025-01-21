@@ -10,7 +10,7 @@
   >
     <template #action-extra="">
       <p class="extra-info">
-        <span class="dot-booked" /> réservé <span class="dot-option" /> sous option
+        <span class="dot booked" /> réservé <span class="dot option" /> sous option
       </p>
     </template>
   </VueDatePicker>
@@ -32,8 +32,8 @@ const props = defineProps<{
 
 const getDayClass = (date: Date) => {
   const date_ = dayjs(date)
-  if (props.bookedDates?.some((d) => dayjs(d).isSame(date_, 'day'))) return 'booked-date'
-  if (props.optionDates?.some((d) => dayjs(d).isSame(date_, 'day'))) return 'option-date'
+  if (props.bookedDates?.some((d) => dayjs(d).isSame(date_, 'day'))) return 'booked date'
+  if (props.optionDates?.some((d) => dayjs(d).isSame(date_, 'day'))) return 'option date'
   return ''
 }
 </script>
@@ -44,6 +44,9 @@ const getDayClass = (date: Date) => {
 .sgilt-date-picker {
   width: 100%;
 }
+
+$booked-color: red;
+$option-color: orange;
 
 .dp__theme_light {
   --dp-border-radius: 1em;
@@ -70,40 +73,36 @@ const getDayClass = (date: Date) => {
   font-weight: bold;
 }
 
-.option-date {
+.date {
   font-weight: bold;
   &::after {
     content: '.';
     position: absolute;
-    color: orange;
     font-size: 4rem;
+  }
+
+  &.booked::after {
+    color: $booked-color;
+  }
+
+  &.option::after {
+    color: $option-color;
   }
 }
 
-.booked-date {
-  font-weight: bold;
-  &::after {
-    content: '.';
-    position: absolute;
-    color: red;
-    font-size: 4rem;
+.dot {
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  margin: 0 $spacing-s;
+
+  &.booked {
+    background: $booked-color;
   }
-}
 
-.dot-booked {
-  width: 1em;
-  height: 1em;
-  border-radius: 50%;
-  background: red;
-  margin: 0 $spacing-s;
-}
-
-.dot-option {
-  width: 1em;
-  height: 1em;
-  border-radius: 50%;
-  background: orange;
-  margin: 0 $spacing-s;
+  &.option {
+    background: $option-color;
+  }
 }
 
 .extra-info {
