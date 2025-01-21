@@ -23,6 +23,7 @@
       <ReservationForm
         v-model:selected-date="selectedDate"
         :prices="prices"
+        :calendar="calendar"
         class="reservation-form"
       />
     </div>
@@ -37,10 +38,10 @@
 <script setup lang="ts">
 import ReservationForm from '@/components/partner/ReservationForm.vue'
 import PartnerMedia from '@/components/partner/PartnerMedia.vue'
-import type { Price } from '@/data/domain/Partner'
-import { getPartnerBySlug } from '@/data/services/PartnerService'
+import type { CalendarEntry, Price } from '@/data/domain/Partner'
+import { getPartnerBySlug, getPartnerCalendar } from '@/data/services/PartnerService'
 import { tabletView } from '@/utils/StyleUtils'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
@@ -60,6 +61,17 @@ onMounted(async () => {
 
 const selectedDate = ref<Date>()
 
+const prices = ref<Price[]>([])
+const calendar = ref<CalendarEntry[]>([])
+
+watch(partner, (newPartner) => {
+  prices.value = newPartner.prices
+  getPartnerCalendar(newPartner.id).then((fetchedCalendar) => {
+    console.log(fetchedCalendar)
+    calendar.value = fetchedCalendar
+  })
+})
+
 // mock data
 const photos = ref([
   'https://picsum.photos/520/400',
@@ -67,14 +79,6 @@ const photos = ref([
   'https://picsum.photos/520/402',
   'https://picsum.photos/520/403',
 ])
-
-const prices: Price[] = [
-  { id: '1', title: 'Concert de 1h', price: 100 },
-  { id: '2', title: 'Concert de 2h', price: 200 },
-  { id: '3', title: 'Concert de 3h', price: 300 },
-  { id: '4', title: 'Concert de 4h', price: 400 },
-  { id: '5', title: 'Concert de 5h', price: 500 },
-]
 </script>
 
 <style scoped lang="scss">

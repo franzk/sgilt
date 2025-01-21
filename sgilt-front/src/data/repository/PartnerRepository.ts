@@ -1,5 +1,6 @@
-import type { Partner } from '@/data/domain/Partner'
+import type { CalendarEntry, Partner } from '@/data/domain/Partner'
 import type { PartnerQuery } from '@/data/api/query/PartnerQuery'
+import dayjs from 'dayjs'
 
 /**
  * Get all partners
@@ -26,6 +27,15 @@ export const queryPartners = async (query: PartnerQuery): Promise<Partner[]> => 
         query.tagsId.length === 0 ||
         partner.tags.some((tag) => query.tagsId?.includes(tag.id)),
     )
+    .filter(
+      (partner) =>
+        !query.dateFilter ||
+        !partner.calendar?.some(
+          (entry) =>
+            dayjs(entry.date).isSame(dayjs(query.dateFilter), 'day') && entry.state === 'booked',
+        ),
+    )
+
   return new Promise((resolve) => {
     resolve(results)
   })
@@ -44,6 +54,17 @@ export const findPartnerBySlug = async (slug: string): Promise<Partner> => {
   })
 }
 
+export const partnerCalendar = async (id: string): Promise<CalendarEntry[]> => {
+  const partner = partners.find((partner) => partner.id === id)
+  return new Promise((resolve, reject) => {
+    if (!partner) {
+      reject(new Error('Partner not found'))
+    } else {
+      resolve(partner?.calendar || [])
+    }
+  })
+}
+
 // Mock data
 const partners: Partner[] = [
   // Category: Music
@@ -56,7 +77,16 @@ const partners: Partner[] = [
       'Plongez dans l’univers captivant du Gypsy Reed Ensemble, un groupe de jazz qui mêle élégance et passion. Leur musique envoûtante saura créer une ambiance raffinée et chaleureuse, idéale pour vos événements privés ou professionnels. Laissez-vous séduire par leurs mélodies uniques et leur maîtrise musicale incomparable.',
     imageUrl: './images/jazz-band.jpg',
     tags: [{ id: '1', name: 'Jazz', category: 'music' }],
-    entryPrice: 1200,
+    entryPrice: 500,
+    prices: [
+      { id: '1', title: 'Formule 5 musiciens', price: 1500 },
+      { id: '2', title: 'Formule 4 musiciens', price: 1200 },
+      { id: '3', title: 'Formule 3 musiciens', price: 900 },
+    ],
+    calendar: [
+      { id: '1', date: new Date('2025-01-24'), state: 'booked' },
+      { id: '2', date: new Date('2025-01-25'), state: 'option' },
+    ],
   },
   {
     id: '2',
@@ -68,6 +98,11 @@ const partners: Partner[] = [
     imageUrl: './images/pop-rock-band.jpg',
     tags: [{ id: '2', name: 'Pop-Rock', category: 'music' }],
     entryPrice: 800,
+    prices: [
+      { id: '1', title: 'Formule 5 musiciens', price: 1500 },
+      { id: '2', title: 'Formule 4 musiciens', price: 1200 },
+      { id: '3', title: 'Formule 3 musiciens', price: 900 },
+    ],
   },
   {
     id: '3',
@@ -79,6 +114,13 @@ const partners: Partner[] = [
     imageUrl: './images/dj-animation.jpg',
     tags: [{ id: '3', name: 'D.J.', category: 'music' }],
     entryPrice: 600,
+    prices: [
+      { id: '1', title: 'Animation de 1h', price: 100 },
+      { id: '2', title: 'Animation de 2h', price: 200 },
+      { id: '3', title: 'Animation de 3h', price: 300 },
+      { id: '4', title: 'Animation de 4h', price: 400 },
+      { id: '5', title: 'Animation de 5h', price: 500 },
+    ],
   },
   {
     id: '4',
@@ -90,6 +132,11 @@ const partners: Partner[] = [
     imageUrl: './images/jazz-quartet.jpg',
     tags: [{ id: '1', name: 'Jazz', category: 'music' }],
     entryPrice: 1000,
+    prices: [
+      { id: '1', title: 'Formule 5 musiciens', price: 1500 },
+      { id: '2', title: 'Formule 4 musiciens', price: 1200 },
+      { id: '3', title: 'Formule 3 musiciens', price: 900 },
+    ],
   },
   {
     id: '5',
@@ -101,6 +148,11 @@ const partners: Partner[] = [
     imageUrl: './images/rock-band.jpg',
     tags: [{ id: '2', name: 'Pop-Rock', category: 'music' }],
     entryPrice: 1500,
+    prices: [
+      { id: '1', title: 'Formule 5 musiciens', price: 1500 },
+      { id: '2', title: 'Formule 4 musiciens', price: 1200 },
+      { id: '3', title: 'Formule 3 musiciens', price: 900 },
+    ],
   },
 
   // Category: Food
@@ -114,6 +166,11 @@ const partners: Partner[] = [
     imageUrl: './images/traiteur-gourmet.jpg',
     tags: [{ id: '4', name: 'Traiteur', category: 'food' }],
     entryPrice: 400,
+    prices: [
+      { id: '1', title: 'Menu 1 (prix / personne)', price: 40, unity: 'personne(s)' },
+      { id: '2', title: 'Menu 2 (prix / personne)', price: 70, unity: 'personne(s)' },
+      { id: '3', title: 'Menu 3 (prix / personne)', price: 100, unity: 'personne(s)' },
+    ],
   },
   {
     id: '7',
@@ -147,6 +204,11 @@ const partners: Partner[] = [
     imageUrl: './images/cuisine-francaise.jpg',
     tags: [{ id: '4', name: 'Traiteur', category: 'food' }],
     entryPrice: 400,
+    prices: [
+      { id: '1', title: 'Menu 1 (prix / personne)', price: 40, unity: 'personne(s)' },
+      { id: '2', title: 'Menu 2 (prix / personne)', price: 70, unity: 'personne(s)' },
+      { id: '3', title: 'Menu 3 (prix / personne)', price: 100, unity: 'personne(s)' },
+    ],
   },
   {
     id: '10',
@@ -171,6 +233,7 @@ const partners: Partner[] = [
     imageUrl: './images/salle-fetes.png',
     tags: [{ id: '7', name: 'Salle', category: 'place' }],
     entryPrice: 1000,
+    prices: [{ id: '1', title: 'Location 1 journée', price: 1000 }],
   },
   {
     id: '12',
@@ -182,6 +245,7 @@ const partners: Partner[] = [
     imageUrl: './images/chateau-mariage.jpg',
     tags: [{ id: '7', name: 'Salle', category: 'place' }],
     entryPrice: 5000,
+    prices: [{ id: '1', title: 'Location 1 journée', price: 5000 }],
   },
   {
     id: '13',
@@ -193,6 +257,7 @@ const partners: Partner[] = [
     imageUrl: './images/hebergement-groupe.jpg',
     tags: [{ id: '8', name: 'Hébergement', category: 'place' }],
     entryPrice: 300,
+    prices: [{ id: '1', title: 'Location 1 nuit', price: 300 }],
   },
   {
     id: '14',
@@ -227,7 +292,11 @@ const partners: Partner[] = [
       'Capturez les moments les plus précieux de votre événement avec Léo Clairmont. Expert en photographie événementielle, il transforme chaque instant en un souvenir intemporel. Offrez-vous des clichés professionnels qui reflètent l’émotion et la beauté de votre journée.',
     imageUrl: './images/photographe-mariage.jpg',
     tags: [{ id: '10', name: 'Photographe', category: 'photo' }],
-    entryPrice: 350,
+    entryPrice: 500,
+    prices: [
+      { id: '1', title: '5 heures / 50 photos', price: 500 },
+      { id: '2', title: '5 heures / 100 photos', price: 700 },
+    ],
   },
   {
     id: '17',
@@ -239,6 +308,7 @@ const partners: Partner[] = [
     imageUrl: './images/photobooth-vintage.jpg',
     tags: [{ id: '11', name: 'Photobooth', category: 'photo' }],
     entryPrice: 400,
+    prices: [{ id: '1', title: 'Location 1 journée', price: 400 }],
   },
   {
     id: '18',
@@ -250,5 +320,6 @@ const partners: Partner[] = [
     imageUrl: './images/studio-photo-mobile.jpg',
     tags: [{ id: '10', name: 'Photographe', category: 'photo' }],
     entryPrice: 800,
+    prices: [{ id: '1', title: 'Prestation 1 journée', price: 800 }],
   },
 ]

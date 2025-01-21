@@ -11,7 +11,11 @@
       <!-- Datepicker -->
       <div class="form-group">
         <p>{{ $t('reservation.form.date-label') }}</p>
-        <SgiltDatePicker v-model="selectedDate" />
+        <SgiltDatePicker
+          v-model="selectedDate"
+          :booked-dates="bookedDates"
+          :option-dates="optionDates"
+        />
         <p class="error-msg">{{ dateError }}&nbsp;</p>
       </div>
 
@@ -58,7 +62,7 @@ import SgiltSelect, { type SgiltSelectOption } from '@/components/basics/inputs/
 import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 import FirsReservationModal from '@/components/event/FirstReservationModal.vue'
 import IconList from '@/components/icons/IconList.vue'
-import type { Price } from '@/data/domain/Partner'
+import type { CalendarEntry, Price } from '@/data/domain/Partner'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -69,6 +73,7 @@ const showFirstReservationModal = ref<boolean>(false)
 
 const props = defineProps<{
   prices: Price[]
+  calendar: CalendarEntry[]
 }>()
 
 // -- date --
@@ -101,6 +106,13 @@ const calculatedPrice = computed(() => {
 })
 
 // -- booking --
+const bookedDates = computed(() =>
+  props.calendar.filter((entry) => entry.state === 'booked').map((entry) => entry.date),
+)
+
+const optionDates = computed(() =>
+  props.calendar.filter((entry) => entry.state === 'option').map((entry) => entry.date),
+)
 const handleBooking = () => {
   if (!selectedDate.value) {
     dateError.value = t('reservation.form.date-error')

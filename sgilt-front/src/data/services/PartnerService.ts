@@ -1,9 +1,10 @@
-import type { Partner } from '@/data/domain/Partner'
+import type { CalendarEntry, Partner } from '@/data/domain/Partner'
 import type { PartnerQuery } from '@/data/api/query/PartnerQuery'
 import {
   getRandomPartners,
   queryPartners,
   findPartnerBySlug,
+  partnerCalendar,
 } from '@/data/repository/PartnerRepository'
 
 /**
@@ -35,4 +36,13 @@ export const searchPartners = async (query: PartnerQuery): Promise<Partner[]> =>
  */
 export const getPartnerBySlug = async (slug: string): Promise<Partner> => {
   return findPartnerBySlug(slug)
+}
+
+/**
+ * get partner calendar
+ * @param partnerId
+ * @returns the partner booked and option dates
+ */
+export const getPartnerCalendar = async (partnerId: string): Promise<CalendarEntry[]> => {
+  return partnerCalendar(partnerId)
 }

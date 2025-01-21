@@ -10,10 +10,19 @@ export interface Partner {
   tags: Tag[]
   entryPrice: number
   prices?: Price[]
+  calendar?: CalendarEntry[]
 }
 
 export interface Price {
   id: string
   title: string
+  description?: string
   price: number
+  unity?: string
+}
+
+export interface CalendarEntry {
+  id: string
+  date: Date
+  state: 'booked' | 'option'
 }
