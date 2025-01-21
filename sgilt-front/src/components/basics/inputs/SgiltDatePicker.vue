@@ -7,8 +7,10 @@
     :format="format"
     class="sgilt-date-picker"
     :day-class="getDayClass"
+    :state="choiceState"
   >
     <template #action-extra>
+      <!-- Extra info : color legend -->
       <p class="extra-info" v-if="showExtraInfo">
         <span class="dot booked" /> {{ $t('date-picker.booked') }} <span class="dot option" />
         {{ $t('date-picker.option') }}
@@ -21,9 +23,9 @@
 import VueDatePicker from '@vuepic/vue-datepicker'
 import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 
-const date = ref<Date | null>(null)
+const date = defineModel<Date>()
 const format = (date: Date) => dayjs(date).locale('fr').format('dddd DD MMM YYYY')
 
 // dates to highlight
@@ -33,15 +35,20 @@ const props = defineProps<{
 }>()
 
 const getDayClass = (date: Date) => {
-  const date_ = dayjs(date)
-  if (props.bookedDates?.some((d) => dayjs(d).isSame(date_, 'day'))) return 'date booked'
-  if (props.optionDates?.some((d) => dayjs(d).isSame(date_, 'day'))) return 'date option'
+  if (props.bookedDates?.some((d) => dayjs(d).isSame(date, 'day'))) return 'date booked'
+  if (props.optionDates?.some((d) => dayjs(d).isSame(date, 'day'))) return 'date option'
   return ''
 }
 
 const showExtraInfo = computed(
   () => (props.bookedDates?.length || 0) > 0 || (props.optionDates?.length || 0) > 0,
 )
+
+const choiceState = computed(() => {
+  if (date.value && props.bookedDates?.some((d) => dayjs(d).isSame(date.value, 'day'))) return false
+  if (date.value && props.optionDates?.some((d) => dayjs(d).isSame(date.value, 'day'))) return true
+  return undefined
+})
 </script>
 
 <style lang="scss">
@@ -63,6 +70,7 @@ $option-color: orange;
 
   --dp-primary-color: #{$color-accent};
   --dp-icon-color: #{$color-primary};
+  --dp-success-color: #{$option-color};
 }
 
 .dp__input {
