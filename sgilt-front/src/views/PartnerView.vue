@@ -26,7 +26,7 @@
         :partnerId="partner.id"
         :prices="prices"
         :calendar="calendar"
-        class="reservation-form"
+        :reservationDate="reservationDate"
       />
     </div>
 
@@ -45,34 +45,50 @@ import { getPartnerBySlug, getPartnerCalendar } from '@/data/services/PartnerSer
 import { tabletView } from '@/utils/StyleUtils'
 import { onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import dayjs from 'dayjs'
 
 const route = useRoute()
 const router = useRouter()
-const partner = ref()
 
+const partner = ref()
+const prices = ref<Price[]>([])
+const calendar = ref<CalendarEntry[]>([])
+
+// load partner data
 onMounted(async () => {
   const partnerSlug = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
+  loadPartner(partnerSlug)
+})
+
+watch(
+  () => route.params.id,
+  (newId) => {
+    const partnerSlug = Array.isArray(newId) ? newId[0] : newId
+    loadPartner(partnerSlug)
+  },
+)
+
+const loadPartner = (partnerSlug: string) => {
   getPartnerBySlug(partnerSlug)
     .then((p) => {
       partner.value = p
+      prices.value = p.prices || []
+      getPartnerCalendar(p.id).then((fetchedCalendar) => {
+        calendar.value = fetchedCalendar
+      })
     })
     .catch(() => {
       router.push('/404')
     })
-})
+}
 
+// reservation date
 const selectedDate = ref<Date>()
 
-const prices = ref<Price[]>([])
-const calendar = ref<CalendarEntry[]>([])
-
-watch(partner, (newPartner) => {
-  prices.value = newPartner.prices
-  getPartnerCalendar(newPartner.id).then((fetchedCalendar) => {
-    console.log(fetchedCalendar)
-    calendar.value = fetchedCalendar
-  })
-})
+const reservationDate = route.query?.date ? dayjs(route.query.date as string).toDate() : undefined
+if (reservationDate) {
+  selectedDate.value = reservationDate
+}
 
 // mock data
 const photos = ref([

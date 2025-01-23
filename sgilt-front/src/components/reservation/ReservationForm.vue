@@ -41,6 +41,7 @@
       v-if="chosenDateState === 'booked'"
       :partnerName="partnerName"
       :partnerId="partnerId"
+      :reservationDate="selectedDate"
     />
 
     <!-- Footer Section -->
@@ -73,12 +74,7 @@ import type { CalendarEntry, Price } from '@/data/domain/Partner'
 import { useI18n } from 'vue-i18n'
 import { dateArrayContains } from '@/utils/ArrayUtils'
 import AlreadyBooked from '@/components/reservation/AlreadyBooked.vue'
-
 const { t } = useI18n()
-
-const selectedDate = defineModel<Date>('selected-date')
-const selectedPrice = defineModel<Price>('selected-price')
-const showFirstReservationModal = ref<boolean>(false)
 
 const props = defineProps<{
   partnerName: string
@@ -87,16 +83,13 @@ const props = defineProps<{
   calendar: CalendarEntry[]
 }>()
 
-// -- date --
-const dateError = ref<string>('')
-watch(
-  () => selectedDate.value,
-  (newValue) => {
-    if (newValue) dateError.value = ''
-  },
-)
+// v-models
+const selectedDate = defineModel<Date>('selected-date')
+const selectedPrice = defineModel<Price>('selected-price')
 
+// -- date --
 const chosenDateState = computed(() => {
+  // is the selected date available, booked or option ?
   const date = selectedDate.value
   if (!date) return 'empty'
   if (bookedDates.value.includes(date)) return 'booked'
@@ -105,11 +98,21 @@ const chosenDateState = computed(() => {
   return 'available'
 })
 
+const dateError = ref<string>('') // reset error message when date changes
+watch(
+  () => selectedDate.value,
+  (newValue) => {
+    if (newValue) dateError.value = ''
+  },
+)
+
 // -- price --
-const pricesOptions = props.prices.map((price) => ({
-  value: price.id,
-  label: price.title,
-}))
+const pricesOptions = computed(() =>
+  props.prices.map((price) => ({
+    value: price.id,
+    label: price.title,
+  })),
+)
 
 const selectedOption = ref<SgiltSelectOption>()
 selectedPrice.value = props.prices?.[0] || {}
@@ -124,6 +127,13 @@ watch(
 const calculatedPrice = computed(() => {
   return selectedPrice.value?.price || 0
 })
+
+watch(
+  () => props.prices,
+  () => {
+    selectedOption.value = pricesOptions.value[0]
+  },
+)
 
 // -- booking --
 const bookedDates = computed(() =>
@@ -140,6 +150,9 @@ const handleBooking = () => {
     showFirstReservationModal.value = true // Open first reservation modal
   }
 }
+
+const showFirstReservationModal = ref<boolean>(false)
+
 // -> back from first reservation modal
 const newUserConnected = (email: string) => {
   console.log('New user connected with email:', email)

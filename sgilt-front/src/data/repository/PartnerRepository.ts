@@ -124,6 +124,7 @@ const partners: Partner[] = [
       { id: '2', title: 'Formule 4 musiciens', price: 1200 },
       { id: '3', title: 'Formule 3 musiciens', price: 900 },
     ],
+    calendar: [{ id: '1', date: new Date('2025-01-24'), state: 'booked' }],
   },
   {
     id: '3',

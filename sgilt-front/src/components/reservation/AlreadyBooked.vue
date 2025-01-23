@@ -7,30 +7,52 @@
 
   <div class="related-partners">
     <div class="partners">
-      <PartnerTail v-for="partner in relatedPartners" :key="partner.id" :partner="partner" />
+      <PartnerItem
+        v-for="partner in relatedPartners"
+        :key="partner.id"
+        :partner="partner"
+        @click="selectRelatedPartner(partner)"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { getReleatedPartners } from '@/data/services/PartnerService'
 import type { Partner } from '@/data/domain/Partner'
-import PartnerTail from '@/components/partner/PartnerTail.vue'
+import PartnerItem from '@/components/partner/PartnerItem.vue'
+import router from '@/router'
 
 const props = defineProps<{
   partnerName: string
   partnerId: string
+  reservationDate?: Date
 }>()
 
 const relatedPartners = ref<Partner[]>([])
 
 onMounted(() => {
-  // fetch related partners
-  getReleatedPartners(props.partnerId).then((partners) => {
+  fetchRelatedPartners(props.partnerId)
+})
+
+watch(
+  () => props.partnerId,
+  (newId) => {
+    fetchRelatedPartners(newId)
+  },
+)
+
+const fetchRelatedPartners = (partnerId: string) => {
+  getReleatedPartners(partnerId).then((partners) => {
     relatedPartners.value = partners
   })
-})
+}
+
+const selectRelatedPartner = (partner: Partner) => {
+  // redirect to partner page
+  router.push(`/${partner.slug}`)
+}
 </script>
 
 <style scoped lang="scss">

@@ -52,8 +52,8 @@
       "options-label": "Choisissez un service :",
       "pricing": "Tarif estimé:",
       "booked": {
-        "title": "🛑 Oups ! { partnerName } est déjà réservé ce jour-là.",
-        "subtitle": "Pas de souci, nous avons sélectionné pour vous des prestataires similaires disponibles à cette date."
+        "title": "🛑 Désolé, { partnerName } n’est pas disponible ce jour-là.",
+        "subtitle": "Ne vous inquiétez pas, nous avons sélectionné d’autres talents qui pourraient vous plaire !"
       }
     },
     "button": "Réserver",
