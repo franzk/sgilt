@@ -52,6 +52,8 @@
       "options-label": "Choisissez un service :",
       "price-placeholder": "Sélectionnez une option",
       "price-error": "Veuillez sélectionner une option avant de continuer.",
+      "quantity-label": "Quantité :",
+      "quantity-error": "Ce service nécessite un minimum de {count} {unity}. Vous pouvez ajuster le nombre ci-dessus 👆",
       "pricing": "Tarif estimé:",
       "booked": {
         "title": "🛑 Désolé, { partnerName } n’est pas disponible ce jour-là.",

@@ -12,11 +12,11 @@
       <div class="form-group">
         <p>{{ $t('reservation.form.date-label') }}</p>
         <SgiltDatePicker
-          v-model="selectedDate"
+          v-model="reservationStore.dateReservation"
           :booked-dates="bookedDates"
           :option-dates="optionDates"
         />
-        <p class="error-msg">{{ dateError }}&nbsp;</p>
+        <p class="error-msg">{{ reservationStore.dateError }}&nbsp;</p>
       </div>
 
       <!-- Select options -->
@@ -24,7 +24,7 @@
     </div>
 
     <!-- if booked -->
-    <AlreadyBooked v-if="chosenDateState === 'booked'" :reservationDate="selectedDate" />
+    <AlreadyBooked v-if="chosenDateState === 'booked'" />
 
     <!-- Footer Section submit & help -->
     <div class="reservation-footer">
@@ -47,42 +47,30 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
 import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 import FirsReservationModal from '@/components/event/FirstReservationModal.vue'
-import { useI18n } from 'vue-i18n'
 import { dateArrayContains } from '@/utils/ArrayUtils'
 import AlreadyBooked from '@/components/reservation/AlreadyBooked.vue'
 import { usePartnerStore } from '@/stores/partner.store'
 import PricingTool from '@/components/reservation/PricingTool.vue'
 import { useReservationStore } from '@/stores/reservation.store'
-const { t } = useI18n()
 
 const partnerStore = usePartnerStore()
 const partner = computed(() => partnerStore.partner)
 
 const reservationStore = useReservationStore()
 
-const selectedDate = ref<Date>()
-
 // -- date --
 const chosenDateState = computed(() => {
   // is the selected date available, booked or option ?
-  const date = selectedDate.value
+  const date = reservationStore.dateReservation
   if (!date) return 'empty'
   if (bookedDates.value && dateArrayContains(bookedDates.value, date)) return 'booked'
   if (optionDates.value && dateArrayContains(optionDates.value, date)) return 'option'
   return 'available'
 })
-
-const dateError = ref<string>('') // reset error message when date changes
-watch(
-  () => selectedDate.value,
-  (newValue) => {
-    if (newValue) dateError.value = ''
-  },
-)
 
 // -- booking --
 const bookedDates = computed(() =>
@@ -96,14 +84,7 @@ const optionDates = computed(() =>
 // submit button
 const showFirstReservationModal = ref<boolean>(false)
 const handleBooking = () => {
-  console.log('Booking:', reservationStore)
-  if (!selectedDate.value) {
-    dateError.value = t('reservation.form.date-error') // date is required
-  } else if ((reservationStore.price?.price || '-1') === '-1') {
-    reservationStore.priceError = t('reservation.form.price-error') // price is required
-  } else {
-    showFirstReservationModal.value = true // Open first reservation modal
-  }
+  showFirstReservationModal.value = reservationStore.checkValidity()
 }
 
 // -> back from first reservation modal
@@ -113,7 +94,6 @@ const newUserConnected = (email: string) => {
 </script>
 
 <style scoped lang="scss">
-/* Main container */
 .reservation-form {
   width: 20rem;
   background: $color-white;

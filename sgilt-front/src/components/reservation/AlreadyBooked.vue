@@ -30,10 +30,6 @@ import { usePartnerStore } from '@/stores/partner.store'
 const partnerStore = usePartnerStore()
 const partner = computed(() => partnerStore.partner)
 
-defineProps<{
-  reservationDate?: Date
-}>()
-
 const relatedPartners = ref<Partner[]>([])
 
 onMounted(() => {

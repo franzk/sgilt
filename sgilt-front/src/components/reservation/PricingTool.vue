@@ -1,17 +1,23 @@
 <template>
+  <!-- Options -->
   <div class="form-group">
-    <!-- title -->
     <p>{{ $t('reservation.form.options-label') }}</p>
-
-    <!-- select options -->
     <SgiltSelect :options="pricesOptions || []" v-model="selectedOption">
       <template v-slot:left-icon>
         <IconList />
       </template>
     </SgiltSelect>
-
-    <!-- error message -->
     <p class="error-msg">{{ reservationStore.priceError }}&nbsp;</p>
+  </div>
+
+  <!-- Quantity -->
+  <div class="form-group" v-if="reservationStore.price?.unity">
+    <p>{{ $t('reservation.form.quantity-label') }}</p>
+    <div class="quantity">
+      <SgiltNumberInput type="number" v-model="reservationStore.quantity" />
+      <p>{{ reservationStore.price?.unity }}</p>
+    </div>
+    <p class="error-msg">{{ reservationStore.quantityError }}&nbsp;</p>
   </div>
 
   <!-- Price estimation -->
@@ -29,6 +35,7 @@ import SgiltSelect from '@/components/basics/inputs/SgiltSelect.vue'
 import type { SgiltSelectOption } from '@/components/basics/inputs/SgiltSelect.vue'
 import IconList from '@/components/icons/IconList.vue'
 import { useI18n } from 'vue-i18n'
+import SgiltNumberInput from '@/components/basics/inputs/SgiltNumberInput.vue'
 const { t } = useI18n()
 
 // stores
@@ -53,17 +60,25 @@ const selectedPrice = computed(() =>
   partner.value?.prices?.find((price) => price.id === selectedOption.value?.value),
 )
 
+// on new price selection
 watch(
   () => selectedPrice.value,
   (newValue) => {
     reservationStore.price = newValue
     reservationStore.priceError = ''
+    if (newValue?.unity && !reservationStore.quantity) {
+      reservationStore.quantity = newValue?.minQuantity || 0
+    }
   },
 )
 
 // calculated price
 const calculatedPrice = computed(() => {
-  return selectedPrice.value?.price || 0
+  if (!selectedPrice.value?.unity) {
+    return selectedPrice.value?.price || 0
+  } else {
+    return (selectedPrice.value?.price || 0) * (reservationStore.quantity || 0)
+  }
 })
 
 // reset selected option when prices change
@@ -87,5 +102,9 @@ watch(
     color: $color-accent;
     font-weight: bold;
   }
+}
+.quantity {
+  display: flex;
+  gap: $spacing-s;
 }
 </style>

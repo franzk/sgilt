@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, watch } from 'vue'
 
 const props = defineProps<{
   photos: string[]
@@ -67,7 +67,17 @@ const handleKeydown = (event: KeyboardEvent) => {
   if (event.key === 'Escape') closeModal()
 }
 
-onMounted(() => window.addEventListener('keydown', handleKeydown))
+watch(
+  () => displayedPhoto.value,
+  () => {
+    if (displayedPhoto.value) {
+      window.addEventListener('keydown', handleKeydown)
+    } else {
+      window.removeEventListener('keydown', handleKeydown)
+    }
+  },
+)
+
 onUnmounted(() => window.removeEventListener('keydown', handleKeydown))
 </script>
 

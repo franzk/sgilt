@@ -98,7 +98,7 @@ const partners: Partner[] = [
       'Plongez dans l’univers captivant du Gypsy Reed Ensemble, un groupe de jazz qui mêle élégance et passion. Leur musique envoûtante saura créer une ambiance raffinée et chaleureuse, idéale pour vos événements privés ou professionnels. Laissez-vous séduire par leurs mélodies uniques et leur maîtrise musicale incomparable.',
     imageUrl: './images/jazz-band.jpg',
     tags: [{ id: '1', name: 'Jazz', category: 'music' }],
-    entryPrice: 500,
+    entryPrice: 900,
     prices: [
       { id: '1', title: 'Formule 5 musiciens', price: 1500 },
       { id: '2', title: 'Formule 4 musiciens', price: 1200 },
@@ -118,7 +118,7 @@ const partners: Partner[] = [
       'Starlight Pulse apporte une énergie débordante et des rythmes entraînants pour faire vibrer votre soirée. Avec un répertoire varié, allant des classiques pop-rock aux hits modernes, ce groupe saura ravir tous vos invités. Offrez à votre événement une ambiance électrique qui restera gravée dans les mémoires.',
     imageUrl: './images/pop-rock-band.jpg',
     tags: [{ id: '2', name: 'Pop-Rock', category: 'music' }],
-    entryPrice: 800,
+    entryPrice: 900,
     prices: [
       { id: '1', title: 'Formule 5 musiciens', price: 1500 },
       { id: '2', title: 'Formule 4 musiciens', price: 1200 },
@@ -135,13 +135,13 @@ const partners: Partner[] = [
       'Avec DJ Animation aux platines, transformez votre soirée en un moment inoubliable. Maître dans l’art de lire la piste de danse, ce DJ adapte sa playlist en temps réel pour maintenir une ambiance au top. Une soirée animée, rythmée et sur mesure vous attend.',
     imageUrl: './images/dj-animation.jpg',
     tags: [{ id: '3', name: 'D.J.', category: 'music' }],
-    entryPrice: 600,
+    entryPrice: 200,
     prices: [
-      { id: '1', title: 'Animation de 1h', price: 100 },
-      { id: '2', title: 'Animation de 2h', price: 200 },
-      { id: '3', title: 'Animation de 3h', price: 300 },
-      { id: '4', title: 'Animation de 4h', price: 400 },
-      { id: '5', title: 'Animation de 5h', price: 500 },
+      { id: '1', title: 'Animation de 1h', price: 200 },
+      { id: '2', title: 'Animation de 2h', price: 300 },
+      { id: '3', title: 'Animation de 3h', price: 400 },
+      { id: '4', title: 'Animation de 4h', price: 500 },
+      { id: '5', title: 'Animation de 5h', price: 600 },
     ],
   },
   {
@@ -153,7 +153,7 @@ const partners: Partner[] = [
       'Swing Spark combine le charme du jazz classique avec une touche contemporaine pour sublimer vos événements. Ce quatuor talentueux crée une atmosphère sophistiquée et intime, idéale pour des réceptions élégantes. Offrez à vos invités une expérience musicale mémorable et pleine de finesse.',
     imageUrl: './images/jazz-quartet.jpg',
     tags: [{ id: '1', name: 'Jazz', category: 'music' }],
-    entryPrice: 1000,
+    entryPrice: 900,
     prices: [
       { id: '1', title: 'Formule 5 musiciens', price: 1500 },
       { id: '2', title: 'Formule 4 musiciens', price: 1200 },
@@ -169,7 +169,7 @@ const partners: Partner[] = [
       'Préparez-vous à une explosion de sons et d’énergie avec The Jive Rebels ! Ce groupe de rock met le feu à la scène avec des performances électrisantes et un répertoire qui ravira les fans de rock. Assurez le succès de votre événement avec une ambiance vibrante et inoubliable.',
     imageUrl: './images/rock-band.jpg',
     tags: [{ id: '2', name: 'Pop-Rock', category: 'music' }],
-    entryPrice: 1500,
+    entryPrice: 900,
     prices: [
       { id: '1', title: 'Formule 5 musiciens', price: 1500 },
       { id: '2', title: 'Formule 4 musiciens', price: 1200 },
@@ -187,11 +187,29 @@ const partners: Partner[] = [
       'Éclat Gourmet propose une expérience culinaire haut de gamme pour vos réceptions. Avec des menus créatifs, élaborés à partir de produits frais et locaux, ce traiteur transformera votre événement en un moment gastronomique unique. Offrez à vos invités le luxe d’une cuisine raffinée et savoureuse.',
     imageUrl: './images/traiteur-gourmet.jpg',
     tags: [{ id: '4', name: 'Traiteur', category: 'food' }],
-    entryPrice: 400,
+    entryPrice: 40,
     prices: [
-      { id: '1', title: 'Menu 1 (prix / personne)', price: 40, unity: 'personne(s)' },
-      { id: '2', title: 'Menu 2 (prix / personne)', price: 70, unity: 'personne(s)' },
-      { id: '3', title: 'Menu 3 (prix / personne)', price: 100, unity: 'personne(s)' },
+      {
+        id: '1',
+        title: 'Menu 1 : 40€ / personne',
+        price: 40,
+        unity: 'personne(s)',
+        minQuantity: 20,
+      },
+      {
+        id: '2',
+        title: 'Menu 2 : 70€ / personne',
+        price: 70,
+        unity: 'personne(s)',
+        minQuantity: 20,
+      },
+      {
+        id: '3',
+        title: 'Menu 3 : 100€ / personne',
+        price: 100,
+        unity: 'personne(s)',
+        minQuantity: 20,
+      },
     ],
   },
   {
@@ -203,7 +221,10 @@ const partners: Partner[] = [
       'Apportez une touche conviviale et délicieuse à votre événement avec Food Truck Burgers. Spécialisé dans les burgers gourmets préparés sur place, ce food truck ravira les amateurs de bonne cuisine. Une solution parfaite pour une ambiance décontractée et un plaisir gustatif garanti.',
     imageUrl: './images/food-truck-burgers.jpg',
     tags: [{ id: '5', name: 'Food Truck', category: 'food' }],
-    entryPrice: 300,
+    entryPrice: 30,
+    prices: [
+      { id: '1', title: 'Formule Food Truck', price: 30, unity: 'personne(s)', minQuantity: 50 },
+    ],
   },
   {
     id: '8',
@@ -225,11 +246,11 @@ const partners: Partner[] = [
       'Découvrez l’élégance de la gastronomie française avec ce buffet soigneusement préparé. Des plats traditionnels revisités avec finesse pour satisfaire les palais les plus exigeants. Idéal pour vos réceptions haut de gamme, ce buffet apportera une touche de prestige à votre événement.',
     imageUrl: './images/cuisine-francaise.jpg',
     tags: [{ id: '4', name: 'Traiteur', category: 'food' }],
-    entryPrice: 400,
+    entryPrice: 40,
     prices: [
-      { id: '1', title: 'Menu 1 (prix / personne)', price: 40, unity: 'personne(s)' },
-      { id: '2', title: 'Menu 2 (prix / personne)', price: 70, unity: 'personne(s)' },
-      { id: '3', title: 'Menu 3 (prix / personne)', price: 100, unity: 'personne(s)' },
+      { id: '1', title: 'Menu 1', price: 40, unity: 'personne(s)', minQuantity: 20 },
+      { id: '2', title: 'Menu 2', price: 70, unity: 'personne(s)', minQuantity: 20 },
+      { id: '3', title: 'Menu 3', price: 100, unity: 'personne(s)', minQuantity: 20 },
     ],
   },
   {
@@ -241,7 +262,10 @@ const partners: Partner[] = [
       'Régalez vos invités avec des pizzas artisanales préparées sous leurs yeux grâce à notre camion pizza. La cuisson au feu de bois garantit une saveur authentique et incomparable. Une solution conviviale et savoureuse pour ravir petits et grands lors de vos événements.',
     imageUrl: './images/pizza-truck.jpg',
     tags: [{ id: '5', name: 'Food Truck', category: 'food' }],
-    entryPrice: 200,
+    entryPrice: 20,
+    prices: [
+      { id: '1', title: 'Formule Food Truck', price: 20, unity: 'personne(s)', minQuantity: 50 },
+    ],
   },
 
   // Category: Place

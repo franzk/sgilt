@@ -11,7 +11,7 @@
       @keydown="handleKeyDown"
       @blur="$emit('blur')"
     />
-    <span>€</span>
+    <span v-if="symbol">{{ symbol }}</span>
   </p>
 </template>
 
@@ -23,6 +23,7 @@ const model = defineModel<number>()
 
 defineProps<{
   placeholder?: string
+  symbol?: string
 }>()
 
 defineEmits<{
@@ -87,17 +88,22 @@ input[type='number'] {
 }
 
 .price-input {
-  display: flex;
+  display: inline-flex;
   flex-direction: row;
   align-content: center;
 
   height: 2.5rem;
 
-  //&:focus-within {
   &:has(input:focus-visible) {
     outline: $focus-outline;
     outline-offset: $focus-outline-offset;
     border-radius: $br;
+  }
+
+  &:not(:has(span)) {
+    input {
+      border-radius: $br;
+    }
   }
 
   input {
@@ -105,6 +111,7 @@ input[type='number'] {
     width: 5rem;
     border-radius: $br 0 0 $br;
     border: $bw solid $bc;
+    text-align: right;
 
     &:focus {
       outline: none;

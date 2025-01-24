@@ -1,12 +1,14 @@
 <template>
   <div class="price-filter">
     <div class="price-range">
-      <SgiltPriceInput
+      <SgiltNumberInput
+        symbol="€"
         v-model="minPrice"
         :placeholder="$t('texts.minimum')"
         @blur="$emit('blur')"
       />
-      <SgiltPriceInput
+      <SgiltNumberInput
+        symbol="€"
         v-model="maxPrice"
         :placeholder="$t('texts.maximum')"
         @blur="$emit('blur')"
@@ -16,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import SgiltPriceInput from '@/components/basics/inputs/SgiltPriceInput.vue'
+import SgiltNumberInput from '@/components/basics/inputs/SgiltNumberInput.vue'
 
 const minPrice = defineModel('minPrice', { type: Number, required: true })
 const maxPrice = defineModel('maxPrice', { type: Number, required: true })

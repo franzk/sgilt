@@ -19,6 +19,7 @@ export interface Price {
   description?: string
   price: number
   unity?: string
+  minQuantity?: number
 }
 
 export interface CalendarEntry {
