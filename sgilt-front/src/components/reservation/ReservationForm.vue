@@ -1,6 +1,6 @@
 <template>
   <div class="reservation-form" v-if="partner">
-    <!-- Header Section -->
+    <!-- Header Section : title & subtitle -->
     <div class="reservation-header">
       <h2>{{ $t('reservation.title') }}</h2>
       <p class="subtitle">{{ $t('reservation.subtitle') }}</p>
@@ -39,7 +39,7 @@
     <!-- if booked -->
     <AlreadyBooked v-if="chosenDateState === 'booked'" :reservationDate="selectedDate" />
 
-    <!-- Footer Section -->
+    <!-- Footer Section submit & help -->
     <div class="reservation-footer">
       <SgiltButton @click="handleBooking" class="button" v-if="chosenDateState !== 'booked'">
         {{ $t('reservation.button') }}
@@ -50,6 +50,7 @@
     </div>
   </div>
 
+  <!-- First reservation modal in cas of submission -->
   <FirsReservationModal
     :showModal="showFirstReservationModal"
     @close="showFirstReservationModal = false"
@@ -98,6 +99,7 @@ watch(
 
 // -- price --
 const pricesOptions = computed(() =>
+  // list of prices options
   partner?.prices?.map((price) => ({
     value: price.id,
     label: price.title,
@@ -105,7 +107,7 @@ const pricesOptions = computed(() =>
 )
 
 const selectedOption = ref<SgiltSelectOption>()
-selectedPrice.value = partner?.prices?.[0]
+selectedPrice.value = partner?.prices?.[0] // default selected price
 
 watch(
   // update selected price when selected option changes
@@ -120,6 +122,7 @@ const calculatedPrice = computed(() => {
 })
 
 watch(
+  // reset selected option when prices change
   () => partner?.prices,
   () => {
     selectedOption.value = pricesOptions.value?.[0]

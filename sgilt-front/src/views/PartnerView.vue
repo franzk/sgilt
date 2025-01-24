@@ -1,24 +1,12 @@
 <template>
-  <div class="split-screen-layout" v-if="partnerStore.partner">
+  <div class="split-screen-layout" v-if="partner">
     <!-- left content : texts & actions -->
     <div class="left-content">
       <!-- Header -->
-      <header class="partner-header">
-        <div class="header-left">
-          <img
-            :src="partnerStore.partner.imageUrl"
-            alt="Photo du partner"
-            class="profile-picture"
-          />
-          <div>
-            <h1>{{ partnerStore.partner.title }}</h1>
-            <p class="slogan">{{ partnerStore.partner.description }}</p>
-          </div>
-        </div>
-      </header>
+      <PartnerHeader />
 
       <!-- Description -->
-      <p class="partner-description">{{ partnerStore.partner.longDescription }}</p>
+      <p class="partner-description">{{ partner.longDescription }}</p>
 
       <!-- Video & photo gallery place here in tablet & mobile view -->
       <PartnerMedia :photos="photos" v-if="tabletView" />
@@ -37,21 +25,17 @@
 <script setup lang="ts">
 import ReservationForm from '@/components/reservation/ReservationForm.vue'
 import PartnerMedia from '@/components/partner/PartnerMedia.vue'
+import PartnerHeader from '@/components/partner/PartnerHeader.vue'
 import { usePartnerStore } from '@/stores/partner.store'
-// import type { CalendarEntry, Price } from '@/data/domain/Partner'
-// import { getPartnerBySlug, getPartnerCalendar } from '@/data/services/PartnerService'
 import { tabletView } from '@/utils/StyleUtils'
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import dayjs from 'dayjs'
 
 const route = useRoute()
 const router = useRouter()
 const partnerStore = usePartnerStore()
-
-// const partner = ref()
-// const prices = ref<Price[]>([])
-// const calendar = ref<CalendarEntry[]>([])
+const partner = computed(() => partnerStore.partner)
 
 // load partner data
 onMounted(async () => {
@@ -70,20 +54,14 @@ watch(
 const loadPartner = async (partnerSlug: string) => {
   partnerStore
     .fetchPartner(partnerSlug)
-    .then(() => console.log('partner fetched', partnerStore.partner, partnerSlug))
-    .catch(() => router.push('/404'))
-
-  /*getPartnerBySlug(partnerSlug)
-    .then((p) => {
-      partner.value = p
-      prices.value = p.prices || []
-      getPartnerCalendar(p.id).then((fetchedCalendar) => {
-        calendar.value = fetchedCalendar
-      })
+    .then(() => console.log('partner fetched', partnerStore.partner, partner, partnerSlug)) // TODO enlever le console.log
+    .catch((error) => {
+      if (error === '404') {
+        router.push('/404')
+      } else {
+        console.error(error)
+      }
     })
-    .catch(() => {
-      router.push('/404')
-    })*/
 }
 
 // reservation date
@@ -105,7 +83,6 @@ const photos = ref([
 
 <style scoped lang="scss">
 $left-column-width: 40rem;
-$profile-picture-size: 8em;
 
 /* Split Screen Layout */
 .split-screen-layout {
@@ -126,7 +103,7 @@ $profile-picture-size: 8em;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.partner-header {
+/*.partner-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -155,7 +132,7 @@ $profile-picture-size: 8em;
     font-style: italic;
     color: $color-subtext;
   }
-}
+} */
 
 .partner-description {
   margin: $spacing-m 0;

@@ -47,7 +47,7 @@ export const findPartnerBySlug = async (slug: string): Promise<Partner> => {
   const partner = partners.find((partner) => partner.slug === slug)
   return new Promise((resolve, reject) => {
     if (!partner) {
-      reject(new Error('Partner not found'))
+      reject(new Error('404'))
     } else {
       resolve(partner)
     }

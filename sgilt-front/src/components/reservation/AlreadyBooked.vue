@@ -30,7 +30,7 @@ import { usePartnerStore } from '@/stores/partner.store'
 const partnerStore = usePartnerStore()
 const partner = partnerStore.partner
 
-const props = defineProps<{
+defineProps<{
   reservationDate?: Date
 }>()
 
