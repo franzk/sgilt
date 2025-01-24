@@ -9,14 +9,14 @@
       <p class="partner-description">{{ partner.longDescription }}</p>
 
       <!-- Video & photo gallery place here in tablet & mobile view -->
-      <PartnerMedia :photos="photos" v-if="tabletView" />
+      <PartnerMedia :photos="photos" v-if="isTabletView" />
 
       <!-- Reservation form -->
       <ReservationForm v-model:selected-date="selectedDate" :reservationDate="reservationDate" />
     </div>
 
     <!-- right content : video & photo here on desktop view -->
-    <div class="right-content" v-if="!tabletView">
+    <div class="right-content" v-if="!isTabletView">
       <PartnerMedia :photos="photos" />
     </div>
   </div>
@@ -27,10 +27,12 @@ import ReservationForm from '@/components/reservation/ReservationForm.vue'
 import PartnerMedia from '@/components/partner/PartnerMedia.vue'
 import PartnerHeader from '@/components/partner/PartnerHeader.vue'
 import { usePartnerStore } from '@/stores/partner.store'
-import { tabletView } from '@/utils/StyleUtils'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import dayjs from 'dayjs'
+import { useTabletView } from '@/composable/useTabletView'
+
+const { isTabletView } = useTabletView()
 
 const route = useRoute()
 const router = useRouter()
@@ -52,16 +54,13 @@ watch(
 )
 
 const loadPartner = async (partnerSlug: string) => {
-  partnerStore
-    .fetchPartner(partnerSlug)
-    .then(() => console.log('partner fetched', partnerStore.partner, partner, partnerSlug)) // TODO enlever le console.log
-    .catch((error) => {
-      if (error === '404') {
-        router.push('/404')
-      } else {
-        console.error(error)
-      }
-    })
+  partnerStore.fetchPartner(partnerSlug).catch((error) => {
+    if (error.message === '404') {
+      router.push('/404')
+    } else {
+      console.error(error)
+    }
+  })
 }
 
 // reservation date

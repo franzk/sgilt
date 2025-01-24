@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { getReleatedPartners } from '@/data/services/PartnerService'
 import type { Partner } from '@/data/domain/Partner'
 import PartnerItem from '@/components/partner/PartnerItem.vue'
@@ -28,7 +28,7 @@ import router from '@/router'
 import { usePartnerStore } from '@/stores/partner.store'
 
 const partnerStore = usePartnerStore()
-const partner = partnerStore.partner
+const partner = computed(() => partnerStore.partner)
 
 defineProps<{
   reservationDate?: Date
@@ -37,13 +37,13 @@ defineProps<{
 const relatedPartners = ref<Partner[]>([])
 
 onMounted(() => {
-  if (partner?.id) {
-    fetchRelatedPartners(partner.id)
+  if (partner.value?.id) {
+    fetchRelatedPartners(partner.value.id)
   }
 })
 
 watch(
-  () => partner?.id,
+  () => partner.value?.id,
   (newId) => {
     fetchRelatedPartners(newId)
   },

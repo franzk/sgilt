@@ -74,7 +74,8 @@ import AlreadyBooked from '@/components/reservation/AlreadyBooked.vue'
 import { usePartnerStore } from '@/stores/partner.store'
 const { t } = useI18n()
 
-const partner = usePartnerStore().partner
+const partnerStore = usePartnerStore()
+const partner = computed(() => partnerStore.partner)
 
 // v-models
 const selectedDate = defineModel<Date>('selected-date')
@@ -104,7 +105,7 @@ const priceError = ref<string>('') // reset error message when price changes
 const pricesOptions = computed(() =>
   // list of prices options
   [{ value: '-1', label: t('reservation.form.price-placeholder') }].concat(
-    partner?.prices?.map((price) => ({
+    partner.value?.prices?.map((price) => ({
       value: price.id,
       label: price.title,
     })) || [],
@@ -112,14 +113,14 @@ const pricesOptions = computed(() =>
 )
 
 const selectedOption = ref<SgiltSelectOption>()
-selectedPrice.value = partner?.prices?.[0] // default selected price
+selectedPrice.value = partner.value?.prices?.[0] // default selected price
 
 watch(
   // update selected price when selected option changes
   () => selectedOption.value,
   (newValue) => {
     priceError.value = ''
-    selectedPrice.value = partner?.prices?.find((price) => price.id === newValue?.value)
+    selectedPrice.value = partner.value?.prices?.find((price) => price.id === newValue?.value)
   },
 )
 
@@ -129,7 +130,7 @@ const calculatedPrice = computed(() => {
 
 watch(
   // reset selected option when prices change
-  () => partner?.prices,
+  () => partner.value?.prices,
   () => {
     selectedOption.value = pricesOptions.value?.[0]
   },
@@ -137,11 +138,11 @@ watch(
 
 // -- booking --
 const bookedDates = computed(() =>
-  partner?.calendar?.filter((entry) => entry.state === 'booked').map((entry) => entry.date),
+  partner.value?.calendar?.filter((entry) => entry.state === 'booked').map((entry) => entry.date),
 )
 
 const optionDates = computed(() =>
-  partner?.calendar?.filter((entry) => entry.state === 'option').map((entry) => entry.date),
+  partner.value?.calendar?.filter((entry) => entry.state === 'option').map((entry) => entry.date),
 )
 
 // submit button

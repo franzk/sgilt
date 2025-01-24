@@ -12,9 +12,10 @@
 
 <script setup lang="ts">
 import { usePartnerStore } from '@/stores/partner.store'
+import { computed } from 'vue'
 
 const partnerStore = usePartnerStore()
-const partner = partnerStore.partner
+const partner = computed(() => partnerStore.partner)
 </script>
 
 <style scoped lang="scss">

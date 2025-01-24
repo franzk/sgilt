@@ -7,11 +7,7 @@ export const usePartnerStore = defineStore('partner', () => {
   const partner = ref<Partner>()
 
   const fetchPartner = async (slug: string): Promise<void> => {
-    try {
-      partner.value = await getPartnerBySlug(slug)
-    } catch (error) {
-      throw error
-    }
+    partner.value = await getPartnerBySlug(slug)
   }
 
   return { partner, fetchPartner }
