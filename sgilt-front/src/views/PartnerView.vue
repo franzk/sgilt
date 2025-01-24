@@ -12,7 +12,7 @@
       <PartnerMedia :photos="photos" v-if="isTabletView" />
 
       <!-- Reservation form -->
-      <ReservationForm v-model:selected-date="selectedDate" :reservationDate="reservationDate" />
+      <ReservationForm />
     </div>
 
     <!-- right content : video & photo here on desktop view -->

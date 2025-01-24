@@ -20,21 +20,7 @@
       </div>
 
       <!-- Select options -->
-      <div class="form-group" v-if="chosenDateState !== 'booked'">
-        <p>{{ $t('reservation.form.options-label') }}</p>
-        <SgiltSelect :options="pricesOptions || []" v-model="selectedOption">
-          <template v-slot:left-icon>
-            <IconList />
-          </template>
-        </SgiltSelect>
-        <p class="error-msg">{{ priceError }}&nbsp;</p>
-      </div>
-
-      <!-- Pricing -->
-      <div class="pricing" v-if="chosenDateState !== 'booked'">
-        <p>{{ $t('reservation.form.pricing') }}</p>
-        <p class="price">{{ calculatedPrice }} €</p>
-      </div>
+      <PricingTool v-if="chosenDateState !== 'booked'" />
     </div>
 
     <!-- if booked -->
@@ -63,23 +49,22 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
-import SgiltSelect, { type SgiltSelectOption } from '@/components/basics/inputs/SgiltSelect.vue'
 import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 import FirsReservationModal from '@/components/event/FirstReservationModal.vue'
-import IconList from '@/components/icons/IconList.vue'
-import type { Price } from '@/data/domain/Partner'
 import { useI18n } from 'vue-i18n'
 import { dateArrayContains } from '@/utils/ArrayUtils'
 import AlreadyBooked from '@/components/reservation/AlreadyBooked.vue'
 import { usePartnerStore } from '@/stores/partner.store'
+import PricingTool from '@/components/reservation/PricingTool.vue'
+import { useReservationStore } from '@/stores/reservation.store'
 const { t } = useI18n()
 
 const partnerStore = usePartnerStore()
 const partner = computed(() => partnerStore.partner)
 
-// v-models
-const selectedDate = defineModel<Date>('selected-date')
-const selectedPrice = defineModel<Price>('selected-price')
+const reservationStore = useReservationStore()
+
+const selectedDate = ref<Date>()
 
 // -- date --
 const chosenDateState = computed(() => {
@@ -99,43 +84,6 @@ watch(
   },
 )
 
-// -- price --
-const priceError = ref<string>('') // reset error message when price changes
-
-const pricesOptions = computed(() =>
-  // list of prices options
-  [{ value: '-1', label: t('reservation.form.price-placeholder') }].concat(
-    partner.value?.prices?.map((price) => ({
-      value: price.id,
-      label: price.title,
-    })) || [],
-  ),
-)
-
-const selectedOption = ref<SgiltSelectOption>()
-selectedPrice.value = partner.value?.prices?.[0] // default selected price
-
-watch(
-  // update selected price when selected option changes
-  () => selectedOption.value,
-  (newValue) => {
-    priceError.value = ''
-    selectedPrice.value = partner.value?.prices?.find((price) => price.id === newValue?.value)
-  },
-)
-
-const calculatedPrice = computed(() => {
-  return selectedPrice.value?.price || 0
-})
-
-watch(
-  // reset selected option when prices change
-  () => partner.value?.prices,
-  () => {
-    selectedOption.value = pricesOptions.value?.[0]
-  },
-)
-
 // -- booking --
 const bookedDates = computed(() =>
   partner.value?.calendar?.filter((entry) => entry.state === 'booked').map((entry) => entry.date),
@@ -148,10 +96,11 @@ const optionDates = computed(() =>
 // submit button
 const showFirstReservationModal = ref<boolean>(false)
 const handleBooking = () => {
+  console.log('Booking:', reservationStore)
   if (!selectedDate.value) {
     dateError.value = t('reservation.form.date-error') // date is required
-  } else if (selectedOption.value?.value === '-1') {
-    priceError.value = t('reservation.form.price-error') // price is required
+  } else if ((reservationStore.price?.price || '-1') === '-1') {
+    reservationStore.priceError = t('reservation.form.price-error') // price is required
   } else {
     showFirstReservationModal.value = true // Open first reservation modal
   }
@@ -176,36 +125,6 @@ const newUserConnected = (email: string) => {
   h2 {
     color: $color-primary;
     margin: 0 0 $spacing-m 0;
-  }
-
-  /* Form groups */
-  .form-group {
-    margin-bottom: $spacing-l;
-
-    .error-msg {
-      color: $color-error;
-      font-size: $font-size-base;
-      margin-top: $spacing-s;
-      font-weight: 500;
-    }
-
-    p {
-      font-weight: bold;
-      margin-bottom: $spacing-s;
-      display: block;
-    }
-  }
-
-  /* Pricing section */
-  .pricing {
-    text-align: left;
-    margin-bottom: $spacing-m;
-
-    .price {
-      font-size: 24px;
-      color: $color-accent;
-      font-weight: bold;
-    }
   }
 
   .reservation-footer {
