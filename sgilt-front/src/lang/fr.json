@@ -50,6 +50,8 @@
       "date-label": "Choisissez une date :",
       "date-error": "Veuillez sélectionner une date avant de continuer.",
       "options-label": "Choisissez un service :",
+      "price-placeholder": "Sélectionnez une option",
+      "price-error": "Veuillez sélectionner une option avant de continuer.",
       "pricing": "Tarif estimé:",
       "booked": {
         "title": "🛑 Désolé, { partnerName } n’est pas disponible ce jour-là.",

@@ -27,6 +27,7 @@
             <IconList />
           </template>
         </SgiltSelect>
+        <p class="error-msg">{{ priceError }}&nbsp;</p>
       </div>
 
       <!-- Pricing -->
@@ -98,12 +99,16 @@ watch(
 )
 
 // -- price --
+const priceError = ref<string>('') // reset error message when price changes
+
 const pricesOptions = computed(() =>
   // list of prices options
-  partner?.prices?.map((price) => ({
-    value: price.id,
-    label: price.title,
-  })),
+  [{ value: '-1', label: t('reservation.form.price-placeholder') }].concat(
+    partner?.prices?.map((price) => ({
+      value: price.id,
+      label: price.title,
+    })) || [],
+  ),
 )
 
 const selectedOption = ref<SgiltSelectOption>()
@@ -113,6 +118,7 @@ watch(
   // update selected price when selected option changes
   () => selectedOption.value,
   (newValue) => {
+    priceError.value = ''
     selectedPrice.value = partner?.prices?.find((price) => price.id === newValue?.value)
   },
 )
@@ -143,6 +149,8 @@ const showFirstReservationModal = ref<boolean>(false)
 const handleBooking = () => {
   if (!selectedDate.value) {
     dateError.value = t('reservation.form.date-error') // date is required
+  } else if (selectedOption.value?.value === '-1') {
+    priceError.value = t('reservation.form.price-error') // price is required
   } else {
     showFirstReservationModal.value = true // Open first reservation modal
   }
