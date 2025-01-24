@@ -1,5 +1,5 @@
 <template>
-  <div class="reservation-form">
+  <div class="reservation-form" v-if="partner">
     <!-- Header Section -->
     <div class="reservation-header">
       <h2>{{ $t('reservation.title') }}</h2>
@@ -22,7 +22,7 @@
       <!-- Select options -->
       <div class="form-group" v-if="chosenDateState !== 'booked'">
         <p>{{ $t('reservation.form.options-label') }}</p>
-        <SgiltSelect :options="pricesOptions" v-model="selectedOption">
+        <SgiltSelect :options="pricesOptions || []" v-model="selectedOption">
           <template v-slot:left-icon>
             <IconList />
           </template>
@@ -37,12 +37,7 @@
     </div>
 
     <!-- if booked -->
-    <AlreadyBooked
-      v-if="chosenDateState === 'booked'"
-      :partnerName="partnerName"
-      :partnerId="partnerId"
-      :reservationDate="selectedDate"
-    />
+    <AlreadyBooked v-if="chosenDateState === 'booked'" :reservationDate="selectedDate" />
 
     <!-- Footer Section -->
     <div class="reservation-footer">
@@ -70,18 +65,14 @@ import SgiltSelect, { type SgiltSelectOption } from '@/components/basics/inputs/
 import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 import FirsReservationModal from '@/components/event/FirstReservationModal.vue'
 import IconList from '@/components/icons/IconList.vue'
-import type { CalendarEntry, Price } from '@/data/domain/Partner'
+import type { Price } from '@/data/domain/Partner'
 import { useI18n } from 'vue-i18n'
 import { dateArrayContains } from '@/utils/ArrayUtils'
 import AlreadyBooked from '@/components/reservation/AlreadyBooked.vue'
+import { usePartnerStore } from '@/stores/partner.store'
 const { t } = useI18n()
 
-const props = defineProps<{
-  partnerName: string
-  partnerId: string
-  prices: Price[]
-  calendar: CalendarEntry[]
-}>()
+const partner = usePartnerStore().partner
 
 // v-models
 const selectedDate = defineModel<Date>('selected-date')
@@ -92,9 +83,8 @@ const chosenDateState = computed(() => {
   // is the selected date available, booked or option ?
   const date = selectedDate.value
   if (!date) return 'empty'
-  if (bookedDates.value.includes(date)) return 'booked'
-  if (dateArrayContains(bookedDates.value, date)) return 'booked'
-  if (dateArrayContains(optionDates.value, date)) return 'option'
+  if (bookedDates.value && dateArrayContains(bookedDates.value, date)) return 'booked'
+  if (optionDates.value && dateArrayContains(optionDates.value, date)) return 'option'
   return 'available'
 })
 
@@ -108,19 +98,20 @@ watch(
 
 // -- price --
 const pricesOptions = computed(() =>
-  props.prices.map((price) => ({
+  partner?.prices?.map((price) => ({
     value: price.id,
     label: price.title,
   })),
 )
 
 const selectedOption = ref<SgiltSelectOption>()
-selectedPrice.value = props.prices?.[0] || {}
+selectedPrice.value = partner?.prices?.[0]
 
 watch(
+  // update selected price when selected option changes
   () => selectedOption.value,
   (newValue) => {
-    selectedPrice.value = props.prices.find((price) => price.id === newValue?.value)
+    selectedPrice.value = partner?.prices?.find((price) => price.id === newValue?.value)
   },
 )
 
@@ -129,29 +120,30 @@ const calculatedPrice = computed(() => {
 })
 
 watch(
-  () => props.prices,
+  () => partner?.prices,
   () => {
-    selectedOption.value = pricesOptions.value[0]
+    selectedOption.value = pricesOptions.value?.[0]
   },
 )
 
 // -- booking --
 const bookedDates = computed(() =>
-  props.calendar.filter((entry) => entry.state === 'booked').map((entry) => entry.date),
+  partner?.calendar?.filter((entry) => entry.state === 'booked').map((entry) => entry.date),
 )
 
 const optionDates = computed(() =>
-  props.calendar.filter((entry) => entry.state === 'option').map((entry) => entry.date),
+  partner?.calendar?.filter((entry) => entry.state === 'option').map((entry) => entry.date),
 )
+
+// submit button
+const showFirstReservationModal = ref<boolean>(false)
 const handleBooking = () => {
   if (!selectedDate.value) {
-    dateError.value = t('reservation.form.date-error')
+    dateError.value = t('reservation.form.date-error') // date is required
   } else {
     showFirstReservationModal.value = true // Open first reservation modal
   }
 }
-
-const showFirstReservationModal = ref<boolean>(false)
 
 // -> back from first reservation modal
 const newUserConnected = (email: string) => {

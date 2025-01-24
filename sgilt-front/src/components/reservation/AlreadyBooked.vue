@@ -1,7 +1,9 @@
 <template>
   <!-- if booked -->
-  <div>
-    <p class="booked-title">{{ $t('reservation.form.booked.title', { partnerName }) }}</p>
+  <div v-if="partner">
+    <p class="booked-title">
+      {{ $t('reservation.form.booked.title', { partnerName: partner.title }) }}
+    </p>
     <p>{{ $t('reservation.form.booked.subtitle') }}</p>
   </div>
 
@@ -23,30 +25,38 @@ import { getReleatedPartners } from '@/data/services/PartnerService'
 import type { Partner } from '@/data/domain/Partner'
 import PartnerItem from '@/components/partner/PartnerItem.vue'
 import router from '@/router'
+import { usePartnerStore } from '@/stores/partner.store'
+
+const partnerStore = usePartnerStore()
+const partner = partnerStore.partner
 
 const props = defineProps<{
-  partnerName: string
-  partnerId: string
   reservationDate?: Date
 }>()
 
 const relatedPartners = ref<Partner[]>([])
 
 onMounted(() => {
-  fetchRelatedPartners(props.partnerId)
+  if (partner?.id) {
+    fetchRelatedPartners(partner.id)
+  }
 })
 
 watch(
-  () => props.partnerId,
+  () => partner?.id,
   (newId) => {
     fetchRelatedPartners(newId)
   },
 )
 
-const fetchRelatedPartners = (partnerId: string) => {
-  getReleatedPartners(partnerId).then((partners) => {
-    relatedPartners.value = partners
-  })
+const fetchRelatedPartners = (partnerId: string | undefined) => {
+  if (!partnerId) {
+    relatedPartners.value = []
+  } else {
+    getReleatedPartners(partnerId).then((partners) => {
+      relatedPartners.value = partners
+    })
+  }
 }
 
 const selectRelatedPartner = (partner: Partner) => {

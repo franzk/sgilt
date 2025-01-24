@@ -1,33 +1,30 @@
 <template>
-  <div class="split-screen-layout" v-if="partner">
+  <div class="split-screen-layout" v-if="partnerStore.partner">
     <!-- left content : texts & actions -->
     <div class="left-content">
       <!-- Header -->
       <header class="partner-header">
         <div class="header-left">
-          <img :src="partner.imageUrl" alt="Photo du partner" class="profile-picture" />
+          <img
+            :src="partnerStore.partner.imageUrl"
+            alt="Photo du partner"
+            class="profile-picture"
+          />
           <div>
-            <h1>{{ partner.title }}</h1>
-            <p class="slogan">{{ partner.description }}</p>
+            <h1>{{ partnerStore.partner.title }}</h1>
+            <p class="slogan">{{ partnerStore.partner.description }}</p>
           </div>
         </div>
       </header>
 
       <!-- Description -->
-      <p class="partner-description">{{ partner.longDescription }}</p>
+      <p class="partner-description">{{ partnerStore.partner.longDescription }}</p>
 
       <!-- Video & photo gallery place here in tablet & mobile view -->
       <PartnerMedia :photos="photos" v-if="tabletView" />
 
       <!-- Reservation form -->
-      <ReservationForm
-        v-model:selected-date="selectedDate"
-        :partnerName="partner.title"
-        :partnerId="partner.id"
-        :prices="prices"
-        :calendar="calendar"
-        :reservationDate="reservationDate"
-      />
+      <ReservationForm v-model:selected-date="selectedDate" :reservationDate="reservationDate" />
     </div>
 
     <!-- right content : video & photo here on desktop view -->
@@ -40,8 +37,9 @@
 <script setup lang="ts">
 import ReservationForm from '@/components/reservation/ReservationForm.vue'
 import PartnerMedia from '@/components/partner/PartnerMedia.vue'
-import type { CalendarEntry, Price } from '@/data/domain/Partner'
-import { getPartnerBySlug, getPartnerCalendar } from '@/data/services/PartnerService'
+import { usePartnerStore } from '@/stores/partner.store'
+// import type { CalendarEntry, Price } from '@/data/domain/Partner'
+// import { getPartnerBySlug, getPartnerCalendar } from '@/data/services/PartnerService'
 import { tabletView } from '@/utils/StyleUtils'
 import { onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -49,10 +47,11 @@ import dayjs from 'dayjs'
 
 const route = useRoute()
 const router = useRouter()
+const partnerStore = usePartnerStore()
 
-const partner = ref()
-const prices = ref<Price[]>([])
-const calendar = ref<CalendarEntry[]>([])
+// const partner = ref()
+// const prices = ref<Price[]>([])
+// const calendar = ref<CalendarEntry[]>([])
 
 // load partner data
 onMounted(async () => {
@@ -68,8 +67,13 @@ watch(
   },
 )
 
-const loadPartner = (partnerSlug: string) => {
-  getPartnerBySlug(partnerSlug)
+const loadPartner = async (partnerSlug: string) => {
+  partnerStore
+    .fetchPartner(partnerSlug)
+    .then(() => console.log('partner fetched', partnerStore.partner, partnerSlug))
+    .catch(() => router.push('/404'))
+
+  /*getPartnerBySlug(partnerSlug)
     .then((p) => {
       partner.value = p
       prices.value = p.prices || []
@@ -79,7 +83,7 @@ const loadPartner = (partnerSlug: string) => {
     })
     .catch(() => {
       router.push('/404')
-    })
+    })*/
 }
 
 // reservation date
