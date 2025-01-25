@@ -1,6 +1,6 @@
 <template>
   <div class="partner-video">
-    <SgiltVideo :youtubeId="partnerStore.partner?.youtubeId || '_A6w3ECkN4k'" />
+    <SgiltVideo :youtubeId="partnerStore.partner?.youtubeId" />
   </div>
 
   <!-- Photo gallery -->

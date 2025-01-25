@@ -7,7 +7,7 @@ export interface Partner {
   description: string
   longDescription: string
   imageUrl: string
-  youtubeId?: string
+  youtubeId: string
   tags: Tag[]
   entryPrice: number
   prices?: Price[]
