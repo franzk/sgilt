@@ -1,3 +1,4 @@
+import type { SgiltSelectOption } from '@/components/basics/inputs/SgiltSelect.vue'
 import type { Partner, Price } from '@/data/domain/Partner'
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
@@ -6,15 +7,18 @@ import { useI18n } from 'vue-i18n'
 export const useReservationStore = defineStore('reservation', () => {
   const { t } = useI18n()
 
-  // partner booked
-  const partner = ref<Partner>()
-
   // booking date
   const dateReservation = ref<Date>()
   const dateError = ref<string | undefined>()
   watch(dateReservation, () => {
     dateError.value = undefined
   })
+
+  // event type
+  const eventType = ref<SgiltSelectOption>()
+
+  // partner booked
+  const partner = ref<Partner>()
 
   // chosen price
   const price = ref<Price | undefined>()
@@ -60,9 +64,10 @@ export const useReservationStore = defineStore('reservation', () => {
   }
 
   return {
-    partner,
     dateReservation,
     dateError,
+    eventType,
+    partner,
     price,
     priceError,
     quantity,
