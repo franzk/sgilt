@@ -1,24 +1,27 @@
 <template>
   <!-- Options -->
-  <div class="form-group">
-    <p>{{ $t('reservation.form.options-label') }}</p>
+  <SgiltFormGroup
+    :title="$t('reservation.form.options-label')"
+    :errorMessage="reservationStore.priceError"
+  >
     <SgiltSelect :options="pricesOptions || []" v-model="selectedOption">
       <template v-slot:left-icon>
         <IconList />
       </template>
     </SgiltSelect>
-    <p class="error-msg">{{ reservationStore.priceError }}&nbsp;</p>
-  </div>
+  </SgiltFormGroup>
 
   <!-- Quantity -->
-  <div class="form-group" v-if="reservationStore.price?.unity">
-    <p>{{ $t('reservation.form.quantity-label') }}</p>
+  <SgiltFormGroup
+    v-if="reservationStore.price?.unity"
+    :title="$t('reservation.form.quantity-label')"
+    :errorMessage="reservationStore.quantityError"
+  >
     <div class="quantity">
       <SgiltNumberInput type="number" v-model="reservationStore.quantity" />
       <p>{{ reservationStore.price?.unity }}</p>
     </div>
-    <p class="error-msg">{{ reservationStore.quantityError }}&nbsp;</p>
-  </div>
+  </SgiltFormGroup>
 
   <!-- Price estimation -->
   <div class="pricing">
@@ -36,6 +39,7 @@ import type { SgiltSelectOption } from '@/components/basics/inputs/SgiltSelect.v
 import IconList from '@/components/icons/IconList.vue'
 import { useI18n } from 'vue-i18n'
 import SgiltNumberInput from '@/components/basics/inputs/SgiltNumberInput.vue'
+import SgiltFormGroup from '@/components/basics/inputs/SgiltFormGroup.vue'
 const { t } = useI18n()
 
 // stores

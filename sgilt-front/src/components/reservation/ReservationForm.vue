@@ -6,20 +6,20 @@
       <p class="subtitle">{{ $t('reservation.subtitle') }}</p>
     </div>
 
-    <!-- Body Section -->
     <div class="reservation-body">
       <!-- Datepicker -->
-      <div class="form-group">
-        <p>{{ $t('reservation.form.date-label') }}</p>
+      <SgiltFormGroup
+        :title="$t('reservation.form.date-label')"
+        :errorMessage="reservationStore.dateError"
+      >
         <SgiltDatePicker
           v-model="reservationStore.dateReservation"
           :booked-dates="bookedDates"
           :option-dates="optionDates"
         />
-        <p class="error-msg">{{ reservationStore.dateError }}&nbsp;</p>
-      </div>
+      </SgiltFormGroup>
 
-      <!-- Select options -->
+      <!-- Pricing -->
       <PricingTool v-if="chosenDateState !== 'booked'" />
     </div>
 
@@ -56,6 +56,7 @@ import AlreadyBooked from '@/components/reservation/AlreadyBooked.vue'
 import { usePartnerStore } from '@/stores/partner.store'
 import PricingTool from '@/components/reservation/PricingTool.vue'
 import { useReservationStore } from '@/stores/reservation.store'
+import SgiltFormGroup from '@/components/basics/inputs/SgiltFormGroup.vue'
 
 const partnerStore = usePartnerStore()
 const partner = computed(() => partnerStore.partner)

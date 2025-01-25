@@ -59,23 +59,6 @@ body {
     line-height: calc($line-height-base * 0.8);
   }
 
-  .form-group {
-    margin-bottom: $spacing-l;
-
-    .error-msg {
-      color: $color-error;
-      font-size: $font-size-base;
-      margin-top: $spacing-s;
-      font-weight: 500;
-    }
-
-    p {
-      font-weight: bold;
-      margin-bottom: $spacing-s;
-      display: block;
-    }
-  }
-
   @include respond-to(tablet) {
     font-size: calc($font-size-base * 1.1);
     line-height: calc($line-height-base * 1.1);
