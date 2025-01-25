@@ -13,6 +13,8 @@
         <p>{{ $t('texts.a-partir-de') }}</p>
         <p class="price">{{ partner.entryPrice }} €</p>
       </div>
+
+      <PartnerAvailability availability="available" />
     </RouterLink>
   </div>
 </template>
@@ -20,6 +22,7 @@
 <script setup lang="ts">
 import CategoryChip from '@/components/basics/chips/CategoryChip.vue'
 import type { Partner } from '@/data/domain/Partner'
+import PartnerAvailability from '@/components/partner/PartnerAvailability.vue'
 
 defineProps<{
   partner: Partner

@@ -59,9 +59,6 @@ const choiceState = computed(() => {
   width: 100%;
 }
 
-$booked-color: red;
-$option-color: orange;
-
 .dp__theme_light {
   --dp-border-radius: 1em;
   --dp-border-color: #{$shadow-m};
@@ -97,11 +94,11 @@ $option-color: orange;
   }
 
   &.booked::after {
-    color: $booked-color;
+    color: $color-booked;
   }
 
   &.option::after {
-    color: $option-color;
+    color: $color-option;
   }
 }
 
@@ -112,11 +109,11 @@ $option-color: orange;
   margin: 0 $spacing-s;
 
   &.booked {
-    background: $booked-color;
+    background: $color-booked;
   }
 
   &.option {
-    background: $option-color;
+    background: $color-option;
   }
 }
 
