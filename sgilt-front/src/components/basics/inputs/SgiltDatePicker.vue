@@ -68,7 +68,7 @@ const choiceState = computed(() => {
 
   --dp-primary-color: #{$color-accent};
   --dp-icon-color: #{$color-primary};
-  --dp-success-color: #{$option-color};
+  --dp-success-color: #{$color-option};
 }
 
 .dp__input {

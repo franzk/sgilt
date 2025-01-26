@@ -103,5 +103,12 @@
       "title": "Oups !!",
       "message": "La page que vous recherchez n'existe pas."
     }
+  },
+  "partner": {
+    "availability": {
+      "available": "🟢 Disponible",
+      "option": "🟠 Sous option",
+      "booked": "🔴 Réservé"
+    }
   }
 }

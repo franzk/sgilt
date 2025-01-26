@@ -1,5 +1,5 @@
 <template>
-  <main class="home-view">
+  <section class="home-view">
     <div class="search-section-wrapper">
       <HomeSearchSection />
     </div>
@@ -7,7 +7,7 @@
     <HomeCategoriesSection />
 
     <HomePartnersSection />
-  </main>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -22,13 +22,10 @@ import HomeCategoriesSection from '@/components/home/HomeCategoriesSection.vue'
   flex-direction: column;
 
   background: url('@/assets/images/home_bg.jpg') no-repeat;
-  background-size: cover;
-  @include respond-to(tablet) {
-    background-size: contain;
-  }
+  background-size: contain;
 
   .search-section-wrapper {
-    flex: 0 0 85%;
+    flex: 0 0 88vh;
     @include respond-to(tablet) {
       flex: 0;
       aspect-ratio: 2;

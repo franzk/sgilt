@@ -7,34 +7,27 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps<{
-  availability?: 'available' | 'option' | 'booked'
+  availability?: string
 }>()
 
 const availabilityText = computed(() => {
-  switch (props.availability) {
-    case 'available':
-      return '🟢 Disponible'
-    case 'option':
-      return '🟠 Sous option jusqu’à 24h'
-    case 'booked':
-      return '🔴 Réservé'
-    default:
-      return ''
+  if (['available', 'option', 'booked'].includes(props.availability ?? '')) {
+    return t(`partner.availability.${props.availability}`)
+  } else {
+    return ''
   }
 })
 
 const availabilityClass = computed(() => {
-  switch (props.availability) {
-    case 'available':
-      return 'available'
-    case 'option':
-      return 'under-option'
-    case 'booked':
-      return 'booked'
-    default:
-      return ''
+  if (['available', 'option', 'booked'].includes(props.availability ?? '')) {
+    return props.availability
+  } else {
+    return ''
   }
 })
 </script>
@@ -47,7 +40,7 @@ const availabilityClass = computed(() => {
   &.available {
     color: $color-available;
   }
-  &.under-option {
+  &.option {
     color: $color-option;
   }
   &.booked {

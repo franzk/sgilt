@@ -1,12 +1,7 @@
 <template>
   <div class="search-view">
     <aside v-show="searchBarOpened" class="search-bar">
-      <SearchBar
-        @search="search"
-        @close="searchBarOpened = false"
-        :dateFilter="dateFilter"
-        :tagsFilter="tagsFilter"
-      />
+      <SearchBar @search="search" @close="searchBarOpened = false" :tagsFilter="tagsFilter" />
     </aside>
     <aside v-if="!searchBarOpened && !mobileView" class="reduced-search-bar">
       <div
@@ -33,19 +28,18 @@ import { useSearchStore } from '@/stores/search.store'
 import { useTagsStore } from '@/stores/tag.store'
 import type { PartnerQuery } from '@/data/api/query/PartnerQuery'
 import type { TagFilter } from '@/types/TagFilter'
-import dayjs from 'dayjs'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { mobileView } from '@/utils/StyleUtils'
+import { useReservationStore } from '@/stores/reservation.store'
 
 const searchStore = useSearchStore()
+const reservationStore = useReservationStore()
 
 const searchBarOpened = ref(true)
 
 // get params from route
 const route = useRoute()
-const dateFilter = route.query?.date ? dayjs(route.query.date as string).toDate() : undefined
-// TODO : handle eventType param
 const category = (route.query?.category || '') as string
 const tagsFilter = ref<TagFilter[]>(
   useTagsStore()
@@ -53,11 +47,13 @@ const tagsFilter = ref<TagFilter[]>(
     .map((tag) => ({ id: tag.id, name: tag.name, category: tag.category })),
 )
 
-// filters  herited from route
+// date filter from reservation store
 const searchQuery: PartnerQuery = {}
-if (dateFilter) {
-  searchQuery.dateFilter = dateFilter
+if (reservationStore.dateReservation) {
+  searchQuery.dateFilter = reservationStore.dateReservation
 }
+
+// set tags filter from route
 if (tagsFilter.value.length > 0) {
   searchQuery.tagsId = tagsFilter.value.map((tag) => tag.id)
   searchBarOpened.value = !mobileView // close search bar on mobile if filters are set in route

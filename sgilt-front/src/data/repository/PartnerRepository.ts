@@ -1,4 +1,5 @@
 import type { CalendarEntry, Partner } from '@/data/domain/Partner'
+import type { PartnerSearchViewModel } from '@/data/domain/viewmodels/PartnerSearchViewModel'
 import type { PartnerQuery } from '@/data/api/query/PartnerQuery'
 import dayjs from 'dayjs'
 
@@ -17,7 +18,7 @@ export const getRandomPartners = (count: number): Promise<Partner[]> => {
 }
 
 // moke API to search partners
-export const queryPartners = async (query: PartnerQuery): Promise<Partner[]> => {
+export const queryPartners = async (query: PartnerQuery): Promise<PartnerSearchViewModel[]> => {
   const results = partners
     .filter((partner) => partner.entryPrice >= (query.minPrice || 0))
     .filter((partner) => partner.entryPrice <= (query.maxPrice || Number.MAX_VALUE))
@@ -27,18 +28,22 @@ export const queryPartners = async (query: PartnerQuery): Promise<Partner[]> => 
         query.tagsId.length === 0 ||
         partner.tags.some((tag) => query.tagsId?.includes(tag.id)),
     )
-    .filter(
-      (partner) =>
-        !query.dateFilter ||
-        !partner.calendar?.some(
-          (entry) =>
-            dayjs(entry.date).isSame(dayjs(query.dateFilter), 'day') && entry.state === 'booked',
-        ),
-    )
+    .map((partner) => ({
+      ...partner,
+      ...{
+        availability: query.dateFilter ? partnerAvailability(partner, query.dateFilter) : undefined,
+      },
+    }))
 
   return new Promise((resolve) => {
     resolve(results)
   })
+}
+
+const partnerAvailability = (partner: Partner, date: Date): string => {
+  const calendar = partner.calendar || []
+  const entry = calendar.find((entry) => dayjs(entry.date).isSame(date, 'day'))
+  return entry ? entry.state : 'available'
 }
 
 // moke API to get a partner by slug
