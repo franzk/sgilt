@@ -4,7 +4,7 @@
     <p class="booked-title">
       {{ $t(`reservation.form.${state}.title`, { partnerName: partner.title }) }}
     </p>
-    <p class="waiting-list">
+    <p class="waiting-list" v-if="state === 'option'">
       <SgiltButton>S’inscrire sur la liste d’attente pour cette date</SgiltButton>
     </p>
     <p>{{ $t(`reservation.form.${state}.subtitle`) }}</p>
@@ -16,7 +16,7 @@
         v-for="partner in relatedPartners"
         :key="partner.id"
         :partner="partner"
-        @click="selectRelatedPartner(partner)"
+        @click="selectRelatedPartner(partner.slug)"
       />
     </div>
   </div>
@@ -25,11 +25,11 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { getReleatedPartners } from '@/data/services/PartnerService'
-import type { Partner } from '@/data/domain/Partner'
 import PartnerItem from '@/components/partner/PartnerItem.vue'
 import router from '@/router'
 import { usePartnerStore } from '@/stores/partner.store'
 import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
+import type { PartnerSearchViewModel } from '@/data/domain/viewmodels/PartnerSearchViewModel'
 
 defineProps<{
   state: string
@@ -38,7 +38,7 @@ defineProps<{
 const partnerStore = usePartnerStore()
 const partner = computed(() => partnerStore.partner)
 
-const relatedPartners = ref<Partner[]>([])
+const relatedPartners = ref<PartnerSearchViewModel[]>([])
 
 onMounted(() => {
   if (partner.value?.id) {
@@ -63,9 +63,9 @@ const fetchRelatedPartners = (partnerId: string | undefined) => {
   }
 }
 
-const selectRelatedPartner = (partner: Partner) => {
+const selectRelatedPartner = (partnerSlug: string) => {
   // redirect to partner page
-  router.push(`/${partner.slug}`)
+  router.push(`/${partnerSlug}`)
 }
 </script>
 

@@ -1,5 +1,6 @@
 import type { CalendarEntry, Partner } from '@/data/domain/Partner'
 import type { PartnerQuery } from '@/data/api/query/PartnerQuery'
+import type { PartnerSearchViewModel } from '../domain/viewmodels/PartnerSearchViewModel'
 import {
   getRandomPartners,
   queryPartners,
@@ -26,7 +27,7 @@ export const getHihglightedPartners = (count: number): Promise<Partner[]> => {
  * @param query the query to search partners
  * @returns a list of partners matching the query
  */
-export const searchPartners = async (query: PartnerQuery): Promise<Partner[]> => {
+export const searchPartners = async (query: PartnerQuery): Promise<PartnerSearchViewModel[]> => {
   return queryPartners(query)
 }
 
@@ -53,6 +54,6 @@ export const getPartnerCalendar = async (partnerId: string): Promise<CalendarEnt
  * @param partnerId
  * @returns partners that are releated to the given partner
  */
-export const getReleatedPartners = async (partnerId: string): Promise<Partner[]> => {
+export const getReleatedPartners = async (partnerId: string): Promise<PartnerSearchViewModel[]> => {
   return relatedPartners(partnerId)
 }

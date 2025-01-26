@@ -1,5 +1,5 @@
 <template>
-  <div class="partner-card" @click="selectPartner">
+  <div class="partner-item" @click="selectPartner">
     <!-- Image -->
     <img :src="partner.imageUrl" :alt="`Image de ${partner.title}`" class="partner-image" />
 
@@ -8,15 +8,17 @@
       <h3 class="partner-name">{{ partner.title }}</h3>
       <p class="partner-category">{{ partner.tags.map((t) => t.name).join(',') }}</p>
       <p class="partner-price">À partir de {{ partner.entryPrice }} €</p>
+      <PartnerAvailability v-if="partner.availability" :availability="partner.availability" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { Partner } from '@/data/domain/Partner'
+import type { PartnerSearchViewModel } from '@/data/domain/viewmodels/PartnerSearchViewModel'
+import PartnerAvailability from '@/components/partner/PartnerAvailability.vue'
 
 const props = defineProps<{
-  partner: Partner
+  partner: PartnerSearchViewModel
 }>()
 
 const emit = defineEmits(['select-partner'])
@@ -27,7 +29,7 @@ const selectPartner = () => {
 </script>
 
 <style scoped lang="scss">
-.partner-card {
+.partner-item {
   display: flex;
   align-items: center;
   background-color: $color-secondary;

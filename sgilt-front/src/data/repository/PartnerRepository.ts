@@ -70,7 +70,7 @@ export const partnerCalendar = async (id: string): Promise<CalendarEntry[]> => {
   })
 }
 
-export const relatedPartners = async (id: string): Promise<Partner[]> => {
+export const relatedPartners = async (id: string): Promise<PartnerSearchViewModel[]> => {
   const partner = partners.find((partner) => partner.id === id)
   return new Promise((resolve, reject) => {
     if (!partner) {
@@ -86,7 +86,9 @@ export const relatedPartners = async (id: string): Promise<Partner[]> => {
           !tagRelated.includes(p) &&
           p.tags.some((tag) => partner.tags.some((t) => t.category === tag.category)),
       )
-      resolve([...tagRelated, ...categoryRelated])
+      const relateds = [...tagRelated, ...categoryRelated]
+
+      resolve(relateds.map((p) => ({ ...p, ...{ availability: 'available' } })))
     }
   })
 }
