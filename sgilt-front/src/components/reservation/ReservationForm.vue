@@ -20,15 +20,15 @@
       </SgiltFormGroup>
 
       <!-- Pricing -->
-      <PricingTool v-if="chosenDateState !== 'booked'" />
+      <PricingTool v-if="dateIsAvailable" />
     </div>
 
-    <!-- if booked -->
-    <AlreadyBooked v-if="chosenDateState === 'booked'" />
+    <!-- if not available -->
+    <NotAvailable v-if="!dateIsAvailable" :state="chosenDateState" />
 
     <!-- Footer Section submit & help -->
     <div class="reservation-footer">
-      <SgiltButton @click="handleBooking" class="button" v-if="chosenDateState !== 'booked'">
+      <SgiltButton @click="handleBooking" class="button" v-if="dateIsAvailable">
         {{ $t('reservation.button') }}
       </SgiltButton>
       <div class="contact">
@@ -52,11 +52,11 @@ import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
 import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 import FirsReservationModal from '@/components/event/FirstReservationModal.vue'
 import { dateArrayContains } from '@/utils/ArrayUtils'
-import AlreadyBooked from '@/components/reservation/AlreadyBooked.vue'
 import { usePartnerStore } from '@/stores/partner.store'
 import PricingTool from '@/components/reservation/PricingTool.vue'
 import { useReservationStore } from '@/stores/reservation.store'
 import SgiltFormGroup from '@/components/basics/inputs/SgiltFormGroup.vue'
+import NotAvailable from '@/components/reservation/NotAvailable.vue'
 
 const partnerStore = usePartnerStore()
 const partner = computed(() => partnerStore.partner)
@@ -72,6 +72,8 @@ const chosenDateState = computed(() => {
   if (optionDates.value && dateArrayContains(optionDates.value, date)) return 'option'
   return 'available'
 })
+
+const dateIsAvailable = computed(() => !['option', 'booked'].includes(chosenDateState.value))
 
 // -- booking --
 const bookedDates = computed(() =>

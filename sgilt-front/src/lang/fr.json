@@ -58,6 +58,10 @@
       "booked": {
         "title": "🛑 Désolé, { partnerName } n’est pas disponible ce jour-là.",
         "subtitle": "Ne vous inquiétez pas, nous avons sélectionné d’autres talents qui pourraient vous plaire !"
+      },
+      "option": {
+        "title": "🟠 Cette date est sous option pour  { partnerName }.",
+        "subtitle": "Soyez parmi les premiers informés si la date se libère ! Rejoignez la liste d’attente en un clic. Pendant ce temps, voici d’autres prestataires similaires disponibles à cette date : 👇"
       }
     },
     "button": "Réserver",

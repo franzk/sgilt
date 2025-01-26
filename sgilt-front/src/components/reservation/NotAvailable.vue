@@ -2,9 +2,12 @@
   <!-- if booked -->
   <div v-if="partner">
     <p class="booked-title">
-      {{ $t('reservation.form.booked.title', { partnerName: partner.title }) }}
+      {{ $t(`reservation.form.${state}.title`, { partnerName: partner.title }) }}
     </p>
-    <p>{{ $t('reservation.form.booked.subtitle') }}</p>
+    <p class="waiting-list">
+      <SgiltButton>S’inscrire sur la liste d’attente pour cette date</SgiltButton>
+    </p>
+    <p>{{ $t(`reservation.form.${state}.subtitle`) }}</p>
   </div>
 
   <div class="related-partners">
@@ -26,6 +29,11 @@ import type { Partner } from '@/data/domain/Partner'
 import PartnerItem from '@/components/partner/PartnerItem.vue'
 import router from '@/router'
 import { usePartnerStore } from '@/stores/partner.store'
+import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
+
+defineProps<{
+  state: string
+}>()
 
 const partnerStore = usePartnerStore()
 const partner = computed(() => partnerStore.partner)
@@ -64,5 +72,13 @@ const selectRelatedPartner = (partner: Partner) => {
 <style scoped lang="scss">
 .booked-title {
   font-weight: bold;
+}
+
+.waiting-list {
+  text-align: center;
+}
+
+.related-partners {
+  margin-top: $spacing-l;
 }
 </style>
