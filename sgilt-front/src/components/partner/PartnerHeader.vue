@@ -24,12 +24,20 @@ $profile-picture-size: 8em;
 .partner-header {
   display: flex;
   justify-content: space-between;
+  @include respond-to(mobile) {
+    justify-content: center;
+  }
   align-items: center;
   border-bottom: 2px solid #eee;
   padding-bottom: $spacing-l;
 
   .header-left {
     display: flex;
+    @include respond-to(mobile) {
+      flex-direction: column;
+      text-align: center;
+      gap: 0;
+    }
     align-items: center;
     gap: $spacing-l;
   }

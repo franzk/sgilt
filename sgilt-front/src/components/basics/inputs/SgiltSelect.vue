@@ -1,6 +1,11 @@
 <template>
   <!-- TODO : implement keyboard navigation -->
-  <div class="custom-select" :tabindex="focusable ? 0 : -1" @blur="open = false">
+  <div
+    class="custom-select"
+    :tabindex="focusable ? 0 : -1"
+    @blur="open = false"
+    @keydown="onkeydown"
+  >
     <div class="selected" :class="{ open: open }" @click="open = !open">
       <div class="left-icon"><slot name="left-icon" /></div>
       <div class="selected-text">{{ selectedLabel }}</div>
@@ -9,7 +14,12 @@
     </div>
 
     <div class="items" :class="{ selectHide: !open }">
-      <div v-for="(option, i) of options" :key="i" @click="click(option)">
+      <div
+        v-for="(option, i) of options"
+        :key="i"
+        @click="click(option)"
+        :class="{ 'selected-option': option.value === selectedOption?.value }"
+      >
         {{ option.label }}
       </div>
     </div>
@@ -50,6 +60,29 @@ onMounted(() => {
 const click = (option: SgiltSelectOption) => {
   selectedOption.value = option // update the model
   open.value = false // close the select
+}
+
+// keyboard navigation
+const onkeydown = (e: KeyboardEvent) => {
+  if (['Enter', 'Space'].includes(e.code)) {
+    e.preventDefault()
+    open.value = !open.value
+  } else if (e.code === 'ArrowDown') {
+    e.preventDefault()
+    const index = props.options.findIndex((o) => o.value === selectedOption.value?.value)
+    if (index < props.options.length - 1) {
+      selectedOption.value = props.options[index + 1]
+    }
+  } else if (e.code === 'ArrowUp') {
+    e.preventDefault()
+    const index = props.options.findIndex((o) => o.value === selectedOption.value?.value)
+    if (index > 0) {
+      selectedOption.value = props.options[index - 1]
+    }
+  } else if (e.code === 'Escape') {
+    e.preventDefault()
+    open.value = false
+  }
 }
 </script>
 
@@ -126,6 +159,11 @@ $bc: $input-border-color;
     left: 0;
     right: 0;
     z-index: $z-app-absolute-element;
+
+    .selected-option {
+      background-color: $color-2;
+      color: $color-white;
+    }
 
     div {
       color: $color-3;
