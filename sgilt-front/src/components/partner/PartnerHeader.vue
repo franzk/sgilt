@@ -30,6 +30,11 @@ $profile-picture-size: 8em;
 
   .header-left {
     display: flex;
+    @include respond-to(mobile) {
+      flex-direction: column;
+      text-align: center;
+      gap: 0;
+    }
     align-items: center;
     gap: $spacing-l;
   }
