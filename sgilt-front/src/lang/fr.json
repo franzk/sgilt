@@ -7,6 +7,10 @@
       "celebrez": "CÉLÉBREZ !!"
     }
   },
+  "date-picker": {
+    "booked": "Réservé",
+    "option": "Sous option"
+  },
   "categories": {
     "music": {
       "title": "Musique",
@@ -46,7 +50,19 @@
       "date-label": "Choisissez une date :",
       "date-error": "Veuillez sélectionner une date avant de continuer.",
       "options-label": "Choisissez un service :",
-      "pricing": "Tarif estimé:"
+      "price-placeholder": "Sélectionnez une option",
+      "price-error": "Veuillez sélectionner une option avant de continuer.",
+      "quantity-label": "Quantité :",
+      "quantity-error": "Ce service nécessite un minimum de {count} {unity}. Vous pouvez ajuster le nombre ci-dessus 👆",
+      "pricing": "Tarif estimé:",
+      "booked": {
+        "title": "🛑 Désolé, { partnerName } n’est pas disponible ce jour-là.",
+        "subtitle": "Ne vous inquiétez pas, nous avons sélectionné d’autres talents qui pourraient vous plaire !"
+      },
+      "option": {
+        "title": "🟠 Cette date est sous option pour  { partnerName }.",
+        "subtitle": "Soyez parmi les premiers informés si la date se libère ! Rejoignez la liste d’attente en un clic. Pendant ce temps, voici d’autres prestataires similaires disponibles à cette date : 👇"
+      }
     },
     "button": "Réserver",
     "help": {
@@ -90,6 +106,13 @@
     "404": {
       "title": "Oups !!",
       "message": "La page que vous recherchez n'existe pas."
+    }
+  },
+  "partner": {
+    "availability": {
+      "available": "🟢 Disponible",
+      "option": "🟠 Sous option",
+      "booked": "🔴 Réservé"
     }
   }
 }

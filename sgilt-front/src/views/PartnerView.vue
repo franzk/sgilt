@@ -3,62 +3,73 @@
     <!-- left content : texts & actions -->
     <div class="left-content">
       <!-- Header -->
-      <header class="partner-header">
-        <div class="header-left">
-          <img :src="partner.imageUrl" alt="Photo du partner" class="profile-picture" />
-          <div>
-            <h1>{{ partner.title }}</h1>
-            <p class="slogan">{{ partner.description }}</p>
-          </div>
-        </div>
-      </header>
+      <PartnerHeader />
 
       <!-- Description -->
       <p class="partner-description">{{ partner.longDescription }}</p>
 
       <!-- Video & photo gallery place here in tablet & mobile view -->
-      <PartnerMedia :photos="photos" v-if="tabletView" />
+      <PartnerMedia :photos="photos" v-if="isTabletView" />
 
       <!-- Reservation form -->
-      <ReservationForm
-        v-model:selected-date="selectedDate"
-        :prices="prices"
-        class="reservation-form"
-      />
+      <ReservationForm />
     </div>
 
     <!-- right content : video & photo here on desktop view -->
-    <div class="right-content" v-if="!tabletView">
+    <div class="right-content" v-if="!isTabletView">
       <PartnerMedia :photos="photos" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import ReservationForm from '@/components/partner/ReservationForm.vue'
+import ReservationForm from '@/components/reservation/ReservationForm.vue'
 import PartnerMedia from '@/components/partner/PartnerMedia.vue'
-import type { Price } from '@/data/domain/Partner'
-import { getPartnerBySlug } from '@/data/services/PartnerService'
-import { tabletView } from '@/utils/StyleUtils'
-import { onMounted, ref } from 'vue'
+import PartnerHeader from '@/components/partner/PartnerHeader.vue'
+import { usePartnerStore } from '@/stores/partner.store'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import dayjs from 'dayjs'
+import { useTabletView } from '@/composable/useTabletView'
+
+const { isTabletView } = useTabletView()
 
 const route = useRoute()
 const router = useRouter()
-const partner = ref()
+const partnerStore = usePartnerStore()
+const partner = computed(() => partnerStore.partner)
 
+// load partner data
 onMounted(async () => {
   const partnerSlug = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
-  getPartnerBySlug(partnerSlug)
-    .then((p) => {
-      partner.value = p
-    })
-    .catch(() => {
-      router.push('/404')
-    })
+  loadPartner(partnerSlug)
 })
 
+watch(
+  () => route.params.id,
+  (newId) => {
+    const partnerSlug = Array.isArray(newId) ? newId[0] : newId
+    loadPartner(partnerSlug)
+  },
+)
+
+const loadPartner = async (partnerSlug: string) => {
+  partnerStore.fetchPartner(partnerSlug).catch((error) => {
+    if (error.message === '404') {
+      router.push('/404')
+    } else {
+      console.error(error)
+    }
+  })
+}
+
+// reservation date
 const selectedDate = ref<Date>()
+
+const reservationDate = route.query?.date ? dayjs(route.query.date as string).toDate() : undefined
+if (reservationDate) {
+  selectedDate.value = reservationDate
+}
 
 // mock data
 const photos = ref([
@@ -67,19 +78,10 @@ const photos = ref([
   'https://picsum.photos/520/402',
   'https://picsum.photos/520/403',
 ])
-
-const prices: Price[] = [
-  { id: '1', title: 'Concert de 1h', price: 100 },
-  { id: '2', title: 'Concert de 2h', price: 200 },
-  { id: '3', title: 'Concert de 3h', price: 300 },
-  { id: '4', title: 'Concert de 4h', price: 400 },
-  { id: '5', title: 'Concert de 5h', price: 500 },
-]
 </script>
 
 <style scoped lang="scss">
 $left-column-width: 40rem;
-$profile-picture-size: 8em;
 
 /* Split Screen Layout */
 .split-screen-layout {
@@ -100,7 +102,7 @@ $profile-picture-size: 8em;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.partner-header {
+/*.partner-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -129,7 +131,7 @@ $profile-picture-size: 8em;
     font-style: italic;
     color: $color-subtext;
   }
-}
+} */
 
 .partner-description {
   margin: $spacing-m 0;

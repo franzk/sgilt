@@ -1,8 +1,8 @@
-import type { Partner } from '@/data/domain/Partner'
 import { searchPartners } from '@/data/services/PartnerService'
 import type { PartnerQuery } from '@/data/api/query/PartnerQuery'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import type { PartnerSearchViewModel } from '@/data/domain/viewmodels/PartnerSearchViewModel'
 
 /**
  * Search store
@@ -10,7 +10,7 @@ import { ref } from 'vue'
  */
 export const useSearchStore = defineStore('search', () => {
   // reactive state
-  const results = ref<Partner[]>([])
+  const results = ref<PartnerSearchViewModel[]>([])
   const filtersCount = ref(0)
 
   // actions

@@ -28,6 +28,14 @@ const router = createRouter({
       component: ErrorNotFound,
     },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    // if there is a savedPosition, use it
+    if (savedPosition) {
+      return savedPosition
+    }
+    // else scroll to the top of the page
+    return { top: 0 }
+  },
 })
 
 export default router

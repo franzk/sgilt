@@ -1,18 +1,23 @@
 <template>
   <section id="search-banner">
     <div class="title">
+      <!-- background image -->
       <img src="@/assets/images/home_bg.jpg" class="bg-mobile" />
+      <!-- title -->
       <div class="title-text">
         <span class="title-thin">{{ $t('home.search-banner.title-part-1') }}</span>
         <span class="title-bold">{{ $t('home.search-banner.title-part-2') }}</span>
         <h3 class="tagline">{{ $t('home.search-banner.tagline') }}</h3>
       </div>
     </div>
+    <!-- Search fields -->
     <div class="search-fields">
-      <SgiltDatePicker v-model="date" class="date-picker" />
+      <!-- Date picker -->
+      <SgiltDatePicker v-model="reservationStore.dateReservation" class="date-picker" />
+      <!-- Event type select -->
       <SgiltSelect
         :options="options"
-        v-model="selectedEventTypeOption"
+        v-model="reservationStore.eventType"
         focusable
         class="select-event-type"
       >
@@ -20,6 +25,7 @@
           <IconRocket />
         </template>
       </SgiltSelect>
+      <!-- Search button -->
       <SgiltButton @click="search">{{ $t('home.search-banner.button') }}</SgiltButton>
     </div>
   </section>
@@ -27,36 +33,27 @@
 
 <script setup lang="ts">
 import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
-import SgiltSelect, { type SgiltSelectOption } from '@/components/basics/inputs/SgiltSelect.vue'
+import SgiltSelect from '@/components/basics/inputs/SgiltSelect.vue'
 import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
-
 import router from '@/router'
-import { ref } from 'vue'
-import type { LocationQueryRaw } from 'vue-router'
 import { useEventTypeStore } from '@/stores/event-type.store'
-import dayjs from 'dayjs'
 import IconRocket from '@/components/icons/IconRocket.vue'
+import { useReservationStore } from '@/stores/reservation.store'
 
-// Filtre date
-const date = ref<Date>()
+const reservationStore = useReservationStore()
 
 // Types d'événements
-const options = useEventTypeStore().events.map((eventType) => ({
-  value: eventType.id,
-  label: eventType.name,
-}))
-const selectedEventTypeOption = ref<SgiltSelectOption>()
+const options = [
+  ...[{ value: '-1', label: 'Votre événement' }],
+  ...useEventTypeStore().events.map((eventType) => ({
+    value: eventType.id,
+    label: eventType.name,
+  })),
+]
 
 // Recherche
 const search = () => {
-  const query: LocationQueryRaw = {}
-  if (date.value) {
-    query.date = dayjs(date.value).format('YYYY-MM-DD')
-  }
-  if (selectedEventTypeOption.value) {
-    query.event = selectedEventTypeOption.value.value
-  }
-  router.push({ path: '/search', query })
+  router.push({ name: 'search' })
 }
 </script>
 

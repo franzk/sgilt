@@ -4,7 +4,13 @@ import TheHeader from '@/components/TheHeader.vue'
 
 <template>
   <TheHeader />
-  <RouterView />
+  <main>
+    <RouterView />
+  </main>
 </template>
 
-<style scoped></style>
+<style scoped>
+main {
+  padding-top: 4.5rem;
+}
+</style>

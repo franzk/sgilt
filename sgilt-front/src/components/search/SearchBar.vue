@@ -17,7 +17,11 @@
         </div>
         <hr />
       </div>
-      <DateFilter class="filters-date" v-model="dateFilter" @update:model-value="search" />
+      <DateFilter
+        class="filters-date"
+        v-model="reservationStore.dateReservation"
+        @update:model-value="search"
+      />
       <PriceFilter
         v-model:min-price="minPrice"
         v-model:max-price="maxPrice"
@@ -48,10 +52,13 @@ import type { PartnerQuery } from '@/data/api/query/PartnerQuery'
 import type { TagFilter } from '@/types/TagFilter'
 import { mobileView } from '@/utils/StyleUtils'
 import { useSearchStore } from '@/stores/search.store'
+import { useReservationStore } from '@/stores/reservation.store'
+
+const reservationStore = useReservationStore()
 
 // props
 const props = defineProps<{
-  dateFilter?: Date
+  // dateFilter?: Date
   tagsFilter?: TagFilter[]
 }>()
 
@@ -62,7 +69,7 @@ const emit = defineEmits<{
 }>()
 
 // filters
-const dateFilter = ref(props.dateFilter)
+// const dateFilter = ref(props.dateFilter)
 const minPrice = ref(0)
 const maxPrice = ref(0)
 const tagsFilter = ref<TagFilter[]>(props.tagsFilter ?? [])
@@ -73,7 +80,7 @@ const reduceOrCloseSymbol = computed(() => (mobileView ? '✕' : '<<'))
 // methods
 const search = () => {
   const query: PartnerQuery = {
-    dateFilter: dateFilter.value,
+    dateFilter: reservationStore.dateReservation, // dateFilter.value,
     minPrice: minPrice.value,
     maxPrice: maxPrice.value,
     tagsId: tagsFilter.value.map((tag) => tag.id),
@@ -82,7 +89,7 @@ const search = () => {
 }
 
 const resetFilters = () => {
-  dateFilter.value = undefined
+  reservationStore.dateReservation = undefined // dateFilter.value = undefined
   minPrice.value = 0
   maxPrice.value = 0
   tagsFilter.value = []

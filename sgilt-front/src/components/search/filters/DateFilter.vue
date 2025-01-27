@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
 
-const date = defineModel<Date>()
+const date = defineModel<Date | undefined>()
 </script>
 
 <style scoped lang="scss"></style>

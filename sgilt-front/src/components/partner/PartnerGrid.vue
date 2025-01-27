@@ -7,11 +7,11 @@
 </template>
 
 <script setup lang="ts">
-import type { Partner } from '@/data/domain/Partner'
-import PartnerCard from './PartnerCard.vue'
+import PartnerCard from '@/components/partner/PartnerCard.vue'
+import type { PartnerSearchViewModel } from '@/data/domain/viewmodels/PartnerSearchViewModel'
 
 defineProps<{
-  partners: Partner[]
+  partners: PartnerSearchViewModel[]
 }>()
 </script>
 

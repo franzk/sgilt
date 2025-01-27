@@ -1,5 +1,10 @@
 <template>
-  <div class="partner-video"><SgiltVideo youtubeId="_A6w3ECkN4k" /></div>
+  <div class="partner-video">
+    <SgiltVideo
+      v-if="partnerStore.partner?.youtubeId"
+      :youtubeId="partnerStore.partner?.youtubeId"
+    />
+  </div>
 
   <!-- Photo gallery -->
   <div class="photo-gallery">
@@ -18,9 +23,12 @@ import SgiltVideo from '@/components/basics/media/SgiltVideo.vue'
 import SgiltModalGallery from '@/components/basics/media/SgiltModalGallery.vue'
 
 import { ref } from 'vue'
+import { usePartnerStore } from '@/stores/partner.store'
 defineProps<{
   photos: string[]
 }>()
+
+const partnerStore = usePartnerStore()
 
 const displayedPhoto = ref()
 </script>

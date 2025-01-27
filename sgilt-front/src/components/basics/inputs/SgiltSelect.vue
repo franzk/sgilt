@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 // selected value
 const selectedOption = defineModel<SgiltSelectOption>()
@@ -35,15 +35,20 @@ const props = defineProps<{
 }>()
 
 // display the selected label
-const selectedLabel = ref(props.options?.[0]?.label || '')
+const selectedLabel = computed(() => selectedOption?.value?.label || '')
 
 // is the select opened ?
 const open = ref(false)
 
+onMounted(() => {
+  if (!selectedOption.value && props.options.length > 0) {
+    selectedOption.value = props.options[0]
+  }
+})
+
 // when an option is clicked
 const click = (option: SgiltSelectOption) => {
   selectedOption.value = option // update the model
-  selectedLabel.value = option.label // update the label
   open.value = false // close the select
 }
 </script>
