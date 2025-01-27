@@ -4,7 +4,7 @@
     :title="$t('reservation.form.options-label')"
     :errorMessage="reservationStore.priceError"
   >
-    <SgiltSelect :options="pricesOptions || []" v-model="selectedOption">
+    <SgiltSelect :options="pricesOptions || []" v-model="selectedOption" focusable>
       <template v-slot:left-icon>
         <IconList />
       </template>
