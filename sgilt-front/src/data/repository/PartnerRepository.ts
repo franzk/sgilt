@@ -70,7 +70,10 @@ export const partnerCalendar = async (id: string): Promise<CalendarEntry[]> => {
   })
 }
 
-export const relatedPartners = async (id: string): Promise<PartnerSearchViewModel[]> => {
+export const relatedPartners = async (
+  id: string,
+  dateReservation?: Date,
+): Promise<PartnerSearchViewModel[]> => {
   const partner = partners.find((partner) => partner.id === id)
   return new Promise((resolve, reject) => {
     if (!partner) {
@@ -88,7 +91,14 @@ export const relatedPartners = async (id: string): Promise<PartnerSearchViewMode
       )
       const relateds = [...tagRelated, ...categoryRelated]
 
-      resolve(relateds.map((p) => ({ ...p, ...{ availability: 'available' } })))
+      resolve(
+        relateds.map((p) => ({
+          ...p,
+          ...{
+            availability: dateReservation ? partnerAvailability(p, dateReservation) : undefined,
+          },
+        })),
+      )
     }
   })
 }

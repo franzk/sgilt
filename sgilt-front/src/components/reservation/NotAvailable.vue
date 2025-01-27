@@ -30,6 +30,7 @@ import router from '@/router'
 import { usePartnerStore } from '@/stores/partner.store'
 import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 import type { PartnerSearchViewModel } from '@/data/domain/viewmodels/PartnerSearchViewModel'
+import { useReservationStore } from '@/stores/reservation.store'
 
 defineProps<{
   state: string
@@ -37,6 +38,8 @@ defineProps<{
 
 const partnerStore = usePartnerStore()
 const partner = computed(() => partnerStore.partner)
+
+const reservationStore = useReservationStore()
 
 const relatedPartners = ref<PartnerSearchViewModel[]>([])
 
@@ -57,7 +60,7 @@ const fetchRelatedPartners = (partnerId: string | undefined) => {
   if (!partnerId) {
     relatedPartners.value = []
   } else {
-    getReleatedPartners(partnerId).then((partners) => {
+    getReleatedPartners(partnerId, reservationStore.dateReservation).then((partners) => {
       relatedPartners.value = partners
     })
   }
@@ -80,5 +83,9 @@ const selectRelatedPartner = (partnerSlug: string) => {
 
 .related-partners {
   margin-top: $spacing-l;
+  .partners {
+    display: grid;
+    gap: $spacing-m;
+  }
 }
 </style>

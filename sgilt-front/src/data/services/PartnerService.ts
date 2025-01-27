@@ -54,6 +54,9 @@ export const getPartnerCalendar = async (partnerId: string): Promise<CalendarEnt
  * @param partnerId
  * @returns partners that are releated to the given partner
  */
-export const getReleatedPartners = async (partnerId: string): Promise<PartnerSearchViewModel[]> => {
-  return relatedPartners(partnerId)
+export const getReleatedPartners = async (
+  partnerId: string,
+  dateReservation?: Date,
+): Promise<PartnerSearchViewModel[]> => {
+  return relatedPartners(partnerId, dateReservation)
 }
