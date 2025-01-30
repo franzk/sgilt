@@ -59,6 +59,19 @@ body {
     line-height: calc($line-height-base * 0.8);
   }
 
+  input,
+  textarea {
+    font-size: $font-size-base;
+    // width: 5rem;
+    border-radius: $input-border-radius;
+    border: 1px solid $shadow-s;
+    // text-align: right;
+    padding: 1em;
+    &:focus {
+      outline: none;
+    }
+  }
+
   @include respond-to(tablet) {
     font-size: calc($font-size-base * 1.1);
     line-height: calc($line-height-base * 1.1);

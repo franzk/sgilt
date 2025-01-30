@@ -3,6 +3,7 @@ import HomeView from '@/views/HomeView.vue'
 import SearchView from '@/views/SearchView.vue'
 import PartnerView from '@/views/PartnerView.vue'
 import ErrorNotFound from '@/views/ErrorNotFound.vue'
+import BookingFlowView from '@/components/booking_flow/BookingFlow.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

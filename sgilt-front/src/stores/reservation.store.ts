@@ -14,8 +14,14 @@ export const useReservationStore = defineStore('reservation', () => {
     dateError.value = undefined
   })
 
+  // event time
+  const timeReservation = ref<string>()
+
   // event type
   const eventType = ref<SgiltSelectOption>()
+
+  // location
+  const location: ref<string> = ref()
 
   // partner booked
   const partner = ref<Partner>()
@@ -66,6 +72,8 @@ export const useReservationStore = defineStore('reservation', () => {
   return {
     dateReservation,
     dateError,
+    timeReservation,
+    location,
     eventType,
     partner,
     price,
