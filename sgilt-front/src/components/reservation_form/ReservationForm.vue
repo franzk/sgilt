@@ -88,7 +88,7 @@ const optionDates = computed(() =>
 // submit button
 const showBookingFlow = ref<boolean>(false)
 const handleBooking = () => {
-  showBookingFlow.value = reservationStore.checkValidity()
+  showBookingFlow.value = reservationStore.checkPriceValidity()
 }
 </script>
 

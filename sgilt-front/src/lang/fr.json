@@ -92,6 +92,24 @@
       "link": "En savoir plus"
     }
   },
+  "booking-flow": {
+    "step-1": {
+      "title": "📍 Détails de votre événement",
+      "subtitle": "Indiquez où et quand aura lieu votre événement."
+    },
+    "step-2": {
+      "title": "🔑 Connexion ou Inscription",
+      "subtitle": "Connectez-vous ou créez un compte pour finaliser votre demande."
+    },
+    "step-3": {
+      "title": "🎉 Demande envoyée !",
+      "subtitle": "Votre demande a bien été envoyée au prestataire. Il a **24h pour répondre**."
+    },
+    "email-label": "Ou utilisez votre email :",
+    "email-placeholder": "Votre email",
+    "email-required-error": "Veuillez saisir votre adresse email.",
+    "email-invalid-error": "Veuillez saisir une adresse email valide."
+  },
   "texts": {
     "a-partir-de": "À partir de",
     "minimum": "Minimum",

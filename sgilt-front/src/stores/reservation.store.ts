@@ -10,18 +10,20 @@ export const useReservationStore = defineStore('reservation', () => {
   // booking date
   const dateReservation = ref<Date>()
   const dateError = ref<string | undefined>()
-  watch(dateReservation, () => {
-    dateError.value = undefined
-  })
+  watch(dateReservation, () => (dateError.value = undefined))
 
   // event time
   const timeReservation = ref<string>()
+  const timeError = ref<string | undefined>()
+  watch(timeReservation, () => (timeError.value = undefined))
 
   // event type
   const eventType = ref<SgiltSelectOption>()
 
   // location
   const location: ref<string> = ref()
+  const locationError = ref<string | undefined>()
+  watch(location, () => (locationError.value = undefined))
 
   // partner booked
   const partner = ref<Partner>()
@@ -37,15 +39,18 @@ export const useReservationStore = defineStore('reservation', () => {
   // quantity of the chosen price
   const quantity = ref<number>()
   const quantityError = ref<string | undefined>()
-  watch(quantity, () => {
-    quantityError.value = undefined
-  })
+  watch(quantity, () => (quantityError.value = undefined))
+
+  // client email
+  const email = ref<string>()
+  const emailError = ref<string | undefined>()
+  watch(email, () => (emailError.value = undefined))
 
   /**
    * check if the form is valid
    * @returns {boolean} true if the form is valid
    */
-  const checkValidity = (): boolean => {
+  const checkPriceValidity = (): boolean => {
     let isValid = true
     if (!dateReservation.value) {
       dateError.value = t('reservation.form.date-error') // date is required
@@ -69,17 +74,48 @@ export const useReservationStore = defineStore('reservation', () => {
     return isValid
   }
 
+  const checkFirstValidation = (): boolean => {
+    let isValid = true
+    if (!location.value) {
+      locationError.value = t('reservation.form.location-error') // location is required
+      isValid = false
+    }
+    if (!timeReservation.value) {
+      timeError.value = t('reservation.form.time-error') // time is required
+      isValid = false
+    }
+    return isValid
+  }
+
+  const checkSecondValidation = (): boolean => {
+    let isValid = true
+    if (!email.value) {
+      emailError.value = t('booking-flow.email-required-error') // email is required
+      isValid = false
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/i.test(email.value.trim())) {
+      emailError.value = t('booking-flow.email-invalid-error') // email is not valid
+      isValid = false
+    }
+    return isValid
+  }
+
   return {
     dateReservation,
     dateError,
     timeReservation,
+    timeError,
     location,
+    locationError,
     eventType,
     partner,
     price,
     priceError,
     quantity,
     quantityError,
-    checkValidity,
+    email,
+    emailError,
+    checkPriceValidity,
+    checkFirstValidation,
+    checkSecondValidation,
   }
 })

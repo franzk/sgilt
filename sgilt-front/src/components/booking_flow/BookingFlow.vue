@@ -6,35 +6,21 @@
         <button v-if="isModal" class="close-btn" @click="closeModal">✖</button>
 
         <header class="booking-header">
-          <h2>📍 Détails de votre événement</h2>
-          <p>Indiquez où et quand aura lieu votre événement.</p>
+          <h2>{{ $t(`booking-flow.step-${step}.title`) }}</h2>
+          <p>{{ $t(`booking-flow.step-${step}.subtitle`) }}</p>
         </header>
 
-        <SgiltFormGroup title="Lieu de l’événement">
-          <input
-            v-model="eventDetails.location"
-            type="text"
-            placeholder="Ex : Paris, Lyon, Marseille..."
-          />
-        </SgiltFormGroup>
-
-        <div class="date-time">
-          <SgiltFormGroup title="Date de l’événement">
-            <SgiltDatePicker />
-          </SgiltFormGroup>
-
-          <SgiltFormGroup title="Heure de l’événement">
-            <input type="time" />
-          </SgiltFormGroup>
+        <div class="content">
+          <StepOne v-if="step === 1" />
+          <StepTwo v-if="step === 2" />
         </div>
-
-        <SgiltFormGroup title="Envoyez un message à Marcel">
-          <textarea v-model="eventDetails.message" placeholder="Ajoutez un message..."></textarea>
-        </SgiltFormGroup>
 
         <!-- Footer toujours visible -->
         <div class="modal-footer">
-          <SgiltButton @click="validateEvent">Continuer</SgiltButton>
+          <SgiltButton v-if="step === 2" @click="step--" variant="secondary">&larr;</SgiltButton>
+          <SgiltButton class="btn-submit" @click="submit">{{
+            step === 2 ? 'Envoyer ma réservation' : 'Continuer'
+          }}</SgiltButton>
         </div>
       </div>
     </div>
@@ -45,20 +31,21 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
-import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
-import SgiltFormGroup from '@/components/basics/inputs/SgiltFormGroup.vue'
+import StepOne from '@/components/booking_flow/StepOne.vue'
+import StepTwo from '@/components/booking_flow/StepTwo.vue'
+import { useReservationStore } from '@/stores/reservation.store'
+
+const reservationStore = useReservationStore()
 
 defineProps<{
   showModal: boolean
 }>()
 
-const emit = defineEmits<{
-  (e: 'close'): void
-}>()
+const emit = defineEmits<{ (e: 'close'): void }>()
 
-const closeModal = () => {
-  emit('close')
-}
+const closeModal = () => emit('close')
+
+const step = ref(1)
 
 const route = useRoute()
 const isModal = computed(() => !route.path.includes('/event-booking')) // Détermine si c'est une modale ou une page
@@ -68,18 +55,20 @@ onMounted(() => {
   isMobile.value = window.innerWidth < 768
 })
 
-const eventDetails = ref({
-  location: '',
-  date: '',
-  message: '',
-})
-
-const validateEvent = () => {
-  if (!eventDetails.value.location || !eventDetails.value.date) {
-    alert('Veuillez remplir tous les champs obligatoires.')
-    return
+const submit = () => {
+  if (step.value === 1) {
+    if (reservationStore.checkFirstValidation()) {
+      step.value++
+    }
+  } else if (step.value === 2) {
+    if (reservationStore.checkSecondValidation()) {
+      step.value++
+    }
+  } else {
+    // submit reservation
+    closeModal()
+    step.value = 1
   }
-  console.log('Événement validé avec :', eventDetails.value)
 }
 </script>
 
@@ -111,7 +100,7 @@ const validateEvent = () => {
     background: white;
     padding: 2rem;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    max-height: 90vh;
+    max-height: 80vh;
     overflow-y: auto;
   }
 
@@ -128,16 +117,18 @@ const validateEvent = () => {
   }
 }
 
-.booking-header {
-  text-align: center;
+.container {
+  display: flex;
+  flex-direction: column;
+
+  .content {
+    flex: 1;
+    padding: $spacing-m 0;
+  }
 }
 
-.date-time {
-  display: flex;
-  gap: $spacing-m;
-  & > * {
-    flex: 1;
-  }
+.booking-header {
+  text-align: center;
 }
 
 /* Bouton de fermeture */
@@ -159,7 +150,8 @@ const validateEvent = () => {
   padding: 1rem;
   border-top: 1px solid $shadow-s;
   display: flex;
-  & > * {
+  gap: $spacing-m;
+  .btn-submit {
     flex: 1;
   }
 }

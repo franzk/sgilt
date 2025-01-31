@@ -2,6 +2,7 @@
   <VueDatePicker
     v-model="date"
     auto-apply
+    :disabled="disabled"
     :enable-time-picker="false"
     locale="fr"
     :format="format"
@@ -33,6 +34,7 @@ const format = (date: Date) => dayjs(date).locale('fr').format('dddd DD MMM YYYY
 const props = defineProps<{
   bookedDates?: Date[]
   optionDates?: Date[]
+  disabled?: boolean
 }>()
 
 const getDayClass = (date: Date) => {
