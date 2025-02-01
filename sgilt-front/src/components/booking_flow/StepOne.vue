@@ -1,10 +1,14 @@
 <template>
   <SgiltFormGroup title="Lieu de l’événement" :error-message="reservationStore.locationError">
-    <input
-      v-model="reservationStore.location"
+    <SgiltInput
       type="text"
+      v-model:text-model="reservationStore.location"
       placeholder="Ex : Strasbourg, Rathsamhausen, Breuschwickersheim..."
-    />
+    >
+      <template #icon>
+        <IconPlace />
+      </template>
+    </SgiltInput>
   </SgiltFormGroup>
 
   <div class="date-time">
@@ -26,6 +30,8 @@
 import { useReservationStore } from '@/stores/reservation.store'
 import SgiltFormGroup from '@/components/basics/inputs/SgiltFormGroup.vue'
 import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
+import SgiltInput from '@/components/basics/inputs/SgiltInput.vue'
+import IconPlace from '@/components/icons/IconPlace.vue'
 
 const reservationStore = useReservationStore()
 </script>
