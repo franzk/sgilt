@@ -1,5 +1,5 @@
 <template>
-  <p class="sgilt-input" tabindex="0" @focus="focusDiv">
+  <div class="sgilt-input" tabindex="0" @focus="focusDiv">
     <div class="icon" v-if="$slots.icon">
       <slot name="icon" />
     </div>
@@ -15,7 +15,7 @@
       @blur="$emit('blur')"
     />
     <span v-if="symbol">{{ symbol }}</span>
-  </p>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -136,7 +136,6 @@ input::-webkit-inner-spin-button {
 
     border-radius: $br 0 0 $br;
     border: $bw solid $bc;
-    // text-align: right;
     flex: 1;
 
     &:focus {
@@ -148,7 +147,6 @@ input::-webkit-inner-spin-button {
     text-align: right;
     appearance: textfield;
     -moz-appearance: textfield;
-
     padding: $spacing-m;
   }
 

@@ -1,9 +1,12 @@
 <template>
-  <SgiltFormGroup title="Lieu de l’événement" :error-message="reservationStore.locationError">
+  <SgiltFormGroup
+    :title="$t('booking-flow.step-1.location.label')"
+    :error-message="reservationStore.locationError"
+  >
     <SgiltInput
       type="text"
       v-model:text-model="reservationStore.location"
-      placeholder="Ex : Strasbourg, Rathsamhausen, Breuschwickersheim..."
+      :placeholder="$t('booking-flow.step-1.location.placeholder')"
     >
       <template #icon>
         <IconPlace />
@@ -12,17 +15,24 @@
   </SgiltFormGroup>
 
   <div class="date-time">
-    <SgiltFormGroup title="Date de l’événement">
+    <SgiltFormGroup :title="$t('booking-flow.step-1.date.label')">
       <SgiltDatePicker v-model="reservationStore.dateReservation" disabled />
     </SgiltFormGroup>
 
-    <SgiltFormGroup title="Heure de l’événement" :error-message="reservationStore.timeError">
+    <SgiltFormGroup
+      :title="$t('booking-flow.step-1.time.label')"
+      :error-message="reservationStore.timeError"
+    >
       <input type="time" v-model="reservationStore.timeReservation" />
     </SgiltFormGroup>
   </div>
 
-  <SgiltFormGroup title="Envoyez un message à Marcel (optionnel)">
-    <textarea placeholder="Ajoutez un message pour préciser vos attentes..."></textarea>
+  <SgiltFormGroup
+    :title="
+      $t('booking-flow.step-1.message.label', { partnerName: reservationStore.partner?.title })
+    "
+  >
+    <textarea :placeholder="$t('booking-flow.step-1.message.placeholder')"></textarea>
   </SgiltFormGroup>
 </template>
 

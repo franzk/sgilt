@@ -95,7 +95,23 @@
   "booking-flow": {
     "step-1": {
       "title": "📍 Détails de votre événement",
-      "subtitle": "Indiquez où et quand aura lieu votre événement."
+      "subtitle": "Indiquez où et quand aura lieu votre événement.",
+      "location": {
+        "label": "Lieu de l'événement",
+        "placeholder": "Ex : Strasbourg, Rathsamhausen, Breuschwickersheim...",
+        "error": "Veuillez saisir un lieu valide."
+      },
+      "date": {
+        "label": "Date de l'événement"
+      },
+      "time": {
+        "label": "Heure de l'événement",
+        "error": "Veuillez saisir une heure valide."
+      },
+      "message": {
+        "label": "Envoyez un message à {partnerName} (optionnel)",
+        "placeholder": "Ajoutez un message pour préciser vos attentes..."
+      }
     },
     "step-2": {
       "title": "🔑 Connexion ou Inscription",

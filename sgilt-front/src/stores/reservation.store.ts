@@ -74,14 +74,14 @@ export const useReservationStore = defineStore('reservation', () => {
     return isValid
   }
 
-  const checkFirstValidation = (): boolean => {
+  const checkStepOne = (): boolean => {
     let isValid = true
     if (!location.value) {
-      locationError.value = t('reservation.form.location-error') // location is required
+      locationError.value = t('booking-flow.step-1.location.error') // location is required
       isValid = false
     }
     if (!timeReservation.value) {
-      timeError.value = t('reservation.form.time-error') // time is required
+      timeError.value = t('booking-flow.step-1.time.error') // time is required
       isValid = false
     }
     return isValid
@@ -115,7 +115,7 @@ export const useReservationStore = defineStore('reservation', () => {
     email,
     emailError,
     checkPriceValidity,
-    checkFirstValidation,
+    checkStepOne,
     checkSecondValidation,
   }
 })

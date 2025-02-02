@@ -54,12 +54,6 @@ const emit = defineEmits<{ (e: 'close'): void }>()
 const closeModal = () => emit('close')
 
 const step = ref(0)
-/*const steps = [
-  { title: '📍 Détails' },
-  { title: '🔑 Connexion' },
-  { title: '✅ Vérification' },
-  { title: '🎉 Confirmation' },
-]*/
 
 const route = useRoute()
 const isModal = computed(() => !route.path.includes('/event-booking'))
@@ -70,11 +64,8 @@ onMounted(() => {
 })
 
 const nextStep = () => {
-  if (step.value < 3) {
+  if (step.value === 0 && reservationStore.checkStepOne()) {
     step.value++
-  } else {
-    closeModal()
-    step.value = 0
   }
 }
 

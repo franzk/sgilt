@@ -37,13 +37,6 @@
     </div>
   </div>
 
-  <!-- First reservation modal in cas of submission -->
-  <!--FirsReservationModal
-    :showModal="showFirstReservationModal"
-    @close="showFirstReservationModal = false"
-    @connect-email="newUserConnected"
-    @connect-s-s-o="newUserConnected"
-  /-->
   <BookingFlow :showModal="showBookingFlow" @close="showBookingFlow = false" />
 </template>
 
@@ -88,7 +81,10 @@ const optionDates = computed(() =>
 // submit button
 const showBookingFlow = ref<boolean>(false)
 const handleBooking = () => {
-  showBookingFlow.value = reservationStore.checkPriceValidity()
+  if (reservationStore.checkPriceValidity()) {
+    reservationStore.partner = partner.value
+    showBookingFlow.value = true
+  }
 }
 </script>
 
