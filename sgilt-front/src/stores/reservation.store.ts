@@ -21,7 +21,7 @@ export const useReservationStore = defineStore('reservation', () => {
   const eventType = ref<SgiltSelectOption>()
 
   // location
-  const location: ref<string> = ref()
+  const location = ref<string>()
   const locationError = ref<string | undefined>()
   watch(location, () => (locationError.value = undefined))
 

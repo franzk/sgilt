@@ -3,6 +3,7 @@
     :title="$t('booking-flow.step-1.location.label')"
     :error-message="reservationStore.locationError"
   >
+    <!-- location -->
     <SgiltInput
       type="text"
       v-model:text-model="reservationStore.location"
@@ -15,18 +16,21 @@
   </SgiltFormGroup>
 
   <div class="date-time">
+    <!-- date -->
     <SgiltFormGroup :title="$t('booking-flow.step-1.date.label')">
       <SgiltDatePicker v-model="reservationStore.dateReservation" disabled />
     </SgiltFormGroup>
 
+    <!-- time -->
     <SgiltFormGroup
       :title="$t('booking-flow.step-1.time.label')"
       :error-message="reservationStore.timeError"
     >
-      <input type="time" v-model="reservationStore.timeReservation" />
+      <SgiltTimeInput v-model="reservationStore.timeReservation" />
     </SgiltFormGroup>
   </div>
 
+  <!-- message -->
   <SgiltFormGroup
     :title="
       $t('booking-flow.step-1.message.label', { partnerName: reservationStore.partner?.title })
@@ -42,6 +46,7 @@ import SgiltFormGroup from '@/components/basics/inputs/SgiltFormGroup.vue'
 import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
 import SgiltInput from '@/components/basics/inputs/SgiltInput.vue'
 import IconPlace from '@/components/icons/IconPlace.vue'
+import SgiltTimeInput from '@/components/basics/inputs/SgiltTimeInput.vue'
 
 const reservationStore = useReservationStore()
 </script>

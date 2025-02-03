@@ -111,7 +111,8 @@ body {
   flex-direction: column;
 }
 
-*:focus-visible {
+*:focus-visible,
+input[type='time']:focus {
   outline: $focus-outline;
   outline-offset: $focus-outline-offset;
 }
