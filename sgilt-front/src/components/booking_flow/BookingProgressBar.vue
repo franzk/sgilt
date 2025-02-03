@@ -3,14 +3,18 @@
     <div
       v-for="stepItem in steps"
       :key="stepItem"
-      :class="['step', { active: stepItem === currentStep, completed: stepItem < currentStep!! }]"
+      :class="[
+        'step',
+        { active: stepItem === currentStep, completed: stepItem < currentStep!! },
+        { 'last-step': stepItem === 4 },
+      ]"
       @click="emit('stepChange', stepItem)"
     >
       <div class="step-circle">
         <span v-if="stepItem < currentStep!!">✔</span>
-        <span v-else>{{ stepItem + 1 }}</span>
+        <span v-else>{{ stepItem }}</span>
       </div>
-      <div v-if="stepItem < stepCount - 1" class="step-line"></div>
+      <div v-if="stepItem < 4" class="step-line"></div>
     </div>
   </div>
 </template>
@@ -18,11 +22,7 @@
 <script setup lang="ts">
 const currentStep = defineModel<number>()
 
-const props = defineProps<{
-  stepCount: number
-}>()
-
-const steps = Array.from({ length: props.stepCount }, (_, i) => i)
+const steps = [1, 2, 3, 4]
 
 const emit = defineEmits<{
   (e: 'stepChange', step: number): void
@@ -42,7 +42,9 @@ const emit = defineEmits<{
   display: flex;
   align-items: center;
   position: relative;
-  flex: 1;
+  &:not(.last-step) {
+    flex: 1;
+  }
 }
 
 .step-circle {
@@ -72,6 +74,7 @@ const emit = defineEmits<{
 .step.completed .step-circle {
   background: $color-primary;
   color: white;
+  cursor: pointer;
 }
 
 .step.completed .step-line {

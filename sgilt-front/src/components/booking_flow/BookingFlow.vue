@@ -2,31 +2,31 @@
   <div class="booking-flow-modal" v-if="showModal" @click.self="closeModal">
     <div :class="['event-booking', { 'as-modal': isModal, 'full-height': isMobile }]">
       <div class="container">
-        <!-- Bouton de fermeture -->
+        <!-- Close button-->
         <button v-if="isModal" class="close-btn" @click="closeModal">✖</button>
 
-        <!-- Header Full Width avec Dégradé -->
+        <!-- Header -->
         <header class="booking-header">
-          <h2>{{ $t(`booking-flow.step-${step + 1}.title`) }}</h2>
-          <p>{{ $t(`booking-flow.step-${step + 1}.subtitle`) }}</p>
-          <BookingProgressBar :stepCount="4" v-model="step" @stepChange="goToStep" />
+          <h2>{{ $t(`booking-flow.step-${step}.title`) }}</h2>
+          <p>{{ $t(`booking-flow.step-${step}.subtitle`) }}</p>
+          <BookingProgressBar v-model="step" @stepChange="goToStep" />
         </header>
 
-        <!-- Contenu dynamique -->
+        <!-- Dynamic content -->
         <div class="content">
-          <StepOne v-if="step === 0" />
-          <StepTwo v-if="step === 1" />
-          <StepThree v-if="step === 2" />
-          <StepFour v-if="step === 3" />
+          <StepOne v-if="step === 1" />
+          <StepTwo v-if="step === 2" />
+          <StepThree v-if="step === 3" />
+          <StepFour v-if="step === 4" />
         </div>
 
-        <!-- Footer Sticky -->
+        <!-- Sticky Footer -->
         <div class="modal-footer">
-          <SgiltButton v-if="step > 0" @click="step--" variant="secondary"
+          <SgiltButton v-if="step > 1" @click="step--" variant="secondary"
             >&larr; Retour</SgiltButton
           >
           <SgiltButton class="btn-submit" @click="nextStep">
-            {{ step === 3 ? 'Finaliser' : 'Continuer →' }}
+            {{ step === 4 ? 'Finaliser' : 'Continuer →' }}
           </SgiltButton>
         </div>
       </div>
@@ -53,7 +53,7 @@ const emit = defineEmits<{ (e: 'close'): void }>()
 
 const closeModal = () => emit('close')
 
-const step = ref(0)
+const step = ref(1)
 
 const route = useRoute()
 const isModal = computed(() => !route.path.includes('/event-booking'))
@@ -64,7 +64,7 @@ onMounted(() => {
 })
 
 const nextStep = () => {
-  if (step.value === 0 && reservationStore.checkStepOne()) {
+  if (step.value === 1 && reservationStore.checkStepOne()) {
     step.value++
   }
 }
