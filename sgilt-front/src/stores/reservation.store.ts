@@ -87,7 +87,7 @@ export const useReservationStore = defineStore('reservation', () => {
     return isValid
   }
 
-  const checkSecondValidation = (): boolean => {
+  const checkStepTwo = (): boolean => {
     let isValid = true
     if (!email.value) {
       emailError.value = t('booking-flow.email-required-error') // email is required
@@ -116,6 +116,6 @@ export const useReservationStore = defineStore('reservation', () => {
     emailError,
     checkPriceValidity,
     checkStepOne,
-    checkSecondValidation,
+    checkStepTwo,
   }
 })

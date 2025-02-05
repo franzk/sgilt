@@ -16,6 +16,7 @@
         v-for="partner in relatedPartners"
         :key="partner.id"
         :partner="partner"
+        selectable
         @click="selectRelatedPartner(partner.slug)"
       />
     </div>

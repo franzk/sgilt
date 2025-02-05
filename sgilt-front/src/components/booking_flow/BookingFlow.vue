@@ -13,21 +13,28 @@
         </header>
 
         <!-- Dynamic content -->
-        <div class="content">
-          <StepOne v-if="step === 1" />
-          <StepTwo v-if="step === 2" />
-          <StepThree v-if="step === 3" />
-          <StepFour v-if="step === 4" />
-        </div>
+        <transition :name="stepAnimation" mode="out-in">
+          <div class="content" :key="step">
+            <StepOne v-if="step === 1" />
+            <StepTwo v-if="step === 2" />
+            <StepThree v-if="step === 3" />
+            <StepFour v-if="step === 4" />
+          </div>
+        </transition>
 
         <!-- Sticky Footer -->
         <div class="modal-footer">
-          <SgiltButton v-if="step > 1" @click="step--" variant="secondary"
-            >&larr; Retour</SgiltButton
-          >
-          <SgiltButton class="btn-submit" @click="nextStep">
-            {{ step === 4 ? 'Finaliser' : 'Continuer →' }}
-          </SgiltButton>
+          <div class="captcha" v-if="step === 3">
+            <input type="checkbox" /> Je ne suis pas un robot
+          </div>
+          <div class="navigation">
+            <SgiltButton v-if="step > 1" @click="prevStep" variant="secondary"
+              >&larr; Retour</SgiltButton
+            >
+            <SgiltButton class="btn-submit" @click="nextStep">
+              {{ step === 3 ? 'Envoyer ma demande' : 'Continuer →' }}
+            </SgiltButton>
+          </div>
         </div>
       </div>
     </div>
@@ -40,7 +47,7 @@ import { useRoute } from 'vue-router'
 import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 import StepOne from '@/components/booking_flow/StepOne.vue'
 import StepTwo from '@/components/booking_flow/StepTwo.vue'
-// import StepThree from '@/components/booking_flow/StepThree.vue'
+import StepThree from '@/components/booking_flow/StepThree.vue'
 // import StepFour from '@/components/booking_flow/StepFour.vue'
 import { useReservationStore } from '@/stores/reservation.store'
 import BookingProgressBar from '@/components/booking_flow/BookingProgressBar.vue'
@@ -55,6 +62,8 @@ const closeModal = () => emit('close')
 
 const step = ref(1)
 
+const stepAnimation = ref('')
+
 const route = useRoute()
 const isModal = computed(() => !route.path.includes('/event-booking'))
 const isMobile = ref(false)
@@ -63,21 +72,31 @@ onMounted(() => {
   isMobile.value = window.innerWidth < 768
 })
 
+const prevStep = () => {
+  stepAnimation.value = ''
+  step.value--
+}
+
 const nextStep = () => {
   if (step.value === 1 && reservationStore.checkStepOne()) {
+    stepAnimation.value = 'step-fade'
+    step.value++
+  } else if (step.value === 2 && reservationStore.checkStepTwo()) {
+    stepAnimation.value = 'step-fade'
     step.value++
   }
 }
 
 const goToStep = (index: number) => {
   if (index < step.value) {
+    stepAnimation.value = ''
     step.value = index
   }
 }
 </script>
 
 <style scoped lang="scss">
-/* --- MODAL GÉNÉRALE --- */
+/* --- MODAL --- */
 .booking-flow-modal {
   position: fixed;
   top: 0;
@@ -119,7 +138,7 @@ const goToStep = (index: number) => {
   }
 }
 
-/* --- HEADER FULL WIDTH AVEC DÉGRADÉ --- */
+/* --- HEADER FULL WIDTH --- */
 .booking-header {
   text-align: center;
   padding: 1.5rem 0;
@@ -128,56 +147,26 @@ const goToStep = (index: number) => {
   border-radius: 8px 8px 0 0;
 }
 
-/* --- BARRE DE PROGRESSION DANS LE HEADER --- */
-/*.progress-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 1rem;
-  padding: 0 1rem;
+/* --- CONTENT --- */
+/* Transition between steps */
+.step-fade-enter-active,
+.step-fade-leave-active {
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease;
 }
 
-.step {
-  display: flex;
-  align-items: center;
-  position: relative;
-  flex: 1;
+.step-fade-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
 }
 
-.step-circle {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
-  background: $color-secondary;
-  transition: 0.3s;
+.step-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
-.step-line {
-  flex: 1;
-  height: 3px;
-  background: $shadow-s;
-}
-
-.step.active .step-circle {
-  background: $color-accent;
-  color: white;
-  box-shadow: 0 0 10px rgba(255, 191, 0, 0.5);
-}
-
-.step.completed .step-circle {
-  background: $color-primary;
-  color: white;
-}
-
-.step.completed .step-line {
-  background: $color-primary;
-}*/
-
-/* --- BOUTON DE FERMETURE --- */
+/* --- CLOSE BUTTON--- */
 .close-btn {
   position: absolute;
   top: 10px;
@@ -200,13 +189,18 @@ const goToStep = (index: number) => {
   padding: 1rem;
   border-top: 1px solid $shadow-s;
   display: flex;
+  flex-direction: column;
   gap: $spacing-m;
+  align-items: center;
 
-  .btn-submit {
+  .navigation {
+    display: flex;
+    gap: $spacing-m;
     flex: 1;
-    background: $color-accent;
-    color: white;
-    font-weight: bold;
+    width: 100%;
+    .btn-submit {
+      flex: 1;
+    }
   }
 }
 </style>
