@@ -45,21 +45,14 @@ const dateTimeReservation = computed(
     `${dayjs(reservationStore.dateReservation).format('DD/MM/YYYY')} à ${reservationStore.timeReservation}`,
 )
 
-const totalPrice = computed(() => {
-  if (reservationStore.quantity) {
-    return (reservationStore.price?.price || 0) * reservationStore.quantity
-  }
-  return reservationStore.price?.price
-})
-
-const priceTitle = `Tarif : <strong>${totalPrice.value} €</strong>`
+const priceTitle = `Tarif : <strong>${reservationStore.totalPrice} €</strong>`
 const priceDetail = computed(() => {
   if (reservationStore.quantity) {
     if (reservationStore.quantity) {
       return `
       💳 ${reservationStore.price?.title}
 
-      ${reservationStore.price?.price} € / ${reservationStore.price?.unity} * ${reservationStore.quantity} ${reservationStore.price?.unity} = <strong>${totalPrice.value} €</strong>
+      ${reservationStore.price?.price} € / ${reservationStore.price?.unity} * ${reservationStore.quantity} ${reservationStore.price?.unity} = <strong>${reservationStore.totalPrice} €</strong>
       `
     }
   }

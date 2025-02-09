@@ -1,7 +1,7 @@
 import type { SgiltSelectOption } from '@/components/basics/inputs/SgiltSelect.vue'
 import type { Partner, Price } from '@/data/domain/Partner'
 import { defineStore } from 'pinia'
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 export const useReservationStore = defineStore('reservation', () => {
@@ -40,6 +40,10 @@ export const useReservationStore = defineStore('reservation', () => {
   const quantity = ref<number>()
   const quantityError = ref<string | undefined>()
   watch(quantity, () => (quantityError.value = undefined))
+
+  const totalPrice = computed(() =>
+    quantity.value && price.value ? quantity.value * price.value.price : price.value?.price,
+  )
 
   // client email
   const email = ref<string>()
@@ -112,6 +116,7 @@ export const useReservationStore = defineStore('reservation', () => {
     priceError,
     quantity,
     quantityError,
+    totalPrice,
     email,
     emailError,
     checkPriceValidity,

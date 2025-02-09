@@ -6,7 +6,7 @@
         <button v-if="isModal" class="close-btn" @click="closeModal">✖</button>
 
         <!-- Header -->
-        <header class="booking-header">
+        <header class="booking-header" v-if="step < 4">
           <h2>{{ $t(`booking-flow.step-${step}.title`) }}</h2>
           <p>{{ $t(`booking-flow.step-${step}.subtitle`) }}</p>
           <BookingProgressBar v-model="step" @stepChange="goToStep" />
@@ -14,7 +14,7 @@
 
         <!-- Dynamic content -->
         <transition :name="stepAnimation" mode="out-in">
-          <div class="content" :key="step">
+          <div :class="{ content: step < 4 }" :key="step">
             <StepOne v-if="step === 1" />
             <StepTwo v-if="step === 2" />
             <StepThree v-if="step === 3" />
@@ -25,12 +25,14 @@
         <!-- Sticky Footer -->
         <div class="modal-footer">
           <div class="navigation">
-            <SgiltButton v-if="step > 1" @click="prevStep" variant="secondary"
+            <SgiltButton v-if="[2, 3].includes(step)" @click="prevStep" variant="secondary"
               >&larr; Retour</SgiltButton
             >
-            <SgiltButton class="btn-submit" @click="nextStep">
+            <SgiltButton class="btn-submit" @click="nextStep" v-if="step < 4">
               {{ $t(`booking-flow.step-${step}.cta`) }}
             </SgiltButton>
+            <SgiltButton v-if="step === 4" @click="closeModal">Partager</SgiltButton>
+            <SgiltButton v-if="step === 4" @click="closeModal">Voir mes réservations</SgiltButton>
           </div>
         </div>
       </div>
@@ -45,7 +47,7 @@ import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 import StepOne from '@/components/booking_flow/StepOne.vue'
 import StepTwo from '@/components/booking_flow/StepTwo.vue'
 import StepThree from '@/components/booking_flow/StepThree.vue'
-// import StepFour from '@/components/booking_flow/StepFour.vue'
+import StepFour from '@/components/booking_flow/StepFour.vue'
 import { useReservationStore } from '@/stores/reservation.store'
 import BookingProgressBar from '@/components/booking_flow/BookingProgressBar.vue'
 
@@ -80,6 +82,8 @@ const nextStep = () => {
     step.value++
   } else if (step.value === 2 && reservationStore.checkStepTwo()) {
     stepAnimation.value = 'step-fade'
+    step.value++
+  } else if (step.value === 3) {
     step.value++
   }
 }
