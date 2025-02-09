@@ -115,7 +115,7 @@ const goToStep = (index: number) => {
   border-radius: $border-radius-m;
   box-shadow: 0 8px 20px $shadow-m;
   width: 100%;
-  max-width: 700px;
+  max-width: 900px;
   margin: auto;
   position: relative;
 

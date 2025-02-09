@@ -15,7 +15,7 @@
 
     <!-- Colonne droite : Récap -->
     <div class="recap-section">
-      <h3>📜 Récapitulatif de votre réservation</h3>
+      <h3 class="recap-section-title">📜 Récapitulatif de votre réservation</h3>
 
       <div class="infos">
         <div class="recap-card">
@@ -66,13 +66,18 @@ const steps = [
 }
 
 .timeline-section {
-  flex: 1;
+  width: 22rem;
   border-right: 2px solid #ddd;
   padding-right: 2rem;
 }
 
 .recap-section {
-  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-m;
+  .recap-section-title {
+    margin-bottom: 0.3rem;
+  }
 }
 
 .timeline {
@@ -106,10 +111,10 @@ const steps = [
 
 .recap-card {
   background: #f8f8f8;
-  padding: 1rem;
+  padding: $spacing-m;
   border-radius: $border-radius-m;
   box-shadow: $box-shadow;
-  margin-bottom: 1rem;
+  // margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
   gap: $spacing-m;
@@ -130,13 +135,15 @@ const steps = [
   flex-direction: row;
   gap: 1rem;
   .datetime {
+    width: 11rem;
     justify-content: center;
-    flex: 1;
+    //flex: 1;
   }
 }
 
 .location {
-  height: 2rem;
+  flex: 1;
+  // height: 2rem;
   display: flex;
   align-items: start;
   align-items: center;
@@ -148,9 +155,9 @@ const steps = [
     flex: 1;
   }
 }
-.price {
+/*.price {
   margin-top: $spacing-l;
-}
+}*/
 
 .captcha-section {
   margin-top: 1rem;
