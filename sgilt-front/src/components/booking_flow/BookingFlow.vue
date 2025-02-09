@@ -24,15 +24,12 @@
 
         <!-- Sticky Footer -->
         <div class="modal-footer">
-          <div class="captcha" v-if="step === 3">
-            <input type="checkbox" /> Je ne suis pas un robot
-          </div>
           <div class="navigation">
             <SgiltButton v-if="step > 1" @click="prevStep" variant="secondary"
               >&larr; Retour</SgiltButton
             >
             <SgiltButton class="btn-submit" @click="nextStep">
-              {{ step === 3 ? 'Envoyer ma demande' : 'Continuer →' }}
+              {{ $t(`booking-flow.step-${step}.cta`) }}
             </SgiltButton>
           </div>
         </div>

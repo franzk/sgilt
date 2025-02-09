@@ -18,22 +18,24 @@
       <h3 class="recap-section-title">📜 Récapitulatif de votre réservation</h3>
 
       <div class="infos">
-        <div class="recap-card">
-          <p class="location">
-            <IconPlace /> <span>{{ reservationStore.location }}</span>
-          </p>
-        </div>
+        <!--div class="recap-card location">
+          <IconPlace /> <span>{{ reservationStore.location }}</span>
+        </!--div>
 
-        <div class="recap-card datetime">
-          <p>📆 {{ dateReservation }} à {{ reservationStore.timeReservation }}</p>
-        </div>
+        <div-- class="recap-card datetime">
+          <IconClock />
+          <span>{{ dateReservation }} à {{ reservationStore.timeReservation }}</span>
+        </div-->
+        <RecapCard :text="reservationStore.location!!" class="location"><IconPlace /></RecapCard>
+        <RecapCard :text="dateTimeReservation" class="datetime"><IconCalendar /></RecapCard>
       </div>
 
       <PartnerItem :partner="reservationStore.partner!!" hidePrice />
 
-      <div class="recap-card">
+      <!--div class="recap-card">
         <p class="price">💰 <strong>Tarif :</strong> 1500 €</p>
-      </div>
+      </!--div-->
+      <RecapCard text="Tarif : 1500 €"><IconPrice /></RecapCard>
     </div>
   </div>
 </template>
@@ -42,12 +44,18 @@
 import { useReservationStore } from '@/stores/reservation.store'
 import IconPlace from '../icons/IconPlace.vue'
 import PartnerItem from '../partner/PartnerItem.vue'
+import RecapCard from './RecapCard.vue'
 import dayjs from 'dayjs'
 import { computed } from 'vue'
+import IconCalendar from '../icons/IconCalendar.vue'
+import IconPrice from '../icons/IconPrice.vue'
 
 const reservationStore = useReservationStore()
 
-const dateReservation = computed(() => dayjs(reservationStore.dateReservation).format('DD/MM/YYYY'))
+const dateTimeReservation = computed(
+  () =>
+    `${dayjs(reservationStore.dateReservation).format('DD/MM/YYYY')} à ${reservationStore.timeReservation}`,
+)
 
 const currentStep = 0
 const steps = [
@@ -109,7 +117,7 @@ const steps = [
   box-shadow: 0 0 10px gold;
 }
 
-.recap-card {
+/*.recap-card {
   background: #f8f8f8;
   padding: $spacing-m;
   border-radius: $border-radius-m;
@@ -117,18 +125,29 @@ const steps = [
   // margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
+
+  align-items: center;
+  span {
+    flex: 1;
+  }
+
   gap: $spacing-m;
   p {
     margin: 0;
     padding: 0;
   }
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
   &:hover {
     background: #f1f1f1; // Légère variation du fond
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); // Ombre plus marquée
     transform: translateY(-2px); // Léger soulèvement
     cursor: pointer;
   }
-}
+}*/
 
 .infos {
   display: flex;
@@ -139,21 +158,25 @@ const steps = [
     justify-content: center;
     //flex: 1;
   }
+  .location {
+    flex: 1;
+    // height: 2rem;
+    /*display: flex;
+  align-items: center;
+  span {
+    flex: 1;
+  }*/
+  }
 }
 
 .location {
   flex: 1;
   // height: 2rem;
-  display: flex;
-  align-items: start;
+  /*display: flex;
   align-items: center;
-  svg {
-    width: 1.5rem;
-    height: 1.5rem;
-  }
   span {
     flex: 1;
-  }
+  }*/
 }
 /*.price {
   margin-top: $spacing-l;

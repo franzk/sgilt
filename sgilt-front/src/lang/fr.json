@@ -96,6 +96,7 @@
     "step-1": {
       "title": "📍 Détails de votre événement",
       "subtitle": "Indiquez où et quand aura lieu votre événement.",
+      "cta": "Continuer",
       "location": {
         "label": "Lieu de l'événement",
         "placeholder": "Ex : Strasbourg, Rathsamhausen, Breuschwickersheim...",
@@ -115,11 +116,13 @@
     },
     "step-2": {
       "title": "🔑 Connexion ou Inscription",
-      "subtitle": "Connectez-vous ou créez un compte pour finaliser votre demande."
+      "subtitle": "Connectez-vous ou créez un compte pour finaliser votre demande.",
+      "cta": "Continuer"
     },
     "step-3": {
       "title": "📝 Récapitulatif de votre demande",
-      "subtitle": "Vérifiez les détails de votre réservation avant l’envoi."
+      "subtitle": "Vérifiez les détails de votre réservation avant l’envoi.",
+      "cta": "Confirmer & Envoyer ma demande"
     },
     "email-label": "Ou utilisez votre email :",
     "email-placeholder": "Votre email",
