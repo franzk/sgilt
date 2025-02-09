@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import { useReservationStore } from '@/stores/reservation.store'
-import SgiltFormGroup from '../basics/inputs/SgiltFormGroup.vue'
+import SgiltFormGroup from '@/components/basics/inputs/SgiltFormGroup.vue'
 
 const reservationStore = useReservationStore()
 </script>
@@ -91,54 +91,6 @@ const reservationStore = useReservationStore()
 
     &:hover {
       opacity: 0.9;
-    }
-  }
-}
-
-/* Divider */
-.divider {
-  font-size: $font-size-base;
-  color: $color-subtext;
-  margin: $spacing-m 0;
-}
-
-/* Email Form */
-.email-form {
-  display: flex;
-  gap: $spacing-s;
-
-  input {
-    flex: 1;
-    padding: $spacing-mm;
-    font-size: 1rem;
-    border: 1px solid $shadow-s;
-    border-radius: $border-radius-xs;
-    color: $color-primary;
-    background-color: $color-white;
-
-    &::placeholder {
-      color: $color-subtext;
-    }
-
-    &:focus {
-      outline: none;
-      border: 1px solid $color-accent;
-      box-shadow: 0 0 4px $color-accent;
-    }
-  }
-
-  .email-btn {
-    background-color: $color-accent;
-    color: $color-white;
-    border: none;
-    padding: $spacing-mm $spacing-m;
-    border-radius: $border-radius-xs;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-
-    &:hover {
-      background-color: darken($color-accent, 10%);
     }
   }
 }

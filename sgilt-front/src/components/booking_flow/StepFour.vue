@@ -3,13 +3,15 @@
     <!-- 🎊 Confettis -->
     <canvas ref="confettiCanvas" style="height: 0"></canvas>
 
-    <img class="celebration-image" src="@/assets/images/home_bg.jpg" alt="Illustration festive" />
+    <img class="celebration-image" src="@/assets/images/home_bg.jpg" />
 
     <!-- ✅ Titre de validation -->
     <div class="celebration-content">
-      <h1>🎉 Félicitations !</h1>
+      <h1>{{ $t('booking-flow.step-4.title') }}</h1>
       <p>
-        Votre réservation avec <strong>{{ reservationStore.partner?.title }}</strong> est confirmée.
+        {{ $t('booking-flow.step-4.subtitle-start') }}
+        <strong>{{ reservationStore.partner?.title }}</strong>
+        {{ $t('booking-flow.step-4.subtitle-end') }}
       </p>
       <p>Le partenaire va vous contacter sous peu. Préparez-vous à un événement exceptionnel !</p>
 
@@ -51,16 +53,6 @@ onMounted(() => {
     launchConfetti()
   }, 500)
 })
-
-// 📤 Partage de la réservation
-const shareReservation = () => {
-  alert('🚀 Lien de partage généré ! (à implémenter)')
-}
-
-// 🔄 Redirection vers l’espace client
-const goToDashboard = () => {
-  alert('📂 Redirection vers le tableau de bord ! (à implémenter)')
-}
 </script>
 
 <style scoped lang="scss">
@@ -74,6 +66,7 @@ const goToDashboard = () => {
   border-radius: 12px;
   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
   position: relative;
+  line-height: $line-height-base;
 
   .celebration-content {
     padding: 3rem;
@@ -87,6 +80,7 @@ h1 {
 
 p {
   font-size: 1.2rem;
+  line-height: 1.2rem;
   color: #444;
 }
 

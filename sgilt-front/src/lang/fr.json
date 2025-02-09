@@ -124,10 +124,18 @@
       "subtitle": "Vérifiez les détails de votre réservation avant l’envoi.",
       "cta": "Confirmer & Envoyer ma demande"
     },
+    "step-4": {
+      "title": "🎉 Félicitations !",
+      "subtitle-start": "Votre réservation avec ",
+      "subtitle-end": "est confirmée.",
+      "cta-share": "Partager",
+      "cta-event": "Voir mes réservations"
+    },
     "email-label": "Ou utilisez votre email :",
     "email-placeholder": "Votre email",
     "email-required-error": "Veuillez saisir votre adresse email.",
-    "email-invalid-error": "Veuillez saisir une adresse email valide."
+    "email-invalid-error": "Veuillez saisir une adresse email valide.",
+    "back-button": "← Retour"
   },
   "texts": {
     "a-partir-de": "À partir de",

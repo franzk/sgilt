@@ -1,31 +1,26 @@
 <template>
   <div class="recap-container">
-    <!-- Colonne gauche : Timeline -->
-    <div class="timeline-section">
-      <h3>⏳ Comment ça marche ?</h3>
-      <div class="timeline">
-        <div v-for="(step, index) in steps" :key="index" class="timeline-step">
-          <div class="step-number" :class="{ active: index === currentStep }">
-            {{ index + 1 }}
-          </div>
-          <p class="step-label">{{ step.label }}</p>
-        </div>
-      </div>
-    </div>
+    <aside class="timeline-bar">
+      <RecapTimeLine />
+    </aside>
 
     <!-- Colonne droite : Récap -->
     <div class="recap-section">
       <h3 class="recap-section-title">📜 Récapitulatif de votre réservation</h3>
 
+      <!-- infos : location & date-time -->
       <div class="infos">
         <RecapCard :title="reservationStore.location!!" icon="Place" class="location" />
         <RecapCard :title="dateTimeReservation" icon="Calendar" class="datetime" />
       </div>
 
+      <!-- booked partner -->
       <PartnerItem :partner="reservationStore.partner!!" hidePrice />
 
+      <!-- price section -->
       <RecapCard icon="Price" :title="priceTitle"><span v-html="priceDetail" /></RecapCard>
 
+      <!-- user infos -->
       <RecapCard icon="Mail" :title="reservationStore.email!!" />
     </div>
   </div>
@@ -33,18 +28,21 @@
 
 <script setup lang="ts">
 import { useReservationStore } from '@/stores/reservation.store'
-import PartnerItem from '../partner/PartnerItem.vue'
-import RecapCard from './RecapCard.vue'
+import RecapTimeLine from '@/components/booking_flow/RecapTimeLine.vue'
+import PartnerItem from '@/components/partner/PartnerItem.vue'
+import RecapCard from '@/components/booking_flow/RecapCard.vue'
 import dayjs from 'dayjs'
 import { computed } from 'vue'
 
 const reservationStore = useReservationStore()
 
+// date & time
 const dateTimeReservation = computed(
   () =>
     `${dayjs(reservationStore.dateReservation).format('DD/MM/YYYY')} à ${reservationStore.timeReservation}`,
 )
 
+// price
 const priceTitle = `Tarif : <strong>${reservationStore.totalPrice} €</strong>`
 const priceDetail = computed(() => {
   if (reservationStore.quantity) {
@@ -58,81 +56,42 @@ const priceDetail = computed(() => {
   }
   return ''
 })
-
-const currentStep = 0
-const steps = [
-  { label: 'Vous envoyez votre demande' },
-  { label: 'Le partenaire vous contacte' },
-  { label: 'Vous validez et payez' },
-  { label: '🎉 C’est réservé !' },
-]
 </script>
 
 <style scoped lang="scss">
 .recap-container {
   display: flex;
-  gap: 2rem;
-  padding: 1rem;
-}
+  gap: $spacing-l;
+  padding: $spacing-m;
 
-.timeline-section {
-  width: 22rem;
-  border-right: 2px solid #ddd;
-  padding-right: 2rem;
-}
-
-.recap-section {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-m;
-  .recap-section-title {
-    margin-bottom: 0.3rem;
+  .timeline-bar {
+    width: 35rem;
+    height: auto;
   }
-}
 
-.timeline {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
+  .recap-section {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-m;
 
-.timeline-step {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
+    .recap-section-title {
+      margin-bottom: 0.3rem;
+    }
 
-.step-number {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  background: #ccc;
-  color: #fff;
-}
+    .infos {
+      display: flex;
+      flex-direction: row;
+      gap: $spacing-m;
 
-.step-number.active {
-  background: gold;
-  box-shadow: 0 0 10px gold;
-}
+      .datetime {
+        width: 12rem;
+        justify-content: center;
+      }
 
-.infos {
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-  .datetime {
-    width: 14rem;
-    justify-content: center;
+      .location {
+        flex: 1;
+      }
+    }
   }
-  .location {
-    flex: 1;
-  }
-}
-
-.location {
-  flex: 1;
 }
 </style>
