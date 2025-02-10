@@ -23,7 +23,18 @@
       </RecapCard>
 
       <!-- user infos -->
-      <RecapCard icon="Mail" :title="reservationStore.email!!" />
+      <RecapCard icon="Arobase" :title="$t('booking-flow.step-3.titles.email')">
+        {{ reservationStore.email }}
+      </RecapCard>
+
+      <!-- message -->
+      <RecapCard
+        v-if="reservationStore.message"
+        icon="Mail"
+        :title="$t('booking-flow.step-3.titles.message')"
+      >
+        {{ reservationStore.message }}
+      </RecapCard>
     </div>
   </div>
 </template>
@@ -67,11 +78,12 @@ const priceDetail = computed(() => {
   padding: $spacing-m;
 
   .timeline-bar {
-    width: 35rem;
+    width: 20rem;
     height: auto;
   }
 
   .recap-section {
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: $spacing-m;

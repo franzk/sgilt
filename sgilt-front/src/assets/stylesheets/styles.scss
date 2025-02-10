@@ -61,12 +61,11 @@ body {
 
   input,
   textarea {
+    font-family: inherit;
     font-size: $font-size-base;
-    // width: 5rem;
     border-radius: $input-border-radius;
     border: 1px solid $shadow-s;
-    // text-align: right;
-    padding: 1em;
+    padding: $spacing-m;
     &:focus {
       outline: none;
     }

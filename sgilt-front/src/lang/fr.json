@@ -122,6 +122,10 @@
     "step-3": {
       "title": "📝 Récapitulatif de votre demande",
       "subtitle": "Vérifiez les détails de votre réservation avant l’envoi.",
+      "titles": {
+        "email": "Votre adresse mail",
+        "message": "Message à transmettre"
+      },
       "cta": "Confirmer & Envoyer ma demande"
     },
     "step-4": {

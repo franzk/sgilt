@@ -53,6 +53,9 @@ export const useReservationStore = defineStore('reservation', () => {
   const emailError = ref<string | undefined>()
   watch(email, () => (emailError.value = undefined))
 
+  // message to the partner
+  const message = ref<string | undefined>()
+
   /**
    * check if the form is valid
    * @returns {boolean} true if the form is valid
@@ -122,6 +125,7 @@ export const useReservationStore = defineStore('reservation', () => {
     totalPrice,
     email,
     emailError,
+    message,
     checkPriceValidity,
     checkStepOne,
     checkStepTwo,

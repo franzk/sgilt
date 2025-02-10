@@ -61,11 +61,12 @@ const iconComponent = props.icon
 
   .recap-card-content {
     white-space: pre-wrap;
-    margin-left: $spacing-m;
+    margin: 0 $spacing-m;
     line-height: 1.1rem;
 
     &:not(:empty) {
       border-top: 1px solid $color-divider;
+      padding-top: $spacing-m;
     }
   }
 }

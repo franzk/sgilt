@@ -36,7 +36,10 @@
       $t('booking-flow.step-1.message.label', { partnerName: reservationStore.partner?.title })
     "
   >
-    <textarea :placeholder="$t('booking-flow.step-1.message.placeholder')"></textarea>
+    <textarea
+      :placeholder="$t('booking-flow.step-1.message.placeholder')"
+      v-model="reservationStore.message"
+    />
   </SgiltFormGroup>
 </template>
 
