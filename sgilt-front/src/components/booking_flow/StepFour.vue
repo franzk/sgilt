@@ -11,17 +11,36 @@
       <p>
         {{ $t('booking-flow.step-4.subtitle-start') }}
         <strong>{{ reservationStore.partner?.title }}</strong>
-        {{ $t('booking-flow.step-4.subtitle-end') }}
+        <span v-html="$t('booking-flow.step-4.subtitle-end')" />&nbsp;
+        <span
+          ><strong>{{ $t('booking-flow.step-4.stay-tuned') }}</strong></span
+        >
       </p>
-      <p>Le partenaire va vous contacter sous peu. Préparez-vous à un événement exceptionnel !</p>
 
       <!-- 📅 Détails de la réservation -->
       <div class="recap-details">
-        <p>📍 <strong>Lieu :</strong> {{ reservationStore.location }}</p>
         <p>
-          📅 <strong>Date :</strong> {{ dateReservation }} à {{ reservationStore.timeReservation }}
+          📍 <strong>{{ $t('booking-flow.step-4.location-label') }}</strong>
+          {{ reservationStore.location }}
         </p>
-        <p>💰 <strong>Tarif :</strong> {{ reservationStore.totalPrice }} €</p>
+        <p>
+          📅 <strong>{{ $t('booking-flow.step-4.date-label') }}</strong> {{ dateReservation }} à
+          {{ reservationStore.timeReservation }}
+        </p>
+        <p>
+          💰 <strong>{{ $t('booking-flow.step-4.price-label') }}</strong>
+          {{ reservationStore.totalPrice }} €
+        </p>
+      </div>
+
+      <!-- next steps -->
+      <div class="next-steps">
+        <p class="highlight">{{ $t('booking-flow.step-4.next-steps.title') }}</p>
+        <p>
+          {{ $t('booking-flow.step-4.next-steps.message') }}
+          <strong>{{ $t('booking-flow.step-4.next-steps.event-board') }}</strong
+          >.
+        </p>
       </div>
     </div>
   </div>
@@ -68,8 +87,19 @@ onMounted(() => {
   position: relative;
   line-height: $line-height-base;
 
+  .celebration-image {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+  }
+
   .celebration-content {
     padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-m;
   }
 }
 
@@ -85,18 +115,10 @@ p {
 }
 
 .recap-details {
-  margin: 1.5rem 0;
+  // margin: 1.5rem 0;
   background: white;
   padding: 1rem;
   border-radius: 10px;
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
-}
-
-.celebration-image {
-  width: 100%;
-  max-height: 200px;
-  object-fit: cover;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
 }
 </style>

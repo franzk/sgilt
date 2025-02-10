@@ -126,10 +126,21 @@
     },
     "step-4": {
       "title": "🎉 Félicitations !",
-      "subtitle-start": "Votre réservation avec ",
-      "subtitle-end": "est confirmée.",
-      "cta-share": "Partager",
-      "cta-event": "Voir mes réservations"
+      "subtitle-start": "Votre demande de réservation avec ",
+      "subtitle-end": " a bien été envoyée. Votre partenaire va vous contacter sous peu.",
+      "stay-tuned": "Restez à l’affût 📩 !",
+      "location-label": "Lieu: ",
+      "date-label": "Date: ",
+      "price-label": "Tarif: ",
+      "next-steps": {
+        "title": "💡 Que faire maintenant ?",
+        "message": "👉 Retrouvez tous les détails et suivez l’évolution de votre événement dans votre ",
+        "event-board": "Tableau de Bord"
+      },
+      "cta-event-board": "Voir mon Tableau de Bord",
+      "cta-close": "Fermer",
+      "next-step-notice": "Vous pourrez retrouver votre événement à tout moment dans votre ",
+      "event-board": "Tableau de Bord"
     },
     "email-label": "Ou utilisez votre email :",
     "email-placeholder": "Votre email",

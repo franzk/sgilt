@@ -24,6 +24,7 @@
 
         <!-- Sticky Footer -->
         <div class="modal-footer">
+          <!-- Navigation buttons : step 1, 2, 3 -->
           <div class="navigation">
             <SgiltButton v-if="[2, 3].includes(step)" @click="prevStep" variant="secondary">{{
               $t('booking-flow.back-button')
@@ -31,16 +32,23 @@
             <SgiltButton class="btn-submit" @click="nextStep" v-if="step < 4">
               {{ $t(`booking-flow.step-${step}.cta`) }}
             </SgiltButton>
+          </div>
 
-            <!-- Last step buttons -->
-            <template v-if="step === 4">
-              <SgiltButton @click="closeModal">{{
-                $t('booking-flow.step-4.cta-share')
+          <!-- Last step buttons -->
+          <div v-if="step === 4" class="step-4-cta">
+            <div class="step-4-buttons">
+              <SgiltButton @click="console.log">{{
+                $t('booking-flow.step-4.cta-event-board')
               }}</SgiltButton>
-              <SgiltButton @click="closeModal">{{
-                $t('booking-flow.step-4.cta-event')
+              <SgiltButton @click="closeModal" variant="secondary">{{
+                $t('booking-flow.step-4.cta-close')
               }}</SgiltButton>
-            </template>
+            </div>
+            <p class="small-text">
+              {{ $t('booking-flow.step-4.next-step-notice') }}
+              <strong>{{ $t('booking-flow.step-4.event-board') }}</strong
+              >.
+            </p>
           </div>
         </div>
       </div>
@@ -173,6 +181,24 @@ const goToStep = (index: number) => {
         width: 100%;
         .btn-submit {
           flex: 1;
+        }
+      }
+
+      .step-4-cta {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-s;
+        align-items: center;
+        text-align: center;
+
+        .step-4-buttons {
+          display: flex;
+          gap: $spacing-m;
+        }
+
+        .small-text {
+          font-size: 0.9rem;
+          color: $color-subtext;
         }
       }
     }
