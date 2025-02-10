@@ -34,6 +34,9 @@ export const useReservationStore = defineStore('reservation', () => {
   watch(price, () => {
     priceError.value = undefined
     quantityError.value = undefined
+    if (!price.value?.unity) {
+      quantity.value = 0
+    }
   })
 
   // quantity of the chosen price

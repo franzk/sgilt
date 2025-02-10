@@ -18,7 +18,14 @@
       <PartnerItem :partner="reservationStore.partner!!" hidePrice />
 
       <!-- price section -->
-      <RecapCard icon="Price" :title="priceTitle"><span v-html="priceDetail" /></RecapCard>
+      <template v-if="!!priceDetail">
+        <RecapCard icon="Price" :title="priceTitle">
+          <span v-html="priceDetail" />
+        </RecapCard>
+      </template>
+      <template v-else>
+        <RecapCard icon="Price" :title="priceTitle" />
+      </template>
 
       <!-- user infos -->
       <RecapCard icon="Mail" :title="reservationStore.email!!" />
@@ -54,7 +61,7 @@ const priceDetail = computed(() => {
       `
     }
   }
-  return ''
+  return null
 })
 </script>
 
