@@ -38,15 +38,15 @@
           <div v-if="step === 4" class="step-4-cta">
             <div class="step-4-buttons">
               <SgiltButton @click="console.log">{{
-                $t('booking-flow.step-4.cta-event-board')
+                $t('booking-flow.step-4.cta.btn-event-board')
               }}</SgiltButton>
               <SgiltButton @click="closeModal" variant="secondary">{{
-                $t('booking-flow.step-4.cta-close')
+                $t('booking-flow.step-4.cta.btn-close')
               }}</SgiltButton>
             </div>
             <p class="small-text">
-              {{ $t('booking-flow.step-4.next-step-notice') }}
-              <strong>{{ $t('booking-flow.step-4.event-board') }}</strong
+              {{ $t('booking-flow.step-4.cta.next-step-notice') }}
+              <strong>{{ $t('booking-flow.step-4.cta.event-board') }}</strong
               >.
             </p>
           </div>
@@ -199,6 +199,7 @@ const goToStep = (index: number) => {
         .small-text {
           font-size: 0.9rem;
           color: $color-subtext;
+          font-style: italic;
         }
       }
     }

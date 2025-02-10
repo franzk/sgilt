@@ -9,26 +9,26 @@
     <div class="celebration-content">
       <h1>{{ $t('booking-flow.step-4.title') }}</h1>
       <p>
-        {{ $t('booking-flow.step-4.subtitle-start') }}
+        {{ $t('booking-flow.step-4.subtitle.start') }}
         <strong>{{ reservationStore.partner?.title }}</strong>
-        <span v-html="$t('booking-flow.step-4.subtitle-end')" />&nbsp;
+        <span v-html="$t('booking-flow.step-4.subtitle.end')" />&nbsp;
         <span
-          ><strong>{{ $t('booking-flow.step-4.stay-tuned') }}</strong></span
+          ><strong>{{ $t('booking-flow.step-4.subtitle.stay-tuned') }}</strong></span
         >
       </p>
 
       <!-- 📅 Détails de la réservation -->
       <div class="recap-details">
         <p>
-          📍 <strong>{{ $t('booking-flow.step-4.location-label') }}</strong>
+          <strong>{{ $t('booking-flow.step-4.labels.location') }}</strong>
           {{ reservationStore.location }}
         </p>
         <p>
-          📅 <strong>{{ $t('booking-flow.step-4.date-label') }}</strong> {{ dateReservation }} à
+          <strong>{{ $t('booking-flow.step-4.labels.date') }}</strong> {{ dateReservation }} à
           {{ reservationStore.timeReservation }}
         </p>
         <p>
-          💰 <strong>{{ $t('booking-flow.step-4.price-label') }}</strong>
+          <strong>{{ $t('booking-flow.step-4.labels.price') }}</strong>
           {{ reservationStore.totalPrice }} €
         </p>
       </div>
@@ -80,9 +80,8 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  // padding: 3rem;
   background: linear-gradient(135deg, #ffdf7e, #ffbe0b);
-  border-radius: 12px;
+  border-radius: $border-radius-m;
   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
   position: relative;
   line-height: $line-height-base;
@@ -91,34 +90,28 @@ onMounted(() => {
     width: 100%;
     max-height: 200px;
     object-fit: cover;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
+    border-top-left-radius: $border-radius-m;
+    border-top-right-radius: $border-radius-m;
   }
 
   .celebration-content {
-    padding: 3rem;
+    padding: $spacing-xl;
     display: flex;
     flex-direction: column;
     gap: $spacing-m;
   }
 }
 
-h1 {
-  font-size: 2.5rem;
-  color: #333;
-}
-
 p {
-  font-size: 1.2rem;
-  line-height: 1.2rem;
+  font-size: $font-size-h3;
+  line-height: $line-height-h3;
   color: #444;
 }
 
 .recap-details {
-  // margin: 1.5rem 0;
   background: white;
-  padding: 1rem;
-  border-radius: 10px;
+  padding: $spacing-m;
+  border-radius: $border-radius-sm;
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
 }
 </style>
