@@ -18,14 +18,9 @@
       <PartnerItem :partner="reservationStore.partner!!" hidePrice />
 
       <!-- price section -->
-      <template v-if="!!priceDetail">
-        <RecapCard icon="Price" :title="priceTitle">
-          <span v-html="priceDetail" />
-        </RecapCard>
-      </template>
-      <template v-else>
-        <RecapCard icon="Price" :title="priceTitle" />
-      </template>
+      <RecapCard icon="Price" :title="priceTitle">
+        <span v-if="!!priceDetail" v-html="priceDetail" />
+      </RecapCard>
 
       <!-- user infos -->
       <RecapCard icon="Mail" :title="reservationStore.email!!" />

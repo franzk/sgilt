@@ -60,10 +60,13 @@ const iconComponent = props.icon
   }
 
   .recap-card-content {
-    border-top: 1px solid $color-divider;
     white-space: pre-wrap;
     margin-left: $spacing-m;
     line-height: 1.1rem;
+
+    &:not(:empty) {
+      border-top: 1px solid $color-divider;
+    }
   }
 }
 </style>
