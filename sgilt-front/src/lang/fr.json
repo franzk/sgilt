@@ -121,6 +121,17 @@
     },
     "step-3": {
       "title": "📝 Récapitulatif de votre demande",
+      "timeline-title": "⏳ Comment ça marche ?",
+      "timeline": {
+        "step-1": "Vous envoyez votre demande",
+        "step-2": "Votre partenaire vous contacte",
+        "step-3": "Vous validez et payez",
+        "step-4": "🎉 C’est réservé !"
+      },
+      "recap-title": {
+        "desktop": "📜 Récapitulatif de votre réservation",
+        "mobile": "📜 Votre réservation"
+      },
       "subtitle": "Vérifiez les détails de votre réservation avant l’envoi.",
       "titles": {
         "email": "Votre adresse mail",

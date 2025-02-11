@@ -12,12 +12,16 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
+
 const currentStep = 0
+
 const steps = [
-  { label: 'Vous envoyez votre demande' },
-  { label: 'Le partenaire vous contacte' },
-  { label: 'Vous validez et payez' },
-  { label: '🎉 C’est réservé !' },
+  { label: t('booking-flow.step-3.timeline.step-1') },
+  { label: t('booking-flow.step-3.timeline.step-2') },
+  { label: t('booking-flow.step-3.timeline.step-3') },
+  { label: t('booking-flow.step-3.timeline.step-4') },
 ]
 </script>
 

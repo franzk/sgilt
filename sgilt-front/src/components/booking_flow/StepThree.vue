@@ -1,14 +1,16 @@
 <template>
   <div class="recap-container">
     <aside class="timeline-bar">
-      <h3>⏳ Comment ça marche ?</h3>
+      <h3>{{ $t('booking-flow.step-3.timeline-title') }}</h3>
       <RecapTimeLine />
     </aside>
 
     <!-- Colonne droite : Récap -->
     <div class="recap-section">
-      <h3 v-if="mobileView">📜 Votre réservation</h3>
-      <h3 class="recap-section-title" v-else>📜 Récapitulatif de votre réservation</h3>
+      <h3 v-if="mobileView">{{ $t('booking-flow.step-3.recap-title.mobile') }}</h3>
+      <h3 class="recap-section-title" v-else>
+        {{ $t('booking-flow.step-3.recap-title.desktop') }}
+      </h3>
 
       <!-- infos : location & date-time -->
       <div class="infos">
@@ -104,6 +106,10 @@ const priceDetail = computed(() => {
     display: flex;
     flex-direction: column;
     gap: $spacing-m;
+
+    @include respond-to(mobile) {
+      border-top: 1px solid $color-divider;
+    }
 
     .recap-section-title {
       margin-bottom: 0.3rem;
