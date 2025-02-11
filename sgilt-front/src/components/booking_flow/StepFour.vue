@@ -109,6 +109,9 @@ p {
 }
 
 .recap-details {
+  @include respond-to(mobile) {
+    text-align: left;
+  }
   background: white;
   padding: $spacing-m;
   border-radius: $border-radius-sm;

@@ -132,20 +132,27 @@ const goToStep = (index: number) => {
 
     &.as-modal {
       box-shadow: $modal-box-shadow;
-      max-height: 85vh;
+      max-height: 90vh;
       overflow-y: auto;
     }
 
     &.full-height {
-      position: fixed;
+      // position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      height: 100%;
+      height: 80%;
       background: white;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+    }
+
+    .container {
+      height: 100%;
+      position: relative;
+      display: flex;
+      flex-direction: column;
     }
 
     // Header
@@ -160,6 +167,7 @@ const goToStep = (index: number) => {
     // modal content
     .content {
       padding: $spacing-m;
+      flex: 1;
     }
 
     // footer

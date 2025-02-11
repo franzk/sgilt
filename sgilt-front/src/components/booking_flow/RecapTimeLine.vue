@@ -1,6 +1,5 @@
 <template>
   <div class="timeline-wrapper">
-    <h3>⏳ Comment ça marche ?</h3>
     <div class="timeline">
       <div v-for="(step, index) in steps" :key="index" class="timeline-step">
         <div class="step-number" :class="{ active: index === currentStep }">
@@ -24,7 +23,11 @@ const steps = [
 
 <style scoped lang="scss">
 .timeline-wrapper {
-  border-right: 2px solid $color-divider;
+  @include respond-to(mobile) {
+    align-items: center;
+    padding-right: 0;
+  }
+
   padding-right: $spacing-l;
   display: flex;
   flex-direction: column;
@@ -34,6 +37,9 @@ const steps = [
     display: flex;
     flex-direction: column;
     gap: $spacing-m;
+    @include respond-to(mobile) {
+      gap: 0;
+    }
 
     .timeline-step {
       display: flex;

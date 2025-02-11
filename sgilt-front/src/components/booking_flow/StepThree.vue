@@ -1,12 +1,14 @@
 <template>
   <div class="recap-container">
     <aside class="timeline-bar">
+      <h3>⏳ Comment ça marche ?</h3>
       <RecapTimeLine />
     </aside>
 
     <!-- Colonne droite : Récap -->
     <div class="recap-section">
-      <h3 class="recap-section-title">📜 Récapitulatif de votre réservation</h3>
+      <h3 v-if="mobileView">📜 Votre réservation</h3>
+      <h3 class="recap-section-title" v-else>📜 Récapitulatif de votre réservation</h3>
 
       <!-- infos : location & date-time -->
       <div class="infos">
@@ -46,6 +48,7 @@ import PartnerItem from '@/components/partner/PartnerItem.vue'
 import RecapCard from '@/components/booking_flow/RecapCard.vue'
 import dayjs from 'dayjs'
 import { computed } from 'vue'
+import { mobileView } from '@/utils/StyleUtils'
 
 const reservationStore = useReservationStore()
 
@@ -74,10 +77,24 @@ const priceDetail = computed(() => {
 <style scoped lang="scss">
 .recap-container {
   display: flex;
+
+  @include respond-to(mobile) {
+    flex-direction: column;
+    padding: 0 $spacing-m;
+    h3 {
+      margin: $spacing-s 0;
+    }
+  }
+
   gap: $spacing-l;
   padding: $spacing-m;
 
   .timeline-bar {
+    border-right: 2px solid $color-divider;
+    @include respond-to(mobile) {
+      border-right: none;
+    }
+
     width: 20rem;
     height: auto;
   }
@@ -97,8 +114,15 @@ const priceDetail = computed(() => {
       flex-direction: row;
       gap: $spacing-m;
 
+      @include respond-to(mobile) {
+        flex-direction: column;
+      }
+
       .datetime {
         width: 12rem;
+        @include respond-to(mobile) {
+          width: initial;
+        }
         justify-content: center;
       }
 

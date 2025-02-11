@@ -25,13 +25,13 @@
   </SgiltFormGroup>
 
   <!-- Already have an account -->
-  <p class="already-account">
-    {{ $t('first-reservation-modal.already-account.title') }}
+  <p class="extra-infos already-registred">
+    <span class="">{{ $t('first-reservation-modal.already-account.title') }}</span>
     <a href="/login" class="link">{{ $t('first-reservation-modal.already-account.link') }}</a>
   </p>
 
   <!-- Link to detailed page -->
-  <p class="extra-info">
+  <p class="extra-infos">
     <span>{{ $t('first-reservation-modal.extra-info.title') }}</span>
     <a href="/signup-info" class="link">{{ $t('first-reservation-modal.extra-info.link') }}</a>
   </p>
@@ -95,30 +95,20 @@ const reservationStore = useReservationStore()
   }
 }
 
-.already-account {
-  margin-top: $spacing-ml;
-  font-size: $font-size-base;
-  color: $color-subtext;
-  text-align: center;
-
-  .link {
-    color: $color-accent;
-    text-decoration: none;
-    font-weight: bold;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-}
-
 /* Link to detailed page */
-.extra-info {
+.extra-infos {
   font-size: $font-size-base;
   color: $color-subtext;
   margin-bottom: 0;
   font-style: italic;
   justify-content: center;
+  display: flex;
+  flex-direction: colrowumn;
+  align-items: center;
+
+  @include respond-to(mobile) {
+    flex-direction: column;
+  }
 
   span {
     margin-right: $spacing-s;
@@ -133,5 +123,9 @@ const reservationStore = useReservationStore()
       text-decoration: underline;
     }
   }
+}
+
+.already-registred {
+  font-style: normal;
 }
 </style>
