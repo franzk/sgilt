@@ -41,6 +41,10 @@
       v-model="reservationStore.message"
     />
   </SgiltFormGroup>
+
+  <div v-if="tabletView" class="live-recap-section">
+    <LiveRecap />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -50,6 +54,8 @@ import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
 import SgiltInput from '@/components/basics/inputs/SgiltInput.vue'
 import IconPlace from '@/components/icons/IconPlace.vue'
 import SgiltTimeInput from '@/components/basics/inputs/SgiltTimeInput.vue'
+import LiveRecap from '@/components/booking_flow/LiveRecap.vue'
+import { tabletView } from '@/utils/StyleUtils'
 
 const reservationStore = useReservationStore()
 </script>
@@ -65,5 +71,10 @@ textarea {
   & > * {
     flex: 1;
   }
+}
+
+.live-recap-section {
+  border-top: 1px solid $color-divider;
+  padding-top: $spacing-m;
 }
 </style>

@@ -1,9 +1,9 @@
 <template>
   <div class="booking-flow-modal" v-if="showModal" @click.self="closeModal">
-    <div :class="['booking-flow', { 'as-modal': isModal, 'full-height': mobileView }]">
+    <div class="booking-flow as-modal" :class="{ mobile: mobileView, tablet: tabletView }">
       <div class="container">
         <!-- Close button-->
-        <button v-if="isModal" class="close-btn" @click="closeModal">✖</button>
+        <button class="close-btn" @click="closeModal">✖</button>
 
         <!-- Header -->
         <header class="booking-header" v-if="step < 4">
@@ -57,15 +57,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref } from 'vue'
 import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 import StepOne from '@/components/booking_flow/StepOne.vue'
 import StepTwo from '@/components/booking_flow/StepTwo.vue'
 import StepThree from '@/components/booking_flow/StepThree.vue'
 import StepFour from '@/components/booking_flow/StepFour.vue'
 import { useReservationStore } from '@/stores/reservation.store'
-import { mobileView } from '@/utils/StyleUtils'
+import { mobileView, tabletView } from '@/utils/StyleUtils'
 import BookingProgressBar from '@/components/booking_flow/BookingProgressBar.vue'
 
 const reservationStore = useReservationStore()
@@ -79,9 +78,6 @@ const closeModal = () => emit('close')
 const step = ref(1)
 
 const stepAnimation = ref('')
-
-const route = useRoute()
-const isModal = computed(() => !route.path.includes('/event-booking'))
 
 const prevStep = () => {
   stepAnimation.value = ''
@@ -136,8 +132,7 @@ const goToStep = (index: number) => {
       overflow-y: auto;
     }
 
-    &.full-height {
-      // position: fixed;
+    &.mobile {
       top: 0;
       left: 0;
       width: 100%;
@@ -146,6 +141,13 @@ const goToStep = (index: number) => {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+    }
+
+    &.tablet {
+      width: 80%;
+      max-width: 800px;
+      height: 70%;
+      max-height: 1000px;
     }
 
     .container {

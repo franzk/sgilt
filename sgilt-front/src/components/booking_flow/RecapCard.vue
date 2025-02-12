@@ -1,7 +1,7 @@
 <template>
   <div class="recap-card">
     <div class="recap-card-title">
-      <p class="left-icon">
+      <p class="left-icon" v-if="title">
         <component :is="iconComponent" />
       </p>
       <span v-html="title" />
