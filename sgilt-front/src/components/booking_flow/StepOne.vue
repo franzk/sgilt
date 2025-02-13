@@ -7,6 +7,7 @@
     <SgiltInput
       type="text"
       v-model:text-model="reservationStore.location"
+      updateOnBlur
       :placeholder="$t('booking-flow.step-1.location.placeholder')"
     >
       <template #icon>

@@ -12,7 +12,7 @@
       @beforeinput="beforeInput"
       @input="onInput"
       @keydown="handleKeyDown"
-      @blur="$emit('blur')"
+      @blur="onBlur"
     />
     <span v-if="symbol">{{ symbol }}</span>
   </div>
@@ -21,37 +21,55 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-// Props
+// Models
 const numberModel = defineModel('number-model', { type: Number })
-
 const textModel = defineModel('text-model', { type: String })
 
+// Buffers
+let numberValue = numberModel.value
+let textValue = textModel.value
+
+// Props
 const props = defineProps<{
   placeholder?: string
   symbol?: string
   type: 'number' | 'text'
-}>()
-
-defineEmits<{
-  blur: void
+  updateOnBlur?: boolean
 }>()
 
 // show empty string if value is 0
 const displayValue = computed(() =>
-  props.type === 'text'
-    ? textModel.value
-    : numberModel.value === 0
-      ? ''
-      : numberModel.value?.toString(),
+  props.type === 'text' ? textValue : numberValue === 0 ? '' : numberValue?.toString(),
 )
 
-// onInput handler : update model.value
+// onInput handler : update model.value if updateOnBlur is false
 const onInput = (event: Event) => {
   const value = (event.target as HTMLInputElement).value
   if (props.type === 'text') {
-    textModel.value = value
+    textValue = value
   } else {
-    numberModel.value = value ? parseFloat(value) : 0
+    numberValue = value ? parseFloat(value) : 0
+  }
+  if (!props.updateOnBlur) {
+    updateModelValue()
+  }
+}
+
+// onBlur handler : update model.value if updateOnBlur is true
+const emit = defineEmits<{ (e: 'blur'): void }>()
+const onBlur = () => {
+  if (props.updateOnBlur) {
+    updateModelValue()
+  }
+  emit('blur')
+}
+
+// updateModelValue
+const updateModelValue = () => {
+  if (props.type === 'text') {
+    textModel.value = textValue
+  } else {
+    numberModel.value = numberValue
   }
 }
 
