@@ -64,6 +64,9 @@ import dayjs from 'dayjs'
 import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 
 const reservationStore = useReservationStore()
+
+defineEmits<{ (e: 'close'): void }>()
+
 const dateReservation = computed(() => dayjs(reservationStore.dateReservation).format('DD/MM/YYYY'))
 const confettiCanvas = ref(null)
 
@@ -130,7 +133,13 @@ p {
 
 .step-4-buttons {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+  @include respond-to(mobile) {
+    flex-direction: column;
+  }
   gap: $spacing-m;
   background: $color-white;
   padding: $spacing-l;

@@ -22,7 +22,7 @@
             <StepOne v-if="step === 1" />
             <StepTwo v-if="step === 2" />
             <StepThree v-if="step === 3" />
-            <StepFour v-if="step === 4" />
+            <StepFour v-if="step === 4" @close="closeModal" />
           </div>
         </transition>
 
