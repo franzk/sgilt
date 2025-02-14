@@ -18,7 +18,7 @@
     :errorMessage="reservationStore.quantityError"
   >
     <div class="quantity">
-      <SgiltNumberInput type="number" v-model="reservationStore.quantity" />
+      <SgiltInput type="number" v-model:number-model="reservationStore.quantity" />
       <p>{{ reservationStore.price?.unity }}</p>
     </div>
   </SgiltFormGroup>
@@ -38,7 +38,7 @@ import SgiltSelect from '@/components/basics/inputs/SgiltSelect.vue'
 import type { SgiltSelectOption } from '@/components/basics/inputs/SgiltSelect.vue'
 import IconList from '@/components/icons/IconList.vue'
 import { useI18n } from 'vue-i18n'
-import SgiltNumberInput from '@/components/basics/inputs/SgiltNumberInput.vue'
+import SgiltInput from '@/components/basics/inputs/SgiltInput.vue'
 import SgiltFormGroup from '@/components/basics/inputs/SgiltFormGroup.vue'
 const { t } = useI18n()
 

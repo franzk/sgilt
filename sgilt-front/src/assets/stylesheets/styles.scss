@@ -59,6 +59,18 @@ body {
     line-height: calc($line-height-base * 0.8);
   }
 
+  input,
+  textarea {
+    font-family: inherit;
+    font-size: $font-size-base;
+    border-radius: $input-border-radius;
+    border: 1px solid $shadow-s;
+    padding: $spacing-m;
+    &:focus {
+      outline: none;
+    }
+  }
+
   @include respond-to(tablet) {
     font-size: calc($font-size-base * 1.1);
     line-height: calc($line-height-base * 1.1);
@@ -98,7 +110,8 @@ body {
   flex-direction: column;
 }
 
-*:focus-visible {
+*:focus-visible,
+input[type='time']:focus {
   outline: $focus-outline;
   outline-offset: $focus-outline-offset;
 }

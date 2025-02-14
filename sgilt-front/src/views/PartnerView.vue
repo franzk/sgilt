@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import ReservationForm from '@/components/reservation/ReservationForm.vue'
+import ReservationForm from '@/components/reservation_form/ReservationForm.vue'
 import PartnerMedia from '@/components/partner/PartnerMedia.vue'
 import PartnerHeader from '@/components/partner/PartnerHeader.vue'
 import { usePartnerStore } from '@/stores/partner.store'

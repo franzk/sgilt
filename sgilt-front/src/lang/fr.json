@@ -92,6 +92,83 @@
       "link": "En savoir plus"
     }
   },
+  "booking-flow": {
+    "step-1": {
+      "title": "📍 Détails de votre événement",
+      "subtitle": "Indiquez où et quand aura lieu votre événement.",
+      "cta": "Continuer",
+      "location": {
+        "label": "Lieu de l'événement",
+        "placeholder": "Ex : Strasbourg, Rathsamhausen, Breuschwickersheim...",
+        "error": "Veuillez saisir un lieu valide."
+      },
+      "date": {
+        "label": "Date de l'événement"
+      },
+      "time": {
+        "label": "Heure de l'événement",
+        "error": "Veuillez saisir une heure valide."
+      },
+      "message": {
+        "label": "Envoyez un message à {partnerName} (optionnel)",
+        "placeholder": "Ajoutez un message pour préciser vos attentes..."
+      }
+    },
+    "step-2": {
+      "title": "🔑 Connexion ou Inscription",
+      "subtitle": "Connectez-vous ou créez un compte pour finaliser votre demande.",
+      "cta": "Continuer"
+    },
+    "step-3": {
+      "title": "📝 Récapitulatif de votre demande",
+      "timeline-title": "⏳ Comment ça marche ?",
+      "timeline": {
+        "step-1": "Vous envoyez votre demande",
+        "step-2": "Votre partenaire vous contacte",
+        "step-3": "Vous validez et payez",
+        "step-4": "🎉 C’est réservé !"
+      },
+      "recap-title": {
+        "desktop": "📜 Récapitulatif de votre réservation",
+        "mobile": "📜 Votre réservation"
+      },
+      "subtitle": "Vérifiez les détails de votre réservation avant l’envoi.",
+      "titles": {
+        "email": "Votre adresse mail",
+        "message": "Message à transmettre"
+      },
+      "cta": "Confirmer & Envoyer ma demande"
+    },
+    "step-4": {
+      "title": "🎉 Félicitations !",
+      "subtitle": {
+        "start": "Votre demande de réservation avec ",
+        "end": " a bien été envoyée. Votre partenaire va vous contacter sous peu.",
+        "stay-tuned": "Restez à l’affût 📩 !"
+      },
+      "labels": {
+        "location": "📍 Lieu: ",
+        "date": "📅 Date: ",
+        "price": "📌 Tarif: "
+      },
+      "next-steps": {
+        "title": "💡 Que faire maintenant ?",
+        "message": "👉 Retrouvez tous les détails et suivez l’évolution de votre événement dans votre ",
+        "event-board": "Tableau de Bord"
+      },
+      "cta": {
+        "btn-event-board": "Voir mon Tableau de Bord",
+        "btn-close": "Fermer",
+        "next-step-notice": "Vous pourrez retrouver votre événement à tout moment dans votre ",
+        "event-board": "Tableau de Bord"
+      }
+    },
+    "email-label": "Ou utilisez votre email :",
+    "email-placeholder": "Votre email",
+    "email-required-error": "Veuillez saisir votre adresse email.",
+    "email-invalid-error": "Veuillez saisir une adresse email valide.",
+    "back-button": "← Retour"
+  },
   "texts": {
     "a-partir-de": "À partir de",
     "minimum": "Minimum",

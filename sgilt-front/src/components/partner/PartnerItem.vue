@@ -1,5 +1,5 @@
 <template>
-  <div class="partner-item" @click="selectPartner">
+  <div class="partner-item" @click="selectPartner" :class="{ selectable: selectable }">
     <!-- Image -->
     <img :src="partner.imageUrl" :alt="`Image de ${partner.title}`" class="partner-image" />
 
@@ -7,7 +7,7 @@
     <div class="partner-info">
       <h3 class="partner-name">{{ partner.title }}</h3>
       <p class="partner-category">{{ partner.tags.map((t) => t.name).join(',') }}</p>
-      <p class="partner-price">À partir de {{ partner.entryPrice }} €</p>
+      <p class="partner-price" v-if="!hidePrice">À partir de {{ partner.entryPrice }} €</p>
       <PartnerAvailability v-if="partner.availability" :availability="partner.availability" />
     </div>
   </div>
@@ -19,16 +19,23 @@ import PartnerAvailability from '@/components/partner/PartnerAvailability.vue'
 
 const props = defineProps<{
   partner: PartnerSearchViewModel
+  selectable?: boolean
+  hidePrice?: boolean
 }>()
 
 const emit = defineEmits(['select-partner'])
 
 const selectPartner = () => {
-  emit('select-partner', props.partner)
+  if (props.selectable) {
+    emit('select-partner', props.partner)
+  }
 }
 </script>
 
 <style scoped lang="scss">
+.selectable {
+  cursor: pointer;
+}
 .partner-item {
   display: flex;
   align-items: center;
@@ -40,7 +47,6 @@ const selectPartner = () => {
   transition:
     transform 0.2s ease-in-out,
     box-shadow 0.2s ease-in-out;
-  cursor: pointer;
 
   &:hover {
     transform: translateY(-2px);

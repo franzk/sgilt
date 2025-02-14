@@ -37,26 +37,20 @@
     </div>
   </div>
 
-  <!-- First reservation modal in cas of submission -->
-  <FirsReservationModal
-    :showModal="showFirstReservationModal"
-    @close="showFirstReservationModal = false"
-    @connect-email="newUserConnected"
-    @connect-s-s-o="newUserConnected"
-  />
+  <BookingFlow :showModal="showBookingFlow" @close="showBookingFlow = false" />
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
 import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
-import FirsReservationModal from '@/components/event/FirstReservationModal.vue'
 import { dateArrayContains } from '@/utils/ArrayUtils'
 import { usePartnerStore } from '@/stores/partner.store'
-import PricingTool from '@/components/reservation/PricingTool.vue'
+import PricingTool from '@/components/reservation_form/PricingTool.vue'
 import { useReservationStore } from '@/stores/reservation.store'
 import SgiltFormGroup from '@/components/basics/inputs/SgiltFormGroup.vue'
-import NotAvailable from '@/components/reservation/NotAvailable.vue'
+import NotAvailable from '@/components/reservation_form/NotAvailable.vue'
+import BookingFlow from '@/components/booking_flow/BookingFlow.vue'
 
 const partnerStore = usePartnerStore()
 const partner = computed(() => partnerStore.partner)
@@ -85,20 +79,18 @@ const optionDates = computed(() =>
 )
 
 // submit button
-const showFirstReservationModal = ref<boolean>(false)
+const showBookingFlow = ref<boolean>(false)
 const handleBooking = () => {
-  showFirstReservationModal.value = reservationStore.checkValidity()
-}
-
-// -> back from first reservation modal
-const newUserConnected = (email: string) => {
-  console.log('New user connected with email:', email)
+  if (reservationStore.checkPriceValidity()) {
+    reservationStore.partner = partner.value
+    showBookingFlow.value = true
+  }
 }
 </script>
 
 <style scoped lang="scss">
 .reservation-form {
-  width: 20rem;
+  width: 22rem;
   background: $color-white;
   padding: $spacing-l;
   border-radius: $border-radius-s;
@@ -135,6 +127,7 @@ const newUserConnected = (email: string) => {
     width: 30rem;
   }
   .reservation-header {
+    text-align: center;
     h2 {
       font-size: $font-size-h1;
     }
@@ -143,6 +136,12 @@ const newUserConnected = (email: string) => {
 @include respond-to(mobile) {
   .reservation-form {
     width: initial;
+  }
+  .reservation-header {
+    h2 {
+      font-size: $font-size-h2;
+      line-height: $line-height-h2;
+    }
   }
 }
 </style>

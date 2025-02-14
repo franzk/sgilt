@@ -95,7 +95,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeydown))
   justify-content: center;
   align-items: center;
 
-  background-color: $modal-overlay;
+  background-color: $gallery-modal-overlay;
 
   .modal-overlay {
     position: relative;

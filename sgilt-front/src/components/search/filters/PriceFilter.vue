@@ -1,24 +1,24 @@
 <template>
   <div class="price-filter">
-    <div class="price-range">
-      <SgiltNumberInput
-        symbol="€"
-        v-model="minPrice"
-        :placeholder="$t('texts.minimum')"
-        @blur="$emit('blur')"
-      />
-      <SgiltNumberInput
-        symbol="€"
-        v-model="maxPrice"
-        :placeholder="$t('texts.maximum')"
-        @blur="$emit('blur')"
-      />
-    </div>
+    <SgiltInput
+      symbol="€"
+      type="number"
+      v-model:number-model="minPrice"
+      :placeholder="$t('texts.minimum')"
+      @blur="$emit('blur')"
+    />
+    <SgiltInput
+      symbol="€"
+      type="number"
+      v-model:number-model="maxPrice"
+      :placeholder="$t('texts.maximum')"
+      @blur="$emit('blur')"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import SgiltNumberInput from '@/components/basics/inputs/SgiltNumberInput.vue'
+import SgiltInput from '@/components/basics/inputs/SgiltInput.vue'
 
 const minPrice = defineModel('minPrice', { type: Number, required: true })
 const maxPrice = defineModel('maxPrice', { type: Number, required: true })
@@ -29,7 +29,7 @@ defineEmits<{
 </script>
 
 <style scoped lang="scss">
-.price-range {
+.price-filter {
   display: flex;
   flex-direction: row;
   gap: $spacing-m;

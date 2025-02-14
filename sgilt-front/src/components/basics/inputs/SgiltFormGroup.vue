@@ -15,9 +15,11 @@ defineProps<{
 
 <style scoped lang="scss">
 .form-group {
-  margin-bottom: $spacing-l;
+  display: flex;
+  flex-direction: column;
 
   .error-msg {
+    text-align: left;
     color: $color-error;
     font-size: $font-size-base;
     margin-top: $spacing-s;
