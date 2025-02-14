@@ -1,6 +1,10 @@
 <template>
   <div class="booking-flow-modal" v-if="showModal" @mousedown.self="closeModal">
-    <div class="booking-flow as-modal" :class="{ mobile: mobileView, tablet: tabletView }">
+    <div
+      class="booking-flow as-modal"
+      :class="{ mobile: mobileView, tablet: tabletView }"
+      ref="modal"
+    >
       <div class="container">
         <!-- Close button-->
         <button class="close-btn" @click="closeModal">✖</button>
@@ -89,6 +93,7 @@ const prevStep = () => {
   step.value--
 }
 
+const modal = ref<HTMLElement | null>(null)
 const nextStep = () => {
   if (
     (step.value === 1 && reservationStore.checkStepOne()) ||
@@ -96,8 +101,10 @@ const nextStep = () => {
   ) {
     stepAnimation.value = 'step-fade'
     step.value++
+    modal.value?.scrollTo({ top: 0, behavior: 'auto' })
   } else if (step.value === 3) {
     step.value++
+    modal.value?.scrollTo({ top: 0, behavior: 'auto' })
   }
 }
 

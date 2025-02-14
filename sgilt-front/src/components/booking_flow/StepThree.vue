@@ -83,6 +83,7 @@ const priceDetail = computed(() => {
   @include respond-to(mobile) {
     flex-direction: column;
     padding: 0 $spacing-m;
+    gap: $spacing-s;
     h3 {
       margin: $spacing-s 0;
     }

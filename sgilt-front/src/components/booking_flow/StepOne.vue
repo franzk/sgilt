@@ -1,47 +1,49 @@
 <template>
-  <SgiltFormGroup
-    :title="$t('booking-flow.step-1.location.label')"
-    :error-message="reservationStore.locationError"
-  >
-    <!-- location -->
-    <SgiltInput
-      type="text"
-      v-model:text-model="reservationStore.location"
-      updateOnBlur
-      :placeholder="$t('booking-flow.step-1.location.placeholder')"
+  <div class="step-1">
+    <SgiltFormGroup
+      :title="$t('booking-flow.step-1.location.label')"
+      :error-message="reservationStore.locationError"
     >
-      <template #icon>
-        <IconPlace />
-      </template>
-    </SgiltInput>
-  </SgiltFormGroup>
-
-  <div class="date-time">
-    <!-- date -->
-    <SgiltFormGroup :title="$t('booking-flow.step-1.date.label')">
-      <SgiltDatePicker v-model="reservationStore.dateReservation" disabled />
+      <!-- location -->
+      <SgiltInput
+        type="text"
+        v-model:text-model="reservationStore.location"
+        updateOnBlur
+        :placeholder="$t('booking-flow.step-1.location.placeholder')"
+      >
+        <template #icon>
+          <IconPlace />
+        </template>
+      </SgiltInput>
     </SgiltFormGroup>
 
-    <!-- time -->
+    <div class="date-time">
+      <!-- date -->
+      <SgiltFormGroup :title="$t('booking-flow.step-1.date.label')">
+        <SgiltDatePicker v-model="reservationStore.dateReservation" disabled />
+      </SgiltFormGroup>
+
+      <!-- time -->
+      <SgiltFormGroup
+        :title="$t('booking-flow.step-1.time.label')"
+        :error-message="reservationStore.timeError"
+      >
+        <SgiltTimeInput v-model="reservationStore.timeReservation" />
+      </SgiltFormGroup>
+    </div>
+
+    <!-- message -->
     <SgiltFormGroup
-      :title="$t('booking-flow.step-1.time.label')"
-      :error-message="reservationStore.timeError"
+      :title="
+        $t('booking-flow.step-1.message.label', { partnerName: reservationStore.partner?.title })
+      "
     >
-      <SgiltTimeInput v-model="reservationStore.timeReservation" />
+      <SgiltTextArea
+        :placeholder="$t('booking-flow.step-1.message.placeholder')"
+        v-model="reservationStore.message"
+      />
     </SgiltFormGroup>
   </div>
-
-  <!-- message -->
-  <SgiltFormGroup
-    :title="
-      $t('booking-flow.step-1.message.label', { partnerName: reservationStore.partner?.title })
-    "
-  >
-    <SgiltTextArea
-      :placeholder="$t('booking-flow.step-1.message.placeholder')"
-      v-model="reservationStore.message"
-    />
-  </SgiltFormGroup>
 </template>
 
 <script setup lang="ts">
@@ -52,12 +54,20 @@ import SgiltInput from '@/components/basics/inputs/SgiltInput.vue'
 import IconPlace from '@/components/icons/IconPlace.vue'
 import SgiltTimeInput from '@/components/basics/inputs/SgiltTimeInput.vue'
 import SgiltTextArea from '@/components/basics/inputs/SgiltTextArea.vue'
-import { mobileView } from '@/utils/StyleUtils'
 
 const reservationStore = useReservationStore()
 </script>
 
 <style scoped lang="scss">
+.step-1 {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-m;
+  @include respond-to(mobile) {
+    gap: 0;
+  }
+}
+
 textarea {
   min-height: 4rem;
 }
@@ -66,15 +76,11 @@ textarea {
   display: flex;
   @include respond-to(mobile) {
     flex-direction: column;
+    gap: $spacing-s;
   }
   gap: $spacing-m;
   & > * {
     flex: 1;
   }
-}
-
-.live-recap-section {
-  border-top: 1px solid $color-divider;
-  padding-top: $spacing-m;
 }
 </style>
