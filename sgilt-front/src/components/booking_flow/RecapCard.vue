@@ -51,7 +51,7 @@ const iconComponent = props.icon
 
     span {
       flex: 1;
-      font-weight: bold;
+      font-weight: 500;
     }
 
     p {

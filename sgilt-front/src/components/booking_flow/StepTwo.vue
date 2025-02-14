@@ -7,9 +7,6 @@
     <button class="sso-btn facebook">
       {{ $t('first-reservation-modal.sso.facebook') }}
     </button>
-    <button class="sso-btn apple">
-      {{ $t('first-reservation-modal.sso.apple') }}
-    </button>
   </div>
 
   <!-- Or Email -->

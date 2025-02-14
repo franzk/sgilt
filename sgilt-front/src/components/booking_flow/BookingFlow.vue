@@ -31,7 +31,7 @@
         </div>
 
         <!-- Sticky Footer -->
-        <div class="modal-footer">
+        <div class="modal-footer" v-if="step < 4">
           <!-- Navigation buttons : step 1, 2, 3 -->
           <div class="navigation">
             <SgiltButton v-if="[2, 3].includes(step)" @click="prevStep" variant="secondary">{{
@@ -40,23 +40,6 @@
             <SgiltButton class="btn-submit" @click="nextStep" v-if="step < 4">
               {{ $t(`booking-flow.step-${step}.cta`) }}
             </SgiltButton>
-          </div>
-
-          <!-- Last step buttons -->
-          <div v-if="step === 4" class="step-4-cta">
-            <div class="step-4-buttons">
-              <SgiltButton @click="console.log">{{
-                $t('booking-flow.step-4.cta.btn-event-board')
-              }}</SgiltButton>
-              <SgiltButton @click="closeModal" variant="secondary">{{
-                $t('booking-flow.step-4.cta.btn-close')
-              }}</SgiltButton>
-            </div>
-            <p class="small-text">
-              {{ $t('booking-flow.step-4.cta.next-step-notice') }}
-              <strong>{{ $t('booking-flow.step-4.cta.event-board') }}</strong
-              >.
-            </p>
           </div>
         </div>
       </div>

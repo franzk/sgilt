@@ -29,6 +29,7 @@ const time = defineModel()
 .time-input {
   flex: 1;
   padding: 0 2.5rem;
+  background: $color-white;
 
   &::-webkit-calendar-picker-indicator {
     display: none;

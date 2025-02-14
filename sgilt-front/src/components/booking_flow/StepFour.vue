@@ -44,6 +44,16 @@
       </div>
     </div>
   </div>
+
+  <!-- 🎉 Boutons de fin -->
+  <div class="step-4-buttons">
+    <SgiltButton @click="console.log">
+      {{ $t('booking-flow.step-4.cta.btn-event-board') }}
+    </SgiltButton>
+    <SgiltButton @click="$emit('close')" variant="secondary">
+      {{ $t('booking-flow.step-4.cta.btn-close') }}
+    </SgiltButton>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -51,6 +61,7 @@ import { computed, onMounted, ref } from 'vue'
 import confetti from 'canvas-confetti'
 import { useReservationStore } from '@/stores/reservation.store'
 import dayjs from 'dayjs'
+import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 
 const reservationStore = useReservationStore()
 const dateReservation = computed(() => dayjs(reservationStore.dateReservation).format('DD/MM/YYYY'))
@@ -81,8 +92,7 @@ onMounted(() => {
   align-items: center;
   text-align: center;
   background: linear-gradient(135deg, #ffdf7e, #ffbe0b);
-  border-radius: $border-radius-m;
-  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+  border-radius: $border-radius-m $border-radius-m 0 0;
   position: relative;
   line-height: $line-height-base;
 
@@ -116,5 +126,14 @@ p {
   padding: $spacing-m;
   border-radius: $border-radius-sm;
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.step-4-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-m;
+  background: $color-white;
+  padding: $spacing-l;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="step-1">
     <SgiltFormGroup
-      :title="$t('booking-flow.step-1.location.label')"
+      :title="mobileView ? '' : $t('booking-flow.step-1.location.label')"
       :error-message="reservationStore.locationError"
     >
       <!-- location -->
@@ -9,7 +9,11 @@
         type="text"
         v-model:text-model="reservationStore.location"
         updateOnBlur
-        :placeholder="$t('booking-flow.step-1.location.placeholder')"
+        :placeholder="
+          mobileView
+            ? $t('booking-flow.step-1.location.label')
+            : $t('booking-flow.step-1.location.placeholder')
+        "
       >
         <template #icon>
           <IconPlace />
@@ -19,13 +23,13 @@
 
     <div class="date-time">
       <!-- date -->
-      <SgiltFormGroup :title="$t('booking-flow.step-1.date.label')">
+      <SgiltFormGroup :title="mobileView ? '' : $t('booking-flow.step-1.date.label')">
         <SgiltDatePicker v-model="reservationStore.dateReservation" disabled />
       </SgiltFormGroup>
 
       <!-- time -->
       <SgiltFormGroup
-        :title="$t('booking-flow.step-1.time.label')"
+        :title="mobileView ? '' : $t('booking-flow.step-1.time.label')"
         :error-message="reservationStore.timeError"
       >
         <SgiltTimeInput v-model="reservationStore.timeReservation" />
@@ -35,11 +39,21 @@
     <!-- message -->
     <SgiltFormGroup
       :title="
-        $t('booking-flow.step-1.message.label', { partnerName: reservationStore.partner?.title })
+        mobileView
+          ? ''
+          : $t('booking-flow.step-1.message.label', {
+              partnerName: reservationStore.partner?.title,
+            })
       "
     >
       <SgiltTextArea
-        :placeholder="$t('booking-flow.step-1.message.placeholder')"
+        :placeholder="
+          mobileView
+            ? $t('booking-flow.step-1.message.label', {
+                partnerName: reservationStore.partner?.title,
+              })
+            : $t('booking-flow.step-1.message.placeholder')
+        "
         v-model="reservationStore.message"
       />
     </SgiltFormGroup>
@@ -54,6 +68,7 @@ import SgiltInput from '@/components/basics/inputs/SgiltInput.vue'
 import IconPlace from '@/components/icons/IconPlace.vue'
 import SgiltTimeInput from '@/components/basics/inputs/SgiltTimeInput.vue'
 import SgiltTextArea from '@/components/basics/inputs/SgiltTextArea.vue'
+import { mobileView } from '@/utils/StyleUtils'
 
 const reservationStore = useReservationStore()
 </script>

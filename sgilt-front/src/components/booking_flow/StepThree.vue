@@ -1,12 +1,19 @@
 <template>
   <div class="recap-container">
     <aside class="timeline-bar">
-      <h3>{{ $t('booking-flow.step-3.timeline-title') }}</h3>
-      <RecapTimeLine />
+      <h3 @click="onTimelineTitleClick">
+        {{ $t('booking-flow.step-3.timeline-title') }}
+        <span v-if="!showTimeline">🔽</span>
+      </h3>
+      <RecapTimeLine v-if="showTimeline" />
     </aside>
 
+    <div v-if="mobileView && !showRecap" class="see-recap" @click="onSeeRecapClick">
+      👉 Revoir ma réservation
+    </div>
+
     <!-- Colonne droite : Récap -->
-    <div class="recap-section">
+    <div class="recap-section" v-if="!mobileView || showRecap">
       <h3 v-if="mobileView">{{ $t('booking-flow.step-3.recap-title.mobile') }}</h3>
       <h3 class="recap-section-title" v-else>
         {{ $t('booking-flow.step-3.recap-title.desktop') }}
@@ -49,10 +56,22 @@ import RecapTimeLine from '@/components/booking_flow/RecapTimeLine.vue'
 import PartnerItem from '@/components/partner/PartnerItem.vue'
 import RecapCard from '@/components/booking_flow/RecapCard.vue'
 import dayjs from 'dayjs'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { mobileView } from '@/utils/StyleUtils'
 
 const reservationStore = useReservationStore()
+
+const showRecap = ref(false)
+const showTimeline = ref(true)
+const onTimelineTitleClick = () => {
+  if (mobileView) showTimeline.value = true
+}
+const onSeeRecapClick = () => {
+  if (mobileView) {
+    showRecap.value = true
+    showTimeline.value = false
+  }
+}
 
 // date & time
 const dateTimeReservation = computed(
@@ -100,6 +119,13 @@ const priceDetail = computed(() => {
 
     width: 20rem;
     height: auto;
+  }
+
+  .see-recap {
+    display: flex;
+    justify-content: center;
+    margin-top: $spacing-m;
+    text-decoration: underline;
   }
 
   .recap-section {
