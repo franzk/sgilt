@@ -52,6 +52,7 @@ import SgiltInput from '@/components/basics/inputs/SgiltInput.vue'
 import IconPlace from '@/components/icons/IconPlace.vue'
 import SgiltTimeInput from '@/components/basics/inputs/SgiltTimeInput.vue'
 import SgiltTextArea from '@/components/basics/inputs/SgiltTextArea.vue'
+import { mobileView } from '@/utils/StyleUtils'
 
 const reservationStore = useReservationStore()
 </script>
@@ -63,6 +64,9 @@ textarea {
 
 .date-time {
   display: flex;
+  @include respond-to(mobile) {
+    flex-direction: column;
+  }
   gap: $spacing-m;
   & > * {
     flex: 1;
