@@ -1,5 +1,5 @@
 <template>
-  <div class="booking-flow-modal" v-if="showModal" @click.self="closeModal">
+  <div class="booking-flow-modal" v-if="showModal" @mousedown.self="closeModal">
     <div class="booking-flow as-modal" :class="{ mobile: mobileView, tablet: tabletView }">
       <div class="container">
         <!-- Close button-->
@@ -21,6 +21,10 @@
             <StepFour v-if="step === 4" />
           </div>
         </transition>
+
+        <div class="tablet-illustration" v-if="tabletView && step < 3">
+          <BookingFlowIllustration />
+        </div>
 
         <!-- Sticky Footer -->
         <div class="modal-footer">
@@ -66,6 +70,7 @@ import StepFour from '@/components/booking_flow/StepFour.vue'
 import { useReservationStore } from '@/stores/reservation.store'
 import { mobileView, tabletView } from '@/utils/StyleUtils'
 import BookingProgressBar from '@/components/booking_flow/BookingProgressBar.vue'
+import BookingFlowIllustration from '@/components/booking_flow/BookingFlowIllustration.vue'
 
 const reservationStore = useReservationStore()
 
@@ -170,6 +175,16 @@ const goToStep = (index: number) => {
     .content {
       padding: $spacing-m;
       flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    // tablet illustration
+    .tablet-illustration {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     // footer

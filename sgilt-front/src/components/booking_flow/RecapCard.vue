@@ -1,5 +1,8 @@
 <template>
-  <div class="recap-card">
+  <div
+    class="recap-card"
+    :class="{ 'width-fit-content': widthFitContent, 'row-direction': direction === 'row' }"
+  >
     <div class="recap-card-title">
       <p class="left-icon" v-if="title">
         <component :is="iconComponent" />
@@ -18,6 +21,8 @@ import { defineAsyncComponent } from 'vue'
 const props = defineProps<{
   icon?: string
   title: string
+  widthFitContent?: boolean
+  direction?: 'column' | 'row'
 }>()
 
 const iconComponent = props.icon
@@ -46,6 +51,7 @@ const iconComponent = props.icon
 
     span {
       flex: 1;
+      font-weight: bold;
     }
 
     p {
@@ -69,5 +75,19 @@ const iconComponent = props.icon
       padding-top: $spacing-m;
     }
   }
+
+  &.row-direction {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    .recap-card-content {
+      border-top: 0;
+      padding-top: 0;
+    }
+  }
+}
+
+.width-fit-content {
+  width: fit-content;
 }
 </style>

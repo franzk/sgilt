@@ -120,13 +120,13 @@ const priceDetail = computed(() => {
       flex-direction: row;
       gap: $spacing-m;
 
-      @include respond-to(mobile) {
+      @include respond-to(tablet) {
         flex-direction: column;
       }
 
       .datetime {
         width: 12rem;
-        @include respond-to(mobile) {
+        @include respond-to(tablet) {
           width: initial;
         }
         justify-content: center;

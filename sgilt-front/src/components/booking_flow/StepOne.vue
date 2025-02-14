@@ -37,15 +37,11 @@
       $t('booking-flow.step-1.message.label', { partnerName: reservationStore.partner?.title })
     "
   >
-    <textarea
+    <SgiltTextArea
       :placeholder="$t('booking-flow.step-1.message.placeholder')"
       v-model="reservationStore.message"
     />
   </SgiltFormGroup>
-
-  <div v-if="tabletView" class="live-recap-section">
-    <LiveRecap />
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -55,8 +51,7 @@ import SgiltDatePicker from '@/components/basics/inputs/SgiltDatePicker.vue'
 import SgiltInput from '@/components/basics/inputs/SgiltInput.vue'
 import IconPlace from '@/components/icons/IconPlace.vue'
 import SgiltTimeInput from '@/components/basics/inputs/SgiltTimeInput.vue'
-import LiveRecap from '@/components/booking_flow/LiveRecap.vue'
-import { tabletView } from '@/utils/StyleUtils'
+import SgiltTextArea from '@/components/basics/inputs/SgiltTextArea.vue'
 
 const reservationStore = useReservationStore()
 </script>

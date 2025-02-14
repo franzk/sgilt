@@ -26,8 +26,8 @@ const numberModel = defineModel('number-model', { type: Number })
 const textModel = defineModel('text-model', { type: String })
 
 // Buffers
-let numberValue = numberModel.value
-let textValue = textModel.value
+const numberValue = ref<number | undefined>(numberModel.value)
+const textValue = ref<string | undefined>(textModel.value)
 
 // Props
 const props = defineProps<{
@@ -39,16 +39,20 @@ const props = defineProps<{
 
 // show empty string if value is 0
 const displayValue = computed(() =>
-  props.type === 'text' ? textValue : numberValue === 0 ? '' : numberValue?.toString(),
+  props.type === 'text'
+    ? textValue.value
+    : numberValue.value === 0
+      ? ''
+      : numberValue.value?.toString(),
 )
 
 // onInput handler : update model.value if updateOnBlur is false
 const onInput = (event: Event) => {
   const value = (event.target as HTMLInputElement).value
   if (props.type === 'text') {
-    textValue = value
+    textValue.value = value
   } else {
-    numberValue = value ? parseFloat(value) : 0
+    numberValue.value = value ? parseFloat(value) : 0
   }
   if (!props.updateOnBlur) {
     updateModelValue()
@@ -67,9 +71,9 @@ const onBlur = () => {
 // updateModelValue
 const updateModelValue = () => {
   if (props.type === 'text') {
-    textModel.value = textValue
+    textModel.value = textValue.value
   } else {
-    numberModel.value = numberValue
+    numberModel.value = numberValue.value
   }
 }
 
