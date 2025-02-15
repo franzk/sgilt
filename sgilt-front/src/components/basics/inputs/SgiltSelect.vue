@@ -158,7 +158,7 @@ $bc: $input-border-color;
     background-color: $color-1;
     left: 0;
     right: 0;
-    z-index: $z-app-absolute-element;
+    z-index: $z-first-floor;
 
     .selected-option {
       background-color: $color-2;

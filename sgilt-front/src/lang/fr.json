@@ -140,27 +140,36 @@
       "cta": "Confirmer & Envoyer ma demande"
     },
     "step-4": {
-      "title": "🎉 Félicitations !",
-      "subtitle": {
-        "start": "Votre demande de réservation avec ",
-        "end": " a bien été envoyée. Votre partenaire va vous contacter sous peu.",
-        "stay-tuned": "Restez à l’affût 📩 !"
-      },
-      "labels": {
-        "location": "📍 Lieu: ",
-        "date": "📅 Date: ",
-        "price": "📌 Tarif: "
-      },
-      "next-steps": {
-        "title": "💡 Que faire maintenant ?",
-        "message": "👉 Retrouvez tous les détails et suivez l’évolution de votre événement dans votre ",
-        "event-board": "Tableau de Bord"
+      "title": "📩 Confirmez votre email",
+      "subtitle": "Vous y êtes presque ! 🔥🔥",
+      "infos": {
+        "first": {
+          "sub-1": "👉 Nous venons de vous envoyer un email à l’adresse",
+          "sub-2": "contenant un",
+          "sub-3": "lien d’activation"
+        },
+        "second": {
+          "sub-1": "📩 Ouvrez votre boîte de réception",
+          "sub-2": ", cliquez sur le lien et validez votre compte. Votre demande sera alors automatiquement transmise à",
+          "sub-3": " !"
+        }
       },
       "cta": {
-        "btn-event-board": "Voir mon Tableau de Bord",
-        "btn-close": "Fermer",
-        "next-step-notice": "Vous pourrez retrouver votre événement à tout moment dans votre ",
-        "event-board": "Tableau de Bord"
+        "resend": "Renvoyer l’email",
+        "sending": "Envoi en cours...",
+        "new-mail": "Utiliser une autre adresse",
+        "event-board": "Voir mon Tableau de bord",
+        "close": "Fermer"
+      },
+      "change-mail": {
+        "title": "Changer d’adresse email",
+        "placeholder": "Nouvelle adresse email",
+        "send": "Envoyer",
+        "sending": "Envoi..."
+      },
+      "validation-info": {
+        "start": "ℹ️ Tant que votre email n’est pas confirmé,",
+        "end": "ne verra pas votre demande !"
       }
     },
     "email-label": "Ou utilisez votre email :",
