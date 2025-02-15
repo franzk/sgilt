@@ -1,148 +1,159 @@
 <template>
-  <div class="celebration-container">
-    <!-- 🎊 Confettis -->
-    <canvas ref="confettiCanvas" style="height: 0"></canvas>
-
-    <img class="celebration-image" src="@/assets/images/home_bg.jpg" />
-
-    <!-- ✅ Titre de validation -->
-    <div class="celebration-content">
-      <h1>{{ $t('booking-flow.step-4.title') }}</h1>
+  <div class="step-4">
+    <!-- informations -->
+    <div class="infos">
       <p>
-        {{ $t('booking-flow.step-4.subtitle.start') }}
-        <strong>{{ reservationStore.partner?.title }}</strong>
-        <span v-html="$t('booking-flow.step-4.subtitle.end')" />&nbsp;
-        <span
-          ><strong>{{ $t('booking-flow.step-4.subtitle.stay-tuned') }}</strong></span
-        >
+        {{ $t('booking-flow.step-4.infos.first.sub-1') }}
+        <strong>{{ reservationStore.email }}</strong>
+        {{ $t('booking-flow.step-4.infos.first.sub-2') }}
+        <b>{{ $t('booking-flow.step-4.infos.first.sub-3') }}</b>
       </p>
-
-      <!-- 📅 Détails de la réservation -->
-      <div class="recap-details">
-        <p>
-          <strong>{{ $t('booking-flow.step-4.labels.location') }}</strong>
-          {{ reservationStore.location }}
-        </p>
-        <p>
-          <strong>{{ $t('booking-flow.step-4.labels.date') }}</strong> {{ dateReservation }} à
-          {{ reservationStore.timeReservation }}
-        </p>
-        <p>
-          <strong>{{ $t('booking-flow.step-4.labels.price') }}</strong>
-          {{ reservationStore.totalPrice }} €
-        </p>
-      </div>
-
-      <!-- next steps -->
-      <div class="next-steps">
-        <p class="highlight">{{ $t('booking-flow.step-4.next-steps.title') }}</p>
-        <p>
-          {{ $t('booking-flow.step-4.next-steps.message') }}
-          <strong>{{ $t('booking-flow.step-4.next-steps.event-board') }}</strong
-          >.
-        </p>
-      </div>
+      <p>
+        <b>{{ $t('booking-flow.step-4.infos.second.sub-1') }}</b>
+        {{ $t('booking-flow.step-4.infos.second.sub-2') }}
+        <strong>{{ reservationStore.partner?.title }}</strong>
+        {{ $t('booking-flow.step-4.infos.second.sub-3') }}
+      </p>
     </div>
-  </div>
 
-  <!-- 🎉 Boutons de fin -->
-  <div class="step-4-buttons">
-    <SgiltButton @click="console.log">
-      {{ $t('booking-flow.step-4.cta.btn-event-board') }}
-    </SgiltButton>
-    <SgiltButton @click="$emit('close')" variant="secondary">
-      {{ $t('booking-flow.step-4.cta.btn-close') }}
-    </SgiltButton>
+    <!-- email action buttons  -->
+    <div class="cta-email">
+      <SgiltButton @click="resendEmail" :disabled="isResending">
+        {{
+          isResending ? $t('booking-flow.step-4.cta.sending') : $t('booking-flow.step-4.cta.resend')
+        }}
+      </SgiltButton>
+
+      <SgiltButton @click="toggleEmailInput" class="toggle-email-btn" variant="secondary">
+        {{ $t('booking-flow.step-4.cta.new-mail') }}
+      </SgiltButton>
+    </div>
+
+    <!-- email change form -->
+    <SgiltFormGroup v-if="showEmailChange" :title="$t('booking-flow.step-4.change-mail.title')">
+      <div class="change-mail-form">
+        <SgiltInput
+          type="text"
+          v-model="newEmail"
+          :placeholder="$t('booking-flow.step-4.change-mail.placeholder')"
+        />
+        <SgiltButton @click="resendEmail" class="btn send-new" :disabled="isResending">
+          {{
+            isResending
+              ? $t('booking-flow.step-4.change-mail.sending')
+              : $t('booking-flow.step-4.change-mail.send')
+          }}
+        </SgiltButton>
+      </div>
+    </SgiltFormGroup>
+
+    <!-- validation info -->
+    <div class="validation-info">
+      <p>
+        {{ $t('booking-flow.step-4.validation-info.start') }}
+        <strong>{{ reservationStore.partner?.title }}</strong>
+        {{ $t('booking-flow.step-4.validation-info.end') }}
+      </p>
+    </div>
+
+    <!-- illustration -->
+    <div class="sgilt-illustration">
+      <BookingFlowIllustration />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import confetti from 'canvas-confetti'
+import { ref } from 'vue'
 import { useReservationStore } from '@/stores/reservation.store'
-import dayjs from 'dayjs'
 import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
+import SgiltFormGroup from '@/components/basics/inputs/SgiltFormGroup.vue'
+import SgiltInput from '@/components/basics/inputs/SgiltInput.vue'
+import BookingFlowIllustration from './BookingFlowIllustration.vue'
 
 const reservationStore = useReservationStore()
 
-defineEmits<{ (e: 'close'): void }>()
+const isResending = ref(false)
+const showEmailChange = ref(false)
+const newEmail = ref('')
 
-const dateReservation = computed(() => dayjs(reservationStore.dateReservation).format('DD/MM/YYYY'))
-const confettiCanvas = ref(null)
-
-// 🎊 Fonction pour déclencher les confettis
-const launchConfetti = () => {
-  confetti({
-    particleCount: 150,
-    spread: 80,
-    origin: { y: 0.6 }, // Ça part du haut de l’écran
-    zIndex: 1000,
-  })
+const toggleEmailInput = () => {
+  showEmailChange.value = !showEmailChange.value
 }
 
-// ⏳ Lance les confettis quand le composant est monté
-onMounted(() => {
-  setTimeout(() => {
-    launchConfetti()
-  }, 500)
-})
+const resendEmail = () => console.log('Renvoyer l’email')
 </script>
 
 <style scoped lang="scss">
-.celebration-container {
+.step-4 {
+  flex: 1;
+  padding: $spacing-xl $spacing-xl 0 $spacing-xl;
+  @include respond-to(mobile) {
+    padding: 0;
+  }
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: $spacing-m;
   text-align: center;
-  background: linear-gradient(135deg, #ffdf7e, #ffbe0b);
-  border-radius: $border-radius-m $border-radius-m 0 0;
-  position: relative;
-  line-height: $line-height-base;
-
-  .celebration-image {
-    width: 100%;
-    max-height: 200px;
-    object-fit: cover;
-    border-top-left-radius: $border-radius-m;
-    border-top-right-radius: $border-radius-m;
-  }
-
-  .celebration-content {
-    padding: $spacing-xl;
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-m;
-  }
-}
-
-p {
-  font-size: $font-size-h3;
   line-height: $line-height-h3;
-  color: #444;
 }
 
-.recap-details {
+.infos {
   @include respond-to(mobile) {
     text-align: left;
   }
-  background: white;
-  padding: $spacing-m;
-  border-radius: $border-radius-sm;
-  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
 }
 
-.step-4-buttons {
+.sgilt-illustration {
+  flex: 1;
   display: flex;
-  flex-direction: row;
-  align-items: center;
   justify-content: center;
-
+  padding-top: $spacing-m;
   @include respond-to(mobile) {
-    flex-direction: column;
+    padding-top: 0;
   }
+  img {
+    height: 5rem;
+  }
+  @include respond-to(tablet-only) {
+    padding: 0;
+    align-items: center;
+    img {
+      height: unset;
+    }
+  }
+}
+
+.cta-email {
+  display: flex;
+  justify-content: center;
+  gap: $spacing-xxl;
+  @include respond-to(mobile) {
+    gap: $spacing-m;
+  }
+  > * {
+    width: 11rem;
+    @include respond-to(mobile) {
+      width: unset;
+    }
+  }
+}
+
+.change-mail-form {
+  display: flex;
   gap: $spacing-m;
-  background: $color-white;
-  padding: $spacing-l;
-  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+
+  :first-child {
+    flex: 1;
+  }
+}
+
+.validation-info {
+  font-size: $font-size-base;
+  color: $color-subtext;
+  font-style: italic;
+  margin-top: $spacing-s;
+  display: flex;
+  flex-direction: column;
 }
 </style>

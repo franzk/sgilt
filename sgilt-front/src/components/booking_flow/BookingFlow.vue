@@ -10,7 +10,7 @@
         <button class="close-btn" @click="closeModal">✖</button>
 
         <!-- Header -->
-        <header class="booking-header" v-if="step < 4">
+        <header class="booking-header">
           <h2>{{ $t(`booking-flow.step-${step}.title`) }}</h2>
           <p>{{ $t(`booking-flow.step-${step}.subtitle`) }}</p>
           <BookingProgressBar v-model="step" @stepChange="goToStep" />
@@ -18,7 +18,7 @@
 
         <!-- Dynamic content -->
         <transition :name="stepAnimation" mode="out-in">
-          <div :class="{ content: step < 4 }" :key="step">
+          <div :class="{ 'v-center': step == 2 }" :key="step" class="content">
             <StepOne v-if="step === 1" />
             <StepTwo v-if="step === 2" />
             <StepThree v-if="step === 3" />
@@ -31,7 +31,7 @@
         </div>
 
         <!-- Sticky Footer -->
-        <div class="modal-footer" v-if="step < 4">
+        <div class="modal-footer">
           <!-- Navigation buttons : step 1, 2, 3 -->
           <div class="navigation">
             <SgiltButton v-if="[2, 3].includes(step)" @click="prevStep" variant="secondary">{{
@@ -39,6 +39,12 @@
             }}</SgiltButton>
             <SgiltButton class="btn-submit" @click="nextStep" v-if="step < 4">
               {{ $t(`booking-flow.step-${step}.cta`) }}
+            </SgiltButton>
+            <SgiltButton v-if="step === 4">
+              {{ $t('booking-flow.step-4.cta.event-board') }}
+            </SgiltButton>
+            <SgiltButton v-if="step === 4" @click="closeModal" variant="secondary">
+              {{ $t('booking-flow.step-4.cta.close') }}
             </SgiltButton>
           </div>
         </div>
@@ -123,7 +129,8 @@ const goToStep = (index: number) => {
 
     &.as-modal {
       box-shadow: $modal-box-shadow;
-      max-height: 90vh;
+      height: 90vh;
+      max-height: 800px;
       overflow-y: auto;
     }
 
@@ -169,6 +176,12 @@ const goToStep = (index: number) => {
       flex-direction: column;
     }
 
+    .v-center {
+      @include respond-to(desktop) {
+        justify-content: center;
+      }
+    }
+
     // tablet illustration
     .tablet-illustration {
       flex: 1;
@@ -192,6 +205,7 @@ const goToStep = (index: number) => {
       .navigation {
         display: flex;
         gap: $spacing-m;
+        justify-content: center;
         flex: 1;
         width: 100%;
         .btn-submit {

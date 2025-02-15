@@ -6,18 +6,19 @@ $breakpoint-tablet: 1280px;
   --breakpoint-tablet: #{$breakpoint-tablet};
 }
 
+$breakpoints: (
+  mobile: '(max-width: #{$breakpoint-mobile})',
+  tablet: '(max-width: #{$breakpoint-tablet})',
+  tablet-only: '(min-width: #{$breakpoint-mobile}) and (max-width: #{$breakpoint-tablet})',
+  desktop: '(min-width: #{$breakpoint-tablet})',
+);
+
 @mixin respond-to($device) {
-  @if $device == mobile {
-    @media (max-width: #{$breakpoint-mobile}) {
+  @if map-has-key($breakpoints, $device) {
+    @media #{map-get($breakpoints, $device)} {
       @content;
     }
-  } @else if $device == tablet {
-    @media (max-width: #{$breakpoint-tablet}) {
-      @content;
-    }
-  } @else if $device == desktop {
-    @media (min-width: #{$breakpoint-tablet}) {
-      @content;
-    }
+  } @else {
+    @error "Breakpoint `#{$device}` not found in `$breakpoints` map.";
   }
 }

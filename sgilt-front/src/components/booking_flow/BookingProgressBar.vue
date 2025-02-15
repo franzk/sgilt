@@ -8,7 +8,7 @@
         { active: stepItem === currentStep, completed: stepItem < currentStep!! },
         { 'last-step': stepItem === 4 },
       ]"
-      @click="emit('stepChange', stepItem)"
+      @click="onStepClick(stepItem)"
     >
       <div class="step-circle">
         <span v-if="stepItem < currentStep!!">✔</span>
@@ -27,6 +27,13 @@ const steps = [1, 2, 3, 4]
 const emit = defineEmits<{
   (e: 'stepChange', step: number): void
 }>()
+
+const onStepClick = (step: number) => {
+  console.log('step', currentStep.value)
+  if (currentStep.value && (currentStep.value < 4)) {
+    emit('stepChange', step) 
+  }
+}
 </script>
 
 <style scoped lang="scss">
