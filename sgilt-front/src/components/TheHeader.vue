@@ -3,7 +3,8 @@
     <!-- LOGO SGILT -->
     <h1 class="logo">
       <router-link :to="{ name: 'home' }">
-        <img src="@/assets/images/sgilt.png" alt="SGILT" />
+        <!--img src="@/assets/images/sgilt.png" alt="SGILT" /-->
+        <img src="@/assets/images/sgilt-logo.svg" alt="SGILT" />
       </router-link>
     </h1>
 
