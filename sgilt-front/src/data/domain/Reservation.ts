@@ -8,4 +8,6 @@ export interface Reservation {
   quantity?: number
   totalPrice: number
   messages: Message[]
+  status: 'pending' | 'viewed' | 'approved' | 'declined' | 'canceled' | 'paied' | 'completed'
+  createdAt: Date
 }

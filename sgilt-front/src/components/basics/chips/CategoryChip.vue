@@ -1,6 +1,6 @@
 <template>
   <SgiltChip
-    :label="$t(`categories.${categoryName}.title`)"
+    :label="iconOnly ? '' : $t(`categories.${categoryName}.title`)"
     @click="$emit('click')"
     class="category-chip small-font"
   >
@@ -18,6 +18,7 @@ import type { Component } from 'vue'
 
 const props = defineProps<{
   categoryName: string
+  iconOnly?: boolean
 }>()
 
 defineEmits(['click'])

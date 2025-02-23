@@ -5,7 +5,7 @@
   >
     <div class="recap-card-title">
       <p class="left-icon" v-if="title">
-        <component :is="iconComponent" />
+        <SgiltIcon :icon="icon || ''" />
       </p>
       <span v-html="title" />
     </div>
@@ -16,18 +16,14 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent } from 'vue'
+import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
 
-const props = defineProps<{
+defineProps<{
   icon?: string
   title: string
   widthFitContent?: boolean
   direction?: 'column' | 'row'
 }>()
-
-const iconComponent = props.icon
-  ? defineAsyncComponent(() => import(`../icons/Icon${props.icon}.vue`))
-  : null
 </script>
 
 <style scoped lang="scss">
