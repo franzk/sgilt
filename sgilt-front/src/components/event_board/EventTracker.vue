@@ -38,14 +38,13 @@ const steps = ref([
   { value: 'paied', label: 'C’est réservé, préparez la fête !' },
 ])
 
-const pawns = []
-/* computed(() =>
+const pawns = computed(() =>
   steps.value.map((step) =>
     props.event?.reservations
       .filter((reservation: Reservation) => reservation.status === step.value)
       .map((reservation: Reservation) => reservation.partner.imageUrl),
   ),
-) */
+)
 </script>
 
 <style scoped lang="scss">
@@ -93,7 +92,8 @@ $step-spacing: 0.8rem;
     .date-location {
       font-size: 0.9rem;
       font-style: italic;
-      color: #555;
+      color: $color-primary;
+      font-weight: 400;
     }
 
     .icon-star {
@@ -106,7 +106,7 @@ $step-spacing: 0.8rem;
       margin: auto;
       z-index: -1;
       border: 0;
-      color: rgba(0, 0, 0, 0.1);
+      color: rgba(0, 0, 0, 0.09);
       opacity: 0.8;
       text-shadow:
         -2px -2px 3px rgba(255, 255, 255, 0.8),

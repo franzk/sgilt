@@ -7,6 +7,7 @@ export const getTestEvent = async (): Promise<SgiltEvent> => {
   const testDateTime = dayjs(new Date()).add(10, 'days').toDate()
   const salleDesFetesDeRathsamhausen = await findPartnerBySlug('salle-des-fetes-rathsamhausen')
   const gypsyReedEnsemble = await findPartnerBySlug('gypsy-reed-ensemble')
+  const foodTruckBurgers = await findPartnerBySlug('food-truck-burgers')
 
   return {
     title: 'Mon 60e anniversaire !',
@@ -33,6 +34,25 @@ export const getTestEvent = async (): Promise<SgiltEvent> => {
         messages: [],
         createdAt: creationDateTime,
         status: 'pending',
+      },
+      {
+        id: '2',
+        partner: gypsyReedEnsemble,
+        price: gypsyReedEnsemble!.prices![0]!,
+        totalPrice: 1500,
+        messages: [],
+        createdAt: creationDateTime,
+        status: 'approved',
+      },
+      {
+        id: '2',
+        partner: foodTruckBurgers,
+        price: foodTruckBurgers!.prices![0]!,
+        quantity: 50,
+        totalPrice: 1500,
+        messages: [],
+        createdAt: creationDateTime,
+        status: 'approved',
       },
     ],
   }
