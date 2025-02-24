@@ -9,9 +9,21 @@
         <div class="step-content-wrapper">
           <template v-if="pawns && pawns.length">
             <!-- pawns : images of the partners -->
-            <div v-for="pawn in pawns" :key="pawn" class="pawn">
+            <!-- Display 9 pawns if there are 9 or fewer partners, -->
+            <!-- otherwise show the first 8 pawns followed by a "..." icon if there are more than 9 partners. -->
+            <div
+              v-for="(pawn, index) in (pawns ?? []).filter(
+                (p, i) => i < ((pawns ?? []).length > 9 ? 8 : 9),
+              )"
+              :key="index"
+              class="pawn"
+            >
               <img :src="pawn" />
             </div>
+            <!-- "..." icon -->
+            <span v-if="pawns && pawns.length > 9" class="more-pawns"
+              ><SgiltIcon icon="More"
+            /></span>
           </template>
 
           <!-- icon : svg icon = placeholder when no pawn -->

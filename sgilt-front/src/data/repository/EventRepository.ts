@@ -37,15 +37,6 @@ export const getTestEvent = async (): Promise<SgiltEvent> => {
       },
       {
         id: '2',
-        partner: gypsyReedEnsemble,
-        price: gypsyReedEnsemble!.prices![0]!,
-        totalPrice: 1500,
-        messages: [],
-        createdAt: creationDateTime,
-        status: 'approved',
-      },
-      {
-        id: '2',
         partner: foodTruckBurgers,
         price: foodTruckBurgers!.prices![0]!,
         quantity: 50,
