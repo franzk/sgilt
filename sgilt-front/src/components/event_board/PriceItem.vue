@@ -15,7 +15,7 @@ defineProps<{
 </script>
 
 <style scoped lang="scss">
-.price-item {
+/*.price-item {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -30,6 +30,27 @@ defineProps<{
 
   .price-icon {
     font-size: 1.2rem;
+  }
+}*/
+.price-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-l;
+
+  .price-item-icon {
+    color: $color-white;
+    font-size: 1.2rem;
+    svg {
+      // border: 1px solid black;
+      border-radius: 100%;
+      background: #4a4a4a;
+      padding: 0.1rem;
+    }
+  }
+
+  span {
+    font-size: 0.95rem;
+    color: #333333;
   }
 }
 </style>

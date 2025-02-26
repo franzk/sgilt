@@ -16,29 +16,31 @@
       <p class="status-subtext">{{ status?.subtext }}</p>
     </div>
 
-    <div class="reservation-price">
-      <PriceItem v-if="reservation?.price.title" :label="reservation.price.title" icon="Star" />
-      <PriceItem
-        v-if="reservation?.quantity"
-        :label="`${reservation.quantity} ${reservation.price.unity}`"
-        icon="Profile"
-      />
-      <PriceItem
-        v-if="reservation?.quantity && reservation?.price.price"
-        :label="`${reservation.price.price.toString()} / ${reservation.price.unity}`"
-        icon="More"
-      />
-      <PriceItem
-        v-if="reservation?.totalPrice"
-        :label="reservation.totalPrice.toString()"
-        icon="Price"
-      />
-    </div>
+    <div class="bottom-section">
+      <div class="reservation-price">
+        <PriceItem v-if="reservation?.price.title" :label="reservation.price.title" icon="Star" />
+        <PriceItem
+          v-if="reservation?.quantity"
+          :label="`${reservation.quantity} ${reservation.price.unity}`"
+          icon="Profile"
+        />
+        <PriceItem
+          v-if="reservation?.quantity && reservation?.price.price"
+          :label="`${reservation.price.price.toString()} / ${reservation.price.unity}`"
+          icon="More"
+        />
+        <PriceItem
+          v-if="reservation?.totalPrice"
+          :label="reservation.totalPrice.toString()"
+          icon="Price"
+        />
+      </div>
 
-    <div class="reservation-actions">
-      <button v-if="showPayButton" @click="pay" class="pay-btn">💳 Payer</button>
-      <button @click="message" class="message-btn">💬 Message</button>
-      <button v-if="canCancel" @click="cancel" class="cancel-btn">🛑 Annuler</button>
+      <div class="reservation-actions">
+        <button v-if="showPayButton" @click="pay" class="pay-btn">💳 Payer</button>
+        <button @click="message" class="message-btn">💬 Message</button>
+        <button v-if="canCancel" @click="cancel" class="cancel-btn">🛑 Annuler</button>
+      </div>
     </div>
   </div>
 </template>
@@ -179,10 +181,18 @@ p {
   }
 }
 
+.bottom-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-s;
+  padding: 0 $spacing-s $spacing-s $spacing-s;
+}
+
 .reservation-price {
   // display: grid;
   // grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));
-  flex: 1;
+  /*flex: 1;
   display: flex;
   flex-direction: column;
 
@@ -190,7 +200,20 @@ p {
   padding: 1rem;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); */
+  // background: rgba(0, 0, 0, 0.05); // Fond léger, ajustable
+  // border-radius: 8px;
+  // padding: 10px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  font-size: $font-size-base;
+
+  background: rgba(255, 255, 255, 0.6); // Un fond très léger, plus doux que le gris
+  border: 1px solid rgba(0, 0, 0, 0.08); // Une bordure subtile pour structurer
+  border-radius: 8px;
+  padding: 10px 15px;
 }
 
 .reservation-actions {
@@ -209,8 +232,23 @@ button {
 }
 
 .pay-btn {
-  background: $color-accent;
-  color: $color-white;
+  // background: $color-accent;
+  // color: $color-white;
+  background-color: #f4b400; /* Jaune */
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition:
+    background-color 2s ease-in-out,
+    transform 2s ease-in-out;
+
+  &:hover {
+    background-color: #e59400; /* Jaune plus foncé */
+    transform: translateY(-2px); /* Léger effet de survol */
+  }
 }
 
 .message-btn {
