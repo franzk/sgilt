@@ -31,7 +31,7 @@
             <SgiltIcon icon="Sent" v-if="value === 'pending'" />
             <SgiltIcon icon="Eye" v-if="value === 'viewed'" />
             <SgiltIcon icon="CreditCard" v-if="value === 'approved'" />
-            <SgiltIcon icon="Rocket" v-if="value === 'paied'" />
+            <SgiltIcon icon="Rocket" v-if="value === 'paid'" />
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import type { Message } from '@/data/domain/Message'
 import type { Partner, Price } from '@/data/domain/Partner'
+import type { ReservationStatusKey } from '@/types/ReservationStatusType'
 
 export interface Reservation {
   id: string
@@ -8,6 +9,6 @@ export interface Reservation {
   quantity?: number
   totalPrice: number
   messages: Message[]
-  status: 'pending' | 'viewed' | 'approved' | 'declined' | 'canceled' | 'paied' | 'completed'
+  status: ReservationStatusKey
   createdAt: Date
 }

@@ -35,7 +35,7 @@ const steps = ref([
   { value: 'pending', label: 'Demande envoyée !' },
   { value: 'viewed', label: 'Votre partenaire a vu votre demande' },
   { value: 'approved', label: 'Il est prêt, à vous de payer !' },
-  { value: 'paied', label: 'C’est réservé, préparez la fête !' },
+  { value: 'paid', label: 'C’est réservé, préparez la fête !' },
 ])
 
 const pawns = computed(() =>

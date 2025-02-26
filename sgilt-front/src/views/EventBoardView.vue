@@ -3,6 +3,9 @@
     <section class="event-tracker">
       <EventTracker :event="sgiltEvent" />
     </section>
+    <div>
+      <ReservationsBoard :reservations="sgiltEvent?.reservations" />
+    </div>
   </div>
 </template>
 
@@ -11,6 +14,7 @@ import type { SgiltEvent } from '@/data/domain/SgiltEvent'
 import { getTestEvent } from '@/data/repository/EventRepository'
 import { onMounted, ref } from 'vue'
 import EventTracker from '@/components/event_board/EventTracker.vue'
+import ReservationsBoard from '@/components/event_board/ReservationsBoard.vue'
 
 const sgiltEvent = ref<SgiltEvent>()
 
@@ -21,10 +25,8 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 .event-board {
-  height: 100%;
   display: flex;
   flex-direction: column;
-  padding: $spacing-m 0;
-  background: $color-secondary;
+  gap: 1rem;
 }
 </style>
