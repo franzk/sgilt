@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import type { Reservation } from '@/data/domain/Reservation'
-import ReservationCard from '@/components/event_board/ReservationCard.vue'
+import ReservationCard from '@/components/event_board/reservation_card/ReservationCard.vue'
 
 defineProps<{
   reservations?: Reservation[]

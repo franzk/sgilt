@@ -3,6 +3,10 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useReservationStatusStore = defineStore('statusStore', () => {
+  const getStatus = (key?: StatusKey) => (key ? statusMap.value.get(key) : undefined)
+
+  const getStatusColor = (key: StatusKey) => statusMap.value.get(key)?.color
+
   const statusMap = ref<Map<ReservationStatusKey, ReservationStatus>>(
     new Map([
       [
@@ -59,7 +63,5 @@ export const useReservationStatusStore = defineStore('statusStore', () => {
     ]),
   )
 
-  const getStatus = (key?: StatusKey) => (key ? statusMap.value.get(key) : undefined)
-
-  return { getStatus }
+  return { getStatus, getStatusColor }
 })
