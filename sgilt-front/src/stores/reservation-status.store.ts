@@ -1,4 +1,4 @@
-import type { ReservationStatus, ReservationStatusKey } from '@/types/ReservationStatusType'
+import type { ReservationStatus, ReservationStatusKey } from '@/types/ReservationStatus'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
