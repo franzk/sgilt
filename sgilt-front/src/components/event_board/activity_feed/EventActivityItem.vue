@@ -1,35 +1,19 @@
 <template>
-  <li class="activity-item">
-    <!-- Avatar -->
-    <div class="partner-avatar">
-      <img :src="activity.partnerAvatarUrl" :alt="activity.partnerName" />
+  <div class="activity-item">
+    <div class="activity-icon">
+      <SgiltIcon v-if="activity.eventActivityType.icon" :icon="activity.eventActivityType.icon" />
     </div>
-
-    <!-- Contenu -->
     <div class="activity-content">
-      <div class="activity-header">
-        <span class="activity-icon" :style="{ color: activity.eventActivityType.color }">
-          <SgiltIcon
-            v-if="activity.eventActivityType.icon"
-            :icon="activity.eventActivityType.icon"
-          />
-        </span>
-        <p class="activity-title">
-          {{
-            $t(`event-activities.${activity.eventActivityType.id}.title`, {
-              partnerName: activity.partnerName,
-            })
-          }}
-        </p>
-      </div>
-      <p class="activity-message">
+      <p class="activity-title">
         {{
-          $t(`event-activities.${activity.eventActivityType.id}.content`, { ...activity.payload })
+          $t(`event-activities.${activity.eventActivityType.id}.title`, {
+            partnerName: activity.partnerName,
+          })
         }}
       </p>
-      <span class="activity-date">{{ activity.date }}</span>
+      <p class="activity-date">{{ formatDate(activity.date) }}</p>
     </div>
-  </li>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -39,72 +23,30 @@ import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
 defineProps<{
   activity: EventActivity
 }>()
+
+const formatDate = (date: Date) => {
+  const now = new Date()
+  const diff = Math.floor((now.getDate() - date.getDate()) / 1000 / 60 / 60 / 24)
+  if (diff === 0) return "Aujourd'hui"
+  if (diff === 1) return 'Hier'
+  return `Il y a ${diff} jours`
+}
 </script>
 
 <style scoped lang="scss">
+p {
+  margin: 0;
+}
+
 .activity-item {
   display: flex;
-  align-items: center;
-  gap: $spacing-m;
-  padding: $spacing-s;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease-in-out;
+  gap: $spacing-s;
 
-  &:hover {
-    background: lighten($color-secondary, 10%);
+  .activity-icon {
+    flex: 0 0 auto;
+    svg {
+      height: auto;
+    }
   }
-}
-
-/* 🎭 Avatar du partenaire */
-.partner-avatar {
-  width: 3rem;
-  height: 3rem;
-  flex-shrink: 0;
-  border-radius: 50%;
-  overflow: hidden;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-}
-
-/* 📝 Contenu */
-.activity-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.activity-header {
-  display: flex;
-  align-items: center;
-  gap: $spacing-xs;
-}
-
-.activity-icon {
-  font-size: 1.2rem;
-}
-
-/* 🏷️ Titre */
-.activity-title {
-  font-weight: bold;
-  color: $color-primary;
-  font-size: $font-size-base;
-}
-
-/* 💬 Message */
-.activity-message {
-  // font-size: $font-size-small;
-  // color: $color-text-light;
-}
-
-/* 📆 Date */
-.activity-date {
-  font-size: 0.8rem;
-  // color: $color-text-light;
-  margin-top: $spacing-xs;
 }
 </style>

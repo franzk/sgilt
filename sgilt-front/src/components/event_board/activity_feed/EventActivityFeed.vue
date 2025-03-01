@@ -1,19 +1,30 @@
 <template>
   <div class="event-activity-feed">
-    <h3 class="feed-title">📰 Activité récente</h3>
-    <div v-if="activities.length === 0" class="empty-feed">Aucune activité pour le moment.</div>
-
-    <ul class="activity-list">
-      <EventActivityItem v-for="activity in activities" :key="activity.id" :activity="activity" />
+    <ul class="feed-list">
+      <li v-for="activity in activities" :key="activity.id" class="feed-item">
+        <EventActivityItem :activity="activity" />
+      </li>
     </ul>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+import { findAllEventActivities } from '@/data/repository/EventActivityRepository'
 import EventActivityItem from '@/components/event_board/activity_feed/EventActivityItem.vue'
-import type { EventActivity } from '@/data/domain/EventActivity'
 
-defineProps<{
-  activities: EventActivity[]
-}>()
+const activities = ref(findAllEventActivities())
 </script>
+
+<style scoped lang="scss">
+.event-feed {
+  border-left: 1px solid $color-divider;
+}
+
+.feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+}
+</style>
