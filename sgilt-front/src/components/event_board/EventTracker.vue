@@ -1,5 +1,6 @@
 <template>
   <div class="event-tracker">
+    <!-- step boxes -->
     <StepBox
       v-for="(step, index) in steps"
       :key="index"
@@ -9,6 +10,7 @@
       :pawns="pawns[index]"
       class="event-step-box"
     />
+    <!-- final step -->
     <div class="final-step">
       <p class="event-title">{{ event?.title }}</p>
       <p class="date-location">
@@ -26,17 +28,15 @@ import StepBox from '@/components/event_board/StepBox.vue'
 import type { SgiltEvent } from '@/data/domain/SgiltEvent'
 import IconStar from '@/components/icons/IconStar.vue'
 import dayjs from 'dayjs'
+import { useReservationStepsStore } from '@/stores/reservation-steps.store'
 
 const props = defineProps<{
   event?: SgiltEvent
 }>()
 
-const steps = ref([
-  { value: 'pending', label: 'Demande envoyée !' },
-  { value: 'viewed', label: 'Votre partenaire a vu votre demande' },
-  { value: 'approved', label: 'Il est prêt, à vous de payer !' },
-  { value: 'paid', label: 'C’est réservé, préparez la fête !' },
-])
+const reservationStepsStore = useReservationStepsStore()
+
+const steps = ref(reservationStepsStore.steps)
 
 const pawns = computed(() =>
   steps.value.map((step) =>
@@ -52,6 +52,7 @@ $step-height: 12rem;
 $arrow-width: 3rem;
 $step-spacing: 0.8rem;
 
+// EventTracker container
 .event-tracker {
   display: flex;
   flex-direction: row;
@@ -65,10 +66,12 @@ $step-spacing: 0.8rem;
   background: linear-gradient(135deg, #f6f8fc 0%, #ebeff5 100%);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 
+  // steps
   .event-step-box {
     flex: 1;
   }
 
+  // final step
   .final-step {
     flex: 1;
     transform: translateX(calc(($arrow-width - $step-spacing) * -2));
@@ -115,17 +118,6 @@ $step-spacing: 0.8rem;
       mix-blend-mode: multiply;
       transition: all 0.3s ease-in-out;
       backdrop-filter: blur(2px);
-    }
-
-    // Option pour une icône en filigrane
-    &::before {
-      content: url('/icons/event.svg'); // Remplace par ton icône SVG
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      width: 40px;
-      height: 40px;
-      opacity: 0.2;
     }
   }
 }

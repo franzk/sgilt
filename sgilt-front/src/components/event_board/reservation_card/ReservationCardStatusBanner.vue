@@ -1,7 +1,9 @@
 <template>
   <div class="reservation-status">
     <div class="status-wrapper">
+      <!-- state -->
       <p class="status-state">✔️ {{ status?.state }}</p>
+      <!-- action to do in this step -->
       <p class="status-action">
         <span><SgiltIcon v-if="status" :icon="status?.icon" /></span>
         <span class="status-action-label">{{ status?.action }}</span>
@@ -73,6 +75,7 @@ $status-color: v-bind(statusColor);
       }
     }
 
+    // background = faded status color
     &::before {
       content: '';
       position: absolute;
@@ -90,7 +93,6 @@ $status-color: v-bind(statusColor);
 }
 
 .status-subtext {
-  // text-align: left;
   font-style: italic;
   padding: 0 $spacing-s;
 }

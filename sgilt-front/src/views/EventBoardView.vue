@@ -1,32 +1,60 @@
 <template>
   <div class="event-board">
+    <!-- EventTracker component -->
     <section class="event-tracker">
       <EventTracker :event="sgiltEvent" />
     </section>
-    <div>
-      <ReservationsBoard :reservations="sgiltEvent?.reservations" />
-    </div>
+    <section class="event-components">
+      <!-- ReservationsBoard component -->
+      <div class="reservations-board">
+        <ReservationsBoard :reservations="sgiltEvent?.reservations" />
+      </div>
+      <!-- EventActivityFeed component -->
+      <div class="event-activity-feed">
+        <EventActivityFeed :activities="activities" />
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { SgiltEvent } from '@/data/domain/SgiltEvent'
-import { getTestEvent } from '@/data/repository/EventRepository'
 import { onMounted, ref } from 'vue'
 import EventTracker from '@/components/event_board/EventTracker.vue'
 import ReservationsBoard from '@/components/event_board/ReservationsBoard.vue'
+import { findAllEventActivities } from '@/data/repository/EventActivityRepository'
+import type { EventActivity } from '@/data/domain/EventActivity'
+import EventActivityFeed from '@/components/event_board/activity_feed/EventActivityFeed.vue'
+import { getTestEvent } from '@/data/repository/TestEventRepository'
 
 const sgiltEvent = ref<SgiltEvent>()
 
+const activities = ref<EventActivity[]>([])
+
 onMounted(async () => {
-  sgiltEvent.value = await getTestEvent()
+  sgiltEvent.value = await getTestEvent(2)
+  activities.value = findAllEventActivities()
 })
 </script>
 
 <style scoped lang="scss">
+$activity-feed-width: 20rem;
+
 .event-board {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.event-components {
+  display: flex;
+  flex-direction: row;
+  gap: $spacing-m;
+  .reservations-board {
+    flex: 1;
+  }
+  .event-activity-feed {
+    width: $activity-feed-width;
+  }
 }
 </style>

@@ -1,30 +1,30 @@
 <template>
   <div class="reservation-card">
-    <ReservationCardTitle :partner="reservation?.partner" />
+    <!-- Title -->
+    <ReservationCardTitle :partner="reservation?.partner" :compactMode="compactMode" />
 
+    <!-- Status banner -->
     <ReservationCardStatusBanner :statusKey="props.reservation?.status" />
 
     <div class="bottom-section">
+      <!-- Price zone -->
       <ReservationCardPriceZone
         :price="reservation?.price"
         :quantity="reservation?.quantity"
         :totalPrice="reservation?.totalPrice"
+        :compactMode="compactMode"
         class="reservation-price"
       />
 
+      <!-- Buttons -->
       <ReservationCardActions
+        v-if="!compactMode"
         :showPayButton="showPayButton"
         :canCancel="canCancel"
         @pay="pay"
         @message="message"
         @cancel="cancel"
       />
-
-      <!--div class="reservation-actions">
-        <button v-if="showPayButton" @click="pay" class="pay-btn">💳 Payer</button>
-        <button @click="message" class="message-btn">💬 Message</button>
-        <button v-if="canCancel" @click="cancel" class="cancel-btn">🛑 Annuler</button>
-      </!--div-->
     </div>
   </div>
 </template>
@@ -40,6 +40,7 @@ import ReservationCardActions from '@/components/event_board/reservation_card/Re
 
 const props = defineProps<{
   reservation?: Reservation
+  compactMode?: boolean
 }>()
 
 const reservationStatusStore = useReservationStatusStore()
@@ -77,68 +78,29 @@ p {
   position: relative;
   gap: $spacing-m;
   background: $color-white;
-  border-radius: $border-radius-m;
+  border-radius: $border-radius-s;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
   transition: 0.3s ease-in-out;
   border-left: 5px solid transparent;
   border-left-color: $status-color;
-}
 
-.bottom-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-s;
-  padding: 0 $spacing-s $spacing-s $spacing-s;
-}
+  .bottom-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-s;
+    padding: 0 $spacing-s $spacing-s $spacing-s;
 
-.reservation-price {
-  flex: 1;
-}
+    .reservation-price {
+      flex: 1;
+    }
 
-.reservation-actions {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-button {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: $border-radius-s;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  font-weight: bold;
-}
-
-.pay-btn {
-  // background: $color-accent;
-  // color: $color-white;
-  background-color: #f4b400; /* Jaune */
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  transition:
-    background-color 2s ease-in-out,
-    transform 2s ease-in-out;
-
-  &:hover {
-    background-color: #e59400; /* Jaune plus foncé */
-    transform: translateY(-2px); /* Léger effet de survol */
+    .reservation-actions {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+    }
   }
-}
-
-.message-btn {
-  background: $color-primary;
-  color: $color-white;
-}
-
-.cancel-btn {
-  background: $color-error;
-  color: $color-white;
 }
 </style>

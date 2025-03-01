@@ -124,6 +124,13 @@
       "content": "Nous sommes désolés, mais {partnerName} a indiqué qu'il ne pourra pas honorer la réservation. Vous pouvez rechercher un autre prestataire."
     }
   },
+  "event-reservation": {
+    "action": {
+      "pay": "Payer",
+      "message": "Message",
+      "cancel": "Annuler"
+    }
+  },
   "first-reservation-modal": {
     "title": "Réservez votre prestataire en quelques secondes",
     "subtitle": "Choisissez une méthode pour continuer :",

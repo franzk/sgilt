@@ -1,9 +1,12 @@
 <template>
   <div class="reservation-actions">
     <div class="buttons">
+      <!-- pay button -->
       <SgiltButton v-if="showPayButton" @click="$emit('pay')">Payer</SgiltButton>
+      <!-- message button -->
       <SgiltButton @click="$emit('message')" variant="secondary">Message</SgiltButton>
     </div>
+    <!-- cancel link -->
     <p v-if="canCancel" @click="$emit('cancel')" class="cancel">Annuler la réservation</p>
   </div>
 </template>

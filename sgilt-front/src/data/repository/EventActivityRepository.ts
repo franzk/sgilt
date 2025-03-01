@@ -13,7 +13,7 @@ const eventActivities: EventActivity[] = [
     id: '1',
     date: new Date('2025-02-24T10:15:00'),
     partnerName: 'Food Truck Burgers',
-    partnerAvatarUrl: '/images/food-truck.jpg',
+    partnerAvatarUrl: './images/food-truck-burgers.jpg',
     eventActivityType: {
       id: 'reservation-sent',
       color: '#F7B731',
@@ -27,7 +27,7 @@ const eventActivities: EventActivity[] = [
     id: '2',
     date: new Date('2025-02-24T11:00:00'),
     partnerName: 'DJ Animation',
-    partnerAvatarUrl: '/images/dj.jpg',
+    partnerAvatarUrl: './images/dj-animation.jpg',
     eventActivityType: {
       id: 'reservation-viewed',
       color: '#45A0D9',
@@ -41,7 +41,7 @@ const eventActivities: EventActivity[] = [
     id: '3',
     date: new Date('2025-02-24T12:30:00'),
     partnerName: 'Gypsy Reed Ensemble',
-    partnerAvatarUrl: '/images/gypsy.jpg',
+    partnerAvatarUrl: './images/jazz-band.jpg',
     eventActivityType: {
       id: 'message-received',
       color: '#8E44AD',
@@ -55,7 +55,7 @@ const eventActivities: EventActivity[] = [
     id: '4',
     date: new Date('2025-02-24T14:45:00'),
     partnerName: 'Food Truck Burgers',
-    partnerAvatarUrl: '/images/food-truck.jpg',
+    partnerAvatarUrl: './images/food-truck-burgers.jpg',
     eventActivityType: {
       id: 'reservation-approved',
       color: '#4CAF50',
@@ -69,7 +69,7 @@ const eventActivities: EventActivity[] = [
     id: '5',
     date: new Date('2025-02-24T16:10:00'),
     partnerName: 'DJ Animation',
-    partnerAvatarUrl: '/images/dj.jpg',
+    partnerAvatarUrl: './images/dj-animation.jpg',
     eventActivityType: {
       id: 'payment-required',
       color: '#E67E22',
@@ -84,7 +84,7 @@ const eventActivities: EventActivity[] = [
     id: '6',
     date: new Date('2025-02-24T17:30:00'),
     partnerName: 'Gypsy Reed Ensemble',
-    partnerAvatarUrl: '/images/gypsy.jpg',
+    partnerAvatarUrl: './images/jazz-band.jpg',
     eventActivityType: {
       id: 'payment-confirmed',
       color: '#27AE60',
@@ -99,7 +99,7 @@ const eventActivities: EventActivity[] = [
     id: '7',
     date: new Date('2025-02-24T18:00:00'),
     partnerName: 'DJ Animation',
-    partnerAvatarUrl: '/images/dj.jpg',
+    partnerAvatarUrl: './images/dj-animation.jpg',
     eventActivityType: {
       id: 'message-sent',
       color: '#8E44AD',
@@ -113,7 +113,7 @@ const eventActivities: EventActivity[] = [
     id: '8',
     date: new Date('2025-02-24T18:45:00'),
     partnerName: 'Food Truck Burgers',
-    partnerAvatarUrl: '/images/food-truck.jpg',
+    partnerAvatarUrl: './images/food-truck-burgers.jpg',
     eventActivityType: {
       id: 'reservation-updated',
       color: '#3498DB',
@@ -127,7 +127,7 @@ const eventActivities: EventActivity[] = [
     id: '9',
     date: new Date('2025-02-24T19:20:00'),
     partnerName: 'DJ Animation',
-    partnerAvatarUrl: '/images/dj.jpg',
+    partnerAvatarUrl: './images/dj-animation.jpg',
     eventActivityType: {
       id: 'reservation-canceled',
       color: '#E74C3C',
@@ -141,7 +141,7 @@ const eventActivities: EventActivity[] = [
     id: '10',
     date: new Date('2025-02-24T20:00:00'),
     partnerName: 'Food Truck Burgers',
-    partnerAvatarUrl: '/images/food-truck.jpg',
+    partnerAvatarUrl: './images/food-truck-burgers.jpg',
     eventActivityType: {
       id: 'partner-unavailable',
       color: '#C0392B',
