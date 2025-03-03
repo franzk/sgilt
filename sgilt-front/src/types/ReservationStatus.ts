@@ -5,5 +5,6 @@ export interface ReservationStatus {
   icon: string
   state: string
   action: string
+  actionColor?: string
   subtext: string
 }

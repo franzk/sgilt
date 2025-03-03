@@ -29,6 +29,7 @@ import type { SgiltEvent } from '@/data/domain/SgiltEvent'
 import IconStar from '@/components/icons/IconStar.vue'
 import dayjs from 'dayjs'
 import { useReservationStepsStore } from '@/stores/reservation-steps.store'
+import type { Reservation } from '@/data/domain/Reservation'
 
 const props = defineProps<{
   event?: SgiltEvent

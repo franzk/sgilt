@@ -3,9 +3,9 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useReservationStatusStore = defineStore('statusStore', () => {
-  const getStatus = (key?: StatusKey) => (key ? statusMap.value.get(key) : undefined)
+  const getStatus = (key?: ReservationStatusKey) => (key ? statusMap.value.get(key) : undefined)
 
-  const getStatusColor = (key: StatusKey) => statusMap.value.get(key)?.color
+  const getStatusColor = (key: ReservationStatusKey) => statusMap.value.get(key)?.color
 
   const statusMap = ref<Map<ReservationStatusKey, ReservationStatus>>(
     new Map([
@@ -36,6 +36,7 @@ export const useReservationStatusStore = defineStore('statusStore', () => {
           icon: 'CreditCard',
           state: 'Demande acceptée',
           action: 'En attente de paiement.',
+          actionColor: 'orange',
           subtext: 'Votre demande a été acceptée, vous pouvez maintenant payer.',
         },
       ],

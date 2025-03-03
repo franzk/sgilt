@@ -72,7 +72,7 @@
   },
   "event-activities": {
     "reservation-sent": {
-      "title": "Vous avez envoyé une demande de réservation à {partnerName}",
+      "title": "Demande de réservation envoyée !",
       "content": "Votre demande a été envoyée avec succès. {partnerName} va vous contactez."
     },
     "reservation-viewed": {
@@ -159,9 +159,9 @@
       "subtitle": "Indiquez où et quand aura lieu votre événement.",
       "cta": "Continuer",
       "location": {
-        "label": "Lieu de l'événement",
+        "label": "Localité de l'événement",
         "placeholder": "Ex : Strasbourg, Rathsamhausen, Breuschwickersheim...",
-        "error": "Veuillez saisir un lieu valide."
+        "error": "Veuillez saisir une localité valide."
       },
       "date": {
         "label": "Date de l'événement"

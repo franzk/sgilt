@@ -14,11 +14,7 @@ const eventActivities: EventActivity[] = [
     date: new Date('2025-02-24T10:15:00'),
     partnerName: 'Food Truck Burgers',
     partnerAvatarUrl: './images/food-truck-burgers.jpg',
-    eventActivityType: {
-      id: 'reservation-sent',
-      color: '#F7B731',
-      icon: 'Mail',
-    },
+    eventActivityTypeId: 'reservation-sent',
     payload: {
       message: 'Votre demande a bien été envoyée au partenaire.',
     },
@@ -28,11 +24,7 @@ const eventActivities: EventActivity[] = [
     date: new Date('2025-02-24T11:00:00'),
     partnerName: 'DJ Animation',
     partnerAvatarUrl: './images/dj-animation.jpg',
-    eventActivityType: {
-      id: 'reservation-viewed',
-      color: '#45A0D9',
-      icon: 'Eye',
-    },
+    eventActivityTypeId: 'reservation-viewed',
     payload: {
       message: 'Le partenaire a vu votre demande de réservation.',
     },
@@ -42,11 +34,7 @@ const eventActivities: EventActivity[] = [
     date: new Date('2025-02-24T12:30:00'),
     partnerName: 'Gypsy Reed Ensemble',
     partnerAvatarUrl: './images/jazz-band.jpg',
-    eventActivityType: {
-      id: 'message-received',
-      color: '#8E44AD',
-      icon: 'ChatBubble',
-    },
+    eventActivityTypeId: 'message-received',
     payload: {
       message: "Bonjour, pouvez-vous préciser le lieu de l'événement ?",
     },
@@ -56,11 +44,7 @@ const eventActivities: EventActivity[] = [
     date: new Date('2025-02-24T14:45:00'),
     partnerName: 'Food Truck Burgers',
     partnerAvatarUrl: './images/food-truck-burgers.jpg',
-    eventActivityType: {
-      id: 'reservation-approved',
-      color: '#4CAF50',
-      icon: 'Check',
-    },
+    eventActivityTypeId: 'reservation-approved',
     payload: {
       message: 'Le partenaire a accepté votre demande.',
     },
@@ -70,11 +54,7 @@ const eventActivities: EventActivity[] = [
     date: new Date('2025-02-24T16:10:00'),
     partnerName: 'DJ Animation',
     partnerAvatarUrl: './images/dj-animation.jpg',
-    eventActivityType: {
-      id: 'payment-required',
-      color: '#E67E22',
-      icon: 'CreditCard',
-    },
+    eventActivityTypeId: 'payment-required',
     payload: {
       amount: '150€',
       message: 'Le paiement est requis pour confirmer la réservation.',
@@ -85,11 +65,7 @@ const eventActivities: EventActivity[] = [
     date: new Date('2025-02-24T17:30:00'),
     partnerName: 'Gypsy Reed Ensemble',
     partnerAvatarUrl: './images/jazz-band.jpg',
-    eventActivityType: {
-      id: 'payment-confirmed',
-      color: '#27AE60',
-      icon: 'Done',
-    },
+    eventActivityTypeId: 'payment-confirmed',
     payload: {
       amount: '200€',
       message: 'Votre paiement a été reçu. Réservation confirmée !',
@@ -100,11 +76,7 @@ const eventActivities: EventActivity[] = [
     date: new Date('2025-02-24T18:00:00'),
     partnerName: 'DJ Animation',
     partnerAvatarUrl: './images/dj-animation.jpg',
-    eventActivityType: {
-      id: 'message-sent',
-      color: '#8E44AD',
-      icon: 'Chat',
-    },
+    eventActivityTypeId: 'message-sent',
     payload: {
       message: 'Merci pour votre réponse ! On valide la prestation ?',
     },
@@ -114,11 +86,7 @@ const eventActivities: EventActivity[] = [
     date: new Date('2025-02-24T18:45:00'),
     partnerName: 'Food Truck Burgers',
     partnerAvatarUrl: './images/food-truck-burgers.jpg',
-    eventActivityType: {
-      id: 'reservation-updated',
-      color: '#3498DB',
-      icon: 'EditNote',
-    },
+    eventActivityTypeId: 'reservation-updated',
     payload: {
       message: 'Le partenaire a mis à jour sa prestation.',
     },
@@ -128,11 +96,7 @@ const eventActivities: EventActivity[] = [
     date: new Date('2025-02-24T19:20:00'),
     partnerName: 'DJ Animation',
     partnerAvatarUrl: './images/dj-animation.jpg',
-    eventActivityType: {
-      id: 'reservation-canceled',
-      color: '#E74C3C',
-      icon: 'Cancel',
-    },
+    eventActivityTypeId: 'reservation-canceled',
     payload: {
       message: 'Votre réservation a été annulée.',
     },
@@ -142,11 +106,7 @@ const eventActivities: EventActivity[] = [
     date: new Date('2025-02-24T20:00:00'),
     partnerName: 'Food Truck Burgers',
     partnerAvatarUrl: './images/food-truck-burgers.jpg',
-    eventActivityType: {
-      id: 'partner-unavailable',
-      color: '#C0392B',
-      icon: 'Block',
-    },
+    eventActivityTypeId: 'partner-unavailable',
     payload: {
       message: 'Le partenaire n’est plus disponible à cette date.',
     },

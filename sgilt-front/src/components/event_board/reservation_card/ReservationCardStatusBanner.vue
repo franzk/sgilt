@@ -4,7 +4,7 @@
       <!-- state -->
       <p class="status-state">✔️ {{ status?.state }}</p>
       <!-- action to do in this step -->
-      <p class="status-action">
+      <p class="status-action" :class="{ 'action-color': status?.actionColor }">
         <span><SgiltIcon v-if="status" :icon="status?.icon" /></span>
         <span class="status-action-label">{{ status?.action }}</span>
       </p>
@@ -28,10 +28,12 @@ const status = computed(() =>
   props.statusKey ? reservationStatusStore.getStatus(props.statusKey) : undefined,
 )
 const statusColor = computed(() => status?.value?.color || 'transparent')
+const actionColor = computed(() => status?.value?.actionColor || 'transparent')
 </script>
 
 <style scoped lang="scss">
 $status-color: v-bind(statusColor);
+$action-color: v-bind(actionColor);
 
 .reservation-status {
   p {
@@ -49,7 +51,7 @@ $status-color: v-bind(statusColor);
     position: relative;
     align-items: start;
     text-align: left;
-    width: 100%;
+    padding: 0 $spacing-s $spacing-s $spacing-s;
     box-shadow: $box-shadow;
 
     .status-state {
@@ -74,6 +76,11 @@ $status-color: v-bind(statusColor);
         line-height: 1.1;
       }
     }
+    .action-color {
+      background-color: $action-color;
+      border-radius: $border-radius-l;
+      z-index: 0;
+    }
 
     // background = faded status color
     &::before {
@@ -86,6 +93,7 @@ $status-color: v-bind(statusColor);
       background-color: $status-color;
       opacity: 0.5;
     }
+
     * > * {
       z-index: 0;
     }

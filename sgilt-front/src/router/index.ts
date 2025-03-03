@@ -29,7 +29,7 @@ const router = createRouter({
       component: ErrorNotFound,
     },
     {
-      path: '/event-board',
+      path: '/event-board/:id',
       name: 'eventBoard',
       component: EventBoardView,
     },

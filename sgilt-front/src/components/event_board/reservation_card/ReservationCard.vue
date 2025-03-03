@@ -90,7 +90,7 @@ p {
     display: flex;
     flex-direction: column;
     gap: $spacing-s;
-    padding: 0 $spacing-s $spacing-s $spacing-s;
+    padding: $spacing-m $spacing-m 0 $spacing-m;
 
     .reservation-price {
       flex: 1;

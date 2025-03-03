@@ -26,13 +26,17 @@ import { findAllEventActivities } from '@/data/repository/EventActivityRepositor
 import type { EventActivity } from '@/data/domain/EventActivity'
 import EventActivityFeed from '@/components/event_board/activity_feed/EventActivityFeed.vue'
 import { getTestEvent } from '@/data/repository/TestEventRepository'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const sgiltEvent = ref<SgiltEvent>()
 
 const activities = ref<EventActivity[]>([])
 
 onMounted(async () => {
-  sgiltEvent.value = await getTestEvent(2)
+  const id = parseInt(Array.isArray(route.params.id) ? route.params.id[0] : route.params.id)
+  sgiltEvent.value = await getTestEvent(id)
+
   activities.value = findAllEventActivities()
 })
 </script>
