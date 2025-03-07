@@ -26,5 +26,6 @@ const activities = ref(findAllEventActivities())
   flex-direction: column;
   gap: 10px;
   list-style: none;
+  margin: 0;
 }
 </style>

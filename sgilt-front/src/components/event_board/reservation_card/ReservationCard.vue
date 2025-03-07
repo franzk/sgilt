@@ -84,6 +84,7 @@ p {
   transition: 0.3s ease-in-out;
   border-left: 5px solid transparent;
   border-left-color: $status-color;
+  padding-bottom: $spacing-m;
 
   .bottom-section {
     flex: 1;

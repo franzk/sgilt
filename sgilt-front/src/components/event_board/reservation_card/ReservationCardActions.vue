@@ -23,6 +23,10 @@ defineEmits(['pay', 'message', 'cancel'])
 </script>
 
 <style scoped lang="scss">
+p {
+  margin: 0;
+}
+
 .reservation-actions {
   display: flex;
   flex-direction: column;
