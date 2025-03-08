@@ -43,25 +43,23 @@ const props = defineProps<{
   compactMode?: boolean
 }>()
 
+// Reservation status color
 const reservationStatusStore = useReservationStatusStore()
-const statusColor = computed(() => reservationStatusStore.getStatusColor(props.reservation?.status))
+const statusColor = computed(() =>
+  props.reservation?.status ? reservationStatusStore.getStatusColor(props.reservation?.status) : '',
+)
 
+// Action buttons
 const showPayButton = computed(() => props.reservation?.status === 'approved')
 const canCancel = computed(() =>
   ['pending', 'viewed', 'approved'].includes(props.reservation?.status || ''),
 )
 
-const pay = () => {
-  console.log('Paiement en cours...')
-}
+const pay = () => console.log('Paiement en cours...')
 
-const message = () => {
-  console.log('Ouvrir la conversation...')
-}
+const message = () => console.log('Ouvrir la conversation...')
 
-const cancel = () => {
-  console.log('Annulation en cours...')
-}
+const cancel = () => console.log('Annulation en cours...')
 </script>
 
 <style scoped lang="scss">

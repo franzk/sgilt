@@ -95,11 +95,6 @@ onClickOutside(menuRef, () => (isMenuOpen.value = false))
     &:hover {
       background: rgba(0, 0, 0, 0.1);
     }
-
-    .material-icons {
-      font-size: 1.5rem;
-      color: #666;
-    }
   }
 
   .menu {
@@ -111,20 +106,20 @@ onClickOutside(menuRef, () => (isMenuOpen.value = false))
     border-radius: 0.5rem;
     overflow: hidden;
     min-width: 160px;
-    z-index: 10;
+    z-index: $z-first-floor;
     display: flex;
     flex-direction: column;
 
     button {
       all: unset;
-      padding: 0.75rem 1rem;
+      padding: $spacing-mm $spacing-m;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: $spacing-s;
       cursor: pointer;
       transition: background 0.2s ease-in-out;
-      font-size: 0.9rem;
-      color: #333;
+      font-size: $font-size-base;
+      color: $color-primary;
 
       &:hover {
         background: rgba(0, 0, 0, 0.05);
@@ -134,7 +129,6 @@ onClickOutside(menuRef, () => (isMenuOpen.value = false))
       }
 
       .menu-icons {
-        font-size: 1.2rem;
         color: inherit;
       }
 

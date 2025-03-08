@@ -17,11 +17,13 @@
 import { useReservationStatusStore } from '@/stores/reservation-status.store'
 import { computed } from 'vue'
 import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
+import type { ReservationStatusKey } from '@/types/ReservationStatus'
 
 const props = defineProps<{
-  statusKey?: string
+  statusKey?: ReservationStatusKey
 }>()
 
+// status color and action color
 const reservationStatusStore = useReservationStatusStore()
 
 const status = computed(() =>
@@ -66,16 +68,19 @@ $action-color: v-bind(actionColor);
       flex-direction: row;
       align-items: center;
       padding: 0 $spacing-s;
-      gap: 0.5rem;
+      gap: $spacing-s;
       font-weight: 700;
+
       svg {
         height: 2rem;
         aspect-ratio: 1;
       }
+
       .status-action-label {
         line-height: 1.1;
       }
     }
+
     .action-color {
       background-color: $action-color;
       border-radius: $border-radius-l;
