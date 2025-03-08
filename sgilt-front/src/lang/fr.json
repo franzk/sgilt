@@ -70,65 +70,103 @@
       "contact": "Contactez-nous"
     }
   },
-  "event-activities": {
-    "reservation-sent": {
-      "title": "Demande de réservation envoyée !",
-      "content": "Votre demande a été envoyée avec succès. {partnerName} va vous contactez."
+  "event": {
+    "activities": {
+      "reservation-sent": {
+        "title": "Demande de réservation envoyée !",
+        "content": "Votre demande a été envoyée avec succès. {partnerName} va vous contactez."
+      },
+      "reservation-viewed": {
+        "title": "{partnerName} a vu votre demande",
+        "content": "Bonne nouvelle ! {partnerName} a consulté votre demande. Vous devriez recevoir une réponse bientôt."
+      },
+      "message-sent": {
+        "title": "Vous avez envoyé un message à {partnerName}",
+        "content": "Votre message a été transmis à {partnerName}. Vous serez notifié dès qu'une réponse sera reçue."
+      },
+      "message-received": {
+        "title": "{partnerName} vous a envoyé un message",
+        "content": "{partnerName} vous a écrit : \"{messagePreview}\". Cliquez ici pour ouvrir la conversation."
+      },
+      "reservation-approved": {
+        "title": "{partnerName} a accepté votre demande",
+        "content": "Votre demande de réservation a été acceptée. Il ne vous reste plus qu'à effectuer le paiement pour finaliser la réservation."
+      },
+      "payment-request": {
+        "title": "Paiement requis pour {partnerName}",
+        "content": "Votre demande a été acceptée par {partnerName}. Vous devez maintenant procéder au paiement pour confirmer la réservation."
+      },
+      "payment-success": {
+        "title": "Paiement confirmé pour {partnerName}",
+        "content": "Votre paiement a bien été reçu par {partnerName}. Votre réservation est maintenant confirmée ! 🎉"
+      },
+      "payment-failed": {
+        "title": "Échec du paiement pour {partnerName}",
+        "content": "Nous avons rencontré un problème avec votre paiement. Merci de réessayer ou de contacter {partnerName} pour plus d'informations."
+      },
+      "reservation-cancelled-user": {
+        "title": "Vous avez annulé la réservation avec {partnerName}",
+        "content": "Votre réservation avec {partnerName} a été annulée. Vous pouvez toujours refaire une demande si besoin."
+      },
+      "reservation-cancelled-partner": {
+        "title": "{partnerName} a annulé votre réservation",
+        "content": "Malheureusement, {partnerName} a dû annuler votre réservation. Vous pouvez le contacter pour plus d’informations ou chercher un autre prestataire."
+      },
+      "reservation-updated": {
+        "title": "{partnerName} a mis à jour votre réservation",
+        "content": "Les détails de votre réservation avec {partnerName} ont été modifiés. Pensez à vérifier les nouvelles informations."
+      },
+      "reservation-modified-user": {
+        "title": "Vous avez modifié votre réservation avec {partnerName}",
+        "content": "Vous avez effectué des changements sur votre réservation avec {partnerName}. Ces modifications sont maintenant en attente de validation."
+      },
+      "partner-unavailable": {
+        "title": "{partnerName} ne peut plus assurer la prestation",
+        "content": "Nous sommes désolés, mais {partnerName} a indiqué qu'il ne pourra pas honorer la réservation. Vous pouvez rechercher un autre prestataire."
+      }
     },
-    "reservation-viewed": {
-      "title": "{partnerName} a vu votre demande",
-      "content": "Bonne nouvelle ! {partnerName} a consulté votre demande. Vous devriez recevoir une réponse bientôt."
+    "reservation": {
+      "action": {
+        "pay": "Payer",
+        "message": "Message",
+        "cancel": "Annuler"
+      }
     },
-    "message-sent": {
-      "title": "Vous avez envoyé un message à {partnerName}",
-      "content": "Votre message a été transmis à {partnerName}. Vous serez notifié dès qu'une réponse sera reçue."
-    },
-    "message-received": {
-      "title": "{partnerName} vous a envoyé un message",
-      "content": "{partnerName} vous a écrit : \"{messagePreview}\". Cliquez ici pour ouvrir la conversation."
-    },
-    "reservation-approved": {
-      "title": "{partnerName} a accepté votre demande",
-      "content": "Votre demande de réservation a été acceptée. Il ne vous reste plus qu'à effectuer le paiement pour finaliser la réservation."
-    },
-    "payment-request": {
-      "title": "Paiement requis pour {partnerName}",
-      "content": "Votre demande a été acceptée par {partnerName}. Vous devez maintenant procéder au paiement pour confirmer la réservation."
-    },
-    "payment-success": {
-      "title": "Paiement confirmé pour {partnerName}",
-      "content": "Votre paiement a bien été reçu par {partnerName}. Votre réservation est maintenant confirmée ! 🎉"
-    },
-    "payment-failed": {
-      "title": "Échec du paiement pour {partnerName}",
-      "content": "Nous avons rencontré un problème avec votre paiement. Merci de réessayer ou de contacter {partnerName} pour plus d'informations."
-    },
-    "reservation-cancelled-user": {
-      "title": "Vous avez annulé la réservation avec {partnerName}",
-      "content": "Votre réservation avec {partnerName} a été annulée. Vous pouvez toujours refaire une demande si besoin."
-    },
-    "reservation-cancelled-partner": {
-      "title": "{partnerName} a annulé votre réservation",
-      "content": "Malheureusement, {partnerName} a dû annuler votre réservation. Vous pouvez le contacter pour plus d’informations ou chercher un autre prestataire."
-    },
-    "reservation-updated": {
-      "title": "{partnerName} a mis à jour votre réservation",
-      "content": "Les détails de votre réservation avec {partnerName} ont été modifiés. Pensez à vérifier les nouvelles informations."
-    },
-    "reservation-modified-user": {
-      "title": "Vous avez modifié votre réservation avec {partnerName}",
-      "content": "Vous avez effectué des changements sur votre réservation avec {partnerName}. Ces modifications sont maintenant en attente de validation."
-    },
-    "partner-unavailable": {
-      "title": "{partnerName} ne peut plus assurer la prestation",
-      "content": "Nous sommes désolés, mais {partnerName} a indiqué qu'il ne pourra pas honorer la réservation. Vous pouvez rechercher un autre prestataire."
-    }
-  },
-  "event-reservation": {
-    "action": {
-      "pay": "Payer",
-      "message": "Message",
-      "cancel": "Annuler"
+    "help": {
+      "steps": {
+        "title": "Comment ça marche ?",
+        "step-1": {
+          "title": "Vous envoyez votre demande",
+          "content": "→ Votre partenaire vous répond sous 24h."
+        },
+        "step-2": {
+          "title": "Votre partenaire consulte votre demande",
+          "content": "→ Il vous contacte pour valider les détails, comprendre vos attentes et confirmer sa disponibilité avant d’accepter ou refuser."
+        },
+        "step-3": {
+          "title": "Votre demande est acceptée",
+          "content": "→ Vous avez 48h pour finaliser le paiement et sécuriser votre réservation. Passé ce délai, la demande expire automatiquement."
+        },
+        "step-4": {
+          "title": "4. C’est réservé !",
+          "content": "→ Une fois le paiement validé, votre réservation est confirmée !"
+        },
+        "warning": "⚠️ N’oubliez pas ! Si le paiement n’est pas effectué dans les 48h après acceptation, la réservation est annulée."
+      },
+      "contact": {
+        "title": "📞 Assistance & Contact"
+      },
+      "faq": {
+        "title": "💡 Questions fréquentes",
+        "pay": {
+          "title": "Comment payer ma réservation ?",
+          "content": "→ Depuis le tableau de bord, cliquez sur 'Payer'."
+        },
+        "cancel": {
+          "title": "Puis-je annuler une réservation ?",
+          "content": "→ Oui, tant qu’elle n’est pas payée."
+        }
+      }
     }
   },
   "first-reservation-modal": {

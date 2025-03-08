@@ -10,7 +10,7 @@
     <p
       class="activity-content"
       v-html="
-        $t(`event-activities.${activity.eventActivityTypeId}.content`, {
+        $t(`event.activities.${activity.eventActivityTypeId}.content`, {
           partnerName: 'thePartnerName',
         }).replace('thePartnerName', `<i>${activity.partnerName}</i>`)
       "

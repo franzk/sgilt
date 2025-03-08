@@ -1,45 +1,44 @@
 <template>
   <div class="event-help-panel">
-    <h3>🎯 Comment ça marche ?</h3>
+    <h3>{{ $t('events.help.title') }}</h3>
     <span class="close" @click="$emit('close')"><SgiltIcon icon="Close" /></span>
     <ul>
       <li>
         <EventHelpItem
           icon="Mail"
-          title="Vous envoyez votre demande"
-          content="→ Votre partenaire vous répond sous 24h."
+          :title="$t('event.help.steps.step-1.title')"
+          :content="$t('event.help.steps.step-1.content')"
         />
       </li>
       <li>
         <EventHelpItem
           icon="Eye"
-          title="Votre partenaire consulte votre demande"
-          content="→ Il vous contacte pour valider les détails, comprendre vos attentes et confirmer sa disponibilité avant d’accepter ou refuser."
+          :title="$t('event.help.steps.step-2.title')"
+          :content="$t('event.help.steps.step-2.content')"
         />
       </li>
       <li>
         <EventHelpItem
           icon="Check"
-          title="Votre demande est acceptée"
-          content="→ Vous avez 48h pour finaliser le paiement et sécuriser votre réservation. Passé ce délai, la demande expire automatiquement."
+          :title="$t('event.help.steps.step-3.title')"
+          :content="$t('event.help.steps.step-3.content')"
         />
       </li>
       <li>
         <EventHelpItem
           icon="Calendar"
-          title="C’est réservé !"
-          content="→ Une fois le paiement validé, votre réservation est confirmée !"
+          :title="$t('event.help.steps.step-4.title')"
+          :content="$t('event.help.steps.step-4.content')"
         />
       </li>
     </ul>
     <p class="warning">
-      ⚠️ N’oubliez pas ! Si le paiement n’est pas effectué dans les 48h après acceptation, la
-      réservation est annulée.
+      {{ $t('event.help.steps.warning') }}
     </p>
 
     <div class="divider" />
 
-    <h3>📞 Assistance & Contact</h3>
+    <h3>{{ $t('event.help.contact.title') }}</h3>
     <p>
       <EventHelpItem icon="Mail" title="Support client :" content="support@sgilt.com" oneline />
     </p>
@@ -49,19 +48,19 @@
 
     <div class="divider" />
 
-    <h3>💡 Questions fréquentes</h3>
+    <h3>{{ $t('event.help.faq.title') }}</h3>
     <p>
       <EventHelpItem
         icon="CreditCard"
-        title="Comment payer ma réservation ?"
-        content="→ Depuis l’event board, cliquez sur 'Payer'."
+        :title="$t('event.help.faq.pay.title')"
+        :content="$t('event.help.faq.pay.content')"
       />
     </p>
     <p>
       <EventHelpItem
         icon="Cancel"
-        title="Puis-je annuler une réservation ?"
-        content="→ Oui, tant qu’elle n’est pas payée."
+        :title="$t('event.help.faq.cancel.title')"
+        :content="$t('event.help.faq.cancel.content')"
       />
     </p>
   </div>

@@ -16,15 +16,15 @@
       <div v-if="isMenuOpen" class="menu" ref="menuRef">
         <button @click="$emit('pay')">
           <span class="menu-icons"><SgiltIcon icon="CreditCard" /></span>
-          {{ $t('event-reservation.action.pay') }}
+          {{ $t('event.reservation.action.pay') }}
         </button>
         <button @click="$emit('message')">
           <span class="menu-icons"><SgiltIcon icon="ChatBubble" /></span>
-          {{ $t('event-reservation.action.message') }}
+          {{ $t('event.reservation.action.message') }}
         </button>
         <button class="danger" @click="$emit('cancel')">
           <span class="menu-icons"><SgiltIcon icon="Cancel" /></span>
-          {{ $t('event-reservation.action.cancel') }}
+          {{ $t('event.reservation.action.cancel') }}
         </button>
       </div>
     </transition>
