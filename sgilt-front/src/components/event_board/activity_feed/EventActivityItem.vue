@@ -1,5 +1,6 @@
 <template>
   <div class="activity-item">
+    <!-- header : partner avatar and name -->
     <div class="activity-header">
       <img :src="activity.partnerAvatarUrl" class="partner-avatar" />
       <span class="activity-title">
@@ -7,6 +8,7 @@
       </span>
     </div>
 
+    <!-- content : activity description -->
     <p
       class="activity-content"
       v-html="
@@ -16,27 +18,26 @@
       "
     />
 
-    <p class="activity-date">{{ formatDate(activity.date) }}</p>
+    <!-- date : activity date -->
+    <p class="activity-date">{{ formatedDate }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { EventActivity } from '@/data/domain/EventActivity'
 import { useEventActivityStore } from '@/stores/event-activity.store'
+import dayjs from 'dayjs'
 import { computed } from 'vue'
 
 const props = defineProps<{
   activity: EventActivity
 }>()
 
-const formatDate = (date: Date) => {
-  const now = new Date()
-  const diff = Math.floor((date.getDate() - now.getDate()) / 1000 / 60 / 60 / 24)
-  if (diff === 0) return "Aujourd'hui"
-  if (diff === 1) return 'Hier'
-  return `Il y a ${diff} jours`
-}
+const formatedDate = computed(() => {
+  return dayjs(props.activity.date).format('DD/MM/YYYY HH:mm:ss')
+})
 
+// activity color
 const eventActivityStore = useEventActivityStore()
 const backgroundColor = computed(() =>
   eventActivityStore.getColor(props.activity.eventActivityTypeId),
@@ -55,13 +56,11 @@ p {
   flex-direction: column;
   position: relative;
   gap: $spacing-s;
-  border-bottom: 1px solid $color-divider;
   padding: $spacing-s;
   box-shadow: $box-shadow;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  // background-color: $background-color;
 
-  // background = faded status color
+  // faded background
   &::before {
     content: '';
     position: absolute;

@@ -54,7 +54,7 @@ const eventActivities: EventActivity[] = [
     date: new Date('2025-02-24T16:10:00'),
     partnerName: 'DJ Animation',
     partnerAvatarUrl: '/images/dj-animation.jpg',
-    eventActivityTypeId: 'payment-required',
+    eventActivityTypeId: 'payment-request',
     payload: {
       amount: '150€',
       message: 'Le paiement est requis pour confirmer la réservation.',
@@ -65,7 +65,7 @@ const eventActivities: EventActivity[] = [
     date: new Date('2025-02-24T17:30:00'),
     partnerName: 'Gypsy Reed Ensemble',
     partnerAvatarUrl: '/images/jazz-band.jpg',
-    eventActivityTypeId: 'payment-confirmed',
+    eventActivityTypeId: 'payment-success',
     payload: {
       amount: '200€',
       message: 'Votre paiement a été reçu. Réservation confirmée !',
@@ -96,7 +96,7 @@ const eventActivities: EventActivity[] = [
     date: new Date('2025-02-24T19:20:00'),
     partnerName: 'DJ Animation',
     partnerAvatarUrl: '/images/dj-animation.jpg',
-    eventActivityTypeId: 'reservation-canceled',
+    eventActivityTypeId: 'reservation-cancelled-user',
     payload: {
       message: 'Votre réservation a été annulée.',
     },

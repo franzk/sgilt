@@ -17,14 +17,10 @@ const activities = ref(findAllEventActivities())
 </script>
 
 <style scoped lang="scss">
-.event-feed {
-  border-left: 1px solid $color-divider;
-}
-
 .feed-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: $spacing-mm;
   list-style: none;
   margin: 0;
 }
