@@ -247,7 +247,8 @@
     "filtres": "Filtres",
     "resultats": "Aucun résultat. | 1 résultat | {count} résultats",
     "voir-resultats": "Aucun résultat | Voir le résultat | Voir les {count} résultats",
-    "effacer-filtres": "Tout effacer"
+    "effacer-filtres": "Tout effacer",
+    "need-help": "Besoin d'aide ?"
   },
   "errors": {
     "404": {

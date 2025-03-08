@@ -3,23 +3,25 @@
     <!-- EventTracker component -->
     <section class="event-tracker">
       <EventTracker :event="sgiltEvent" />
-      <div class="floating-button-container" @click="helpPanelVisible = !helpPanelVisible">
-        Besoin d'aide ?
+      <div class="help-panel-toggler" @click="helpPanelVisible = !helpPanelVisible">
+        {{ $t('texts.need-help') }}
       </div>
     </section>
+
+    <!-- Event components section -->
     <section class="event-components">
       <!-- Help Panel component -->
-      <div class="help-panel" :class="{ open: helpPanelVisible }">
+      <aside class="help-panel" :class="{ open: helpPanelVisible }">
         <EventHelpPanel @close="helpPanelVisible = false" />
-      </div>
+      </aside>
       <!-- ReservationsBoard component -->
       <div class="reservations-board">
         <ReservationsBoard :reservations="sgiltEvent?.reservations" />
       </div>
       <!-- EventActivityFeed component -->
-      <div class="event-activity-feed">
+      <aside class="event-activity-feed">
         <EventActivityFeed :activities="activities" />
-      </div>
+      </aside>
     </section>
   </div>
 </template>
@@ -52,7 +54,7 @@ const helpPanelVisible = ref(false)
 </script>
 
 <style scoped lang="scss">
-$activity-feed-width: 20rem;
+$aside-width: 20rem;
 
 .event-board {
   display: flex;
@@ -69,49 +71,48 @@ $activity-feed-width: 20rem;
   flex-direction: row;
   gap: $spacing-m;
 
-  /* PANEL D'AIDE */
+  // left panel : help panel
   .help-panel {
-    flex: 0 0 0; /* Il commence avec une largeur de 0 */
+    flex: 0 0 0; // it begins with no width
     display: flex;
     overflow: hidden;
     opacity: 0;
-    transform: translateX(-100%); /* Déplacé complètement à gauche */
 
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
 
     transition:
-      transform 0.4s ease-out,
       opacity 0.3s ease-in-out,
       flex 0.4s ease-out;
+
+    &.open {
+      flex: 0 0 $aside-width; // it takes the width
+      opacity: 1;
+    }
   }
 
-  /* Quand il s'affiche */
-  .help-panel.open {
-    flex: 0 0 $activity-feed-width; /* Il prend sa place */
-    transform: translateX(0); /* Il revient en position normale */
-    opacity: 1;
-  }
-
+  // reservations board in the middle
   .reservations-board {
     flex: 1;
   }
+
+  // right panel activity feed
   .event-activity-feed {
-    width: $activity-feed-width;
+    width: $aside-width;
   }
 }
 
-.floating-button-container {
-  display: flex;
-  justify-content: flex-start;
-  margin-left: $spacing-s;
+.help-panel-toggler {
   position: absolute;
   bottom: 0;
-  left: 0;
+  left: $spacing-s;
+
   cursor: pointer;
   font-style: italic;
 
   &:hover {
     text-decoration: underline;
+    font-weight: 600;
+    transition: font-weight 0.3s ease-in-out text-decoration 0.3s ease-in-out;
   }
 }
 </style>
