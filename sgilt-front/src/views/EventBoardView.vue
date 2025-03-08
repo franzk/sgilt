@@ -24,6 +24,8 @@
       </aside>
     </section>
   </div>
+
+  <MobileBottomNavBar activeView="event" />
 </template>
 
 <script setup lang="ts">
@@ -37,6 +39,7 @@ import EventActivityFeed from '@/components/event_board/activity_feed/EventActiv
 import { getTestEvent } from '@/data/repository/TestEventRepository'
 import { useRoute } from 'vue-router'
 import EventHelpPanel from '@/components/event_board/help_panel/EventHelpPanel.vue'
+import MobileBottomNavBar from '@/components/event_board/MobileBottomNavBar.vue'
 
 const route = useRoute()
 const sgiltEvent = ref<SgiltEvent>()
@@ -81,8 +84,8 @@ $aside-width: 20rem;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
 
     transition:
-      opacity 0.3s ease-in-out,
-      flex 0.4s ease-out;
+      opacity 0.4s ease-in-out,
+      flex 0.2s ease-in-out;
 
     &.open {
       flex: 0 0 $aside-width; // it takes the width
