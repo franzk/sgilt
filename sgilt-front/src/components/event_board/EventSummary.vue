@@ -2,12 +2,20 @@
   <div class="event-summary">
     <div class="event-info">
       <h2>
-        <span class="event-name">{{ title }}</span>
+        <span class="event-name">{{ sgiltEvent?.title || '' }}</span>
       </h2>
       <p class="event-date">
         <SgiltIcon icon="Event" />
-        <span class="event-date-date">{{ formattedDate }}</span> - {{ location }}
+        <span class="event-date-date">{{ formattedDate }}</span>
       </p>
+      <p class="event-location">
+        <SgiltIcon icon="Place" />
+        <span>{{ sgiltEvent?.location || '' }} </span>
+      </p>
+    </div>
+
+    <div class="not-mobile-title">
+      <h3>Votre événement</h3>
     </div>
 
     <div class="event-status">
@@ -33,41 +41,61 @@ import dayjs from 'dayjs'
 import { computed, defineProps } from 'vue'
 import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
+import type { SgiltEvent } from '@/data/domain/SgiltEvent'
 
 const props = defineProps<{
-  title?: string
-  date?: Date
-  location?: string
-  reservationsConfirmed: number
-  reservationsWaitingForPayment: number
-  reservationsWaiting: number
+  sgiltEvent?: SgiltEvent
 }>()
 
-// Format date helper
-const formattedDate = computed(() => {
-  if (!props.date) return ''
-  return dayjs(props.date).locale('fr').format('dddd DD MMM YYYY')
-})
+const formattedDate = computed(() =>
+  props.sgiltEvent?.dateTime
+    ? dayjs(props.sgiltEvent.dateTime).locale('fr').format('dddd DD MMM YYYY')
+    : '',
+)
+
+const reservationsConfirmed = computed(
+  () => props.sgiltEvent?.reservations.filter((r) => r.status === 'paid').length || 0,
+)
+
+const reservationsWaitingForPayment = computed(
+  () => props.sgiltEvent?.reservations.filter((r) => r.status === 'approved').length || 0,
+)
+
+const reservationsWaiting = computed(
+  () =>
+    props.sgiltEvent?.reservations.filter((r) => ['pending', 'viewed'].includes(r.status)).length ||
+    0,
+)
 </script>
 
 <style scoped lang="scss">
 .event-summary {
   background: $color-white;
-  border-radius: $border-radius-s;
   padding: $spacing-m;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: $spacing-s;
+  gap: $spacing-m;
+
+  p {
+    margin: 0;
+  }
 
   .event-info {
+    @include respond-to(not-mobile) {
+      display: none;
+    }
+
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+
     h2 {
       font-size: 1.6rem;
       font-weight: 800;
       text-transform: uppercase;
       color: #222; // Contraste max
-      margin-bottom: $spacing-s;
+      // margin-bottom: $spacing-s;
 
       .event-name {
         background: linear-gradient(45deg, #ff8c00, #ff2e63);
@@ -77,7 +105,8 @@ const formattedDate = computed(() => {
       }
     }
 
-    .event-date {
+    .event-date,
+    .event-location {
       font-size: 1rem;
       line-height: 1.5;
       color: $color-subtext;

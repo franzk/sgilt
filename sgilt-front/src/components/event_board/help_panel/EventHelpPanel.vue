@@ -1,7 +1,6 @@
 <template>
   <div class="event-help-panel">
-    <h3>{{ $t('events.help.title') }}</h3>
-    <span class="close" @click="$emit('close')"><SgiltIcon icon="Close" /></span>
+    <h3>🎯 {{ $t('event.help.steps.title') }}</h3>
     <ul>
       <li>
         <EventHelpItem

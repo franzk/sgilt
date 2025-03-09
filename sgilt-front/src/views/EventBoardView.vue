@@ -2,22 +2,10 @@
   <div class="event-board">
     <!-- Event overview section -->
     <section class="event">
-      <EventSummary
-        :title="sgiltEvent?.title"
-        :date="sgiltEvent?.dateTime"
-        :location="sgiltEvent?.location"
-        :reservationsConfirmed="
-          sgiltEvent?.reservations.filter((r) => r.status === 'paid').length || 0
-        "
-        :reservationsWaitingForPayment="
-          sgiltEvent?.reservations.filter((r) => r.status === 'approved').length || 0
-        "
-        :reservationsWaiting="
-          sgiltEvent?.reservations.filter((r) => ['pending', 'viewed'].includes(r.status)).length ||
-          0
-        "
-        class="event-summary"
-      />
+      <!-- Event summary for mobile view -->
+      <EventSummary :sgiltEvent="sgiltEvent" class="event-summary" />
+
+      <!-- EventTracker component -->
       <EventTracker :event="sgiltEvent" />
       <div class="help-panel-toggler" @click="helpPanelVisible = !helpPanelVisible">
         {{ $t('texts.need-help') }}
@@ -26,14 +14,24 @@
 
     <!-- Event components section -->
     <section class="event-components">
-      <!-- Help Panel component -->
+      <!-- Help Panel  -->
       <aside class="help-panel" :class="{ open: helpPanelVisible }">
+        <span class="help-panel-close" @click="helpPanelVisible = false"
+          ><SgiltIcon icon="Close"
+        /></span>
+
+        <!-- Event summary for desktop & tablet views -->
+        <EventSummary :sgiltEvent="sgiltEvent" class="event-summary" />
+
+        <!-- EventHelpPanel component -->
         <EventHelpPanel @close="helpPanelVisible = false" />
       </aside>
+
       <!-- ReservationsBoard component -->
       <div class="reservations-board">
         <ReservationsBoard :reservations="sgiltEvent?.reservations" />
       </div>
+
       <!-- EventActivityFeed component -->
       <aside class="event-activity-feed">
         <EventActivityFeed :activities="activities" />
@@ -57,6 +55,7 @@ import { useRoute } from 'vue-router'
 import EventHelpPanel from '@/components/event_board/help_panel/EventHelpPanel.vue'
 import MobileBottomNavBar from '@/components/event_board/MobileBottomNavBar.vue'
 import EventSummary from '@/components/event_board/EventSummary.vue'
+import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
 
 const route = useRoute()
 const sgiltEvent = ref<SgiltEvent>()
@@ -110,6 +109,9 @@ $aside-width: 20rem;
   .help-panel {
     flex: 0 0 0; // it begins with no width
     display: flex;
+    flex-direction: column;
+    position: relative;
+    gap: $spacing-m;
     overflow: hidden;
     opacity: 0;
 
@@ -122,6 +124,13 @@ $aside-width: 20rem;
     &.open {
       flex: 0 0 $aside-width; // it takes the width
       opacity: 1;
+    }
+
+    .help-panel-close {
+      position: absolute;
+      top: $spacing-s;
+      right: $spacing-s;
+      cursor: pointer;
     }
   }
 
