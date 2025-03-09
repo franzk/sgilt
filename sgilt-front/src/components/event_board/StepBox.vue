@@ -55,22 +55,29 @@ $arrow-width: 3rem;
 $step-spacing: 0.8rem;
 $box-size: 7rem;
 
-// color gradient
 @for $i from 0 through 3 {
   .step-#{$i} {
+    // color gradient
     background-color: lighten($color-accent, $i * 9%);
-    transform: translateX(calc(($arrow-width - $step-spacing) * -1) * $i);
+    // steps spacings (not on mobile)
+    @include respond-to(not-mobile) {
+      transform: translateX(calc(($arrow-width - $step-spacing) * -1) * $i);
+    }
   }
 }
 
-// shadow under the steps shape
 .step-wrapper {
+  // shadow under the steps shape
   filter: drop-shadow(0px 1px 5px rgba($color-primary, 0.5));
-  margin-bottom: 1.75rem;
+  // no margin on mobile
+  @include respond-to(not-mobile) {
+    margin-bottom: 1.75rem;
+  }
 }
 
 // first shape | >
 .step-0 {
+  // right arrow
   clip-path: polygon(
     0% 0%,
     calc(100% - #{$arrow-width}) 0%,
@@ -79,12 +86,30 @@ $box-size: 7rem;
     100% 100%,
     0% 100%
   );
+  @include respond-to(mobile) {
+    // bottom arrow on mobile
+    clip-path: polygon(
+      0% 0%,
+      100% 0%,
+      100% calc(100% - #{$arrow-width}),
+      50% 100%,
+      0% calc(100% - #{$arrow-width})
+    );
+  }
+  @include respond-to(mobile) {
+    // no top padding on mobile
+    padding-top: 0 !important;
+    .step-title {
+      padding-top: 0 !important;
+    }
+  }
 }
 
 // steps within > >
 .step-1,
 .step-2,
 .step-3 {
+  // right arrow
   clip-path: polygon(
     0% 0%,
     calc(100% - #{$arrow-width}) 0%,
@@ -93,6 +118,17 @@ $box-size: 7rem;
     0% 100%,
     $arrow-width 50%
   );
+  @include respond-to(mobile) {
+    // bottom arrow on mobile
+    clip-path: polygon(
+      0% 0%,
+      50% #{$arrow-width},
+      100% 0%,
+      100% calc(100% - #{$arrow-width}),
+      50% 100%,
+      0% calc(100% - #{$arrow-width})
+    );
+  }
 }
 
 // step
@@ -114,6 +150,10 @@ $box-size: 7rem;
     line-height: 1.4;
     height: 2.8rem;
     padding: 0 1.2rem;
+    @include respond-to(mobile) {
+      padding: 1.2rem 0;
+      align-content: end;
+    }
     transform: translateX(-0.3rem);
     text-align: center;
   }

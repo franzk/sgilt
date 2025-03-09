@@ -8,6 +8,7 @@ $breakpoint-tablet: 1280px;
 
 $breakpoints: (
   mobile: '(max-width: #{$breakpoint-mobile})',
+  not-mobile: '(min-width: #{$breakpoint-mobile})',
   tablet: '(max-width: #{$breakpoint-tablet})',
   tablet-only: '(min-width: #{$breakpoint-mobile}) and (max-width: #{$breakpoint-tablet})',
   desktop: '(min-width: #{$breakpoint-tablet})',

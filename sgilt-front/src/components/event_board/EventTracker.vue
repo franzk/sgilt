@@ -57,6 +57,14 @@ $step-spacing: 0.8rem;
 .event-tracker {
   display: flex;
   flex-direction: row;
+  width: 100%;
+
+  @include respond-to(mobile) {
+    flex-direction: column;
+    padding: $spacing-l 0;
+    flex: 1;
+    width: 90%;
+  }
 
   padding: $spacing-l 0;
   position: relative;
@@ -75,13 +83,18 @@ $step-spacing: 0.8rem;
   // final step
   .final-step {
     flex: 1;
-    transform: translateX(calc(($arrow-width - $step-spacing) * -2));
+    @include respond-to(not-mobile) {
+      transform: translateX(calc(($arrow-width - $step-spacing) * -2));
+    }
     height: 75%;
 
     background: linear-gradient(135deg, #fff6e0 0%, #ffd700 100%);
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
     padding: 1.5rem;
+    @include respond-to(mobile) {
+      margin: $spacing-l 0;
+    }
     text-align: center;
     position: relative;
 

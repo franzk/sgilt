@@ -1,7 +1,23 @@
 <template>
   <div class="event-board">
-    <!-- EventTracker component -->
-    <section class="event-tracker">
+    <!-- Event overview section -->
+    <section class="event">
+      <EventSummary
+        :title="sgiltEvent?.title"
+        :date="sgiltEvent?.dateTime"
+        :location="sgiltEvent?.location"
+        :reservationsConfirmed="
+          sgiltEvent?.reservations.filter((r) => r.status === 'paid').length || 0
+        "
+        :reservationsWaitingForPayment="
+          sgiltEvent?.reservations.filter((r) => r.status === 'approved').length || 0
+        "
+        :reservationsWaiting="
+          sgiltEvent?.reservations.filter((r) => ['pending', 'viewed'].includes(r.status)).length ||
+          0
+        "
+        class="event-summary"
+      />
       <EventTracker :event="sgiltEvent" />
       <div class="help-panel-toggler" @click="helpPanelVisible = !helpPanelVisible">
         {{ $t('texts.need-help') }}
@@ -40,6 +56,7 @@ import { getTestEvent } from '@/data/repository/TestEventRepository'
 import { useRoute } from 'vue-router'
 import EventHelpPanel from '@/components/event_board/help_panel/EventHelpPanel.vue'
 import MobileBottomNavBar from '@/components/event_board/MobileBottomNavBar.vue'
+import EventSummary from '@/components/event_board/EventSummary.vue'
 
 const route = useRoute()
 const sgiltEvent = ref<SgiltEvent>()
@@ -65,11 +82,26 @@ $aside-width: 20rem;
   gap: 1rem;
 }
 
-.event-tracker {
+.event {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-m;
+  padding-top: $spacing-m;
   position: relative;
+  align-items: center;
+
+  .event-summary {
+    @include respond-to(not-mobile) {
+      display: none;
+    }
+  }
 }
 
 .event-components {
+  @include respond-to(mobile) {
+    display: none;
+  }
+
   display: flex;
   flex-direction: row;
   gap: $spacing-m;
@@ -105,6 +137,10 @@ $aside-width: 20rem;
 }
 
 .help-panel-toggler {
+  @include respond-to(mobile) {
+    display: none;
+  }
+
   position: absolute;
   bottom: 0;
   left: $spacing-s;
