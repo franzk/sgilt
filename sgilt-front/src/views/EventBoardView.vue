@@ -1,7 +1,7 @@
 <template>
   <div class="event-board">
     <!-- Event overview section -->
-    <section class="event">
+    <section class="event" v-if="activeMobileView === 'event' || !isMobileView">
       <!-- Event summary for mobile view -->
       <EventSummary :sgiltEvent="sgiltEvent" class="event-summary" />
 
@@ -15,7 +15,11 @@
     <!-- Event components section -->
     <section class="event-components">
       <!-- Help Panel  -->
-      <aside class="help-panel" :class="{ open: helpPanelVisible }">
+      <aside
+        v-if="activeMobileView === 'help' || !isMobileView"
+        class="help-panel"
+        :class="{ open: helpPanelVisible }"
+      >
         <span class="help-panel-close" @click="helpPanelVisible = false"
           ><SgiltIcon icon="Close"
         /></span>
@@ -28,18 +32,18 @@
       </aside>
 
       <!-- ReservationsBoard component -->
-      <div class="reservations-board">
+      <div v-if="activeMobileView === 'reservations' || !isMobileView" class="reservations-board">
         <ReservationsBoard :reservations="sgiltEvent?.reservations" />
       </div>
 
       <!-- EventActivityFeed component -->
-      <aside class="event-activity-feed">
+      <aside class="event-activity-feed" v-if="activeMobileView === 'activities' || !isMobileView">
         <EventActivityFeed :activities="activities" />
       </aside>
     </section>
   </div>
 
-  <MobileBottomNavBar activeView="event" />
+  <MobileBottomNavBar :activeView="activeMobileView" @update-view="updateMobileView($event)" />
 </template>
 
 <script setup lang="ts">
@@ -56,6 +60,7 @@ import EventHelpPanel from '@/components/event_board/help_panel/EventHelpPanel.v
 import MobileBottomNavBar from '@/components/event_board/MobileBottomNavBar.vue'
 import EventSummary from '@/components/event_board/EventSummary.vue'
 import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
+import { useResponsiveView } from '@/composable/useResponsiveView'
 
 const route = useRoute()
 const sgiltEvent = ref<SgiltEvent>()
@@ -69,7 +74,16 @@ onMounted(async () => {
   activities.value = findAllEventActivities()
 })
 
-const helpPanelVisible = ref(false)
+const helpPanelVisible = ref(true)
+
+// responsive mobile view
+const { isResponsiveView } = useResponsiveView('--breakpoint-mobile')
+const isMobileView = isResponsiveView
+
+const activeMobileView = ref('event')
+const updateMobileView = (view: string) => {
+  activeMobileView.value = view
+}
 </script>
 
 <style scoped lang="scss">
@@ -97,10 +111,6 @@ $aside-width: 20rem;
 }
 
 .event-components {
-  @include respond-to(mobile) {
-    display: none;
-  }
-
   display: flex;
   flex-direction: row;
   gap: $spacing-m;
@@ -117,13 +127,28 @@ $aside-width: 20rem;
 
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
 
+    @include respond-to(mobile) {
+      flex: 1;
+      opacity: 1;
+      gap: 0;
+      padding-bottom: $spacing-xxxl;
+    }
+
     transition:
       opacity 0.4s ease-in-out,
       flex 0.2s ease-in-out;
 
     &.open {
-      flex: 0 0 $aside-width; // it takes the width
-      opacity: 1;
+      @include respond-to(not-mobile) {
+        flex: 0 0 $aside-width; // it takes the width
+        opacity: 1;
+      }
+    }
+
+    .event-summary {
+      @include respond-to(mobile) {
+        display: none;
+      }
     }
 
     .help-panel-close {
@@ -131,6 +156,9 @@ $aside-width: 20rem;
       top: $spacing-s;
       right: $spacing-s;
       cursor: pointer;
+      @include respond-to(mobile) {
+        display: none;
+      }
     }
   }
 
@@ -142,6 +170,9 @@ $aside-width: 20rem;
   // right panel activity feed
   .event-activity-feed {
     width: $aside-width;
+    @include respond-to(mobile) {
+      width: unset;
+    }
   }
 }
 

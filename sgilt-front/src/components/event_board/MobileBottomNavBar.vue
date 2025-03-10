@@ -20,10 +20,10 @@ import { defineProps, defineEmits } from 'vue'
 import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
 
 defineProps<{ activeView: string }>()
-const emit = defineEmits(['updateView'])
+const emit = defineEmits(['update-view'])
 
 const switchView = (view: string) => {
-  emit('updateView', view)
+  emit('update-view', view)
 }
 </script>
 

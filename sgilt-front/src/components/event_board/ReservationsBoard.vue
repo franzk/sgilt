@@ -1,4 +1,6 @@
 <template>
+  <MobileScreenTitle icon="List" title="Réservations" />
+
   <div class="reservations-wrapper">
     <div class="reservations" ref="reservationsContainer">
       <template v-for="reservation in reservations" :key="reservation.id">
@@ -13,6 +15,7 @@ import type { Reservation } from '@/data/domain/Reservation'
 import ReservationCard from '@/components/event_board/reservation_card/ReservationCard.vue'
 import { useGridRowsDetection } from '@/composable/useGridRowsDetection'
 import { ref } from 'vue'
+import MobileScreenTitle from '@/components/event_board/MobileScreenTitle.vue'
 
 defineProps<{
   reservations?: Reservation[]
@@ -27,6 +30,9 @@ $reservation-card-width: 300px;
 
 .reservations-wrapper {
   justify-content: center;
+  @include respond-to(mobile) {
+    padding-bottom: $spacing-xxxl;
+  }
 }
 
 .reservations {

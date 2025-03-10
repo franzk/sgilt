@@ -3,17 +3,17 @@ import { getCssVariable } from '@/utils/StyleUtils'
 
 /**
  * Detects if the current view is a tablet view
- * @returns {isTabletView: Ref<boolean>} - A reactive reference to the current view
+ * @returns {isResponsiveView: Ref<boolean>} - A reactive reference to the current view
  */
-export const useTabletView = () => {
-  const isTabletView = ref(false)
+export const useResponsiveView = (breakpointCssVariable: string) => {
+  const isResponsiveView = ref(false)
 
   const tabletViewDetector = window.matchMedia(
-    `(max-width: ${parseInt(getCssVariable('--breakpoint-tablet'))}px)`,
+    `(max-width: ${parseInt(getCssVariable(breakpointCssVariable))}px)`,
   )
 
   const updateTabletView = () => {
-    isTabletView.value = tabletViewDetector.matches
+    isResponsiveView.value = tabletViewDetector.matches
   }
 
   onMounted(() => {
@@ -23,5 +23,5 @@ export const useTabletView = () => {
 
   onUnmounted(() => tabletViewDetector.removeEventListener('change', () => updateTabletView()))
 
-  return { isTabletView }
+  return { isResponsiveView }
 }
