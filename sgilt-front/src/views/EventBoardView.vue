@@ -1,5 +1,4 @@
 <template>
-  {{ isTabletView }}
   <div class="event-board">
     <!-- Event overview section -->
     <section class="event" v-if="activeMobileView === 'event' || !isMobileView">
