@@ -32,8 +32,7 @@ import { useRoute, useRouter } from 'vue-router'
 import dayjs from 'dayjs'
 import { useResponsiveView } from '@/composable/useResponsiveView'
 
-const { isResponsiveView } = useResponsiveView('--breakpoint-tablet')
-const isTabletView = isResponsiveView
+const { isTabletView } = useResponsiveView()
 
 const route = useRoute()
 const router = useRouter()

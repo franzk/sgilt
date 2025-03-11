@@ -3,6 +3,9 @@
 
   <div class="reservations-wrapper">
     <div class="reservations" ref="reservationsContainer">
+      <div v-if="$slots.firstCell">
+        <slot name="firstCell" />
+      </div>
       <template v-for="reservation in reservations" :key="reservation.id">
         <ReservationCard :reservation="reservation" :compactMode="isMultiRow" />
       </template>

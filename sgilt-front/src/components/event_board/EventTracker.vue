@@ -83,8 +83,11 @@ $step-spacing: 0.8rem;
   // final step
   .final-step {
     flex: 1;
-    @include respond-to(not-mobile) {
+    @include respond-to(desktop) {
       transform: translateX(calc(($arrow-width - $step-spacing) * -2));
+    }
+    @include respond-to(tablet) {
+      display: none;
     }
     height: 75%;
 

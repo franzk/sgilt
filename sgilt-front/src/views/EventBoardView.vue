@@ -1,4 +1,5 @@
 <template>
+  {{ isTabletView }}
   <div class="event-board">
     <!-- Event overview section -->
     <section class="event" v-if="activeMobileView === 'event' || !isMobileView">
@@ -33,7 +34,11 @@
 
       <!-- ReservationsBoard component -->
       <div v-if="activeMobileView === 'reservations' || !isMobileView" class="reservations-board">
-        <ReservationsBoard :reservations="sgiltEvent?.reservations" />
+        <ReservationsBoard :reservations="sgiltEvent?.reservations">
+          <template #firstCell v-if="isTabletView">
+            <EventSummary :sgiltEvent="sgiltEvent" />
+          </template>
+        </ReservationsBoard>
       </div>
 
       <!-- EventActivityFeed component -->
@@ -74,12 +79,11 @@ onMounted(async () => {
   activities.value = findAllEventActivities()
 })
 
-const helpPanelVisible = ref(true)
+const { isMobileView, isTabletView } = useResponsiveView()
+
+const helpPanelVisible = ref(!isTabletView)
 
 // responsive mobile view
-const { isResponsiveView } = useResponsiveView('--breakpoint-mobile')
-const isMobileView = isResponsiveView
-
 const activeMobileView = ref('event')
 const updateMobileView = (view: string) => {
   activeMobileView.value = view
@@ -146,13 +150,14 @@ $aside-width: 20rem;
     }
 
     .event-summary {
-      @include respond-to(mobile) {
+      @include respond-to(tablet) {
         display: none;
       }
     }
 
     .help-panel-close {
       position: absolute;
+      z-index: $z-first-floor;
       top: $spacing-s;
       right: $spacing-s;
       cursor: pointer;
