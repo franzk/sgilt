@@ -10,8 +10,9 @@
       :pawns="pawns[index]"
       class="event-step-box"
     />
+
     <!-- final step -->
-    <div class="final-step">
+    <div class="final-step" v-if="showFinalStep">
       <p class="event-title">{{ event?.title }}</p>
       <p class="date-location">
         {{ dayjs(event?.dateTime).locale('fr').format('dddd DD MMM YYYY') }}
@@ -33,6 +34,7 @@ import type { Reservation } from '@/data/domain/Reservation'
 
 const props = defineProps<{
   event?: SgiltEvent
+  showFinalStep?: boolean
 }>()
 
 const reservationStepsStore = useReservationStepsStore()
@@ -86,9 +88,7 @@ $step-spacing: 0.8rem;
     @include respond-to(desktop) {
       transform: translateX(calc(($arrow-width - $step-spacing) * -2));
     }
-    @include respond-to(tablet) {
-      display: none;
-    }
+
     height: 75%;
 
     background: linear-gradient(135deg, #fff6e0 0%, #ffd700 100%);

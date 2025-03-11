@@ -1,5 +1,4 @@
 <template>
-  <!-- TODO : implement keyboard navigation -->
   <div
     class="custom-select"
     :tabindex="focusable ? 0 : -1"

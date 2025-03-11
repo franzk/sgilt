@@ -1,6 +1,7 @@
 <template>
   <div class="event-summary">
-    <div class="event-info">
+    <!-- Event details -->
+    <div v-if="showEventDetails" class="event-info">
       <h2>
         <span class="event-name">{{ sgiltEvent?.title || '' }}</span>
       </h2>
@@ -14,10 +15,12 @@
       </p>
     </div>
 
-    <div class="not-mobile-title">
+    <!-- Event title if details are not shown -->
+    <div v-else>
       <h3>Votre événement</h3>
     </div>
 
+    <!-- Event status -->
     <div class="event-status">
       <p class="status-item confirmed">
         <SgiltIcon icon="Check" /> {{ reservationsConfirmed }} réservation(s) confirmée(s)
@@ -30,6 +33,7 @@
       </p>
     </div>
 
+    <!-- Pay button -->
     <SgiltButton v-if="reservationsWaitingForPayment > 0" class="pay-button"
       ><SgiltIcon icon="Warning" /> Payer maintenant</SgiltButton
     >
@@ -45,6 +49,7 @@ import type { SgiltEvent } from '@/data/domain/SgiltEvent'
 
 const props = defineProps<{
   sgiltEvent?: SgiltEvent
+  showEventDetails?: boolean
 }>()
 
 const formattedDate = computed(() =>
@@ -82,10 +87,6 @@ const reservationsWaiting = computed(
   }
 
   .event-info {
-    @include respond-to(not-mobile) {
-      display: none;
-    }
-
     display: flex;
     flex-direction: column;
     gap: $spacing-xs;
@@ -95,7 +96,6 @@ const reservationsWaiting = computed(
       font-weight: 800;
       text-transform: uppercase;
       color: #222; // Contraste max
-      // margin-bottom: $spacing-s;
 
       .event-name {
         background: linear-gradient(45deg, #ff8c00, #ff2e63);

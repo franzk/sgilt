@@ -3,11 +3,17 @@
     <!-- Event overview section -->
     <section class="event" v-if="activeMobileView === 'event' || !isMobileView">
       <!-- Event summary for mobile view -->
-      <EventSummary :sgiltEvent="sgiltEvent" class="event-summary" />
+      <EventSummary v-if="isMobileView" :sgiltEvent="sgiltEvent" showEventDetails />
 
       <!-- EventTracker component -->
-      <EventTracker :event="sgiltEvent" />
-      <div class="help-panel-toggler" @click="helpPanelVisible = !helpPanelVisible">
+      <EventTracker :event="sgiltEvent" :showFinalStep="!isTabletView" />
+
+      <!-- Help Panel Toggler -->
+      <div
+        v-if="!isMobileView"
+        class="help-panel-toggler"
+        @click="helpPanelVisible = !helpPanelVisible"
+      >
         {{ $t('texts.need-help') }}
       </div>
     </section>
@@ -17,25 +23,25 @@
       <!-- Help Panel  -->
       <aside
         v-if="activeMobileView === 'help' || !isMobileView"
-        class="help-panel"
-        :class="{ open: helpPanelVisible }"
+        :class="['help-panel', { open: helpPanelVisible }]"
       >
         <span class="help-panel-close" @click="helpPanelVisible = false"
           ><SgiltIcon icon="Close"
         /></span>
 
-        <!-- Event summary for desktop & tablet views -->
-        <EventSummary :sgiltEvent="sgiltEvent" class="event-summary" />
+        <!-- Event summary for desktop view -->
+        <EventSummary v-if="isDesktopView" :sgiltEvent="sgiltEvent" />
 
         <!-- EventHelpPanel component -->
-        <EventHelpPanel @close="helpPanelVisible = false" />
+        <EventHelpPanel />
       </aside>
 
       <!-- ReservationsBoard component -->
       <div v-if="activeMobileView === 'reservations' || !isMobileView" class="reservations-board">
         <ReservationsBoard :reservations="sgiltEvent?.reservations">
+          <!-- First cell is the EventSummary component in tablet view -->
           <template #firstCell v-if="isTabletView">
-            <EventSummary :sgiltEvent="sgiltEvent" />
+            <EventSummary :sgiltEvent="sgiltEvent" showEventDetails />
           </template>
         </ReservationsBoard>
       </div>
@@ -47,12 +53,13 @@
     </section>
   </div>
 
+  <!-- Mobile bottom navigation bar -->
   <MobileBottomNavBar :activeView="activeMobileView" @update-view="updateMobileView($event)" />
 </template>
 
 <script setup lang="ts">
 import type { SgiltEvent } from '@/data/domain/SgiltEvent'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import EventTracker from '@/components/event_board/EventTracker.vue'
 import ReservationsBoard from '@/components/event_board/ReservationsBoard.vue'
 import { findAllEventActivities } from '@/data/repository/EventActivityRepository'
@@ -66,11 +73,11 @@ import EventSummary from '@/components/event_board/EventSummary.vue'
 import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
 import { useResponsiveView } from '@/composable/useResponsiveView'
 
-const route = useRoute()
 const sgiltEvent = ref<SgiltEvent>()
-
 const activities = ref<EventActivity[]>([])
 
+// fetch event data
+const route = useRoute()
 onMounted(async () => {
   const id = parseInt(Array.isArray(route.params.id) ? route.params.id[0] : route.params.id)
   sgiltEvent.value = await getTestEvent(id)
@@ -78,11 +85,15 @@ onMounted(async () => {
   activities.value = findAllEventActivities()
 })
 
+// responsive view
 const { isMobileView, isTabletView } = useResponsiveView()
+const isDesktopView = computed(() => !isMobileView.value && !isTabletView.value)
 
-const helpPanelVisible = ref(!isTabletView)
+// help panel visibility
+const helpPanelVisible = ref()
+onMounted(() => (helpPanelVisible.value = isDesktopView.value))
 
-// responsive mobile view
+// active view for mobile
 const activeMobileView = ref('event')
 const updateMobileView = (view: string) => {
   activeMobileView.value = view
@@ -106,10 +117,9 @@ $aside-width: 20rem;
   position: relative;
   align-items: center;
 
-  .event-summary {
-    @include respond-to(not-mobile) {
-      display: none;
-    }
+  @include respond-to(mobile) {
+    // space for the bottom navigation bar
+    margin-bottom: $spacing-xxxl;
   }
 }
 
@@ -127,19 +137,7 @@ $aside-width: 20rem;
     gap: $spacing-m;
     overflow: hidden;
     opacity: 0;
-
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
-
-    @include respond-to(mobile) {
-      flex: 1;
-      opacity: 1;
-      gap: 0;
-      padding-bottom: $spacing-xxxl;
-    }
-
-    transition:
-      opacity 0.4s ease-in-out,
-      flex 0.2s ease-in-out;
 
     &.open {
       @include respond-to(not-mobile) {
@@ -148,21 +146,25 @@ $aside-width: 20rem;
       }
     }
 
-    .event-summary {
-      @include respond-to(tablet) {
-        display: none;
-      }
+    @include respond-to(mobile) {
+      flex: 1;
+      opacity: 1;
+      gap: 0;
+      padding-bottom: $spacing-xxxl;
     }
 
+    // fade in effect
+    transition:
+      opacity 0.4s ease-in-out,
+      flex 0.2s ease-in-out;
+
+    // close button
     .help-panel-close {
       position: absolute;
       z-index: $z-first-floor;
       top: $spacing-s;
       right: $spacing-s;
       cursor: pointer;
-      @include respond-to(mobile) {
-        display: none;
-      }
     }
   }
 
@@ -181,10 +183,6 @@ $aside-width: 20rem;
 }
 
 .help-panel-toggler {
-  @include respond-to(mobile) {
-    display: none;
-  }
-
   position: absolute;
   bottom: 0;
   left: $spacing-s;

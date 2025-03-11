@@ -68,11 +68,8 @@
 </template>
 
 <script setup lang="ts">
-import { defineEmits } from 'vue'
 import EventHelpItem from '@/components/event_board/help_panel/EventHelpItem.vue'
 import MobileScreenTitle from '@/components/event_board/MobileScreenTitle.vue'
-
-defineEmits(['close'])
 </script>
 
 <style scoped lang="scss">
@@ -105,12 +102,5 @@ ul li {
 .warning {
   color: $color-danger;
   font-weight: 600;
-}
-
-.close {
-  position: absolute;
-  top: $spacing-s;
-  right: $spacing-s;
-  cursor: pointer;
 }
 </style>

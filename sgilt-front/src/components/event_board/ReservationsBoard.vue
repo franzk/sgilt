@@ -34,6 +34,7 @@ $reservation-card-width: 300px;
 .reservations-wrapper {
   justify-content: center;
   @include respond-to(mobile) {
+    // space for the mobile bottom navigation bar
     padding-bottom: $spacing-xxxl;
   }
 }
