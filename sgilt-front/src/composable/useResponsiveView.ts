@@ -6,16 +6,20 @@ import { getCssVariable } from '@/utils/StyleUtils'
  * @returns isMobileView - A boolean ref that indicates if the current view is a mobile view
  * @returns isTabletView - A boolean ref that indicates if the current view is a tablet view
  */
-export const useResponsiveView = () => {
+export const useResponsiveView = (breakpointMobile?: number) => {
   const isMobileView = ref(false)
   const isTabletView = ref(false)
 
+  const mobile = breakpointMobile || parseInt(getCssVariable('--breakpoint-mobile'))
+  const tablet = parseInt(getCssVariable('--breakpoint-tablet'))
+
   const mobileViewDetector = window.matchMedia(
-    `(max-width: ${parseInt(getCssVariable('--breakpoint-mobile'))}px)`,
+    //`(max-width: ${breakpointMobile || parseInt(getCssVariable('--breakpoint-mobile'))}px)`,
+    `(max-width: ${mobile}px)`,
   )
 
   const tabletViewDetector = window.matchMedia(
-    `(min-width: ${parseInt(getCssVariable('--breakpoint-mobile'))}px) and (max-width: ${parseInt(getCssVariable('--breakpoint-tablet'))}px)`,
+    `(min-width: ${mobile}px) and (max-width: ${tablet}px)`,
   )
 
   const updateTabletView = () => {

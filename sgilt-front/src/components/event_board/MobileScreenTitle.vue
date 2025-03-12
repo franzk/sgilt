@@ -11,10 +11,6 @@ defineProps<{
 
 <style scoped lang="scss">
 .reservations-title {
-  @include respond-to(not-mobile) {
-    display: none;
-  }
-
   text-transform: uppercase;
   letter-spacing: 1px;
   display: flex;

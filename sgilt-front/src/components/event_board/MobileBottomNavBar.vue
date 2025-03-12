@@ -29,10 +29,10 @@ const switchView = (view: string) => {
 
 <style scoped lang="scss">
 .bottom-nav {
-  display: none;
-  @include respond-to(mobile) {
-    display: flex;
-  }
+  //display: none;
+  // @include respond-to(mobile) {
+  display: flex;
+  // }
 
   position: fixed;
   bottom: 0;

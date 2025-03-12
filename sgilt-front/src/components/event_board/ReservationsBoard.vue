@@ -1,6 +1,4 @@
 <template>
-  <MobileScreenTitle icon="List" title="Réservations" />
-
   <div class="reservations-wrapper">
     <div class="reservations" ref="reservationsContainer">
       <div v-if="$slots.firstCell">
@@ -18,7 +16,6 @@ import type { Reservation } from '@/data/domain/Reservation'
 import ReservationCard from '@/components/event_board/reservation_card/ReservationCard.vue'
 import { useGridRowsDetection } from '@/composable/useGridRowsDetection'
 import { ref } from 'vue'
-import MobileScreenTitle from '@/components/event_board/MobileScreenTitle.vue'
 
 defineProps<{
   reservations?: Reservation[]
@@ -33,18 +30,15 @@ $reservation-card-width: 300px;
 
 .reservations-wrapper {
   justify-content: center;
-  @include respond-to(mobile) {
-    // space for the mobile bottom navigation bar
-    padding-bottom: $spacing-xxxl;
-  }
 }
 
 .reservations {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax($reservation-card-width, $reservation-card-width));
+  grid-template-columns: repeat(auto-fit, minmax($reservation-card-width, 1fr));
   grid-auto-rows: minmax(auto, max-content);
   gap: $spacing-l;
   justify-content: space-around;
+
   > * {
     margin: 0 auto;
     width: 100%;

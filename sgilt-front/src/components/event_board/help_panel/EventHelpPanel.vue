@@ -1,6 +1,4 @@
 <template>
-  <MobileScreenTitle icon="Help" title="Aide" />
-
   <div class="event-help-panel">
     <h3>🎯 {{ $t('event.help.steps.title') }}</h3>
     <ul>
@@ -69,7 +67,6 @@
 
 <script setup lang="ts">
 import EventHelpItem from '@/components/event_board/help_panel/EventHelpItem.vue'
-import MobileScreenTitle from '@/components/event_board/MobileScreenTitle.vue'
 </script>
 
 <style scoped lang="scss">

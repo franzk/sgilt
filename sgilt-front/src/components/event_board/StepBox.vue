@@ -1,8 +1,18 @@
 <template>
-  <div class="step-wrapper">
-    <div :class="['step', 'step-' + index, { active: pawns && pawns.length }]">
+  <div :class="['step-wrapper', { horizontal: orientation === 'horizontal' }]">
+    <div
+      :class="[
+        'step',
+        'step-' + index,
+        {
+          active: pawns && pawns.length,
+          horizontal: orientation === 'horizontal',
+          vertical: orientation === 'vertical',
+        },
+      ]"
+    >
       <!-- step title -->
-      <p class="step-title">{{ label }}</p>
+      <p :class="['step-title', { vertical: orientation === 'vertical' }]">{{ label }}</p>
 
       <!-- step content : either one/several pawns or svg placeholder -->
       <div class="step-box">
@@ -47,6 +57,7 @@ defineProps<{
   label: string
   index: number
   pawns?: string[]
+  orientation: 'horizontal' | 'vertical'
 }>()
 </script>
 
@@ -59,8 +70,9 @@ $box-size: 7rem;
   .step-#{$i} {
     // color gradient
     background-color: lighten($color-accent, $i * 9%);
-    // steps spacings (not on mobile)
-    @include respond-to(not-mobile) {
+
+    &.horizontal {
+      // steps spacings
       transform: translateX(calc(($arrow-width - $step-spacing) * -1) * $i);
     }
   }
@@ -70,7 +82,7 @@ $box-size: 7rem;
   // shadow under the steps shape
   filter: drop-shadow(0px 1px 5px rgba($color-primary, 0.5));
   // no margin on mobile
-  @include respond-to(not-mobile) {
+  &.horizontal {
     margin-bottom: 1.75rem;
   }
 }
@@ -86,7 +98,7 @@ $box-size: 7rem;
     100% 100%,
     0% 100%
   );
-  @include respond-to(mobile) {
+  &.vertical {
     // bottom arrow on mobile
     clip-path: polygon(
       0% 0%,
@@ -95,10 +107,7 @@ $box-size: 7rem;
       50% 100%,
       0% calc(100% - #{$arrow-width})
     );
-  }
-  @include respond-to(mobile) {
-    // no top padding on mobile
-    padding-top: 0 !important;
+
     .step-title {
       padding-top: 0 !important;
     }
@@ -118,8 +127,9 @@ $box-size: 7rem;
     0% 100%,
     $arrow-width 50%
   );
-  @include respond-to(mobile) {
-    // bottom arrow on mobile
+
+  // bottom arrow on mobile
+  &.vertical {
     clip-path: polygon(
       0% 0%,
       50% #{$arrow-width},
@@ -150,7 +160,8 @@ $box-size: 7rem;
     line-height: 1.4;
     height: 2.8rem;
     padding: 0 1.2rem;
-    @include respond-to(mobile) {
+
+    &.vertical {
       padding: 1.2rem 0;
       align-content: end;
     }

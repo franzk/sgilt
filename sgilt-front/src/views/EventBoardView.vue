@@ -1,12 +1,19 @@
 <template>
   <div class="event-board">
     <!-- Event overview section -->
-    <section class="event" v-if="activeMobileView === 'event' || !isMobileView">
+    <section
+      :class="['event', { 'mobile-layout': isMobileView }]"
+      v-if="activeMobileView === 'event' || !isMobileView"
+    >
       <!-- Event summary for mobile view -->
       <EventSummary v-if="isMobileView" :sgiltEvent="sgiltEvent" showEventDetails />
 
       <!-- EventTracker component -->
-      <EventTracker :event="sgiltEvent" :showFinalStep="!isTabletView" />
+      <EventTracker
+        :event="sgiltEvent"
+        :orientation="isMobileView ? 'vertical' : 'horizontal'"
+        :showFinalStep="!isTabletView"
+      />
 
       <!-- Help Panel Toggler -->
       <div
@@ -23,11 +30,13 @@
       <!-- Help Panel  -->
       <aside
         v-if="activeMobileView === 'help' || !isMobileView"
-        :class="['help-panel', { open: helpPanelVisible }]"
+        :class="['help-panel', { open: helpPanelVisible, 'mobile-layout': isMobileView }]"
       >
-        <span class="help-panel-close" @click="helpPanelVisible = false"
+        <span v-if="!isMobileView" class="help-panel-close" @click="helpPanelVisible = false"
           ><SgiltIcon icon="Close"
         /></span>
+
+        <MobileScreenTitle v-if="isMobileView" icon="Help" title="Aide" />
 
         <!-- Event summary for desktop view -->
         <EventSummary v-if="isDesktopView" :sgiltEvent="sgiltEvent" />
@@ -37,7 +46,12 @@
       </aside>
 
       <!-- ReservationsBoard component -->
-      <div v-if="activeMobileView === 'reservations' || !isMobileView" class="reservations-board">
+      <div
+        v-if="activeMobileView === 'reservations' || !isMobileView"
+        :class="['reservations-board', { 'mobile-layout': isMobileView }]"
+      >
+        <MobileScreenTitle v-if="isMobileView" icon="List" title="Réservations" />
+
         <ReservationsBoard :reservations="sgiltEvent?.reservations">
           <!-- First cell is the EventSummary component in tablet view -->
           <template #firstCell v-if="isTabletView">
@@ -47,14 +61,23 @@
       </div>
 
       <!-- EventActivityFeed component -->
-      <aside class="event-activity-feed" v-if="activeMobileView === 'activities' || !isMobileView">
+      <aside
+        v-if="activeMobileView === 'activities' || !isMobileView"
+        :class="['event-activity-feed', { 'mobile-layout': isMobileView }]"
+      >
+        <MobileScreenTitle v-if="isMobileView" icon="Bell" title="Activité" />
+
         <EventActivityFeed :activities="activities" />
       </aside>
     </section>
   </div>
 
   <!-- Mobile bottom navigation bar -->
-  <MobileBottomNavBar :activeView="activeMobileView" @update-view="updateMobileView($event)" />
+  <MobileBottomNavBar
+    v-if="isMobileView"
+    :activeView="activeMobileView"
+    @update-view="updateMobileView($event)"
+  />
 </template>
 
 <script setup lang="ts">
@@ -72,6 +95,7 @@ import MobileBottomNavBar from '@/components/event_board/MobileBottomNavBar.vue'
 import EventSummary from '@/components/event_board/EventSummary.vue'
 import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
 import { useResponsiveView } from '@/composable/useResponsiveView'
+import MobileScreenTitle from '@/components/event_board/MobileScreenTitle.vue'
 
 const sgiltEvent = ref<SgiltEvent>()
 const activities = ref<EventActivity[]>([])
@@ -86,7 +110,7 @@ onMounted(async () => {
 })
 
 // responsive view
-const { isMobileView, isTabletView } = useResponsiveView()
+const { isMobileView, isTabletView } = useResponsiveView(890)
 const isDesktopView = computed(() => !isMobileView.value && !isTabletView.value)
 
 // help panel visibility
@@ -117,7 +141,7 @@ $aside-width: 20rem;
   position: relative;
   align-items: center;
 
-  @include respond-to(mobile) {
+  &.mobile-layout {
     // space for the bottom navigation bar
     margin-bottom: $spacing-xxxl;
   }
@@ -140,23 +164,21 @@ $aside-width: 20rem;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
 
     &.open {
-      @include respond-to(not-mobile) {
-        flex: 0 0 $aside-width; // it takes the width
-        opacity: 1;
-      }
-    }
-
-    @include respond-to(mobile) {
-      flex: 1;
+      flex: 0 0 $aside-width; // it takes the width
       opacity: 1;
-      gap: 0;
-      padding-bottom: $spacing-xxxl;
     }
 
     // fade in effect
     transition:
       opacity 0.4s ease-in-out,
       flex 0.2s ease-in-out;
+
+    &.mobile-layout {
+      flex: 1;
+      opacity: 1;
+      gap: 0;
+      padding-bottom: $spacing-xxxl;
+    }
 
     // close button
     .help-panel-close {
@@ -171,12 +193,16 @@ $aside-width: 20rem;
   // reservations board in the middle
   .reservations-board {
     flex: 1;
+    &.mobile-layout {
+      padding: $spacing-l $spacing-l $spacing-xxxl $spacing-l;
+    }
   }
 
   // right panel activity feed
   .event-activity-feed {
     width: $aside-width;
-    @include respond-to(mobile) {
+    &.mobile-layout {
+      padding: 0 $spacing-l $spacing-xxxl $spacing-l;
       width: unset;
     }
   }
