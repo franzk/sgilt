@@ -1,26 +1,77 @@
-/* Scrollbar sur Chrome, Edge, Chromium */
-::-webkit-scrollbar {
-    width: 8px; /* Mince et élégant */
-    height: 8px;
+/*
+  ----- Style des scrollbars -----
+*/
+
+/* The emerging W3C standard 
+Ajout du @support pour forcer Chrome à utiliser les pseudo sélecteurs -webkit-scrollbar
+*/
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: $color-subtext transparent;
+  }
+}
+
+/* Pour forcer la scrollbar foncée */
+*::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
+/* Works on Chrome/Edge/Safari */
+*::-webkit-scrollbar {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+/* Définit la couleur de la poignée de la scrollbar */
+*::-webkit-scrollbar-thumb {
+  background-color: $color-subtext;
+  border-radius: 100rem;
+}
+
+/* Modifie la couleur de la poignée de la scrollbar lorsque la souris est dessus */
+*::-webkit-scrollbar-thumb:hover {
+  background-color: $color-primary;
+  border-radius: 100rem;
+}
+
+/* Scroll bar light (ex: modale de partage)*/
+.dropdown-overlay > .dropdown :is(.window-body, .window-container) {
+  @supports not selector(::-webkit-scrollbar) {
+    scrollbar-color: $color-subtext transparent;
   }
 
-  ::-webkit-scrollbar-track {
-    background: transparent; /* Pas de fond visible */
+  /* Définit la couleur de la poignée de la scrollbar */
+  /* Ajout d'un border background-clip pour gérer le margin lorsqu'il y la scrollbar ou non */
+  &::-webkit-scrollbar-thumb {
+    background-color: $color-accent;
+    border: 0.4rem transparent solid;
+    background-clip: content-box;
   }
-  
-  ::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2); /* Une discrète opacité */
-    border-radius: 10px;
-    transition: background 0.3s ease-in-out;
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: $color-primary;
   }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.4); /* Un peu plus visible au survol */
+
+  /* La largeur de la scrollbar équivaut à la valeur suivant moins le border de (::-webkit-scrollbar-thumb * 2) */
+  &::-webkit-scrollbar {
+    width: 1rem;
   }
-  
-  /* Scrollbar sur Firefox */
+}
+
+/* Mode dark pour les documents et les éléments */
+.ui-dark,
+.el-ui-dark {
   * {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+    @supports not selector(::-webkit-scrollbar) {
+      scrollbar-color: $color-secondary transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: $color-secondary;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: $color-accent;
+    }
   }
-  
+}
