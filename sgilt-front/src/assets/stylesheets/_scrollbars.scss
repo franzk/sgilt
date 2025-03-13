@@ -1,0 +1,26 @@
+/* Scrollbar sur Chrome, Edge, Chromium */
+::-webkit-scrollbar {
+    width: 8px; /* Mince et élégant */
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent; /* Pas de fond visible */
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2); /* Une discrète opacité */
+    border-radius: 10px;
+    transition: background 0.3s ease-in-out;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.4); /* Un peu plus visible au survol */
+  }
+  
+  /* Scrollbar sur Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  }
+  

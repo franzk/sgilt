@@ -13,6 +13,7 @@
         :event="sgiltEvent"
         :orientation="isMobileView ? 'vertical' : 'horizontal'"
         :showFinalStep="!isTabletView"
+        class="event-tracker"
       />
 
       <!-- Help Panel Toggler -->
@@ -135,15 +136,20 @@ $aside-width: 20rem;
 
 .event {
   display: flex;
-  flex-direction: column;
+
   gap: $spacing-m;
   padding-top: $spacing-m;
   position: relative;
   align-items: center;
 
   &.mobile-layout {
+    flex-direction: column;
     // space for the bottom navigation bar
     margin-bottom: $spacing-xxxl;
+  }
+
+  .event-tracker {
+   flex: 1;
   }
 }
 
@@ -155,6 +161,7 @@ $aside-width: 20rem;
   // left panel : help panel
   .help-panel {
     flex: 0 0 0; // it begins with no width
+    height: 100%;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -177,7 +184,7 @@ $aside-width: 20rem;
       flex: 1;
       opacity: 1;
       gap: 0;
-      padding-bottom: $spacing-xxxl;
+      padding: $spacing-l 0 $spacing-xxxl 0;
     }
 
     // close button

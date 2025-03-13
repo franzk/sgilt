@@ -67,7 +67,6 @@ $step-spacing: 0.8rem;
 .event-tracker {
   display: flex;
   flex-direction: row;
-  width: 100%;
 
   &.vertical {
     flex-direction: column;

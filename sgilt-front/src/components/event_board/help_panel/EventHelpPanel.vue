@@ -71,7 +71,7 @@ import EventHelpItem from '@/components/event_board/help_panel/EventHelpItem.vue
 
 <style scoped lang="scss">
 .event-help-panel {
-  padding: 0 $spacing-m;
+  padding: $spacing-m;
   background: $color-white;
   position: relative;
 
