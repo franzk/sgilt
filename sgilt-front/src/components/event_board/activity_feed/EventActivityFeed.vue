@@ -1,6 +1,6 @@
 <template>
   <div class="event-activity-feed">
-    <ul class="feed-list">
+    <ul :class="['feed-list', { 'mobile-layout': isMobileView }]">
       <li v-for="activity in activities" :key="activity.id" class="feed-item">
         <EventActivityItem :activity="activity" />
       </li>
@@ -9,11 +9,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { findAllEventActivities } from '@/data/repository/EventActivityRepository'
 import EventActivityItem from '@/components/event_board/activity_feed/EventActivityItem.vue'
+import type { EventActivity } from '@/data/domain/EventActivity';
 
-const activities = ref(findAllEventActivities())
+
+defineProps<{
+  activities: EventActivity[]
+  isMobileView?: boolean
+}>()
+
 </script>
 
 <style scoped lang="scss">
@@ -23,5 +27,8 @@ const activities = ref(findAllEventActivities())
   gap: $spacing-mm;
   list-style: none;
   margin: 0;
+  &.mobile-layout {
+    padding: 0;
+  }
 }
 </style>

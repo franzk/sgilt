@@ -27,7 +27,7 @@
     </section>
 
     <!-- Event components section -->
-    <section class="event-components">
+    <section :class="['event-components', { 'mobile-layout': isMobileView }]">
       <!-- Help Panel  -->
       <aside
         v-if="activeMobileView === 'help' || !isMobileView"
@@ -68,7 +68,7 @@
       >
         <MobileScreenTitle v-if="isMobileView" icon="Bell" title="Activité" />
 
-        <EventActivityFeed :activities="activities" />
+        <EventActivityFeed :activities="activities" :isMobileView="isMobileView" />
       </aside>
     </section>
   </div>
@@ -158,6 +158,10 @@ $aside-width: 20rem;
   flex-direction: row;
   gap: $spacing-m;
 
+  &.mobile-layout {
+    justify-content: center;
+  }
+
   // left panel : help panel
   .help-panel {
     flex: 0 0 0; // it begins with no width
@@ -209,7 +213,7 @@ $aside-width: 20rem;
   .event-activity-feed {
     width: $aside-width;
     &.mobile-layout {
-      padding: 0 $spacing-l $spacing-xxxl $spacing-l;
+      padding: $spacing-l 0 $spacing-xxxl 0;
       width: unset;
     }
   }

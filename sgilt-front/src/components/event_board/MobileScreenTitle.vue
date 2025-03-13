@@ -1,5 +1,5 @@
 <template>
-  <h2 class="reservations-title"><SgiltIcon :icon="icon" />{{ title }}</h2>
+  <h2 class="mobile-screen-title"><SgiltIcon :icon="icon" />{{ title }}</h2>
 </template>
 
 <script setup lang="ts">
@@ -10,7 +10,7 @@ defineProps<{
 </script>
 
 <style scoped lang="scss">
-.reservations-title {
+.mobile-screen-title {
   text-transform: uppercase;
   letter-spacing: 1px;
   display: flex;
