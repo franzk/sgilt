@@ -81,6 +81,7 @@ const reservationsWaiting = computed(
   display: flex;
   flex-direction: column;
   gap: $spacing-m;
+  box-shadow: $box-shadow;
 
   p {
     margin: 0;

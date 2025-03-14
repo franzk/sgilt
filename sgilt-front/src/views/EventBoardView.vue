@@ -40,7 +40,7 @@
         <MobileScreenTitle v-if="isMobileView" icon="Help" title="Aide" />
 
         <!-- Event summary for desktop view -->
-        <EventSummary v-if="isDesktopView" :sgiltEvent="sgiltEvent" />
+        <EventSummary v-if="isDesktopView" :sgiltEvent="sgiltEvent" class="desktop-event-summary"/>
 
         <!-- EventHelpPanel component -->
         <EventHelpPanel />
@@ -170,9 +170,10 @@ $aside-width: 20rem;
     flex-direction: column;
     position: relative;
     gap: $spacing-m;
+    padding: $spacing-s;
     overflow: hidden;
     opacity: 0;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    box-shadow: $box-shadow;
 
     &.open {
       flex: 0 0 $aside-width; // it takes the width
@@ -198,6 +199,10 @@ $aside-width: 20rem;
       top: $spacing-s;
       right: $spacing-s;
       cursor: pointer;
+    }
+
+    .desktop-event-summary {
+      box-shadow: $box-shadow;
     }
   }
 
