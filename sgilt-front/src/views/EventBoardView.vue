@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isMobileView"><EventBoardMobile :sgiltEvent="sgiltEvent" /></div>
+  <template v-if="isMobileView"><EventBoardMobile :sgiltEvent="sgiltEvent" /></template>
   <div v-else class="event-board">
     <!-- Event overview section -->
     <section
