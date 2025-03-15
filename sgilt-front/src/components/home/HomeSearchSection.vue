@@ -83,6 +83,10 @@ $overlay: $shadow-l;
   line-height: 2em;
   position: relative;
 
+  .title-text {
+    text-shadow: 1px 1px 10px $color-primary;
+  }
+
   // Region title in mobile view
   .bg-mobile {
     display: none;
