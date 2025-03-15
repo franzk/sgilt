@@ -1,5 +1,6 @@
 <template>
-  <div class="event-board">
+  <div v-if="isMobileView"><EventBoardMobile :sgiltEvent="sgiltEvent" /></div>
+  <div v-else class="event-board">
     <!-- Event overview section -->
     <section
       :class="['event', { 'mobile-layout': isMobileView }]"
@@ -40,7 +41,7 @@
         <MobileScreenTitle v-if="isMobileView" icon="Help" title="Aide" />
 
         <!-- Event summary for desktop view -->
-        <EventSummary v-if="isDesktopView" :sgiltEvent="sgiltEvent" class="desktop-event-summary"/>
+        <EventSummary v-if="isDesktopView" :sgiltEvent="sgiltEvent" class="desktop-event-summary" />
 
         <!-- EventHelpPanel component -->
         <EventHelpPanel />
@@ -74,11 +75,11 @@
   </div>
 
   <!-- Mobile bottom navigation bar -->
-  <MobileBottomNavBar
+  <!--MobileBottomNavBar
     v-if="isMobileView"
     :activeView="activeMobileView"
     @update-view="updateMobileView($event)"
-  />
+  /-->
 </template>
 
 <script setup lang="ts">
@@ -92,11 +93,11 @@ import EventActivityFeed from '@/components/event_board/activity_feed/EventActiv
 import { getTestEvent } from '@/data/repository/TestEventRepository'
 import { useRoute } from 'vue-router'
 import EventHelpPanel from '@/components/event_board/help_panel/EventHelpPanel.vue'
-import MobileBottomNavBar from '@/components/event_board/MobileBottomNavBar.vue'
+// import MobileBottomNavBar from '@/components/event_board/MobileBottomNavBar.vue'
 import EventSummary from '@/components/event_board/EventSummary.vue'
 import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
 import { useResponsiveView } from '@/composable/useResponsiveView'
-import MobileScreenTitle from '@/components/event_board/MobileScreenTitle.vue'
+import EventBoardMobile from '@/components/event_board/mobile/EventBoardMobile.vue'
 
 const sgiltEvent = ref<SgiltEvent>()
 const activities = ref<EventActivity[]>([])
@@ -149,7 +150,7 @@ $aside-width: 20rem;
   }
 
   .event-tracker {
-   flex: 1;
+    flex: 1;
   }
 }
 
