@@ -1,7 +1,6 @@
 <template>
   <div class="event-board-mobile">
     <h1 class="event-title">Mon 60e anniversaire</h1>
-    <p class="event-description">Ratshamausen, le 21/06/2à48 à 20h</p>
     <GlassCard class="dashboard-container">
       <MiniDashboard hasPaymentsPending />
     </GlassCard>
@@ -22,13 +21,11 @@ $max-lines: 2;
   flex-direction: column;
   height: calc(100% - 3rem);
   padding: 1.5rem 2rem;
-  background:
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.05), transparent),
-    url('@/assets/images/mobile/background.svg') center/cover no-repeat;
+  background: linear-gradient(to bottom left, #ffbf00, #ff9900, #ff7f50);
+
   position: relative;
   align-items: center;
   color: $color-white;
-  // justify-content: center;
 }
 
 .event-title {

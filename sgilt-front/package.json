@@ -18,6 +18,7 @@
     "@vuepic/vue-datepicker": "^11.0.1",
     "@vueuse/core": "^12.7.0",
     "canvas-confetti": "^1.9.3",
+    "circle-progress.vue": "^3.3.0",
     "dayjs": "^1.11.13",
     "pinia": "^2.3.0",
     "vue": "^3.5.13",
