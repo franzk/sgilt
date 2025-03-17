@@ -1,44 +1,60 @@
 <template>
   <div class="event-board-mobile">
-    <h1 class="event-title">L'event qui déchire</h1>
-    <GlassCard>
-      <p>
-        Lorem Elsass ipsum gravida dolor eleifend Miss Dahlias habitant barapli blottkopf, geïz
-        ftomi! sit non lacus rhoncus Chulien mänele hopla gal in, quam, sit bredele semper senectus
-        tellus vielmols, Yo dû. nullam kuglopf Pellentesque Heineken und baeckeoffe ornare porta
-        elit tellus schnaps turpis Huguette id vulputate dui wurscht jetz gehts los ac adipiscing
-        leo hopla eget suspendisse Pfourtz !
-      </p>
+    <h1 class="event-title">Mon 60e anniversaire</h1>
+    <p class="event-description">Ratshamausen, le 21/06/2à48 à 20h</p>
+    <GlassCard class="dashboard-container">
+      <MiniDashboard hasPaymentsPending />
     </GlassCard>
   </div>
 </template>
 
 <script setup lang="ts">
 import GlassCard from '@/components/event_board/mobile/GlassCard.vue'
+import MiniDashboard from '@/components/event_board/mobile/MiniDashboard.vue'
 </script>
 
 <style scoped lang="scss">
+$max-lines: 2;
+
 .event-board-mobile {
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  padding: $spacing-m;
+  height: calc(100% - 3rem);
+  padding: 1.5rem 2rem;
   background:
     linear-gradient(to bottom, rgba(0, 0, 0, 0.05), transparent),
     url('@/assets/images/mobile/background.svg') center/cover no-repeat;
   position: relative;
+  align-items: center;
+  color: $color-white;
+  // justify-content: center;
 }
 
 .event-title {
-  font-size: 2.1rem;
+  flex: 1 0 calc(1.2em * $max-lines);
+  max-height: calc(1.2em * $max-lines);
+  font-size: clamp(1.5rem, 4vw, 1.9rem);
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $max-lines;
+  line-clamp: $max-lines;
+  overflow: hidden;
+  word-wrap: break-word;
+  text-align: center;
+  text-transform: uppercase;
   font-weight: 700;
   color: #fff;
-  text-transform: uppercase;
-  text-align: center;
-
   text-shadow:
     0 0 10px rgba(255, 255, 255, 0.7),
     2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-container {
+  flex: 1;
+  width: 100%;
+  max-width: 400px;
+  padding: 1rem;
 }
 </style>

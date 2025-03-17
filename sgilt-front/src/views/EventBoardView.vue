@@ -130,6 +130,7 @@ const updateMobileView = (view: string) => {
 $aside-width: 20rem;
 
 .event-board {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 1rem;

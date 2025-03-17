@@ -35,6 +35,8 @@ const openProfile = () => {
 <style lang="scss" scoped>
 header {
   display: flex;
+  height: $app-header-height;
+
   align-items: center;
   justify-content: space-between;
   position: fixed;

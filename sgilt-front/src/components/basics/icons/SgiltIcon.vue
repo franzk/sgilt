@@ -11,8 +11,8 @@ const props = defineProps<{
 }>()
 
 const iconComponent = props.icon
-  ? defineAsyncComponent(
-      () => import(`@/components/icons/${props.mobile ? '/mobile' : ''}Icon${props.icon}.vue`),
-    )
+  ? props.mobile
+    ? defineAsyncComponent(() => import(`@/components/icons/mobile/Icon${props.icon}.vue`))
+    : defineAsyncComponent(() => import(`@/components/icons/Icon${props.icon}.vue`))
   : null
 </script>
