@@ -7,7 +7,7 @@
   >
     <span v-if="icon" class="icon"><SgiltIcon :icon="icon" mobile /></span>
     <span v-if="label" class="label">{{ label }}</span>
-    <span v-if="value" class="value">{{ value }}</span>
+    <span v-if="value !== undefined" class="value">{{ value }}</span>
     <slot />
   </div>
 </template>
@@ -42,7 +42,7 @@ defineProps<{
 }
 
 .success {
-  border-color: rgba(76, 175, 80, 1);
+  border-color: rgb(115, 255, 119);
   background: rgba(76, 175, 80, 0.2);
   .value {
     background: rgba(76, 175, 80, 1);
@@ -50,7 +50,7 @@ defineProps<{
 }
 
 .pending {
-  border-color: rgba(255, 193, 7, 1);
+  border-color: rgb(255, 230, 157);
   background: rgba(255, 193, 7, 0.2);
   .value {
     background: rgba(255, 193, 7, 1);
@@ -58,7 +58,7 @@ defineProps<{
 }
 
 .danger {
-  border-color: rgba(244, 67, 54, 1);
+  border-color: rgb(254, 170, 164);
   background: rgba(244, 67, 54, 0.2);
   .value {
     background: rgba(244, 67, 54, 1);

@@ -51,7 +51,7 @@ export const getTestEvent = async (id: number): Promise<SgiltEvent> => {
           totalPrice: 2400, // 30€/personne x 80 personnes
           messages: [],
           createdAt: creationDateTime,
-          status: 'approved',
+          status: 'paid',
         },
         {
           id: '4',

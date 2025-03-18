@@ -1,22 +1,47 @@
 <template>
   <div class="mini-dashboard">
     <div class="event-description">
-      <p>📍 Ratshamausen, 🗓️ 21/06/2à48 à 20h</p>
+      <div class="event-icon"><SgiltIcon icon="Event" mobile /></div>
+      <div class="event-details">
+        <p>{{ sgiltEvent?.location }}</p>
+        <p>{{ dayjs(sgiltEvent?.dateTime).locale('fr').format('dddd DD MMM YYYY') }}</p>
+      </div>
     </div>
 
     <div class="dashboard-header">
-      <CircleProgressBar :value="3" :max="6" size="3rem">3</CircleProgressBar>
-      <p><strong>3 sur 6 prestataires</strong> sont déjà confirmés.</p>
+      <CircleProgressBar :value="confirmedReservationsCount" :max="reservationsCount" size="3rem">{{
+        confirmedReservationsCount
+      }}</CircleProgressBar>
+      <p>
+        {{ $t('event.event-board.mobile.reservations', confirmedReservationsCount) }}
+      </p>
     </div>
 
     <div class="stat-cards">
-      <StatCard icon="Check" label="Confirmées" :value="3" state="success" />
-      <StatCard icon="Hourglass" label="En attente" :value="2" state="pending" />
-      <StatCard icon="CreditCard" label="Paiement à faire" :value="1" state="danger" />
+      <StatCard
+        icon="Check"
+        label="Confirmées"
+        :value="confirmedReservationsCount"
+        state="success"
+      />
+      <StatCard
+        icon="Hourglass"
+        label="En attente"
+        :value="pendingReservationsCount"
+        state="pending"
+      />
+      <StatCard
+        icon="CreditCard"
+        label="Paiement à faire"
+        :value="toBePaidReservationsCount"
+        state="danger"
+      />
     </div>
 
-    <div class="pay-now-container">
-      <a href="#" class="pay-now-link">Payer maintenant</a>
+    <div class="pay-now-container" v-if="hasPendingReservations">
+      <a href="#" class="pay-now-link"
+        ><SgiltIcon icon="Warning" mobile /><span>Payer maintenant</span></a
+      >
     </div>
   </div>
 </template>
@@ -24,8 +49,27 @@
 <script setup lang="ts">
 import StatCard from '@/components/event_board/mobile/StatCard.vue'
 import { CircleProgressBar } from 'circle-progress.vue'
+import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
+import type { SgiltEvent } from '@/data/domain/SgiltEvent'
+import { computed } from 'vue'
+import dayjs from 'dayjs'
+import type { ReservationStatusKey } from '@/types/ReservationStatus'
 
-defineProps<{ hasPaymentsPending: boolean }>()
+const props = defineProps<{
+  sgiltEvent?: SgiltEvent
+}>()
+
+const reservationsCount = computed(() => props.sgiltEvent?.reservations.length)
+const confirmedReservationsCount = computed(() => reservationsCountByStatus('paid'))
+const pendingReservationsCount = computed(
+  () => reservationsCountByStatus('pending') + reservationsCountByStatus('viewed'),
+)
+const toBePaidReservationsCount = computed(() => reservationsCountByStatus('approved'))
+
+const hasPendingReservations = computed(() => toBePaidReservationsCount.value > 0)
+
+const reservationsCountByStatus = (status: ReservationStatusKey): number =>
+  props.sgiltEvent?.reservations.filter((r) => r.status === status).length || 0
 </script>
 
 <style scoped lang="scss">
@@ -45,13 +89,29 @@ p {
   gap: $spacing-s;
   padding: $spacing-s;
 
+  font-weight: 600;
+
   background: rgba(0, 0, 0, 0.1);
 }
 
 .event-description {
   display: flex;
-  flex-direction: column;
-  gap: $spacing-s;
+  flex-direction: row;
+  gap: $spacing-m;
+  .event-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    padding: $spacing-s;
+  }
+  .event-details {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: $spacing-s;
+  }
 }
 
 .stat-cards {
@@ -80,16 +140,9 @@ p {
   transition:
     transform 0.2s ease-in-out,
     box-shadow 0.2s ease-in-out;
-}
 
-.pay-now-link:hover {
-  transform: scale(1.05);
-  box-shadow: 0px 6px 14px rgba(231, 76, 60, 0.5);
-}
-
-.pay-now-link::before {
-  content: '⚠️ ';
-  font-size: 1.2rem;
-  margin-right: 0.5rem;
+  span {
+    margin-left: $spacing-xs;
+  }
 }
 </style>

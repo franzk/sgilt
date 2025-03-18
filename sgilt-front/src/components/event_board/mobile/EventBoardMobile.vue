@@ -1,8 +1,8 @@
 <template>
   <div class="event-board-mobile">
-    <h1 class="event-title">Mon 60e anniversaire</h1>
+    <h1 class="event-title">{{ sgiltEvent?.title }}</h1>
     <GlassCard class="dashboard-container">
-      <MiniDashboard hasPaymentsPending />
+      <MiniDashboard :sgiltEvent="sgiltEvent" />
     </GlassCard>
   </div>
 </template>
@@ -10,6 +10,11 @@
 <script setup lang="ts">
 import GlassCard from '@/components/event_board/mobile/GlassCard.vue'
 import MiniDashboard from '@/components/event_board/mobile/MiniDashboard.vue'
+import type { SgiltEvent } from '@/data/domain/SgiltEvent'
+
+defineProps<{
+  sgiltEvent?: SgiltEvent
+}>()
 </script>
 
 <style scoped lang="scss">

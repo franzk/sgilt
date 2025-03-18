@@ -71,6 +71,12 @@
     }
   },
   "event": {
+    "event-board": {
+      "mobile": {
+        "reservations": "Aucune réservation confirmée pour le moment. | 1 réservation confirmée pour le moment. | {count} réservations confirmées pour le moment."
+      }
+    },
+
     "activities": {
       "reservation-sent": {
         "title": "Demande de réservation envoyée !",
@@ -126,6 +132,12 @@
       }
     },
     "reservation": {
+      "steps": {
+        "pending": "Demande envoyée !",
+        "viewed": "Votre partenaire a vu votre demande",
+        "approved": "Il est prêt, à vous de payer !",
+        "paid": "C’est réservé, préparez la fête !"
+      },
       "action": {
         "pay": "Payer",
         "message": "Message",
