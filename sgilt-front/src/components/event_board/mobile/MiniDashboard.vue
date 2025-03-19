@@ -40,7 +40,7 @@
 
     <div class="pay-now-container" v-if="hasPendingReservations">
       <a href="#" class="pay-now-link"
-        ><SgiltIcon icon="Warning" mobile /><span>Payer maintenant</span></a
+        ><SgiltIcon icon="Launch" mobile /><span>Payer maintenant</span></a
       >
     </div>
   </div>
@@ -129,16 +129,20 @@ p {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  font-weight: 600;
   color: #fff;
   background: linear-gradient(90deg, #ff4d4f, #e74c3c);
-  border-radius: 20px;
-  padding: 0.8rem 1.5rem;
+  // border-radius: 20px;
+  border-radius: 50px;
+  padding: 12px 24px;
+  // font-weight: bold;
+  text-transform: uppercase;
+  // padding: 0.8rem 1.5rem;
   font-size: 1rem;
   text-decoration: none;
   box-shadow: 0px 4px 10px rgba(231, 76, 60, 0.4);
   transition:
-    transform 0.2s ease-in-out,
+    // transform 0.2s ease-in-out,
     box-shadow 0.2s ease-in-out;
 
   span {
