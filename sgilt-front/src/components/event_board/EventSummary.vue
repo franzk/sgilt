@@ -17,7 +17,7 @@
 
     <!-- Event title if details are not shown -->
     <div v-else>
-      <h3>Votre événement</h3>
+      <h3>{{ $t('texts.your-event') }}</h3>
     </div>
 
     <!-- Event status -->
@@ -35,7 +35,7 @@
 
     <!-- Pay button -->
     <SgiltButton v-if="reservationsWaitingForPayment > 0" class="pay-button"
-      ><SgiltIcon icon="Warning" /> Payer maintenant</SgiltButton
+      ><SgiltIcon icon="Warning" />{{ $t('texts.pay-now') }}</SgiltButton
     >
   </div>
 </template>
@@ -135,6 +135,7 @@ const reservationsWaiting = computed(
       font-weight: bold;
       display: flex;
       gap: $spacing-s;
+      align-items: center;
 
       svg {
         width: 1rem;

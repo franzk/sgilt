@@ -1,5 +1,5 @@
 <template>
-  <div :class="['event-tracker', { vertical: orientation === 'vertical' }]">
+  <div class="event-tracker">
     <!-- step boxes -->
     <StepBox
       v-for="(step, index) in steps"
@@ -8,18 +8,11 @@
       :label="step.label"
       :index="index"
       :pawns="pawns[index]"
-      :orientation="orientation"
       class="event-step-box"
     />
 
     <!-- final step -->
-    <div
-      v-if="showFinalStep"
-      :class="[
-        'final-step',
-        { horizontal: orientation === 'horizontal', vertical: orientation === 'vertical' },
-      ]"
-    >
+    <div v-if="showFinalStep" class="final-step">
       <p class="event-title">{{ event?.title }}</p>
       <p class="date-location">
         {{ dayjs(event?.dateTime).locale('fr').format('dddd DD MMM YYYY') }}
@@ -42,8 +35,9 @@ import type { Reservation } from '@/data/domain/Reservation'
 const props = defineProps<{
   event?: SgiltEvent
   showFinalStep: boolean
-  orientation: 'horizontal' | 'vertical'
 }>()
+
+const orientation = 'horizontal'
 
 const reservationStepsStore = useReservationStepsStore()
 
@@ -68,14 +62,6 @@ $step-spacing: 0.8rem;
   display: flex;
   flex-direction: row;
 
-  &.vertical {
-    flex-direction: column;
-    padding: $spacing-l;
-    flex: 1;
-    width: 90%;
-    max-width: 20rem;
-  }
-
   padding: $spacing-l 0;
   position: relative;
 
@@ -94,9 +80,7 @@ $step-spacing: 0.8rem;
   .final-step {
     flex: 1;
 
-    &.horizontal {
-      transform: translateX(calc(($arrow-width - $step-spacing) * -2));
-    }
+    transform: translateX(calc(($arrow-width - $step-spacing) * -2));
 
     height: 75%;
 
@@ -104,10 +88,6 @@ $step-spacing: 0.8rem;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
     padding: 1.5rem;
-
-    &.vertical {
-      margin: $spacing-l 0;
-    }
 
     text-align: center;
     position: relative;

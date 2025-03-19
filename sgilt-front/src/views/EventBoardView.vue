@@ -2,43 +2,23 @@
   <template v-if="isMobileView"><EventBoardMobile :sgiltEvent="sgiltEvent" /></template>
   <div v-else class="event-board">
     <!-- Event overview section -->
-    <section
-      :class="['event', { 'mobile-layout': isMobileView }]"
-      v-if="activeMobileView === 'event' || !isMobileView"
-    >
-      <!-- Event summary for mobile view -->
-      <EventSummary v-if="isMobileView" :sgiltEvent="sgiltEvent" showEventDetails />
-
+    <section class="event">
       <!-- EventTracker component -->
-      <EventTracker
-        :event="sgiltEvent"
-        :orientation="isMobileView ? 'vertical' : 'horizontal'"
-        :showFinalStep="!isTabletView"
-        class="event-tracker"
-      />
+      <EventTracker :event="sgiltEvent" :showFinalStep="!isTabletView" class="event-tracker" />
 
       <!-- Help Panel Toggler -->
-      <div
-        v-if="!isMobileView"
-        class="help-panel-toggler"
-        @click="helpPanelVisible = !helpPanelVisible"
-      >
+      <div class="help-panel-toggler" @click="helpPanelVisible = !helpPanelVisible">
         {{ $t('texts.need-help') }}
       </div>
     </section>
 
     <!-- Event components section -->
-    <section :class="['event-components', { 'mobile-layout': isMobileView }]">
+    <section class="event-components">
       <!-- Help Panel  -->
-      <aside
-        v-if="activeMobileView === 'help' || !isMobileView"
-        :class="['help-panel', { open: helpPanelVisible, 'mobile-layout': isMobileView }]"
-      >
-        <span v-if="!isMobileView" class="help-panel-close" @click="helpPanelVisible = false"
-          ><SgiltIcon icon="Close"
-        /></span>
-
-        <MobileScreenTitle v-if="isMobileView" icon="Help" title="Aide" />
+      <aside :class="['help-panel', { open: helpPanelVisible }]">
+        <span class="help-panel-close" @click="helpPanelVisible = false">
+          <SgiltIcon icon="Close" />
+        </span>
 
         <!-- Event summary for desktop view -->
         <EventSummary v-if="isDesktopView" :sgiltEvent="sgiltEvent" class="desktop-event-summary" />
@@ -48,12 +28,7 @@
       </aside>
 
       <!-- ReservationsBoard component -->
-      <div
-        v-if="activeMobileView === 'reservations' || !isMobileView"
-        :class="['reservations-board', { 'mobile-layout': isMobileView }]"
-      >
-        <MobileScreenTitle v-if="isMobileView" icon="List" title="Réservations" />
-
+      <div class="reservations-board">
         <ReservationsBoard :reservations="sgiltEvent?.reservations">
           <!-- First cell is the EventSummary component in tablet view -->
           <template #firstCell v-if="isTabletView">
@@ -63,23 +38,11 @@
       </div>
 
       <!-- EventActivityFeed component -->
-      <aside
-        v-if="activeMobileView === 'activities' || !isMobileView"
-        :class="['event-activity-feed', { 'mobile-layout': isMobileView }]"
-      >
-        <MobileScreenTitle v-if="isMobileView" icon="Bell" title="Activité" />
-
-        <EventActivityFeed :activities="activities" :isMobileView="isMobileView" />
+      <aside class="event-activity-feed">
+        <EventActivityFeed :activities="activities" />
       </aside>
     </section>
   </div>
-
-  <!-- Mobile bottom navigation bar -->
-  <!--MobileBottomNavBar
-    v-if="isMobileView"
-    :activeView="activeMobileView"
-    @update-view="updateMobileView($event)"
-  /-->
 </template>
 
 <script setup lang="ts">
@@ -93,7 +56,6 @@ import EventActivityFeed from '@/components/event_board/activity_feed/EventActiv
 import { getTestEvent } from '@/data/repository/TestEventRepository'
 import { useRoute } from 'vue-router'
 import EventHelpPanel from '@/components/event_board/help_panel/EventHelpPanel.vue'
-// import MobileBottomNavBar from '@/components/event_board/MobileBottomNavBar.vue'
 import EventSummary from '@/components/event_board/EventSummary.vue'
 import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
 import { useResponsiveView } from '@/composable/useResponsiveView'
@@ -118,12 +80,6 @@ const isDesktopView = computed(() => !isMobileView.value && !isTabletView.value)
 // help panel visibility
 const helpPanelVisible = ref()
 onMounted(() => (helpPanelVisible.value = isDesktopView.value))
-
-// active view for mobile
-const activeMobileView = ref('event')
-const updateMobileView = (view: string) => {
-  activeMobileView.value = view
-}
 </script>
 
 <style scoped lang="scss">
@@ -144,12 +100,6 @@ $aside-width: 20rem;
   position: relative;
   align-items: center;
 
-  &.mobile-layout {
-    flex-direction: column;
-    // space for the bottom navigation bar
-    margin-bottom: $spacing-xxxl;
-  }
-
   .event-tracker {
     flex: 1;
   }
@@ -160,14 +110,10 @@ $aside-width: 20rem;
   flex-direction: row;
   gap: $spacing-m;
 
-  &.mobile-layout {
-    justify-content: center;
-  }
-
   // left panel : help panel
   .help-panel {
     flex: 0 0 0; // it begins with no width
-    height: 100%;
+    // height: 100%;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -175,7 +121,7 @@ $aside-width: 20rem;
     padding: $spacing-s;
     overflow: hidden;
     opacity: 0;
-    box-shadow: $box-shadow;
+    // box-shadow: $box-shadow;
 
     &.open {
       flex: 0 0 $aside-width; // it takes the width
@@ -186,13 +132,6 @@ $aside-width: 20rem;
     transition:
       opacity 0.4s ease-in-out,
       flex 0.2s ease-in-out;
-
-    &.mobile-layout {
-      flex: 1;
-      opacity: 1;
-      gap: 0;
-      padding: $spacing-l 0 $spacing-xxxl 0;
-    }
 
     // close button
     .help-panel-close {

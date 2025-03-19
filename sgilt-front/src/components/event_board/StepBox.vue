@@ -1,18 +1,16 @@
 <template>
-  <div :class="['step-wrapper', { horizontal: orientation === 'horizontal' }]">
+  <div class="step-wrapper">
     <div
       :class="[
         'step',
         'step-' + index,
         {
           active: pawns && pawns.length,
-          horizontal: orientation === 'horizontal',
-          vertical: orientation === 'vertical',
         },
       ]"
     >
       <!-- step title -->
-      <p :class="['step-title', { vertical: orientation === 'vertical' }]">{{ label }}</p>
+      <p class="step-title">{{ label }}</p>
 
       <!-- step content : either one/several pawns or svg placeholder -->
       <div class="step-box">
@@ -57,8 +55,8 @@ defineProps<{
   label: string
   index: number
   pawns?: string[]
-  orientation: 'horizontal' | 'vertical'
 }>()
+const orientation = 'horizontal'
 </script>
 
 <style scoped lang="scss">
@@ -71,20 +69,15 @@ $box-size: 7rem;
     // color gradient
     background-color: lighten($color-accent, $i * 9%);
 
-    &.horizontal {
-      // steps spacings
-      transform: translateX(calc(($arrow-width - $step-spacing) * -1) * $i);
-    }
+    // steps spacings
+    transform: translateX(calc(($arrow-width - $step-spacing) * -1) * $i);
   }
 }
 
 .step-wrapper {
   // shadow under the steps shape
   filter: drop-shadow(0px 1px 5px rgba($color-primary, 0.5));
-  // no margin on mobile
-  &.horizontal {
-    margin-bottom: 1.75rem;
-  }
+  margin-bottom: 1.75rem;
 }
 
 // first shape | >
@@ -98,20 +91,6 @@ $box-size: 7rem;
     100% 100%,
     0% 100%
   );
-  &.vertical {
-    // bottom arrow on mobile
-    clip-path: polygon(
-      0% 0%,
-      100% 0%,
-      100% calc(100% - #{$arrow-width}),
-      50% 100%,
-      0% calc(100% - #{$arrow-width})
-    );
-
-    .step-title {
-      padding-top: 0 !important;
-    }
-  }
 }
 
 // steps within > >
@@ -127,18 +106,6 @@ $box-size: 7rem;
     0% 100%,
     $arrow-width 50%
   );
-
-  // bottom arrow on mobile
-  &.vertical {
-    clip-path: polygon(
-      0% 0%,
-      50% #{$arrow-width},
-      100% 0%,
-      100% calc(100% - #{$arrow-width}),
-      50% 100%,
-      0% calc(100% - #{$arrow-width})
-    );
-  }
 }
 
 // step
@@ -161,10 +128,6 @@ $box-size: 7rem;
     height: 2.8rem;
     padding: 0 1.2rem;
 
-    &.vertical {
-      padding: 1.2rem 0;
-      align-content: end;
-    }
     transform: translateX(-0.3rem);
     text-align: center;
   }
@@ -241,6 +204,10 @@ $box-size: 7rem;
       backdrop-filter: blur(2px);
 
       border-radius: 50%;
+      svg {
+        width: 100%;
+        height: 100%;
+      }
     }
   }
 

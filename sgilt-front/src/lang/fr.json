@@ -76,7 +76,6 @@
         "reservations": "Aucune réservation confirmée pour le moment. | 1 réservation confirmée pour le moment. | {count} réservations confirmées pour le moment."
       }
     },
-
     "activities": {
       "reservation-sent": {
         "title": "Demande de réservation envoyée !",
@@ -298,7 +297,9 @@
     "resultats": "Aucun résultat. | 1 résultat | {count} résultats",
     "voir-resultats": "Aucun résultat | Voir le résultat | Voir les {count} résultats",
     "effacer-filtres": "Tout effacer",
-    "need-help": "Besoin d'aide ?"
+    "need-help": "Besoin d'aide ?",
+    "your-event": "Votre événement",
+    "pay-now": "Payer maintenant"
   },
   "errors": {
     "404": {
