@@ -40,7 +40,7 @@
 
     <div class="pay-now-container" v-if="hasPendingReservations">
       <a href="#" class="pay-now-link"
-        ><SgiltIcon icon="Launch" mobile /><span>Payer maintenant</span></a
+        ><SgiltIcon icon="Launch" mobile /><span>{{ $t('texts.pay-now') }}</span></a
       >
     </div>
   </div>
