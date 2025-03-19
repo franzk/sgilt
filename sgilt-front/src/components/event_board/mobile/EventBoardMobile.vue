@@ -2,7 +2,17 @@
   <div class="event-board-mobile">
     <h1 class="event-title">{{ sgiltEvent?.title }}</h1>
     <GlassCard class="dashboard-container">
-      <MiniDashboard :sgiltEvent="sgiltEvent" />
+      <swiper
+        :modules="[Navigation, Pagination]"
+        :slides-per-view="1"
+        :space-between="20"
+        :pagination="{ clickable: true }"
+        class="swiper-container"
+      >
+        <swiper-slide v-for="(screen, index) in screens" :key="index">
+          <component :is="screen" />
+        </swiper-slide>
+      </swiper>
     </GlassCard>
   </div>
 </template>
@@ -10,7 +20,15 @@
 <script setup lang="ts">
 import GlassCard from '@/components/event_board/mobile/GlassCard.vue'
 import MiniDashboard from '@/components/event_board/mobile/MiniDashboard.vue'
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import 'swiper/css'
+import 'swiper/css/pagination'
+import { Navigation, Pagination } from 'swiper/modules'
 import type { SgiltEvent } from '@/data/domain/SgiltEvent'
+import ReservationsBoard from './ReservationsBoard.vue'
+import { ref } from 'vue'
+
+const screens = ref([MiniDashboard, ReservationsBoard])
 
 defineProps<{
   sgiltEvent?: SgiltEvent
@@ -25,7 +43,7 @@ $max-lines: 2;
   display: flex;
   flex-direction: column;
   height: calc(100% - 3rem);
-  padding: 1.5rem 2rem;
+  padding: 1.5rem 0;
   background: linear-gradient(to bottom left, #ffbf00, #ff9900, #ff7f50);
 
   position: relative;
@@ -36,6 +54,7 @@ $max-lines: 2;
 .event-title {
   flex: 1 0 calc(1.2em * $max-lines);
   max-height: calc(1.2em * $max-lines);
+  width: calc(100% - ($spacing-s * 2));
   font-size: clamp(1.5rem, 4vw, 1.9rem);
   line-height: 1.2;
   display: -webkit-box;
@@ -55,8 +74,20 @@ $max-lines: 2;
 
 .dashboard-container {
   flex: 1;
-  width: 100%;
-  max-width: 400px;
+  width: calc(100vw - 4rem);
   padding: 1rem;
+
+  .swiper-container {
+    width: 100%;
+    height: 100%;
+  }
+
+  .swiper-slide {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    height: calc(100vh - 20em);
+    overflow: scroll;
+  }
 }
 </style>
