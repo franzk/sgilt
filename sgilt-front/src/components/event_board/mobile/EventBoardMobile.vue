@@ -74,7 +74,7 @@ $max-lines: 2;
 .dashboard-container {
   flex: 1;
   width: calc(100vw - 4rem);
-  padding: 1rem;
+  padding: $spacing-m;
 
   .swiper-container {
     width: 100%;
