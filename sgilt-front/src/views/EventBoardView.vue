@@ -1,10 +1,10 @@
 <template>
-  <template v-if="isMobileView"><EventBoardMobile :sgiltEvent="sgiltEvent" /></template>
+  <template v-if="isMobileView"><EventBoardMobile /></template>
   <div v-else class="event-board">
     <!-- Event overview section -->
     <section class="event">
       <!-- EventTracker component -->
-      <EventTracker :event="sgiltEvent" :showFinalStep="!isTabletView" class="event-tracker" />
+      <EventTracker :showFinalStep="!isTabletView" class="event-tracker" />
 
       <!-- Help Panel Toggler -->
       <div class="help-panel-toggler" @click="helpPanelVisible = !helpPanelVisible">
@@ -21,7 +21,7 @@
         </span>
 
         <!-- Event summary for desktop view -->
-        <EventSummary v-if="isDesktopView" :sgiltEvent="sgiltEvent" class="desktop-event-summary" />
+        <EventSummary v-if="isDesktopView" class="desktop-event-summary" />
 
         <!-- EventHelpPanel component -->
         <EventHelpPanel />
@@ -29,10 +29,10 @@
 
       <!-- ReservationsBoard component -->
       <div class="reservations-board">
-        <ReservationsBoard :reservations="sgiltEvent?.reservations">
+        <ReservationsBoard :reservations="eventStore.sgiltEvent?.reservations">
           <!-- First cell is the EventSummary component in tablet view -->
           <template #firstCell v-if="isTabletView">
-            <EventSummary :sgiltEvent="sgiltEvent" showEventDetails />
+            <EventSummary showEventDetails />
           </template>
         </ReservationsBoard>
       </div>
@@ -46,30 +46,29 @@
 </template>
 
 <script setup lang="ts">
-import type { SgiltEvent } from '@/data/domain/SgiltEvent'
 import { computed, onMounted, ref } from 'vue'
 import EventTracker from '@/components/event_board/EventTracker.vue'
 import ReservationsBoard from '@/components/event_board/ReservationsBoard.vue'
 import { findAllEventActivities } from '@/data/repository/EventActivityRepository'
 import type { EventActivity } from '@/data/domain/EventActivity'
 import EventActivityFeed from '@/components/event_board/activity_feed/EventActivityFeed.vue'
-import { getTestEvent } from '@/data/repository/TestEventRepository'
 import { useRoute } from 'vue-router'
 import EventHelpPanel from '@/components/event_board/help_panel/EventHelpPanel.vue'
 import EventSummary from '@/components/event_board/EventSummary.vue'
 import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
 import { useResponsiveView } from '@/composable/useResponsiveView'
 import EventBoardMobile from '@/components/event_board/mobile/EventBoardMobile.vue'
+import { useEventStore } from '@/stores/event.store'
 
-const sgiltEvent = ref<SgiltEvent>()
 const activities = ref<EventActivity[]>([])
+
+const eventStore = useEventStore()
 
 // fetch event data
 const route = useRoute()
 onMounted(async () => {
-  const id = parseInt(Array.isArray(route.params.id) ? route.params.id[0] : route.params.id)
-  sgiltEvent.value = await getTestEvent(id)
-
+  const id = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
+  eventStore.loadEvent(id)
   activities.value = findAllEventActivities()
 })
 

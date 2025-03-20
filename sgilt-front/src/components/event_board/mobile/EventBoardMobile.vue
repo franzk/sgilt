@@ -24,15 +24,14 @@ import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import { Navigation, Pagination } from 'swiper/modules'
-import type { SgiltEvent } from '@/data/domain/SgiltEvent'
-import ReservationsBoard from './ReservationsBoard.vue'
-import { ref } from 'vue'
+import MobileReservationsBoard from '@/components/event_board/mobile/MobileReservationsBoard.vue'
+import { computed, ref } from 'vue'
+import { useEventStore } from '@/stores/event.store'
 
-const screens = ref([MiniDashboard, ReservationsBoard])
+const eventStore = useEventStore()
+const sgiltEvent = computed(() => eventStore.sgiltEvent)
 
-defineProps<{
-  sgiltEvent?: SgiltEvent
-}>()
+const screens = ref([MiniDashboard, MobileReservationsBoard])
 </script>
 
 <style scoped lang="scss">

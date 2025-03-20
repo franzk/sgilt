@@ -50,16 +50,15 @@
 import StatCard from '@/components/event_board/mobile/StatCard.vue'
 import { CircleProgressBar } from 'circle-progress.vue'
 import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
-import type { SgiltEvent } from '@/data/domain/SgiltEvent'
 import { computed } from 'vue'
 import dayjs from 'dayjs'
 import type { ReservationStatusKey } from '@/types/ReservationStatus'
+import { useEventStore } from '@/stores/event.store'
 
-const props = defineProps<{
-  sgiltEvent?: SgiltEvent
-}>()
+const eventStore = useEventStore()
+const sgiltEvent = computed(() => eventStore.sgiltEvent)
 
-const reservationsCount = computed(() => props.sgiltEvent?.reservations.length)
+const reservationsCount = computed(() => sgiltEvent.value?.reservations.length)
 const confirmedReservationsCount = computed(() => reservationsCountByStatus('paid'))
 const pendingReservationsCount = computed(
   () => reservationsCountByStatus('pending') + reservationsCountByStatus('viewed'),
@@ -69,7 +68,7 @@ const toBePaidReservationsCount = computed(() => reservationsCountByStatus('appr
 const hasPendingReservations = computed(() => toBePaidReservationsCount.value > 0)
 
 const reservationsCountByStatus = (status: ReservationStatusKey): number =>
-  props.sgiltEvent?.reservations.filter((r) => r.status === status).length || 0
+  sgiltEvent.value?.reservations.filter((r) => r.status === status).length || 0
 </script>
 
 <style scoped lang="scss">

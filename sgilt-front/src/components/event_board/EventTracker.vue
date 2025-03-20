@@ -13,11 +13,11 @@
 
     <!-- final step -->
     <div v-if="showFinalStep" class="final-step">
-      <p class="event-title">{{ event?.title }}</p>
+      <p class="event-title">{{ sgiltEvent?.title }}</p>
       <p class="date-location">
-        {{ dayjs(event?.dateTime).locale('fr').format('dddd DD MMM YYYY') }}
+        {{ dayjs(sgiltEvent?.dateTime).locale('fr').format('dddd DD MMM YYYY') }}
       </p>
-      <p class="date-location">{{ event?.location }}</p>
+      <p class="date-location">{{ sgiltEvent?.location }}</p>
       <IconStar class="icon-star" />
     </div>
   </div>
@@ -26,18 +26,18 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import StepBox from '@/components/event_board/StepBox.vue'
-import type { SgiltEvent } from '@/data/domain/SgiltEvent'
 import IconStar from '@/components/icons/IconStar.vue'
 import dayjs from 'dayjs'
 import { useReservationStepsStore } from '@/stores/reservation-steps.store'
 import type { Reservation } from '@/data/domain/Reservation'
+import { useEventStore } from '@/stores/event.store'
 
-const props = defineProps<{
-  event?: SgiltEvent
+const eventStore = useEventStore()
+const sgiltEvent = computed(() => eventStore.sgiltEvent)
+
+defineProps<{
   showFinalStep: boolean
 }>()
-
-const orientation = 'horizontal'
 
 const reservationStepsStore = useReservationStepsStore()
 
@@ -45,7 +45,7 @@ const steps = ref(reservationStepsStore.steps)
 
 const pawns = computed(() =>
   steps.value.map((step) =>
-    props.event?.reservations
+    sgiltEvent.value?.reservations
       .filter((reservation: Reservation) => reservation.status === step.value)
       .map((reservation: Reservation) => reservation.partner.imageUrl),
   ),

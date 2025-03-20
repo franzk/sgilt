@@ -45,30 +45,33 @@ import dayjs from 'dayjs'
 import { computed, defineProps } from 'vue'
 import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
-import type { SgiltEvent } from '@/data/domain/SgiltEvent'
+import { useEventStore } from '@/stores/event.store'
+
+const eventStore = useEventStore()
+const sgiltEvent = computed(() => eventStore.sgiltEvent)
 
 const props = defineProps<{
-  sgiltEvent?: SgiltEvent
+  // sgiltEvent?: SgiltEvent
   showEventDetails?: boolean
 }>()
 
 const formattedDate = computed(() =>
-  props.sgiltEvent?.dateTime
-    ? dayjs(props.sgiltEvent.dateTime).locale('fr').format('dddd DD MMM YYYY')
+  sgiltEvent.value?.dateTime
+    ? dayjs(sgiltEvent.value?.dateTime).locale('fr').format('dddd DD MMM YYYY')
     : '',
 )
 
 const reservationsConfirmed = computed(
-  () => props.sgiltEvent?.reservations.filter((r) => r.status === 'paid').length || 0,
+  () => sgiltEvent.value?.reservations.filter((r) => r.status === 'paid').length || 0,
 )
 
 const reservationsWaitingForPayment = computed(
-  () => props.sgiltEvent?.reservations.filter((r) => r.status === 'approved').length || 0,
+  () => sgiltEvent.value?.reservations.filter((r) => r.status === 'approved').length || 0,
 )
 
 const reservationsWaiting = computed(
   () =>
-    props.sgiltEvent?.reservations.filter((r) => ['pending', 'viewed'].includes(r.status)).length ||
+    sgiltEvent.value?.reservations.filter((r) => ['pending', 'viewed'].includes(r.status)).length ||
     0,
 )
 </script>

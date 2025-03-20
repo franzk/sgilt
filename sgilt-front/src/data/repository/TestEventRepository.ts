@@ -2,7 +2,7 @@ import type { SgiltEvent } from '@/data/domain/SgiltEvent'
 import dayjs from 'dayjs'
 import { findPartnerBySlug } from '@/data/repository/PartnerRepository'
 
-export const getTestEvent = async (id: number): Promise<SgiltEvent> => {
+export const getTestEvent = async (id: string): Promise<SgiltEvent> => {
   const creationDateTime = dayjs().subtract(10, 'days').toDate()
   const eventDateTime = dayjs().add(15, 'days').toDate()
 
