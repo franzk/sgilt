@@ -1,5 +1,5 @@
 <template>
-  <div class="reservation-status">
+  <div class="reservation-status" :style="statusStyle">
     <div class="status-wrapper">
       <!-- state -->
       <p class="status-state">✔️ {{ status?.state }}</p>
@@ -14,14 +14,21 @@
 </template>
 
 <script setup lang="ts">
-import { useReservationStatusStore } from '@/stores/reservation-status.store'
 import { computed } from 'vue'
 import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
 import type { ReservationStatusKey } from '@/types/ReservationStatus'
+import { useReservationStatusColor } from '@/composable/useReservationStatusColor'
+import { useReservationStatusStore } from '@/stores/reservation-status.store'
 
 const props = defineProps<{
   statusKey?: ReservationStatusKey
+  createdAt?: Date
 }>()
+
+const reservationStatusColor = useReservationStatusColor()
+const statusStyle = computed(() =>
+  reservationStatusColor.statusColorStyle('--status-color', props.statusKey, props.createdAt),
+)
 
 // status color and action color
 const reservationStatusStore = useReservationStatusStore()
@@ -29,13 +36,14 @@ const reservationStatusStore = useReservationStatusStore()
 const status = computed(() =>
   props.statusKey ? reservationStatusStore.getStatus(props.statusKey) : undefined,
 )
-const statusColor = computed(() => status?.value?.color || 'transparent')
-const actionColor = computed(() => status?.value?.actionColor || 'transparent')
+
+/*const statusColor = computed(() => status?.value?.color || 'transparent')
+const actionColor = computed(() => status?.value?.actionColor || 'transparent') */
 </script>
 
 <style scoped lang="scss">
-$status-color: v-bind(statusColor);
-$action-color: v-bind(actionColor);
+// $status-color: v-bind(statusColor);
+// $action-color: v-bind(actionColor);
 
 .reservation-status {
   p {
@@ -82,7 +90,6 @@ $action-color: v-bind(actionColor);
     }
 
     .action-color {
-      background-color: $action-color;
       border-radius: $border-radius-l;
       z-index: 0;
     }
@@ -95,7 +102,7 @@ $action-color: v-bind(actionColor);
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: $status-color;
+      background-color: var(--status-color);
       opacity: 0.5;
     }
 

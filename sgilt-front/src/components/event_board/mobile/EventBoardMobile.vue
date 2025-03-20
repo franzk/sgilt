@@ -5,8 +5,8 @@
       <swiper
         :modules="[Navigation, Pagination]"
         :slides-per-view="1"
-        :space-between="20"
         :pagination="{ clickable: true }"
+        effect="cube"
         class="swiper-container"
       >
         <swiper-slide v-for="(screen, index) in screens" :key="index">
@@ -85,7 +85,7 @@ $max-lines: 2;
     display: flex;
     justify-content: center;
     text-align: center;
-    height: calc(100vh - 20em);
+    height: 100%;
     overflow: scroll;
   }
 }

@@ -1,10 +1,13 @@
 <template>
-  <div class="reservation-card">
+  <div class="reservation-card" :style="statusStyle">
     <!-- Title -->
     <ReservationCardTitle :partner="reservation?.partner" :compactMode="compactMode" />
 
     <!-- Status banner -->
-    <ReservationCardStatusBanner :statusKey="props.reservation?.status" />
+    <ReservationCardStatusBanner
+      :statusKey="reservation?.status"
+      :createdAt="reservation?.createdAt"
+    />
 
     <div class="bottom-section">
       <!-- Price zone -->
@@ -32,7 +35,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Reservation } from '@/data/domain/Reservation'
-import { useReservationStatusStore } from '@/stores/reservation-status.store'
+import { useReservationStatusColor } from '@/composable/useReservationStatusColor.ts'
 import ReservationCardTitle from '@/components/event_board/reservation_card/ReservationCardTitle.vue'
 import ReservationCardStatusBanner from '@/components/event_board/reservation_card/ReservationCardStatusBanner.vue'
 import ReservationCardPriceZone from '@/components/event_board/reservation_card/ReservationCardPriceZone.vue'
@@ -44,9 +47,18 @@ const props = defineProps<{
 }>()
 
 // Reservation status color
-const reservationStatusStore = useReservationStatusStore()
+/*const reservationStatusStore = useReservationStatusStore()
 const statusColor = computed(() =>
   props.reservation?.status ? reservationStatusStore.getStatusColor(props.reservation?.status) : '',
+)*/
+
+const reservationStatusColor = useReservationStatusColor()
+const statusStyle = computed(() =>
+  reservationStatusColor.statusColorStyle(
+    'border-left-color',
+    props.reservation?.status,
+    props.reservation?.createdAt,
+  ),
 )
 
 // Action buttons
@@ -63,7 +75,7 @@ const cancel = () => console.log('Annulation en cours...')
 </script>
 
 <style scoped lang="scss">
-$status-color: v-bind(statusColor);
+// $status-color: v-bind(statusColor);
 
 p {
   margin: 0;
@@ -81,7 +93,7 @@ p {
   text-align: center;
   transition: 0.3s ease-in-out;
   border-left: 5px solid transparent;
-  border-left-color: $status-color;
+  // border-left-color: $status-color;
   padding-bottom: $spacing-m;
 
   .bottom-section {
