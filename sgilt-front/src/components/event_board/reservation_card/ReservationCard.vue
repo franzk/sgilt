@@ -54,11 +54,12 @@ const statusColor = computed(() =>
 
 const reservationStatusColor = useReservationStatusColor()
 const statusStyle = computed(() =>
-  reservationStatusColor.statusColorStyle(
-    'border-left-color',
-    props.reservation?.status,
-    props.reservation?.createdAt,
-  ),
+  reservationStatusColor.statusColorStyle({
+    cssParameter: 'border-left-color',
+    statusKey: props.reservation?.status,
+    startTime: props.reservation?.createdAt,
+    opacity: 0.5,
+  }),
 )
 
 // Action buttons

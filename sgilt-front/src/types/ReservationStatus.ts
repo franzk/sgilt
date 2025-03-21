@@ -1,4 +1,10 @@
-export type ReservationStatusKey = 'pending' | 'viewed' | 'approved' | 'paid' | 'cancelled'
+export type ReservationStatusKey =
+  | 'pending'
+  | 'viewed'
+  | 'approved'
+  | 'paid'
+  | 'expired'
+  | 'cancelled'
 
 export interface ReservationStatus {
   color: string

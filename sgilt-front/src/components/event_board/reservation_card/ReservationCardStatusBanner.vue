@@ -1,6 +1,6 @@
 <template>
-  <div class="reservation-status" :style="statusStyle">
-    <div class="status-wrapper">
+  <div class="reservation-status">
+    <div class="status-wrapper" :style="statusStyle">
       <!-- state -->
       <p class="status-state">✔️ {{ status?.state }}</p>
       <!-- action to do in this step -->
@@ -27,7 +27,12 @@ const props = defineProps<{
 
 const reservationStatusColor = useReservationStatusColor()
 const statusStyle = computed(() =>
-  reservationStatusColor.statusColorStyle('--status-color', props.statusKey, props.createdAt),
+  reservationStatusColor.statusColorStyle({
+    cssParameter: 'background-color',
+    statusKey: props.statusKey,
+    startTime: props.createdAt,
+    opacity: 0.5,
+  }),
 )
 
 // status color and action color
@@ -36,15 +41,9 @@ const reservationStatusStore = useReservationStatusStore()
 const status = computed(() =>
   props.statusKey ? reservationStatusStore.getStatus(props.statusKey) : undefined,
 )
-
-/*const statusColor = computed(() => status?.value?.color || 'transparent')
-const actionColor = computed(() => status?.value?.actionColor || 'transparent') */
 </script>
 
 <style scoped lang="scss">
-// $status-color: v-bind(statusColor);
-// $action-color: v-bind(actionColor);
-
 .reservation-status {
   p {
     margin: 0;
@@ -63,10 +62,11 @@ const actionColor = computed(() => status?.value?.actionColor || 'transparent') 
     text-align: left;
     padding: 0 $spacing-s $spacing-s $spacing-s;
     box-shadow: $box-shadow;
+    background-color: var(--status-color);
 
     .status-state {
       font-weight: 500;
-      color: $color-primary;
+      color: rgba(0, 0, 0, 0.6);
       line-height: 1.5;
       padding: $spacing-xs $spacing-s 0 $spacing-s;
     }
@@ -92,18 +92,6 @@ const actionColor = computed(() => status?.value?.actionColor || 'transparent') 
     .action-color {
       border-radius: $border-radius-l;
       z-index: 0;
-    }
-
-    // background = faded status color
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: var(--status-color);
-      opacity: 0.5;
     }
 
     * > * {
