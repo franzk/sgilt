@@ -6,6 +6,7 @@
         :modules="[Navigation, Pagination]"
         :slides-per-view="1"
         :pagination="{ clickable: true }"
+        space-between="100"
         class="swiper-container"
       >
         <swiper-slide v-for="(screen, index) in screens" :key="index">
@@ -87,6 +88,12 @@ $max-lines: 2;
     text-align: center;
     height: 100%;
     overflow: scroll;
+    &::-webkit-scrollbar {
+      // Chrome, Safari and Opera
+      display: none;
+    }
+    -ms-overflow-style: none; // IE and Edge
+    scrollbar-width: none; // Firefox
   }
 }
 </style>
