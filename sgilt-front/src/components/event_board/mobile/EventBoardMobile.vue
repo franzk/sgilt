@@ -6,7 +6,6 @@
         :modules="[Navigation, Pagination]"
         :slides-per-view="1"
         :pagination="{ clickable: true }"
-        effect="cube"
         class="swiper-container"
       >
         <swiper-slide v-for="(screen, index) in screens" :key="index">
@@ -41,7 +40,7 @@ $max-lines: 2;
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: calc(100% - 3rem);
+  height: calc(100vh - 7.5rem); //calc(100% - 3rem);
   padding: 1.5rem 0;
   background: linear-gradient(to bottom left, #ffbf00, #ff9900, #ff7f50);
 
@@ -74,6 +73,7 @@ $max-lines: 2;
 .dashboard-container {
   flex: 1;
   width: calc(100vw - 4rem);
+  overflow: hidden;
   padding: $spacing-m;
 
   .swiper-container {
