@@ -35,11 +35,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Reservation } from '@/data/domain/Reservation'
-import { useReservationStatusColor } from '@/composable/useReservationStatusColor.ts'
 import ReservationCardTitle from '@/components/event_board/reservation_card/ReservationCardTitle.vue'
 import ReservationCardStatusBanner from '@/components/event_board/reservation_card/ReservationCardStatusBanner.vue'
 import ReservationCardPriceZone from '@/components/event_board/reservation_card/ReservationCardPriceZone.vue'
 import ReservationCardActions from '@/components/event_board/reservation_card/ReservationCardActions.vue'
+import { useReservationStatusStore } from '@/stores/reservation-status.store'
 
 const props = defineProps<{
   reservation?: Reservation
@@ -52,9 +52,9 @@ const statusColor = computed(() =>
   props.reservation?.status ? reservationStatusStore.getStatusColor(props.reservation?.status) : '',
 )*/
 
-const reservationStatusColor = useReservationStatusColor()
+const reservationStatusStore = useReservationStatusStore()
 const statusStyle = computed(() =>
-  reservationStatusColor.statusColorStyle({
+  reservationStatusStore.statusColorStyle({
     cssParameter: 'border-left-color',
     statusKey: props.reservation?.status,
     startTime: props.reservation?.createdAt,
@@ -76,8 +76,6 @@ const cancel = () => console.log('Annulation en cours...')
 </script>
 
 <style scoped lang="scss">
-// $status-color: v-bind(statusColor);
-
 p {
   margin: 0;
   padding: 0;

@@ -18,7 +18,7 @@ export const getTestEvent = async (id: string): Promise<SgiltEvent> => {
   const testEvents = [
     {
       id: '1',
-      title: 'Mariage de Sophie & Julien',
+      title: 'Mariage de Marie-Joséphine & Pierre Henri François',
       description:
         "Un mariage inoubliable dans un cadre d'exception avec des prestataires de choix.",
       location: 'Ratshamhausen',

@@ -51,15 +51,9 @@ $max-lines: 2;
 }
 
 .event-title {
-  flex: 1 0 calc(1.2em * $max-lines);
-  max-height: calc(1.2em * $max-lines);
-  width: calc(100% - ($spacing-s * 2));
+  width: calc(100vw - ($spacing-s * 2));
   font-size: clamp(1.5rem, 4vw, 1.9rem);
-  line-height: 1.2;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: $max-lines;
-  line-clamp: $max-lines;
+  @include multiline-ellipsis(1.2em, $max-lines);
   overflow: hidden;
   word-wrap: break-word;
   text-align: center;

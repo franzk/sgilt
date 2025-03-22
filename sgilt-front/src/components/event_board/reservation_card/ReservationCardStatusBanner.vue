@@ -17,7 +17,6 @@
 import { computed } from 'vue'
 import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
 import type { ReservationStatusKey } from '@/types/ReservationStatus'
-import { useReservationStatusColor } from '@/composable/useReservationStatusColor'
 import { useReservationStatusStore } from '@/stores/reservation-status.store'
 
 const props = defineProps<{
@@ -25,21 +24,20 @@ const props = defineProps<{
   createdAt?: Date
 }>()
 
-const reservationStatusColor = useReservationStatusColor()
-const statusStyle = computed(() =>
-  reservationStatusColor.statusColorStyle({
-    cssParameter: 'background-color',
-    statusKey: props.statusKey,
-    startTime: props.createdAt,
-    opacity: 0.5,
-  }),
-)
-
 // status color and action color
 const reservationStatusStore = useReservationStatusStore()
 
 const status = computed(() =>
   props.statusKey ? reservationStatusStore.getStatus(props.statusKey) : undefined,
+)
+
+const statusStyle = computed(() =>
+  reservationStatusStore.statusColorStyle({
+    cssParameter: 'background-color',
+    statusKey: props.statusKey,
+    startTime: props.createdAt,
+    opacity: 0.5,
+  }),
 )
 </script>
 

@@ -5,22 +5,25 @@
     @click="toggleExpand"
     :style="statusStyle"
   >
-    <div class="reservation-header">
-      <img
-        :src="reservation.partner.imageUrl"
-        class="reservation-avatar"
-        alt="Avatar du prestataire"
-      />
-      <div class="reservation-info">
-        <h3 class="provider-name">{{ reservation.partner.title }}</h3>
-        <span class="reservation-price">{{ reservation.price.price }}€</span>
+    <div class="reservation-card-body">
+      <div class="reservation-header">
+        <img
+          :src="reservation.partner.imageUrl"
+          class="reservation-avatar"
+          alt="Avatar du prestataire"
+        />
+        <div class="reservation-info">
+          <div class="partner-name">{{ reservation.partner.title }}</div>
+        </div>
       </div>
-      <span class="reservation-status">{{ reservation.status }}</span>
-      <span class="chevron">{{ isExpanded ? '▲' : '▼' }}</span>
-    </div>
+      <div class="second-line">
+        <span class="reservation-price">{{ reservation.price.price }}€</span>
+        -
+        <span class="reservation-status">{{ status?.action }}</span>
+      </div>
 
-    <div v-if="isExpanded" class="reservation-details">
-      <!--p>📅 **Historique des statuts**</!--p>
+      <div v-if="isExpanded" class="reservation-details">
+        <!--p>📅 **Historique des statuts**</!--p>
       <p>🕒 Demande envoyée : {{ reservation.sentDate }}</p>
       <p v-if="reservation.approvedDate">✅ Acceptée : {{ reservation.approvedDate }}</p>
       <p v-if="reservation.paymentDeadline">
@@ -29,28 +32,41 @@
 
       <p-- v-if="reservation.notes">📝 Notes : {{ reservation.notes }}</p-->
 
-      <p>💸 **Détails du prix**</p>
-      <p>{{ reservation.price }}</p>
+        <p>💸 **Détails du prix**</p>
+        <p>{{ reservation.price }}</p>
+      </div>
     </div>
+    <div class="chevron">{{ isExpanded ? 'A' : 'V' }}</div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useReservationStatusColor } from '@/composable/useReservationStatusColor'
 import type { Reservation } from '@/data/domain/Reservation'
+import { useReservationStatusStore } from '@/stores/reservation-status.store'
 import { computed, ref } from 'vue'
 
 const props = defineProps<{ reservation: Reservation }>()
 
-const reservationStatusColor = useReservationStatusColor()
-const statusStyle = computed(() =>
-  reservationStatusColor.statusColorStyle({
+const reservationStatusStore = useReservationStatusStore()
+const status = computed(() =>
+  props.reservation?.status
+    ? reservationStatusStore.getStatus(props.reservation?.status)
+    : undefined,
+)
+const statusStyle = computed(() => ({
+  ...reservationStatusStore.statusColorStyle({
+    cssParameter: 'border-color',
+    statusKey: props.reservation?.status,
+    startTime: props.reservation?.createdAt,
+    opacity: 1,
+  }),
+  ...reservationStatusStore.statusColorStyle({
     cssParameter: 'background-color',
     statusKey: props.reservation?.status,
     startTime: props.reservation?.createdAt,
-    opacity: 0.5,
+    opacity: 0.2,
   }),
-)
+}))
 
 const isExpanded = ref(false)
 const toggleExpand = () => {
@@ -59,20 +75,46 @@ const toggleExpand = () => {
 </script>
 
 <style scoped lang="scss">
+$header-height: 2rem;
+
 .reservation-card {
-  background: #fff;
-  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  gap: $spacing-m;
+  position: relative;
+  // border-radius: 10px;
+  border: 1px solid;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   padding: 1rem;
   margin-bottom: 1rem;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
+
+  .reservation-card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-s;
+  }
+
+  .chevron {
+    display: flex;
+    margin-top: calc($header-height - $spacing-s);
+
+    font-size: 1rem;
+    transform: rotate(0deg);
+    transition: transform 0.3s ease-in-out;
+  }
 }
 
 .reservation-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: start;
+  gap: $spacing-m;
+
+  height: $header-height;
+  overflow: hidden;
 }
 
 .reservation-avatar {
@@ -81,41 +123,21 @@ const toggleExpand = () => {
   border-radius: 50%;
 }
 
-.provider-name {
-  font-weight: bold;
+.second-line {
+  display: block;
+  text-align: left;
+  // justify-content: space-between;
+}
+
+.partner-name {
+  font-weight: 700;
+  @include multiline-ellipsis(1em, 2);
+  margin: 0;
+  font-size: 1rem;
 }
 
 .reservation-status {
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 0.9rem;
-  font-weight: bold;
-}
-
-.status-sent {
-  background: #ffb347;
-  color: #fff;
-}
-.status-pending {
-  background: #ff9800;
-  color: #fff;
-}
-.status-approved {
-  background: #d9534f;
-  color: #fff;
-}
-.status-paid {
-  background: #28a745;
-  color: #fff;
-}
-.status-cancelled {
-  background: #343a40;
-  color: #fff;
-}
-
-.chevron {
-  font-size: 1.2rem;
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .reservation-details {

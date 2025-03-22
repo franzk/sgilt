@@ -7,7 +7,7 @@ export type ReservationStatusKey =
   | 'cancelled'
 
 export interface ReservationStatus {
-  color: string
+  colors: string[]
   icon: string
   state: string
   action: string
