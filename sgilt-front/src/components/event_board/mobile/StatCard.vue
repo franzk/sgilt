@@ -2,7 +2,7 @@
   <div
     :class="[
       'stat-card',
-      { success: state === 'success', pending: state === 'pending', danger: state === 'danger' },
+      { confirmed: id === 'confirmed', pending: id === 'pending', toBePaid: id === 'toBePaid' },
     ]"
   >
     <span v-if="icon" class="icon"><SgiltIcon :icon="icon" mobile /></span>
@@ -16,10 +16,10 @@
 import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
 
 defineProps<{
+  id?: string
   icon?: string
   label?: string
   value?: number
-  state?: 'success' | 'pending' | 'danger'
 }>()
 </script>
 
@@ -30,18 +30,12 @@ defineProps<{
   justify-content: space-between;
   padding: 0.8rem;
 
-  // border-radius: 14px;
-  // background: rgba(255, 255, 255, 0.2);
-  // backdrop-filter: blur(10px);
-  /*box-shadow:
-    inset 0px 1px 2px rgba(255, 255, 255, 0.1),
-    0px 4px 8px rgba(0, 0, 0, 0.1);*/
   color: #fff;
   font-weight: 600;
   border: 1px solid;
 }
 
-.success {
+.confirmed {
   border-color: rgb(115, 255, 119);
   background: rgba(76, 175, 80, 0.2);
   .value {
@@ -57,7 +51,7 @@ defineProps<{
   }
 }
 
-.danger {
+.toBePaid {
   border-color: rgb(254, 170, 164);
   background: rgba(244, 67, 54, 0.2);
   .value {

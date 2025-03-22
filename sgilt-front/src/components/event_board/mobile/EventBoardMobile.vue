@@ -54,7 +54,6 @@ $max-lines: 2;
   width: calc(100vw - ($spacing-s * 2));
   font-size: clamp(1.5rem, 4vw, 1.9rem);
   @include multiline-ellipsis(1.2em, $max-lines);
-  overflow: hidden;
   word-wrap: break-word;
   text-align: center;
   text-transform: uppercase;

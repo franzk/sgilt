@@ -12,15 +12,10 @@
           class="reservation-avatar"
           alt="Avatar du prestataire"
         />
-        <div class="reservation-info">
-          <div class="partner-name">{{ reservation.partner.title }}</div>
-        </div>
+        <div class="partner-name">{{ reservation.partner.title }}</div>
+        <div class="chevron">{{ isExpanded ? 'A' : 'V' }}</div>
       </div>
-      <div class="second-line">
-        <span class="reservation-price">{{ reservation.price.price }}€</span>
-        -
-        <span class="reservation-status">{{ status?.action }}</span>
-      </div>
+      <div class="second-line">{{ status?.action }}</div>
 
       <div v-if="isExpanded" class="reservation-details">
         <!--p>📅 **Historique des statuts**</!--p>
@@ -36,7 +31,7 @@
         <p>{{ reservation.price }}</p>
       </div>
     </div>
-    <div class="chevron">{{ isExpanded ? 'A' : 'V' }}</div>
+    <!--div class="chevron">{{ isExpanded ? 'A' : 'V' }}</!--div-->
   </div>
 </template>
 
@@ -96,15 +91,6 @@ $header-height: 2rem;
     flex-direction: column;
     gap: $spacing-s;
   }
-
-  .chevron {
-    display: flex;
-    margin-top: calc($header-height - $spacing-s);
-
-    font-size: 1rem;
-    transform: rotate(0deg);
-    transition: transform 0.3s ease-in-out;
-  }
 }
 
 .reservation-header {
@@ -114,7 +100,6 @@ $header-height: 2rem;
   gap: $spacing-m;
 
   height: $header-height;
-  overflow: hidden;
 }
 
 .reservation-avatar {
@@ -123,17 +108,25 @@ $header-height: 2rem;
   border-radius: 50%;
 }
 
-.second-line {
-  display: block;
-  text-align: left;
-  // justify-content: space-between;
-}
-
 .partner-name {
   font-weight: 700;
   @include multiline-ellipsis(1em, 2);
   margin: 0;
   font-size: 1rem;
+}
+
+.chevron {
+  display: flex;
+  margin-top: calc($header-height - $spacing-s);
+
+  font-size: 1rem;
+  transform: rotate(0deg);
+  transition: transform 0.3s ease-in-out;
+}
+
+.second-line {
+  display: block;
+  text-align: left;
 }
 
 .reservation-status {

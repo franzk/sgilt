@@ -1,10 +1,10 @@
 @mixin multiline-ellipsis($line-height, $max-lines) {
   max-height: calc($line-height * $max-lines);
-  // width: calc(100% - ($spacing-s * 2));
   font-size: clamp(1.5rem, 4vw, 1.9rem);
   line-height: $line-height;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: $max-lines;
   line-clamp: $max-lines;
+  overflow: hidden;
 }
