@@ -13,32 +13,28 @@
           alt="Avatar du prestataire"
         />
         <div class="partner-name">{{ reservation.partner.title }}</div>
-        <div class="chevron">{{ isExpanded ? 'A' : 'V' }}</div>
+        <div class="chevron"><SgiltIcon icon="ExpandCircle" mobile/></div>
       </div>
       <div class="second-line">{{ status?.action }}</div>
 
       <div v-if="isExpanded" class="reservation-details">
-        <!--p>📅 **Historique des statuts**</!--p>
-      <p>🕒 Demande envoyée : {{ reservation.sentDate }}</p>
-      <p v-if="reservation.approvedDate">✅ Acceptée : {{ reservation.approvedDate }}</p>
-      <p v-if="reservation.paymentDeadline">
-        💳 Paiement dû avant : {{ reservation.paymentDeadline }}
-      </p>
-
-      <p-- v-if="reservation.notes">📝 Notes : {{ reservation.notes }}</p-->
-
-        <p>💸 **Détails du prix**</p>
-        <p>{{ reservation.price }}</p>
+        <ReservationCardPriceZone
+          :price="reservation.price"
+          :quantity="reservation.quantity"
+          :totalPrice="reservation.totalPrice"
+          compactMode
+        />
       </div>
     </div>
-    <!--div class="chevron">{{ isExpanded ? 'A' : 'V' }}</!--div-->
   </div>
 </template>
 
 <script setup lang="ts">
 import type { Reservation } from '@/data/domain/Reservation'
 import { useReservationStatusStore } from '@/stores/reservation-status.store'
+import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
 import { computed, ref } from 'vue'
+import ReservationCardPriceZone from '../reservation_card/ReservationCardPriceZone.vue';
 
 const props = defineProps<{ reservation: Reservation }>()
 
@@ -77,7 +73,6 @@ $header-height: 2rem;
   flex-direction: row;
   gap: $spacing-m;
   position: relative;
-  // border-radius: 10px;
   border: 1px solid;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   padding: 1rem;
@@ -96,7 +91,7 @@ $header-height: 2rem;
 .reservation-header {
   display: flex;
   align-items: center;
-  justify-content: start;
+  justify-content: space-between;
   gap: $spacing-m;
 
   height: $header-height;
@@ -117,16 +112,18 @@ $header-height: 2rem;
 
 .chevron {
   display: flex;
-  margin-top: calc($header-height - $spacing-s);
-
   font-size: 1rem;
   transform: rotate(0deg);
-  transition: transform 0.3s ease-in-out;
+  transition: transform 0.5s ease-in-out;
+}
+
+.expanded .chevron {
+  transform: rotate(180deg);
 }
 
 .second-line {
-  display: block;
-  text-align: left;
+  // display: block;
+  text-align: center;
 }
 
 .reservation-status {
@@ -138,5 +135,9 @@ $header-height: 2rem;
   padding-top: 10px;
   border-top: 1px solid #ddd;
   font-size: 0.9rem;
+  background: none;
+  > * {
+    background: none;
+  }
 }
 </style>
