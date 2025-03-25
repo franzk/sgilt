@@ -50,6 +50,7 @@ const statusStyle = computed(() => ({
     statusKey: props.reservation?.status,
     startTime: props.reservation?.createdAt,
     opacity: 1,
+    luminance: 0.5,
   }),
   ...reservationStatusStore.statusColorStyle({
     cssParameter: 'background-color',

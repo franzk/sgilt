@@ -29,7 +29,6 @@
         :label="group.label"
         :icon="group.icon"
         :value="group.count"
-        state="success"
       />
     </div>
 

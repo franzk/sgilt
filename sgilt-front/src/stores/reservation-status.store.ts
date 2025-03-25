@@ -1,4 +1,5 @@
 import type { ReservationStatus, ReservationStatusKey } from '@/types/ReservationStatus'
+import { colorLuminance } from '@/utils/ColorUtils'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -7,28 +8,8 @@ interface StatusColorStyleArgs {
   statusKey?: ReservationStatusKey
   startTime?: Date
   opacity?: number
+  luminance?: number
 }
-
-const ColorLuminance = (hex: string , lum: number): string => {
-
-	// validate hex string
-	hex = String(hex).replace(/[^0-9a-f]/gi, '');
-	if (hex.length < 6) {
-		hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-	}
-	lum = lum || 0;
-
-	// convert to decimal and change luminosity
-	var rgb = "#", c, i;
-	for (i = 0; i < 3; i++) {
-		c = parseInt(hex.substr(i*2,2), 16);
-		c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16);
-		rgb += ("00"+c).substr(c.length);
-	}
-
-	return rgb;
-}
-
 
 /**
  * Store to manage the status of a reservation
@@ -135,9 +116,8 @@ export const useReservationStatusStore = defineStore('statusStore', () => {
       color = color + hexOpacity
     }
 
-    if (args.cssParameter === 'border-color') {
-      // make color lighter for border
-      color = ColorLuminance(color, 0.4)
+    if (args.luminance) {
+      color = colorLuminance(color, args.luminance)
     }
 
     return { [args.cssParameter]: color }
