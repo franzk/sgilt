@@ -1,6 +1,6 @@
 <template>
   <div class="reservations-board-mobile">
-    <h2>Réservations</h2>
+    <MobileScreenTitle icon="List" label="Réservations" />
     <div class="reservations-container">
       <MobileReservationCard
         v-for="reservation in reservations"
@@ -14,6 +14,7 @@
 
 <script setup lang="ts">
 import MobileReservationCard from '@/components/event_board/mobile/MobileReservationCard.vue'
+import MobileScreenTitle from '@/components/event_board/mobile/MobileScreenTitle.vue'
 import { useEventStore } from '@/stores/event.store'
 import { computed } from 'vue'
 
@@ -27,13 +28,6 @@ const reservations = computed(() => eventStore.sgiltEvent?.reservations || [])
   flex-direction: column;
   gap: $spacing-m;
   padding: 0 $spacing-m;
-}
-
-h2 {
-  font-size: 1.5rem;
-  margin: 0 0 1em 0;
-  font-weight: 500;
-  text-transform: uppercase;
 }
 
 .reservations-container {

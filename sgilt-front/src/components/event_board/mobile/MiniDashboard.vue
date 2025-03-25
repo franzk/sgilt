@@ -1,11 +1,12 @@
 <template>
   <div class="mini-dashboard">
+    <MobileScreenTitle icon="Event" label="Evenement" />
+
     <div class="event-description">
-      <div class="event-icon"><SgiltIcon icon="Event" mobile /></div>
-      <div class="event-details">
-        <p>{{ sgiltEvent?.location }}</p>
-        <p>{{ dayjs(sgiltEvent?.dateTime).locale('fr').format('dddd DD MMM YYYY') }}</p>
-      </div>
+      <p>
+        {{ sgiltEvent?.location }} -
+        <span>{{ dayjs(sgiltEvent?.dateTime).locale('fr').format('dddd DD MMM YYYY') }}</span>
+      </p>
     </div>
 
     <div class="dashboard-header">
@@ -44,6 +45,7 @@
 import StatCard from '@/components/event_board/mobile/StatCard.vue'
 import { CircleProgressBar } from 'circle-progress.vue'
 import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
+import MobileScreenTitle from '@/components/event_board/mobile/MobileScreenTitle.vue'
 import { computed } from 'vue'
 import dayjs from 'dayjs'
 import type { ReservationStatusKey } from '@/types/ReservationStatus'
@@ -109,7 +111,9 @@ p {
 .mini-dashboard {
   display: flex;
   flex-direction: column;
-  gap: $spacing-l;
+  gap: $spacing-m;
+  padding: 0 $spacing-m;
+  width: 100%;
 }
 
 .dashboard-header {
@@ -126,21 +130,11 @@ p {
 
 .event-description {
   display: flex;
-  flex-direction: row;
-  gap: $spacing-m;
-  .event-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 50%;
-    padding: $spacing-s;
-  }
-  .event-details {
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    gap: $spacing-s;
+  flex-direction: column;
+  align-items: start;
+  gap: $spacing-s;
+  span {
+    text-transform: capitalize;
   }
 }
 
