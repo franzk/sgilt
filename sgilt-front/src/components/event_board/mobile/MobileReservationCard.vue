@@ -13,7 +13,7 @@
           alt="Avatar du prestataire"
         />
         <div class="partner-name">{{ reservation.partner.title }}</div>
-        <div class="chevron"><SgiltIcon icon="ExpandCircle" mobile/></div>
+        <div class="chevron"><SgiltIcon icon="ExpandCircle" mobile /></div>
       </div>
       <div class="second-line">{{ status?.action }}</div>
 
@@ -34,7 +34,7 @@ import type { Reservation } from '@/data/domain/Reservation'
 import { useReservationStatusStore } from '@/stores/reservation-status.store'
 import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
 import { computed, ref } from 'vue'
-import ReservationCardPriceZone from '../reservation_card/ReservationCardPriceZone.vue';
+import ReservationCardPriceZone from '../reservation_card/ReservationCardPriceZone.vue'
 
 const props = defineProps<{ reservation: Reservation }>()
 
@@ -44,7 +44,12 @@ const status = computed(() =>
     ? reservationStatusStore.getStatus(props.reservation?.status)
     : undefined,
 )
-const statusStyle = computed(() => ({
+const statusStyle = reservationStatusStore.getBoxStyle(
+  props.reservation?.status,
+  props.reservation?.createdAt,
+)
+
+/*computed(() => ({
   ...reservationStatusStore.statusColorStyle({
     cssParameter: 'border-color',
     statusKey: props.reservation?.status,
@@ -58,7 +63,7 @@ const statusStyle = computed(() => ({
     startTime: props.reservation?.createdAt,
     opacity: 0.2,
   }),
-}))
+}))*/
 
 const isExpanded = ref(false)
 const toggleExpand = () => {

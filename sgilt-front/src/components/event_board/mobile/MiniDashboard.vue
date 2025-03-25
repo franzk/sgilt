@@ -25,7 +25,7 @@
       <StatCard
         v-for="group in groupedReservations"
         :key="group.id"
-        :id="group.id"
+        :statusKeyStyle="group.statusKeyStyle"
         :label="group.label"
         :icon="group.icon"
         :value="group.count"
@@ -52,47 +52,54 @@ import { useEventStore } from '@/stores/event.store'
 const eventStore = useEventStore()
 const sgiltEvent = computed(() => eventStore.sgiltEvent)
 
+/**
+ * Stat cards configuration for the mini dashboard
+ * id: unique identifier
+ * statusKeyStyle: status key to get the style from the reservation status store
+ * label: label to display in the stat card
+ * icon: icon to display in the stat card
+ * count: number of reservations to display in the stat card
+ */
 const groupedReservations = computed(() => [
   {
     id: 'confirmed',
+    statusKeyStyle: 'paid' as ReservationStatusKey,
     label: 'Confirmées',
     icon: 'Check',
     count: reservationsCountByStatus('paid'),
   },
   {
     id: 'pending',
+    statusKeyStyle: 'pending' as ReservationStatusKey,
     label: 'En attente',
     icon: 'Hourglass',
     count: reservationsCountByStatus('pending') + reservationsCountByStatus('viewed'),
   },
   {
     id: 'toBePaid',
+    statusKeyStyle: 'approved' as ReservationStatusKey,
     label: 'Paiement à faire',
     icon: 'CreditCard',
     count: reservationsCountByStatus('approved'),
   },
 ])
 
-const reservationsCount = computed(() => sgiltEvent.value?.reservations.length)
+// total count of reservations
+const reservationsCount = computed(() => eventStore.reservationsCount)
 
+// count of confirmed reservations
 const confirmedReservationsCount = computed(
   () => groupedReservations.value.find((g) => g.id === 'confirmed')?.count || 0,
 )
 
+// check if there are pending reservations to pay
 const hasPendingReservations = computed(
   () => (groupedReservations.value.find((g) => g.id === 'toBePaid')?.count || 0) > 0,
 )
 
-/*const confirmedReservationsCount = computed(() => reservationsCountByStatus('paid'))
-const pendingReservationsCount = computed(
-  () => reservationsCountByStatus('pending') + reservationsCountByStatus('viewed'),
-)
-const toBePaidReservationsCount = computed(() => reservationsCountByStatus('approved'))
-
-const hasPendingReservations = computed(() => toBePaidReservationsCount.value > 0)
-*/
+// count of reservations by status
 const reservationsCountByStatus = (status: ReservationStatusKey): number =>
-  sgiltEvent.value?.reservations.filter((r) => r.status === status).length || 0
+  eventStore.reservationsCountByStatus(status)
 </script>
 
 <style scoped lang="scss">

@@ -123,6 +123,23 @@ export const useReservationStatusStore = defineStore('statusStore', () => {
     return { [args.cssParameter]: color }
   }
 
-  return { getStatus, statusColorStyle }
-})
+  const getBoxStyle = (statusKey: ReservationStatusKey, startTime: Date): object => {
+    return {
+      ...statusColorStyle({
+        cssParameter: 'border-color',
+        statusKey,
+        startTime,
+        opacity: 1,
+        luminance: 0.5,
+      }),
+      ...statusColorStyle({
+        cssParameter: 'background-color',
+        statusKey,
+        startTime,
+        opacity: 0.2,
+      }),
+    }
+  }
 
+  return { getStatus, statusColorStyle, getBoxStyle }
+})

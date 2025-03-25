@@ -1,10 +1,5 @@
 <template>
-  <div
-    :class="[
-      'stat-card',
-      { confirmed: id === 'confirmed', pending: id === 'pending', toBePaid: id === 'toBePaid' },
-    ]"
-  >
+  <div :style="boxStyle" class="stat-card">
     <span v-if="icon" class="icon"><SgiltIcon :icon="icon" mobile /></span>
     <span v-if="label" class="label">{{ label }}</span>
     <span v-if="value !== undefined" class="value">{{ value }}</span>
@@ -14,13 +9,23 @@
 
 <script setup lang="ts">
 import SgiltIcon from '@/components/basics/icons/SgiltIcon.vue'
+import { useReservationStatusStore } from '@/stores/reservation-status.store'
+import type { ReservationStatusKey } from '@/types/ReservationStatus'
+import { computed } from 'vue'
 
-defineProps<{
-  id?: string
+const props = defineProps<{
+  statusKeyStyle?: ReservationStatusKey
   icon?: string
   label?: string
   value?: number
 }>()
+
+const reservationStatusStore = useReservationStatusStore()
+const boxStyle = computed(() =>
+  props.statusKeyStyle
+    ? reservationStatusStore.getBoxStyle(props.statusKeyStyle, new Date(new Date().getDate() + 15))
+    : {},
+)
 </script>
 
 <style scoped lang="scss">
@@ -33,30 +38,6 @@ defineProps<{
   color: #fff;
   font-weight: 600;
   border: 1px solid;
-}
-
-.confirmed {
-  border-color: rgb(115, 255, 119);
-  background: rgba(76, 175, 80, 0.2);
-  .value {
-    background: rgba(76, 175, 80, 1);
-  }
-}
-
-.pending {
-  border-color: rgb(255, 230, 157);
-  background: rgba(255, 193, 7, 0.2);
-  .value {
-    background: rgba(255, 193, 7, 1);
-  }
-}
-
-.toBePaid {
-  border-color: rgb(254, 170, 164);
-  background: rgba(244, 67, 54, 0.2);
-  .value {
-    background: rgba(244, 67, 54, 1);
-  }
 }
 
 .value {
