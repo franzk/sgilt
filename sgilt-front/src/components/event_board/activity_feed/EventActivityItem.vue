@@ -6,6 +6,7 @@
       <span class="activity-title">
         {{ activity.partnerName }}
       </span>
+      <span class="activity-date" v-if="mobile"> - {{ formatedDate }}</span>
     </div>
 
     <!-- content : activity description -->
@@ -19,7 +20,7 @@
     />
 
     <!-- date : activity date -->
-    <p class="activity-date">{{ formatedDate }}</p>
+    <p v-if="!mobile" class="activity-date">{{ formatedDate }}</p>
   </div>
 </template>
 
@@ -31,6 +32,7 @@ import { computed } from 'vue'
 
 const props = defineProps<{
   activity: EventActivity
+  mobile?: boolean
 }>()
 
 const formatedDate = computed(() => {
@@ -92,11 +94,13 @@ p {
 
   .activity-content {
     font-size: $font-size-base;
+    text-align: left;
   }
 
   .activity-date {
+    flex: 1;
+    text-align: left;
     font-size: $font-size-base;
-    color: $color-subtext;
     font-style: italic;
   }
 }

@@ -10,7 +10,7 @@
         class="swiper-container"
       >
         <swiper-slide v-for="(screen, index) in screens" :key="index">
-          <component :is="screen" />
+          <component :is="screen.component" v-bind="screen.props" />
         </swiper-slide>
       </swiper>
     </GlassCard>
@@ -27,11 +27,25 @@ import { Navigation, Pagination } from 'swiper/modules'
 import MobileReservationsBoard from '@/components/event_board/mobile/MobileReservationsBoard.vue'
 import { computed, ref } from 'vue'
 import { useEventStore } from '@/stores/event.store'
+import EventActivityFeed from '@/components/event_board/activity_feed/EventActivityFeed.vue'
 
 const eventStore = useEventStore()
 const sgiltEvent = computed(() => eventStore.sgiltEvent)
 
-const screens = ref([MiniDashboard, MobileReservationsBoard])
+const screens = ref([
+  {
+    component: MiniDashboard,
+    props: {},
+  },
+  {
+    component: MobileReservationsBoard,
+    props: {},
+  },
+  {
+    component: EventActivityFeed,
+    props: { mobile: true },
+  },
+])
 </script>
 
 <style scoped lang="scss">
