@@ -80,7 +80,7 @@ $max-lines: 2;
     display: flex;
     justify-content: center;
     text-align: center;
-    height: 100%;
+    height: calc(100% - 2rem);
     overflow: scroll;
     &::-webkit-scrollbar {
       // Chrome, Safari and Opera
