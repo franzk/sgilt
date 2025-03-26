@@ -28,11 +28,12 @@ import MobileReservationsBoard from '@/components/event_board/mobile/MobileReser
 import { computed, ref } from 'vue'
 import { useEventStore } from '@/stores/event.store'
 import MobileActivityFeed from '@/components/event_board/mobile/MobileActivityFeed.vue'
+import EventHelpPanel from '@/components/event_board/help_panel/EventHelpPanel.vue'
 
 const eventStore = useEventStore()
 const sgiltEvent = computed(() => eventStore.sgiltEvent)
 
-const screens = ref([MiniDashboard, MobileReservationsBoard, MobileActivityFeed])
+const screens = ref([MiniDashboard, MobileReservationsBoard, MobileActivityFeed, EventHelpPanel])
 </script>
 
 <style scoped lang="scss">

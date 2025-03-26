@@ -72,7 +72,7 @@ import EventHelpItem from '@/components/event_board/help_panel/EventHelpItem.vue
 <style scoped lang="scss">
 .event-help-panel {
   padding: $spacing-m;
-  background: $color-white;
+  // background: $color-white;
   position: relative;
 
   svg {
@@ -97,6 +97,8 @@ ul li {
 }
 
 .warning {
+  background: $color-secondary;
+  padding: $spacing-s;
   color: $color-danger;
   font-weight: 600;
 }

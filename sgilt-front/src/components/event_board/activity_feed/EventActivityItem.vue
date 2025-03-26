@@ -1,14 +1,13 @@
 <template>
-  <div class="activity-item">
+  <div class="activity-item swiper-no-swiping">
     <!-- header : partner avatar and name -->
     <div class="activity-header">
       <img :src="activity.partnerAvatarUrl" class="partner-avatar" />
-      <span class="activity-title">
-        {{ activity.partnerName }}
-      </span>
-      <span class="activity-date" v-if="mobile"> - {{ formatedDate }}</span>
+      <div class="activity-title">
+        <span class="activity-partner">{{ activity.partnerName }}</span>
+        <span class="activity-date" v-if="mobile">{{ formatedDate }}</span>
+      </div>
     </div>
-
     <!-- content : activity description -->
     <p
       class="activity-content"
@@ -82,7 +81,12 @@ p {
     align-items: center;
 
     .activity-title {
-      font-weight: 700;
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-xs;
+      .activity-partner {
+        font-weight: 700;
+      }
     }
 
     .partner-avatar {
