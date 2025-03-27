@@ -1,7 +1,7 @@
 import type { ReservationStatus, ReservationStatusKey } from '@/types/ReservationStatus'
 import { colorLuminance } from '@/utils/ColorUtils'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, type StyleValue } from 'vue'
 
 interface StatusColorStyleArgs {
   cssParameter: string
@@ -88,7 +88,7 @@ export const useReservationStatusStore = defineStore('statusStore', () => {
    * @param args cssParameter: string, statusKey?: ReservationStatusKey, startTime?: Date, opacity?: number
    * @returns object
    */
-  const statusColorStyle = (args: StatusColorStyleArgs): object => {
+  const statusColorStyle = (args: StatusColorStyleArgs): StyleValue => {
     if (!args.statusKey) return {}
     const status = statusMap.value.get(args.statusKey)
     if (!status) return {}
@@ -123,22 +123,22 @@ export const useReservationStatusStore = defineStore('statusStore', () => {
     return { [args.cssParameter]: color }
   }
 
-  const getBoxStyle = (statusKey: ReservationStatusKey, startTime: Date): object => {
-    return {
-      ...statusColorStyle({
+  const getBoxStyle = (statusKey: ReservationStatusKey, startTime: Date): StyleValue => {
+    return [
+      statusColorStyle({
         cssParameter: 'border-color',
         statusKey,
         startTime,
         opacity: 1,
         luminance: 0.5,
       }),
-      ...statusColorStyle({
+      statusColorStyle({
         cssParameter: 'background-color',
         statusKey,
         startTime,
         opacity: 0.2,
       }),
-    }
+    ]
   }
 
   return { getStatus, statusColorStyle, getBoxStyle }
