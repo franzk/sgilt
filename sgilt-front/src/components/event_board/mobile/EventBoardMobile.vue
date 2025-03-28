@@ -38,13 +38,14 @@ const screens = ref([MiniDashboard, MobileReservationsBoard, MobileActivityFeed,
 
 <style scoped lang="scss">
 $max-lines: 2;
+$padding-bottom: 3.5rem;
 
 .event-board-mobile {
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 7.5rem);
-  padding: 1.5rem 0;
+  height: calc(100vh - 6rem - $padding-bottom);
+  padding: 1.5rem 0 $padding-bottom 0;
   background: linear-gradient(to bottom left, #ffbf00, #ff9900, #ff7f50);
 
   position: relative;
