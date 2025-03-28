@@ -1,6 +1,6 @@
 <template>
   <div class="partner-card">
-    <RouterLink :to="{ name: 'partner', params: { id: partner.slug || 'aa' } }">
+    <RouterLink :to="{ name: 'partner', params: { id: partner.slug || '' } }">
       <div class="partner-category">
         <CategoryChip :categoryName="partner.tags[0]?.category || ''" />
       </div>

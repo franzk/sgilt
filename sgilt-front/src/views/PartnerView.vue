@@ -30,9 +30,9 @@ import { usePartnerStore } from '@/stores/partner.store'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import dayjs from 'dayjs'
-import { useTabletView } from '@/composable/useTabletView'
+import { useResponsiveView } from '@/composable/useResponsiveView'
 
-const { isTabletView } = useTabletView()
+const { isTabletView } = useResponsiveView()
 
 const route = useRoute()
 const router = useRouter()

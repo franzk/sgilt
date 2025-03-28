@@ -1,5 +1,4 @@
 <template>
-  <!-- TODO : implement keyboard navigation -->
   <div
     class="custom-select"
     :tabindex="focusable ? 0 : -1"
@@ -125,11 +124,14 @@ $bc: $input-border-color;
     }
 
     .left-icon {
+      display: flex;
+      flex-wrap: wrap;
       width: 2.5em;
       align-content: center;
-      text-align: center;
+      justify-content: center;
       * {
         width: 1.5em;
+        height: 1.5em;
       }
     }
 

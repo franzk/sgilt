@@ -16,9 +16,12 @@
   "dependencies": {
     "@intlify/unplugin-vue-i18n": "^6.0.3",
     "@vuepic/vue-datepicker": "^11.0.1",
+    "@vueuse/core": "^12.7.0",
     "canvas-confetti": "^1.9.3",
+    "circle-progress.vue": "^3.3.0",
     "dayjs": "^1.11.13",
     "pinia": "^2.3.0",
+    "swiper": "^11.2.6",
     "vue": "^3.5.13",
     "vue-i18n": "10.0.5",
     "vue-router": "^4.5.0"
@@ -45,5 +48,13 @@
     "vite-plugin-vue-devtools": "^7.7.0",
     "vitest": "^2.1.8",
     "vue-tsc": "^2.2.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ],
+    "ignoredBuiltDependencies": [
+      "vue-demi"
+    ]
   }
 }

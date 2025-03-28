@@ -29,4 +29,19 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            const chunks = id.toString().split('node_modules/')[1].split('/')
+
+            // Ex: 'node_modules/vue/dist/vue.runtime.esm.js'
+            // => ['vue', 'dist', 'vue.runtime.esm.js']
+            return chunks[0] // Regroupe par package : 'vue', 'lodash', etc.
+          }
+        },
+      },
+    },
+  },
 })

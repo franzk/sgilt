@@ -1,0 +1,21 @@
+{
+  "name": "S'gilt !",
+  "short_name": "S'gilt !",
+  "description": "Trouvez les meilleurs prestataires pour vos événements en Alsace.",
+  "start_url": "/",
+  "display": "browser",
+  "theme_color": "#FFBF00",
+  "background_color": "#FFFFFF",
+  "icons": [
+    {
+      "src": "/favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

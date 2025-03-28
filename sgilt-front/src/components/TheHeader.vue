@@ -1,66 +1,71 @@
 <template>
   <header>
-    <h1>
-      <router-link :to="{ name: 'home' }"><img src="@/assets/images/sgilt.png" /></router-link>
-      <!-- TODO resize image -->
+    <!-- LOGO SGILT -->
+    <h1 class="logo">
+      <router-link :to="{ name: 'home' }">
+        <!--img src="@/assets/images/sgilt.png" alt="SGILT" /-->
+        <img src="@/assets/images/sgilt-logo.svg" alt="SGILT" />
+      </router-link>
     </h1>
-    <p class="tagline">
-      {{ $t('app-header.tagline.decouvrez') }}
-      {{ $t('app-header.tagline.reservez') }}
-      <span class="bold">{{ $t('app-header.tagline.celebrez') }}</span>
-    </p>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions" v-if="authStore.isConnected">
+      <span class="action-button" @click="openNotifications"><IconBell /></span>
+      <span class="action-button" @click="openProfile"><IconProfile /></span>
+    </div>
   </header>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import IconBell from '@/components/icons/IconBell.vue'
+import IconProfile from '@/components/icons/IconProfile.vue'
+import { useAuthStore } from '@/stores/auth.store'
+
+const authStore = useAuthStore()
+
+const openNotifications = () => {
+  console.log('Ouverture des notifications...')
+}
+
+const openProfile = () => {
+  console.log('Ouverture du profil...')
+}
+</script>
 
 <style lang="scss" scoped>
 header {
-  flex: 0;
-
   display: flex;
-  flex-direction: row;
+  height: $app-header-height;
 
+  align-items: center;
+  justify-content: space-between;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: $z-app-header;
-
   background-color: $color-secondary;
   box-shadow: $box-shadow;
+  padding: $spacing-mm $spacing-l $spacing-mm $spacing-mm;
+}
 
-  gap: $spacing-l;
-  align-content: center;
-  flex-wrap: wrap;
-
-  padding: $spacing-mm;
-
-  h1 {
-    margin: 0 0 0 $spacing-xs;
-    img {
-      height: 3rem;
-      margin-bottom: $spacing-xs;
-    }
-
-    a {
-      text-decoration: none;
-      color: $color-primary;
-      display: flex;
-    }
+/* LOGO SGILT */
+.logo {
+  margin: 0;
+  img {
+    height: 3rem;
   }
+}
 
-  .tagline {
-    padding-top: 0.8em;
-    margin: 0;
-    @include respond-to(mobile) {
-      display: none;
-    }
-    -webkit-align-self: center;
-    align-self: center;
+/* Quick Actions */
+.quick-actions {
+  display: flex;
+  gap: $spacing-mm;
 
-    .bold {
-      font-weight: bold;
+  .action-button {
+    cursor: pointer;
+    &:hover {
+      opacity: 0.7;
     }
   }
 }

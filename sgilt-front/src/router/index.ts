@@ -3,7 +3,7 @@ import HomeView from '@/views/HomeView.vue'
 import SearchView from '@/views/SearchView.vue'
 import PartnerView from '@/views/PartnerView.vue'
 import ErrorNotFound from '@/views/ErrorNotFound.vue'
-import BookingFlowView from '@/components/booking_flow/BookingFlow.vue'
+import EventBoardView from '@/views/EventBoardView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,6 +27,11 @@ const router = createRouter({
       path: '/404',
       name: 'error404',
       component: ErrorNotFound,
+    },
+    {
+      path: '/event-board/:id',
+      name: 'eventBoard',
+      component: EventBoardView,
     },
   ],
   scrollBehavior(to, from, savedPosition) {
