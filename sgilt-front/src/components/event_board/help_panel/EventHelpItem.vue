@@ -1,5 +1,5 @@
 <template>
-  <div class="event-help-item-oneline swiper-no-swiping" v-if="oneline">
+  <div class="event-help-item-oneline" v-if="oneline">
     <span class="help-item-icon">
       <SgiltIcon :icon="icon" />
     </span>
@@ -10,7 +10,7 @@
       {{ content }}
     </span>
   </div>
-  <div class="event-help-item-twolines swiper-no-swiping" v-else>
+  <div class="event-help-item-twolines" v-else>
     <div class="first-line">
       <span class="help-item-icon">
         <SgiltIcon :icon="icon" />

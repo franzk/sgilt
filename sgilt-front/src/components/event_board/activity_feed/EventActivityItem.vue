@@ -1,5 +1,5 @@
 <template>
-  <div class="activity-item swiper-no-swiping">
+  <div class="activity-item">
     <!-- header : partner avatar and name -->
     <div class="activity-header">
       <img :src="activity.partnerAvatarUrl" class="partner-avatar" />
