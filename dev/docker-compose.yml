@@ -1,7 +1,7 @@
 services:
-  ka-keycloak-db:
+  sgilt-keycloak-db:
     image: postgres:17
-    container_name: ka-keycloak-db
+    container_name: sgilt-keycloak-db
     environment:
       POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak
@@ -9,48 +9,48 @@ services:
     volumes:
       - keycloak_pgdata:/var/lib/postgresql/data
     networks:
-      - ka-dev-net
+      - sgilt-dev-net
 
-  ka-keycloak:
+  sgilt-keycloak:
     image: quay.io/keycloak/keycloak:26.2.2
-    container_name: ka-keycloak
+    container_name: sgilt-keycloak
     command: ["start-dev", "--import-realm"]
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://ka-keycloak-db:5432/keycloak
+      KC_DB_URL: jdbc:postgresql://sgilt-keycloak-db:5432/keycloak
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: keycloak
     ports:
       - "5028:8080"
     depends_on:
-      - ka-keycloak-db
+      - sgilt-keycloak-db
     volumes:
-      - ../ka-keycloak/:/opt/keycloak/data/import
-      - ../ka-keycloak/theme:/opt/keycloak/themes/ka-theme
+      - ../sgilt-keycloak/:/opt/keycloak/data/import
+      - ../sgilt-keycloak/theme:/opt/keycloak/themes/sgilt-theme
     networks:
-      - ka-dev-net
+      - sgilt-dev-net
 
-  ka-smtp-bridge:
-    image: ka-smtp-bridge
-    container_name: ka-smtp-bridge
+  sgilt-smtp-bridge:
+    image: sgilt-smtp-bridge
+    container_name: sgilt-smtp-bridge
     environment:
       - MAILER_URL=http://host.docker.internal:5030/api/v1/mail
     build:
-      context: ../ka-smtp-bridge
+      context: ../sgilt-smtp-bridge
     networks:
-      - ka-dev-net
+      - sgilt-dev-net
 
-  ka-mailhog:
+  sgilt-mailhog:
     image: mailhog/mailhog:v1.0.1
-    container_name: ka-mailhog
+    container_name: sgilt-mailhog
     ports:
       - "1026:1025" # SMTP
       - "5125:8025" # Web UI
 
 networks:
-  ka-dev-net:
+  sgilt-dev-net:
     driver: bridge
 
 volumes:

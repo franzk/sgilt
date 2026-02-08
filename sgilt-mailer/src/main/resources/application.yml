@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: sgilt-mailer
+
+  mail:
+    host: ${SMTP_HOST:localhost} # mailhog default
+    port: ${SMTP_PORT:1026}
+    username: ${SMTP_USERNAME:sgilt}
+    password: ${SMTP_PASSWORD}
+    properties:
+      mail.smtp.auth: ${SMTP_AUTH:false}
+      mail.smtp.ssl.enable: ${SMTP_SSL:false}
+
+server:
+  port: 5030

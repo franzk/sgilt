@@ -1,30 +1,12 @@
-# ka-starter
+# Sgilt [WIP]
 
-![KA-STARTER Banner](doc/presentation.png)
+## How to use this project
 
-> **Production Infrastructure Boilerplate** for Fullstack applications (Vue, Spring Boot, Keycloak).
-
-## What is ka-starter?
-
-**ka-starter** is a production-oriented infrastructure boilerplate
-with a clear and consistent architectural approach
-for modern web applications running on a single Linux server
-(VPS, VM, or dedicated server).
-
-It provides a reusable foundation for authentication, API security,
-service separation, and Docker-based deployments,
-so you can focus on building features instead of rebuilding infrastructure.
-
----
-
-## How to use ka-starter
-
-ka-starter can be used in four main ways:
+It can be used in three ways:
 
 1. Run locally for development
 2. Deploy using the registry-based workflow (recommended)
 3. Deploy using the SSH-based workflow (quick manual setup)
-4. Use it as a copy-and-adapt boilerplate for a new project
 
 ### 1. Run locally
 
@@ -37,7 +19,7 @@ Services can be run individually or partially.
 
 ### 2. Deploy using the registry-based workflow (recommended)
 
-The registry-based workflow is the recommended way to deploy ka-starter in production.
+The registry-based workflow is the recommended way to deploy in production.
 
 - Docker images are built in **GitHub Actions**
 - Images are pushed to **GitHub Container Registry (ghcr.io)**
@@ -62,20 +44,6 @@ This mode is mainly intended for quick experiments or early MVPs.
 
 ---
 
-### 4. Use it as a copy-and-adapt boilerplate for a new project
-
-ka-starter can be cloned and adapted as a boilerplate for new projects.
-
-Typical usage includes:
-- keeping the core infrastructure and architecture
-- renaming services and images
-- removing example services
-- adding project-specific business logic 
-
-👉 See [BOILERPLATE.md](BOILERPLATE.md)
-
----
-
 #### Note on Reverse Proxy
 This starter is designed for a **Single-Server Production** setup.
 To handle SSL and routing, I recommend using [ka-proxy](https://github.com/franzk/ka-proxy), a dedicated Nginx reverse proxy built to work with this ecosystem.
@@ -85,7 +53,7 @@ You can also use any other reverse proxy of your choice (e.g. Traefik, Caddy, et
 
 ## How it works
 
-ka-starter is built around a simple, Docker-first architecture
+Sgilt is built around a simple, Docker-first architecture
 designed to run on a single Linux server.
 
 At a high level:
@@ -117,33 +85,3 @@ The following services make up the ka-starter stack:
 ⚠️ Note:   
 Port exposure differs between local and dev environments.    
 This will be normalized in a future iteration.
-
----
-## Scope
-ka-starter is not a project template or a turnkey SaaS.
-
-It focuses on:
-- OAuth2 / OIDC authentication with Keycloak
-- Token-based API security
-- Clean service separation
-- Production-ready Docker setup
-
-It is intended as a solid technical foundation,
-not as a finished product.
-
----
-## Contributing
-1. Fork the repository
-2. Create a feature branch
-3. Commit clean, atomic changes
-4. Open a Pull Request
-
----
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
-## Support
-
-[Open an issue](https://github.com/franzk/ka-starter/issues)

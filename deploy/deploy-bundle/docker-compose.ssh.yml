@@ -7,7 +7,7 @@ services:
     container_name: ka-front
     pull_policy: never
     build:
-      context: ../../ka-front
+      context: ../../sgilt-front
     depends_on:
       - ka-gateway
       - ka-keycloak
@@ -40,7 +40,7 @@ services:
     container_name: ka-keycloak
     pull_policy: never
     build:
-      context: ../../ka-keycloak
+      context: ../../sgilt-keycloak
     command: ["start", "--http-enabled=true", "--proxy-headers=xforwarded"]
     environment:
       # Database
@@ -104,7 +104,7 @@ services:
     environment:
       MAILER_URL: ${MAILER_URL}
     build:
-      context: ../../ka-smtp-bridge
+      context: ../../sgilt-smtp-bridge
     networks:
       - ka-network
 

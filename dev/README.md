@@ -15,7 +15,7 @@ docker compose up
 ## Frontend (SPA)
 
 ```bash
-cd ka-front
+cd sgilt-front
 pnpm install
 pnpm dev
 ```
@@ -36,7 +36,4 @@ you want to work on.
 
 Once everything is running, you can:
 - access the frontend at http://localhost:5173
-- create an account
-- open MailHog at http://localhost:5125 to find the verification email
-- click the verification link
-- log in and explore the app
+- access Keycloak at http://localhost:5080 (admin:admin)
