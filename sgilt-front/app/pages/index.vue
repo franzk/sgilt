@@ -52,10 +52,10 @@ useSeoMeta({
     position: absolute;
     z-index: 1;
 
-    top: 55%;
-    @media (min-width: 1024px) {
-      top: 45%;
-    }
+    filter: brightness(1.06) contrast(1.03) saturate(1.06);
+
+    top: 35%;
+
     left: 0;
     right: 0;
     bottom: 0;
@@ -63,14 +63,16 @@ useSeoMeta({
     background-image: url('/images/hero-party.png');
     background-size: cover;
     background-repeat: no-repeat;
-    background-position: 50% 100%;
+    background-position: 50% 10%;
 
-    @media (min-width: 1024px) {
-      background-position: 50% 75%;
+    @media (min-width: 768px) {
+      background-position: 50% 35%;
+      top: 35%;
+      background-image: url('/images/hero-party-desktop.png');
     }
 
     -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 100%);
-    mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 28%, #000 100%);
 
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
