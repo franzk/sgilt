@@ -41,43 +41,48 @@ const openProfile = () => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/base' as *;
+
 .app-header {
   display: flex;
-  height: 64px; // remplace par ta var $app-header-height quand tu remets tes tokens
   align-items: center;
   justify-content: space-between;
 
-  position: sticky; // mieux que fixed pour éviter les soucis de layout
+  height: $app-header-height;
+
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 50;
 
   background-color: rgba(255, 255, 255, 0.8); // tu pourras remettre $color-secondary
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 
-  padding: 10px 16px;
+  padding: $spacing-xs;
 }
 
 /* LOGO SGILT */
 .logo {
   margin: 0;
-
+  width: 5rem;
   img {
-    height: 3rem;
-    display: block;
+    width: 100%;
+    height: auto;
   }
 }
 
 /* Quick Actions */
 .quick-actions {
   display: flex;
-  gap: 10px;
+  gap: $spacing-s;
 
   .action-button {
     cursor: pointer;
-    padding: 8px;
+    padding: $spacing-xs;
     border: 0;
-    border-radius: 10px;
+    border-radius: $radius-md;
     background: transparent;
     line-height: 0;
 

@@ -4,12 +4,7 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
 
-  modules: [
-    '@nuxtjs/i18n',
-    '@nuxtjs/seo',
-    '@nuxtjs/robots',
-    '@pinia/nuxt'
-  ],
+  modules: ['@nuxtjs/i18n', '@nuxtjs/seo', '@nuxtjs/robots', '@pinia/nuxt'],
 
   /**
    * ======================
@@ -21,22 +16,21 @@ export default defineNuxtConfig({
     '/app/**': {
       ssr: false,
       headers: {
-        'X-Robots-Tag': 'noindex, nofollow'
-      }
+        'X-Robots-Tag': 'noindex, nofollow',
+      },
     },
 
     // Recherche = utilitaire, pas indexée
     '/recherche': {
       headers: {
-        'X-Robots-Tag': 'noindex, nofollow'
-      }
-    }
+        'X-Robots-Tag': 'noindex, nofollow',
+      },
+    },
 
     // /            -> SSR + SEO (default)
     // /m/**        -> SSR + SEO (default)
     // /:slug       -> SSR + SEO (default)
   },
-
 
   // Source de vérité SEO (utilisée notamment pour les canonicals)
   site: {
@@ -54,29 +48,44 @@ export default defineNuxtConfig({
       {
         userAgent: '*',
         allow: '/',
-        disallow: [
-          '/app/',
-          '/recherche'
-        ]
-      }
-    ]
+        disallow: ['/app/', '/recherche'],
+      },
+    ],
   },
 
   /**
    * ======================
-   * i18n 
+   * i18n
    * ======================
    */
   i18n: {
     defaultLocale: 'fr',
-    locales: [
-      { code: 'fr', language: 'fr-FR', name: 'Français' }
-    ],
     strategy: 'no_prefix',
+
+    // lazy: true,
+    // langDir: 'lang/',
+
+    locales: [{ code: 'fr', language: 'fr-FR', name: 'Français', file: 'fr.json' }],
+
     detectBrowserLanguage: {
       useCookie: true,
       cookieKey: 'sgilt_lang',
-      redirectOn: 'root'
-    }
-  }
+      redirectOn: 'root',
+    },
+  },
+
+  css: ['@/assets/styles/main.scss'],
+
+  vite: {
+    css: {
+      preprocessorOptions: {
+        scss: {
+          additionalData:
+            '@use "@/assets/styles/colors" as *;\n' +
+            '@use "@/assets/styles/spacing" as *;\n' +
+            '@use "@/assets/styles/typography" as *;\n',
+        },
+      },
+    },
+  },
 })

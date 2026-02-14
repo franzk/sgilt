@@ -1,0 +1,44 @@
+@use './colors' as *;
+@use './spacing' as *;
+@use './typography' as *;
+@use './borders' as *;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: $font-family-base;
+  font-size: $font-size-md;
+  line-height: $line-height-normal;
+  color: $text-primary;
+  background-color: $brand-background;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0 0 $spacing-m 0;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-tight;
+}
+
+p {
+  margin: 0 0 $spacing-m 0;
+  color: $text-secondary;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+$app-header-height: 4rem;

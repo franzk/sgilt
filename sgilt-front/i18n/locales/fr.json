@@ -1,0 +1,317 @@
+{
+  "app-header": {
+    "app-name": "S'GILT",
+    "tagline": {
+      "decouvrez": "DÉCOUVREZ, ",
+      "reservez": "RÉSERVEZ, ",
+      "celebrez": "CÉLÉBREZ !!"
+    }
+  },
+  "date-picker": {
+    "booked": "Réservé",
+    "option": "Sous option"
+  },
+  "categories": {
+    "music": {
+      "title": "Musique",
+      "description": "Offrez une ambiance unique avec la musique idéale."
+    },
+    "food": {
+      "title": "Restauration",
+      "description": "Régalez vos convives avec des menus sur mesure."
+    },
+    "place": {
+      "title": "Lieu",
+      "description": "Des lieux d’exception pour sublimer vos événements."
+    },
+    "photo": {
+      "title": "Photographie",
+      "description": "Immortalisez chaque instant avec des clichés inoubliables."
+    }
+  },
+  "home": {
+    "search-banner": {
+      "title-part-1": "Qu'est-ce qu'on ",
+      "title-part-2": "FÊTE ?",
+      "tagline": "Des prestataires en Alsace, à votre date",
+      "button": "C'est Party !"
+    },
+    "categories-banner": {
+      "title": "Découvrez les partenaires de votre évènement"
+    },
+    "partners-section": {
+      "title": "La sélection du moment"
+    }
+  },
+  "reservation": {
+    "title": "Réservez maintenant",
+    "subtitle": "Validez votre réservation en quelques clics !",
+    "form": {
+      "date-label": "Choisissez une date :",
+      "date-error": "Veuillez sélectionner une date avant de continuer.",
+      "options-label": "Choisissez un service :",
+      "price-placeholder": "Sélectionnez une option",
+      "price-error": "Veuillez sélectionner une option avant de continuer.",
+      "quantity-label": "Quantité :",
+      "quantity-error": "Ce service nécessite un minimum de {count} {unity}. Vous pouvez ajuster le nombre ci-dessus 👆",
+      "pricing": "Tarif estimé:",
+      "booked": {
+        "title": "🛑 Désolé, { partnerName } n’est pas disponible ce jour-là.",
+        "subtitle": "Ne vous inquiétez pas, nous avons sélectionné d’autres talents qui pourraient vous plaire !"
+      },
+      "option": {
+        "title": "🟠 Cette date est sous option pour  { partnerName }.",
+        "subtitle": "Soyez parmi les premiers informés si la date se libère ! Rejoignez la liste d’attente en un clic. Pendant ce temps, voici d’autres prestataires similaires disponibles à cette date : 👇"
+      }
+    },
+    "button": "Réserver",
+    "help": {
+      "need": "Besoin d'assistance ?",
+      "contact": "Contactez-nous"
+    }
+  },
+  "event": {
+    "event-board": {
+      "mobile": {
+        "reservations": "Aucune réservation confirmée pour le moment. | 1 réservation confirmée pour le moment. | {count} réservations confirmées pour le moment."
+      }
+    },
+    "activities": {
+      "reservation-sent": {
+        "title": "Demande de réservation envoyée !",
+        "content": "Votre demande a été envoyée avec succès. {partnerName} va vous contactez."
+      },
+      "reservation-viewed": {
+        "title": "{partnerName} a vu votre demande",
+        "content": "Bonne nouvelle ! {partnerName} a consulté votre demande. Vous devriez recevoir une réponse bientôt."
+      },
+      "message-sent": {
+        "title": "Vous avez envoyé un message à {partnerName}",
+        "content": "Votre message a été transmis à {partnerName}. Vous serez notifié dès qu'une réponse sera reçue."
+      },
+      "message-received": {
+        "title": "{partnerName} vous a envoyé un message",
+        "content": "{partnerName} vous a écrit : \"{messagePreview}\". Cliquez ici pour ouvrir la conversation."
+      },
+      "reservation-approved": {
+        "title": "{partnerName} a accepté votre demande",
+        "content": "Votre demande de réservation a été acceptée. Il ne vous reste plus qu'à effectuer le paiement pour finaliser la réservation."
+      },
+      "payment-request": {
+        "title": "Paiement requis pour {partnerName}",
+        "content": "Votre demande a été acceptée par {partnerName}. Vous devez maintenant procéder au paiement pour confirmer la réservation."
+      },
+      "payment-success": {
+        "title": "Paiement confirmé pour {partnerName}",
+        "content": "Votre paiement a bien été reçu par {partnerName}. Votre réservation est maintenant confirmée ! 🎉"
+      },
+      "payment-failed": {
+        "title": "Échec du paiement pour {partnerName}",
+        "content": "Nous avons rencontré un problème avec votre paiement. Merci de réessayer ou de contacter {partnerName} pour plus d'informations."
+      },
+      "reservation-cancelled-user": {
+        "title": "Vous avez annulé la réservation avec {partnerName}",
+        "content": "Votre réservation avec {partnerName} a été annulée. Vous pouvez toujours refaire une demande si besoin."
+      },
+      "reservation-cancelled-partner": {
+        "title": "{partnerName} a annulé votre réservation",
+        "content": "Malheureusement, {partnerName} a dû annuler votre réservation. Vous pouvez le contacter pour plus d’informations ou chercher un autre prestataire."
+      },
+      "reservation-updated": {
+        "title": "{partnerName} a mis à jour votre réservation",
+        "content": "Les détails de votre réservation avec {partnerName} ont été modifiés. Pensez à vérifier les nouvelles informations."
+      },
+      "reservation-modified-user": {
+        "title": "Vous avez modifié votre réservation avec {partnerName}",
+        "content": "Vous avez effectué des changements sur votre réservation avec {partnerName}. Ces modifications sont maintenant en attente de validation."
+      },
+      "partner-unavailable": {
+        "title": "{partnerName} ne peut plus assurer la prestation",
+        "content": "Nous sommes désolés, mais {partnerName} a indiqué qu'il ne pourra pas honorer la réservation. Vous pouvez rechercher un autre prestataire."
+      }
+    },
+    "reservation": {
+      "steps": {
+        "pending": "Demande envoyée !",
+        "viewed": "Votre partenaire a vu votre demande",
+        "approved": "Il est prêt, à vous de payer !",
+        "paid": "C’est réservé, préparez la fête !"
+      },
+      "action": {
+        "pay": "Payer",
+        "message": "Message",
+        "cancel": "Annuler"
+      }
+    },
+    "help": {
+      "steps": {
+        "title": "Comment ça marche ?",
+        "step-1": {
+          "title": "Vous envoyez votre demande",
+          "content": "→ Votre partenaire vous répond sous 24h."
+        },
+        "step-2": {
+          "title": "Votre partenaire consulte votre demande",
+          "content": "→ Il vous contacte pour valider les détails, comprendre vos attentes et confirmer sa disponibilité avant d’accepter ou refuser."
+        },
+        "step-3": {
+          "title": "Votre demande est acceptée",
+          "content": "→ Vous avez 48h pour finaliser le paiement et sécuriser votre réservation. Passé ce délai, la demande expire automatiquement."
+        },
+        "step-4": {
+          "title": "4. C’est réservé !",
+          "content": "→ Une fois le paiement validé, votre réservation est confirmée !"
+        },
+        "warning": "⚠️ N’oubliez pas ! Si le paiement n’est pas effectué dans les 48h après acceptation, la réservation est annulée."
+      },
+      "contact": {
+        "title": "📞 Assistance & Contact"
+      },
+      "faq": {
+        "title": "💡 Questions fréquentes",
+        "pay": {
+          "title": "Comment payer ma réservation ?",
+          "content": "→ Depuis le tableau de bord, cliquez sur 'Payer'."
+        },
+        "cancel": {
+          "title": "Puis-je annuler une réservation ?",
+          "content": "→ Oui, tant qu’elle n’est pas payée."
+        }
+      }
+    }
+  },
+  "first-reservation-modal": {
+    "title": "Réservez votre prestataire en quelques secondes",
+    "subtitle": "Choisissez une méthode pour continuer :",
+    "sso": {
+      "facebook": "Continuer avec Facebook",
+      "google": "Continuer avec Google",
+      "apple": "Continuer avec Apple"
+    },
+    "email": {
+      "title": "Ou utilisez votre email :",
+      "placeholder": "Votre email",
+      "button": "Continuer"
+    },
+    "already-account": {
+      "title": "Vous avez déjà un compte ?",
+      "link": "Connectez-vous"
+    },
+    "extra-info": {
+      "title": "Découvrez tous les avantages d’un compte Sgilt.",
+      "link": "En savoir plus"
+    }
+  },
+  "booking-flow": {
+    "step-1": {
+      "title": "📍 Détails de votre événement",
+      "subtitle": "Indiquez où et quand aura lieu votre événement.",
+      "cta": "Continuer",
+      "location": {
+        "label": "Localité de l'événement",
+        "placeholder": "Ex : Strasbourg, Rathsamhausen, Breuschwickersheim...",
+        "error": "Veuillez saisir une localité valide."
+      },
+      "date": {
+        "label": "Date de l'événement"
+      },
+      "time": {
+        "label": "Heure de l'événement",
+        "error": "Veuillez saisir une heure valide."
+      },
+      "message": {
+        "label": "Envoyez un message à {partnerName} (optionnel)",
+        "placeholder": "Ajoutez un message pour préciser vos attentes..."
+      }
+    },
+    "step-2": {
+      "title": "🔑 Connexion ou Inscription",
+      "subtitle": "Connectez-vous ou créez un compte pour finaliser votre demande.",
+      "cta": "Continuer"
+    },
+    "step-3": {
+      "title": "📝 Récapitulatif de votre demande",
+      "timeline-title": "⏳ Comment ça marche ?",
+      "timeline": {
+        "step-1": "Vous envoyez votre demande",
+        "step-2": "Votre partenaire vous contacte",
+        "step-3": "Vous validez et payez",
+        "step-4": "🎉 C’est réservé !"
+      },
+      "recap-title": {
+        "desktop": "📜 Récapitulatif de votre réservation",
+        "mobile": "📜 Votre réservation"
+      },
+      "subtitle": "Vérifiez les détails de votre réservation avant l’envoi.",
+      "titles": {
+        "email": "Votre adresse mail",
+        "message": "Message à transmettre"
+      },
+      "cta": "Confirmer & Envoyer ma demande"
+    },
+    "step-4": {
+      "title": "📩 Confirmez votre email",
+      "subtitle": "Vous y êtes presque ! 🔥🔥",
+      "infos": {
+        "first": {
+          "sub-1": "👉 Nous venons de vous envoyer un email à l’adresse",
+          "sub-2": "contenant un",
+          "sub-3": "lien d’activation"
+        },
+        "second": {
+          "sub-1": "📩 Ouvrez votre boîte de réception",
+          "sub-2": ", cliquez sur le lien et validez votre compte. Votre demande sera alors automatiquement transmise à",
+          "sub-3": " !"
+        }
+      },
+      "cta": {
+        "resend": "Renvoyer l’email",
+        "sending": "Envoi en cours...",
+        "new-mail": "Utiliser une autre adresse",
+        "event-board": "Voir mon Tableau de bord",
+        "close": "Fermer"
+      },
+      "change-mail": {
+        "title": "Changer d’adresse email",
+        "placeholder": "Nouvelle adresse email",
+        "send": "Envoyer",
+        "sending": "Envoi..."
+      },
+      "validation-info": {
+        "start": "ℹ️ Tant que votre email n’est pas confirmé,",
+        "end": "ne verra pas votre demande !"
+      }
+    },
+    "email-label": "Ou utilisez votre email :",
+    "email-placeholder": "Votre email",
+    "email-required-error": "Veuillez saisir votre adresse email.",
+    "email-invalid-error": "Veuillez saisir une adresse email valide.",
+    "back-button": "← Retour"
+  },
+  "texts": {
+    "a-partir-de": "À partir de",
+    "minimum": "Minimum",
+    "maximum": "Maximum",
+    "rechercher": "Rechercher",
+    "filtres": "Filtres",
+    "resultats": "Aucun résultat. | 1 résultat | {count} résultats",
+    "voir-resultats": "Aucun résultat | Voir le résultat | Voir les {count} résultats",
+    "effacer-filtres": "Tout effacer",
+    "need-help": "Besoin d'aide ?",
+    "your-event": "Votre événement",
+    "pay-now": "Payer maintenant"
+  },
+  "errors": {
+    "404": {
+      "title": "Oups !!",
+      "message": "La page que vous recherchez n'existe pas."
+    }
+  },
+  "partner": {
+    "availability": {
+      "available": "🟢 Disponible",
+      "option": "🟠 Sous option",
+      "booked": "🔴 Réservé"
+    }
+  }
+}

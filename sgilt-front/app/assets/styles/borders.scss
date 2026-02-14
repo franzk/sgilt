@@ -1,0 +1,24 @@
+@use './colors' as *;
+
+// --- border-radius ---
+$border-radius-xs: 5px;
+$border-radius-s: 8px;
+$border-radius-sm: 10px;
+$border-radius-m: 1rem;
+$border-radius-l: 2rem;
+$border-radius-xxl: 10rem;
+
+// --- border-width ---
+$border-width-s: 1px;
+$border-width-m: 2px;
+
+// --- input border radius ---
+$input-border-radius: $border-radius-m;
+$input-border-color: $shadow-m;
+
+// --- focus outline ---
+$focus-outline: 1px solid $color-accent;
+$focus-outline-offset: 2px;
+
+$box-shadow: 0 4px 6px $shadow-m;
+$modal-box-shadow: 0 10px 30px $shadow-m;
