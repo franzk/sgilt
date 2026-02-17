@@ -37,7 +37,7 @@ defineProps<{
     box-shadow 0.2s ease;
 
   border: none;
-  border-radius: 1.125rem;
+  border-radius: 0.875rem;
 
   padding: $spacing-m $spacing-l;
 

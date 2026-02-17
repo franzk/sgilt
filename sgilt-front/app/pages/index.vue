@@ -16,9 +16,9 @@
       <!-- composants -->
       <div class="inputs">
         <SgiltDatePicker />
-        <SgiltSelect :options="selectOptions">
+        <SgiltSelectMobile :options="selectOptions">
           <template v-slot:left-icon> <IconRocket /> </template>
-        </SgiltSelect>
+        </SgiltSelectMobile>
         <SgiltButton class="submit_button">C'est parti !</SgiltButton>
       </div>
     </section>
@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
-import SgiltSelect from '~/components/basics/inputs/SgiltSelect.vue'
+import SgiltSelectMobile from '~/components/basics/inputs/SgiltSelectMobile.vue'
 import IconRocket from '~/components/icons/IconRocket.vue'
 
 useSeoMeta({
@@ -141,6 +141,10 @@ const selectOptions = [
 
       .submit_button {
         width: 100%;
+      }
+
+      > * {
+        height: 3rem;
       }
     }
   }
