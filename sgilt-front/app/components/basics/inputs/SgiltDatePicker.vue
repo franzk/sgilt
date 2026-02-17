@@ -3,7 +3,7 @@
     v-model="date"
     auto-apply
     :disabled="disabled"
-    :enable-time-picker="false"
+    :time-config="{ enableTimePicker: false }"
     :locale="fr"
     :formats="format"
     class="sgilt-date-picker"
@@ -76,8 +76,23 @@ const choiceState = computed(() => {
   --dp-text-color: #{$color-primary};
 
   --dp-primary-color: #{$color-accent};
+  --dp-hover-color: rgba(255, 191, 0, 0.14);
   --dp-icon-color: #{$color-primary};
   --dp-success-color: #{$state-option};
+  --dp-cell-border-radius: 0.5em;
+  --dp-cell-padding: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .dp__theme_light {
+    --dp-cell-padding: 1rem;
+  }
+}
+
+@media (max-width: 390px) {
+  .dp__theme_light {
+    --dp-cell-padding: 1rem;
+  }
 }
 
 .dp__input {
@@ -94,9 +109,21 @@ const choiceState = computed(() => {
   font-size: inherit;
 }
 
+.dp__month_year_wrap {
+  font-size: inherit;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.dp__calendar_header_item {
+  padding-top: 0;
+}
+
 .dp__input:focus {
-  outline: $focus-outline;
-  outline-offset: $focus-outline-offset;
+  // outline: $focus-outline;
+  // outline-offset: $focus-outline-offset;
+  border-color: rgba(255, 191, 0, 0.75);
+  box-shadow: 0 0 0 3px rgba(255, 191, 0, 0.25); /* halo doux */
 }
 
 .dp__active_date {

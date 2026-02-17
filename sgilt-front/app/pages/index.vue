@@ -137,6 +137,7 @@ const selectOptions = [
       align-items: center;
       gap: 0.875rem;
       width: 90%;
+      font-size: 1.125rem;
 
       .submit_button {
         width: 100%;
