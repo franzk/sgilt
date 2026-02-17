@@ -8,8 +8,8 @@
     <div class="selected" :class="{ open: open }" @click="open = !open">
       <div class="left-icon"><slot name="left-icon" /></div>
       <div class="selected-text">{{ selectedLabel }}</div>
-      <div class="right-icon" v-if="open">&#x25B2;</div>
-      <div class="right-icon" v-else>&#x25BC;</div>
+      <div class="right-icon" v-if="open"><ChevronIcon /></div>
+      <div class="right-icon" v-else><ChevronIcon /></div>
     </div>
 
     <div class="items" :class="{ selectHide: !open }">
@@ -27,6 +27,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import ChevronIcon from '../icons/ChevronIcon.vue'
 
 // selected value
 const selectedOption = defineModel<SgiltSelectOption>()
@@ -94,7 +95,7 @@ $color-2: $color-accent; // border & bg hover
 $color-3: $color-primary;
 $color-4: $color-secondary; // border not selected
 
-$br: calc($input-border-radius * 0.75);
+$br: 0.875rem;
 $bc: $input-border-color;
 
 .custom-select {
@@ -102,6 +103,7 @@ $bc: $input-border-color;
   line-height: 45px;
   outline: none;
   width: 100%;
+  font-size: 1.125rem;
 
   &:focus-visible {
     outline: $focus-outline;
@@ -117,9 +119,15 @@ $bc: $input-border-color;
     border-radius: $br;
     border: 1px solid $bc;
     color: $color-3;
+    height: 100%;
+    align-items: center;
 
     cursor: pointer;
     user-select: none;
+
+    box-shadow:
+      0 0.0625rem 0 rgba(0, 0, 0, 0.04),
+      0 0.5rem 1.25rem rgba(0, 0, 0, 0.05);
 
     .selected-text {
       flex: 1;
@@ -139,16 +147,25 @@ $bc: $input-border-color;
     }
 
     .right-icon {
+      display: flex;
       width: 2.5em;
       text-align: center;
       align-content: center;
+      justify-content: center;
+      align-items: center;
       // font-size: $font-size-base;
+
+      color: rgba(0, 0, 0, 0.5);
+      transition: transform 160ms ease;
     }
 
     &.open {
       border: 1px solid $color-2;
       border-bottom: none;
       border-radius: $br $br 0px 0px;
+      .right-icon {
+        transform: rotate(180deg);
+      }
     }
   }
 

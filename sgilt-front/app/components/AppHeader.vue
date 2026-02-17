@@ -56,9 +56,9 @@ const openProfile = () => {
   right: 0;
   z-index: 50;
 
-  background-color: rgba(255, 255, 255, 0.8); // tu pourras remettre $color-secondary
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background-color: #fff; // rgba(255, 255, 255, 0.8); // tu pourras remettre $color-secondary
+  // backdrop-filter: blur(10px);
+  // border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 
   padding: $spacing-xs;
 }

@@ -33,7 +33,8 @@
     "search-banner": {
       "title-part-1": "Qu'est-ce qu'on ",
       "title-part-2": "FÊTE ?",
-      "tagline": "Des prestataires en Alsace, à votre date",
+      "tagline-mobile": "Des prestataires en Alsace, à votre date.",
+      "tagline-desktop": "Trouvez les meilleurs prestataires pour votre événement en Alsace, à votre date.",
       "button": "C'est Party !"
     },
     "categories-banner": {

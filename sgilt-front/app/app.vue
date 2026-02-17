@@ -13,11 +13,6 @@ body {
   padding: 0;
 }
 
-:root {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 400;
-}
-
 .app-content {
   padding-top: $app-header-height; // pour compenser la hauteur du header fixe
 }

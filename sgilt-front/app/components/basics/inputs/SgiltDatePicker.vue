@@ -63,13 +63,16 @@ const choiceState = computed(() => {
 
 .sgilt-date-picker {
   width: 100%;
+  * {
+    font-size: inherit;
+  }
 }
 
 .dp__theme_light {
-  --dp-border-radius: 1em;
+  --dp-border-radius: 0.875em;
   --dp-border-color: #{$shadow-m};
   --dp-input-padding: 0.75rem;
-  --dp-font-size: 1em;
+  --dp-font-size: inherit;
   --dp-text-color: #{$color-primary};
 
   --dp-primary-color: #{$color-accent};
@@ -80,6 +83,15 @@ const choiceState = computed(() => {
 .dp__input {
   text-align: center;
   padding-right: 2.5rem;
+  font-size: inherit;
+  height: 100%;
+  box-shadow:
+    0 0.125rem 0.375rem rgba(0, 0, 0, 0.04),
+    0 0.0625rem 0.125rem rgba(0, 0, 0, 0.03);
+}
+
+.dp__input_wrap {
+  font-size: inherit;
 }
 
 .dp__input:focus {
