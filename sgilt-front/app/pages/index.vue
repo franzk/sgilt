@@ -15,10 +15,11 @@
 
       <!-- composants -->
       <div class="inputs">
-        <SgiltDatePicker />
-        <SgiltSelectMobile :options="selectOptions" :model-value="selectedOption">
+        <SgiltDatePicker placeholder="Votre date" />
+
+        <SgiltSelect :options="selectOptions" :model-value="selectedOption">
           <template v-slot:left-icon> <IconRocket /> </template>
-        </SgiltSelectMobile>
+        </SgiltSelect>
         <SgiltButton class="submit_button">C'est parti !</SgiltButton>
       </div>
     </section>
@@ -30,13 +31,16 @@
 <script setup lang="ts">
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
-import SgiltSelectMobile from '~/components/basics/inputs/SgiltSelectMobile.vue'
+import SgiltSelect from '~/components/basics/inputs/SgiltSelect.vue'
 import IconRocket from '~/components/icons/IconRocket.vue'
+import { useDevice } from '~/composables/useDevice'
 
 useSeoMeta({
   title: '',
   description: '',
 })
+
+const { isMobile } = useDevice()
 
 const selectOptions = [
   { value: '-1', label: 'Votre événement' },
@@ -67,24 +71,6 @@ const selectedOption = ref(selectOptions[0]!.value)
   grid-template-areas:
     'content'
     'visual';
-
-  @media (min-width: 1024px) {
-    grid-template-rows: 1fr;
-    grid-template-columns: 44% 56%;
-    grid-template-areas: 'content visual';
-
-    .search-form {
-      align-items: flex-start;
-    }
-    .hero {
-      align-items: flex-start;
-      text-align: left;
-    }
-
-    .photo-layer {
-      background-position: 50% 60% !important;
-    }
-  }
 
   .search-form {
     z-index: 2;
@@ -208,7 +194,7 @@ const selectedOption = ref(selectOptions[0]!.value)
 /* =========================
    DESKTOP HERO FULLSCREEN
    ========================= */
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .home {
     display: flex !important;
     flex-direction: column !important;

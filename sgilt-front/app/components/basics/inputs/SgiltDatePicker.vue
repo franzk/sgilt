@@ -1,23 +1,32 @@
 <template>
-  <VueDatePicker
-    v-model="date"
-    auto-apply
-    :disabled="disabled"
-    :time-config="{ enableTimePicker: false }"
-    :locale="fr"
-    :formats="format"
-    class="sgilt-date-picker"
-    :day-class="getDayClass"
-    :state="choiceState"
-  >
-    <template #action-extra>
-      <!-- Extra info : color legend -->
-      <p class="extra-info" v-if="showExtraInfo">
-        <span class="dot booked" /> {{ $t('date-picker.booked') }} <span class="dot option" />
-        {{ $t('date-picker.option') }}
-      </p>
+  <ClientOnly>
+    <VueDatePicker
+      v-model="date"
+      auto-apply
+      :disabled="disabled"
+      :time-config="{ enableTimePicker: false }"
+      :locale="fr"
+      :formats="format"
+      class="sgilt-date-picker"
+      :day-class="getDayClass"
+      :state="choiceState"
+      :placeholder="placeholder"
+    >
+      <template #action-extra>
+        <!-- Extra info : color legend -->
+        <p class="extra-info" v-if="showExtraInfo">
+          <span class="dot booked" /> {{ $t('date-picker.booked') }} <span class="dot option" />
+          {{ $t('date-picker.option') }}
+        </p>
+      </template>
+    </VueDatePicker>
+    <template #fallback>
+      <div class="select-skeleton">
+        <div class="skeleton-icon" />
+        <div class="skeleton-text" />
+      </div>
     </template>
-  </VueDatePicker>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
@@ -36,6 +45,7 @@ const props = defineProps<{
   bookedDates?: Date[]
   optionDates?: Date[]
   disabled?: boolean
+  placeholder?: string
 }>()
 
 const getDayClass = (date: Date) => {
@@ -99,6 +109,7 @@ const choiceState = computed(() => {
   text-align: center;
   padding-right: 2.5rem;
   font-size: inherit;
+  font-weight: 600;
   height: 100%;
   box-shadow:
     0 0.125rem 0.375rem rgba(0, 0, 0, 0.04),

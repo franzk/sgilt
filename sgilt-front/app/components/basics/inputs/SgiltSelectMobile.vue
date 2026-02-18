@@ -14,9 +14,12 @@
         <div class="sheet-handle" />
 
         <div class="sheet-body">
-          <header class="sheet-header">
-            <h3>Qu'est-ce qu'on fête ?</h3>
-          </header>
+          <DrawerTitle class="sheet-header">
+            <h3 aria-hidden="true">Qu'est-ce qu'on fête ?</h3>
+          </DrawerTitle>
+          <DrawerDescription class="sr-only">
+            Choisissez un type d'événement dans la liste.
+          </DrawerDescription>
 
           <div class="options-container">
             <button
@@ -37,7 +40,15 @@
 </template>
 
 <script setup lang="ts">
-import { DrawerRoot, DrawerContent, DrawerOverlay, DrawerPortal, DrawerTrigger } from 'vaul-vue'
+import {
+  DrawerRoot,
+  DrawerContent,
+  DrawerOverlay,
+  DrawerPortal,
+  DrawerTrigger,
+  DrawerTitle,
+  DrawerDescription,
+} from 'vaul-vue'
 
 const modelValue = defineModel<string>()
 
@@ -49,8 +60,6 @@ const props = withDefaults(defineProps<Props>(), {
   options: () => [],
 })
 
-const emit = defineEmits(['update:modelValue'])
-
 const isOpen = ref(false)
 
 // On récupère le label pour l'afficher sur le bouton "déclencheur"
@@ -61,7 +70,6 @@ const selectedLabel = computed(() => {
 
 const selectOption = (val: string) => {
   modelValue.value = val
-  emit('update:modelValue', val)
   isOpen.value = false // Fermeture automatique après le choix
 }
 </script>
@@ -153,7 +161,7 @@ $shadow-pop: 0 10px 28px rgba(0, 0, 0, 0.1);
 
   .value {
     flex: 1;
-    font-weight: 650;
+    font-weight: 600;
     color: rgba($primary, 0.55);
 
     &.has-value {
