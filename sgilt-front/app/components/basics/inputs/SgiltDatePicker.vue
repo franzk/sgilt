@@ -109,6 +109,20 @@ const choiceState = computed(() => {
   font-size: inherit;
 }
 
+.dp__menu {
+  border-radius: 0.875rem;
+  box-shadow:
+    0 0.25rem 0.5rem rgba(0, 0, 0, 0.1),
+    0 0.75rem 1.75rem rgba(0, 0, 0, 0.08);
+  background:
+    radial-gradient(
+      1100px 520px at 50% -10%,
+      rgba($color-accent, 0.22) 0%,
+      rgba(255, 255, 255, 0) 55%
+    ),
+    linear-gradient(180deg, #fffdf6 0%, #ffffff 60%);
+}
+
 .dp__month_year_wrap {
   font-size: inherit;
   font-weight: 600;

@@ -39,9 +39,14 @@
 <script setup lang="ts">
 import { DrawerRoot, DrawerContent, DrawerOverlay, DrawerPortal, DrawerTrigger } from 'vaul-vue'
 
-const props = defineProps({
-  options: { type: Array, required: true },
-  modelValue: { type: String, default: '' },
+const modelValue = defineModel<string>()
+
+interface Props {
+  options: { value: string; label: string }[]
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  options: () => [],
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -50,11 +55,12 @@ const isOpen = ref(false)
 
 // On récupère le label pour l'afficher sur le bouton "déclencheur"
 const selectedLabel = computed(() => {
-  const option = props.options.find((o) => o.value === props.modelValue)
-  return option ? option.label : 'Votre événement'
+  const option = props.options.find((o) => o.value === modelValue.value)
+  return option ? option.label : ''
 })
 
 const selectOption = (val: string) => {
+  modelValue.value = val
   emit('update:modelValue', val)
   isOpen.value = false // Fermeture automatique après le choix
 }
@@ -87,9 +93,10 @@ const selectOption = (val: string) => {
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    // gap: 0.75rem;
     color: $text-secondary;
     width: 100%;
+    padding-left: 0.5rem;
+    padding-right: 2rem;
 
     .value {
       flex: 1;
@@ -144,38 +151,6 @@ $shadow-pop: 0 10px 28px rgba(0, 0, 0, 0.1);
   // iOS tap highlight off
   -webkit-tap-highlight-color: transparent;
 
-  .trigger-content {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-
-    padding: 1.05rem 1rem;
-    border-radius: 18px;
-
-    background: linear-gradient(180deg, #ffffff 0%, #fbfbfc 100%);
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
-
-    transition:
-      transform 120ms ease,
-      box-shadow 160ms ease,
-      border-color 160ms ease,
-      background 160ms ease;
-
-    // chevron
-    &::after {
-      content: '⌄';
-      position: absolute;
-      right: 0.9rem;
-      top: 50%;
-      transform: translateY(-52%);
-      font-size: 1.15rem;
-      color: rgba($primary, 0.55);
-      pointer-events: none;
-    }
-  }
-
   .value {
     flex: 1;
     font-weight: 650;
@@ -219,7 +194,6 @@ $shadow-pop: 0 10px 28px rgba(0, 0, 0, 0.1);
   bottom: 0;
   z-index: 1001;
 
-  // background: $bg;
   border-top-left-radius: $sheet-radius;
   border-top-right-radius: $sheet-radius;
 
@@ -240,11 +214,6 @@ $shadow-pop: 0 10px 28px rgba(0, 0, 0, 0.1);
   padding-bottom: calc(1.1rem + env(safe-area-inset-bottom, 0px));
   outline: none;
 
-  // petit “grain” subtil optionnel (sans image)
-  /* background-image:
-    radial-gradient(1200px 600px at 50% 0%, rgba($accent, 0.1) 0%, rgba(255, 255, 255, 0) 55%),
-    radial-gradient(900px 500px at 10% 20%, rgba(0, 0, 0, 0.03) 0%, rgba(255, 255, 255, 0) 60%);
-*/
   .sheet-handle {
     width: 52px;
     height: 6px;

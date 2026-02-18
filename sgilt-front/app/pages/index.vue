@@ -16,7 +16,7 @@
       <!-- composants -->
       <div class="inputs">
         <SgiltDatePicker />
-        <SgiltSelectMobile :options="selectOptions">
+        <SgiltSelectMobile :options="selectOptions" :model-value="selectedOption">
           <template v-slot:left-icon> <IconRocket /> </template>
         </SgiltSelectMobile>
         <SgiltButton class="submit_button">C'est parti !</SgiltButton>
@@ -45,6 +45,8 @@ const selectOptions = [
   { value: '2', label: "Fête d'entreprise" },
   { value: '3', label: 'Autre' },
 ]
+
+const selectedOption = ref(selectOptions[0]!.value)
 </script>
 
 <style scoped lang="scss">
