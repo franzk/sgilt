@@ -1,0 +1,12 @@
+node_modules
+.nuxt
+.output
+dist
+.git
+.gitignore
+Dockerfile
+docker-compose*.yml
+README.md
+npm-debug.log*
+pnpm-debug.log*
+.DS_Store

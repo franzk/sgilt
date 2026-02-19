@@ -90,7 +90,7 @@ const choiceState = computed(() => {
   --dp-icon-color: #{$color-primary};
   --dp-success-color: #{$state-option};
   --dp-cell-border-radius: 0.5em;
-  --dp-cell-padding: 1.5rem;
+  --dp-cell-padding: 1.2rem;
 }
 
 @media (min-width: 1024px) {
@@ -109,11 +109,32 @@ const choiceState = computed(() => {
   text-align: center;
   padding-right: 2.5rem;
   font-size: inherit;
-  font-weight: 600;
+  color: #6b635c;
+  font-weight: 500;
   height: 100%;
   box-shadow:
     0 0.125rem 0.375rem rgba(0, 0, 0, 0.04),
     0 0.0625rem 0.125rem rgba(0, 0, 0, 0.03);
+
+  font-family: inherit;
+  line-height: 1;
+  letter-spacing: 0.0005rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  &::placeholder {
+    font-weight: 500;
+    font-family: inherit;
+    opacity: 1;
+    color: #6b635c;
+    font-size: inherit;
+  }
+}
+
+.dp__input_icon {
+  width: 2.5rem;
+  margin: 0;
+  padding: 0;
 }
 
 .dp__input_wrap {

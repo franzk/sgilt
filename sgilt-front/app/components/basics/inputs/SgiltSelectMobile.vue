@@ -2,7 +2,7 @@
   <DrawerRoot v-model:open="isOpen">
     <DrawerTrigger class="select-trigger">
       <div class="trigger-content">
-        <slot name="left-icon" />
+        <span class="left-icon"><slot name="left-icon" /></span>
         <span :class="{ 'has-value': modelValue !== '-1' }" class="value">{{ selectedLabel }}</span>
       </div>
     </DrawerTrigger>
@@ -77,7 +77,7 @@ const selectOption = (val: string) => {
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
-// Style du bouton qui ouvre le menu
+/* // Style du bouton qui ouvre le menu
 .select-trigger {
   width: 100%;
   display: flex;
@@ -131,7 +131,7 @@ const selectOption = (val: string) => {
       height: 1.5em;
     }
   }
-}
+} */
 // ==============================
 // Sgilt Select Drawer (Vaul)
 // ==============================
@@ -148,7 +148,7 @@ $muted2: #eef0f3;
 $shadow-sheet: 0 -28px 80px rgba(0, 0, 0, 0.28);
 $shadow-pop: 0 10px 28px rgba(0, 0, 0, 0.1);
 
-.select-trigger {
+/* .select-trigger {
   width: 100%;
   border: 0;
   background: transparent;
@@ -181,7 +181,7 @@ $shadow-pop: 0 10px 28px rgba(0, 0, 0, 0.1);
       0 10px 24px rgba(0, 0, 0, 0.06),
       0 0 0 4px rgba($accent, 0.22);
   }
-}
+} */
 
 // Overlay
 .sheet-overlay {

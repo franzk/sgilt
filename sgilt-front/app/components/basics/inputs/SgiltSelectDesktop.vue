@@ -3,7 +3,7 @@
     <SelectTrigger asChild>
       <button type="button" class="select-trigger">
         <div class="trigger-content">
-          <slot name="left-icon" />
+          <span class="left-icon"><slot name="left-icon" /></span>
           <SelectValue
             class="value"
             :class="{ 'has-value': modelValue !== '-1' }"
@@ -57,7 +57,7 @@ const props = withDefaults(defineProps<Props>(), {
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
-.select-trigger {
+/* .select-trigger {
   width: 100%;
   height: 3.5rem;
   border-radius: 0.875rem;
@@ -70,7 +70,7 @@ const props = withDefaults(defineProps<Props>(), {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1rem;
+  padding: 0 0.5rem;
   gap: 0.75rem;
 
   cursor: pointer;
@@ -111,6 +111,15 @@ const props = withDefaults(defineProps<Props>(), {
 .chev {
   opacity: 0.55;
   user-select: none;
+} */
+
+.chev {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.55;
+  user-select: none;
 }
 
 /* Dropdown */
@@ -121,6 +130,7 @@ const props = withDefaults(defineProps<Props>(), {
   border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.14);
   overflow: hidden;
+  width: 15rem;
 }
 
 .select-viewport {
@@ -140,7 +150,7 @@ const props = withDefaults(defineProps<Props>(), {
   cursor: pointer;
   user-select: none;
   color: $color-primary;
-  font-weight: 650;
+  font-weight: 550;
 
   &:hover {
     background: rgba($color-accent, 0.12);

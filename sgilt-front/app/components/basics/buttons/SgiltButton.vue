@@ -39,7 +39,7 @@ defineProps<{
   border: none;
   border-radius: 0.875rem;
 
-  padding: $spacing-m $spacing-l;
+  // padding: $spacing-m $spacing-l;
 
   &:hover {
     background-color: darken(#f2c200, 10%);

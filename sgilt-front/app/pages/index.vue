@@ -127,7 +127,10 @@ const selectedOption = ref(selectOptions[0]!.value)
       width: 90%;
       font-size: 1.125rem;
 
-      .submit_button {
+      /* .submit_button {
+        width: 100%;
+      } */
+      .sgilt-button {
         width: 100%;
       }
 
@@ -194,7 +197,7 @@ const selectedOption = ref(selectOptions[0]!.value)
 /* =========================
    DESKTOP HERO FULLSCREEN
    ========================= */
-@media (min-width: 768px) {
+@media (min-width: 850px) {
   .home {
     display: flex !important;
     flex-direction: column !important;
@@ -349,6 +352,7 @@ const selectedOption = ref(selectOptions[0]!.value)
 
   // inputs en ligne (option "recherche", pas "login")
   .inputs {
+    font-size: 1rem;
     // width: min(920px, 92vw);
     display: flex !important;
     flex-direction: row !important;
@@ -360,15 +364,21 @@ const selectedOption = ref(selectOptions[0]!.value)
 
     // un poil de relief sous les composants
     filter: drop-shadow(0 14px 40px rgba(0, 0, 0, 0.22));
+    > * {
+      min-width: 17rem !important;
+      max-width: 17rem !important;
+      font-size: 1.1rem !important;
+      backdrop-filter: blur(6px);
+    }
   }
 
-  .sgilt-date-picker,
+  /* .sgilt-date-picker,
   .custom-select,
   .sgilt-button {
     width: 15rem !important;
-    height: 3rem !important;
+    // height: 3rem !important;
     font-size: 1rem !important;
-  }
+  }*/
 
   .sgilt-button {
     box-shadow:
