@@ -87,7 +87,7 @@ const choiceState = computed(() => {
 
   --dp-primary-color: #{$color-accent};
   --dp-hover-color: rgba(255, 191, 0, 0.14);
-  --dp-icon-color: #{$color-primary};
+  --dp-icon-color: #{$color-accent};
   --dp-success-color: #{$state-option};
   --dp-cell-border-radius: 0.5em;
   --dp-cell-padding: 1.2rem;
@@ -135,6 +135,7 @@ const choiceState = computed(() => {
   width: 2.5rem;
   margin: 0;
   padding: 0;
+  stroke-width: 1px;
 }
 
 .dp__input_wrap {

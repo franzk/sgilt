@@ -115,5 +115,9 @@ const { isMobile } = useDevice()
   width: 2.5rem;
   align-content: center;
   justify-content: center;
+  color: $color-accent;
+  svg path {
+    stroke: currentColor;
+  }
 }
 </style>

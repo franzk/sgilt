@@ -96,14 +96,16 @@ const selectedOption = ref(selectOptions[0]!.value)
       font-weight: 600;
       font-size: 2.5rem;
       line-height: 2.75rem;
+      font-family: 'Cormorant Garamond', serif;
     }
 
     .title-bold {
       font-weight: 900;
-      font-size: 2.75rem;
+      font-size: 3.2rem;
       line-height: 3rem;
       letter-spacing: 0.02em;
       margin-bottom: 0.875rem;
+      color: $color-accent;
     }
 
     .tagline {

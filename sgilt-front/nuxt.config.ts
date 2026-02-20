@@ -4,7 +4,14 @@ export default defineNuxtConfig({
 
   devtools: { enabled: false },
 
-  modules: ['@nuxtjs/i18n', '@nuxtjs/seo', '@nuxtjs/robots', '@pinia/nuxt', 'reka-ui/nuxt'],
+  modules: [
+    '@nuxtjs/i18n',
+    '@nuxtjs/seo',
+    '@nuxtjs/robots',
+    '@pinia/nuxt',
+    'reka-ui/nuxt',
+    '@nuxtjs/google-fonts',
+  ],
 
   /**
    * ======================
