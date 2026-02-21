@@ -41,7 +41,7 @@ export default defineNuxtConfig({
 
   // Source de vérité SEO (utilisée notamment pour les canonicals)
   site: {
-    url: 'https://sgilt.alsace',
+    // url: 'https://sgilt.alsace',
     trailingSlash: false, // => canonicals en /path (sans / final)
   },
 
@@ -54,8 +54,8 @@ export default defineNuxtConfig({
     groups: [
       {
         userAgent: '*',
-        allow: '/',
-        disallow: ['/app/', '/recherche'],
+        disallow: '/',
+        // disallow: ['/app/', '/recherche'],
       },
     ],
   },

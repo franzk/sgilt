@@ -40,6 +40,10 @@ useSeoMeta({
   description: '',
 })
 
+useHead({
+  title: 'Sgilt (Beta)',
+})
+
 const { isMobile } = useDevice()
 
 const selectOptions = [
@@ -274,7 +278,8 @@ const selectedOption = ref(selectOptions[0]!.value)
     height: 50vh !important; // pour éviter que le hero soit trop haut sur grand écran
     display: flex;
     flex-direction: column;
-    padding: 6% 0 0 0 !important;
+    padding-top: 6% !important;
+    padding-bottom: 3% !important;
     // align-items: start !important;
     justify-content: space-between !important;
 
@@ -299,8 +304,6 @@ const selectedOption = ref(selectOptions[0]!.value)
       z-index: -1;
     }*/
     border-radius: 0 0 10px 10px !important;
-
-    padding-bottom: 0.5rem !important;
 
     // “verre” : léger, pas gris
     background: linear-gradient(

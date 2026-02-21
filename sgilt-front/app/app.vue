@@ -5,6 +5,13 @@
   </section>
 </template>
 
+<script setup lang="ts">
+import AppHeader from '@/components/AppHeader.vue'
+useHead({
+  meta: [{ name: 'robots', content: 'noindex, nofollow' }],
+})
+</script>
+
 <style lang="scss">
 @use '@/assets/styles/base' as *;
 
