@@ -92,6 +92,11 @@ const selectedOption = ref(selectOptions[0]!.value)
       align-items: center;
     }
 
+    .title {
+      display: flex;
+      flex-direction: column;
+    }
+
     .title-thin {
       font-weight: 600;
       font-size: 2.5rem;
@@ -203,7 +208,7 @@ const selectedOption = ref(selectOptions[0]!.value)
   .home {
     display: flex !important;
     flex-direction: column !important;
-    justify-content: space-around !important;
+    justify-content: end !important;
     min-height: calc(100dvh - $app-header-height);
     padding-top: 0; // le hero doit coller sous le header
     color: #fff !important;
@@ -258,11 +263,13 @@ const selectedOption = ref(selectOptions[0]!.value)
     position: relative;
     z-index: 2;
 
-    min-height: calc(100dvh - $app-header-height);
+    /*min-*/
+    height: 50vh !important; // pour éviter que le hero soit trop haut sur grand écran
     display: flex;
     flex-direction: column;
+    padding: 6% 0 0 0 !important;
     // align-items: start !important;
-    // justify-content: start !important;
+    justify-content: space-between !important;
 
     // padding: 0% !important;
 
@@ -270,9 +277,9 @@ const selectedOption = ref(selectOptions[0]!.value)
     // padding: clamp(2rem, 6vh, 5rem) clamp(2rem, 6vw, 6rem);
 
     // tu peux régler ce "point d'accroche" vertical
-    gap: 3rem !important;
+    // gap: 5rem !important;
 
-    &::before {
+    /*&::before {
       content: '';
       position: absolute;
       inset: 0;
@@ -283,6 +290,40 @@ const selectedOption = ref(selectOptions[0]!.value)
       filter: blur(24px);
       border-radius: 999px;
       z-index: -1;
+    }*/
+    border-radius: 10px 10px 0 0 !important;
+
+    // “verre” : léger, pas gris
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.25) 0%,
+      rgba(255, 255, 255, 0.1) 100%
+    );
+
+    // blur (à doser)
+    backdrop-filter: blur(1px) saturate(1.15);
+    -webkit-backdrop-filter: blur(2px) saturate(1.15);
+
+    // bord + reflets
+    border: 1px solid rgba(255, 255, 255, 0.42) !important;
+    box-shadow:
+      0 18px 50px rgba(0, 0, 0, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.55) !important;
+
+    // micro-contraste sur le fond (évite l’effet “bande”)
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        900px 220px at 50% 0%,
+        rgba($color-accent, 0.12),
+        transparent 60%
+      );
+      pointer-events: none;
     }
   }
 
@@ -307,7 +348,7 @@ const selectedOption = ref(selectOptions[0]!.value)
 
   .title {
     display: flex;
-    flex-direction: row;
+    flex-direction: row !important;
     color: inherit;
     align-items: baseline;
     gap: 0.6em;
@@ -326,6 +367,7 @@ const selectedOption = ref(selectOptions[0]!.value)
     line-height: 1.05;
     letter-spacing: 0.01em !important;
     margin-top: 0.2rem;
+    color: white !important;
   }
 
   .tagline {
@@ -338,9 +380,6 @@ const selectedOption = ref(selectOptions[0]!.value)
     line-height: 1.3;
     opacity: 0.88 !important;
     color: #fff !important;
-    text-shadow:
-      0 1px 4px rgba(0, 0, 0, 0.25),
-      0 4px 12px rgba(0, 0, 0, 0.15);
 
     .tagline-mobile {
       display: none !important;
@@ -361,8 +400,12 @@ const selectedOption = ref(selectOptions[0]!.value)
     gap: 1.1rem;
     align-items: center !important;
     justify-content: center !important;
-    height: 3rem !important;
-    transform: translateY(1rem);
+    height: unset !important;
+    // transform: translateY(1rem);
+    width: 100% !important;
+    backdrop-filter: blur(20px) saturate(1.15) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.15) !important;
+    padding: 5px !important;
 
     // un poil de relief sous les composants
     filter: drop-shadow(0 14px 40px rgba(0, 0, 0, 0.22));
