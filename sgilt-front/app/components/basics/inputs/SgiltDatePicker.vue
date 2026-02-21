@@ -11,6 +11,7 @@
       :day-class="getDayClass"
       :state="choiceState"
       :placeholder="placeholder"
+      teleport="body"
     >
       <template #action-extra>
         <!-- Extra info : color legend -->
@@ -71,6 +72,8 @@ const choiceState = computed(() => {
 @use '@/assets/styles/colors' as *;
 @import '@vuepic/vue-datepicker/dist/main.css';
 
+$border-radius: 1.4rem;
+
 .sgilt-date-picker {
   width: 100%;
   * {
@@ -79,7 +82,7 @@ const choiceState = computed(() => {
 }
 
 .dp__theme_light {
-  --dp-border-radius: 0.875em;
+  --dp-border-radius: #{$border-radius};
   --dp-border-color: #{$shadow-m};
   --dp-input-padding: 0.75rem;
   --dp-font-size: inherit;
@@ -93,13 +96,13 @@ const choiceState = computed(() => {
   --dp-cell-padding: 1.2rem;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 850px) {
   .dp__theme_light {
     --dp-cell-padding: 1rem;
   }
 }
 
-@media (max-width: 390px) {
+@media (max-width: 300px) {
   .dp__theme_light {
     --dp-cell-padding: 1rem;
   }
@@ -143,7 +146,7 @@ const choiceState = computed(() => {
 }
 
 .dp__menu {
-  border-radius: 0.875rem;
+  border-radius: $border-radius;
   box-shadow:
     0 0.25rem 0.5rem rgba(0, 0, 0, 0.1),
     0 0.75rem 1.75rem rgba(0, 0, 0, 0.08);

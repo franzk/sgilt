@@ -39,6 +39,8 @@ const { isMobile } = useDevice()
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
+$border-radius: 1.4rem;
+
 // Style du bouton qui ouvre le menu
 :global(.select-trigger) {
   position: relative;
@@ -50,7 +52,7 @@ const { isMobile } = useDevice()
   // padding: 1rem 1.25rem;
   background: white;
   border: 1px solid $shadow-m; // ou ta variable
-  border-radius: 0.875rem;
+  border-radius: $border-radius;
   font-size: inherit;
   letter-spacing: 0.02rem;
   height: inherit;
@@ -65,7 +67,7 @@ const { isMobile } = useDevice()
   position: relative;
   width: 100%;
   height: inherit;
-  border-radius: 0.875rem;
+  border-radius: $border-radius;
   background: white;
   border: 1px solid $shadow-m;
   box-shadow:

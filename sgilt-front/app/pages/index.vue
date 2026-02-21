@@ -64,6 +64,12 @@ const selectedOption = ref(selectOptions[0]!.value)
   background: #fff;
   padding-top: 0.75rem;
 
+  @media (max-width: 849px) {
+    :global(.app-header) {
+      box-shadow: none !important;
+    }
+  }
+
   // 1 grille = 2 zones
   display: grid;
   grid-template-rows: 50% 50%;
@@ -132,6 +138,7 @@ const selectedOption = ref(selectOptions[0]!.value)
       align-items: center;
       gap: 0.875rem;
       width: 90%;
+      max-width: 30rem;
       font-size: 1.125rem;
 
       /* .submit_button {
@@ -208,7 +215,7 @@ const selectedOption = ref(selectOptions[0]!.value)
   .home {
     display: flex !important;
     flex-direction: column !important;
-    justify-content: end !important;
+    justify-content: start !important;
     min-height: calc(100dvh - $app-header-height);
     padding-top: 0; // le hero doit coller sous le header
     color: #fff !important;
@@ -291,7 +298,9 @@ const selectedOption = ref(selectOptions[0]!.value)
       border-radius: 999px;
       z-index: -1;
     }*/
-    border-radius: 10px 10px 0 0 !important;
+    border-radius: 0 0 10px 10px !important;
+
+    padding-bottom: 0.5rem !important;
 
     // “verre” : léger, pas gris
     background: linear-gradient(
@@ -301,14 +310,14 @@ const selectedOption = ref(selectOptions[0]!.value)
     );
 
     // blur (à doser)
-    backdrop-filter: blur(1px) saturate(1.15);
-    -webkit-backdrop-filter: blur(2px) saturate(1.15);
+    backdrop-filter: blur(3px) saturate(1.15);
+    -webkit-backdrop-filter: blur(3px) saturate(1.15);
 
     // bord + reflets
     border: 1px solid rgba(255, 255, 255, 0.42) !important;
     box-shadow:
-      0 18px 50px rgba(0, 0, 0, 0.18),
-      inset 0 1px 0 rgba(255, 255, 255, 0.55) !important;
+      0 10px 40px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
 
     // micro-contraste sur le fond (évite l’effet “bande”)
     position: relative;
@@ -351,23 +360,29 @@ const selectedOption = ref(selectOptions[0]!.value)
     flex-direction: row !important;
     color: inherit;
     align-items: baseline;
-    gap: 0.6em;
+    gap: 0.8rem !important;
     margin: 0;
+    text-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
   }
 
   .title-thin {
     font-weight: 600;
-    font-size: clamp(2.2rem, 3.2vw, 3.1rem);
-    line-height: 1.05;
+    font-size: 3.2rem !important;
+    line-height: 1.05 !important;
+    color: $color-primary !important;
   }
 
   .title-bold {
     font-weight: 800 !important;
-    font-size: clamp(2.8rem, 4vw, 4rem) !important;
-    line-height: 1.05;
-    letter-spacing: 0.01em !important;
-    margin-top: 0.2rem;
-    color: white !important;
+    font-size: 4rem !important;
+    line-height: 1.05 !important;
+    letter-spacing: 0.02rem !important;
+    margin-top: 0.2rem !important;
+    // color: white !important;
+
+    text-shadow:
+      0 0 12px rgba(255, 210, 0, 0.4),
+      0 8px 24px rgba(0, 0, 0, 0.2) !important;
   }
 
   .tagline {
@@ -379,7 +394,8 @@ const selectedOption = ref(selectOptions[0]!.value)
     font-size: clamp(1rem, 1.2vw, 1.15rem);
     line-height: 1.3;
     opacity: 0.88 !important;
-    color: #fff !important;
+    color: rgba(0, 0, 0, 0.75) !important;
+    // color: #fff !important;
 
     .tagline-mobile {
       display: none !important;
@@ -403,9 +419,24 @@ const selectedOption = ref(selectOptions[0]!.value)
     height: unset !important;
     // transform: translateY(1rem);
     width: 100% !important;
-    backdrop-filter: blur(20px) saturate(1.15) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(1.15) !important;
-    padding: 5px !important;
+    max-width: unset !important;
+    // backdrop-filter: blur(20px) saturate(1.15) !important;
+    // -webkit-backdrop-filter: blur(20px) saturate(1.15) !important;
+    padding: 0.3rem !important;
+
+    width: unset !important;
+
+    border-radius: 2rem !important;
+
+    background: radial-gradient(
+      1200px 200px at 50% -20%,
+      rgba(255, 190, 60, 0.18),
+      transparent 60%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.42) !important;
+    box-shadow:
+      0 18px 50px rgba(0, 0, 0, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.55) !important;
 
     // un poil de relief sous les composants
     filter: drop-shadow(0 14px 40px rgba(0, 0, 0, 0.22));

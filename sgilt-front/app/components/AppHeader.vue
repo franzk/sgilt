@@ -42,6 +42,7 @@ const openProfile = () => {
 
 <style lang="scss" scoped>
 @use '@/assets/styles/base' as *;
+@use '@/assets/styles/borders' as *;
 
 .app-header {
   display: flex;
@@ -56,6 +57,8 @@ const openProfile = () => {
   right: 0;
   z-index: 50;
 
+  box-shadow: $box-shadow;
+
   background-color: #fff; // rgba(255, 255, 255, 0.8); // tu pourras remettre $color-secondary
   // backdrop-filter: blur(10px);
   // border-bottom: 1px solid rgba(0, 0, 0, 0.06);
@@ -66,10 +69,8 @@ const openProfile = () => {
 /* LOGO SGILT */
 .logo {
   margin: 0;
-  width: 5rem;
   img {
-    width: 100%;
-    height: auto;
+    height: 2rem;
   }
 }
 

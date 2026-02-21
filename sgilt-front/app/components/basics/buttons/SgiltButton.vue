@@ -20,6 +20,8 @@ defineProps<{
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
+$border-radius: 1.75rem;
+
 .sgilt-button {
   cursor: pointer;
 
@@ -37,7 +39,7 @@ defineProps<{
     box-shadow 0.2s ease;
 
   border: none;
-  border-radius: 0.875rem;
+  border-radius: $border-radius;
 
   // padding: $spacing-m $spacing-l;
 
