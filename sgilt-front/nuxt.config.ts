@@ -85,18 +85,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      meta: [
-        // Dit au navigateur: ce site est conçu pour le thème clair
-        { name: 'color-scheme', content: 'light' },
-
-        // Optionnel: certains navigateurs lisent aussi ça
-        { name: 'supported-color-schemes', content: 'light' },
-
-        { name: 'theme-color', content: '#ffffff' },
-
-        // utile aussi, parfois:
-        { name: 'msapplication-TileColor', content: '#ffffff' },
-      ],
+      meta: [{ name: 'theme-color', content: '#ffffff' }],
     },
   },
 
