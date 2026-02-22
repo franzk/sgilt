@@ -105,6 +105,7 @@ const selectedOption = ref(selectOptions[0]!.value)
     .title {
       display: flex;
       flex-direction: column;
+      color: #000 !important;
     }
 
     .title-thin {
@@ -120,14 +121,13 @@ const selectedOption = ref(selectOptions[0]!.value)
       line-height: 3rem;
       letter-spacing: 0.02em;
       margin-bottom: 0.875rem;
-      color: $color-accent;
     }
 
     .tagline {
       font-weight: 500;
       font-size: 1.125rem;
       line-height: 1.25;
-      color: black; //$text-secondary;
+      color: $text-secondary;
       max-width: 36rem;
       .tagline-desktop {
         display: none;
