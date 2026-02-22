@@ -66,7 +66,7 @@ const selectedOption = ref(selectOptions[0]!.value)
   width: 100%;
   min-height: calc(100dvh - $app-header-height); // pour compenser la hauteur du header fixe
   overflow: hidden;
-  background: #f9fbff; // #fff;
+  background: #fff;
   padding-top: 0.75rem;
 
   @media (max-width: 849px) {
@@ -151,6 +151,9 @@ const selectedOption = ref(selectOptions[0]!.value)
       } */
       .sgilt-button {
         width: 100%;
+        box-shadow:
+          0 8px 20px rgba(0, 0, 0, 0.25),
+          0 2px 6px #f9fbff !important;
       }
 
       > * {

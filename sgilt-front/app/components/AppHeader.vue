@@ -59,7 +59,7 @@ const openProfile = () => {
 
   box-shadow: $box-shadow;
 
-  background-color: #f9fbff; //fff !important; // rgba(255, 255, 255, 0.8); // tu pourras remettre $color-secondary
+  background-color: #fff !important; // rgba(255, 255, 255, 0.8); // tu pourras remettre $color-secondary
   // backdrop-filter: blur(10px);
   // border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 
