@@ -20,7 +20,7 @@ body {
   font-size: $font-size-md;
   line-height: $line-height-normal;
   color: $text-primary;
-  background-color: $brand-background;
+  background-color: white; // $brand-background;
 }
 
 h1,
@@ -34,7 +34,7 @@ h4 {
 
 p {
   margin: 0 0 $spacing-m 0;
-  color: $text-secondary;
+  // color: $text-secondary;
 }
 
 a {

@@ -15,7 +15,7 @@ $brand-accent: #e6b800; // accent festif profond
    Text
    ======================== */
 
-$text-primary: $brand-primary;
+$text-primary: black; // $brand-primary;
 $text-secondary: #6b635c;
 $text-inverted: #ffffff;
 
@@ -60,7 +60,7 @@ $shadow-l: rgba(47, 42, 37, 0.18);
    (à supprimer progressivement)
    ======================== */
 
-$color-primary: $brand-primary;
+$color-primary: black; // $brand-primary;
 $color-secondary: $brand-background;
 $color-accent: $brand-accent;
 

@@ -120,14 +120,14 @@ const selectedOption = ref(selectOptions[0]!.value)
       line-height: 3rem;
       letter-spacing: 0.02em;
       margin-bottom: 0.875rem;
-      color: $color-accent;
+      // color: $color-accent;
     }
 
     .tagline {
       font-weight: 500;
       font-size: 1.125rem;
       line-height: 1.25;
-      color: $text-secondary;
+      color: black; //$text-secondary;
       max-width: 36rem;
       .tagline-desktop {
         display: none;
@@ -184,14 +184,17 @@ const selectedOption = ref(selectOptions[0]!.value)
     z-index: 0;
     inset: 0;
 
-    background-image: url('/textures/paper-grain.png');
-    background-repeat: repeat;
-    background-size: 700px;
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
+
+    //background-image: url('/textures/paper-grain.png');
+    //background-repeat: repeat;
+    //background-size: 700px;
 
     pointer-events: none;
 
     /* le masque: blanc en haut, papier visible plus bas */
-    -webkit-mask-image: linear-gradient(
+    /*-webkit-mask-image: linear-gradient(
       to bottom,
       transparent 0%,
       transparent 18%,
@@ -208,7 +211,7 @@ const selectedOption = ref(selectOptions[0]!.value)
       rgba(0, 0, 0, 0.25) 28%,
       rgba(0, 0, 0, 0.6) 38%,
       rgba(0, 0, 0, 1) 52%
-    );
+    );*/
   }
 }
 
@@ -253,14 +256,14 @@ const selectedOption = ref(selectOptions[0]!.value)
       // haut un peu plus clair pour rappeler ton papier,
       // milieu légèrement assombri pour porter le texte,
       // bas quasi neutre (on laisse l'image vivre)
-      background: linear-gradient(
+      /* background: linear-gradient(
         to bottom,
         rgba(255, 255, 255, 0.55) 0%,
         rgba(255, 255, 255, 0.18) 20%,
         rgba(0, 0, 0, 0.18) 45%,
         rgba(0, 0, 0, 0.05) 75%,
         rgba(0, 0, 0, 0) 100%
-      );
+      ); */
     }
   }
 
