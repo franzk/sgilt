@@ -91,6 +91,11 @@ export default defineNuxtConfig({
 
         // Optionnel: certains navigateurs lisent aussi ça
         { name: 'supported-color-schemes', content: 'light' },
+
+        { name: 'theme-color', content: '#ffffff' },
+
+        // utile aussi, parfois:
+        { name: 'msapplication-TileColor', content: '#ffffff' },
       ],
     },
   },
