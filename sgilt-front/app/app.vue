@@ -8,7 +8,12 @@
 <script setup lang="ts">
 import AppHeader from '@/components/AppHeader.vue'
 useHead({
-  meta: [{ name: 'robots', content: 'noindex, nofollow' }],
+  meta: [
+    { name: 'robots', content: 'noindex, nofollow' },
+    { name: 'color-scheme', content: 'light' },
+    { name: 'theme-color', content: '#ffffff', media: '(prefers-color-scheme: light)' },
+    { name: 'theme-color', content: '#111111', media: '(prefers-color-scheme: dark)' },
+  ],
 })
 </script>
 
