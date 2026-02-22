@@ -49,7 +49,7 @@ $border-radius: 1.75rem;
 
   &:active {
     transform: translateY(1px);
-    // box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
   }
   border: 0.0625rem solid rgba(255, 255, 255, 0.35);
   box-shadow:

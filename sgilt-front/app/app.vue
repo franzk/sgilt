@@ -26,5 +26,8 @@ body {
 
 :root {
   color-scheme: light;
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 </style>
