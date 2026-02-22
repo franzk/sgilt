@@ -120,7 +120,7 @@ const selectedOption = ref(selectOptions[0]!.value)
       line-height: 3rem;
       letter-spacing: 0.02em;
       margin-bottom: 0.875rem;
-      // color: $color-accent;
+      color: $color-accent;
     }
 
     .tagline {
