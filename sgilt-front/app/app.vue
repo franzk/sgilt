@@ -23,4 +23,8 @@ body {
 .app-content {
   padding-top: $app-header-height; // pour compenser la hauteur du header fixe
 }
+
+:root {
+  color-scheme: light;
+}
 </style>
