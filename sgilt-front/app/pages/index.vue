@@ -42,6 +42,7 @@ useSeoMeta({
 
 useHead({
   title: 'Sgilt (Beta)',
+  meta: [{ name: 'theme-color', content: '#ffffff' }],
 })
 
 const { isMobile } = useDevice()
