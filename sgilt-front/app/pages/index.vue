@@ -66,7 +66,7 @@ const selectedOption = ref(selectOptions[0]!.value)
   width: 100%;
   min-height: calc(100dvh - $app-header-height); // pour compenser la hauteur du header fixe
   overflow: hidden;
-  background: #fff;
+  background: #f9fbff; // #fff;
   padding-top: 0.75rem;
 
   @media (max-width: 849px) {
@@ -385,7 +385,7 @@ const selectedOption = ref(selectOptions[0]!.value)
     line-height: 1.05 !important;
     letter-spacing: 0.02rem !important;
     margin-top: 0.2rem !important;
-    // color: white !important;
+    color: $color-accent !important;
 
     text-shadow:
       0 0 12px rgba(255, 210, 0, 0.4),
