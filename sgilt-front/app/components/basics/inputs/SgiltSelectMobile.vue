@@ -1,10 +1,14 @@
 <template>
   <DrawerRoot v-model:open="isOpen">
-    <DrawerTrigger class="select-trigger">
-      <div class="trigger-content">
-        <span class="left-icon"><slot name="left-icon" /></span>
-        <span :class="{ 'has-value': modelValue !== '-1' }" class="value">{{ selectedLabel }}</span>
-      </div>
+    <DrawerTrigger asChild>
+      <button ref="triggerRef" type="button" class="select-trigger">
+        <div class="trigger-content">
+          <span class="left-icon"><slot name="left-icon" /></span>
+          <span :class="{ 'has-value': !!modelValue && modelValue !== '-1' }" class="value">{{
+            selectedLabel
+          }}</span>
+        </div>
+      </button>
     </DrawerTrigger>
 
     <DrawerPortal>
@@ -49,6 +53,7 @@ import {
   DrawerTitle,
   DrawerDescription,
 } from 'vaul-vue'
+import { nextTick, onMounted, ref } from 'vue'
 
 const modelValue = defineModel<string>()
 
@@ -61,6 +66,13 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const isOpen = ref(false)
+const triggerRef = ref<HTMLButtonElement | null>(null)
+
+onMounted(() => {
+  nextTick(() => {
+    triggerRef.value?.blur()
+  })
+})
 
 // On récupère le label pour l'afficher sur le bouton "déclencheur"
 const selectedLabel = computed(() => {

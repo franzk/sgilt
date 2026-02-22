@@ -72,8 +72,53 @@ const choiceState = computed(() => {
 @use '@/assets/styles/colors' as *;
 @import '@vuepic/vue-datepicker/dist/main.css';
 
+// input
+// -- border
 $border-radius: 1.4rem;
+$border-color: $shadow-m;
+$box-shadow:
+  0 0.125rem 0.375rem rgba(0, 0, 0, 0.04),
+  0 0.0625rem 0.125rem rgba(0, 0, 0, 0.03);
+$input-focus-border-color: rgba(255, 191, 0, 0.75);
+$input-focus-box-shadow: 0 0 0 3px rgba(255, 191, 0, 0.25); /* halo doux */
 
+// -- contenu
+$input-padding: 0.75rem;
+$input-font-weight: 500;
+$input-letter-spacing: 0.005rem;
+$placeholder-text-opacity: 1;
+
+// -- icon
+$icon-color: $color-accent;
+$input-text-color: rgba($color-primary, 0.8); // #6b635c;
+$icon-width: 2.5rem;
+$icon-stroke-width: 1px;
+
+// calendar
+// -- global
+$calendar-text-color: $color-primary;
+
+// -- cell
+$today-border-color: $color-accent;
+$cell-hover-color: rgba($color-accent, 0.14);
+$cell-border-radius: 0.5em;
+$cell-padding: 1.2rem;
+$cell-padding-small: 1rem;
+
+// -- menu
+$menu-border-radius: 1.4rem;
+$menu-box-shadow:
+  0 0.25rem 0.5rem rgba(0, 0, 0, 0.1),
+  0 0.75rem 1.75rem rgba(0, 0, 0, 0.08);
+$menu-background:
+  radial-gradient(
+    1100px 520px at 50% -10%,
+    rgba($color-accent, 0.22) 0%,
+    rgba(255, 255, 255, 0) 55%
+  ),
+  linear-gradient(180deg, #fffdf6 0%, #ffffff 60%);
+
+// style
 .sgilt-date-picker {
   width: 100%;
   * {
@@ -83,28 +128,28 @@ $border-radius: 1.4rem;
 
 .dp__theme_light {
   --dp-border-radius: #{$border-radius};
-  --dp-border-color: #{$shadow-m};
-  --dp-input-padding: 0.75rem;
+  --dp-border-color: #{$border-color};
+  --dp-input-padding: #{$input-padding};
   --dp-font-size: inherit;
-  --dp-text-color: #{$color-primary};
+  --dp-text-color: #{$calendar-text-color};
 
-  --dp-primary-color: #{$color-accent};
-  --dp-hover-color: rgba(255, 191, 0, 0.14);
-  --dp-icon-color: #{$color-accent};
-  --dp-success-color: #{$state-option};
-  --dp-cell-border-radius: 0.5em;
-  --dp-cell-padding: 1.2rem;
+  --dp-primary-color: #{$today-border-color};
+  --dp-hover-color: #{$cell-hover-color};
+  --dp-icon-color: #{$icon-color};
+  --dp-success-color: #{$state-option}; // TODO : à vérifier
+  --dp-cell-border-radius: #{$cell-border-radius};
+  --dp-cell-padding: #{$cell-padding};
 }
 
 @media (min-width: 850px) {
   .dp__theme_light {
-    --dp-cell-padding: 1rem;
+    --dp-cell-padding: #{$cell-padding-small};
   }
 }
 
 @media (max-width: 300px) {
   .dp__theme_light {
-    --dp-cell-padding: 1rem;
+    --dp-cell-padding: #{$cell-padding-small};
   }
 }
 
@@ -112,33 +157,30 @@ $border-radius: 1.4rem;
   text-align: center;
   padding-right: 2.5rem;
   font-size: inherit;
-  color: #6b635c;
-  font-weight: 500;
+  color: $input-text-color;
+  font-weight: $input-font-weight;
   height: 100%;
-  box-shadow:
-    0 0.125rem 0.375rem rgba(0, 0, 0, 0.04),
-    0 0.0625rem 0.125rem rgba(0, 0, 0, 0.03);
+  box-shadow: $box-shadow;
 
   font-family: inherit;
   line-height: 1;
-  letter-spacing: 0.0005rem;
+  letter-spacing: $input-letter-spacing;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
   &::placeholder {
-    font-weight: 500;
+    font-weight: $input-font-weight;
     font-family: inherit;
-    opacity: 1;
-    color: #6b635c;
+    opacity: $placeholder-text-opacity;
     font-size: inherit;
   }
 }
 
 .dp__input_icon {
-  width: 2.5rem;
+  width: $icon-width;
   margin: 0;
   padding: 0;
-  stroke-width: 1px;
+  stroke-width: $icon-stroke-width;
 }
 
 .dp__input_wrap {
@@ -146,17 +188,9 @@ $border-radius: 1.4rem;
 }
 
 .dp__menu {
-  border-radius: $border-radius;
-  box-shadow:
-    0 0.25rem 0.5rem rgba(0, 0, 0, 0.1),
-    0 0.75rem 1.75rem rgba(0, 0, 0, 0.08);
-  background:
-    radial-gradient(
-      1100px 520px at 50% -10%,
-      rgba($color-accent, 0.22) 0%,
-      rgba(255, 255, 255, 0) 55%
-    ),
-    linear-gradient(180deg, #fffdf6 0%, #ffffff 60%);
+  border-radius: $menu-border-radius;
+  box-shadow: $menu-box-shadow;
+  background: $menu-background;
 }
 
 .dp__month_year_wrap {
@@ -170,15 +204,15 @@ $border-radius: 1.4rem;
 }
 
 .dp__input:focus {
-  // outline: $focus-outline;
-  // outline-offset: $focus-outline-offset;
-  border-color: rgba(255, 191, 0, 0.75);
-  box-shadow: 0 0 0 3px rgba(255, 191, 0, 0.25); /* halo doux */
+  border-color: $input-focus-border-color;
+  box-shadow: $input-focus-box-shadow;
 }
 
 .dp__active_date {
   font-weight: bold;
 }
+
+/* TODO : à revoir quand on fera les states
 
 .date {
   font-weight: bold;
@@ -195,7 +229,7 @@ $border-radius: 1.4rem;
   &.option::after {
     color: $state-option;
   }
-}
+} 
 
 .dot {
   width: 1em;
@@ -212,6 +246,7 @@ $border-radius: 1.4rem;
   }
 }
 
+
 .extra-info {
   // font-size: $font-size-base;
   color: $color-subtext;
@@ -219,5 +254,5 @@ $border-radius: 1.4rem;
   display: flex;
   flex-direction: row;
   align-items: start;
-}
+} */
 </style>

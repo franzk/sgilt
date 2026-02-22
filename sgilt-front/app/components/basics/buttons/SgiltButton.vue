@@ -18,22 +18,45 @@ defineProps<{
 </script>
 
 <style scoped lang="scss">
+// TODO : vérifier le secondary
+@use 'sass:color';
 @use '@/assets/styles/base' as *;
 
-$border-radius: 1.75rem;
+// global
+$background: linear-gradient(to bottom, #ffd84d 0%, #f2c200 100%);
 
+// font
+$font-size: 1.125rem;
+$font-weight: 750;
+$color: #fff;
+$text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+
+// border
+$border-radius: 1.75rem;
+$border: 0.0625rem solid rgba(255, 255, 255, 0.35);
+$box-shadow:
+  0 0.25rem 0.5rem rgba(0, 0, 0, 0.14),
+  0 0.75rem 1.75rem rgba(0, 0, 0, 0.08),
+  0 0.75rem 2rem rgba(242, 194, 0, 0.18);
+
+// hover & active
+$hover-text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+$active-transform: translateY(1px);
+$active-box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
+
+// style
 .sgilt-button {
   cursor: pointer;
 
   height: 100%;
 
-  font-size: 1.125rem;
-  font-weight: 750;
+  font-size: $font-size;
+  font-weight: $font-weight;
 
-  // background-color: #f2c200;
-  background: linear-gradient(to bottom, #ffd84d 0%, #f2c200 100%);
-  color: #fff;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0);
+  background: $background;
+  color: $color;
+  text-shadow: $text-shadow;
   transition:
     transform 0.15s ease,
     box-shadow 0.2s ease;
@@ -41,30 +64,26 @@ $border-radius: 1.75rem;
   border: none;
   border-radius: $border-radius;
 
-  // padding: $spacing-m $spacing-l;
-
   &:hover {
-    background-color: darken(#f2c200, 10%);
+    text-shadow: $hover-text-shadow;
   }
 
   &:active {
-    transform: translateY(1px);
-    box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
+    transform: $active-transform;
+    box-shadow: $active-box-shadow;
   }
-  border: 0.0625rem solid rgba(255, 255, 255, 0.35);
-  box-shadow:
-    0 0.25rem 0.5rem rgba(0, 0, 0, 0.14),
-    0 0.75rem 1.75rem rgba(0, 0, 0, 0.08),
-    0 0.75rem 2rem rgba(242, 194, 0, 0.18);
+
+  border: $border;
+
+  box-shadow: $box-shadow;
 }
 
 .secondary {
   background-color: white;
   color: $color-accent;
-  // border: $border-width-s solid $color-accent;
 
   &:hover {
-    background-color: darken($color-secondary, 10%);
+    background-color: color.adjust($color-secondary, $lightness: -10%);
   }
 }
 </style>

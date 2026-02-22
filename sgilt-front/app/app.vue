@@ -32,6 +32,7 @@ body {
   color-scheme: light;
   * {
     -webkit-tap-highlight-color: transparent;
+    outline: none;
   }
 }
 </style>

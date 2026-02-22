@@ -1,12 +1,12 @@
 <template>
   <SelectRoot v-model="modelValue">
     <SelectTrigger asChild>
-      <button type="button" class="select-trigger">
+      <button ref="triggerRef" type="button" class="select-trigger">
         <div class="trigger-content">
           <span class="left-icon"><slot name="left-icon" /></span>
           <SelectValue
             class="value"
-            :class="{ 'has-value': modelValue !== '-1' }"
+            :class="{ 'has-value': !!modelValue && modelValue !== '-1' }"
             placeholder="placeholder"
           />
         </div>
@@ -42,6 +42,7 @@ import {
   SelectItemText,
   SelectItemIndicator,
 } from 'reka-ui'
+import { nextTick, onMounted, ref } from 'vue'
 
 const modelValue = defineModel<string>()
 
@@ -51,6 +52,14 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   options: () => [],
+})
+
+const triggerRef = ref<HTMLButtonElement | null>(null)
+
+onMounted(() => {
+  nextTick(() => {
+    triggerRef.value?.blur()
+  })
 })
 </script>
 

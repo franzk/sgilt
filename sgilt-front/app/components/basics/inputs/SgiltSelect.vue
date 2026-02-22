@@ -1,16 +1,18 @@
 <template>
   <ClientOnly>
-    <SgiltSelectMobile v-if="isMobile" v-model="modelValue" :options="options">
-      <template #left-icon>
-        <slot name="left-icon" />
-      </template>
-    </SgiltSelectMobile>
+    <div class="sgilt-select">
+      <SgiltSelectMobile v-if="isMobile" v-model="modelValue" :options="options">
+        <template #left-icon>
+          <slot name="left-icon" />
+        </template>
+      </SgiltSelectMobile>
 
-    <SgiltSelectDesktop v-else v-model="modelValue" :options="options">
-      <template #left-icon>
-        <slot name="left-icon" />
-      </template>
-    </SgiltSelectDesktop>
+      <SgiltSelectDesktop v-else v-model="modelValue" :options="options">
+        <template #left-icon>
+          <slot name="left-icon" />
+        </template>
+      </SgiltSelectDesktop>
+    </div>
 
     <!-- SSR fallback -->
     <template #fallback>
@@ -39,57 +41,66 @@ const { isMobile } = useDevice()
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
-$border-radius: 1.4rem;
+$input-border-radius: 1.4rem;
+$input-background: white;
+$input-border: 1px solid $shadow-m;
+$input-letter-spacing: 0.02rem;
+$input-box-shadow:
+  0 0.0625rem 0 rgba(0, 0, 0, 0.04),
+  0 0.5rem 1.25rem rgba(0, 0, 0, 0.05);
+
+.sgilt-select {
+  width: 100%;
+}
 
 // Style du bouton qui ouvre le menu
-:global(.select-trigger) {
+.sgilt-select :deep(.select-trigger) {
   position: relative;
   width: 100%;
   display: flex;
   flex-direction: row;
-  // align-items: center;
-  // justify-content: space-between;
-  // padding: 1rem 1.25rem;
-  background: white;
-  border: 1px solid $shadow-m; // ou ta variable
-  border-radius: $border-radius;
+  background: $input-background;
+  border: $input-border;
+  border-radius: $input-border-radius;
   font-size: inherit;
-  letter-spacing: 0.02rem;
+  letter-spacing: $input-letter-spacing;
   height: inherit;
   padding: 0;
 
-  box-shadow:
-    0 0.0625rem 0 rgba(0, 0, 0, 0.04),
-    0 0.5rem 1.25rem rgba(0, 0, 0, 0.05);
+  box-shadow: $input-box-shadow;
+
+  &:focus-visible {
+    outline: none;
+    border-color: rgba($color-accent, 0.55);
+
+    box-shadow:
+      0 10px 24px rgba(0, 0, 0, 0.06),
+      0 0 0 4px rgba($color-accent, 0.22);
+  }
 }
 
-:global(.trigger-content) {
+// Style du contenu du bouton (zone cliquable)
+.sgilt-select :deep(.trigger-content) {
   position: relative;
   width: 100%;
   height: inherit;
-  border-radius: $border-radius;
-  background: white;
-  border: 1px solid $shadow-m;
-  box-shadow:
-    0 0.0625rem 0 rgba(0, 0, 0, 0.04),
-    0 0.5rem 1.25rem rgba(0, 0, 0, 0.05);
+  border-radius: inherit;
+  background: transparent;
 
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
-  gap: 0.75rem;
-
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
 
-  /* &:focus-visible {
-      outline: none;
-      border-color: rgba($color-accent, 0.55);
-      box-shadow:
-        0 10px 24px rgba(0, 0, 0, 0.06),
-        0 0 0 4px rgba($color-accent, 0.22);
-    } */
+  /*&:focus-visible {
+    outline: none;
+    border-color: rgba($color-accent, 0.55);
+
+    box-shadow:
+      0 10px 24px rgba(0, 0, 0, 0.06),
+      0 0 0 4px rgba($color-accent, 0.22);
+  }*/
 
   .value {
     flex: 1;
@@ -102,14 +113,9 @@ $border-radius: 1.4rem;
     color: $text-primary;
     font-weight: 500;
   }
-
-  /* * {
-      width: 1.5em;
-      height: 1.5em;
-    } */
 }
 
-:global(.trigger-content .left-icon) {
+.sgilt-select :deep(.trigger-content .left-icon) {
   position: absolute;
   left: 0;
   display: flex;
