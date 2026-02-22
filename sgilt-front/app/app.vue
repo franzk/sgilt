@@ -10,9 +10,8 @@ import AppHeader from '@/components/AppHeader.vue'
 useHead({
   meta: [
     { name: 'robots', content: 'noindex, nofollow' },
+    { name: 'theme-color', content: '#ffffff' },
     { name: 'color-scheme', content: 'light' },
-    { name: 'theme-color', content: '#ffffff', media: '(prefers-color-scheme: light)' },
-    { name: 'theme-color', content: '#111111', media: '(prefers-color-scheme: dark)' },
   ],
 })
 </script>
