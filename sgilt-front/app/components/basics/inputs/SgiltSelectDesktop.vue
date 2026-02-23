@@ -66,80 +66,21 @@ onMounted(() => {
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
-/* .select-trigger {
-  width: 100%;
-  height: 3.5rem;
-  border-radius: 0.875rem;
-  background: white;
-  border: 1px solid $shadow-m;
-  box-shadow:
-    0 0.0625rem 0 rgba(0, 0, 0, 0.04),
-    0 0.5rem 1.25rem rgba(0, 0, 0, 0.05);
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 0.5rem;
-  gap: 0.75rem;
-
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-
-  &:focus-visible {
-    outline: none;
-    border-color: rgba($color-accent, 0.55);
-    box-shadow:
-      0 10px 24px rgba(0, 0, 0, 0.06),
-      0 0 0 4px rgba($color-accent, 0.22);
-  }
-}
-
-.trigger-content {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-  min-width: 0;
-  color: $text-secondary;
-}
-
-.value {
-  flex: 1;
-  min-width: 0;
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.has-value {
-  color: $text-primary;
-  font-weight: 600;
-}
-
-.chev {
-  opacity: 0.55;
-  user-select: none;
-} */
-
-.chev {
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  opacity: 0.55;
-  user-select: none;
-}
+$dropdown-border-radius: 1.4rem;
+$dropdown-border: 1px solid rgba(0, 0, 0, 0.08);
+$dropdown-box-shadow: 0 18px 44px rgba(0, 0, 0, 0.14);
+$dropdown-background: white;
+$dropdown-width: 17rem;
 
 /* Dropdown */
 .select-content {
   z-index: 2000 !important;
-  border-radius: 16px;
-  background: white;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.14);
+  border-radius: $dropdown-border-radius;
+  background: $dropdown-background;
+  border: $dropdown-border;
+  box-shadow: $dropdown-box-shadow;
   overflow: hidden;
-  width: 17rem;
+  width: $dropdown-width;
 }
 
 .select-viewport {
@@ -181,5 +122,14 @@ onMounted(() => {
 
 .select-item[data-state='checked'] .item-check {
   opacity: 1;
+}
+
+.chev {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.55;
+  user-select: none;
 }
 </style>

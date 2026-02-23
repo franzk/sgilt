@@ -41,14 +41,30 @@ const { isMobile } = useDevice()
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
+// input border
 $input-border-radius: 1.4rem;
-$input-background: white;
 $input-border: 1px solid $shadow-m;
-$input-letter-spacing: 0.02rem;
 $input-box-shadow:
   0 0.0625rem 0 rgba(0, 0, 0, 0.04),
   0 0.5rem 1.25rem rgba(0, 0, 0, 0.05);
 
+// input
+$input-background: white;
+$input-letter-spacing: 0.02rem;
+
+// focus
+$input-focus-border-color: rgba(255, 191, 0, 0.75);
+$input-focus-box-shadow: 0 0 0 3px rgba(255, 191, 0, 0.25);
+
+// input with value
+$input-has-value-font-weight: 500;
+$input-has-value-color: rgba($color-primary, 0.8);
+
+// icon
+$left-icon-color: $color-accent;
+$left-icon-width: 2.5rem;
+
+// style
 .sgilt-select {
   width: 100%;
 }
@@ -71,11 +87,9 @@ $input-box-shadow:
 
   &:focus-visible {
     outline: none;
-    border-color: rgba($color-accent, 0.55);
+    border-color: $input-focus-border-color;
 
-    box-shadow:
-      0 10px 24px rgba(0, 0, 0, 0.06),
-      0 0 0 4px rgba($color-accent, 0.22);
+    box-shadow: $input-focus-box-shadow;
   }
 }
 
@@ -93,15 +107,6 @@ $input-box-shadow:
   padding: 0;
   cursor: pointer;
 
-  /*&:focus-visible {
-    outline: none;
-    border-color: rgba($color-accent, 0.55);
-
-    box-shadow:
-      0 10px 24px rgba(0, 0, 0, 0.06),
-      0 0 0 4px rgba($color-accent, 0.22);
-  }*/
-
   .value {
     flex: 1;
     display: flex;
@@ -110,20 +115,21 @@ $input-box-shadow:
   }
 
   .has-value {
-    color: $text-primary;
-    font-weight: 500;
+    font-weight: $input-has-value-font-weight;
+    color: $input-has-value-color;
   }
 }
 
+// Style de l'icône à gauche
 .sgilt-select :deep(.trigger-content .left-icon) {
   position: absolute;
   left: 0;
   display: flex;
   flex-wrap: wrap;
-  width: 2.5rem;
+  width: $left-icon-width;
   align-content: center;
   justify-content: center;
-  color: $color-accent;
+  color: $left-icon-color;
   svg path {
     stroke: currentColor;
   }

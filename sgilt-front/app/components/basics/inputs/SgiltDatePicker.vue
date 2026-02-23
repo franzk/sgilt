@@ -80,7 +80,7 @@ $box-shadow:
   0 0.125rem 0.375rem rgba(0, 0, 0, 0.04),
   0 0.0625rem 0.125rem rgba(0, 0, 0, 0.03);
 $input-focus-border-color: rgba(255, 191, 0, 0.75);
-$input-focus-box-shadow: 0 0 0 3px rgba(255, 191, 0, 0.25); /* halo doux */
+$input-focus-box-shadow: 0 0 0 3px rgba(255, 191, 0, 0.25);
 
 // -- contenu
 $input-padding: 0.75rem;

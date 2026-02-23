@@ -89,61 +89,6 @@ const selectOption = (val: string) => {
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
-/* // Style du bouton qui ouvre le menu
-.select-trigger {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  // align-items: center;
-  // justify-content: space-between;
-  // padding: 1rem 1.25rem;
-  background: white;
-  border: 1px solid $shadow-m; // ou ta variable
-  border-radius: 0.875rem;
-  font-size: inherit;
-  letter-spacing: 0.02rem;
-  height: 100%;
-
-  box-shadow:
-    0 0.0625rem 0 rgba(0, 0, 0, 0.04),
-    0 0.5rem 1.25rem rgba(0, 0, 0, 0.05);
-
-  .trigger-content {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    color: $text-secondary;
-    width: 100%;
-    padding-left: 0.5rem;
-    padding-right: 2rem;
-
-    .value {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .has-value {
-      color: $text-primary;
-      font-weight: 500;
-    }
-
-    .left-icon {
-      display: flex;
-      flex-wrap: wrap;
-      width: 2.5em;
-      align-content: center;
-      justify-content: center;
-    }
-
-    * {
-      width: 1.5em;
-      height: 1.5em;
-    }
-  }
-} */
 // ==============================
 // Sgilt Select Drawer (Vaul)
 // ==============================
@@ -159,41 +104,6 @@ $muted2: #eef0f3;
 
 $shadow-sheet: 0 -28px 80px rgba(0, 0, 0, 0.28);
 $shadow-pop: 0 10px 28px rgba(0, 0, 0, 0.1);
-
-/* .select-trigger {
-  width: 100%;
-  border: 0;
-  background: transparent;
-  padding: 0;
-  text-align: left;
-  cursor: pointer;
-
-  // iOS tap highlight off
-  -webkit-tap-highlight-color: transparent;
-
-  .value {
-    flex: 1;
-    font-weight: 600;
-    color: rgba($primary, 0.55);
-
-    &.has-value {
-      color: $primary;
-    }
-  }
-
-  &:active .trigger-content {
-    transform: scale(0.987);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
-  }
-
-  &:focus-visible .trigger-content {
-    outline: none;
-    border-color: rgba($accent, 0.55);
-    box-shadow:
-      0 10px 24px rgba(0, 0, 0, 0.06),
-      0 0 0 4px rgba($accent, 0.22);
-  }
-} */
 
 // Overlay
 .sheet-overlay {
@@ -383,71 +293,4 @@ $shadow-pop: 0 10px 28px rgba(0, 0, 0, 0.1);
     }
   }
 }
-
-/* // L'overlay (fond sombre)
-.sheet-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(2px);
-  z-index: 100;
-}
-
-// Le panneau blanc
-.sheet-content {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: white;
-  z-index: 101;
-  border-top-left-radius: 32px; // L'arrondi de la maquette
-  border-top-right-radius: 32px;
-  padding-bottom: 2rem; // Espace pour la barre de navigation mobile
-  outline: none;
-
-  .sheet-handle {
-    width: 40px;
-    height: 5px;
-    background: #e5e7eb;
-    border-radius: 10px;
-    margin: 12px auto;
-  }
-
-  .sheet-body {
-    padding: 1rem 1.5rem;
-
-    .sheet-header h3 {
-      font-size: 1.25rem;
-      font-weight: 800;
-      text-align: center;
-      margin-bottom: 1.5rem;
-      color: $color-primary;
-    }
-  }
-}
-
-// Les items de la liste
-.option-item {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.25rem;
-  margin-bottom: 0.5rem;
-  border-radius: 1rem;
-  background: #f9fafb;
-  border: none;
-  font-weight: 600;
-  transition: all 0.2s;
-
-  &.is-selected {
-    background: $color-primary; // Ton jaune S'GILT
-    color: white;
-  }
-
-  &:active {
-    transform: scale(0.98);
-  } 
-} */
 </style>

@@ -61,14 +61,47 @@ const selectedOption = ref(selectOptions[0]!.value)
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
+$background: white;
+$padding-top: 0.75rem;
+
+$hero-color: #000000;
+
+$search-form-padding: $spacing-l $spacing-m 0;
+$search-form-gap: clamp(1rem, 3vh, 3rem);
+
+$title-thin-font-weight: 600;
+$title-thin-font-size: 2.5rem;
+$title-thin-line-height: 2.75rem;
+
+$title-bold-font-weight: 900;
+$title-bold-font-size: 3.2rem;
+$title-bold-line-height: 3rem;
+$title-bold-letter-spacing: 0.02em;
+$title-bold-margin-bottom: 0.875rem;
+
+$tagline-font-weight: 500;
+$tagline-font-size: 1.125rem;
+$tagline-line-height: 1.25;
+$tagline-color: $text-secondary;
+$tagline-max-width: 36rem;
+
+$inputs-gap: 0.875rem;
+$inputs-width: 90%;
+$inputs-max-width: 30rem;
+$inputs-font-size: 1.125rem;
+$inputs-height: 3rem;
+
+$photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
+
 .home {
   position: relative;
   width: 100%;
   min-height: calc(100dvh - $app-header-height); // pour compenser la hauteur du header fixe
   overflow: hidden;
-  background: #fff;
-  padding-top: 0.75rem;
+  background: $background;
+  padding-top: $padding-top;
 
+  // cacher l'ombre du header sur mobile
   @media (max-width: 849px) {
     :global(.app-header) {
       box-shadow: none !important;
@@ -90,9 +123,9 @@ const selectedOption = ref(selectOptions[0]!.value)
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: $spacing-l $spacing-m 0;
+    padding: $search-form-padding;
     justify-content: center;
-    gap: clamp(1rem, 3vh, 3rem);
+    gap: $search-form-gap;
 
     .hero {
       text-align: center;
@@ -106,30 +139,30 @@ const selectedOption = ref(selectOptions[0]!.value)
     .title {
       display: flex;
       flex-direction: column;
-      color: #000 !important;
+      color: $hero-color !important;
     }
 
     .title-thin {
-      font-weight: 600;
-      font-size: 2.5rem;
-      line-height: 2.75rem;
+      font-weight: $title-thin-font-weight;
+      font-size: $title-thin-font-size;
+      line-height: $title-thin-line-height;
       font-family: 'Cormorant Garamond', serif;
     }
 
     .title-bold {
-      font-weight: 900;
-      font-size: 3.2rem;
-      line-height: 3rem;
-      letter-spacing: 0.02em;
-      margin-bottom: 0.875rem;
+      font-weight: $title-bold-font-weight;
+      font-size: $title-bold-font-size;
+      line-height: $title-bold-line-height;
+      letter-spacing: $title-bold-letter-spacing;
+      margin-bottom: $title-bold-margin-bottom;
     }
 
     .tagline {
-      font-weight: 500;
-      font-size: 1.125rem;
-      line-height: 1.25;
-      color: $text-secondary;
-      max-width: 36rem;
+      font-weight: $tagline-font-weight;
+      font-size: $tagline-font-size;
+      line-height: $tagline-line-height;
+      color: $tagline-color;
+      max-width: $tagline-max-width;
       .tagline-desktop {
         display: none;
       }
@@ -141,23 +174,17 @@ const selectedOption = ref(selectOptions[0]!.value)
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.875rem;
-      width: 90%;
-      max-width: 30rem;
-      font-size: 1.125rem;
+      gap: $inputs-gap;
+      width: $inputs-width;
+      max-width: $inputs-max-width;
+      font-size: $inputs-font-size;
 
-      /* .submit_button {
-        width: 100%;
-      } */
       .sgilt-button {
         width: 100%;
-        box-shadow:
-          0 8px 20px rgba(0, 0, 0, 0.25),
-          0 2px 6px #f9fbff !important;
       }
 
       > * {
-        height: 3rem;
+        height: $inputs-height;
       }
     }
   }
@@ -166,7 +193,7 @@ const selectedOption = ref(selectOptions[0]!.value)
     grid-area: visual;
     z-index: 1;
 
-    filter: brightness(1.03) contrast(1.03) saturate(1.06);
+    filter: $photo-filter;
 
     background-image: url('/images/hero-party.png');
     background-size: cover;
@@ -191,31 +218,7 @@ const selectedOption = ref(selectOptions[0]!.value)
     mask-image: none !important;
     -webkit-mask-image: none !important;
 
-    //background-image: url('/textures/paper-grain.png');
-    //background-repeat: repeat;
-    //background-size: 700px;
-
     pointer-events: none;
-
-    /* le masque: blanc en haut, papier visible plus bas */
-    /*-webkit-mask-image: linear-gradient(
-      to bottom,
-      transparent 0%,
-      transparent 18%,
-      // 👈 plus longtemps blanc pur
-      rgba(0, 0, 0, 0.25) 28%,
-      rgba(0, 0, 0, 0.6) 38%,
-      rgba(0, 0, 0, 1) 52%
-    );
-
-    mask-image: linear-gradient(
-      to bottom,
-      transparent 0%,
-      transparent 18%,
-      rgba(0, 0, 0, 0.25) 28%,
-      rgba(0, 0, 0, 0.6) 38%,
-      rgba(0, 0, 0, 1) 52%
-    );*/
   }
 }
 
@@ -241,7 +244,6 @@ const selectedOption = ref(selectOptions[0]!.value)
     background-image: url('/images/hero-party-desktop.png') !important; // ou hero-party si tu gardes un seul asset
     background-size: cover;
     background-repeat: no-repeat;
-    // background-position: 50% 60%;
 
     // on enlève le masque mobile
     -webkit-mask-image: none !important;
@@ -250,30 +252,13 @@ const selectedOption = ref(selectOptions[0]!.value)
     filter: brightness(1) contrast(1.03) saturate(1.06);
     pointer-events: none;
 
-    // voile de lisibilité (pas un panneau)
+    // voile de lisibilité
     &::after {
       content: '';
       position: absolute;
       inset: 0;
       pointer-events: none;
-
-      // haut un peu plus clair pour rappeler ton papier,
-      // milieu légèrement assombri pour porter le texte,
-      // bas quasi neutre (on laisse l'image vivre)
-      /* background: linear-gradient(
-        to bottom,
-        rgba(255, 255, 255, 0.55) 0%,
-        rgba(255, 255, 255, 0.18) 20%,
-        rgba(0, 0, 0, 0.18) 45%,
-        rgba(0, 0, 0, 0.05) 75%,
-        rgba(0, 0, 0, 0) 100%
-      ); */
     }
-  }
-
-  // papier: on le coupe en desktop (ou très léger)
-  .app-background {
-    display: none;
   }
 
   // zone texte + form centrée (style "hero")
@@ -281,38 +266,16 @@ const selectedOption = ref(selectOptions[0]!.value)
     position: relative;
     z-index: 2;
 
-    /*min-*/
     height: 50vh !important; // pour éviter que le hero soit trop haut sur grand écran
     display: flex;
     flex-direction: column;
     padding-top: 6% !important;
     padding-bottom: 3% !important;
-    // align-items: start !important;
     justify-content: space-between !important;
 
-    // padding: 0% !important;
-
-    // espace sous le header + confort visuel
-    // padding: clamp(2rem, 6vh, 5rem) clamp(2rem, 6vw, 6rem);
-
-    // tu peux régler ce "point d'accroche" vertical
-    // gap: 5rem !important;
-
-    /*&::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      margin: auto;
-      width: min(1100px, 92vw);
-      height: 280px;
-      background: rgba(0, 0, 0, 0.1);
-      filter: blur(24px);
-      border-radius: 999px;
-      z-index: -1;
-    }*/
     border-radius: 0 0 10px 10px !important;
 
-    // “verre” : léger, pas gris
+    // glassmorphism
     background: linear-gradient(
       180deg,
       rgba(255, 255, 255, 0.25) 0%,
@@ -347,12 +310,10 @@ const selectedOption = ref(selectOptions[0]!.value)
   }
 
   .hero {
-    // max-width: 56rem;
-    // margin-top: 10% !important; // pour régler le point d'accroche vertical du hero
     transform: translateY(-0.5rem);
     text-align: center;
     width: 100% !important;
-    // pas de panneau: juste du relief typographique
+
     color: #fff !important;
     text-shadow:
       0 2px 10px rgba(0, 0, 0, 0.35),
@@ -405,7 +366,6 @@ const selectedOption = ref(selectOptions[0]!.value)
     line-height: 1.3;
     opacity: 0.88 !important;
     color: rgba(0, 0, 0, 0.75) !important;
-    // color: #fff !important;
 
     .tagline-mobile {
       display: none !important;
@@ -417,21 +377,16 @@ const selectedOption = ref(selectOptions[0]!.value)
     }
   }
 
-  // inputs en ligne (option "recherche", pas "login")
   .inputs {
     font-size: 1rem;
-    // width: min(920px, 92vw);
     display: flex !important;
     flex-direction: row !important;
     gap: 1.1rem;
     align-items: center !important;
     justify-content: center !important;
     height: unset !important;
-    // transform: translateY(1rem);
     width: 100% !important;
     max-width: unset !important;
-    // backdrop-filter: blur(20px) saturate(1.15) !important;
-    // -webkit-backdrop-filter: blur(20px) saturate(1.15) !important;
     padding: 0.3rem !important;
 
     width: unset !important;
@@ -457,14 +412,6 @@ const selectedOption = ref(selectOptions[0]!.value)
       backdrop-filter: blur(6px);
     }
   }
-
-  /* .sgilt-date-picker,
-  .custom-select,
-  .sgilt-button {
-    width: 15rem !important;
-    // height: 3rem !important;
-    font-size: 1rem !important;
-  }*/
 
   .sgilt-button {
     box-shadow:
