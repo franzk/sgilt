@@ -39,10 +39,13 @@ $box-shadow:
   0 0.75rem 2rem rgba(242, 194, 0, 0.18);
 
 // hover & active
-$hover-text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+$hover-text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 
 $active-transform: translateY(1px);
 $active-box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
+
+$input-focus-border-color: rgba(255, 191, 0, 0.75);
+$input-focus-box-shadow: 0 0 0 3px rgba(255, 191, 0, 0.25);
 
 // style
 .sgilt-button {
@@ -70,6 +73,13 @@ $active-box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
   &:active {
     transform: $active-transform;
     box-shadow: $active-box-shadow;
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: $input-focus-border-color;
+
+    box-shadow: $input-focus-box-shadow;
   }
 
   border: $border;
