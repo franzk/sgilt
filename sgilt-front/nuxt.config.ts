@@ -81,7 +81,7 @@ export default defineNuxtConfig({
     },
   },
 
-  css: ['@/assets/styles/main.scss'],
+  css: ['@/assets/styles/base.scss'],
 
   app: {
     head: {
@@ -96,7 +96,8 @@ export default defineNuxtConfig({
           additionalData:
             '@use "@/assets/styles/colors" as *;\n' +
             '@use "@/assets/styles/spacing" as *;\n' +
-            '@use "@/assets/styles/typography" as *;\n',
+            '@use "@/assets/styles/typography" as *;\n' +
+            '@use "@/assets/styles/borders" as *;\n',
         },
       },
     },

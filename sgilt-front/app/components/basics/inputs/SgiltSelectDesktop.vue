@@ -64,8 +64,6 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@use '@/assets/styles/base' as *;
-
 $dropdown-border-radius: 1.4rem;
 $dropdown-border: 1px solid rgba(0, 0, 0, 0.08);
 $dropdown-box-shadow: 0 18px 44px rgba(0, 0, 0, 0.14);

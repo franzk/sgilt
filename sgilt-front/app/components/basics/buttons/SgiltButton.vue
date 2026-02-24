@@ -20,7 +20,6 @@ defineProps<{
 <style scoped lang="scss">
 // TODO : vérifier le secondary
 @use 'sass:color';
-@use '@/assets/styles/base' as *;
 
 // global
 $background: linear-gradient(to bottom, #ffd84d 0%, #f2c200 100%);

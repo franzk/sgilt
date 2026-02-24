@@ -87,15 +87,8 @@ const selectOption = (val: string) => {
 </script>
 
 <style scoped lang="scss">
-@use '@/assets/styles/base' as *;
-
-// ==============================
-// Sgilt Select Drawer (Vaul)
-// ==============================
-
-// Ajuste si tu as un accent ailleurs
-$primary: $color-primary; // ton noir/charcoal Sgilt
-$accent: $color-accent; // ton jaune Sgilt (ex: #ffbf00)
+$primary: $color-primary;
+$accent: $color-accent;
 $sheet-radius: 28px;
 
 $bg: #ffffff;

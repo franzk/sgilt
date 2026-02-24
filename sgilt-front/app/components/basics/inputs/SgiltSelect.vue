@@ -39,8 +39,6 @@ const { isMobile } = useDevice()
 </script>
 
 <style scoped lang="scss">
-@use '@/assets/styles/base' as *;
-
 // input border
 $input-border-radius: 1.4rem;
 $input-border: 1px solid $shadow-m;
