@@ -67,21 +67,9 @@ const choiceState = computed(() => {
 </script>
 
 <style lang="scss">
-@use '@/assets/styles/base' as *;
-@use '@/assets/styles/borders' as *;
-@use '@/assets/styles/colors' as *;
 @import '@vuepic/vue-datepicker/dist/main.css';
 
 // input
-// -- border
-$border-radius: 1.4rem;
-$border-color: $shadow-m;
-$box-shadow:
-  0 0.125rem 0.375rem rgba(0, 0, 0, 0.04),
-  0 0.0625rem 0.125rem rgba(0, 0, 0, 0.03);
-$input-focus-border-color: rgba(255, 191, 0, 0.75);
-$input-focus-box-shadow: 0 0 0 3px rgba(255, 191, 0, 0.25);
-
 // -- contenu
 $input-padding: 0.75rem;
 $input-font-weight: 500;
@@ -90,7 +78,7 @@ $placeholder-text-opacity: 1;
 
 // -- icon
 $icon-color: $color-accent;
-$input-text-color: rgba($color-primary, 0.8); // #6b635c;
+$input-text-color: rgba($color-primary, 0.8);
 $icon-width: 2.5rem;
 $icon-stroke-width: 1px;
 
@@ -127,8 +115,8 @@ $menu-background:
 }
 
 .dp__theme_light {
-  --dp-border-radius: #{$border-radius};
-  --dp-border-color: #{$border-color};
+  --dp-border-radius: #{$input-border-radius};
+  --dp-border-color: #{$input-border-color};
   --dp-input-padding: #{$input-padding};
   --dp-font-size: inherit;
   --dp-text-color: #{$calendar-text-color};
@@ -160,7 +148,7 @@ $menu-background:
   color: $input-text-color;
   font-weight: $input-font-weight;
   height: 100%;
-  box-shadow: $box-shadow;
+  box-shadow: $input-box-shadow;
 
   font-family: inherit;
   line-height: 1;

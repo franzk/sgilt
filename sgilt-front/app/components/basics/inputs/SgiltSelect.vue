@@ -39,20 +39,9 @@ const { isMobile } = useDevice()
 </script>
 
 <style scoped lang="scss">
-// input border
-$input-border-radius: 1.4rem;
-$input-border: 1px solid $shadow-m;
-$input-box-shadow:
-  0 0.0625rem 0 rgba(0, 0, 0, 0.04),
-  0 0.5rem 1.25rem rgba(0, 0, 0, 0.05);
-
 // input
 $input-background: white;
 $input-letter-spacing: 0.02rem;
-
-// focus
-$input-focus-border-color: rgba(255, 191, 0, 0.75);
-$input-focus-box-shadow: 0 0 0 3px rgba(255, 191, 0, 0.25);
 
 // input with value
 $input-has-value-font-weight: 500;

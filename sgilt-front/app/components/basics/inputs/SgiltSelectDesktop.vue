@@ -64,12 +64,14 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+// dropdown
 $dropdown-border-radius: 1.4rem;
 $dropdown-border: 1px solid rgba(0, 0, 0, 0.08);
 $dropdown-box-shadow: 0 18px 44px rgba(0, 0, 0, 0.14);
 $dropdown-background: white;
 $dropdown-width: 17rem;
 
+// item
 $select-item-border-radius: 0.12px;
 $select-item-padding: 0.85rem;
 $select-item-color: $color-primary;
@@ -88,11 +90,6 @@ $select-item-disabled-opacity: 0.45;
   overflow: hidden;
   width: $dropdown-width;
 }
-
-/*.select-viewport {
-  padding: 0.5rem;
-  max-height: 320px;
-}*/
 
 .select-item {
   width: 100%;

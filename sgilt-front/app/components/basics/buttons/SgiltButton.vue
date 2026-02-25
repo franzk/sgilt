@@ -44,9 +44,6 @@ $hover-text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 $active-transform: translateY(1px);
 $active-box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
 
-$input-focus-border-color: rgba(255, 191, 0, 0.75);
-$input-focus-box-shadow: 0 0 0 3px rgba(255, 191, 0, 0.25);
-
 // style
 .sgilt-button {
   cursor: pointer;
