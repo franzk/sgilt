@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     'reka-ui/nuxt',
     '@nuxtjs/google-fonts',
+    '@vueuse/nuxt',
   ],
 
   /**
