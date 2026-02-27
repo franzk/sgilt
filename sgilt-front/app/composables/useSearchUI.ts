@@ -77,6 +77,7 @@ export function addDaysISO(iso: string, delta: number) {
   const [y, m, d] = iso.split('-').map(Number)
   if (!y || isNaN(y) || !m || isNaN(m) || !d || isNaN(d))
     throw new Error(`Invalid ISO date: ${iso}`)
+
   const dt = new Date(y, m - 1, d)
   dt.setDate(dt.getDate() + delta)
   return toISODate(dt)
