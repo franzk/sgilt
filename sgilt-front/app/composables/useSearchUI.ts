@@ -1,68 +1,44 @@
-type Category = 'ALL' | 'MUSIC' | 'FOOD' | 'PHOTO' | 'VENUE'
+// app/composables/useSearchUI.ts
+import { APP_CATEGORIES } from '~/utils/constants'
 
-type SearchUi = {
-  date: Ref<string> // YYYY-MM-DD
-  category: Ref<Category>
-  subcatsByCat: Ref<Record<string, string[]>>
-  resetSubcatsForActiveCat: () => void
-  toggleSubcat: (subcat: string) => void
-}
+export function useSearchUi() {
+  // Par défaut, on prend l'ID de la première catégorie de tes constantes (souvent "Tous")
+  const defaultCatId = APP_CATEGORIES[0]?.id || '1'
 
-export function useSearchUi(): SearchUi {
   const date = useState<string>('search:date', () => toISODate(new Date()))
-  const category = useState<Category>('search:category', () => 'ALL')
+  const categoryId = useState<string>('search:categoryId', () => defaultCatId)
+
+  // On utilise un Record<string, string[]> où la clé est l'ID de la catégorie
   const subcatsByCat = useState<Record<string, string[]>>('search:subcatsByCat', () => ({}))
 
-  // cookies (persist refresh)
-  const dateCookie = useCookie<string>('sgilt_search_date', {
-    default: () => date.value,
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 90,
-  })
-  const catCookie = useCookie<Category>('sgilt_search_cat', {
-    default: () => category.value,
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 90,
-  })
+  // Cookies pour la persistance
+  const dateCookie = useCookie<string>('search_date', { default: () => date.value })
+  const catCookie = useCookie<string>('search_cat', { default: () => categoryId.value })
 
-  // Init from cookies on client only
   if (import.meta.client) {
-    // If cookie exists, prefer it
     if (dateCookie.value) date.value = dateCookie.value
-    if (catCookie.value) category.value = catCookie.value
+    if (catCookie.value) categoryId.value = catCookie.value
 
-    // Keep cookies updated
     watch(date, (v) => (dateCookie.value = v))
-    watch(category, (v) => (catCookie.value = v))
+    watch(categoryId, (v) => (catCookie.value = v))
   }
 
-  function getActiveSubcats(): string[] {
-    return subcatsByCat.value[category.value] ?? []
-  }
-
-  function setActiveSubcats(next: string[]) {
-    subcatsByCat.value = {
-      ...subcatsByCat.value,
-      [category.value]: next,
-    }
-  }
-
-  function resetSubcatsForActiveCat() {
-    setActiveSubcats([])
-  }
-
-  function toggleSubcat(subcat: string) {
-    const current = getActiveSubcats()
-    const exists = current.includes(subcat)
-    setActiveSubcats(exists ? current.filter((s) => s !== subcat) : [...current, subcat])
+  function toggleSubcat(subcatId: string) {
+    const current = subcatsByCat.value[categoryId.value] ?? []
+    const exists = current.includes(subcatId)
+    subcatsByCat.value[categoryId.value] = exists
+      ? current.filter((id) => id !== subcatId)
+      : [...current, subcatId]
   }
 
   return {
     date,
-    category,
+    categoryId,
     subcatsByCat,
-    resetSubcatsForActiveCat,
     toggleSubcat,
+    resetSubcats: () => {
+      subcatsByCat.value[categoryId.value] = []
+    },
   }
 }
 
@@ -71,14 +47,4 @@ function toISODate(d: Date) {
   const mm = String(d.getMonth() + 1).padStart(2, '0')
   const dd = String(d.getDate()).padStart(2, '0')
   return `${yyyy}-${mm}-${dd}`
-}
-
-export function addDaysISO(iso: string, delta: number) {
-  const [y, m, d] = iso.split('-').map(Number)
-  if (!y || isNaN(y) || !m || isNaN(m) || !d || isNaN(d))
-    throw new Error(`Invalid ISO date: ${iso}`)
-
-  const dt = new Date(y, m - 1, d)
-  dt.setDate(dt.getDate() + delta)
-  return toISODate(dt)
 }

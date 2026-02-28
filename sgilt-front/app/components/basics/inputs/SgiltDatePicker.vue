@@ -38,7 +38,7 @@ import { fr } from 'date-fns/locale/fr'
 import { computed } from 'vue'
 import { dateArrayContains } from '@/utils/ArrayUtils'
 
-const date = defineModel<Date>()
+const date = defineModel<Date | null>()
 const format = { input: (date: Date) => dayjs(date).locale('fr').format('dddd DD MMM YYYY') }
 
 // dates to highlight

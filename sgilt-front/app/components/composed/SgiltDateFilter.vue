@@ -14,7 +14,7 @@
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
 import dayjs from 'dayjs'
 
-const modelValue = defineModel<Date>()
+const modelValue = defineModel<Date | null>()
 
 const prevDay = () => {
   if (modelValue.value) modelValue.value = dayjs(modelValue.value).subtract(1, 'day').toDate()
