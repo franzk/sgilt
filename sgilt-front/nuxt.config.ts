@@ -8,7 +8,6 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@nuxtjs/seo',
     '@nuxtjs/robots',
-    '@pinia/nuxt',
     'reka-ui/nuxt',
     '@nuxtjs/google-fonts',
     '@vueuse/nuxt',

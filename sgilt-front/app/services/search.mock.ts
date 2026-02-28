@@ -1,6 +1,6 @@
 // app/services/search.mock.ts
 import type {
-  PrestataireCard,
+  PrestataireCardDetail,
   PrestataireDetail,
   PrestataireSearchResponse,
 } from '~/types/prestataire'
@@ -13,7 +13,7 @@ export const SearchMockService = {
     subcats: string[]
   }): Promise<PrestataireSearchResponse> {
     // Simulation du délai réseau (indispensable pour tester tes loaders)
-    await new Promise((resolve) => setTimeout(resolve, 400))
+    await new Promise((resolve) => setTimeout(resolve, 100))
 
     // 1. Filtrage des résultats (ProviderCard[])
     const filteredResults = MOCK_PROVIDERS.filter((p) => {
@@ -34,7 +34,9 @@ export const SearchMockService = {
           shortDescription: p.shortDescription,
           image: p.image,
           slug: p.slug,
-        }) as PrestataireCard,
+          // map categoryPicto
+          categoryPicto: APP_CATEGORIES.find((c) => c.id === p.category)?.picto,
+        }) as PrestataireCardDetail,
     )
 
     // 2. Calcul des compteurs
@@ -63,6 +65,6 @@ export const SearchMockService = {
 
   async getBySlug(slug: string): Promise<PrestataireDetail | undefined> {
     await new Promise((resolve) => setTimeout(resolve, 300))
-    return MOCK_PROVIDERS.find((p) => p.slug === slug)
+    return MOCK_PROVIDERS.find((p) => p.slug === slug) as PrestataireDetail | undefined
   },
 }

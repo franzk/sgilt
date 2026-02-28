@@ -1,12 +1,12 @@
 import { useDebounceFn } from '@vueuse/core'
 import { SearchMockService } from '~/services/search.mock'
-import type { PrestataireCard } from '~/types/prestataire'
+import type { PrestataireCardDetail } from '~/types/prestataire'
 
 export function useSearchFetch() {
   const { date, categoryId, subcatsByCat } = useSearchUi()
 
   const loading = ref(false)
-  const results = ref<PrestataireCard[]>([])
+  const results = ref<PrestataireCardDetail[]>([])
   const countsByCategory = ref<Record<string, number>>({})
   const subcatCounts = ref<Record<string, number>>({})
   const error = ref<string | null>(null)

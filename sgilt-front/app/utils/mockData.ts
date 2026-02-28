@@ -11,7 +11,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     subcats: ['23'], // Jazz
     shortDescription: 'Un groupe de jazz parfait pour animer vos soirées.',
     longDescription: 'Plongez dans l’univers captivant du Gypsy Reed Ensemble...',
-    image: '/images/jazz-band.jpg',
+    image: '/images/prestataires/jazz-band.jpg',
     youtubeId: '_A6w3ECkN4k',
   },
   {
@@ -22,7 +22,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     subcats: ['22'], // Pop-Rock
     shortDescription: 'Un groupe pop-rock énergique pour une ambiance inoubliable.',
     longDescription: 'Starlight Pulse apporte une énergie débordante...',
-    image: '/images/pop-rock-band.jpg',
+    image: '/images/prestataires/pop-rock-band.jpg',
     youtubeId: '4sErhkkcOUU',
   },
   {
@@ -33,7 +33,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     subcats: ['21'], // DJ
     shortDescription: 'Un DJ professionnel pour rythmer vos soirées.',
     longDescription: 'Avec DJ Animation aux platines, transformez votre soirée...',
-    image: '/images/dj-animation.jpg',
+    image: '/images/prestataires/dj-animation.jpg',
     youtubeId: 'zznewKVtKtk',
   },
   {
@@ -44,7 +44,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     subcats: ['22'], // Pop-Rock
     shortDescription: 'Un groupe rock pour faire vibrer votre public.',
     longDescription: 'Préparez-vous à une explosion de sons et d’énergie...',
-    image: '/images/rock-band.jpg',
+    image: '/images/prestataires/rock-band.jpg',
     youtubeId: 'BOCaSJOARFM',
   },
 
@@ -57,7 +57,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     subcats: ['31'], // Traiteur
     shortDescription: 'Un service traiteur haut de gamme pour vos événements.',
     longDescription: 'Éclat Gourmet propose une expérience culinaire haut de gamme...',
-    image: '/images/traiteur-gourmet.jpg',
+    image: '/images/prestataires/traiteur-gourmet.jpg',
     youtubeId: '6D4_3NIpvkI',
   },
   {
@@ -68,7 +68,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     subcats: ['32'], // Food Truck
     shortDescription: 'Des burgers gourmands pour régaler vos invités.',
     longDescription: 'Apportez une touche conviviale et délicieuse...',
-    image: '/images/food-truck-burgers.jpg',
+    image: '/images/prestataires/food-truck-burgers.jpg',
     youtubeId: 'z2xjErKDd-o',
   },
   {
@@ -79,7 +79,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     subcats: ['31'], // Mis en Traiteur/Boissons
     shortDescription: 'Un bar à cocktails pour une expérience unique.',
     longDescription: 'Transformez vos événements en expériences inoubliables...',
-    image: '/images/bar-cocktails.jpg',
+    image: '/images/prestataires/bar-cocktails.jpg',
     youtubeId: 'EFuBvEt84OI',
   },
   {
@@ -90,7 +90,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     subcats: ['31'], // Traiteur
     shortDescription: 'Un buffet raffiné pour sublimer vos réceptions.',
     longDescription: 'Découvrez l’élégance de la gastronomie française...',
-    image: '/images/cuisine-francaise.jpg',
+    image: '/images/prestataires/cuisine-francaise.jpg',
     youtubeId: '30dp3iP66Gs',
   },
   {
@@ -101,7 +101,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     subcats: ['32'], // Food Truck
     shortDescription: 'Une délicieuse pizza cuite au feu de bois sur place.',
     longDescription: 'Régalez vos invités avec des pizzas artisanales...',
-    image: '/images/pizza-truck.jpg',
+    image: '/images/prestataires/pizza-truck.jpg',
     youtubeId: 'HOZs4hWPiKk',
   },
 
@@ -114,7 +114,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     subcats: ['41'], // Photographe
     shortDescription: 'Des souvenirs inoubliables pour votre grand jour.',
     longDescription: 'Capturez les moments les plus précieux...',
-    image: '/images/photographe-mariage.jpg',
+    image: '/images/prestataires/photographe-mariage.jpg',
     youtubeId: 'wlPFNYKkGSA',
   },
   {
@@ -125,7 +125,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     subcats: ['43'], // Photobooth
     shortDescription: 'Un photobooth original pour des photos funs.',
     longDescription: 'Ajoutez une touche rétro et ludique...',
-    image: '/images/photobooth-vintage.jpg',
+    image: '/images/prestataires/photobooth-vintage.jpg',
     youtubeId: 'ybJPbM_ExTk',
   },
   {
@@ -136,7 +136,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     subcats: ['41'], // Photographe
     shortDescription: 'Un studio photo pour des portraits professionnels.',
     longDescription: 'Apportez la qualité d’un studio photo professionnel...',
-    image: '/images/studio-photo-mobile.jpg',
+    image: '/images/prestataires/studio-photo-mobile.jpg',
     youtubeId: 'VoHDwCCxWA4',
   },
 
@@ -149,7 +149,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     subcats: ['52'], // Location matériel/Lieu
     shortDescription: 'Une salle spacieuse pour vos événements.',
     longDescription: 'La Salle des Fêtes est idéale pour accueillir...',
-    image: '/images/salle-fetes.png',
+    image: '/images/prestataires/salle-fetes.png',
     youtubeId: 'SdAQjcIMjpo',
   },
   {
@@ -160,7 +160,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     subcats: ['52'],
     shortDescription: 'Un cadre enchanteur pour célébrer votre union.',
     longDescription: 'Réalisez votre rêve de conte de fées...',
-    image: '/images/chateau-mariage.jpg',
+    image: '/images/prestataires/chateau-mariage.jpg',
     youtubeId: '615biPQMdJQ',
   },
   {
@@ -171,7 +171,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     subcats: ['52'],
     shortDescription: 'Un hébergement confortable pour vos invités.',
     longDescription: 'Offrez à vos invités le confort et la convivialité...',
-    image: '/images/hebergement-groupe.jpg',
+    image: '/images/prestataires/hebergement-groupe.jpg',
     youtubeId: '_2tBuidbF88',
   },
 ]

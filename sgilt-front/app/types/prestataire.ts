@@ -1,13 +1,14 @@
 // app/types/prestataire.ts
-export interface PrestataireCard {
+export interface PrestataireCardDetail {
   id: string
   name: string
   shortDescription: string
   image: string
   slug: string
+  categoryPicto?: Component
 }
 
-export interface PrestataireDetail extends PrestataireCard {
+export interface PrestataireDetail extends PrestataireCardDetail {
   longDescription: string
   youtubeId?: string
   calendar?: any[]
@@ -16,7 +17,7 @@ export interface PrestataireDetail extends PrestataireCard {
 }
 
 export interface PrestataireSearchResponse {
-  results: PrestataireCard[]
+  results: PrestataireCardDetail[]
   countsByCategory: Record<string, number>
   subcatCounts: Record<string, number>
 }
