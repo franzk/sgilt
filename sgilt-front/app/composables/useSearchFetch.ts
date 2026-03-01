@@ -12,6 +12,11 @@ export function useSearchFetch() {
   const error = ref<string | null>(null)
 
   const fetchNow = async () => {
+    console.log('Fetching with params:', {
+      date: date.value,
+      categoryId: categoryId.value,
+      subcats: subcatsByCat.value[categoryId.value] ?? [],
+    })
     loading.value = true
     error.value = null
 

@@ -13,12 +13,12 @@ export const SearchMockService = {
     subcats: string[]
   }): Promise<PrestataireSearchResponse> {
     // Simulation du délai réseau (indispensable pour tester tes loaders)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    await new Promise((resolve) => setTimeout(resolve, 400))
 
     // 1. Filtrage des résultats (ProviderCard[])
     const filteredResults = MOCK_PROVIDERS.filter((p) => {
       // Filtre catégorie : si '1', on prend tout, sinon on match l'ID
-      const matchCat = params.categoryId === '1' || p.category === params.categoryId
+      const matchCat = params.categoryId === '1' || p.categoryId === params.categoryId
 
       // Filtre sous-catégories : si aucune cochée, on prend tout le parent.
       // Sinon, on vérifie si le prestataire a au moins une des subcats sélectionnées.
@@ -46,11 +46,11 @@ export const SearchMockService = {
 
     MOCK_PROVIDERS.forEach((p) => {
       // Compte toujours pour les catégories parentes (pour les onglets)
-      countsByCategory[p.category] = (countsByCategory[p.category] || 0) + 1
+      countsByCategory[p.categoryId] = (countsByCategory[p.categoryId] || 0) + 1
 
       // Compte les subcats UNIQUEMENT si elles appartiennent à la catégorie active
       // et que cette catégorie n'est pas "ALL" (car pas d'affichage de subcats sur ALL)
-      if (params.categoryId !== '1' && p.category === params.categoryId) {
+      if (params.categoryId !== '1' && p.categoryId === params.categoryId) {
         p.subcats.forEach((s) => {
           subcatCounts[s] = (subcatCounts[s] || 0) + 1
         })

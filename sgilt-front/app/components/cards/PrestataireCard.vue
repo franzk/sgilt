@@ -76,15 +76,10 @@ defineProps<{
   .image-wrapper {
     position: relative;
     width: 100%;
-    aspect-ratio: 1.1 / 1; // Un peu plus haut que le 16/9 pour plus d'impact
+    aspect-ratio: 1.1 / 1;
     overflow: hidden;
-    // On laisse un petit espace entre l'image et le bord de la carte pour un look "objet"
-    margin: 0; //6px;
-    // width: calc(100% - 12px);
+    margin: 0;
     border-radius: 12px;
-    // display: flex;
-    // flex-direction: column;
-    // gap: 8px;
 
     img {
       width: 100%;
@@ -96,26 +91,25 @@ defineProps<{
 
     .category-tag {
       position: absolute;
-      display: flex;
       top: 12px;
       right: 12px;
-      // width: 30px;
       height: 30px;
-      background: rgba(0, 0, 0, 0.2); // Fond blanc translucide
-      backdrop-filter: blur(4px); // Effet de flou "iOS style"
-      // background: #ffffff;
-      border-radius: 5rem;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      padding: 0px 6px;
+
       display: flex;
       gap: 6px;
+
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(4px); // Effet de flou glassmorphism
+
+      border-radius: 5rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+
+      padding: 0px 6px;
+
       align-items: center;
       justify-content: center;
       color: #fff;
-      // box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      // border: 1px solid rgba(255, 255, 255, 0.3);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
-      // border: 1px solid rgba(0, 0, 0, 0.05);
 
       .inner-icon {
         width: 14px;
@@ -136,10 +130,9 @@ defineProps<{
   }
 
   .content {
-    // padding: 12px 6px 8px; // 0.4rem 1rem 0.6rem; // Plus d'espace en bas pour asseoir la carte
     display: flex;
     flex-direction: column;
-    gap: 2px; // 0.2rem;
+    gap: 2px;
 
     .title-row {
       display: flex;
@@ -147,12 +140,11 @@ defineProps<{
       align-items: baseline;
 
       .name {
-        font-size: 14px; //1.1rem;
+        font-size: 14px;
         letter-spacing: -0.01em;
         font-weight: 600;
-        color: #000000; // #1e293b;
+        color: #000000;
         margin: 0;
-        // margin-bottom: 4px;
       }
 
       .rating {
@@ -162,9 +154,10 @@ defineProps<{
     }
 
     .description {
-      font-size: 13px; // 0.85rem;
-      color: #717171; //#64748b;
+      font-size: 13px;
+      color: #717171;
       line-height: 1.4;
+
       // On limite à 2 lignes proprement
       display: -webkit-box;
       -webkit-line-clamp: 2;
