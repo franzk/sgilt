@@ -6,13 +6,14 @@ export interface PrestataireCardDetail {
   image: string
   slug: string
   categoryPicto?: Component
+  categoryName?: string
 }
 
 export interface PrestataireDetail extends PrestataireCardDetail {
   longDescription: string
   youtubeId?: string
   calendar?: any[]
-  category: string
+  categoryId: string
   subcats: string[]
 }
 

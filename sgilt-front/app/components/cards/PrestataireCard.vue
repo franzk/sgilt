@@ -10,8 +10,9 @@ defineProps<{
   <NuxtLink :to="`/prestataire/${provider.slug}`" class="provider-card">
     <div class="image-wrapper">
       <img :src="provider.image" :alt="provider.name" loading="lazy" />
-      <div class="category-circle">
-        <component :is="provider.categoryPicto" class="inner-icon" />
+      <div class="category-tag">
+        <span><component :is="provider.categoryPicto" class="inner-icon" /></span>
+        <span class="category-name">{{ provider.categoryName }}</span>
       </div>
     </div>
 
@@ -68,28 +69,39 @@ defineProps<{
       transition: transform 0.6s ease;
     }
 
-    .category-circle {
+    .category-tag {
       position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 30px;
-      height: 30px;
-      // background: rgba(255, 255, 255, 0.7); // Fond blanc translucide
-      // backdrop-filter: blur(8px); // Effet de flou "iOS style"
-      background: #ffffff;
-      border-radius: 50%;
       display: flex;
+      top: 12px;
+      right: 12px;
+      // width: 30px;
+      height: 30px;
+      background: rgba(0, 0, 0, 0.2); // Fond blanc translucide
+      backdrop-filter: blur(4px); // Effet de flou "iOS style"
+      // background: #ffffff;
+      border-radius: 5rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0px 6px;
+      display: flex;
+      gap: 6px;
       align-items: center;
       justify-content: center;
+      color: #fff;
       // box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       // border: 1px solid rgba(255, 255, 255, 0.3);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
-      border: 1px solid rgba(0, 0, 0, 0.05);
+      // border: 1px solid rgba(0, 0, 0, 0.05);
 
       .inner-icon {
-        width: 16px;
-        height: 16px;
-        color: #1e293b; // Couleur sombre pour le contraste
+        width: 14px;
+        height: 14px;
+      }
+
+      .category-name {
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
     }
   }
