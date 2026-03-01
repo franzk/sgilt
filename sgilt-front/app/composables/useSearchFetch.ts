@@ -20,7 +20,7 @@ export function useSearchFetch() {
 
       const data = await SearchMockService.search({
         date: date.value,
-        categoryId: categoryId.value,
+        categoryId: String(categoryId.value),
         subcats: activeSubcats,
       })
 
