@@ -32,9 +32,10 @@ defineProps<{
   text-decoration: none;
   color: inherit;
   background: #ffffff;
-  border-radius: 28px;
+  border-radius: 12px;
+  gap: 0.5rem;
 
-  padding: 6px; // à voir
+  padding: 6px 6px 0 6px;
 
   border: 1px solid #f1f5f9;
   height: 100%;
@@ -59,7 +60,10 @@ defineProps<{
     // On laisse un petit espace entre l'image et le bord de la carte pour un look "objet"
     margin: 0; //6px;
     // width: calc(100% - 12px);
-    border-radius: 20px;
+    border-radius: 12px;
+    // display: flex;
+    // flex-direction: column;
+    // gap: 8px;
 
     img {
       width: 100%;
@@ -111,10 +115,10 @@ defineProps<{
   }
 
   .content {
-    padding: 12px 6px 8px; // 0.4rem 1rem 0.6rem; // Plus d'espace en bas pour asseoir la carte
+    // padding: 12px 6px 8px; // 0.4rem 1rem 0.6rem; // Plus d'espace en bas pour asseoir la carte
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: 2px; // 0.2rem;
 
     .title-row {
       display: flex;
@@ -122,12 +126,12 @@ defineProps<{
       align-items: baseline;
 
       .name {
-        font-size: 1.1rem;
+        font-size: 14px; //1.1rem;
         letter-spacing: -0.01em;
-        font-weight: 700;
-        color: #1e293b;
+        font-weight: 600;
+        color: #000000; // #1e293b;
         margin: 0;
-        margin-bottom: 4px;
+        // margin-bottom: 4px;
       }
 
       .rating {
@@ -137,8 +141,8 @@ defineProps<{
     }
 
     .description {
-      font-size: 0.85rem;
-      color: #64748b;
+      font-size: 13px; // 0.85rem;
+      color: #717171; //#64748b;
       line-height: 1.4;
       // On limite à 2 lignes proprement
       display: -webkit-box;

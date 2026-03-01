@@ -38,14 +38,14 @@ defineProps<{
 .grid-container {
   display: grid;
   // Le secret : auto-fill avec un min-width
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1.5rem 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 14px; // 1.5rem 1rem;
   // padding: 1rem;
 
   // Sur très petits écrans ( < 350px ), on passe en 1 colonne pour laisser respirer la typo
-  @media (max-width: 350px) {
+  /*@media (max-width: 350px) {
     grid-template-columns: 1fr;
-  }
+  }*/
 }
 
 .status-message {
