@@ -12,7 +12,7 @@ defineProps<{
 <template>
   <div class="results-section">
     <div v-if="loading" class="grid-container">
-      <div v-for="i in 4" :key="i" class="skeleton-card" />
+      <PrestataireCard v-for="i in 6" :key="i" loading />
     </div>
 
     <div v-else-if="error" class="status-message error">

@@ -2,27 +2,48 @@
 import type { PrestataireCardDetail } from '~/types/prestataire'
 
 defineProps<{
-  provider: PrestataireCardDetail
+  provider?: PrestataireCardDetail
+  loading?: boolean
 }>()
 </script>
 
 <template>
-  <NuxtLink :to="`/prestataire/${provider.slug}`" class="provider-card">
+  <component
+    :is="loading ? 'div' : 'NuxtLink'"
+    :to="!loading ? `/prestataire/${provider?.slug}` : undefined"
+    class="provider-card"
+    :class="{ 'is-loading shimmer-container': loading }"
+  >
     <div class="image-wrapper">
-      <img :src="provider.image" :alt="provider.name" loading="lazy" />
-      <div class="category-tag">
-        <span><component :is="provider.categoryPicto" class="inner-icon" /></span>
-        <span class="category-name">{{ provider.categoryName }}</span>
-      </div>
+      <template v-if="!loading">
+        <img :src="provider?.image" :alt="provider?.name" loading="lazy" />
+        <div class="category-tag">
+          <span><component :is="provider?.categoryPicto" class="inner-icon" /></span>
+          <span class="category-name">{{ provider?.categoryName }}</span>
+        </div>
+      </template>
+
+      <template v-else>
+        <div class="skeleton-image"></div>
+        <div class="skeleton-icon category-placeholder"></div>
+      </template>
     </div>
 
     <div class="content">
       <div class="title-row">
-        <h3 class="name">{{ provider.name }}</h3>
+        <h3 v-if="!loading" class="name">{{ provider?.name }}</h3>
+        <div v-else class="skeleton-text title"></div>
       </div>
-      <p class="description">{{ provider.shortDescription }}</p>
+
+      <div v-if="!loading" class="description">
+        {{ provider?.shortDescription }}
+      </div>
+      <div v-else class="description-group">
+        <div class="skeleton-text"></div>
+        <div class="skeleton-text short"></div>
+      </div>
     </div>
-  </NuxtLink>
+  </component>
 </template>
 
 <style scoped lang="scss">
@@ -165,6 +186,25 @@ defineProps<{
         color: #1e293b;
         font-weight: 700;
       }
+    }
+  }
+
+  &.is-loading {
+    cursor: default;
+    border-color: transparent;
+    box-shadow: none;
+
+    .category-placeholder {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+    }
+
+    .description-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
     }
   }
 }
