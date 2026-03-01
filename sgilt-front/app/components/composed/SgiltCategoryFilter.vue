@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { APP_CATEGORIES } from '~/utils/constants'
+import SgiltCategoryIcon from '~/components/basics/icons/CategoryIcon.vue'
 
 const modelValue = defineModel<string>() // L'ID de la catégorie active
 
@@ -16,7 +17,8 @@ const emit = defineEmits(['update:modelValue'])
       @click="$emit('update:modelValue', cat.id)"
     >
       <div class="icon-circle" v-if="!!cat.picto">
-        <component :is="cat.picto" class="icon-svg" />
+        <!-- <component :is="cat.picto" class="icon-svg" /> -->
+        <SgiltCategoryIcon :categoryId="cat.id" class="icon-svg" />
       </div>
       <span class="name">{{ cat.name }}</span>
     </button>

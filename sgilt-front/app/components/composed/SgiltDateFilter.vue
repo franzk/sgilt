@@ -1,19 +1,17 @@
 <template>
-  <ClientOnly>
-    <div class="sgilt-date-filter">
-      <button class="nav-btn prev" @click="prevDay()" aria-label="Jour précédent">
-        <span class="chevron"></span>
-      </button>
+  <div class="sgilt-date-filter">
+    <button class="nav-btn prev" @click="prevDay()" aria-label="Jour précédent">
+      <span class="chevron"></span>
+    </button>
 
-      <span class="sgilt-date-filter_date">
-        <SgiltDatePicker v-model="modelValue" />
-      </span>
+    <span class="sgilt-date-filter_date">
+      <SgiltDatePicker v-model="modelValue" />
+    </span>
 
-      <button class="nav-btn next" @click="nextDay()" aria-label="Jour suivant">
-        <span class="chevron"></span>
-      </button>
-    </div>
-  </ClientOnly>
+    <button class="nav-btn next" @click="nextDay()" aria-label="Jour suivant">
+      <span class="chevron"></span>
+    </button>
+  </div>
 </template>
 
 <script setup lang="ts">
