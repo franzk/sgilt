@@ -12,7 +12,7 @@ const emit = defineEmits(['update:modelValue'])
       v-for="cat in APP_CATEGORIES"
       :key="cat.id"
       class="category-btn"
-      :class="{ active: String(cat.id).trim() === String(modelValue).trim() }"
+      :class="{ active: cat.id === modelValue }"
       @click="$emit('update:modelValue', cat.id)"
     >
       <div class="icon-circle" v-if="!!cat.picto">

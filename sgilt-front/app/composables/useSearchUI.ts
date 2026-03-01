@@ -6,6 +6,12 @@ export function useSearchUi() {
   const defaultCatId = APP_CATEGORIES[0]?.id || '1'
 
   const date = useState<string>('search:date', () => toISODate(new Date()))
+
+  const dateModel = computed({
+    get: () => new Date(date.value),
+    set: (value: Date) => (date.value = toISODate(value)),
+  })
+
   const categoryId = useState<string>('search:categoryId', () => defaultCatId)
 
   // On utilise un Record<string, string[]> où la clé est l'ID de la catégorie
@@ -16,8 +22,8 @@ export function useSearchUi() {
   const catCookie = useCookie<string>('search_cat', { default: () => categoryId.value })
 
   if (import.meta.client) {
-    if (dateCookie.value) date.value = dateCookie.value
-    if (catCookie.value) categoryId.value = catCookie.value
+    if (dateCookie.value) date.value = String(dateCookie.value)
+    if (catCookie.value) categoryId.value = String(catCookie.value)
 
     watch(date, (v) => (dateCookie.value = v))
     watch(categoryId, (v) => (catCookie.value = v))
@@ -33,6 +39,7 @@ export function useSearchUi() {
 
   return {
     date,
+    dateModel,
     categoryId,
     subcatsByCat,
     toggleSubcat,

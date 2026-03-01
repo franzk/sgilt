@@ -1,26 +1,28 @@
 <template>
-  <div class="search-page">
-    <section class="search-header">
-      <SgiltDateFilter v-model="date" />
+  <ClientOnly>
+    <div class="search-page">
+      <section class="search-header">
+        <SgiltDateFilter v-model="dateModel" />
 
-      <SgiltCategoryFilter v-model="categoryId" />
+        <SgiltCategoryFilter v-model="categoryId" />
 
-      <SgiltSubCategoryFilter
-        v-if="categoryId !== '1'"
-        :categoryId="categoryId"
-        :activeSubcats="subcatsByCat[categoryId] || []"
-        :counts="subcatCounts"
-        @toggle="toggleSubcat"
-      />
-    </section>
+        <SgiltSubCategoryFilter
+          v-if="categoryId !== '1'"
+          :categoryId="categoryId"
+          :activeSubcats="subcatsByCat[categoryId] || []"
+          :counts="subcatCounts"
+          @toggle="toggleSubcat"
+        />
+      </section>
 
-    <section
-      class="search-results margin-for-header"
-      :class="{ 'margin-for-header-and-subcats': categoryId !== '1' }"
-    >
-      <SgiltSearchResults :results="results" :loading="loading" :error="error" />
-    </section>
-  </div>
+      <section
+        class="search-results margin-for-header"
+        :class="{ 'margin-for-header-and-subcats': categoryId !== '1' }"
+      >
+        <SgiltSearchResults :results="results" :loading="loading" :error="error" />
+      </section>
+    </div>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
@@ -30,7 +32,7 @@ import SgiltSubCategoryFilter from '~/components/composed/SgiltSubCategoryFilter
 import SgiltSearchResults from '~/components/composed/SgiltSearchResults.vue'
 
 // On récupère l'état de l'UI
-const { date, categoryId, subcatsByCat, toggleSubcat } = useSearchUi()
+const { dateModel, categoryId, subcatsByCat, toggleSubcat } = useSearchUi()
 
 // On récupère les données (le watcher interne lance le fetch auto)
 const { results, loading, countsByCategory, subcatCounts, error } = useSearchFetch()
