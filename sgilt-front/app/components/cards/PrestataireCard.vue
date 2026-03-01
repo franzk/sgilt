@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import type { PrestataireCardDetail } from '~/types/prestataire'
+import SgiltImage from '~/components/basics/media/SgiltImage.vue'
 
 defineProps<{
   provider?: PrestataireCardDetail
   loading?: boolean
 }>()
+
+const imageLoaded = ref(false)
 </script>
 
 <template>
@@ -16,7 +19,8 @@ defineProps<{
   >
     <div class="image-wrapper">
       <template v-if="!loading">
-        <img :src="provider?.image" :alt="provider?.name" loading="lazy" />
+        <!--img :src="provider?.image" :alt="provider?.name" loading="lazy" /-->
+        <SgiltImage :src="provider?.image" :alt="provider?.name" width="400" height="360" />
         <div class="category-tag">
           <span><component :is="provider?.categoryPicto" class="inner-icon" /></span>
           <span class="category-name">{{ provider?.categoryName }}</span>
@@ -56,7 +60,7 @@ defineProps<{
   border-radius: 12px;
   gap: 0.5rem;
 
-  padding: 6px 6px 0 6px;
+  padding: 6px;
 
   border: 1px solid #f1f5f9;
   height: 100%;

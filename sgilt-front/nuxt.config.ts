@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     'reka-ui/nuxt',
     '@nuxtjs/google-fonts',
     '@vueuse/nuxt',
+    '@nuxt/image',
   ],
 
   /**
