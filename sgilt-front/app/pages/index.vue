@@ -15,12 +15,14 @@
 
       <!-- composants -->
       <div class="inputs">
-        <SgiltDatePicker placeholder="Votre date" />
+        <SgiltDatePicker placeholder="Votre date" v-model="dateModel" />
 
         <SgiltSelect :options="selectOptions" :model-value="selectedOption">
           <template v-slot:left-icon> <IconRocket /> </template>
         </SgiltSelect>
-        <SgiltButton class="submit_button">C'est parti !</SgiltButton>
+        <SgiltButton class="submit_button" @click="navigateTo('/search')">
+          C'est parti !
+        </SgiltButton>
       </div>
     </section>
     <section class="photo-layer" aria-hidden="true"></section>
@@ -56,6 +58,9 @@ const selectOptions = [
 ]
 
 const selectedOption = ref(selectOptions[0]!.value)
+
+const { dateModel, showOnboarding } = useSearchUi()
+showOnboarding.value = true // on affiche l'onboarding à la suite de la page d'accueil
 </script>
 
 <style scoped lang="scss">

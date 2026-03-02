@@ -17,6 +17,9 @@ export function useSearchUi() {
   // On utilise un Record<string, string[]> où la clé est l'ID de la catégorie
   const subcatsByCat = useState<Record<string, string[]>>('search:subcatsByCat', () => ({}))
 
+  // est ce qu'on doit afficher la phrase d'onboarding ?
+  const showOnboarding = useState<boolean>('search:showOnboarding', () => false)
+
   // Cookies pour la persistance
   const dateCookie = useCookie<string>('search_date', { default: () => date.value })
   const catCookie = useCookie<string>('search_cat', { default: () => categoryId.value })
@@ -41,6 +44,7 @@ export function useSearchUi() {
     date,
     dateModel,
     categoryId,
+    showOnboarding,
     subcatsByCat,
     toggleSubcat,
     resetSubcats: () => {

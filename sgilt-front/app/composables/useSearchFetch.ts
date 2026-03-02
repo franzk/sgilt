@@ -1,4 +1,4 @@
-import { useDebounceFn } from '@vueuse/core'
+import { useThrottleFn } from '@vueuse/core'
 import { SearchMockService } from '~/services/search.mock'
 import type { PrestataireCardDetail } from '~/types/prestataire'
 
@@ -35,10 +35,10 @@ export function useSearchFetch() {
     }
   }
 
-  const fetchDebounced = useDebounceFn(fetchNow, 300)
+  const fetchThrottled = useThrottleFn(fetchNow, 300)
 
   // Watcher auto-pilote
-  watch([date, categoryId, () => subcatsByCat.value[categoryId.value]], () => fetchDebounced(), {
+  watch([date, categoryId, () => subcatsByCat.value[categoryId.value]], () => fetchThrottled(), {
     deep: true,
     immediate: true,
   })

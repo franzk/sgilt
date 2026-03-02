@@ -13,7 +13,7 @@ export const SearchMockService = {
     subcats: string[]
   }): Promise<PrestataireSearchResponse> {
     // Simulation du délai réseau (indispensable pour tester tes loaders)
-    await new Promise((resolve) => setTimeout(resolve, 400))
+    await new Promise((resolve) => setTimeout(resolve, 300))
 
     // 1. Filtrage des résultats (ProviderCard[])
     const filteredResults = MOCK_PROVIDERS.filter((p) => {

@@ -82,6 +82,21 @@ export default defineNuxtConfig({
     },
   },
 
+  /**
+   * ======================
+   * Google Fonts
+   * ======================
+   */
+  googleFonts: {
+    families: {
+      'Cormorant Garamond': {
+        wght: [300, 400, 500],
+        ital: [400],
+      },
+      Inter: [400, 500, 600, 900],
+    },
+  },
+
   css: ['@/assets/styles/base.scss'],
 
   app: {

@@ -2,7 +2,9 @@
   <ClientOnly>
     <div class="search-page">
       <section class="search-header">
-        <SgiltDateFilter v-model="dateModel" />
+        <div class="date-filter">
+          <SgiltDateFilter v-model="dateModel" />
+        </div>
 
         <SgiltCategoryFilter v-model="categoryId" />
 
@@ -13,12 +15,27 @@
           :counts="subcatCounts"
           @toggle="toggleSubcat"
         />
+
+        <div v-else class="results-meta" :class="{ 'is-onboarding': showOnboarding }">
+          <Transition name="vibe-collapse">
+            <h2 v-if="showOnboarding" class="vibe-text">Votre événement prend forme.</h2>
+          </Transition>
+
+          <p class="count">
+            <span v-if="!loading && !error">
+              {{ results.length }} prestataires sont disponibles à votre date.
+            </span>
+            <div v-else-if="loading" class="skeleton-text"></div>
+          </p>
+        </div>
       </section>
 
-      <section
-        class="search-results margin-for-header"
-        :class="{ 'margin-for-header-and-subcats': categoryId !== '1' }"
-      >
+      <div
+        class="margin-for-header"
+        :class="{ onboarding: categoryId === '1' && showOnboarding }"
+      />
+
+      <section class="search-results">
         <SgiltSearchResults :results="results" :loading="loading" :error="error" />
       </section>
     </div>
@@ -32,10 +49,16 @@ import SgiltSubCategoryFilter from '~/components/composed/SgiltSubCategoryFilter
 import SgiltSearchResults from '~/components/composed/SgiltSearchResults.vue'
 
 // On récupère l'état de l'UI
-const { dateModel, categoryId, subcatsByCat, toggleSubcat } = useSearchUi()
+const { dateModel, categoryId, showOnboarding, subcatsByCat, toggleSubcat } = useSearchUi()
 
 // On récupère les données (le watcher interne lance le fetch auto)
-const { results, loading, countsByCategory, subcatCounts, error } = useSearchFetch()
+const { results, loading, subcatCounts, error } = useSearchFetch()
+
+watch(categoryId, (newCat) => {
+  showOnboarding.value = false
+  loading.value = true
+  results.value = []
+})
 </script>
 
 <style scoped lang="scss">
@@ -54,19 +77,80 @@ const { results, loading, countsByCategory, subcatCounts, error } = useSearchFet
 }
 
 .margin-for-header {
-  margin-top: 140px; // Laisse de la place pour le header fixe
-}
+  margin-top: 190px;
+  transition: margin-top 180ms ease;
 
-.margin-for-header-and-subcats {
-  margin-top: 200px; // Laisse de la place pour le header fixe + filtre sous catégorie
+  &.onboarding {
+    margin-top: 210px;
+  }
 }
 
 .search-header {
   display: flex;
   flex-direction: column;
+  align-items: center;
   width: 100%;
   position: fixed;
   z-index: 10;
   background-color: #ffffff;
+}
+
+.date-filter {
+  max-width: 500px;
+}
+
+.results-meta {
+  max-width: 1400px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  &:not(:has(.vibe-text)) {
+    width: 100%;
+    align-items: start;
+  }
+
+  .vibe-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+  }
+
+  .count {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #555555;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.skeleton-text {
+  min-width: 20rem;
+  height: 1.2rem;
+}
+
+/* Fade + slide out/in (l'in ne se produira qu'une seule fois au début) */
+.vibe-collapse-enter-active,
+.vibe-collapse-leave-active {
+  transition:
+    opacity 320ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 320ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.vibe-collapse-enter-from,
+.vibe-collapse-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+.vibe-collapse-enter-to,
+.vibe-collapse-leave-from {
+  opacity: 1;
+  transform: translateY(0);
 }
 </style>
