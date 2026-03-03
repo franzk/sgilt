@@ -11,7 +11,7 @@
         <SgiltSubCategoryFilter
           v-if="categoryId !== '1'"
           :categoryId="categoryId"
-          :activeSubcats="subcatsByCat[categoryId] || []"
+          :activeSubcats="currentSubcats"
           :counts="subcatCounts"
           @toggle="toggleSubcat"
         />
@@ -49,7 +49,7 @@ import SgiltSubCategoryFilter from '~/components/composed/SgiltSubCategoryFilter
 import SgiltSearchResults from '~/components/composed/SgiltSearchResults.vue'
 
 // On récupère l'état de l'UI
-const { dateModel, categoryId, showOnboarding, subcatsByCat, toggleSubcat } = useSearchUi()
+const { dateModel, categoryId, showOnboarding, currentSubcats, toggleSubcat } = useSearchUi()
 
 // On récupère les données (le watcher interne lance le fetch auto)
 const { results, loading, subcatCounts, error } = useSearchFetch()
@@ -79,11 +79,11 @@ watch(categoryId, (newCat) => {
 }
 
 .margin-for-header {
-  margin-top: 190px;
+  margin-top: 11.875rem; 
   transition: margin-top 180ms ease;
 
   &.onboarding {
-    margin-top: 210px;
+    margin-top: 13.125rem; 
   }
 }
 
@@ -98,12 +98,13 @@ watch(categoryId, (newCat) => {
 }
 
 .date-filter {
-  max-width: 500px;
+  width: 100%;
+  max-width: 32rem; 
 }
 
 .results-meta {
   max-width: 1400px;
-  padding: 16px;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;

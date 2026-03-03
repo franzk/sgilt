@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import IconPhotoBreak from '~/components/icons/IconPhotoBreak.vue'
+
 const props = defineProps<{
   src?: string
   alt?: string

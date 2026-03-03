@@ -2,54 +2,78 @@
 import { APP_CATEGORIES } from '~/utils/constants'
 
 export function useSearchUi() {
-  // Par défaut, on prend l'ID de la première catégorie de tes constantes (souvent "Tous")
+  const route = useRoute()
+  const router = useRouter()
+
   const defaultCatId = APP_CATEGORIES[0]?.id || '1'
 
-  const date = useState<string>('search:date', () => toISODate(new Date()))
+  // --- HELPERS POUR L'URL ---
+  // Met à jour une clé dans l'URL sans recharger la page
+  const updateQuery = (params: Record<string, string | undefined | null>) => {
+    router.replace({
+      query: {
+        ...route.query,
+        ...params,
+      },
+    })
+  }
+
+  // --- DATE ---
+  const date = computed({
+    get: () => (route.query.date as string) || toISODate(new Date()),
+    set: (val) => updateQuery({ date: val }),
+  })
 
   const dateModel = computed({
     get: () => new Date(date.value),
-    set: (value: Date) => (date.value = toISODate(value)),
+    set: (value: Date) => {
+      date.value = toISODate(value)
+    },
   })
 
-  const categoryId = useState<string>('search:categoryId', () => defaultCatId)
+  // --- CATEGORIE ---
+  const categoryId = computed({
+    get: () => (route.query.cat as string) || defaultCatId,
+    set: (val) => {
+      // Optionnel : On réinitialise les sous-catégories si on change de catégorie parente
+      updateQuery({ cat: val, subcats: undefined })
+    },
+  })
 
-  // On utilise un Record<string, string[]> où la clé est l'ID de la catégorie
-  const subcatsByCat = useState<Record<string, string[]>>('search:subcatsByCat', () => ({}))
-
-  // est ce qu'on doit afficher la phrase d'onboarding ?
-  const showOnboarding = useState<boolean>('search:showOnboarding', () => false)
-
-  // Cookies pour la persistance
-  const dateCookie = useCookie<string>('search_date', { default: () => date.value })
-  const catCookie = useCookie<string>('search_cat', { default: () => categoryId.value })
-
-  if (import.meta.client) {
-    if (dateCookie.value) date.value = String(dateCookie.value)
-    if (catCookie.value) categoryId.value = String(catCookie.value)
-
-    watch(date, (v) => (dateCookie.value = v))
-    watch(categoryId, (v) => (catCookie.value = v))
-  }
+  // --- SOUS-CATEGORIES ---
+  // On les stocke souvent en CSV dans l'URL (ex: ?subcats=12,45,67)
+  const currentSubcats = computed(() => {
+    const raw = route.query.subcats as string
+    return raw ? raw.split(',') : []
+  })
 
   function toggleSubcat(subcatId: string) {
-    const current = subcatsByCat.value[categoryId.value] ?? []
-    const exists = current.includes(subcatId)
-    subcatsByCat.value[categoryId.value] = exists
-      ? current.filter((id) => id !== subcatId)
-      : [...current, subcatId]
+    const current = [...currentSubcats.value]
+    const index = current.indexOf(subcatId)
+
+    if (index > -1) {
+      current.splice(index, 1)
+    } else {
+      current.push(subcatId)
+    }
+
+    updateQuery({
+      subcats: current.length > 0 ? current.join(',') : undefined,
+    })
   }
+
+  // --- ONBOARDING (On peut garder useState car c'est purement UI/Session) ---
+  const showOnboarding = useState<boolean>('search:showOnboarding', () => false)
 
   return {
     date,
     dateModel,
     categoryId,
     showOnboarding,
-    subcatsByCat,
+    currentSubcats,
     toggleSubcat,
-    resetSubcats: () => {
-      subcatsByCat.value[categoryId.value] = []
-    },
+    resetSubcats: () => updateQuery({ subcats: undefined }),
+    toISODate,
   }
 }
 

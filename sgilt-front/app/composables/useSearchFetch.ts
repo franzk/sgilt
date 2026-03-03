@@ -3,7 +3,7 @@ import { SearchMockService } from '~/services/search.mock'
 import type { PrestataireCardDetail } from '~/types/prestataire'
 
 export function useSearchFetch() {
-  const { date, categoryId, subcatsByCat } = useSearchUi()
+  const { date, categoryId, currentSubcats } = useSearchUi()
 
   const loading = ref(false)
   const results = ref<PrestataireCardDetail[]>([])
@@ -16,7 +16,7 @@ export function useSearchFetch() {
     error.value = null
 
     try {
-      const activeSubcats = subcatsByCat.value[categoryId.value] ?? []
+      const activeSubcats = currentSubcats.value
 
       const data = await SearchMockService.search({
         date: date.value,
@@ -38,7 +38,7 @@ export function useSearchFetch() {
   const fetchThrottled = useThrottleFn(fetchNow, 300)
 
   // Watcher auto-pilote
-  watch([date, categoryId, () => subcatsByCat.value[categoryId.value]], () => fetchThrottled(), {
+  watch([date, categoryId, currentSubcats], () => fetchThrottled(), {
     deep: true,
     immediate: true,
   })

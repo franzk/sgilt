@@ -47,3 +47,11 @@ export const APP_CATEGORIES: Category[] = [
     ],
   },
 ]
+
+export const eventTypes = [
+  { value: '-1', label: 'Votre événement' },
+  { value: '0', label: 'Mariage' },
+  { value: '1', label: 'Anniversaire' },
+  { value: '2', label: "Fête d'entreprise" },
+  { value: '3', label: 'Autre' },
+]

@@ -18,7 +18,7 @@
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
 import dayjs from 'dayjs'
 
-const modelValue = defineModel<Date | null>()
+const modelValue = defineModel<Date | undefined>()
 
 const prevDay = () => {
   if (modelValue.value) modelValue.value = dayjs(modelValue.value).subtract(1, 'day').toDate()
@@ -36,13 +36,14 @@ const nextDay = () => {
   justify-content: space-between;
   gap: 0.5rem;
   width: 100%;
+
   // On s'assure que le container ne squeeze pas les boutons
   padding: 2px 8px;
 
   .nav-btn {
-    // Le bouton devient un cercle tactile de 40px (idéal mobile)
-    width: 40px;
-    height: 40px;
+    // Le bouton devient un cercle tactile de 2.5rem (idéal mobile)
+    width: 2.5rem;
+    height: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -68,20 +69,20 @@ const nextDay = () => {
     // Dessin du chevron en CSS pur
     .chevron {
       display: block;
-      width: 10px;
-      height: 10px;
+      width: 0.625rem;
+      height: 0.625rem;
       border-top: 2px solid currentColor;
       border-left: 2px solid currentColor;
     }
 
     &.prev .chevron {
       transform: rotate(-45deg);
-      margin-left: 4px; // Compensation optique pour centrer
+      margin-left: 0.25rem; // Compensation optique pour centrer
     }
 
     &.next .chevron {
       transform: rotate(135deg);
-      margin-right: 4px; // Compensation optique
+      margin-right: 0.25rem; // Compensation optique
     }
   }
 

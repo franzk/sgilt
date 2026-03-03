@@ -20,7 +20,10 @@
         <SgiltSelect :options="selectOptions" :model-value="selectedOption">
           <template v-slot:left-icon> <IconRocket /> </template>
         </SgiltSelect>
-        <SgiltButton class="submit_button" @click="navigateTo('/search')">
+        <SgiltButton
+          class="submit_button"
+          @click="navigateTo({ path: '/search', query: { date: dateString } })"
+        >
           C'est parti !
         </SgiltButton>
       </div>
@@ -35,7 +38,6 @@ import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
 import SgiltSelect from '~/components/basics/inputs/SgiltSelect.vue'
 import IconRocket from '~/components/icons/IconRocket.vue'
-import { useDevice } from '~/composables/useDevice'
 
 useSeoMeta({
   title: '',
@@ -47,19 +49,16 @@ useHead({
   meta: [{ name: 'theme-color', content: '#ffffff' }],
 })
 
-const { isMobile } = useDevice()
+const { showOnboarding, toISODate } = useSearchUi()
 
-const selectOptions = [
-  { value: '-1', label: 'Votre événement' },
-  { value: '0', label: 'Mariage' },
-  { value: '1', label: 'Anniversaire' },
-  { value: '2', label: "Fête d'entreprise" },
-  { value: '3', label: 'Autre' },
-]
+const selectOptions = eventTypes
+
+const dateModel = ref<Date | undefined>(undefined)
+
+const dateString = computed(() => (dateModel.value ? toISODate(dateModel.value) : ''))
 
 const selectedOption = ref(selectOptions[0]!.value)
 
-const { dateModel, showOnboarding } = useSearchUi()
 showOnboarding.value = true // on affiche l'onboarding à la suite de la page d'accueil
 </script>
 
