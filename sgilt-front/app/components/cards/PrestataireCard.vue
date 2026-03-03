@@ -125,6 +125,9 @@ const imageLoaded = ref(false)
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        @media (max-width: 380px) {
+          display: none; // On ne garde que l'icône sur petit mobile
+        }
       }
     }
   }

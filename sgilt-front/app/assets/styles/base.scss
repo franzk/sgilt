@@ -15,12 +15,19 @@ html {
 }
 
 body {
+  height: 100vh;
   margin: 0;
   font-family: $font-family-base;
   font-size: $font-size-md;
   line-height: $line-height-normal;
   color: $text-primary;
   background-color: white; // $brand-background;
+}
+
+#__nuxt {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 h1,

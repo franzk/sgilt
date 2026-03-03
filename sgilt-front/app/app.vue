@@ -26,6 +26,9 @@ body {
 
 .app-content {
   padding-top: $app-header-height; // pour compenser la hauteur du header fixe
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 :root {

@@ -31,21 +31,39 @@ defineProps<{
 
 <style scoped lang="scss">
 .results-section {
-  padding: 1rem;
+  flex: 1;
+  padding: 10px;
   background-color: #f7f9fb;
+
+  @media (min-width: 768px) {
+    padding: 2rem;
+  }
 }
 
 .grid-container {
   display: grid;
-  // Le secret : auto-fill avec un min-width
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  gap: 14px; // 1.5rem 1rem;
-  // padding: 1rem;
 
-  // Sur très petits écrans ( < 350px ), on passe en 1 colonne pour laisser respirer la typo
-  /*@media (max-width: 350px) {
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 10px;
+  // Par défaut (mobile) : on force 2 colonnes
+  grid-template-columns: repeat(2, 1fr);
+  padding: 0;
+
+  // DESKTOP : On repasse sur un comportement flexible
+  @media (min-width: 600px) {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+
+  //  Très petits écrans (ex: iPhone SE ou vieux modèles)
+  @media (max-width: 340px) {
     grid-template-columns: 1fr;
-  }*/
+  }
 }
 
 .status-message {

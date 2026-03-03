@@ -63,6 +63,7 @@ watch(categoryId, (newCat) => {
 
 <style scoped lang="scss">
 .search-page {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -70,6 +71,7 @@ watch(categoryId, (newCat) => {
 }
 
 .search-results {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -121,6 +123,14 @@ watch(categoryId, (newCat) => {
     font-size: 1rem;
     font-weight: 600;
     color: #555555;
+
+    // limite à 1 ligne et ajoute des "..." si c'est trop long
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    @media (min-width: 640px) {
+      font-size: 1.125rem;
+    }
   }
 
   * {
