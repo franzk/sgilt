@@ -2,10 +2,13 @@
   <ClientOnly>
     <div class="search-page">
       <section class="search-header">
+
+        <!-- Date filter -->
         <div class="date-filter">
           <SgiltDateFilter v-model="dateModel" />
         </div>
 
+        <!-- Category + subcat filters -->
         <SgiltCategoryFilter v-model="categoryId" />
 
         <SgiltSubCategoryFilter
@@ -16,6 +19,7 @@
           @toggle="toggleSubcat"
         />
 
+        <!-- Résumé des résultats -->
         <div v-else class="results-meta" :class="{ 'is-onboarding': showOnboarding }">
           <Transition name="vibe-collapse">
             <h2 v-if="showOnboarding" class="vibe-text">Votre événement prend forme.</h2>
@@ -30,11 +34,13 @@
         </div>
       </section>
 
+      <!-- Marge pour compenser le header fixe (et son extension lors de l'onboarding) -->
       <div
         class="margin-for-header"
         :class="{ onboarding: categoryId === '1' && showOnboarding }"
       />
 
+      <!-- Résultats -->
       <section class="search-results">
         <SgiltSearchResults :results="results" :loading="loading" :error="error" />
       </section>
@@ -54,10 +60,8 @@ const { dateModel, categoryId, showOnboarding, currentSubcats, toggleSubcat } = 
 // On récupère les données (le watcher interne lance le fetch auto)
 const { results, loading, subcatCounts, error } = useSearchFetch()
 
-watch(categoryId, (newCat) => {
+watch(categoryId, () => {
   showOnboarding.value = false
-  loading.value = true
-  results.value = []
 })
 </script>
 
