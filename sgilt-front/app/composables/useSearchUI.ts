@@ -5,10 +5,14 @@ export function useSearchUi() {
   const route = useRoute()
   const router = useRouter()
 
-  const defaultCatId = APP_CATEGORIES[0]?.id || '1'
+  const defaultCatId = (() => {
+    const id = APP_CATEGORIES[0]?.id
+    if (!id) console.warn('[useSearchUi] APP_CATEGORIES est vide ou mal configuré')
+    return id || ''
+  })()
 
   // --- HELPERS POUR L'URL ---
-  // Met à jour une clé dans l'URL sans recharger la page
+
   const updateQuery = (params: Record<string, string | undefined | null>) => {
     router.replace({
       query: {
@@ -19,29 +23,35 @@ export function useSearchUi() {
   }
 
   // --- DATE ---
+
   const date = computed({
     get: () => (route.query.date as string) || toISODate(new Date()),
     set: (val) => updateQuery({ date: val }),
   })
 
   const dateModel = computed({
-    get: () => new Date(date.value),
+    get: () => {
+      const d = new Date(date.value)
+      return isNaN(d.getTime()) ? new Date() : d
+    },
     set: (value: Date) => {
       date.value = toISODate(value)
     },
   })
 
   // --- CATEGORIE ---
+
   const categoryId = computed({
     get: () => (route.query.cat as string) || defaultCatId,
     set: (val) => {
-      // Optionnel : On réinitialise les sous-catégories si on change de catégorie parente
+      // On réinitialise les sous-catégories si on change de catégorie parente
       updateQuery({ cat: val, subcats: undefined })
     },
   })
 
   // --- SOUS-CATEGORIES ---
-  // On les stocke souvent en CSV dans l'URL (ex: ?subcats=12,45,67)
+  // Stockées en CSV dans l'URL (ex: ?subcats=12,45,67)
+
   const currentSubcats = computed(() => {
     const raw = route.query.subcats as string
     return raw ? raw.split(',') : []
@@ -50,19 +60,18 @@ export function useSearchUi() {
   function toggleSubcat(subcatId: string) {
     const current = [...currentSubcats.value]
     const index = current.indexOf(subcatId)
-
     if (index > -1) {
       current.splice(index, 1)
     } else {
       current.push(subcatId)
     }
-
     updateQuery({
       subcats: current.length > 0 ? current.join(',') : undefined,
     })
   }
 
-  // --- ONBOARDING (On peut garder useState car c'est purement UI/Session) ---
+  // --- ONBOARDING (useState car c'est purement UI/Session) ---
+
   const showOnboarding = useState<boolean>('search:showOnboarding', () => false)
 
   return {
@@ -77,7 +86,7 @@ export function useSearchUi() {
   }
 }
 
-function toISODate(d: Date) {
+export function toISODate(d: Date): string {
   const yyyy = d.getFullYear()
   const mm = String(d.getMonth() + 1).padStart(2, '0')
   const dd = String(d.getDate()).padStart(2, '0')

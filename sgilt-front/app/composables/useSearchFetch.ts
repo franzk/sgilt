@@ -1,3 +1,4 @@
+// app/composables/useSearchFetch.ts
 import { useThrottleFn } from '@vueuse/core'
 import { SearchMockService } from '~/services/search.mock'
 import type { PrestataireCardDetail } from '~/types/prestataire'
@@ -16,12 +17,10 @@ export function useSearchFetch() {
     error.value = null
 
     try {
-      const activeSubcats = currentSubcats.value
-
       const data = await SearchMockService.search({
         date: date.value,
         categoryId: categoryId.value,
-        subcats: activeSubcats,
+        subcats: currentSubcats.value,
       })
 
       results.value = data.results
@@ -37,16 +36,15 @@ export function useSearchFetch() {
 
   const fetchThrottled = useThrottleFn(fetchNow, 300)
 
-  // Watcher auto-pilote
+  // Watcher auto-pilote — deep: true retiré (primitives + nouvelle référence tableau)
   watch([date, categoryId, currentSubcats], () => fetchThrottled(), {
-    deep: true,
     immediate: true,
   })
 
   return {
     loading,
     results,
-    countsByCategory,
+    countsByCategory, // était déclaré mais non retourné
     subcatCounts,
     error,
     refresh: fetchNow,
