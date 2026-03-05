@@ -64,6 +64,7 @@ watch(
     width: 100%;
     height: 100%;
     display: block;
+    object-fit: cover;
     opacity: 0;
     transition: opacity 0.5s ease;
 

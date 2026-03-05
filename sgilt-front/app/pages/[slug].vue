@@ -5,22 +5,26 @@
     ════════════════════════════════════════════ -->
     <section class="hero" @touchstart.passive="onHeroTouchStart" @touchend.passive="onHeroTouchEnd">
       <!-- Slide image -->
-      <img
-        v-if="heroItems[heroIndex]?.type === 'image'"
-        :src="heroItems[heroIndex].src"
-        :alt="prestataire.name"
-        class="hero__image"
-      />
+      <div v-if="heroItems[heroIndex]?.type === 'image'" class="hero__image">
+        <SgiltImage :src="heroItems[heroIndex].src" :alt="prestataire.name" loading="eager" />
+      </div>
 
       <!-- Slide vidéo -->
       <template v-else-if="heroItems[heroIndex]?.type === 'video'">
-        <img
-          :src="`https://img.youtube.com/vi/${heroItems[heroIndex].youtubeId}/hqdefault.jpg`"
-          alt="Vidéo"
-          class="hero__image"
-        />
+        <div class="hero__image">
+          <SgiltImage
+            :src="`https://img.youtube.com/vi/${heroItems[heroIndex].youtubeId}/hqdefault.jpg`"
+            alt="Vidéo"
+            loading="eager"
+          />
+        </div>
         <button class="hero__video-play" @click="openVideo" aria-label="Lancer la vidéo">▶</button>
       </template>
+
+      <!-- Bouton share -->
+      <button class="hero__share" @click="share" aria-label="Partager">
+        <IconShare />
+      </button>
 
       <!-- Overlay gradient -->
       <div class="hero__overlay" aria-hidden="true" />
@@ -215,6 +219,8 @@
 <script setup lang="ts">
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
+import SgiltImage from '~/components/basics/media/SgiltImage.vue'
+import IconShare from '~/components/icons/IconShare.vue'
 import { SearchMockService } from '~/services/search.mock'
 import type { PrestataireDetail, Badge } from '~/types/prestataire'
 
@@ -316,6 +322,19 @@ function closeVideo() {
   showVideo.value = false
 }
 
+// ─── Share ────────────────────────────────────────────────────────────────────
+async function share() {
+  if (navigator.share) {
+    await navigator.share({
+      title: prestataire.value?.name,
+      text: prestataire.value?.baseline,
+      url: window.location.href,
+    })
+  } else {
+    await navigator.clipboard.writeText(window.location.href)
+  }
+}
+
 // ─── Contact ──────────────────────────────────────────────────────────────────
 function openContactModal() {
   // TODO: ouvrir la modale de contact / messagerie
@@ -413,6 +432,30 @@ $section-gap: 2.5rem;
     opacity: 0.9;
     margin: 0;
     max-width: 36rem;
+  }
+
+  // Bouton share
+  &__share {
+    position: absolute;
+    top: $spacing-m;
+    right: $spacing-m;
+    z-index: 2;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
   }
 
   // Bouton play vidéo

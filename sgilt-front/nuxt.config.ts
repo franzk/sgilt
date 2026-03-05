@@ -97,6 +97,10 @@ export default defineNuxtConfig({
     },
   },
 
+  image: {
+    domains: ['images.unsplash.com', 'picsum.photos'],
+  },
+
   css: ['@/assets/styles/base.scss'],
 
   app: {
