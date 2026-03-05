@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PrestataireCardDetail } from '~/types/prestataire'
 import SgiltImage from '~/components/basics/media/SgiltImage.vue'
+import { NuxtLink } from '#components'
 
 defineProps<{
   provider?: PrestataireCardDetail
@@ -12,8 +13,8 @@ const imageLoaded = ref(false)
 
 <template>
   <component
-    :is="loading ? 'div' : 'NuxtLink'"
-    :to="!loading ? `/prestataire/${provider?.slug}` : undefined"
+    :is="loading ? 'div' : NuxtLink"
+    :to="!loading ? `/${provider?.slug}` : undefined"
     class="provider-card"
     :class="{ 'is-loading shimmer-container': loading }"
   >

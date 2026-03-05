@@ -14,13 +14,13 @@
       teleport="body"
     >
       <template #action-extra>
-        <!-- Extra info : color legend -->
         <p class="extra-info" v-if="showExtraInfo">
           <span class="dot booked" /> {{ $t('date-picker.booked') }} <span class="dot option" />
           {{ $t('date-picker.option') }}
         </p>
       </template>
     </VueDatePicker>
+
     <template #fallback>
       <div class="select-skeleton">
         <div class="skeleton-icon" />
@@ -39,9 +39,9 @@ import { computed } from 'vue'
 import { dateArrayContains } from '@/utils/ArrayUtils'
 
 const date = defineModel<Date>()
+
 const format = { input: (date: Date) => dayjs(date).locale('fr').format('dddd DD MMM YYYY') }
 
-// dates to highlight
 const props = defineProps<{
   bookedDates?: Date[]
   optionDates?: Date[]
@@ -69,31 +69,25 @@ const choiceState = computed(() => {
 <style lang="scss">
 @import '@vuepic/vue-datepicker/dist/main.css';
 
+// ─── Tokens ───────────────────────────────────────────────────────────────────
+
 // input
-// -- contenu
 $input-padding: 0.75rem;
 $input-font-weight: 500;
 $input-letter-spacing: 0.005rem;
 $placeholder-text-opacity: 1;
-
-// -- icon
 $icon-color: $color-accent;
 $input-text-color: rgba($color-primary, 0.8);
 $icon-width: 2.5rem;
 $icon-stroke-width: 1px;
 
 // calendar
-// -- global
 $calendar-text-color: $color-primary;
-
-// -- cell
 $today-border-color: $color-accent;
 $cell-hover-color: rgba($color-accent, 0.14);
 $cell-border-radius: 0.5em;
 $cell-padding: 1.2rem;
 $cell-padding-small: 1rem;
-
-// -- menu
 $menu-border-radius: 1.4rem;
 $menu-box-shadow:
   0 0.25rem 0.5rem rgba(0, 0, 0, 0.1),
@@ -106,7 +100,8 @@ $menu-background:
   ),
   linear-gradient(180deg, #fffdf6 0%, #ffffff 60%);
 
-// style
+// ─── Composant ────────────────────────────────────────────────────────────────
+
 .sgilt-date-picker {
   width: 100%;
   * {
@@ -120,11 +115,10 @@ $menu-background:
   --dp-input-padding: #{$input-padding};
   --dp-font-size: inherit;
   --dp-text-color: #{$calendar-text-color};
-
   --dp-primary-color: #{$today-border-color};
   --dp-hover-color: #{$cell-hover-color};
   --dp-icon-color: #{$icon-color};
-  --dp-success-color: #{$state-option}; // TODO : à vérifier
+  --dp-success-color: #{$state-option};
   --dp-cell-border-radius: #{$cell-border-radius};
   --dp-cell-padding: #{$cell-padding};
 }
@@ -134,7 +128,6 @@ $menu-background:
     --dp-cell-padding: #{$cell-padding-small};
   }
 }
-
 @media (max-width: 300px) {
   .dp__theme_light {
     --dp-cell-padding: #{$cell-padding-small};
@@ -149,7 +142,6 @@ $menu-background:
   font-weight: $input-font-weight;
   height: 100%;
   box-shadow: $input-box-shadow;
-
   font-family: inherit;
   line-height: 1;
   letter-spacing: $input-letter-spacing;
@@ -161,6 +153,11 @@ $menu-background:
     font-family: inherit;
     opacity: $placeholder-text-opacity;
     font-size: inherit;
+  }
+
+  &:focus {
+    border-color: $input-focus-border-color;
+    box-shadow: $input-focus-box-shadow;
   }
 }
 
@@ -190,57 +187,61 @@ $menu-background:
 .dp__calendar_header_item {
   padding-top: 0;
 }
-
-.dp__input:focus {
-  border-color: $input-focus-border-color;
-  box-shadow: $input-focus-box-shadow;
-}
-
 .dp__active_date {
   font-weight: bold;
 }
 
-/* TODO : à revoir quand on fera les states
+// ─── Points colorés sur les jours ────────────────────────────────────────────
 
 .date {
-  font-weight: bold;
+  position: relative;
+
+  // Point centré sous le chiffre du jour
   &::after {
-    content: '.';
+    content: '';
     position: absolute;
-    font-size: 4rem;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
   }
 
   &.booked::after {
-    color: $state-booked;
+    background: $state-booked;
   }
 
   &.option::after {
-    color: $state-option;
+    background: $state-option;
   }
-} 
+}
+
+// ─── Légende (action-extra) ───────────────────────────────────────────────────
 
 .dot {
-  width: 1em;
-  height: 1em;
+  display: inline-block;
+  width: 0.55em;
+  height: 0.55em;
   border-radius: 50%;
-  margin: 0 $spacing-s;
+  margin: 0 0.3em;
+  vertical-align: middle;
 
   &.booked {
     background: $state-booked;
   }
-
   &.option {
     background: $state-option;
   }
 }
 
-
 .extra-info {
-  // font-size: $font-size-base;
   color: $color-subtext;
   margin-left: $spacing-s;
   display: flex;
   flex-direction: row;
-  align-items: start;
-} */
+  align-items: center;
+  gap: 0.2em;
+  font-size: 0.8rem;
+}
 </style>

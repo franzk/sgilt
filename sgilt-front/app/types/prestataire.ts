@@ -1,4 +1,26 @@
 // app/types/prestataire.ts
+
+// ─── Sous-types ───────────────────────────────────────────────────────────────
+
+export interface Badge {
+  icon: string // emoji ou nom d'icône
+  label: string // ex: "Réponse < 48h"
+  description: string // contenu du popover au clic
+}
+
+export interface Testimonial {
+  author: string
+  text: string
+  eventType?: string // ex: "Mariage", "Anniversaire"
+}
+
+export interface FaqItem {
+  question: string
+  answer: string
+}
+
+// ─── Card (liste de résultats) ────────────────────────────────────────────────
+
 export interface PrestataireCardDetail {
   id: string
   name: string
@@ -9,13 +31,39 @@ export interface PrestataireCardDetail {
   categoryName?: string
 }
 
+// ─── Fiche complète ───────────────────────────────────────────────────────────
+
 export interface PrestataireDetail extends PrestataireCardDetail {
-  longDescription: string
-  youtubeId?: string
-  calendar?: any[]
+  // Identité
+  baseline: string // 1 phrase d'accroche
   categoryId: string
-  subcats: string[]
+  category: string // "Musique", "Restauration"...
+  subcats: string[] // IDs des sous-catégories
+
+  // Hero media
+  heroImage: string // image principale forte
+  photos: string[] // 2-3 images supplémentaires
+  youtubeId?: string // ID YouTube (optionnel)
+
+  // Contenu
+  badges: Badge[] // 2-4 max
+  offerings: string[] // "Ce que nous proposons" — liste libre
+  identity?: string // Touche identitaire (optionnel)
+  budget?: string // Texte libre du prestataire (optionnel)
+
+  // Disponibilités
+  unavailableDates: string[] // ISO dates (ex: "2026-06-14")
+
+  // Témoignages
+  testimonials?: Testimonial[] // 0-2 max
+
+  // Infos pratiques (flux mobile : logistique → technique → FAQ)
+  logistics?: string[] // liste libre
+  technical?: string[] // liste libre
+  faq?: FaqItem[]
 }
+
+// ─── Réponse de recherche ─────────────────────────────────────────────────────
 
 export interface PrestataireSearchResponse {
   results: PrestataireCardDetail[]
