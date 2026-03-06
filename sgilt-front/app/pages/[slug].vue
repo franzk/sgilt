@@ -3,49 +3,7 @@
     <!-- ═══════════════════════════════════════════
          1. HERO
     ════════════════════════════════════════════ -->
-    <section class="hero" @touchstart.passive="onHeroTouchStart" @touchend.passive="onHeroTouchEnd">
-      <!-- Slide image -->
-      <div v-if="heroItems[heroIndex]?.type === 'image'" class="hero__image">
-        <SgiltImage :src="heroItems[heroIndex].src" :alt="prestataire.name" loading="eager" />
-      </div>
-
-      <!-- Slide vidéo -->
-      <template v-else-if="heroItems[heroIndex]?.type === 'video'">
-        <div class="hero__image">
-          <SgiltImage
-            :src="`https://img.youtube.com/vi/${heroItems[heroIndex].youtubeId}/hqdefault.jpg`"
-            alt="Vidéo"
-            loading="eager"
-          />
-        </div>
-        <button class="hero__video-play" @click="openVideo" aria-label="Lancer la vidéo">▶</button>
-      </template>
-
-      <!-- Bouton share -->
-      <button class="hero__share" @click="share" aria-label="Partager">
-        <IconShare />
-      </button>
-
-      <!-- Overlay gradient -->
-      <div class="hero__overlay" aria-hidden="true" />
-
-      <!-- Contenu hero -->
-      <div class="hero__content">
-        <p class="hero__category">{{ prestataire.category }}</p>
-        <h1 class="hero__name">{{ prestataire.name }}</h1>
-        <p class="hero__baseline">{{ prestataire.baseline }}</p>
-      </div>
-
-      <!-- Dots -->
-      <div v-if="heroItems.length > 1" class="hero__dots" aria-hidden="true">
-        <span
-          v-for="(_, i) in heroItems"
-          :key="i"
-          class="hero__dot"
-          :class="{ 'hero__dot--active': i === heroIndex }"
-        />
-      </div>
-    </section>
+    <PrestataireHero :prestataire="prestataire" @open-video="openVideo" />
 
     <!-- ═══════════════════════════════════════════
          DATEPICKER — juste après le hero
@@ -68,56 +26,41 @@
          CONTENU PRINCIPAL
     ════════════════════════════════════════════ -->
     <div class="provider-content">
-      <!-- 2. BADGES -->
-      <section v-if="prestataire.badges.length > 0" class="section badges-section">
-        <div class="badges">
-          <button
-            v-for="badge in prestataire.badges"
-            :key="badge.label"
-            class="badge"
-            @click="toggleBadge(badge)"
-            :aria-label="`En savoir plus : ${badge.label}`"
-          >
-            <span class="badge__icon">{{ badge.icon }}</span>
-            <span class="badge__label">{{ badge.label }}</span>
-          </button>
-        </div>
-
-        <!-- Popover badge -->
-        <Transition name="fade">
-          <div v-if="activeBadge" class="badge-popover" role="tooltip">
-            <p>{{ activeBadge.description }}</p>
-            <NuxtLink to="/notre-demarche" class="badge-popover__link"> Notre démarche → </NuxtLink>
-            <button class="badge-popover__close" @click="activeBadge = null" aria-label="Fermer">
-              ✕
-            </button>
-          </div>
-        </Transition>
-      </section>
-
       <!-- 3. CE QUE NOUS PROPOSONS -->
       <section v-if="prestataire.offerings.length > 0" class="section">
         <h2 class="section__title">Ce que nous proposons</h2>
         <ul class="offerings">
           <li v-for="item in prestataire.offerings" :key="item" class="offering-item">
-            <span class="offering-item__bullet" aria-hidden="true" />
+            <IconCheck class="offering-item__check" aria-hidden="true" />
             {{ item }}
           </li>
         </ul>
       </section>
 
       <!-- 4. TOUCHE IDENTITAIRE -->
-      <section v-if="prestataire.identity" class="section identity-section">
-        <p class="identity-text">{{ prestataire.identity }}</p>
+      <section v-if="prestataire.identity" class="section identity-spotlight">
+        <div class="identity-spotlight__content">
+          <blockquote class="identity-spotlight__quote">
+            {{ prestataire.identity.quote }}
+          </blockquote>
+          <p class="identity-spotlight__bio">{{ prestataire.identity.bio }}</p>
+        </div>
       </section>
 
-      <!-- 5. BUDGET -->
+      <!-- 5. BADGES -->
+      <section v-if="prestataire.badges.length > 0" class="section badges-section">
+        <div class="badges">
+          <EngagementBadge v-for="badge in prestataire.badges" :key="badge.label" :badge="badge" />
+        </div>
+      </section>
+
+      <!-- 6. BUDGET -->
       <section v-if="prestataire.budget" class="section budget-section">
         <h2 class="section__title">Tarifs</h2>
         <p class="budget-text">{{ prestataire.budget }}</p>
       </section>
 
-      <!-- 6. TÉMOIGNAGES -->
+      <!-- 7. TÉMOIGNAGES -->
       <section
         v-if="prestataire.testimonials && prestataire.testimonials.length > 0"
         class="section"
@@ -219,10 +162,10 @@
 <script setup lang="ts">
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
-import SgiltImage from '~/components/basics/media/SgiltImage.vue'
-import IconShare from '~/components/icons/IconShare.vue'
+import PrestataireHero from '~/components/prestataire/PrestataireHero.vue'
+import EngagementBadge from '~/components/prestataire/EngagementBadge.vue'
 import { SearchMockService } from '~/services/search.mock'
-import type { PrestataireDetail, Badge } from '~/types/prestataire'
+import type { PrestataireDetail } from '~/types/prestataire'
 
 // ─── Routing ──────────────────────────────────────────────────────────────────
 const route = useRoute()
@@ -255,34 +198,6 @@ const hasInfosPratiques = computed(
     (prestataire.value?.faq?.length ?? 0) > 0,
 )
 
-// ─── Hero carousel ────────────────────────────────────────────────────────────
-type HeroItem = { type: 'image'; src: string } | { type: 'video'; youtubeId: string }
-
-const heroItems = computed<HeroItem[]>(() => {
-  if (!prestataire.value) return []
-  const images: HeroItem[] = [prestataire.value.heroImage, ...prestataire.value.photos].map(
-    (src) => ({ type: 'image', src }),
-  )
-  if (prestataire.value.youtubeId) {
-    return [...images, { type: 'video', youtubeId: prestataire.value.youtubeId }]
-  }
-  return images
-})
-
-const heroIndex = ref(0)
-const touchStartX = ref(0)
-
-function onHeroTouchStart(e: TouchEvent) {
-  touchStartX.value = e.touches[0].clientX
-}
-
-function onHeroTouchEnd(e: TouchEvent) {
-  const diff = touchStartX.value - e.changedTouches[0].clientX
-  if (Math.abs(diff) < 30) return
-  if (diff > 0) heroIndex.value = (heroIndex.value + 1) % heroItems.value.length
-  else heroIndex.value = (heroIndex.value - 1 + heroItems.value.length) % heroItems.value.length
-}
-
 // ─── Disponibilités ───────────────────────────────────────────────────────────
 const selectedDate = ref<Date | undefined>(undefined)
 
@@ -304,13 +219,6 @@ const availabilityClass = computed(() =>
   isUnavailable.value ? 'availability-badge--unavailable' : 'availability-badge--available',
 )
 
-// ─── Badges ───────────────────────────────────────────────────────────────────
-const activeBadge = ref<Badge | null>(null)
-
-function toggleBadge(badge: Badge) {
-  activeBadge.value = activeBadge.value?.label === badge.label ? null : badge
-}
-
 // ─── Vidéo ────────────────────────────────────────────────────────────────────
 const showVideo = ref(false)
 
@@ -320,19 +228,6 @@ function openVideo() {
 
 function closeVideo() {
   showVideo.value = false
-}
-
-// ─── Share ────────────────────────────────────────────────────────────────────
-async function share() {
-  if (navigator.share) {
-    await navigator.share({
-      title: prestataire.value?.name,
-      text: prestataire.value?.baseline,
-      url: window.location.href,
-    })
-  } else {
-    await navigator.clipboard.writeText(window.location.href)
-  }
 }
 
 // ─── Contact ──────────────────────────────────────────────────────────────────
@@ -351,7 +246,6 @@ onUnmounted(() => {
 function onKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape') {
     closeVideo()
-    activeBadge.value = null
   }
 }
 </script>
@@ -369,145 +263,6 @@ $section-gap: 2.5rem;
   flex-direction: column;
   min-height: 100dvh;
   padding-bottom: 6rem; // espace pour le sticky CTA
-}
-
-// ─── Hero ─────────────────────────────────────────────────────────────────────
-.hero {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-
-  &__image {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-  }
-
-  &__overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      to bottom,
-      transparent 30%,
-      rgba(0, 0, 0, 0.25) 60%,
-      rgba(0, 0, 0, 0.72) 100%
-    );
-  }
-
-  &__content {
-    position: absolute;
-    bottom: 1.5rem;
-    left: 0;
-    right: 0;
-    padding: 0 $spacing-m;
-    color: #fff;
-    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
-  }
-
-  &__category {
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    opacity: 0.85;
-    margin: 0 0 0.4rem;
-    color: $color-accent;
-  }
-
-  &__name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(2rem, 6vw, 3.2rem);
-    font-weight: 700;
-    line-height: 1.1;
-    margin: 0 0 0.5rem;
-  }
-
-  &__baseline {
-    font-size: 1rem;
-    font-weight: 400;
-    opacity: 0.9;
-    margin: 0;
-    max-width: 36rem;
-  }
-
-  // Bouton share
-  &__share {
-    position: absolute;
-    top: $spacing-m;
-    right: $spacing-m;
-    z-index: 2;
-    width: 2.2rem;
-    height: 2.2rem;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    background: rgba(0, 0, 0, 0.25);
-    backdrop-filter: blur(6px);
-    color: #fff;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    svg {
-      width: 1rem;
-      height: 1rem;
-    }
-  }
-
-  // Bouton play vidéo
-  &__video-play {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2;
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.8);
-    background: rgba(0, 0, 0, 0.45);
-    color: #fff;
-    font-size: 1.2rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(4px);
-    transition: background 150ms ease;
-
-    &:hover {
-      background: rgba(0, 0, 0, 0.65);
-    }
-  }
-
-  // Dots de navigation
-  &__dots {
-    position: absolute;
-    bottom: $spacing-s;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 0.35rem;
-  }
-
-  &__dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.5);
-    transition:
-      background 200ms ease,
-      transform 200ms ease;
-
-    &--active {
-      background: #fff;
-      transform: scale(1.3);
-    }
-  }
 }
 
 // ─── Hero datepicker ──────────────────────────────────────────────────────────
@@ -581,75 +336,11 @@ $section-gap: 2.5rem;
 
 .badges {
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
-  gap: 0.6rem;
-}
-
-.badge {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.28rem 0.65rem;
-  border-radius: 2rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  background: #fafafa;
-  cursor: pointer;
-  font-size: 0.78rem;
-  font-weight: 500;
-  color: $text-secondary;
-  transition:
-    border-color 150ms ease,
-    background 150ms ease;
-
-  &:hover {
-    border-color: $color-accent;
-    background: rgba($color-accent, 0.06);
-  }
-
-  &__icon {
-    font-size: 0.82rem;
-  }
-}
-
-.badge-popover {
-  position: relative;
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: $radius-md;
-  padding: $spacing-m;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  font-size: 0.9rem;
-  line-height: 1.5;
-  color: $text-secondary;
-
-  &__link {
-    display: inline-block;
-    margin-top: 0.5rem;
-    font-size: 0.8rem;
-    color: $color-primary;
-    text-decoration: none;
-    opacity: 0.7;
-
-    &:hover {
-      opacity: 1;
-    }
-  }
-
-  &__close {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 0.85rem;
-    color: $text-secondary;
-    opacity: 0.5;
-    padding: 0.2rem 0.4rem;
-
-    &:hover {
-      opacity: 1;
-    }
+  gap: 1rem;
+  > * {
+    width: 6rem;
   }
 }
 
@@ -660,42 +351,67 @@ $section-gap: 2.5rem;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 1rem;
 }
+
+$color-success: #2e7d32; // Un vert élégant qui tranche bien sur le blanc
 
 .offering-item {
   display: flex;
   align-items: flex-start;
-  gap: 0.6rem;
+  gap: 0.5rem;
   font-size: 0.95rem;
-  line-height: 1.5;
+  line-height: 1.35;
   color: $text-secondary;
+  // margin-bottom: 0.5rem;
 
-  &__bullet {
+  &::before {
+    content: '';
     flex-shrink: 0;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: $color-accent;
-    margin-top: 0.5rem;
+    width: 16px;
+    height: 16px;
+    margin-top: 0.2rem;
+
+    background-color: $color-success;
+    // Utilisation d'un masque SVG pour un rendu ultra-net
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+    mask-repeat: no-repeat;
+    mask-size: contain;
+  }
+
+  // On nettoie l'ancien bullet orange
+  &__bullet {
+    display: none;
   }
 }
 
 // ─── Identity ─────────────────────────────────────────────────────────────────
-.identity-section {
-  padding: $spacing-m;
-  background: rgba($color-accent, 0.06);
-  border-left: 3px solid $color-accent;
-  border-radius: 0 $radius-md $radius-md 0;
-}
+.identity-spotlight {
+  padding: 1.5rem 0;
+  border-top: 1px solid #eee; // Séparation légère avec le bloc précédent
 
-.identity-text {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.1rem;
-  font-style: italic;
-  line-height: 1.65;
-  color: $color-primary;
-  margin: 0;
+  &__content {
+    border-left: 4px solid $color-accent; // Ta couleur jaune
+    padding-left: 1.2rem;
+  }
+
+  &__quote {
+    font-family: 'Cormorant Garamond', serif; // Ou ta police de titre
+    font-size: 1.2rem;
+    font-style: italic;
+    font-weight: 600;
+    color: $text-primary;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+  }
+
+  &__bio {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: $text-secondary;
+    margin: 0;
+  }
 }
 
 // ─── Budget ───────────────────────────────────────────────────────────────────

@@ -70,12 +70,23 @@ export type EngagementBadge = {
   icon: string
   label: string
   color: string
+  description?: string
 }
 export const engagementBadges: EngagementBadge[] = [
-  { icon: 'Clock', label: 'Réponse sous 48h', color: '#FACC15' },
-  { icon: 'Tune', label: 'Prestation adaptable', color: '#FACC15' },
-  { icon: 'Handshake', label: 'Accompagnement perso', color: '#FACC15' },
-  { icon: 'Inventory_2', label: 'Autonome & Équipé', color: '#FACC15' },
-  { icon: 'Person_Check', label: 'Interlocuteur Unique', color: '#FACC15' },
-  { icon: 'Eco', label: 'Éco-responsable', color: '#22C55E' },
+  { icon: 'Clock', label: '48h', description: 'Réponse sous 48h', color: '#FACC15' },
+  { icon: 'Tune', label: 'Adaptable', description: 'Prestation adaptable', color: '#FACC15' },
+  {
+    icon: 'Handshake',
+    label: 'Accompagné',
+    description: 'Accompagnement personnalisé',
+    color: '#FACC15',
+  },
+  { icon: 'Inventory_2', label: 'Équipé', description: 'Autonome et équipé', color: '#FACC15' },
+  {
+    icon: 'Person_Check',
+    label: 'Interlocuteur Unique',
+    description: 'Interlocuteur unique',
+    color: '#FACC15',
+  },
+  { icon: 'Eco', label: 'Éco', description: 'Éco-responsable', color: '#22C55E' },
 ]

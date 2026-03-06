@@ -18,9 +18,14 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     youtubeId: 'zznewKVtKtk',
     shortDescription: 'Un DJ professionnel pour rythmer vos soirées.',
     badges: [
-      { icon: 'Clock', label: 'Réponse sous 48h', color: '#FACC15' },
-      { icon: 'Tune', label: 'Prestation adaptable', color: '#FACC15' },
-      { icon: 'Handshake', label: 'Accompagnement perso', color: '#FACC15' },
+      { icon: 'Clock', label: '48h', description: 'Réponse sous 48h', color: '#FACC15' },
+      { icon: 'Tune', label: 'Adaptable', description: 'Prestation adaptable', color: '#FACC15' },
+      {
+        icon: 'Handshake',
+        label: 'Accompagné',
+        description: 'Accompagnement personnalisé',
+        color: '#FACC15',
+      },
     ],
     offerings: [
       'Animation DJ pour mariages et soirées privées',
@@ -29,8 +34,10 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
       'Formule duo avec animateur micro sur demande',
       'Set DJ live ou playlist curatée selon vos préférences',
     ],
-    identity:
-      "Passionné de musique depuis plus de 15 ans, je mets autant de soin dans le choix d'un morceau que dans l'écoute de ce que vous attendez. Chaque soirée est unique.",
+    identity: {
+      quote: 'Chaque soirée est unique',
+      bio: "Passionné de musique depuis plus de 15 ans, je mets autant de soin dans le choix d'un morceau que dans l'écoute de ce que vous attendez.",
+    },
     budget: 'Tarif selon durée et configuration. Devis personnalisé sur demande.',
     unavailableDates: [
       '2026-04-04',
@@ -102,9 +109,14 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Un groupe de jazz parfait pour animer vos soirées.',
     youtubeId: '_A6w3ECkN4k',
     badges: [
-      { icon: 'Inventory_2', label: 'Autonome & Équipé', color: '#FACC15' },
-      { icon: 'Person_Check', label: 'Interlocuteur Unique', color: '#FACC15' },
-      { icon: 'Tune', label: 'Prestation adaptable', color: '#FACC15' },
+      { icon: 'Inventory_2', label: 'Équipé', description: 'Autonome et équipé', color: '#FACC15' },
+      {
+        icon: 'Person_Check',
+        label: 'Interlocuteur Unique',
+        description: 'Interlocuteur unique',
+        color: '#FACC15',
+      },
+      { icon: 'Tune', label: 'Adaptable', description: 'Prestation adaptable', color: '#FACC15' },
     ],
     offerings: [
       'Quartet jazz manouche (guitare, contrebasse, violon, guitare rythmique)',
@@ -114,8 +126,10 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
       'Set dansant en soirée sur demande',
       'Sonorisation légère incluse pour les formules sonorisées',
     ],
-    identity:
-      'Quatre musiciens, une passion commune : la musique qui voyage. On joue ensemble depuis 2018, et chaque concert est une conversation entre nos instruments. On aime autant jouer dans un château alsacien que dans une grange rénovée.',
+    identity: {
+      quote: 'Quatre musiciens, une passion commune : la musique qui voyage.',
+      bio: 'On joue ensemble depuis 2018, et chaque concert est une conversation entre nos instruments. On aime autant jouer dans un château alsacien que dans une grange rénovée.',
+    },
     budget:
       'À partir de 800€ pour une formule cocktail (2h). Tarif dégressif selon la durée. Devis sur demande.',
     unavailableDates: [
@@ -179,9 +193,14 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Un groupe pop-rock énergique pour une ambiance inoubliable.',
     youtubeId: '4sErhkkcOUU',
     badges: [
-      { icon: 'Clock', label: 'Réponse sous 48h', color: '#FACC15' },
-      { icon: 'Handshake', label: 'Accompagnement perso', color: '#FACC15' },
-      { icon: 'Eco', label: 'Éco-responsable', color: '#22C55E' },
+      { icon: 'Clock', label: '48h', description: 'Réponse sous 48h', color: '#FACC15' },
+      {
+        icon: 'Handshake',
+        label: 'Accompagné',
+        description: 'Accompagnement personnalisé',
+        color: '#FACC15',
+      },
+      { icon: 'Eco', label: 'Éco', description: 'Éco-responsable', color: '#22C55E' },
     ],
     offerings: [
       'Groupe de 4 musiciens (guitare, basse, batterie, clavier)',
@@ -190,8 +209,10 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
       'Formule concert (2 sets de 45min) ou animation continue',
       'Karaoké animé en option',
     ],
-    identity:
-      'On est là pour que personne ne reste assis. Depuis 2015, on parcourt les salles alsaciennes avec une seule obsession : que vous repartiez avec des crampes aux jambes.',
+    identity: {
+      quote: 'On est là pour que personne ne reste assis.',
+      bio: 'Depuis 2015, on parcourt les salles alsaciennes avec une seule obsession : que vous repartiez avec des crampes aux jambes.',
+    },
     budget:
       'Formule soirée complète à partir de 1 800€. Devis sur demande selon durée et configuration.',
     unavailableDates: [
@@ -258,8 +279,13 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Un groupe rock pour faire vibrer votre public.',
     youtubeId: 'BOCaSJOARFM',
     badges: [
-      { icon: 'Person_Check', label: 'Interlocuteur Unique', color: '#FACC15' },
-      { icon: 'Inventory_2', label: 'Autonome & Équipé', color: '#FACC15' },
+      {
+        icon: 'Person_Check',
+        label: 'Interlocuteur Unique',
+        description: 'Interlocuteur unique',
+        color: '#FACC15',
+      },
+      { icon: 'Inventory_2', label: 'Équipé', description: 'Autonome et équipé', color: '#FACC15' },
     ],
     offerings: [
       'Trio ou quartet rock (guitare, basse, batterie + chant)',
@@ -267,8 +293,10 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
       '2 sets de 45 minutes ou set unique de 90 minutes',
       'Sonorisation incluse',
     ],
-    identity:
-      "On joue du rock parce que rien d'autre ne nous convient. Pas de compromis sur le son, pas de titre trop lisse. Juste du rock honnête pour un public qui aime ça.",
+    identity: {
+      quote: 'Juste du rock honnête pour un public qui aime ça.',
+      bio: "On joue du rock parce que rien d'autre ne nous convient. Pas de compromis sur le son, pas de titre trop lisse.",
+    },
     budget: 'À partir de 1 200€ pour une soirée. Devis sur demande.',
     unavailableDates: ['2026-05-02', '2026-05-23', '2026-06-27', '2026-07-11', '2026-08-22'],
     testimonials: [
@@ -318,10 +346,15 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Un service traiteur haut de gamme pour vos événements.',
     youtubeId: '6D4_3NIpvkI',
     badges: [
-      { icon: 'Tune', label: 'Prestation adaptable', color: '#FACC15' },
-      { icon: 'Handshake', label: 'Accompagnement perso', color: '#FACC15' },
-      { icon: 'Eco', label: 'Éco-responsable', color: '#22C55E' },
-      { icon: 'Clock', label: 'Réponse sous 48h', color: '#FACC15' },
+      { icon: 'Tune', label: 'Adaptable', description: 'Prestation adaptable', color: '#FACC15' },
+      {
+        icon: 'Handshake',
+        label: 'Accompagné',
+        description: 'Accompagnement personnalisé',
+        color: '#FACC15',
+      },
+      { icon: 'Eco', label: 'Éco', description: 'Éco-responsable', color: '#22C55E' },
+      { icon: 'Clock', label: '48h', description: 'Réponse sous 48h', color: '#FACC15' },
     ],
     offerings: [
       'Cocktail dînatoire ou repas assis (de 20 à 300 personnes)',
@@ -330,8 +363,10 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
       'Vaisselle et nappage fournis sur demande',
       'Formule fromages et desserts alsaciens disponible',
     ],
-    identity:
-      "On cuisine comme on reçoit : avec soin, sans se prendre trop au sérieux. Ce qui compte, c'est que vos invités se régalent et que vous profitiez de votre fête.",
+    identity: {
+      quote: 'On cuisine comme on reçoit.',
+      bio: "Avec soin, sans se prendre trop au sérieux. Ce qui compte, c'est que vos invités se régalent et que vous profitiez de votre fête.",
+    },
     budget:
       'À partir de 45€ par personne pour un cocktail dînatoire. Devis sur demande selon formule et nombre de convives.',
     unavailableDates: [
@@ -399,8 +434,8 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Des burgers gourmands pour régaler vos invités.',
     youtubeId: 'z2xjErKDd-o',
     badges: [
-      { icon: 'Clock', label: 'Réponse sous 48h', color: '#FACC15' },
-      { icon: 'Inventory_2', label: 'Autonome & Équipé', color: '#FACC15' },
+      { icon: 'Clock', label: '48h', description: 'Réponse sous 48h', color: '#FACC15' },
+      { icon: 'Inventory_2', label: 'Équipé', description: 'Autonome et équipé', color: '#FACC15' },
     ],
     offerings: [
       'Service au camion pour événements privés ou publics',
@@ -409,8 +444,10 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
       'Frites fraîches maison',
       'Boissons et desserts sur demande',
     ],
-    identity:
-      "Le food truck, c'est nous depuis 2017. On a commencé sur les marchés alsaciens, et on ne s'est jamais lassés. Chaque burger est une fierté.",
+    identity: {
+      quote: 'Chaque burger est une fierté.',
+      bio: "Le food truck, c'est nous depuis 2017. On a commencé sur les marchés alsaciens, et on ne s'est jamais lassés.",
+    },
     budget:
       'Forfait événement à partir de 600€ pour 50 personnes. Tarif au convive possible selon format.',
     unavailableDates: ['2026-04-25', '2026-05-16', '2026-06-27', '2026-07-18', '2026-08-15'],
@@ -455,9 +492,19 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Un bar à cocktails pour une expérience unique.',
     youtubeId: 'EFuBvEt84OI',
     badges: [
-      { icon: 'Person_Check', label: 'Interlocuteur Unique', color: '#FACC15' },
-      { icon: 'Tune', label: 'Prestation adaptable', color: '#FACC15' },
-      { icon: 'Handshake', label: 'Accompagnement perso', color: '#FACC15' },
+      {
+        icon: 'Person_Check',
+        label: 'Interlocuteur Unique',
+        description: 'Interlocuteur unique',
+        color: '#FACC15',
+      },
+      { icon: 'Tune', label: 'Adaptable', description: 'Prestation adaptable', color: '#FACC15' },
+      {
+        icon: 'Handshake',
+        label: 'Accompagné',
+        description: 'Accompagnement personnalisé',
+        color: '#FACC15',
+      },
     ],
     offerings: [
       'Bar mobile pour événements privés et professionnels',
@@ -466,8 +513,10 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
       'Animations bar : cours de cocktail, show flair sur demande',
       'Glace, garnitures et matériel fournis',
     ],
-    identity:
-      "Chaque verre est une attention. On ne verse pas juste un liquide — on crée un moment. Notre bar s'adapte à votre décor et à votre ambiance.",
+    identity: {
+      quote: 'Chaque cocktail est une histoire à raconter.',
+      bio: "On ne verse pas juste un liquide — on crée un moment. Notre bar s'adapte à votre décor et à votre ambiance.",
+    },
     budget:
       'Forfait à partir de 500€ pour 50 personnes (2h de service). Tarif à la consommation possible.',
     unavailableDates: ['2026-04-18', '2026-05-09', '2026-06-06', '2026-07-04', '2026-08-01'],
@@ -516,9 +565,9 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Un buffet raffiné pour sublimer vos réceptions.',
     youtubeId: '30dp3iP66Gs',
     badges: [
-      { icon: 'Eco', label: 'Éco-responsable', color: '#22C55E' },
-      { icon: 'Inventory_2', label: 'Autonome & Équipé', color: '#FACC15' },
-      { icon: 'Clock', label: 'Réponse sous 48h', color: '#FACC15' },
+      { icon: 'Eco', label: 'Éco', description: 'Éco-responsable', color: '#22C55E' },
+      { icon: 'Inventory_2', label: 'Équipé', description: 'Autonome et équipé', color: '#FACC15' },
+      { icon: 'Clock', label: '48h', description: 'Réponse sous 48h', color: '#FACC15' },
     ],
     offerings: [
       'Buffet froid ou mixte (chaud/froid)',
@@ -527,8 +576,10 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
       'Service avec ou sans personnel',
       'Vaisselle et nappage fournis en option',
     ],
-    identity:
-      "Notre cuisine est celle qu'on aimerait manger chez des amis : généreuse, vraie, faite avec du temps. Pas de fioritures, juste du bon.",
+    identity: {
+      quote: 'Pas de fioritures, juste du bon.',
+      bio: "Notre cuisine est celle qu'on aimerait manger chez des amis : généreuse, vraie, faite avec du temps.",
+    },
     budget: 'À partir de 35€ par personne. Devis personnalisé selon formule et nombre.',
     unavailableDates: ['2026-05-02', '2026-05-30', '2026-06-20', '2026-07-11', '2026-08-08'],
     testimonials: [
@@ -571,8 +622,13 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Une délicieuse pizza cuite au feu de bois sur place.',
     youtubeId: 'HOZs4hWPiKk',
     badges: [
-      { icon: 'Tune', label: 'Prestation adaptable', color: '#FACC15' },
-      { icon: 'Person_Check', label: 'Interlocuteur Unique', color: '#FACC15' },
+      { icon: 'Tune', label: 'Adaptable', description: 'Prestation adaptable', color: '#FACC15' },
+      {
+        icon: 'Person_Check',
+        label: 'Interlocuteur Unique',
+        description: 'Interlocuteur unique',
+        color: '#FACC15',
+      },
     ],
     offerings: [
       'Service pizza au feu de bois pour événements privés',
@@ -581,8 +637,10 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
       'Pizza blanche (sans tomate) disponible',
       'Service continu ou par vagues selon format',
     ],
-    identity:
-      "On est tombés amoureux de la pizza napolitaine lors d'un voyage en Italie. Depuis 2019, on partage cette passion en Alsace avec un four qu'on a ramené de là-bas.",
+    identity: {
+      quote: 'Un voyage en Italie.',
+      bio: "On est tombés amoureux de la pizza napolitaine lors d'un voyage en Italie. Depuis 2019, on partage cette passion en Alsace avec un four qu'on a ramené de là-bas.",
+    },
     budget: 'Forfait événement à partir de 550€ pour 50 personnes.',
     unavailableDates: ['2026-04-04', '2026-05-16', '2026-06-13', '2026-07-25', '2026-08-22'],
     testimonials: [
@@ -632,10 +690,20 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Des souvenirs inoubliables pour votre grand jour.',
     youtubeId: 'wlPFNYKkGSA',
     badges: [
-      { icon: 'Clock', label: 'Réponse sous 48h', color: '#FACC15' },
-      { icon: 'Handshake', label: 'Accompagnement perso', color: '#FACC15' },
-      { icon: 'Person_Check', label: 'Interlocuteur Unique', color: '#FACC15' },
-      { icon: 'Tune', label: 'Prestation adaptable', color: '#FACC15' },
+      { icon: 'Clock', label: '48h', description: 'Réponse sous 48h', color: '#FACC15' },
+      {
+        icon: 'Handshake',
+        label: 'Accompagné',
+        description: 'Accompagnement personnalisé',
+        color: '#FACC15',
+      },
+      {
+        icon: 'Person_Check',
+        label: 'Interlocuteur Unique',
+        description: 'Interlocuteur unique',
+        color: '#FACC15',
+      },
+      { icon: 'Tune', label: 'Adaptable', description: 'Prestation adaptable', color: '#FACC15' },
     ],
     offerings: [
       'Reportage photo mariage (journée complète ou demi-journée)',
@@ -644,8 +712,10 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
       'Reportage événementiel (anniversaire, baptême, séminaire)',
       'Tirage et album photo disponibles en option',
     ],
-    identity:
-      "Je photographie des gens, pas des poses. Mon travail, c'est d'être là au bon moment — discret, patient, attentif. Les photos que je préfère sont celles où personne ne regardait l'objectif.",
+    identity: {
+      quote: "Saisir l'instant présent",
+      bio: "Je photographie des gens, pas des poses. Mon travail, c'est d'être là au bon moment — discret, patient, attentif. Les photos que je préfère sont celles où personne ne regardait l'objectif.",
+    },
     budget: 'Formule mariage à partir de 1 400€ (demi-journée). Journée complète sur devis.',
     unavailableDates: [
       '2026-04-25',
@@ -711,8 +781,8 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Un photobooth original pour des photos funs.',
     youtubeId: 'ybJPbM_ExTk',
     badges: [
-      { icon: 'Inventory_2', label: 'Autonome & Équipé', color: '#FACC15' },
-      { icon: 'Clock', label: 'Réponse sous 48h', color: '#FACC15' },
+      { icon: 'Inventory_2', label: 'Équipé', description: 'Autonome et équipé', color: '#FACC15' },
+      { icon: 'Clock', label: '48h', description: 'Réponse sous 48h', color: '#FACC15' },
     ],
     offerings: [
       'Borne photobooth vintage avec tirage instantané',
@@ -721,8 +791,10 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
       'Galerie digitale partagée après événement',
       'Personnalisation du cadre photo (nom, date, logo)',
     ],
-    identity:
-      'On a chiné cette borne dans une vente aux enchères en 2016 et on en est tombés amoureux. Depuis, elle voyage de fête en fête et ne manque jamais de faire sourire.',
+    identity: {
+      quote: 'Un classique qui ne se démode jamais.',
+      bio: 'On a chiné cette borne dans une vente aux enchères en 2016 et on en est tombés amoureux. Depuis, elle voyage de fête en fête et ne manque jamais de faire sourire.',
+    },
     budget: 'Forfait soirée (4h) à partir de 450€. Heures supplémentaires en option.',
     unavailableDates: ['2026-04-11', '2026-05-02', '2026-06-13', '2026-07-04', '2026-08-01'],
     testimonials: [
@@ -770,9 +842,14 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Un studio photo pour des portraits professionnels.',
     youtubeId: 'VoHDwCCxWA4',
     badges: [
-      { icon: 'Handshake', label: 'Accompagnement perso', color: '#FACC15' },
-      { icon: 'Tune', label: 'Prestation adaptable', color: '#FACC15' },
-      { icon: 'Eco', label: 'Éco-responsable', color: '#22C55E' },
+      {
+        icon: 'Handshake',
+        label: 'Accompagné',
+        description: 'Accompagnement personnalisé',
+        color: '#FACC15',
+      },
+      { icon: 'Tune', label: 'Adaptable', description: 'Prestation adaptable', color: '#FACC15' },
+      { icon: 'Eco', label: 'Éco', description: 'Éco-responsable', color: '#22C55E' },
     ],
     offerings: [
       'Studio photo mobile monté sur place',
@@ -781,8 +858,10 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
       'Retouche légère incluse',
       'Idéal pour séminaires, galas, événements corporate',
     ],
-    identity:
-      'On apporte la lumière et le cadre — vous apportez vos sourires. En 5 minutes par personne, on fait des photos dont les gens sont fiers.',
+    identity: {
+      quote: 'Des photos dont les gens sont fiers.',
+      bio: 'On apporte la lumière et le cadre — vous apportez vos sourires. En 5 minutes par personne, on fait des photos dont les gens sont fiers.',
+    },
     budget: "À partir de 600€ pour une session de 3h (jusqu'à 60 portraits). Devis sur demande.",
     unavailableDates: ['2026-04-18', '2026-05-23', '2026-06-06', '2026-07-11', '2026-08-15'],
     testimonials: [
@@ -832,9 +911,19 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Une salle spacieuse pour vos événements.',
     youtubeId: 'SdAQjcIMjpo',
     badges: [
-      { icon: 'Person_Check', label: 'Interlocuteur Unique', color: '#FACC15' },
-      { icon: 'Inventory_2', label: 'Autonome & Équipé', color: '#FACC15' },
-      { icon: 'Handshake', label: 'Accompagnement perso', color: '#FACC15' },
+      {
+        icon: 'Person_Check',
+        label: 'Interlocuteur Unique',
+        description: 'Interlocuteur unique',
+        color: '#FACC15',
+      },
+      { icon: 'Inventory_2', label: 'Équipé', description: 'Autonome et équipé', color: '#FACC15' },
+      {
+        icon: 'Handshake',
+        label: 'Accompagné',
+        description: 'Accompagnement personnalisé',
+        color: '#FACC15',
+      },
     ],
     offerings: [
       'Location de salle pour mariages, anniversaires, séminaires',
@@ -844,8 +933,10 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
       'Tables, chaises et nappage inclus',
       'Hébergement possible sur place (chambres en option)',
     ],
-    identity:
-      "Cette salle, on l'a rénovée avec nos mains pendant trois ans. Chaque pierre a une histoire. On la loue à des gens qui savent prendre soin des lieux.",
+    identity: {
+      quote: 'Chaque pierre a une histoire.',
+      bio: "Cette salle, on l'a rénovée avec nos mains pendant trois ans. Chaque pierre a une histoire. On la loue à des gens qui savent prendre soin des lieux.",
+    },
     budget: 'Location à partir de 800€ le week-end. Tarif journée disponible.',
     unavailableDates: [
       '2026-04-04',
@@ -911,9 +1002,14 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Un cadre enchanteur pour célébrer votre union.',
     youtubeId: '615biPQMdJQ',
     badges: [
-      { icon: 'Clock', label: 'Réponse sous 48h', color: '#FACC15' },
-      { icon: 'Person_Check', label: 'Interlocuteur Unique', color: '#FACC15' },
-      { icon: 'Tune', label: 'Prestation adaptable', color: '#FACC15' },
+      { icon: 'Clock', label: '48h', description: 'Réponse sous 48h', color: '#FACC15' },
+      {
+        icon: 'Person_Check',
+        label: 'Interlocuteur Unique',
+        description: 'Interlocuteur unique',
+        color: '#FACC15',
+      },
+      { icon: 'Tune', label: 'Adaptable', description: 'Prestation adaptable', color: '#FACC15' },
     ],
     offerings: [
       'Location exclusive du château et du parc',
@@ -923,8 +1019,10 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
       'Cuisine professionnelle disponible',
       'Parking sécurisé pour 150 véhicules',
     ],
-    identity:
-      'Ce château est dans notre famille depuis cinq générations. On le partage avec ceux qui veulent y créer leurs propres souvenirs.',
+    identity: {
+      quote: 'Un lieu chargé d’histoire, prêt à accueillir la vôtre.',
+      bio: 'Ce château est dans notre famille depuis cinq générations. On le partage avec ceux qui veulent y créer leurs propres souvenirs.',
+    },
     budget: 'Location week-end à partir de 4 500€. Devis sur demande selon saison et format.',
     unavailableDates: [
       '2026-04-25',
@@ -1003,9 +1101,19 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Un hébergement confortable pour vos invités.',
     youtubeId: '_2tBuidbF88',
     badges: [
-      { icon: 'Handshake', label: 'Accompagnement perso', color: '#FACC15' },
-      { icon: 'Inventory_2', label: 'Autonome & Équipé', color: '#FACC15' },
-      { icon: 'Person_Check', label: 'Interlocuteur Unique', color: '#FACC15' },
+      {
+        icon: 'Handshake',
+        label: 'Accompagné',
+        description: 'Accompagnement personnalisé',
+        color: '#FACC15',
+      },
+      { icon: 'Inventory_2', label: 'Équipé', description: 'Autonome et équipé', color: '#FACC15' },
+      {
+        icon: 'Person_Check',
+        label: 'Interlocuteur Unique',
+        description: 'Interlocuteur unique',
+        color: '#FACC15',
+      },
     ],
     offerings: [
       'Location du gîte complet (16 personnes)',
@@ -1014,8 +1122,10 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
       'Petit-déjeuner en option',
       'Idéal pour week-ends de fête, enterrements de vie, séjours groupes',
     ],
-    identity:
-      "On a aménagé ce gîte pour que les gens s'y sentent comme chez eux — parce que pendant leur séjour, c'est chez eux.",
+    identity: {
+      quote: "C'est chez vous !",
+      bio: "On a aménagé ce gîte pour que les gens s'y sentent comme chez eux — parce que pendant leur séjour, c'est chez eux.",
+    },
     budget: 'Location complète à partir de 350€ la nuit. Week-end (2 nuits) à partir de 600€.',
     unavailableDates: [
       '2026-04-04',

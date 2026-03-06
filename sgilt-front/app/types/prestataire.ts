@@ -44,7 +44,7 @@ export interface PrestataireDetail extends PrestataireCardDetail {
   // Contenu
   badges: EngagementBadge[] // 2-4 max
   offerings: string[] // "Ce que nous proposons" — liste libre
-  identity?: string // Touche identitaire (optionnel)
+  identity?: { quote: string; bio: string } // Touche identitaire (optionnel)
   budget?: string // Texte libre du prestataire (optionnel)
 
   // Disponibilités
