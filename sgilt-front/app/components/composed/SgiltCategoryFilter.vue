@@ -16,8 +16,7 @@ const emit = defineEmits(['update:modelValue'])
       :class="{ active: cat.id === modelValue }"
       @click="$emit('update:modelValue', cat.id)"
     >
-      <div class="icon-circle" v-if="!!cat.picto">
-        <!-- <component :is="cat.picto" class="icon-svg" /> -->
+      <div class="icon-circle">
         <SgiltCategoryIcon :categoryId="cat.id" class="icon-svg" />
       </div>
       <span class="name">{{ cat.name }}</span>

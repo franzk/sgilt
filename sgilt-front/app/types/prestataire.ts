@@ -1,12 +1,8 @@
 // app/types/prestataire.ts
 
-// ─── Sous-types ───────────────────────────────────────────────────────────────
+import type { EngagementBadge } from '~/utils/constants'
 
-export interface Badge {
-  icon: string // emoji ou nom d'icône
-  label: string // ex: "Réponse < 48h"
-  description: string // contenu du popover au clic
-}
+// ─── Sous-types ───────────────────────────────────────────────────────────────
 
 export interface Testimonial {
   author: string
@@ -46,7 +42,7 @@ export interface PrestataireDetail extends PrestataireCardDetail {
   youtubeId?: string // ID YouTube (optionnel)
 
   // Contenu
-  badges: Badge[] // 2-4 max
+  badges: EngagementBadge[] // 2-4 max
   offerings: string[] // "Ce que nous proposons" — liste libre
   identity?: string // Touche identitaire (optionnel)
   budget?: string // Texte libre du prestataire (optionnel)

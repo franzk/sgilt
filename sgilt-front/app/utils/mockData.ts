@@ -18,22 +18,9 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     youtubeId: 'zznewKVtKtk',
     shortDescription: 'Un DJ professionnel pour rythmer vos soirées.',
     badges: [
-      {
-        icon: '⏱',
-        label: 'Réponse < 48h',
-        description: "DJ Animation s'engage à répondre à toutes les demandes sous 48h ouvrées.",
-      },
-      {
-        icon: '📅',
-        label: 'Calendrier à jour',
-        description: 'Les disponibilités affichées sont mises à jour en temps réel.',
-      },
-      {
-        icon: '🎵',
-        label: 'Playlist personnalisée',
-        description:
-          "Chaque prestation fait l'objet d'un échange préalable pour construire une playlist adaptée à vos goûts et à votre public.",
-      },
+      { icon: 'Clock', label: 'Réponse sous 48h', color: '#FACC15' },
+      { icon: 'Tune', label: 'Prestation adaptable', color: '#FACC15' },
+      { icon: 'Handshake', label: 'Accompagnement perso', color: '#FACC15' },
     ],
     offerings: [
       'Animation DJ pour mariages et soirées privées',
@@ -115,24 +102,9 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Un groupe de jazz parfait pour animer vos soirées.',
     youtubeId: '_A6w3ECkN4k',
     badges: [
-      {
-        icon: '🎻',
-        label: 'Répertoire sur mesure',
-        description:
-          'Le groupe adapte son répertoire à votre événement : cocktail feutré, dîner animé ou soirée dansante. Un échange préalable est toujours proposé.',
-      },
-      {
-        icon: '📍',
-        label: 'Basé en Alsace',
-        description:
-          'Le Gypsy Reed Ensemble est basé à Strasbourg et intervient principalement en Alsace et dans le Grand Est, sans frais de déplacement dans un rayon de 50km.',
-      },
-      {
-        icon: '🎶',
-        label: 'Acoustique ou sonorisé',
-        description:
-          'Le groupe peut jouer en acoustique pour les petits espaces ou avec sonorisation légère pour les plus grandes salles. Les deux formules sont disponibles.',
-      },
+      { icon: 'Inventory_2', label: 'Autonome & Équipé', color: '#FACC15' },
+      { icon: 'Person_Check', label: 'Interlocuteur Unique', color: '#FACC15' },
+      { icon: 'Tune', label: 'Prestation adaptable', color: '#FACC15' },
     ],
     offerings: [
       'Quartet jazz manouche (guitare, contrebasse, violon, guitare rythmique)',
@@ -207,24 +179,9 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Un groupe pop-rock énergique pour une ambiance inoubliable.',
     youtubeId: '4sErhkkcOUU',
     badges: [
-      {
-        icon: '🎤',
-        label: 'Chant live',
-        description:
-          'Tous les morceaux sont chantés en live, sans playback. Deux chanteurs pour une dynamique scénique forte.',
-      },
-      {
-        icon: '🎸',
-        label: 'Setlist adaptable',
-        description:
-          "De la pop actuelle au rock classique, la setlist est construite avec vous selon votre public et l'ambiance souhaitée.",
-      },
-      {
-        icon: '🔊',
-        label: 'Sono complète incluse',
-        description:
-          "Système de sonorisation professionnel inclus pour les salles jusqu'à 300 personnes.",
-      },
+      { icon: 'Clock', label: 'Réponse sous 48h', color: '#FACC15' },
+      { icon: 'Handshake', label: 'Accompagnement perso', color: '#FACC15' },
+      { icon: 'Eco', label: 'Éco-responsable', color: '#22C55E' },
     ],
     offerings: [
       'Groupe de 4 musiciens (guitare, basse, batterie, clavier)',
@@ -301,18 +258,8 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Un groupe rock pour faire vibrer votre public.',
     youtubeId: 'BOCaSJOARFM',
     badges: [
-      {
-        icon: '🎸',
-        label: 'Rock authentique',
-        description:
-          'Pas de samples, pas de backing tracks. Guitares, basse, batterie — tout est joué live avec conviction.',
-      },
-      {
-        icon: '🤘',
-        label: 'Scène éprouvée',
-        description:
-          'Plus de 200 concerts depuis 2012. Une présence scénique rodée qui captive du premier riff.',
-      },
+      { icon: 'Person_Check', label: 'Interlocuteur Unique', color: '#FACC15' },
+      { icon: 'Inventory_2', label: 'Autonome & Équipé', color: '#FACC15' },
     ],
     offerings: [
       'Trio ou quartet rock (guitare, basse, batterie + chant)',
@@ -371,24 +318,10 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Un service traiteur haut de gamme pour vos événements.',
     youtubeId: '6D4_3NIpvkI',
     badges: [
-      {
-        icon: '👨‍🍳',
-        label: 'Chef dédié',
-        description:
-          "Un chef est présent sur place pour chaque prestation, du dressage jusqu'au service.",
-      },
-      {
-        icon: '🌿',
-        label: 'Produits locaux',
-        description:
-          'Priorité aux producteurs alsaciens et aux circuits courts. Les menus changent selon la saison.',
-      },
-      {
-        icon: '🍽',
-        label: 'Menu sur mesure',
-        description:
-          'Chaque menu est élaboré avec vous. Allergies, régimes spécifiques, thématiques : tout est pris en compte.',
-      },
+      { icon: 'Tune', label: 'Prestation adaptable', color: '#FACC15' },
+      { icon: 'Handshake', label: 'Accompagnement perso', color: '#FACC15' },
+      { icon: 'Eco', label: 'Éco-responsable', color: '#22C55E' },
+      { icon: 'Clock', label: 'Réponse sous 48h', color: '#FACC15' },
     ],
     offerings: [
       'Cocktail dînatoire ou repas assis (de 20 à 300 personnes)',
@@ -466,18 +399,8 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Des burgers gourmands pour régaler vos invités.',
     youtubeId: 'z2xjErKDd-o',
     badges: [
-      {
-        icon: '🍔',
-        label: 'Pain artisanal',
-        description:
-          'Nos buns sont livrés chaque matin par une boulangerie artisanale locale. Rien de congelé.',
-      },
-      {
-        icon: '🚚',
-        label: 'Tout inclus',
-        description:
-          'Le camion arrive, se branche, et repart. Aucune logistique à gérer de votre côté.',
-      },
+      { icon: 'Clock', label: 'Réponse sous 48h', color: '#FACC15' },
+      { icon: 'Inventory_2', label: 'Autonome & Équipé', color: '#FACC15' },
     ],
     offerings: [
       'Service au camion pour événements privés ou publics',
@@ -532,18 +455,9 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Un bar à cocktails pour une expérience unique.',
     youtubeId: 'EFuBvEt84OI',
     badges: [
-      {
-        icon: '🍹',
-        label: 'Cocktails signature',
-        description:
-          'On peut créer un cocktail signature pour votre événement — avec votre prénom, vos couleurs, votre histoire.',
-      },
-      {
-        icon: '🫙',
-        label: 'Sans alcool disponible',
-        description:
-          'Une gamme de mocktails élaborés pour que tout le monde soit servi avec le même soin.',
-      },
+      { icon: 'Person_Check', label: 'Interlocuteur Unique', color: '#FACC15' },
+      { icon: 'Tune', label: 'Prestation adaptable', color: '#FACC15' },
+      { icon: 'Handshake', label: 'Accompagnement perso', color: '#FACC15' },
     ],
     offerings: [
       'Bar mobile pour événements privés et professionnels',
@@ -602,18 +516,9 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Un buffet raffiné pour sublimer vos réceptions.',
     youtubeId: '30dp3iP66Gs',
     badges: [
-      {
-        icon: '🥖',
-        label: 'Fait maison',
-        description:
-          "Tout est préparé dans notre laboratoire : terrines, quiches, desserts. Rien n'est sous-traité.",
-      },
-      {
-        icon: '🫶',
-        label: 'Convivialité garantie',
-        description:
-          'Le buffet est pensé pour que les gens se servent, se parlent, reviennent. Le partage est au cœur de notre approche.',
-      },
+      { icon: 'Eco', label: 'Éco-responsable', color: '#22C55E' },
+      { icon: 'Inventory_2', label: 'Autonome & Équipé', color: '#FACC15' },
+      { icon: 'Clock', label: 'Réponse sous 48h', color: '#FACC15' },
     ],
     offerings: [
       'Buffet froid ou mixte (chaud/froid)',
@@ -666,18 +571,8 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Une délicieuse pizza cuite au feu de bois sur place.',
     youtubeId: 'HOZs4hWPiKk',
     badges: [
-      {
-        icon: '🔥',
-        label: 'Four à bois',
-        description:
-          'Notre four à bois embarqué atteint 400°C. Les pizzas cuisent en 90 secondes — et ça se voit.',
-      },
-      {
-        icon: '🫓',
-        label: 'Pâte maison',
-        description:
-          'La pâte est préparée la veille avec fermentation longue. Légère, digeste, croustillante.',
-      },
+      { icon: 'Tune', label: 'Prestation adaptable', color: '#FACC15' },
+      { icon: 'Person_Check', label: 'Interlocuteur Unique', color: '#FACC15' },
     ],
     offerings: [
       'Service pizza au feu de bois pour événements privés',
@@ -737,24 +632,10 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Des souvenirs inoubliables pour votre grand jour.',
     youtubeId: 'wlPFNYKkGSA',
     badges: [
-      {
-        icon: '📸',
-        label: 'Reportage discret',
-        description:
-          'Léo privilégie le style reportage : il capte les moments vrais sans interrompre le fil de votre journée.',
-      },
-      {
-        icon: '🖼',
-        label: 'Galerie en 4 semaines',
-        description:
-          'Vos photos retouchées sont livrées dans un espace privé en ligne sous 4 semaines.',
-      },
-      {
-        icon: '💾',
-        label: 'Fichiers HD inclus',
-        description:
-          "Tous les fichiers haute définition sont inclus, sans restriction d'utilisation.",
-      },
+      { icon: 'Clock', label: 'Réponse sous 48h', color: '#FACC15' },
+      { icon: 'Handshake', label: 'Accompagnement perso', color: '#FACC15' },
+      { icon: 'Person_Check', label: 'Interlocuteur Unique', color: '#FACC15' },
+      { icon: 'Tune', label: 'Prestation adaptable', color: '#FACC15' },
     ],
     offerings: [
       'Reportage photo mariage (journée complète ou demi-journée)',
@@ -830,24 +711,8 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Un photobooth original pour des photos funs.',
     youtubeId: 'ybJPbM_ExTk',
     badges: [
-      {
-        icon: '🖨',
-        label: 'Impression instantanée',
-        description:
-          'Les photos sont imprimées en 10 secondes sur place. Chaque invité repart avec son tirage.',
-      },
-      {
-        icon: '🎭',
-        label: 'Accessoires inclus',
-        description:
-          "Une caisse d'accessoires loufoques est fournie : chapeaux, lunettes, moustaches, pancartes...",
-      },
-      {
-        icon: '📲',
-        label: 'Galerie digitale',
-        description:
-          "Toutes les photos sont également disponibles en téléchargement dans une galerie privée partagée après l'événement.",
-      },
+      { icon: 'Inventory_2', label: 'Autonome & Équipé', color: '#FACC15' },
+      { icon: 'Clock', label: 'Réponse sous 48h', color: '#FACC15' },
     ],
     offerings: [
       'Borne photobooth vintage avec tirage instantané',
@@ -905,18 +770,9 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Un studio photo pour des portraits professionnels.',
     youtubeId: 'VoHDwCCxWA4',
     badges: [
-      {
-        icon: '💡',
-        label: 'Éclairage studio',
-        description:
-          'Flash de studio et modificateurs de lumière professionnels montés sur place pour des portraits de qualité.',
-      },
-      {
-        icon: '⚡',
-        label: 'Remise le jour même',
-        description:
-          'Les portraits retouchés sont disponibles en téléchargement le soir même ou le lendemain.',
-      },
+      { icon: 'Handshake', label: 'Accompagnement perso', color: '#FACC15' },
+      { icon: 'Tune', label: 'Prestation adaptable', color: '#FACC15' },
+      { icon: 'Eco', label: 'Éco-responsable', color: '#22C55E' },
     ],
     offerings: [
       'Studio photo mobile monté sur place',
@@ -976,22 +832,9 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Une salle spacieuse pour vos événements.',
     youtubeId: 'SdAQjcIMjpo',
     badges: [
-      {
-        icon: '🏡',
-        label: 'Cadre authentique',
-        description:
-          'Bâtiment du XIXe siècle rénové, poutres apparentes, pierres et lumières chaleureuses.',
-      },
-      {
-        icon: '🅿️',
-        label: 'Parking gratuit',
-        description: 'Grand parking privé attenant, gratuit pour tous vos invités.',
-      },
-      {
-        icon: '♿',
-        label: 'Accès PMR',
-        description: 'La salle est entièrement accessible aux personnes à mobilité réduite.',
-      },
+      { icon: 'Person_Check', label: 'Interlocuteur Unique', color: '#FACC15' },
+      { icon: 'Inventory_2', label: 'Autonome & Équipé', color: '#FACC15' },
+      { icon: 'Handshake', label: 'Accompagnement perso', color: '#FACC15' },
     ],
     offerings: [
       'Location de salle pour mariages, anniversaires, séminaires',
@@ -1068,22 +911,9 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Un cadre enchanteur pour célébrer votre union.',
     youtubeId: '615biPQMdJQ',
     badges: [
-      {
-        icon: '🏰',
-        label: 'Monument classé',
-        description:
-          'Château du XVIIIe siècle classé monument historique, au cœur du vignoble alsacien.',
-      },
-      {
-        icon: '🌿',
-        label: 'Parc privatif',
-        description: '5 hectares de parc entièrement privatisés pour votre événement.',
-      },
-      {
-        icon: '🛏',
-        label: 'Chambres sur place',
-        description: '12 chambres disponibles dans le château pour héberger vos proches.',
-      },
+      { icon: 'Clock', label: 'Réponse sous 48h', color: '#FACC15' },
+      { icon: 'Person_Check', label: 'Interlocuteur Unique', color: '#FACC15' },
+      { icon: 'Tune', label: 'Prestation adaptable', color: '#FACC15' },
     ],
     offerings: [
       'Location exclusive du château et du parc',
@@ -1173,22 +1003,9 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     shortDescription: 'Un hébergement confortable pour vos invités.',
     youtubeId: '_2tBuidbF88',
     badges: [
-      {
-        icon: '🛏',
-        label: '16 couchages',
-        description: "Le gîte peut accueillir jusqu'à 16 personnes en chambres doubles et dortoir.",
-      },
-      {
-        icon: '🍳',
-        label: 'Cuisine équipée',
-        description:
-          'Grande cuisine commune entièrement équipée pour les petits-déjeuners et repas du lendemain.',
-      },
-      {
-        icon: '🌲',
-        label: 'Jardin privatif',
-        description: 'Grand jardin clos avec terrasse, salon de jardin et barbecue.',
-      },
+      { icon: 'Handshake', label: 'Accompagnement perso', color: '#FACC15' },
+      { icon: 'Inventory_2', label: 'Autonome & Équipé', color: '#FACC15' },
+      { icon: 'Person_Check', label: 'Interlocuteur Unique', color: '#FACC15' },
     ],
     offerings: [
       'Location du gîte complet (16 personnes)',
