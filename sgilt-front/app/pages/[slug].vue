@@ -13,12 +13,12 @@
       <aside class="page-layout__sidebar">
         <div class="sidebar-block">
           <SgiltDatePicker
-            v-model="selectedDate"
+            v-model="dateModel"
             :booked-dates="unavailableDatesAsDate"
             placeholder="Vérifier une date"
           />
           <Transition name="fade">
-            <div v-if="selectedDate" class="availability-badge" :class="availabilityClass">
+            <div v-if="dateModel" class="availability-badge" :class="availabilityClass">
               <span class="availability-badge__icon">{{ availabilityIcon }}</span>
               <span>{{ availabilityLabel }}</span>
             </div>
@@ -43,7 +43,6 @@
             <h2 class="section__title">Ce que nous proposons</h2>
             <ul class="offerings">
               <li v-for="item in prestataire.offerings" :key="item" class="offering-item">
-                <IconCheck class="offering-item__check" aria-hidden="true" />
                 {{ item }}
               </li>
             </ul>
@@ -289,15 +288,17 @@ function nextPhoto() {
 }
 
 // ─── Disponibilités ───────────────────────────────────────────────────────────
-const selectedDate = ref<Date | undefined>(undefined)
+// const selectedDate = ref<Date | undefined>(undefined)
+
+const { dateModel } = useSearchUi()
 
 const unavailableDatesAsDate = computed<Date[]>(() =>
   (prestataire.value?.unavailableDates ?? []).map((d) => new Date(d)),
 )
 
 const isUnavailable = computed(() => {
-  if (!selectedDate.value || !prestataire.value) return false
-  const iso = selectedDate.value.toISOString().slice(0, 10)
+  if (!dateModel.value || !prestataire.value) return false
+  const iso = dateModel.value.toISOString().slice(0, 10)
   return prestataire.value.unavailableDates.includes(iso)
 })
 
