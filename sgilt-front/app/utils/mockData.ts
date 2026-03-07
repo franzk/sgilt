@@ -14,7 +14,11 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     subcats: ['21'],
     image: '/images/prestataires/dj-animation.jpg',
     heroImage: '/images/prestataires/dj-animation.jpg',
-    photos: ['https://picsum.photos/seed/dj1/800/600', 'https://picsum.photos/seed/dj2/800/600'],
+    photos: [
+      'https://picsum.photos/seed/dj1/800/600',
+      'https://picsum.photos/seed/dj2/800/600',
+      'https://picsum.photos/seed/dj3/800/600',
+    ],
     youtubeId: 'zznewKVtKtk',
     shortDescription: 'Un DJ professionnel pour rythmer vos soirées.',
     badges: [
@@ -105,6 +109,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     photos: [
       'https://picsum.photos/seed/jazz1/800/600',
       'https://picsum.photos/seed/jazz2/800/600',
+      'https://picsum.photos/seed/jazz3/800/600',
     ],
     shortDescription: 'Un groupe de jazz parfait pour animer vos soirées.',
     youtubeId: '_A6w3ECkN4k',

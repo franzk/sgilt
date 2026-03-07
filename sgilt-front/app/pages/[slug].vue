@@ -1,121 +1,184 @@
 <template>
   <div v-if="prestataire" class="provider-page">
     <!-- ═══════════════════════════════════════════
-         1. HERO
+         HERO
     ════════════════════════════════════════════ -->
-    <PrestataireHero :prestataire="prestataire" @open-video="openVideo" />
+    <PrestataireHero :prestataire="prestataire" @open-video="openVideo" @open-photo="openGallery" />
 
     <!-- ═══════════════════════════════════════════
-         DATEPICKER — juste après le hero
+         LAYOUT PRINCIPAL
     ════════════════════════════════════════════ -->
-    <div class="hero-datepicker">
-      <SgiltDatePicker
-        v-model="selectedDate"
-        :booked-dates="unavailableDatesAsDate"
-        placeholder="Vérifier une date"
-      />
-      <Transition name="fade">
-        <div v-if="selectedDate" class="availability-badge" :class="availabilityClass">
-          <span class="availability-badge__icon">{{ availabilityIcon }}</span>
-          <span>{{ availabilityLabel }}</span>
-        </div>
-      </Transition>
-    </div>
-
-    <!-- ═══════════════════════════════════════════
-         CONTENU PRINCIPAL
-    ════════════════════════════════════════════ -->
-    <div class="provider-content">
-      <!-- 3. CE QUE NOUS PROPOSONS -->
-      <section v-if="prestataire.offerings.length > 0" class="section">
-        <h2 class="section__title">Ce que nous proposons</h2>
-        <ul class="offerings">
-          <li v-for="item in prestataire.offerings" :key="item" class="offering-item">
-            <IconCheck class="offering-item__check" aria-hidden="true" />
-            {{ item }}
-          </li>
-        </ul>
-      </section>
-
-      <!-- 4. TOUCHE IDENTITAIRE -->
-      <section v-if="prestataire.identity" class="section identity-spotlight">
-        <div class="identity-spotlight__content">
-          <blockquote class="identity-spotlight__quote">
-            {{ prestataire.identity.quote }}
-          </blockquote>
-          <p class="identity-spotlight__bio">{{ prestataire.identity.bio }}</p>
-        </div>
-      </section>
-
-      <!-- 5. BADGES -->
-      <section v-if="prestataire.badges.length > 0" class="section badges-section">
-        <div class="badges">
-          <EngagementBadge v-for="badge in prestataire.badges" :key="badge.label" :badge="badge" />
-        </div>
-      </section>
-
-      <!-- 6. BUDGET -->
-      <section v-if="prestataire.budget" class="section budget-section">
-        <h2 class="section__title">Tarifs</h2>
-        <p class="budget-text">{{ prestataire.budget }}</p>
-      </section>
-
-      <!-- 7. TÉMOIGNAGES -->
-      <section
-        v-if="prestataire.testimonials && prestataire.testimonials.length > 0"
-        class="section"
-      >
-        <h2 class="section__title">Ils en parlent</h2>
-        <div class="testimonials">
-          <blockquote v-for="t in prestataire.testimonials" :key="t.author" class="testimonial">
-            <p class="testimonial__text">« {{ t.text }} »</p>
-            <footer class="testimonial__footer">
-              <span class="testimonial__author">{{ t.author }}</span>
-              <span v-if="t.eventType" class="testimonial__event">{{ t.eventType }}</span>
-            </footer>
-          </blockquote>
-        </div>
-      </section>
-
-      <!-- 8. INFORMATIONS PRATIQUES -->
-      <section v-if="hasInfosPratiques" class="section infos-section">
-        <h2 class="section__title">Informations pratiques</h2>
-
-        <div v-if="prestataire.logistics && prestataire.logistics.length > 0" class="infos-block">
-          <h3 class="infos-block__title">Logistique</h3>
-          <ul class="infos-list">
-            <li v-for="item in prestataire.logistics" :key="item">{{ item }}</li>
-          </ul>
-        </div>
-
-        <div v-if="prestataire.technical && prestataire.technical.length > 0" class="infos-block">
-          <h3 class="infos-block__title">Technique</h3>
-          <ul class="infos-list">
-            <li v-for="item in prestataire.technical" :key="item">{{ item }}</li>
-          </ul>
-        </div>
-
-        <div v-if="prestataire.faq && prestataire.faq.length > 0" class="infos-block">
-          <h3 class="infos-block__title">Questions fréquentes</h3>
-          <div class="faq">
-            <div v-for="item in prestataire.faq" :key="item.question" class="faq-item">
-              <p class="faq-item__question">{{ item.question }}</p>
-              <p class="faq-item__answer">{{ item.answer }}</p>
+    <div class="page-layout">
+      <!-- ── Sidebar : datepicker + tarifs + CTA ── -->
+      <aside class="page-layout__sidebar">
+        <div class="sidebar-block">
+          <SgiltDatePicker
+            v-model="selectedDate"
+            :booked-dates="unavailableDatesAsDate"
+            placeholder="Vérifier une date"
+          />
+          <Transition name="fade">
+            <div v-if="selectedDate" class="availability-badge" :class="availabilityClass">
+              <span class="availability-badge__icon">{{ availabilityIcon }}</span>
+              <span>{{ availabilityLabel }}</span>
             </div>
-          </div>
+          </Transition>
         </div>
-      </section>
+
+        <div v-if="prestataire.budget" class="sidebar-block sidebar-budget">
+          <h3 class="sidebar-budget__title">Tarifs</h3>
+          <p class="sidebar-budget__text">{{ prestataire.budget }}</p>
+        </div>
+
+        <SgiltButton class="sidebar-cta" @click="openContactModal">
+          Envoyer une demande
+        </SgiltButton>
+      </aside>
+
+      <!-- ── Contenu principal ── -->
+      <div class="page-layout__main">
+        <div class="provider-content">
+          <!-- CE QUE NOUS PROPOSONS -->
+          <section v-if="prestataire.offerings.length > 0" class="section">
+            <h2 class="section__title">Ce que nous proposons</h2>
+            <ul class="offerings">
+              <li v-for="item in prestataire.offerings" :key="item" class="offering-item">
+                <IconCheck class="offering-item__check" aria-hidden="true" />
+                {{ item }}
+              </li>
+            </ul>
+          </section>
+
+          <!-- TOUCHE IDENTITAIRE -->
+          <section v-if="prestataire.identity" class="section identity-spotlight">
+            <div class="identity-spotlight__content">
+              <blockquote class="identity-spotlight__quote">
+                {{ prestataire.identity.quote }}
+              </blockquote>
+              <p class="identity-spotlight__bio">{{ prestataire.identity.bio }}</p>
+            </div>
+          </section>
+
+          <!-- BADGES -->
+          <section v-if="prestataire.badges.length > 0" class="section badges-section">
+            <div class="badges">
+              <EngagementBadge
+                v-for="badge in prestataire.badges"
+                :key="badge.label"
+                :badge="badge"
+              />
+            </div>
+          </section>
+
+          <!-- BUDGET (mobile uniquement — sur desktop dans la sidebar) -->
+          <section v-if="prestataire.budget" class="section budget-section mobile-only">
+            <h2 class="section__title">Tarifs</h2>
+            <p class="budget-text">{{ prestataire.budget }}</p>
+          </section>
+
+          <!-- TÉMOIGNAGES -->
+          <section
+            v-if="prestataire.testimonials && prestataire.testimonials.length > 0"
+            class="section"
+          >
+            <h2 class="section__title">Ils en parlent</h2>
+            <div class="testimonials">
+              <blockquote v-for="t in prestataire.testimonials" :key="t.author" class="testimonial">
+                <p class="testimonial__text">« {{ t.text }} »</p>
+                <footer class="testimonial__footer">
+                  <span class="testimonial__author">{{ t.author }}</span>
+                  <span v-if="t.eventType" class="testimonial__event">{{ t.eventType }}</span>
+                </footer>
+              </blockquote>
+            </div>
+          </section>
+
+          <!-- INFORMATIONS PRATIQUES -->
+          <section v-if="hasInfosPratiques" class="section infos-section">
+            <h2 class="section__title">Informations pratiques</h2>
+
+            <div
+              v-if="prestataire.logistics && prestataire.logistics.length > 0"
+              class="infos-block"
+            >
+              <h3 class="infos-block__title">Logistique</h3>
+              <ul class="infos-list">
+                <li v-for="item in prestataire.logistics" :key="item">{{ item }}</li>
+              </ul>
+            </div>
+
+            <div
+              v-if="prestataire.technical && prestataire.technical.length > 0"
+              class="infos-block"
+            >
+              <h3 class="infos-block__title">Technique</h3>
+              <ul class="infos-list">
+                <li v-for="item in prestataire.technical" :key="item">{{ item }}</li>
+              </ul>
+            </div>
+
+            <div v-if="prestataire.faq && prestataire.faq.length > 0" class="infos-block">
+              <h3 class="infos-block__title">Questions fréquentes</h3>
+              <div class="faq">
+                <div v-for="item in prestataire.faq" :key="item.question" class="faq-item">
+                  <p class="faq-item__question">{{ item.question }}</p>
+                  <p class="faq-item__answer">{{ item.answer }}</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
     </div>
-    <!-- /provider-content -->
 
     <!-- ═══════════════════════════════════════════
-         STICKY CTA
+         STICKY CTA (mobile uniquement)
     ════════════════════════════════════════════ -->
     <div class="sticky-cta">
       <SgiltButton class="sticky-cta__button" @click="openContactModal">
         Envoyer une demande
       </SgiltButton>
     </div>
+
+    <!-- ═══════════════════════════════════════════
+         MODALE GALERIE
+    ════════════════════════════════════════════ -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div
+          v-if="showGallery"
+          class="modal-overlay"
+          @click.self="closeGallery"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Galerie photos"
+        >
+          <button class="modal-close" @click="closeGallery" aria-label="Fermer">✕</button>
+          <div class="gallery">
+            <button
+              class="gallery__nav gallery__nav--prev"
+              @click="prevPhoto"
+              aria-label="Photo précédente"
+            >
+              ‹
+            </button>
+            <img
+              :src="galleryPhotos[galleryIndex]"
+              :alt="`Photo ${galleryIndex + 1}`"
+              class="gallery__image"
+            />
+            <button
+              class="gallery__nav gallery__nav--next"
+              @click="nextPhoto"
+              aria-label="Photo suivante"
+            >
+              ›
+            </button>
+            <div class="gallery__counter">{{ galleryIndex + 1 }} / {{ galleryPhotos.length }}</div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
 
     <!-- ═══════════════════════════════════════════
          MODALE VIDÉO
@@ -198,6 +261,33 @@ const hasInfosPratiques = computed(
     (prestataire.value?.faq?.length ?? 0) > 0,
 )
 
+// ─── Galerie ──────────────────────────────────────────────────────────────────
+const showGallery = ref(false)
+const galleryIndex = ref(0)
+
+const galleryPhotos = computed<string[]>(() => {
+  if (!prestataire.value) return []
+  return [prestataire.value.heroImage, ...prestataire.value.photos]
+})
+
+function openGallery(index: number) {
+  galleryIndex.value = index
+  showGallery.value = true
+}
+
+function closeGallery() {
+  showGallery.value = false
+}
+
+function prevPhoto() {
+  galleryIndex.value =
+    (galleryIndex.value - 1 + galleryPhotos.value.length) % galleryPhotos.value.length
+}
+
+function nextPhoto() {
+  galleryIndex.value = (galleryIndex.value + 1) % galleryPhotos.value.length
+}
+
 // ─── Disponibilités ───────────────────────────────────────────────────────────
 const selectedDate = ref<Date | undefined>(undefined)
 
@@ -232,7 +322,6 @@ function closeVideo() {
 
 // ─── Contact ──────────────────────────────────────────────────────────────────
 function openContactModal() {
-  // TODO: ouvrir la modale de contact / messagerie
   console.log('Ouverture de la modale de contact')
 }
 
@@ -245,6 +334,7 @@ onUnmounted(() => {
 })
 function onKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape') {
+    closeGallery()
     closeVideo()
   }
 }
@@ -256,26 +346,129 @@ function onKeydown(e: KeyboardEvent) {
 // ─── Tokens locaux ────────────────────────────────────────────────────────────
 $content-max-width: 640px;
 $section-gap: 2.5rem;
+$desktop: 900px;
+
+// ─── Utilitaires responsive ───────────────────────────────────────────────────
+.mobile-only {
+  @media (min-width: $desktop) {
+    display: none !important;
+  }
+}
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 .provider-page {
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  padding-bottom: 6rem; // espace pour le sticky CTA
+  padding-bottom: 6rem; // espace sticky CTA mobile
+
+  @media (min-width: $desktop) {
+    padding-bottom: 0;
+  }
 }
 
-// ─── Hero datepicker ──────────────────────────────────────────────────────────
-.hero-datepicker {
-  padding: $spacing-m $spacing-m $spacing-s;
-  max-width: $content-max-width;
-  margin: 0 auto;
-  width: 100%;
+// ─── Layout deux colonnes ─────────────────────────────────────────────────────
+.page-layout {
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: $desktop) {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    grid-template-areas: 'main sidebar';
+    max-width: 1280px;
+    margin: 0 auto;
+    gap: 3rem;
+    padding: 2.5rem 2.5rem;
+    align-items: start;
+    width: 100%;
+  }
+}
+
+.page-layout__main {
+  @media (min-width: $desktop) {
+    grid-area: main;
+  }
+}
+
+.page-layout__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: $spacing-m;
+
+  @media (min-width: $desktop) {
+    grid-area: sidebar;
+    position: sticky;
+    top: 5rem;
+    padding: 1.5rem;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: $radius-md;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  }
+}
+
+.sidebar-block {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
 }
 
+.sidebar-budget {
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+
+  &__title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: $color-primary;
+    margin: 0 0 0.5rem;
+  }
+
+  &__text {
+    font-size: 0.9rem;
+    color: $text-secondary;
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+.sidebar-cta {
+  display: none;
+
+  @media (min-width: $desktop) {
+    display: block;
+    width: 100%;
+    height: 3rem;
+  }
+}
+
+// ─── Sticky CTA (mobile) ──────────────────────────────────────────────────────
+.sticky-cta {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  padding: $spacing-s $spacing-m;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+
+  @media (min-width: $desktop) {
+    display: none;
+  }
+
+  &__button {
+    height: 3rem;
+    width: 100%;
+  }
+}
+
+// ─── Disponibilité ────────────────────────────────────────────────────────────
 .availability-badge {
   display: inline-flex;
   align-items: center;
@@ -311,6 +504,11 @@ $section-gap: 2.5rem;
   max-width: $content-max-width;
   margin: 0 auto;
   width: 100%;
+
+  @media (min-width: $desktop) {
+    max-width: none;
+    padding: 0;
+  }
 }
 
 .section {
@@ -354,7 +552,7 @@ $section-gap: 2.5rem;
   gap: 1rem;
 }
 
-$color-success: #2e7d32; // Un vert élégant qui tranche bien sur le blanc
+$color-success: #2e7d32;
 
 .offering-item {
   display: flex;
@@ -363,7 +561,6 @@ $color-success: #2e7d32; // Un vert élégant qui tranche bien sur le blanc
   font-size: 0.95rem;
   line-height: 1.35;
   color: $text-secondary;
-  // margin-bottom: 0.5rem;
 
   &::before {
     content: '';
@@ -371,16 +568,13 @@ $color-success: #2e7d32; // Un vert élégant qui tranche bien sur le blanc
     width: 16px;
     height: 16px;
     margin-top: 0.2rem;
-
     background-color: $color-success;
-    // Utilisation d'un masque SVG pour un rendu ultra-net
     -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
     mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
     mask-repeat: no-repeat;
     mask-size: contain;
   }
 
-  // On nettoie l'ancien bullet orange
   &__bullet {
     display: none;
   }
@@ -389,15 +583,15 @@ $color-success: #2e7d32; // Un vert élégant qui tranche bien sur le blanc
 // ─── Identity ─────────────────────────────────────────────────────────────────
 .identity-spotlight {
   padding: 1.5rem 0;
-  border-top: 1px solid #eee; // Séparation légère avec le bloc précédent
+  border-top: 1px solid #eee;
 
   &__content {
-    border-left: 4px solid $color-accent; // Ta couleur jaune
+    border-left: 4px solid $color-accent;
     padding-left: 1.2rem;
   }
 
   &__quote {
-    font-family: 'Cormorant Garamond', serif; // Ou ta police de titre
+    font-family: 'Cormorant Garamond', serif;
     font-size: 1.2rem;
     font-style: italic;
     font-weight: 600;
@@ -414,7 +608,7 @@ $color-success: #2e7d32; // Un vert élégant qui tranche bien sur le blanc
   }
 }
 
-// ─── Budget ───────────────────────────────────────────────────────────────────
+// ─── Budget (mobile) ──────────────────────────────────────────────────────────
 .budget-text {
   font-size: 0.95rem;
   color: $text-secondary;
@@ -535,25 +729,6 @@ $color-success: #2e7d32; // Un vert élégant qui tranche bien sur le blanc
   }
 }
 
-// ─── Sticky CTA ───────────────────────────────────────────────────────────────
-.sticky-cta {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 20;
-  padding: $spacing-s $spacing-m;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-
-  &__button {
-    height: 3rem;
-    width: 100%;
-  }
-}
-
 // ─── Modales ──────────────────────────────────────────────────────────────────
 .modal-overlay {
   position: fixed;
@@ -589,6 +764,65 @@ $color-success: #2e7d32; // Un vert élégant qui tranche bien sur le blanc
 
   &:hover {
     background: #f5f5f5;
+  }
+}
+
+.gallery {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__image {
+    max-width: 100%;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: $radius-md;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  &__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    background: #fff;
+    font-size: 1.4rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: background 150ms ease;
+
+    &:hover {
+      background: #f5f5f5;
+    }
+
+    &--prev {
+      left: $spacing-m;
+    }
+
+    &--next {
+      right: $spacing-m;
+    }
+  }
+
+  &__counter {
+    position: absolute;
+    bottom: $spacing-m;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    color: $text-secondary;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 0.2rem 0.6rem;
+    border-radius: 1rem;
   }
 }
 
@@ -629,6 +863,7 @@ $color-success: #2e7d32; // Un vert élégant qui tranche bien sur le blanc
     opacity 200ms ease,
     transform 200ms ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
@@ -639,6 +874,7 @@ $color-success: #2e7d32; // Un vert élégant qui tranche bien sur le blanc
 .modal-leave-active {
   transition: opacity 250ms ease;
 }
+
 .modal-enter-from,
 .modal-leave-to {
   opacity: 0;
