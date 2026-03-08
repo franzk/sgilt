@@ -417,22 +417,27 @@ $desktop: 900px;
 }
 
 .sidebar-budget {
-  padding-top: 1.25rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  display: none;
 
-  &__title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: $color-primary;
-    margin: 0 0 0.5rem;
-  }
+  @media (min-width: $desktop) {
+    display: unset;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
 
-  &__text {
-    font-size: 0.9rem;
-    color: $text-secondary;
-    line-height: 1.6;
-    margin: 0;
+    &__title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: $color-primary;
+      margin: 0 0 0.5rem;
+    }
+
+    &__text {
+      font-size: 0.9rem;
+      color: $text-secondary;
+      line-height: 1.6;
+      margin: 0;
+    }
   }
 }
 
