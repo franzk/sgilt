@@ -140,6 +140,17 @@
     </div>
 
     <!-- ═══════════════════════════════════════════
+         TUNNEL DEMANDE (bottom sheet mobile)
+    ════════════════════════════════════════════ -->
+    <DemandeBottomSheet
+      :is-open="showDemande"
+      :prestataire-name="prestataire.name"
+      :prestataire-slug="slug"
+      :initial-date="dateModel"
+      @close="showDemande = false"
+    />
+
+    <!-- ═══════════════════════════════════════════
          MODALE GALERIE
     ════════════════════════════════════════════ -->
     <Teleport to="body">
@@ -226,6 +237,7 @@ import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
 import PrestataireHero from '~/components/prestataire/PrestataireHero.vue'
 import EngagementBadge from '~/components/prestataire/EngagementBadge.vue'
+import DemandeBottomSheet from '~/components/demande/DemandeBottomSheet.vue'
 import { SearchMockService } from '~/services/search.mock'
 import type { PrestataireDetail } from '~/types/prestataire'
 
@@ -322,8 +334,15 @@ function closeVideo() {
 }
 
 // ─── Contact ──────────────────────────────────────────────────────────────────
+const showDemande = ref(false)
+const { isDesktop } = useDevice()
+
 function openContactModal() {
-  console.log('Ouverture de la modale de contact')
+  if (isDesktop.value) {
+    navigateTo(`/${slug}/demande`)
+  } else {
+    showDemande.value = true
+  }
 }
 
 // ─── Keyboard escape ──────────────────────────────────────────────────────────
@@ -337,6 +356,7 @@ function onKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape') {
     closeGallery()
     closeVideo()
+    showDemande.value = false
   }
 }
 </script>
