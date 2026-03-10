@@ -9,6 +9,7 @@
       autre-placeholder="Décrivez le moment clé…"
       @update:model-value="state.momentCle = $event"
       @update:autre-value="state.momentCleAutre = $event"
+      @change="$emit('change')"
     />
   </div>
 </template>
@@ -18,6 +19,9 @@ import { MOMENT_CLE_OPTIONS } from '~/types/demande'
 import type { DemandeState } from '~/types/demande'
 
 defineProps<{ state: DemandeState }>()
+const emit = defineEmits<{
+  (e: 'change'): void
+}>()
 </script>
 
 <style scoped lang="scss">

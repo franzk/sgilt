@@ -18,8 +18,10 @@ export interface DemandeState {
   ville: string
   nbInvites: string
   lieuDefini: boolean
+  lieu: string
   email: string
   telephone: string
+  prestataireMessage?: string
 }
 
 export const ETAPES_COUNT = 5

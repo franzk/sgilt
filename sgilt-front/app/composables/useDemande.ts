@@ -25,29 +25,14 @@ export function useDemande(initialDate?: Date | null | undefined) {
     ville: '',
     nbInvites: '',
     lieuDefini: true,
+    lieu: '',
     email: '',
     telephone: '',
-  })
-
-  const canProceed = computed(() => {
-    switch (etapeActuelle.value) {
-      case 1:
-        return !!state.eventType
-      case 2:
-        return !!state.ambiance
-      case 3:
-        return !!state.momentCle
-      case 4:
-        return true
-      case 5:
-        return !!state.email && !!state.telephone
-      default:
-        return false
-    }
+    prestataireMessage: '',
   })
 
   function next() {
-    if (etapeActuelle.value < 5 && canProceed.value) {
+    if (etapeActuelle.value < 6) {
       direction.value = 'forward'
       etapeActuelle.value++
     }
@@ -61,14 +46,13 @@ export function useDemande(initialDate?: Date | null | undefined) {
   }
 
   function goTo(etape: number) {
-    if (etape >= 1 && etape <= 5) {
+    if (etape >= 1 && etape <= 6) {
       direction.value = etape > etapeActuelle.value ? 'forward' : 'back'
       etapeActuelle.value = etape
     }
   }
 
   async function submit() {
-    if (!canProceed.value) return
     submitting.value = true
     // TODO: remplacer par un vrai appel API / email
     await new Promise((resolve) => setTimeout(resolve, 800))
@@ -118,7 +102,6 @@ export function useDemande(initialDate?: Date | null | undefined) {
     submitted,
     submitting,
     state,
-    canProceed,
     next,
     back,
     goTo,

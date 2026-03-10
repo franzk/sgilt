@@ -9,6 +9,7 @@
       autre-placeholder="Décrivez l'ambiance souhaitée…"
       @update:model-value="state.ambiance = $event"
       @update:autre-value="state.ambianceAutre = $event"
+      @change="$emit('change')"
     />
   </div>
 </template>
@@ -18,6 +19,10 @@ import { AMBIANCE_OPTIONS } from '~/types/demande'
 import type { DemandeState } from '~/types/demande'
 
 defineProps<{ state: DemandeState }>()
+
+const emit = defineEmits<{
+  (e: 'change'): void
+}>()
 </script>
 
 <style scoped lang="scss">

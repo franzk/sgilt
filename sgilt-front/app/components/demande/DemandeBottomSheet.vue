@@ -1,107 +1,108 @@
 <template>
-  <Teleport to="body">
-    <Transition name="overlay">
-      <div v-if="isOpen" class="sheet-overlay" @click.self="$emit('close')" />
-    </Transition>
+  <SgiltBottomSheet
+    v-model:open="drawerOpen"
+    title="Envoyer une demande"
+    description="Remplissez les étapes pour contacter ce prestataire."
+    class="demande-bottom-sheet"
+  >
+    <div class="sheet-inner">
+      <!-- Header -->
+      <div class="sheet-header">
+        <button
+          v-if="etapeActuelle > 1 && !submitted"
+          class="header-btn"
+          type="button"
+          aria-label="Étape précédente"
+          @click="back"
+        >
+          ←
+        </button>
+        <span v-else class="header-btn-placeholder" />
 
-    <Transition name="sheet">
-      <div
-        v-if="isOpen"
-        class="sheet"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Envoyer une demande"
-        @touchstart.passive="onTouchStart"
-        @touchmove.passive="onTouchMove"
-        @touchend.passive="onTouchEnd"
-      >
-        <!-- Header -->
-        <div class="sheet__header">
-          <button
-            v-if="etapeActuelle > 1 && !submitted"
-            class="sheet__back"
-            type="button"
-            aria-label="Étape précédente"
-            @click="back"
-          >
-            ←
-          </button>
-          <span v-else class="sheet__back-placeholder" />
+        <DemandeStepper v-if="!submitted" :etape="etapeActuelle" @go-to="goTo" />
 
-          <DemandeStepper
-            v-if="!submitted"
-            :etape="etapeActuelle"
-            @go-to="goTo"
-          />
-
-          <button class="sheet__close" type="button" aria-label="Fermer" @click="$emit('close')">
-            ✕
-          </button>
-        </div>
-
-        <!-- Contenu des étapes -->
-        <div class="sheet__body" ref="bodyRef">
-          <div v-if="submitted" class="sheet__step">
-            <DemandeConfirmation
-              :prestataire-name="prestataireName"
-              :email="state.email"
-              @close="$emit('close')"
-            />
-          </div>
-
-          <template v-else>
-            <Transition :name="direction === 'forward' ? 'slide-forward' : 'slide-back'" mode="out-in">
-              <div :key="etapeActuelle" class="sheet__step">
-                <DemandeEtape1 v-if="etapeActuelle === 1" :state="state" />
-                <DemandeEtape2 v-else-if="etapeActuelle === 2" :state="state" />
-                <DemandeEtape3 v-else-if="etapeActuelle === 3" :state="state" />
-                <DemandeEtape4 v-else-if="etapeActuelle === 4" :state="state" />
-                <DemandeEtape5
-                  v-else-if="etapeActuelle === 5"
-                  :state="state"
-                  :event-type-label="eventTypeLabel"
-                  :event-type-emoji="eventTypeEmoji"
-                  :ambiance-label="ambianceLabel"
-                  :ambiance-emoji="ambianceEmoji"
-                  :moment-cle-label="momentCleLabel"
-                  :moment-cle-emoji="momentCleEmoji"
-                />
-              </div>
-            </Transition>
-
-            <!-- Récap progressif (étapes 2-4) -->
-            <DemandeRecap
-              v-if="etapeActuelle >= 2 && etapeActuelle < 5"
-              :event-type-label="eventTypeLabel"
-              :event-type-emoji="eventTypeEmoji"
-              :ambiance-label="ambianceLabel"
-              :ambiance-emoji="ambianceEmoji"
-              :moment-cle-label="momentCleLabel"
-              :moment-cle-emoji="momentCleEmoji"
-            />
-          </template>
-        </div>
-
-        <!-- Footer CTA -->
-        <div v-if="!submitted" class="sheet__footer">
-          <button
-            class="sheet__cta"
-            :class="{ 'sheet__cta--disabled': !canProceed }"
-            :disabled="!canProceed || submitting"
-            type="button"
-            @click="etapeActuelle < 5 ? next() : submit()"
-          >
-            <span v-if="submitting">Envoi en cours…</span>
-            <span v-else-if="etapeActuelle < 5">Continuer →</span>
-            <span v-else>Envoyer la demande →</span>
-          </button>
-        </div>
+        <button class="header-btn" type="button" aria-label="Fermer" @click="drawerOpen = false">
+          ✕
+        </button>
       </div>
-    </Transition>
-  </Teleport>
+
+      <!-- Body -->
+      <div class="sheet-body" ref="bodyRef">
+        <div v-if="submitted">
+          <DemandeConfirmation
+            :prestataire-name="prestataireName"
+            :email="state.email"
+            @close="drawerOpen = false"
+          />
+        </div>
+
+        <template v-else>
+          <Transition
+            :name="direction === 'forward' ? 'slide-forward' : 'slide-back'"
+            mode="out-in"
+          >
+            <div :key="etapeActuelle">
+              <DemandeEtape1 v-if="etapeActuelle === 1" :state="state" @change="next" />
+              <DemandeEtape2 v-else-if="etapeActuelle === 2" :state="state" @change="next" />
+              <DemandeEtape3 v-else-if="etapeActuelle === 3" :state="state" @change="next" />
+              <DemandeEtape4 v-else-if="etapeActuelle === 4" :state="state" @change="next" />
+              <DemandeEtape5
+                v-else-if="etapeActuelle === 5"
+                :state="state"
+                :event-type-label="eventTypeLabel"
+                :event-type-emoji="eventTypeEmoji"
+                :ambiance-label="ambianceLabel"
+                :ambiance-emoji="ambianceEmoji"
+                :moment-cle-label="momentCleLabel"
+                :moment-cle-emoji="momentCleEmoji"
+                @change="next"
+              />
+              <DemandeEtape6
+                v-else-if="etapeActuelle === 6"
+                :state="state"
+                :event-type-label="eventTypeLabel"
+                :event-type-emoji="eventTypeEmoji"
+                :ambiance-label="ambianceLabel"
+                :ambiance-emoji="ambianceEmoji"
+                :moment-cle-label="momentCleLabel"
+                :moment-cle-emoji="momentCleEmoji"
+                @change="submit"
+              />
+            </div>
+          </Transition>
+
+          <DemandeRecap
+            v-if="etapeActuelle >= 2 && etapeActuelle < 5"
+            :event-type-label="eventTypeLabel"
+            :event-type-emoji="eventTypeEmoji"
+            :ambiance-label="ambianceLabel"
+            :ambiance-emoji="ambianceEmoji"
+            :moment-cle-label="momentCleLabel"
+            :moment-cle-emoji="momentCleEmoji"
+          />
+        </template>
+      </div>
+
+      <!-- Footer CTA -->
+      <!--div v-if="!submitted" class="sheet-footer">
+        <button
+          class="sheet-cta"
+          :class="{ 'sheet-cta--disabled': !canProceed }"
+          :disabled="!canProceed || submitting"
+          type="button"
+          @click="etapeActuelle < 5 ? next() : submit()"
+        >
+          <span v-if="submitting">Envoi en cours…</span>
+          <span v-else-if="etapeActuelle < 5">Continuer →</span>
+          <span v-else>Envoyer la demande →</span>
+        </button>
+      </div-->
+    </div>
+  </SgiltBottomSheet>
 </template>
 
 <script setup lang="ts">
+import SgiltBottomSheet from '~/components/basics/sheets/SgiltBottomSheet.vue'
 import { useDemande } from '~/composables/useDemande'
 
 const props = defineProps<{
@@ -113,13 +114,20 @@ const props = defineProps<{
 
 const emit = defineEmits<{ (e: 'close'): void }>()
 
+// ─── Controlled v-model bridge ─────────────────────────────────────────────────
+const drawerOpen = computed({
+  get: () => props.isOpen,
+  set: (v) => {
+    if (!v) emit('close')
+  },
+})
+
 const {
   etapeActuelle,
   direction,
   submitted,
   submitting,
   state,
-  canProceed,
   next,
   back,
   goTo,
@@ -137,155 +145,115 @@ const bodyRef = ref<HTMLElement | null>(null)
 watch(etapeActuelle, () => {
   nextTick(() => bodyRef.value?.scrollTo({ top: 0, behavior: 'smooth' }))
 })
-
-// ─── Swipe down to close ───────────────────────────────────────────────────────
-const touchStartY = ref(0)
-const touchCurrentY = ref(0)
-
-function onTouchStart(e: TouchEvent) {
-  touchStartY.value = e.touches[0]?.clientY ?? 0
-}
-
-function onTouchMove(e: TouchEvent) {
-  touchCurrentY.value = e.touches[0]?.clientY ?? 0
-}
-
-function onTouchEnd() {
-  const delta = touchCurrentY.value - touchStartY.value
-  if (delta > 80) {
-    emit('close')
-  }
-}
 </script>
 
 <style scoped lang="scss">
-$sheet-radius: 16px 16px 0 0;
+@use '@/assets/styles/base' as *;
 
-.sheet-overlay {
-  position: fixed;
-  inset: 0;
-  background: $overlay-dark-medium;
-  z-index: $z-overlay;
+:global(.sgilt-sheet__content) {
+  height: calc(100vh - $app-header-height);
 }
 
-.sheet {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: $z-modal;
-  background: #fff;
-  border-radius: $sheet-radius;
-  max-height: 90dvh;
+$shadow-sheet: 0 -28px 80px rgba(0, 0, 0, 0.28);
+
+.sheet-inner {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: 0;
+
+  background:
+    radial-gradient(
+      1100px 520px at 50% -10%,
+      rgba($color-accent, 0.22) 0%,
+      rgba(255, 255, 255, 0) 55%
+    ),
+    linear-gradient(180deg, #fffdf6 0%, #ffffff 60%);
+
+  border-top: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: $shadow-sheet;
+  padding-bottom: calc(1.1rem + env(safe-area-inset-bottom, 0px));
+}
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-s $spacing-m 0;
+  flex-shrink: 0;
+  gap: $spacing-xs;
   overflow: hidden;
+}
 
-  &__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: $spacing-s $spacing-m 0;
-    flex-shrink: 0;
-    gap: $spacing-xs;
-  }
+.header-btn {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  border: 1px solid $divider-color;
+  background: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 150ms ease;
+  color: $text-primary;
 
-  &__back,
-  &__close {
-    width: 2.2rem;
-    height: 2.2rem;
-    border-radius: 50%;
-    border: 1px solid $divider-color;
-    background: #fff;
-    font-size: 1rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: background 150ms ease;
-    color: $text-primary;
-
-    &:hover {
-      background: $surface-soft;
-    }
-  }
-
-  &__back-placeholder {
-    width: 2.2rem;
-    height: 2.2rem;
-    flex-shrink: 0;
-  }
-
-  &__body {
-    flex: 1;
-    overflow-y: auto;
-    padding: $spacing-m $spacing-m;
-    overscroll-behavior: contain;
-  }
-
-  &__step {
-    // prevent layout shift during transition
-  }
-
-  &__footer {
-    flex-shrink: 0;
-    padding: $spacing-s $spacing-m $spacing-m;
-    background: rgba(255, 255, 255, 0.95);
-    border-top: 1px solid $divider-color;
-  }
-
-  &__cta {
-    width: 100%;
-    height: 3rem;
-    border-radius: 2rem;
-    border: none;
-    background: linear-gradient(to bottom, #ffd84d 0%, #f2c200 100%);
-    color: #fff;
-    font-size: 1rem;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
-    box-shadow:
-      0 4px 8px rgba(0, 0, 0, 0.14),
-      0 12px 28px rgba(242, 194, 0, 0.18);
-    transition:
-      opacity 150ms ease,
-      transform 100ms ease;
-
-    &:active {
-      transform: scale(0.99);
-    }
-
-    &--disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-      pointer-events: none;
-    }
+  &:hover {
+    background: $surface-soft;
   }
 }
 
-// ─── Overlay transition ────────────────────────────────────────────────────────
-.overlay-enter-active,
-.overlay-leave-active {
-  transition: opacity 300ms ease;
+.header-btn-placeholder {
+  width: 2.2rem;
+  height: 2.2rem;
+  flex-shrink: 0;
 }
 
-.overlay-enter-from,
-.overlay-leave-to {
-  opacity: 0;
+.sheet-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-m;
+  overscroll-behavior: contain;
+  position: relative;
 }
 
-// ─── Sheet slide-up transition ────────────────────────────────────────────────
-.sheet-enter-active,
-.sheet-leave-active {
-  transition: transform 300ms ease-out;
+.sheet-footer {
+  flex-shrink: 0;
+  padding: $spacing-s $spacing-m calc($spacing-m + env(safe-area-inset-bottom, 0px));
+  background: rgba(255, 255, 255, 0.95);
+  border-top: 1px solid $divider-color;
 }
 
-.sheet-enter-from,
-.sheet-leave-to {
-  transform: translateY(100%);
+.sheet-cta {
+  width: 100%;
+  height: 3rem;
+  border-radius: 2rem;
+  border: none;
+  background: linear-gradient(to bottom, #ffd84d 0%, #f2c200 100%);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.14),
+    0 12px 28px rgba(242, 194, 0, 0.18);
+  transition:
+    opacity 150ms ease,
+    transform 100ms ease;
+
+  &:active {
+    transform: scale(0.99);
+  }
+
+  &--disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
 }
 
 // ─── Step slide transitions ────────────────────────────────────────────────────

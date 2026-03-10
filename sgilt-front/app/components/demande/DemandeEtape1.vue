@@ -6,9 +6,10 @@
       :options="EVENT_TYPE_OPTIONS"
       :model-value="state.eventType"
       :autre-value="state.eventTypeAutre"
-      autre-placeholder="Décrivez votre événement…"
+      autre-placeholder="Quel événement préparez-vous&nbsp;?"
       @update:model-value="state.eventType = $event"
       @update:autre-value="state.eventTypeAutre = $event"
+      @change="$emit('change')"
     />
   </div>
 </template>
@@ -18,6 +19,10 @@ import { EVENT_TYPE_OPTIONS } from '~/types/demande'
 import type { DemandeState } from '~/types/demande'
 
 defineProps<{ state: DemandeState }>()
+
+const emit = defineEmits<{
+  (e: 'change'): void
+}>()
 </script>
 
 <style scoped lang="scss">

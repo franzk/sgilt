@@ -11,13 +11,21 @@
     />
 
     <p class="etape__optional">Optionnel — vous pouvez passer cette étape.</p>
+
+    <p class="etape__next">
+      <SgiltButton class="etape__next-btn" @click="$emit('change')"> Continuer →</SgiltButton>
+    </p>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { DemandeState } from '~/types/demande'
+import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 
 defineProps<{ state: DemandeState }>()
+const emit = defineEmits<{
+  (e: 'change'): void
+}>()
 </script>
 
 <style scoped lang="scss">
@@ -42,6 +50,15 @@ defineProps<{ state: DemandeState }>()
     color: $text-secondary;
     opacity: 0.6;
     margin: $spacing-s 0 0;
+  }
+
+  &__next {
+    height: 3rem;
+    width: 100%;
+    display: flex;
+    button {
+      width: 100%;
+    }
   }
 }
 

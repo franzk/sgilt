@@ -2,61 +2,43 @@
   <div class="etape">
     <h2 class="etape__question">Quelques infos pour les prestataires</h2>
 
-    <!-- Infos pratiques -->
+    <!-- Coordonnées -->
+    <div class="section-title">Vos coordonnées</div>
     <div class="fields">
       <div class="field-group">
-        <label class="field-label">📅 Date de l'événement</label>
-        <SgiltDatePicker v-model="state.date" placeholder="Choisir une date" disabled />
-      </div>
-
-      <div class="field-group">
-        <label class="field-label">📍 Ville</label>
+        <label class="field-label">📧 Email <span class="required">*</span></label>
         <input
-          v-model="state.ville"
+          v-model="state.email"
           class="field-input"
-          type="text"
-          placeholder="Ex : Strasbourg"
+          type="email"
+          placeholder="votre@email.fr"
+          autocomplete="email"
         />
       </div>
 
       <div class="field-group">
-        <label class="field-label">👥 Nombre d'invités</label>
+        <label class="field-label">📱 Téléphone <span class="required">*</span></label>
         <input
-          v-model="state.nbInvites"
+          v-model="state.telephone"
           class="field-input"
-          type="text"
-          placeholder="Ex : Environ 40"
+          type="tel"
+          placeholder="06 12 34 56 78"
+          autocomplete="tel"
         />
       </div>
 
-      <div class="field-group field-group--row">
-        <label class="field-label">📍 Lieu défini&nbsp;?</label>
-        <div class="toggle-group">
-          <button
-            class="toggle-btn"
-            :class="{ 'toggle-btn--active': state.lieuDefini }"
-            type="button"
-            @click="state.lieuDefini = true"
-          >
-            Oui
-          </button>
-          <button
-            class="toggle-btn"
-            :class="{ 'toggle-btn--active': !state.lieuDefini }"
-            type="button"
-            @click="state.lieuDefini = false"
-          >
-            Non
-          </button>
-        </div>
-        <span v-if="!state.lieuDefini" class="lieu-non-defini">Lieu non défini</span>
-      </div>
-      <div v-if="state.lieuDefini" class="field-group">
-        <input v-model="state.lieu" class="field-input" type="text" />
-      </div>
       <div class="field-group">
+        <textarea
+          v-model="state.prestataireMessage"
+          class="description-textarea"
+          placeholder="Message optionnel pour les prestataires (ex : « Je préfère être contacté par email »)"
+          rows="6"
+        />
+      </div>
+
+      <div class="field-group submit">
         <SgiltButton type="primary" :disabled="!formValid" @click="emit('change')"
-          >Continuer →</SgiltButton
+          >Envoyer ma demande</SgiltButton
         >
       </div>
     </div>
@@ -72,15 +54,13 @@
       :date="state.date"
       :ville="state.ville"
       :nb-invites="state.nbInvites"
-      :lieu="state.lieu"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
-import type { DemandeState } from '~/types/demande'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
+import type { DemandeState } from '~/types/demande'
 
 const props = defineProps<{
   state: DemandeState
@@ -92,18 +72,13 @@ const props = defineProps<{
   momentCleEmoji: string
 }>()
 
+const formValid = computed(() => {
+  return !!props.state.email && !!props.state.telephone
+})
+
 const emit = defineEmits<{
   (e: 'change'): void
 }>()
-
-const formValid = computed(() => {
-  return (
-    !!props.state.date &&
-    !!props.state.ville.trim() &&
-    !!props.state.nbInvites.trim() &&
-    Number(props.state.nbInvites) > 0
-  )
-})
 </script>
 
 <style scoped lang="scss">
@@ -144,10 +119,6 @@ const formValid = computed(() => {
     flex-wrap: wrap;
     gap: $spacing-s;
   }
-
-  button {
-    height: 3rem;
-  }
 }
 
 .field-label {
@@ -184,39 +155,34 @@ const formValid = computed(() => {
   }
 }
 
-.toggle-group {
-  display: flex;
+.description-textarea {
+  width: 100%;
+  padding: $spacing-m;
   border: 1.5px solid $divider-color;
   border-radius: $radius-md;
-  overflow: hidden;
-}
-
-.toggle-btn {
-  padding: $spacing-xxs $spacing-m;
-  border: none;
-  background: #fff;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-family: inherit;
-  color: $text-secondary;
-  cursor: pointer;
-  transition:
-    background 150ms ease,
-    color 150ms ease;
+  color: $text-primary;
+  background: #fff;
+  resize: vertical;
+  outline: none;
+  transition: border-color 180ms ease;
+  box-sizing: border-box;
+  line-height: 1.6;
 
-  & + & {
-    border-left: 1px solid $divider-color;
+  &:focus {
+    border-color: $brand-accent;
   }
 
-  &--active {
-    background: $brand-accent;
-    color: #fff;
-    font-weight: 600;
+  &::placeholder {
+    color: $text-secondary;
+    opacity: 0.5;
   }
 }
 
-.lieu-non-defini {
-  font-size: 0.82rem;
-  color: $text-secondary;
-  font-style: italic;
+.submit {
+  button {
+    height: 3rem;
+  }
 }
 </style>
