@@ -10,6 +10,11 @@
       rows="6"
     />
 
+    <p class="etape__subtitle">
+      Plus vous nous en dites, mieux les prestataires pourront comprendre votre projet et y répondre
+      de manière pertinente !
+    </p>
+
     <p class="etape__optional">Optionnel — vous pouvez passer cette étape.</p>
 
     <p class="etape__next">
@@ -27,8 +32,7 @@ const emit = defineEmits<{
   (e: 'change'): void
 }>()
 
-const placeholderText =
-  'Parlez-nous de votre événement, de ce que vous avez déjà prévu, de ce que vous imaginez, de vos envies… Plus vous nous en dites, mieux les prestataires pourront comprendre votre projet et y répondre de manière pertinente !'
+const placeholderText = 'Parlez-nous de votre événement, de vos envies, de ce que vous imaginez...'
 </script>
 
 <style scoped lang="scss">

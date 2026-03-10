@@ -60,6 +60,7 @@ function select(value: string) {
     nextTick(() => {
       const input = document.querySelector('.autre-input__field') as HTMLInputElement | null
       input?.focus()
+      input?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     })
   }
 }

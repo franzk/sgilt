@@ -16,6 +16,7 @@
           class="field-input"
           type="text"
           placeholder="Ex : Strasbourg"
+          @focus="scrollInputIntoView($event.target as HTMLElement)"
         />
       </div>
 
@@ -26,6 +27,7 @@
           class="field-input"
           type="text"
           placeholder="Ex : Environ 40"
+          @focus="scrollInputIntoView($event.target as HTMLElement)"
         />
       </div>
 
@@ -49,10 +51,15 @@
             Non
           </button>
         </div>
-        <span v-if="!state.lieuDefini" class="lieu-non-defini">Lieu non défini</span>
+        <span v-if="!state.lieuDefini" class="lieu-non-defini">Lieu pas encore défini</span>
       </div>
       <div v-if="state.lieuDefini" class="field-group">
-        <input v-model="state.lieu" class="field-input" type="text" />
+        <input
+          v-model="state.lieu"
+          class="field-input"
+          type="text"
+          @focus="scrollInputIntoView($event.target as HTMLElement)"
+        />
       </div>
       <div class="field-group">
         <SgiltButton type="primary" :disabled="!formValid" @click="emit('change')"
@@ -81,6 +88,7 @@
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
 import type { DemandeState } from '~/types/demande'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
+import { scrollInputIntoView } from '~/utils/scrollInputIntoView'
 
 const props = defineProps<{
   state: DemandeState

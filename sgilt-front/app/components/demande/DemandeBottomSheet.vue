@@ -29,10 +29,18 @@
       <!-- Body -->
       <div class="sheet-body" ref="bodyRef">
         <div v-if="submitted">
-          <DemandeConfirmation
-            :prestataire-name="prestataireName"
-            :email="state.email"
-            @close="drawerOpen = false"
+          <DemandeFinalisation
+            :event-type-label="eventTypeLabel"
+            :event-type-emoji="eventTypeEmoji"
+            :ambiance-label="ambianceLabel"
+            :ambiance-emoji="ambianceEmoji"
+            :moment-cle-label="momentCleLabel"
+            :moment-cle-emoji="momentCleEmoji"
+            :date="state.date"
+            :ville="state.ville"
+            :nb-invites="state.nbInvites"
+            :lieu="state.lieu"
+            :prestataireName="prestataireName"
           />
         </div>
 
