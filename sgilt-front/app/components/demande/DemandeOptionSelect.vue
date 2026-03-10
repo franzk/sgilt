@@ -1,18 +1,5 @@
 <template>
   <div class="demande-option-select">
-    <div class="option-select">
-      <button
-        v-for="option in options"
-        :key="option.value"
-        class="option"
-        :class="{ 'option--selected': modelValue === option.value }"
-        type="button"
-        @click="select(option.value)"
-      >
-        <span class="option__emoji">{{ option.emoji }}</span>
-        <span class="option__label">{{ option.label }}</span>
-      </button>
-    </div>
     <Transition name="fade-down">
       <div
         v-if="modelValue === 'autre'"
@@ -31,13 +18,25 @@
         </div>
       </div>
     </Transition>
+    <div class="option-select">
+      <button
+        v-for="option in options"
+        :key="option.value"
+        class="option"
+        :class="{ 'option--selected': modelValue === option.value }"
+        type="button"
+        @click="select(option.value)"
+      >
+        <span class="option__emoji">{{ option.emoji }}</span>
+        <span class="option__label">{{ option.label }}</span>
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { DemandeOption } from '~/types/demande'
 import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
-import IconCheck from '../icons/IconCheck.vue'
 
 defineProps<{
   options: DemandeOption[]
@@ -56,11 +55,23 @@ function select(value: string) {
   emit('update:modelValue', value)
   if (value !== 'autre') {
     emit('change')
+  } else {
+    // focus input when "autre" is selected
+    nextTick(() => {
+      const input = document.querySelector('.autre-input__field') as HTMLInputElement | null
+      input?.focus()
+    })
   }
 }
 </script>
 
 <style scoped lang="scss">
+.demande-option-select {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-s;
+}
+
 .option-select {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -120,32 +131,36 @@ function select(value: string) {
 }
 
 .autre-input-container {
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(2px);
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  padding: $spacing-xs;
+  // align-items: center;
+  // justify-content: center;
+  // overflow: hidden;
 
   .autre-input {
-    padding: 0 $spacing-xs;
     display: flex;
+    align-items: center;
     height: 3rem;
+    width: 100%;
     gap: 0;
+    padding: 0 $spacing-xs;
 
     .autre-value-button {
-      margin-left: $spacing-s;
-      border-radius: $radius-sm;
-      padding: 0 $spacing-s;
+      height: 100%;
+      margin: 0;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: $radius-md;
+      // padding: 0 $spacing-s;
     }
 
     &__field {
+      flex: 1;
       width: 100%;
-      padding: $spacing-s $spacing-m;
+      height: 100%;
+      padding: 0 $spacing-m;
       border: 1.5px solid $divider-color;
       border-radius: $radius-md;
       font-size: 0.95rem;
@@ -170,14 +185,16 @@ function select(value: string) {
 
 .fade-down-enter-active,
 .fade-down-leave-active {
+  display: grid;
+  grid-template-rows: 1fr;
   transition:
-    opacity 180ms ease,
-    transform 180ms ease;
+    grid-template-rows 220ms ease,
+    opacity 220ms ease;
 }
 
 .fade-down-enter-from,
 .fade-down-leave-to {
+  grid-template-rows: 0fr;
   opacity: 0;
-  transform: translateY(-6px);
 }
 </style>

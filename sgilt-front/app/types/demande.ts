@@ -34,6 +34,18 @@ export const EVENT_TYPE_OPTIONS: DemandeOption[] = [
   { value: 'autre', label: 'Autre', emoji: '•••' },
 ]
 
+export const eventDescriptionPlaceholders: Record<string, string> = {
+  anniversaire:
+    "Des bougies, des rires, les gens qu'on aime... racontez-nous ce moment comme vous le rêvez.",
+  mariage:
+    "La musique, l'émotion palpable, la fête qui éclate... décrivez le mariage que vous imaginez.",
+  soiree:
+    "Une playlist qui fait bouger les épaules, des éclats de rire jusqu'à tard... à quoi ressemble votre soirée idéale ?",
+  entreprise:
+    "Des fous rires hors des réunions, une ambiance qu'on ne voit pas venir... à quoi ressemble votre soirée d'entreprise ?",
+  autre: "Fermez les yeux. Qu'est-ce que vous voyez ce soir-là ?",
+}
+
 export const AMBIANCE_OPTIONS: DemandeOption[] = [
   { value: 'festif', label: 'Festif et dansant', emoji: '🎉' },
   { value: 'chic', label: 'Chic et élégant', emoji: '✨' },

@@ -82,21 +82,6 @@
           />
         </template>
       </div>
-
-      <!-- Footer CTA -->
-      <!--div v-if="!submitted" class="sheet-footer">
-        <button
-          class="sheet-cta"
-          :class="{ 'sheet-cta--disabled': !canProceed }"
-          :disabled="!canProceed || submitting"
-          type="button"
-          @click="etapeActuelle < 5 ? next() : submit()"
-        >
-          <span v-if="submitting">Envoi en cours…</span>
-          <span v-else-if="etapeActuelle < 5">Continuer →</span>
-          <span v-else>Envoyer la demande →</span>
-        </button>
-      </div-->
     </div>
   </SgiltBottomSheet>
 </template>

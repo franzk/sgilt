@@ -1,6 +1,6 @@
 <template>
   <div class="etape">
-    <h2 class="etape__question">Quelques infos pour les prestataires</h2>
+    <h2 class="etape__question">Votre événement en pratique</h2>
 
     <!-- Infos pratiques -->
     <div class="fields">

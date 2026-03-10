@@ -6,7 +6,7 @@
     <textarea
       v-model="state.description"
       class="description-textarea"
-      placeholder="Je fête mes 40 ans avec mes amis proches…"
+      :placeholder="placeholderText"
       rows="6"
     />
 
@@ -22,10 +22,13 @@
 import type { DemandeState } from '~/types/demande'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 
-defineProps<{ state: DemandeState }>()
+const props = defineProps<{ state: DemandeState }>()
 const emit = defineEmits<{
   (e: 'change'): void
 }>()
+
+const placeholderText =
+  'Parlez-nous de votre événement, de ce que vous avez déjà prévu, de ce que vous imaginez, de vos envies… Plus vous nous en dites, mieux les prestataires pourront comprendre votre projet et y répondre de manière pertinente !'
 </script>
 
 <style scoped lang="scss">

@@ -1,6 +1,6 @@
 <template>
   <div class="etape">
-    <h2 class="etape__question">Quelques infos pour les prestataires</h2>
+    <h2 class="etape__question">Comment vous contacter ?</h2>
 
     <!-- Coordonnées -->
     <div class="section-title">Vos coordonnées</div>
@@ -31,7 +31,7 @@
         <textarea
           v-model="state.prestataireMessage"
           class="description-textarea"
-          placeholder="Message optionnel pour les prestataires (ex : « Je préfère être contacté par email »)"
+          placeholder="(optionnel) Votre message pour le prestataire"
           rows="6"
         />
       </div>
