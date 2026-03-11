@@ -186,7 +186,7 @@ async function share() {
   aspect-ratio: 1 / 1;
   overflow: hidden;
 
-  @media (min-width: 900px) {
+  @media (min-width: $breakpoint-desktop) {
     display: none;
   }
 }
@@ -204,7 +204,7 @@ async function share() {
 .hero__mosaic {
   display: none;
 
-  @media (min-width: 900px) {
+  @media (min-width: $breakpoint-desktop) {
     display: grid;
     grid-template-columns: 1.2fr 1fr;
     height: 55vh;

@@ -56,6 +56,7 @@
               />
               <DemandeEtape6
                 v-else-if="etapeActuelle === 6"
+                showRecap
                 :state="state"
                 :event-type-label="eventTypeLabel"
                 :event-type-emoji="eventTypeEmoji"

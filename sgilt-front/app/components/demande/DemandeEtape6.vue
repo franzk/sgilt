@@ -45,6 +45,7 @@
 
     <!-- Récapitulatif complet -->
     <DemandeRecap
+      v-if="props.showRecap"
       :event-type-label="eventTypeLabel"
       :event-type-emoji="eventTypeEmoji"
       :ambiance-label="ambianceLabel"
@@ -70,6 +71,8 @@ const props = defineProps<{
   ambianceEmoji: string
   momentCleLabel: string | null
   momentCleEmoji: string
+
+  showRecap?: boolean
 }>()
 
 const formValid = computed(() => {

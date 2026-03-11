@@ -60,7 +60,6 @@ const hideShadow = computed(() => {
 
 <style lang="scss" scoped>
 @use '@/assets/styles/base' as *;
-@use '@/assets/styles/borders' as *;
 
 .app-header {
   display: flex;

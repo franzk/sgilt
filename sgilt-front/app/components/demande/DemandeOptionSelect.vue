@@ -67,6 +67,8 @@ function select(value: string) {
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/base' as *;
+
 .demande-option-select {
   display: flex;
   flex-direction: column;
@@ -77,6 +79,11 @@ function select(value: string) {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: $spacing-xs;
+
+  @media (min-width: $breakpoint-desktop) {
+    display: flex;
+    gap: $spacing-s;
+  }
 }
 
 .option {

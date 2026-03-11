@@ -2,26 +2,37 @@
   <div v-if="hasContent" class="recap">
     <p class="recap__title">Votre événement</p>
     <ul class="recap__list">
-      <li v-if="eventTypeLabel" class="recap__item">
-        <span class="recap__emoji">{{ eventTypeEmoji }}</span>
-        <span>{{ eventTypeLabel }}</span>
-      </li>
-      <li v-if="ambianceLabel" class="recap__item">
-        <span class="recap__emoji">{{ ambianceEmoji }}</span>
-        <span>{{ ambianceLabel }}</span>
-      </li>
-      <li v-if="momentCleLabel" class="recap__item">
-        <span class="recap__emoji">{{ momentCleEmoji }}</span>
-        <span>{{ momentCleLabel }}</span>
-      </li>
+      <!-- Date -->
       <li v-if="date" class="recap__item">
         <span class="recap__emoji">📅</span>
         <span>{{ formatDate(date) }}</span>
       </li>
+
+      <!-- Type d'événement -->
+      <li v-if="eventTypeLabel" class="recap__item">
+        <span class="recap__emoji">{{ eventTypeEmoji }}</span>
+        <span>{{ eventTypeLabel }}</span>
+      </li>
+
+      <!-- Ambiance -->
+      <li v-if="ambianceLabel" class="recap__item">
+        <span class="recap__emoji">{{ ambianceEmoji }}</span>
+        <span>{{ ambianceLabel }}</span>
+      </li>
+
+      <!-- Moment clé -->
+      <li v-if="momentCleLabel" class="recap__item">
+        <span class="recap__emoji">{{ momentCleEmoji }}</span>
+        <span>{{ momentCleLabel }}</span>
+      </li>
+
+      <!-- Ville -->
       <li v-if="ville" class="recap__item">
         <span class="recap__emoji">📍</span>
         <span>{{ ville }}</span>
       </li>
+
+      <!-- Nombre d'invités -->
       <li v-if="nbInvites" class="recap__item">
         <span class="recap__emoji">👥</span>
         <span>{{ nbInvites }} invités</span>

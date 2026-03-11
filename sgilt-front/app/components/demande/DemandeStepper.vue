@@ -1,37 +1,55 @@
 <template>
   <div
     class="stepper"
+    :class="{ 'stepper--vertical': vertical }"
     role="progressbar"
     :aria-valuenow="etape"
     aria-valuemin="1"
     aria-valuemax="6"
   >
     <div v-for="n in 6" :key="n" class="stepper__item">
-      <button
-        class="stepper__dot"
+      <div class="stepper__dot-col">
+        <button
+          class="stepper__dot"
+          :class="{
+            'stepper__dot--active': n === etape,
+            'stepper__dot--done': n < etape,
+            'stepper__dot--future': n > etape,
+          }"
+          :aria-label="`Étape ${n}`"
+          :aria-current="n === etape ? 'step' : undefined"
+          @click="n < etape ? $emit('go-to', n) : undefined"
+        >
+          <span v-if="n < etape" class="stepper__check">✓</span>
+          <span v-else>{{ n }}</span>
+        </button>
+        <div v-if="n < 6" class="stepper__line" :class="{ 'stepper__line--done': n < etape }" />
+      </div>
+      <span
+        v-if="labels?.[n - 1]"
+        class="stepper__label"
         :class="{
-          'stepper__dot--active': n === etape,
-          'stepper__dot--done': n < etape,
-          'stepper__dot--future': n > etape,
+          'stepper__label--active': n === etape,
+          'stepper__label--done': n < etape,
         }"
-        :aria-label="`Étape ${n}`"
-        :aria-current="n === etape ? 'step' : undefined"
-        @click="n < etape ? $emit('go-to', n) : undefined"
       >
-        <span v-if="n < etape" class="stepper__check">✓</span>
-        <span v-else>{{ n }}</span>
-      </button>
-      <div v-if="n < 6" class="stepper__line" :class="{ 'stepper__line--done': n < etape }" />
+        {{ labels[n - 1] }}
+      </span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-defineProps<{ etape: number }>()
+defineProps<{
+  etape: number
+  vertical?: boolean
+  labels?: string[]
+}>()
 defineEmits<{ (e: 'go-to', n: number): void }>()
 </script>
 
 <style scoped lang="scss">
+// ─── Horizontal (default) ──────────────────────────────────────────────────────
 .stepper {
   display: flex;
   align-items: center;
@@ -47,6 +65,12 @@ defineEmits<{ (e: 'go-to', n: number): void }>()
     &:last-child {
       flex: 0;
     }
+  }
+
+  &__dot-col {
+    display: flex;
+    align-items: center;
+    flex: 1;
   }
 
   &__dot {
@@ -106,6 +130,59 @@ defineEmits<{ (e: 'go-to', n: number): void }>()
 
     &--done {
       background: $brand-accent;
+    }
+  }
+
+  &__label {
+    display: none;
+  }
+}
+
+// ─── Vertical ─────────────────────────────────────────────────────────────────
+.stepper--vertical {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  overflow: visible;
+
+  .stepper__item {
+    flex: 0;
+    align-items: flex-start;
+    gap: $spacing-s;
+  }
+
+  .stepper__dot-col {
+    flex: 0;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .stepper__line {
+    flex: none;
+    width: 2px;
+    height: 1.5rem;
+    background: $divider-color;
+
+    &--done {
+      background: $brand-accent;
+    }
+  }
+
+  .stepper__label {
+    display: block;
+    padding-top: 0.3rem;
+    font-size: 0.875rem;
+    color: $text-secondary;
+    line-height: 1.4;
+    transition: color 200ms ease;
+
+    &--active {
+      color: $text-primary;
+      font-weight: 600;
+    }
+
+    &--done {
+      color: $text-secondary;
     }
   }
 }

@@ -1,10 +1,103 @@
 <template>
-  <div v-if="prestataire" class="demande-page">
-    <div class="demande-container">
-      <!-- Finalisation -->
-      <template v-if="submitted">
-        <DemandeFinalisation
-          :prestataire-name="prestataire.name"
+  <div v-if="prestataire" class="demande-layout">
+    <!-- Finalisation -->
+    <template v-if="submitted">
+      <DemandeFinalisation
+        class="demande-layout__finalisation"
+        :prestataire-name="prestataire.name"
+        :event-type-label="eventTypeLabel"
+        :event-type-emoji="eventTypeEmoji"
+        :ambiance-label="ambianceLabel"
+        :ambiance-emoji="ambianceEmoji"
+        :moment-cle-label="momentCleLabel"
+        :moment-cle-emoji="momentCleEmoji"
+        :date="state.date"
+        :ville="state.ville"
+        :nb-invites="state.nbInvites"
+        :lieu="state.lieu"
+      />
+    </template>
+
+    <!-- Accordion tunnel -->
+    <template v-else>
+      <!-- Center: accordion -->
+      <main class="demande-main">
+        <div class="demande-main__top">
+          <button class="main-back" type="button" @click="navigateTo(`/${slug}`)">← Retour</button>
+        </div>
+
+        <div class="demande-accordion">
+          <div
+            v-for="n in 6"
+            :key="n"
+            class="accordion-block"
+            :class="{
+              'accordion-block--active': n === etapeActuelle,
+              'accordion-block--done': n < etapeActuelle,
+              'accordion-block--locked': n > etapeActuelle,
+            }"
+          >
+            <!-- Header -->
+            <button
+              class="accordion-block__header"
+              type="button"
+              :disabled="n > etapeActuelle"
+              @click="n < etapeActuelle ? goTo(n) : undefined"
+            >
+              <span
+                class="accordion-block__dot"
+                :class="{
+                  'accordion-block__dot--active': n === etapeActuelle,
+                  'accordion-block__dot--done': n < etapeActuelle,
+                }"
+              >
+                <span v-if="n < etapeActuelle">✓</span>
+                <span v-else>{{ n }}</span>
+              </span>
+
+              <span class="accordion-block__header-text">
+                <span class="accordion-block__label">{{ stepLabels[n - 1] }}</span>
+                <span
+                  v-if="n < etapeActuelle && stepDoneSummary(n)"
+                  class="accordion-block__summary"
+                >
+                  {{ stepDoneSummary(n) }}
+                </span>
+              </span>
+
+              <span v-if="n < etapeActuelle" class="accordion-block__edit">Modifier</span>
+            </button>
+
+            <!-- Body -->
+            <Transition name="accordion-body">
+              <div v-if="n === etapeActuelle" class="accordion-block__body">
+                <DemandeEtape1 v-if="n === 1" :state="state" @change="next" />
+                <DemandeEtape2 v-else-if="n === 2" :state="state" @change="next" />
+                <DemandeEtape3 v-else-if="n === 3" :state="state" @change="next" />
+                <DemandeEtape4 v-else-if="n === 4" :state="state" @change="next" />
+                <DemandeEtape5Desktop v-else-if="n === 5" :state="state" @change="next" />
+                <DemandeEtape6
+                  v-else-if="n === 6"
+                  :state="state"
+                  :event-type-label="eventTypeLabel"
+                  :event-type-emoji="eventTypeEmoji"
+                  :ambiance-label="ambianceLabel"
+                  :ambiance-emoji="ambianceEmoji"
+                  :moment-cle-label="momentCleLabel"
+                  :moment-cle-emoji="momentCleEmoji"
+                  @change="submit"
+                />
+              </div>
+            </Transition>
+          </div>
+        </div>
+      </main>
+
+      <!-- Right panel -->
+      <aside class="demande-panel">
+        <DemandeCommentCaMarche v-if="etapeActuelle === 1" />
+        <DemandeRecap
+          v-else
           :event-type-label="eventTypeLabel"
           :event-type-emoji="eventTypeEmoji"
           :ambiance-label="ambianceLabel"
@@ -14,58 +107,9 @@
           :date="state.date"
           :ville="state.ville"
           :nb-invites="state.nbInvites"
-          :lieu="state.lieu"
         />
-      </template>
-
-      <!-- Tunnel -->
-      <template v-else>
-        <DemandeSheetHeader
-          :etape="etapeActuelle"
-          :submitted="submitted"
-          @back="back"
-          @close="navigateTo(`/${slug}`)"
-          @go-to="goTo"
-        />
-
-        <div class="demande-content">
-          <div class="demande-content__form">
-            <Transition
-              :name="direction === 'forward' ? 'slide-forward' : 'slide-back'"
-              mode="out-in"
-            >
-              <div :key="etapeActuelle" class="step-wrapper">
-                <DemandeEtape1 v-if="etapeActuelle === 1" :state="state" @change="next" />
-                <DemandeEtape2 v-else-if="etapeActuelle === 2" :state="state" @change="next" />
-                <DemandeEtape3 v-else-if="etapeActuelle === 3" :state="state" @change="next" />
-                <DemandeEtape4 v-else-if="etapeActuelle === 4" :state="state" @change="next" />
-                <DemandeEtape5Desktop
-                  v-else-if="etapeActuelle === 5"
-                  :state="state"
-                  @change="next"
-                />
-              </div>
-            </Transition>
-          </div>
-
-          <aside class="demande-content__aside">
-            <DemandeCommentCaMarche v-if="etapeActuelle === 1" />
-            <DemandeRecap
-              v-else
-              :event-type-label="eventTypeLabel"
-              :event-type-emoji="eventTypeEmoji"
-              :ambiance-label="ambianceLabel"
-              :ambiance-emoji="ambianceEmoji"
-              :moment-cle-label="momentCleLabel"
-              :moment-cle-emoji="momentCleEmoji"
-              :date="state.date"
-              :ville="state.ville"
-              :nb-invites="state.nbInvites"
-            />
-          </aside>
-        </div>
-      </template>
-    </div>
+      </aside>
+    </template>
   </div>
 
   <div v-else-if="!loading" class="not-found">
@@ -75,7 +119,6 @@
 </template>
 
 <script setup lang="ts">
-import DemandeSheetHeader from '~/components/demande/DemandeSheetHeader.vue'
 import DemandeRecap from '~/components/demande/DemandeRecap.vue'
 import DemandeCommentCaMarche from '~/components/demande/DemandeCommentCaMarche.vue'
 import DemandeEtape1 from '~/components/demande/DemandeEtape1.vue'
@@ -83,6 +126,7 @@ import DemandeEtape2 from '~/components/demande/DemandeEtape2.vue'
 import DemandeEtape3 from '~/components/demande/DemandeEtape3.vue'
 import DemandeEtape4 from '~/components/demande/DemandeEtape4.vue'
 import DemandeEtape5Desktop from '~/components/demande/DemandeEtape5Desktop.vue'
+import DemandeEtape6 from '~/components/demande/DemandeEtape6.vue'
 import DemandeFinalisation from '~/components/demande/DemandeFinalisation.vue'
 import { useDemande } from '~/composables/useDemande'
 import { SearchMockService } from '~/services/search.mock'
@@ -110,12 +154,10 @@ watchEffect(() => {
 
 const {
   etapeActuelle,
-  direction,
   submitted,
   submitting,
   state,
   next,
-  back,
   goTo,
   submit,
   eventTypeLabel,
@@ -126,38 +168,77 @@ const {
   momentCleEmoji,
 } = useDemande(dateModel.value)
 
-const canProceed = computed(() => {
-  switch (etapeActuelle.value) {
+const stepLabels = [
+  "Type d'événement",
+  'Ambiance',
+  'Moment clé',
+  'Description',
+  'Détails pratiques',
+  'Contact',
+]
+
+function stepDoneSummary(n: number): string {
+  switch (n) {
     case 1:
-      return !!state.eventType
+      return eventTypeLabel.value ? `${eventTypeEmoji.value} ${eventTypeLabel.value}` : ''
     case 2:
-      return !!state.ambiance
+      return ambianceLabel.value ? `${ambianceEmoji.value} ${ambianceLabel.value}` : ''
     case 3:
-      return !!state.momentCle
+      return momentCleLabel.value ? `${momentCleEmoji.value} ${momentCleLabel.value}` : ''
     case 4:
-      return true
-    case 5:
-      return !!state.date && !!state.ville.trim() && !!state.nbInvites.trim()
+      return state.description
+        ? state.description.slice(0, 60) + (state.description.length > 60 ? '…' : '')
+        : ''
+    case 5: {
+      const parts = [state.ville, state.nbInvites ? `${state.nbInvites} invités` : ''].filter(
+        Boolean,
+      )
+      return parts.join(' · ')
+    }
     default:
-      return false
+      return ''
   }
-})
+}
 </script>
 
 <style scoped lang="scss">
-.demande-page {
-  min-height: 100dvh;
-  padding: 0 $spacing-m;
+@use '@/assets/styles/base' as *;
+
+// ─── Layout ───────────────────────────────────────────────────────────────────
+.demande-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  min-height: calc(100dvh - $app-header-height);
 }
 
-.back-link {
+.demande-layout__finalisation {
+  grid-column: 1 / -1;
+}
+
+// ─── Center ───────────────────────────────────────────────────────────────────
+.demande-main {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: $spacing-xxxl;
+}
+
+.demande-main__top {
+  display: flex;
+  justify-content: flex-start;
+  padding: $spacing-m $spacing-l;
+}
+
+.main-back {
   display: inline-flex;
   align-items: center;
   gap: $spacing-xs;
+  padding: $spacing-xs $spacing-s;
+  background: none;
+  border: none;
   font-size: 0.9rem;
+  font-family: inherit;
   color: $text-secondary;
-  text-decoration: none;
-  margin-bottom: $spacing-l;
+  cursor: pointer;
   transition: color 150ms ease;
 
   &:hover {
@@ -165,112 +246,150 @@ const canProceed = computed(() => {
   }
 }
 
-.demande-container {
-  max-width: 940px;
-  margin: 0 auto;
+// ─── Accordion ────────────────────────────────────────────────────────────────
+.demande-accordion {
+  padding: 0 $spacing-xxl;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
 }
 
-.demande-content {
-  margin-top: $spacing-l;
-  display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: $spacing-xxl;
-  align-items: start;
-}
+.accordion-block {
+  border-bottom: 1px solid $divider-color;
 
-.demande-content__aside {
-  position: sticky;
-  top: $spacing-l;
+  &:first-child {
+    border-top: 1px solid $divider-color;
+  }
 
-  :deep(.recap) {
-    margin-top: 0;
+  &--locked {
+    opacity: 0.4;
   }
 }
 
-.demande-nav {
+.accordion-block__header {
+  width: 100%;
   display: flex;
   align-items: center;
   gap: $spacing-m;
-  margin-top: $spacing-xl;
-  padding-top: $spacing-l;
-  border-top: 1px solid $divider-color;
-}
-
-.nav-back {
-  padding: $spacing-s $spacing-l;
-  border: 1.5px solid $divider-color;
-  border-radius: 2rem;
-  background: #fff;
-  font-size: 0.95rem;
-  font-family: inherit;
-  color: $text-secondary;
-  cursor: pointer;
-  transition: background 150ms ease;
-  white-space: nowrap;
-
-  &:hover {
-    background: $surface-soft;
-  }
-}
-
-.nav-cta {
-  flex: 1;
-  height: 3rem;
-  border-radius: 2rem;
+  padding: $spacing-m 0;
+  background: none;
   border: none;
-  background: linear-gradient(to bottom, #ffd84d 0%, #f2c200 100%);
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 700;
-  font-family: inherit;
   cursor: pointer;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
-  box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.14),
-    0 12px 28px rgba(242, 194, 0, 0.18);
-  transition:
-    opacity 150ms ease,
-    transform 100ms ease;
+  text-align: left;
+  font-family: inherit;
 
-  &:active {
-    transform: scale(0.99);
+  &:disabled {
+    cursor: default;
   }
 
-  &--disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-    pointer-events: none;
+  &:not(:disabled):hover .accordion-block__edit {
+    opacity: 1;
   }
 }
 
-// ─── Step transitions ──────────────────────────────────────────────────────────
-.slide-forward-enter-active,
-.slide-forward-leave-active,
-.slide-back-enter-active,
-.slide-back-leave-active {
+.accordion-block__dot {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  border: 2px solid $divider-color;
+  background: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: $text-secondary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
   transition:
-    transform 250ms ease,
-    opacity 250ms ease;
+    background 200ms ease,
+    border-color 200ms ease,
+    color 200ms ease;
+
+  &--active {
+    background: $brand-accent;
+    border-color: $brand-accent;
+    color: #fff;
+  }
+
+  &--done {
+    background: $brand-accent;
+    border-color: $brand-accent;
+    color: #fff;
+    font-size: 0.7rem;
+  }
 }
 
-.slide-forward-enter-from {
-  transform: translateX(40px);
-  opacity: 0;
+.accordion-block__header-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
-.slide-forward-leave-to {
-  transform: translateX(-40px);
-  opacity: 0;
+.accordion-block__label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: $text-primary;
+
+  .accordion-block--locked & {
+    font-weight: 500;
+    color: $text-secondary;
+  }
 }
 
-.slide-back-enter-from {
-  transform: translateX(-40px);
-  opacity: 0;
+.accordion-block__summary {
+  font-size: 0.825rem;
+  color: $text-secondary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.slide-back-leave-to {
-  transform: translateX(40px);
+.accordion-block__edit {
+  font-size: 0.8rem;
+  color: $brand-accent;
+  font-weight: 500;
   opacity: 0;
+  transition: opacity 150ms ease;
+  flex-shrink: 0;
+}
+
+.accordion-block__body {
+  padding-bottom: $spacing-l;
+}
+
+// ─── Accordion body transition ────────────────────────────────────────────────
+.accordion-body-enter-active,
+.accordion-body-leave-active {
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
+}
+
+.accordion-body-enter-from,
+.accordion-body-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+// ─── Right panel ──────────────────────────────────────────────────────────────
+.demande-panel {
+  padding: $spacing-xl $spacing-l;
+  border-left: 1px solid $divider-color;
+  position: sticky;
+  top: 3rem;
+  height: calc(100dvh - $app-header-height);
+  overflow-y: auto;
+
+  :global(.recap) {
+    margin-top: 0;
+
+    @media (min-width: $breakpoint-desktop) {
+      width: 600px;
+      align-self: center;
+    }
+  }
 }
 
 // ─── 404 ──────────────────────────────────────────────────────────────────────

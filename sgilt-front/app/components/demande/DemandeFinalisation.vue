@@ -43,6 +43,8 @@ defineProps<{
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/base' as *;
+
 .finalisation {
   display: flex;
   flex-direction: column;
@@ -76,6 +78,10 @@ defineProps<{
     border: 1.5px solid rgba($brand-accent, 0.3);
     border-radius: $radius-md;
     padding: $spacing-m $spacing-l;
+
+    @media (min-width: $breakpoint-desktop) {
+      max-width: 500px;
+    }
   }
 
   &__cta-text {
