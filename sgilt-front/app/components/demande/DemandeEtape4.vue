@@ -18,19 +18,16 @@
     <p class="etape__optional">Optionnel — vous pouvez passer cette étape.</p>
 
     <p class="etape__next">
-      <SgiltButton class="etape__next-btn" @click="$emit('change')"> Continuer →</SgiltButton>
+      <SgiltButton class="etape__next-btn" @click="next"> Continuer →</SgiltButton>
     </p>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { DemandeState } from '~/types/demande'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
+import { useDemande } from '~/composables/useDemande'
 
-const props = defineProps<{ state: DemandeState }>()
-const emit = defineEmits<{
-  (e: 'change'): void
-}>()
+const { state, next } = useDemande()
 
 const placeholderText = 'Parlez-nous de votre événement, de vos envies, de ce que vous imaginez...'
 </script>

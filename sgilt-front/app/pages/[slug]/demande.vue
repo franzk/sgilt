@@ -1,114 +1,91 @@
 <template>
   <div v-if="prestataire" class="demande-layout">
-    <!-- Finalisation -->
+    <!-- Finalisation (both layouts) -->
     <template v-if="submitted">
       <DemandeFinalisation
         class="demande-layout__finalisation"
         :prestataire-name="prestataire.name"
-        :event-type-label="eventTypeLabel"
-        :event-type-emoji="eventTypeEmoji"
-        :ambiance-label="ambianceLabel"
-        :ambiance-emoji="ambianceEmoji"
-        :moment-cle-label="momentCleLabel"
-        :moment-cle-emoji="momentCleEmoji"
-        :date="state.date"
-        :ville="state.ville"
-        :nb-invites="state.nbInvites"
-        :lieu="state.lieu"
       />
     </template>
 
-    <!-- Accordion tunnel -->
     <template v-else>
-      <!-- Center: accordion -->
-      <main class="demande-main">
-        <div class="demande-main__top">
-          <button class="main-back" type="button" @click="navigateTo(`/${slug}`)">← Retour</button>
-        </div>
-
-        <div class="demande-accordion">
-          <div
-            v-for="n in 6"
-            :key="n"
-            class="accordion-block"
-            :class="{
-              'accordion-block--active': n === etapeActuelle,
-              'accordion-block--done': n < etapeActuelle,
-              'accordion-block--locked': n > etapeActuelle,
-            }"
-          >
-            <!-- Header -->
-            <button
-              class="accordion-block__header"
-              type="button"
-              :disabled="n > etapeActuelle"
-              @click="n < etapeActuelle ? goTo(n) : undefined"
-            >
-              <span
-                class="accordion-block__dot"
-                :class="{
-                  'accordion-block__dot--active': n === etapeActuelle,
-                  'accordion-block__dot--done': n < etapeActuelle,
-                }"
-              >
-                <span v-if="n < etapeActuelle">✓</span>
-                <span v-else>{{ n }}</span>
-              </span>
-
-              <span class="accordion-block__header-text">
-                <span class="accordion-block__label">{{ stepLabels[n - 1] }}</span>
-                <span
-                  v-if="n < etapeActuelle && stepDoneSummary(n)"
-                  class="accordion-block__summary"
-                >
-                  {{ stepDoneSummary(n) }}
-                </span>
-              </span>
-
-              <span v-if="n < etapeActuelle" class="accordion-block__edit">Modifier</span>
+      <!-- ── DESKTOP : accordion + right panel ──────────────────────────────── -->
+      <template v-if="!isMobile">
+        <main class="demande-main">
+          <div class="demande-main__top">
+            <button class="main-back" type="button" @click="navigateTo(`/${slug}`)">
+              ← Retour
             </button>
-
-            <!-- Body -->
-            <Transition name="accordion-body">
-              <div v-if="n === etapeActuelle" class="accordion-block__body">
-                <DemandeEtape1 v-if="n === 1" :state="state" @change="next" />
-                <DemandeEtape2 v-else-if="n === 2" :state="state" @change="next" />
-                <DemandeEtape3 v-else-if="n === 3" :state="state" @change="next" />
-                <DemandeEtape4 v-else-if="n === 4" :state="state" @change="next" />
-                <DemandeEtape5Desktop v-else-if="n === 5" :state="state" @change="next" />
-                <DemandeEtape6
-                  v-else-if="n === 6"
-                  :state="state"
-                  :event-type-label="eventTypeLabel"
-                  :event-type-emoji="eventTypeEmoji"
-                  :ambiance-label="ambianceLabel"
-                  :ambiance-emoji="ambianceEmoji"
-                  :moment-cle-label="momentCleLabel"
-                  :moment-cle-emoji="momentCleEmoji"
-                  @change="submit"
-                />
-              </div>
-            </Transition>
           </div>
-        </div>
-      </main>
 
-      <!-- Right panel -->
-      <aside class="demande-panel">
-        <DemandeCommentCaMarche v-if="etapeActuelle === 1" />
-        <DemandeRecap
-          v-else
-          :event-type-label="eventTypeLabel"
-          :event-type-emoji="eventTypeEmoji"
-          :ambiance-label="ambianceLabel"
-          :ambiance-emoji="ambianceEmoji"
-          :moment-cle-label="momentCleLabel"
-          :moment-cle-emoji="momentCleEmoji"
-          :date="state.date"
-          :ville="state.ville"
-          :nb-invites="state.nbInvites"
-        />
-      </aside>
+          <div class="demande-accordion">
+            <div
+              v-for="n in 6"
+              :key="n"
+              class="accordion-block"
+              :class="{
+                'accordion-block--active': n === etapeActuelle,
+                'accordion-block--done': n < etapeActuelle,
+                'accordion-block--locked': n > etapeActuelle,
+              }"
+            >
+              <button
+                class="accordion-block__header"
+                type="button"
+                :disabled="n > etapeActuelle"
+                @click="n < etapeActuelle ? goTo(n) : undefined"
+              >
+                <span
+                  class="accordion-block__dot"
+                  :class="{
+                    'accordion-block__dot--active': n === etapeActuelle,
+                    'accordion-block__dot--done': n < etapeActuelle,
+                  }"
+                >
+                  <span v-if="n < etapeActuelle">✓</span>
+                  <span v-else>{{ n }}</span>
+                </span>
+
+                <span class="accordion-block__header-text">
+                  <span class="accordion-block__label">{{ stepLabels[n - 1] }}</span>
+                  <span
+                    v-if="n < etapeActuelle && stepDoneSummary(n)"
+                    class="accordion-block__summary"
+                  >
+                    {{ stepDoneSummary(n) }}
+                  </span>
+                </span>
+
+                <span v-if="n < etapeActuelle" class="accordion-block__edit">Modifier</span>
+              </button>
+
+              <Transition name="accordion-body">
+                <div v-if="n === etapeActuelle" class="accordion-block__body">
+                  <DemandeEtape1 v-if="n === 1" />
+                  <DemandeEtape2 v-else-if="n === 2" />
+                  <DemandeEtape3 v-else-if="n === 3" />
+                  <DemandeEtape4 v-else-if="n === 4" />
+                  <DemandeEtape5Desktop v-else-if="n === 5" />
+                  <DemandeEtape6 v-else-if="n === 6" />
+                </div>
+              </Transition>
+            </div>
+          </div>
+        </main>
+
+        <aside class="demande-panel">
+          <DemandeCommentCaMarche v-if="etapeActuelle === 1" />
+          <DemandeRecap v-else />
+        </aside>
+      </template>
+
+      <!-- ── MOBILE : bottom sheet ───────────────────────────────────────────── -->
+      <DemandeBottomSheet
+        v-if="isMobile"
+        :is-open="mobileSheetOpen"
+        :prestataire-name="prestataire.name"
+        @close="navigateTo(`/${slug}`)"
+      />
     </template>
   </div>
 
@@ -119,6 +96,7 @@
 </template>
 
 <script setup lang="ts">
+import DemandeBottomSheet from '~/components/demande/DemandeBottomSheet.vue'
 import DemandeRecap from '~/components/demande/DemandeRecap.vue'
 import DemandeCommentCaMarche from '~/components/demande/DemandeCommentCaMarche.vue'
 import DemandeEtape1 from '~/components/demande/DemandeEtape1.vue'
@@ -139,6 +117,7 @@ const prestataire = ref<PrestataireDetail | null>(null)
 const loading = ref(true)
 
 const { dateModel } = useSearchUi()
+const { isMobile } = useDevice()
 
 onMounted(async () => {
   prestataire.value = (await SearchMockService.getBySlug(slug)) ?? null
@@ -155,11 +134,8 @@ watchEffect(() => {
 const {
   etapeActuelle,
   submitted,
-  submitting,
   state,
-  next,
   goTo,
-  submit,
   eventTypeLabel,
   eventTypeEmoji,
   ambianceLabel,
@@ -168,6 +144,18 @@ const {
   momentCleEmoji,
 } = useDemande(dateModel.value)
 
+// ── Mobile sheet ──────────────────────────────────────────────────────────────
+const mobileSheetOpen = ref(true)
+
+watch(isMobile, (mobile) => {
+  if (mobile) mobileSheetOpen.value = true
+})
+
+watch(mobileSheetOpen, (open) => {
+  if (!open) navigateTo(`/${slug}`)
+})
+
+// ── Desktop accordion ─────────────────────────────────────────────────────────
 const stepLabels = [
   "Type d'événement",
   'Ambiance',
@@ -206,16 +194,19 @@ function stepDoneSummary(n: number): string {
 
 // ─── Layout ───────────────────────────────────────────────────────────────────
 .demande-layout {
-  display: grid;
-  grid-template-columns: 1fr 280px;
   min-height: calc(100dvh - $app-header-height);
+
+  @media (min-width: 849px) {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+  }
 }
 
 .demande-layout__finalisation {
   grid-column: 1 / -1;
 }
 
-// ─── Center ───────────────────────────────────────────────────────────────────
+// ─── Desktop center ───────────────────────────────────────────────────────────
 .demande-main {
   display: flex;
   flex-direction: column;
@@ -359,7 +350,6 @@ function stepDoneSummary(n: number): string {
   padding-bottom: $spacing-l;
 }
 
-// ─── Accordion body transition ────────────────────────────────────────────────
 .accordion-body-enter-active,
 .accordion-body-leave-active {
   transition:
@@ -373,22 +363,17 @@ function stepDoneSummary(n: number): string {
   transform: translateY(-6px);
 }
 
-// ─── Right panel ──────────────────────────────────────────────────────────────
+// ─── Desktop right panel ──────────────────────────────────────────────────────
 .demande-panel {
   padding: $spacing-xl $spacing-l;
   border-left: 1px solid $divider-color;
   position: sticky;
-  top: 3rem;
+  top: 0;
   height: calc(100dvh - $app-header-height);
   overflow-y: auto;
 
   :global(.recap) {
     margin-top: 0;
-
-    @media (min-width: $breakpoint-desktop) {
-      width: 600px;
-      align-self: center;
-    }
   }
 }
 

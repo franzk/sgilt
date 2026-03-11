@@ -18,33 +18,32 @@
     />
 
     <div class="etape__cta">
-      <SgiltButton :disabled="!formValid" @click="$emit('change')">Continuer →</SgiltButton>
+      <SgiltButton :disabled="!formValid" @click="next">Continuer →</SgiltButton>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
-import type { DemandeState } from '~/types/demande'
+import { useDemande } from '~/composables/useDemande'
 
-const props = defineProps<{
-  state: DemandeState
-  eventTypeLabel: string | null
-  eventTypeEmoji: string
-  ambianceLabel: string | null
-  ambianceEmoji: string
-  momentCleLabel: string | null
-  momentCleEmoji: string
-}>()
-
-defineEmits<{ (e: 'change'): void }>()
+const {
+  state,
+  next,
+  eventTypeLabel,
+  eventTypeEmoji,
+  ambianceLabel,
+  ambianceEmoji,
+  momentCleLabel,
+  momentCleEmoji,
+} = useDemande()
 
 const formValid = computed(
   () =>
-    !!props.state.date &&
-    !!props.state.ville.trim() &&
-    !!props.state.nbInvites.trim() &&
-    Number(props.state.nbInvites) > 0,
+    !!state.date &&
+    !!state.ville.trim() &&
+    !!state.nbInvites.trim() &&
+    Number(state.nbInvites) > 0,
 )
 </script>
 

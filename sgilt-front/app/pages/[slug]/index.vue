@@ -145,8 +145,6 @@
     <DemandeBottomSheet
       :is-open="showDemande"
       :prestataire-name="prestataire.name"
-      :prestataire-slug="slug"
-      :initial-date="dateModel"
       @close="showDemande = false"
     />
 

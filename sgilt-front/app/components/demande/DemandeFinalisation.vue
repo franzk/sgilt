@@ -11,35 +11,14 @@
       </div>
     </div>
 
-    <DemandeRecap
-      :event-type-label="eventTypeLabel"
-      :event-type-emoji="eventTypeEmoji"
-      :ambiance-label="ambianceLabel"
-      :ambiance-emoji="ambianceEmoji"
-      :moment-cle-label="momentCleLabel"
-      :moment-cle-emoji="momentCleEmoji"
-      :date="date"
-      :ville="ville"
-      :nb-invites="nbInvites"
-      :lieu="lieu"
-    />
+    <div class="finalisation-recap">
+      <DemandeRecap />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  eventTypeLabel: string | null
-  eventTypeEmoji: string
-  ambianceLabel: string | null
-  ambianceEmoji: string
-  momentCleLabel: string | null
-  momentCleEmoji: string
-  date: Date | undefined
-  ville: string
-  nbInvites: string
-  lieu: string
-  prestataireName: string
-}>()
+defineProps<{ prestataireName: string }>()
 </script>
 
 <style scoped lang="scss">
@@ -90,5 +69,14 @@ defineProps<{
     line-height: 1.6;
     margin: 0;
   }
+}
+
+.finalisation-recap {
+  width: 600px;
+
+  @media (max-width: $breakpoint-desktop) {
+    width: 90%;
+  }
+  align-self: center;
 }
 </style>

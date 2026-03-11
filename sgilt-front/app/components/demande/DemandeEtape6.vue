@@ -37,7 +37,7 @@
       </div>
 
       <div class="field-group submit">
-        <SgiltButton type="primary" :disabled="!formValid" @click="emit('change')"
+        <SgiltButton type="primary" :disabled="!formValid" @click="submit"
           >Envoyer ma demande</SgiltButton
         >
       </div>
@@ -45,7 +45,7 @@
 
     <!-- Récapitulatif complet -->
     <DemandeRecap
-      v-if="props.showRecap"
+      v-if="showRecap"
       :event-type-label="eventTypeLabel"
       :event-type-emoji="eventTypeEmoji"
       :ambiance-label="ambianceLabel"
@@ -61,27 +61,22 @@
 
 <script setup lang="ts">
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
-import type { DemandeState } from '~/types/demande'
+import { useDemande } from '~/composables/useDemande'
 
-const props = defineProps<{
-  state: DemandeState
-  eventTypeLabel: string | null
-  eventTypeEmoji: string
-  ambianceLabel: string | null
-  ambianceEmoji: string
-  momentCleLabel: string | null
-  momentCleEmoji: string
+defineProps<{ showRecap?: boolean }>()
 
-  showRecap?: boolean
-}>()
+const {
+  state,
+  submit,
+  eventTypeLabel,
+  eventTypeEmoji,
+  ambianceLabel,
+  ambianceEmoji,
+  momentCleLabel,
+  momentCleEmoji,
+} = useDemande()
 
-const formValid = computed(() => {
-  return !!props.state.email && !!props.state.telephone
-})
-
-const emit = defineEmits<{
-  (e: 'change'): void
-}>()
+const formValid = computed(() => !!state.email && !!state.telephone)
 </script>
 
 <style scoped lang="scss">

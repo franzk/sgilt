@@ -1,5 +1,3 @@
-// app/composables/useDemande.ts
-
 import {
   type DemandeState,
   EVENT_TYPE_OPTIONS,
@@ -7,13 +5,46 @@ import {
   MOMENT_CLE_OPTIONS,
 } from '~/types/demande'
 
-export function useDemande(initialDate?: Date | null | undefined) {
-  const etapeActuelle = ref(1)
-  const direction = ref<'forward' | 'back'>('forward')
-  const submitted = ref(false)
-  const submitting = ref(false)
+const STORAGE_KEY = 'sgilt:demande'
+const storage = () => sessionStorage
 
-  const state = reactive<DemandeState>({
+// ── Serialization (handles Date ↔ ISO string) ─────────────────────────────────
+
+function readStorage(): { state: DemandeState; etape: number } | null {
+  if (!import.meta.client) return null
+  try {
+    const raw = storage().getItem(STORAGE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw)
+    return {
+      etape: typeof parsed.etape === 'number' ? parsed.etape : 1,
+      state: {
+        ...parsed.state,
+        date: parsed.state?.date ? new Date(parsed.state.date) : undefined,
+      },
+    }
+  } catch {
+    return null
+  }
+}
+
+function writeStorage(s: DemandeState, etape: number) {
+  if (!import.meta.client) return
+  storage().setItem(
+    STORAGE_KEY,
+    JSON.stringify({ etape, state: { ...s, date: s.date?.toISOString() ?? null } }),
+  )
+}
+
+function clearStorage() {
+  if (!import.meta.client) return
+  storage().removeItem(STORAGE_KEY)
+}
+
+// ── Default state factory ─────────────────────────────────────────────────────
+
+function defaultDemandeState(): DemandeState {
+  return {
     eventType: null,
     eventTypeAutre: '',
     ambiance: null,
@@ -21,7 +52,7 @@ export function useDemande(initialDate?: Date | null | undefined) {
     momentCle: null,
     momentCleAutre: '',
     description: '',
-    date: initialDate ?? undefined,
+    date: undefined,
     ville: '',
     nbInvites: '',
     lieuDefini: true,
@@ -29,7 +60,38 @@ export function useDemande(initialDate?: Date | null | undefined) {
     email: '',
     telephone: '',
     prestataireMessage: '',
-  })
+  }
+}
+
+// ── Singleton state (module-level, shared across all useDemande calls) ─────────
+
+const _stored = import.meta.client ? readStorage() : null
+
+const etapeActuelle = ref<number>(_stored?.etape ?? 1)
+const direction = ref<'forward' | 'back'>('forward')
+const submitted = ref(false)
+const submitting = ref(false)
+const state = reactive<DemandeState>({
+  ...defaultDemandeState(),
+  ...(_stored?.state ?? {}),
+})
+
+// Persist on every change (client only, runs for the lifetime of the app)
+if (import.meta.client) {
+  watch(
+    [etapeActuelle, () => toRaw(state)],
+    () => writeStorage(toRaw(state), etapeActuelle.value),
+    { deep: true },
+  )
+}
+
+// ── Composable ────────────────────────────────────────────────────────────────
+
+export function useDemande(initialDate?: Date | null | undefined) {
+  // Use the provided date as a fallback if none is stored yet
+  if (initialDate && !state.date) {
+    state.date = initialDate
+  }
 
   function next() {
     if (etapeActuelle.value < 6) {
@@ -52,16 +114,26 @@ export function useDemande(initialDate?: Date | null | undefined) {
     }
   }
 
+  function reset() {
+    Object.assign(state, defaultDemandeState())
+    etapeActuelle.value = 1
+    direction.value = 'forward'
+    submitted.value = false
+    clearStorage()
+  }
+
   async function submit() {
     submitting.value = true
-    // TODO: remplacer par un vrai appel API / email
     await new Promise((resolve) => setTimeout(resolve, 800))
     console.log('Demande envoyée:', toRaw(state))
     submitting.value = false
+    // Clear storage so a refresh shows a fresh form, but keep in-memory
+    // state so the confirmation screen can display the recap
+    clearStorage()
     submitted.value = true
   }
 
-  // ─── Helpers labels pour le récap ─────────────────────────────────────────
+  // ── Labels ────────────────────────────────────────────────────────────────
 
   const eventTypeLabel = computed(() => {
     if (!state.eventType) return null
@@ -105,6 +177,7 @@ export function useDemande(initialDate?: Date | null | undefined) {
     next,
     back,
     goTo,
+    reset,
     submit,
     eventTypeLabel,
     eventTypeEmoji,

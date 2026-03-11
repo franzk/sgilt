@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx nuxi:*)"
+      "Bash(npx nuxi:*)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Read(//c/Users/koehl/Documents/projects/sgilt/sgilt/sgilt-front/app/components/demande/**)",
+      "Bash(done)"
     ]
   }
 }

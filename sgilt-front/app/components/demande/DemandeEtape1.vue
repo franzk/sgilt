@@ -9,7 +9,7 @@
       autre-placeholder="Quel événement préparez-vous&nbsp;?"
       @update:model-value="state.eventType = $event"
       @update:autre-value="state.eventTypeAutre = $event"
-      @change="$emit('change')"
+      @change="next"
     />
 
     <DemandeCommentCaMarche class="flow-mobile" />
@@ -18,13 +18,9 @@
 
 <script setup lang="ts">
 import { EVENT_TYPE_OPTIONS } from '~/types/demande'
-import type { DemandeState } from '~/types/demande'
+import { useDemande } from '~/composables/useDemande'
 
-defineProps<{ state: DemandeState }>()
-
-const emit = defineEmits<{
-  (e: 'change'): void
-}>()
+const { state, next } = useDemande()
 </script>
 
 <style scoped lang="scss">

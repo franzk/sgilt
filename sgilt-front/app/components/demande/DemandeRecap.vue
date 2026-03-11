@@ -3,9 +3,9 @@
     <p class="recap__title">Votre événement</p>
     <ul class="recap__list">
       <!-- Date -->
-      <li v-if="date" class="recap__item">
+      <li v-if="state.date" class="recap__item">
         <span class="recap__emoji">📅</span>
-        <span>{{ formatDate(date) }}</span>
+        <span>{{ formatDate(state.date) }}</span>
       </li>
 
       <!-- Type d'événement -->
@@ -27,35 +27,27 @@
       </li>
 
       <!-- Ville -->
-      <li v-if="ville" class="recap__item">
+      <li v-if="state.ville" class="recap__item">
         <span class="recap__emoji">📍</span>
-        <span>{{ ville }}</span>
+        <span>{{ state.ville }}</span>
       </li>
 
       <!-- Nombre d'invités -->
-      <li v-if="nbInvites" class="recap__item">
+      <li v-if="state.nbInvites" class="recap__item">
         <span class="recap__emoji">👥</span>
-        <span>{{ nbInvites }} invités</span>
+        <span>{{ state.nbInvites }} invités</span>
       </li>
     </ul>
   </div>
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
-  eventTypeLabel: string | null
-  eventTypeEmoji: string
-  ambianceLabel: string | null
-  ambianceEmoji: string
-  momentCleLabel?: string | null
-  momentCleEmoji?: string
-  date?: Date | null | undefined
-  ville?: string
-  nbInvites?: string
-}>()
+import { useDemande } from '~/composables/useDemande'
+
+const { state, eventTypeLabel, eventTypeEmoji, ambianceLabel, ambianceEmoji, momentCleLabel, momentCleEmoji } = useDemande()
 
 const hasContent = computed(
-  () => !!props.eventTypeLabel || !!props.ambianceLabel || !!props.momentCleLabel,
+  () => !!eventTypeLabel.value || !!ambianceLabel.value || !!momentCleLabel.value,
 )
 
 function formatDate(d: Date) {
