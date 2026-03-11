@@ -7,24 +7,13 @@
   >
     <div class="sheet-inner">
       <!-- Header -->
-      <div class="sheet-header">
-        <button
-          v-if="etapeActuelle > 1 && !submitted"
-          class="header-btn"
-          type="button"
-          aria-label="Étape précédente"
-          @click="back"
-        >
-          ←
-        </button>
-        <span v-else class="header-btn-placeholder" />
-
-        <DemandeStepper v-if="!submitted" :etape="etapeActuelle" @go-to="goTo" />
-
-        <button class="header-btn" type="button" aria-label="Fermer" @click="drawerOpen = false">
-          ✕
-        </button>
-      </div>
+      <DemandeSheetHeader
+        :etape="etapeActuelle"
+        :submitted="submitted"
+        @back="back"
+        @close="drawerOpen = false"
+        @go-to="goTo"
+      />
 
       <!-- Body -->
       <div class="sheet-body" ref="bodyRef">
@@ -166,42 +155,6 @@ $shadow-sheet: 0 -28px 80px rgba(0, 0, 0, 0.28);
   border-top: 1px solid rgba(255, 255, 255, 0.7);
   box-shadow: $shadow-sheet;
   padding-bottom: calc(1.1rem + env(safe-area-inset-bottom, 0px));
-}
-
-.sheet-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: $spacing-s $spacing-m 0;
-  flex-shrink: 0;
-  gap: $spacing-xs;
-  overflow: hidden;
-}
-
-.header-btn {
-  width: 2.2rem;
-  height: 2.2rem;
-  border-radius: 50%;
-  border: 1px solid $divider-color;
-  background: #fff;
-  font-size: 1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: background 150ms ease;
-  color: $text-primary;
-
-  &:hover {
-    background: $surface-soft;
-  }
-}
-
-.header-btn-placeholder {
-  width: 2.2rem;
-  height: 2.2rem;
-  flex-shrink: 0;
 }
 
 .sheet-body {

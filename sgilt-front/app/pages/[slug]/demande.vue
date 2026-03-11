@@ -1,79 +1,68 @@
 <template>
   <div v-if="prestataire" class="demande-page">
-    <!-- Lien retour -->
-    <NuxtLink :to="`/${slug}`" class="back-link">← Retour à la fiche</NuxtLink>
-
     <div class="demande-container">
-      <!-- Confirmation -->
+      <!-- Finalisation -->
       <template v-if="submitted">
-        <DemandeConfirmation
+        <DemandeFinalisation
           :prestataire-name="prestataire.name"
-          :email="state.email"
-          @close="navigateTo(`/${slug}`)"
+          :event-type-label="eventTypeLabel"
+          :event-type-emoji="eventTypeEmoji"
+          :ambiance-label="ambianceLabel"
+          :ambiance-emoji="ambianceEmoji"
+          :moment-cle-label="momentCleLabel"
+          :moment-cle-emoji="momentCleEmoji"
+          :date="state.date"
+          :ville="state.ville"
+          :nb-invites="state.nbInvites"
+          :lieu="state.lieu"
         />
       </template>
 
       <!-- Tunnel -->
       <template v-else>
-        <DemandeStepper :etape="etapeActuelle" @go-to="goTo" />
+        <DemandeSheetHeader
+          :etape="etapeActuelle"
+          :submitted="submitted"
+          @back="back"
+          @close="navigateTo(`/${slug}`)"
+          @go-to="goTo"
+        />
 
         <div class="demande-content">
-          <Transition
-            :name="direction === 'forward' ? 'slide-forward' : 'slide-back'"
-            mode="out-in"
-          >
-            <div :key="etapeActuelle" class="step-wrapper">
-              <DemandeEtape1 v-if="etapeActuelle === 1" :state="state" />
-              <DemandeEtape2 v-else-if="etapeActuelle === 2" :state="state" />
-              <DemandeEtape3 v-else-if="etapeActuelle === 3" :state="state" />
-              <DemandeEtape4 v-else-if="etapeActuelle === 4" :state="state" />
-              <DemandeEtape5
-                v-else-if="etapeActuelle === 5"
-                :state="state"
-                :event-type-label="eventTypeLabel"
-                :event-type-emoji="eventTypeEmoji"
-                :ambiance-label="ambianceLabel"
-                :ambiance-emoji="ambianceEmoji"
-                :moment-cle-label="momentCleLabel"
-                :moment-cle-emoji="momentCleEmoji"
-              />
-            </div>
-          </Transition>
+          <div class="demande-content__form">
+            <Transition
+              :name="direction === 'forward' ? 'slide-forward' : 'slide-back'"
+              mode="out-in"
+            >
+              <div :key="etapeActuelle" class="step-wrapper">
+                <DemandeEtape1 v-if="etapeActuelle === 1" :state="state" @change="next" />
+                <DemandeEtape2 v-else-if="etapeActuelle === 2" :state="state" @change="next" />
+                <DemandeEtape3 v-else-if="etapeActuelle === 3" :state="state" @change="next" />
+                <DemandeEtape4 v-else-if="etapeActuelle === 4" :state="state" @change="next" />
+                <DemandeEtape5Desktop
+                  v-else-if="etapeActuelle === 5"
+                  :state="state"
+                  @change="next"
+                />
+              </div>
+            </Transition>
+          </div>
 
-          <!-- Récap progressif (étapes 2-4) -->
-          <DemandeRecap
-            v-if="etapeActuelle >= 2 && etapeActuelle < 5"
-            :event-type-label="eventTypeLabel"
-            :event-type-emoji="eventTypeEmoji"
-            :ambiance-label="ambianceLabel"
-            :ambiance-emoji="ambianceEmoji"
-            :moment-cle-label="momentCleLabel"
-            :moment-cle-emoji="momentCleEmoji"
-          />
-        </div>
-
-        <!-- Navigation -->
-        <div class="demande-nav">
-          <button
-            v-if="etapeActuelle > 1"
-            class="nav-back"
-            type="button"
-            @click="back"
-          >
-            ← Retour
-          </button>
-
-          <button
-            class="nav-cta"
-            :class="{ 'nav-cta--disabled': !canProceed }"
-            :disabled="!canProceed || submitting"
-            type="button"
-            @click="etapeActuelle < 5 ? next() : submit()"
-          >
-            <span v-if="submitting">Envoi en cours…</span>
-            <span v-else-if="etapeActuelle < 5">Continuer →</span>
-            <span v-else>Envoyer la demande →</span>
-          </button>
+          <aside class="demande-content__aside">
+            <DemandeCommentCaMarche v-if="etapeActuelle === 1" />
+            <DemandeRecap
+              v-else
+              :event-type-label="eventTypeLabel"
+              :event-type-emoji="eventTypeEmoji"
+              :ambiance-label="ambianceLabel"
+              :ambiance-emoji="ambianceEmoji"
+              :moment-cle-label="momentCleLabel"
+              :moment-cle-emoji="momentCleEmoji"
+              :date="state.date"
+              :ville="state.ville"
+              :nb-invites="state.nbInvites"
+            />
+          </aside>
         </div>
       </template>
     </div>
@@ -86,14 +75,15 @@
 </template>
 
 <script setup lang="ts">
-import DemandeStepper from '~/components/demande/DemandeStepper.vue'
+import DemandeSheetHeader from '~/components/demande/DemandeSheetHeader.vue'
 import DemandeRecap from '~/components/demande/DemandeRecap.vue'
+import DemandeCommentCaMarche from '~/components/demande/DemandeCommentCaMarche.vue'
 import DemandeEtape1 from '~/components/demande/DemandeEtape1.vue'
 import DemandeEtape2 from '~/components/demande/DemandeEtape2.vue'
 import DemandeEtape3 from '~/components/demande/DemandeEtape3.vue'
 import DemandeEtape4 from '~/components/demande/DemandeEtape4.vue'
-import DemandeEtape5 from '~/components/demande/DemandeEtape5.vue'
-import DemandeConfirmation from '~/components/demande/DemandeConfirmation.vue'
+import DemandeEtape5Desktop from '~/components/demande/DemandeEtape5Desktop.vue'
+import DemandeFinalisation from '~/components/demande/DemandeFinalisation.vue'
 import { useDemande } from '~/composables/useDemande'
 import { SearchMockService } from '~/services/search.mock'
 import type { PrestataireDetail } from '~/types/prestataire'
@@ -124,7 +114,6 @@ const {
   submitted,
   submitting,
   state,
-  canProceed,
   next,
   back,
   goTo,
@@ -136,16 +125,29 @@ const {
   momentCleLabel,
   momentCleEmoji,
 } = useDemande(dateModel.value)
+
+const canProceed = computed(() => {
+  switch (etapeActuelle.value) {
+    case 1:
+      return !!state.eventType
+    case 2:
+      return !!state.ambiance
+    case 3:
+      return !!state.momentCle
+    case 4:
+      return true
+    case 5:
+      return !!state.date && !!state.ville.trim() && !!state.nbInvites.trim()
+    default:
+      return false
+  }
+})
 </script>
 
 <style scoped lang="scss">
 .demande-page {
   min-height: 100dvh;
-  padding: $spacing-l $spacing-m;
-
-  @media (min-width: 640px) {
-    padding: $spacing-xxl $spacing-l;
-  }
+  padding: 0 $spacing-m;
 }
 
 .back-link {
@@ -164,16 +166,25 @@ const {
 }
 
 .demande-container {
-  max-width: 600px;
+  max-width: 940px;
   margin: 0 auto;
 }
 
 .demande-content {
   margin-top: $spacing-l;
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: $spacing-xxl;
+  align-items: start;
 }
 
-.step-wrapper {
-  // placeholder for transition
+.demande-content__aside {
+  position: sticky;
+  top: $spacing-l;
+
+  :deep(.recap) {
+    margin-top: 0;
+  }
 }
 
 .demande-nav {
