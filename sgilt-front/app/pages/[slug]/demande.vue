@@ -116,7 +116,6 @@ const slug = route.params.slug as string
 const prestataire = ref<PrestataireDetail | null>(null)
 const loading = ref(true)
 
-const { dateModel } = useSearchUi()
 const { isMobile } = useDevice()
 
 onMounted(async () => {
@@ -142,7 +141,7 @@ const {
   ambianceEmoji,
   momentCleLabel,
   momentCleEmoji,
-} = useDemande(dateModel.value)
+} = useDemande()
 
 // ── Mobile sheet ──────────────────────────────────────────────────────────────
 const mobileSheetOpen = ref(true)

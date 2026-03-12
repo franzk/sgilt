@@ -87,11 +87,10 @@ if (import.meta.client) {
 
 // ── Composable ────────────────────────────────────────────────────────────────
 
-export function useDemande(initialDate?: Date | null | undefined) {
-  // Use the provided date as a fallback if none is stored yet
-  if (initialDate && !state.date) {
-    state.date = initialDate
-  }
+export function useDemande() {
+  // dateModel (URL) est la source de vérité pour la date — state.date suit
+  const { dateModel } = useSearchUi()
+  watch(dateModel, (d) => { state.date = d }, { immediate: true })
 
   function next() {
     if (etapeActuelle.value < 6) {
