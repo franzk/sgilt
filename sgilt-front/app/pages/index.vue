@@ -17,7 +17,7 @@
       <div class="inputs">
         <SgiltDatePicker placeholder="Votre date" v-model="dateFilter" />
 
-        <SgiltSelect :options="selectOptions" :model-value="selectedOption">
+        <SgiltSelect :options="selectOptions" v-model="selectedOption">
           <template v-slot:left-icon> <IconRocket /> </template>
         </SgiltSelect>
         <SgiltButton class="submit_button" @click="launch"> C'est parti ! </SgiltButton>
@@ -33,6 +33,7 @@ import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
 import SgiltSelect from '~/components/basics/inputs/SgiltSelect.vue'
 import IconRocket from '~/components/icons/IconRocket.vue'
+import { EVENT_TYPE_OPTIONS } from '~/types/demande'
 
 useSeoMeta({
   title: '',
@@ -45,22 +46,24 @@ useHead({
 })
 
 const { showOnboarding } = useSearchUi()
+const { state } = useDemande()
 
-const selectOptions = eventTypes
+const selectOptions = [
+  { label: 'Votre événement', value: '1' },
+  ...EVENT_TYPE_OPTIONS.map((o) => ({ label: `${o.emoji} ${o.label}`, value: o.value })),
+]
 
 const dateFilter = ref<Date | undefined>(undefined)
-
 const selectedOption = ref(selectOptions[0]!.value)
 
-showOnboarding.value = true // on affiche l'onboarding à la suite de la page d'accueil
+showOnboarding.value = true
 
 const launch = () => {
-  showOnboarding.value = false
-  if (!dateFilter.value) {
-    navigateTo({ path: '/search' })
-  } else {
-    navigateTo({ path: '/search', query: { date: toISODate(dateFilter.value) } })
-  }
+  state.eventType = selectedOption.value !== '1' ? selectedOption.value : ''
+  navigateTo({
+    path: '/search',
+    query: { date: dateFilter.value ? toISODate(dateFilter.value) : undefined },
+  })
 }
 </script>
 

@@ -35,10 +35,17 @@ export function useSearchUi() {
     set: (val) => updateQuery({ date: val }),
   })
 
+  const stateDate = useState<Date | undefined>('search:date', () => undefined)
+
+  // Quand l'URL contient une date (ex: arrivée depuis index), on la propage dans stateDate
+  // pour que [slug] puisse la lire sans ?date= dans son URL
+  watch(date, (val) => { if (val) stateDate.value = new Date(val) }, { immediate: true })
+
   const dateModel = computed({
-    get: () => (date.value ? new Date(date.value) : undefined),
+    get: () => (date.value ? new Date(date.value) : stateDate.value),
     set: (value: Date | undefined) => {
       date.value = value ? toISODate(value) : ''
+      stateDate.value = value
     },
   })
 
@@ -80,6 +87,7 @@ export function useSearchUi() {
   return {
     date,
     dateModel,
+    stateDate,
     categoryId,
     showOnboarding,
     currentSubcats,
