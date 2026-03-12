@@ -23,7 +23,7 @@ export interface PrestataireCardDetail {
   shortDescription: string
   image: string
   slug: string
-  categoryPicto?: Component
+  categoryId?: string
   categoryName?: string
 }
 

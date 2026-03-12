@@ -35,7 +35,7 @@ export const SearchMockService = {
           image: p.image,
           slug: p.slug,
           // map category info for the card
-          categoryPicto: APP_CATEGORIES.find((c) => c.id === p.categoryId)?.picto,
+          categoryId: p.categoryId,
           categoryName: APP_CATEGORIES.find((c) => c.id === p.categoryId)?.name,
         }) as PrestataireCardDetail,
     )

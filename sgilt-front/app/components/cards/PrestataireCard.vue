@@ -2,6 +2,7 @@
 import type { PrestataireCardDetail } from '~/types/prestataire'
 import SgiltImage from '~/components/basics/media/SgiltImage.vue'
 import { NuxtLink } from '#components'
+import CategoryIcon from '~/components/basics/icons/CategoryIcon.vue'
 
 defineProps<{
   provider?: PrestataireCardDetail
@@ -23,7 +24,7 @@ const imageLoaded = ref(false)
         <!--img :src="provider?.image" :alt="provider?.name" loading="lazy" /-->
         <SgiltImage :src="provider?.image" :alt="provider?.name" width="400" height="360" />
         <div class="category-tag">
-          <span><component :is="provider?.categoryPicto" class="inner-icon" /></span>
+          <span><CategoryIcon :categoryId="provider?.categoryId" class="inner-icon" /></span>
           <span class="category-name">{{ provider?.categoryName }}</span>
         </div>
       </template>

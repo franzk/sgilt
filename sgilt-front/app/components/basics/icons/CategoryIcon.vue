@@ -7,22 +7,22 @@ import IconRocket from '@/components/icons/IconRocket.vue'
 import IconStar from '~/components/icons/IconStar.vue'
 
 const props = defineProps<{
-  categoryId: string
+  categoryId?: string
 }>()
 
 // On utilise markRaw ici par sécurité, même si l'objet est statique
 // car cela garantit que Vue ne cherchera jamais à le transformer.
 const ICONS_MAP: Record<string, any> = {
-  1: markRaw(IconRocket),
-  2: markRaw(IconMusic),
-  3: markRaw(IconFood),
-  4: markRaw(IconPhoto),
-  5: markRaw(IconStar),
+  '1': markRaw(IconRocket),
+  '2': markRaw(IconMusic),
+  '3': markRaw(IconFood),
+  '4': markRaw(IconPhoto),
+  '5': markRaw(IconStar),
 }
 
 // Utilisation d'une computed pour réagir au changement de prop
 const activeIcon = computed(() => {
-  return ICONS_MAP[props.categoryId] || ICONS_MAP[1]
+  return ICONS_MAP[props.categoryId ?? '1']
 })
 </script>
 
