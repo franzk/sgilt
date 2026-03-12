@@ -15,17 +15,12 @@
 
       <!-- composants -->
       <div class="inputs">
-        <SgiltDatePicker placeholder="Votre date" v-model="dateModel" />
+        <SgiltDatePicker placeholder="Votre date" v-model="dateFilter" />
 
         <SgiltSelect :options="selectOptions" :model-value="selectedOption">
           <template v-slot:left-icon> <IconRocket /> </template>
         </SgiltSelect>
-        <SgiltButton
-          class="submit_button"
-          @click="navigateTo({ path: '/search', query: { date: dateString } })"
-        >
-          C'est parti !
-        </SgiltButton>
+        <SgiltButton class="submit_button" @click="launch"> C'est parti ! </SgiltButton>
       </div>
     </section>
     <section class="photo-layer" aria-hidden="true"></section>
@@ -49,17 +44,24 @@ useHead({
   meta: [{ name: 'theme-color', content: '#ffffff' }],
 })
 
-const { showOnboarding, toISODate } = useSearchUi()
+const { showOnboarding } = useSearchUi()
 
 const selectOptions = eventTypes
 
-const dateModel = ref<Date | undefined>(undefined)
-
-const dateString = computed(() => (dateModel.value ? toISODate(dateModel.value) : ''))
+const dateFilter = ref<Date | undefined>(undefined)
 
 const selectedOption = ref(selectOptions[0]!.value)
 
 showOnboarding.value = true // on affiche l'onboarding à la suite de la page d'accueil
+
+const launch = () => {
+  showOnboarding.value = false
+  if (!dateFilter.value) {
+    navigateTo({ path: '/search' })
+  } else {
+    navigateTo({ path: '/search', query: { date: toISODate(dateFilter.value) } })
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -96,7 +98,6 @@ $inputs-font-size: 1.125rem;
 $inputs-height: 3rem;
 
 $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
-$breakpoint-desktop: 850px;
 
 // ─── Composant ────────────────────────────────────────────────────────────────
 .home {

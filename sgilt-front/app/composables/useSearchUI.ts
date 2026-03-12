@@ -14,10 +14,16 @@ export function useSearchUi() {
   // --- HELPERS POUR L'URL ---
 
   const updateQuery = (params: Record<string, string | undefined | null>) => {
+    // Les clés à supprimer sont mises à undefined pour que Vue Router les retire de l'URL
+    const patch: Record<string, string | undefined> = {}
+    for (const [key, value] of Object.entries(params)) {
+      patch[key] = value === null || value === '' ? undefined : (value ?? undefined)
+    }
+
     router.replace({
       query: {
         ...route.query,
-        ...params,
+        ...patch,
       },
     })
   }
@@ -25,17 +31,14 @@ export function useSearchUi() {
   // --- DATE ---
 
   const date = computed({
-    get: () => (route.query.date as string) || toISODate(new Date()),
+    get: () => (route.query.date as string) || '',
     set: (val) => updateQuery({ date: val }),
   })
 
   const dateModel = computed({
-    get: () => {
-      const d = new Date(date.value)
-      return isNaN(d.getTime()) ? new Date() : d
-    },
-    set: (value: Date) => {
-      date.value = toISODate(value)
+    get: () => (date.value ? new Date(date.value) : undefined),
+    set: (value: Date | undefined) => {
+      date.value = value ? toISODate(value) : ''
     },
   })
 
