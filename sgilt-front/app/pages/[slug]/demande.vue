@@ -5,6 +5,7 @@
       <DemandeFinalisation
         class="demande-layout__finalisation"
         :prestataire-name="prestataire.name"
+        @close="closeAndFinish"
       />
     </template>
 
@@ -141,7 +142,13 @@ const {
   ambianceEmoji,
   momentCleLabel,
   momentCleEmoji,
+  reset,
 } = useDemande()
+
+const closeAndFinish = () => {
+  reset()
+  navigateTo(`/${slug}`)
+}
 
 // ── Mobile sheet ──────────────────────────────────────────────────────────────
 const mobileSheetOpen = ref(true)

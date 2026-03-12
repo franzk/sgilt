@@ -4,18 +4,7 @@
 
     <DemandeEtape5Fields :state="state" mobile />
 
-    <DemandeRecap
-      :event-type-label="eventTypeLabel"
-      :event-type-emoji="eventTypeEmoji"
-      :ambiance-label="ambianceLabel"
-      :ambiance-emoji="ambianceEmoji"
-      :moment-cle-label="momentCleLabel"
-      :moment-cle-emoji="momentCleEmoji"
-      :date="state.date"
-      :ville="state.ville"
-      :nb-invites="state.nbInvites"
-      :lieu="state.lieu"
-    />
+    <DemandeRecap />
 
     <div class="etape__cta">
       <SgiltButton :disabled="!formValid" @click="next">Continuer →</SgiltButton>
@@ -40,10 +29,7 @@ const {
 
 const formValid = computed(
   () =>
-    !!state.date &&
-    !!state.ville.trim() &&
-    !!state.nbInvites.trim() &&
-    Number(state.nbInvites) > 0,
+    !!state.date && !!state.ville.trim() && !!state.nbInvites.trim() && Number(state.nbInvites) > 0,
 )
 </script>
 

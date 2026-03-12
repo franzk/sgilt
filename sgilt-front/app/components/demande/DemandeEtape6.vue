@@ -44,18 +44,7 @@
     </div>
 
     <!-- Récapitulatif complet -->
-    <DemandeRecap
-      v-if="showRecap"
-      :event-type-label="eventTypeLabel"
-      :event-type-emoji="eventTypeEmoji"
-      :ambiance-label="ambianceLabel"
-      :ambiance-emoji="ambianceEmoji"
-      :moment-cle-label="momentCleLabel"
-      :moment-cle-emoji="momentCleEmoji"
-      :date="state.date"
-      :ville="state.ville"
-      :nb-invites="state.nbInvites"
-    />
+    <DemandeRecap v-if="showRecap" />
   </div>
 </template>
 

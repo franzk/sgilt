@@ -10,7 +10,7 @@
         :etape="etapeActuelle"
         :submitted="submitted"
         @back="back"
-        @close="$emit('close')"
+        @close="closeAndFinish"
         @go-to="goTo"
       />
 
@@ -59,7 +59,12 @@ const drawerOpen = computed({
   },
 })
 
-const { etapeActuelle, direction, submitted, back, goTo } = useDemande()
+const { etapeActuelle, direction, submitted, back, goTo, reset } = useDemande()
+
+const closeAndFinish = () => {
+  reset()
+  emit('close')
+}
 
 const bodyRef = ref<HTMLElement | null>(null)
 watch(etapeActuelle, () => nextTick(() => bodyRef.value?.scrollTo({ top: 0, behavior: 'smooth' })))

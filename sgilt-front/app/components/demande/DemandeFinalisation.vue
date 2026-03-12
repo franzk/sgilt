@@ -1,5 +1,9 @@
 <template>
   <div class="finalisation">
+    <button class="finalisation__close" type="button" @click="$emit('close')">
+      ✕
+    </button>
+
     <div class="finalisation__hero">
       <div class="finalisation__icon">✉️</div>
       <h2 class="finalisation__title">Plus qu'une étape&nbsp;!</h2>
@@ -19,12 +23,14 @@
 
 <script setup lang="ts">
 defineProps<{ prestataireName: string }>()
+defineEmits<{ close: [] }>()
 </script>
 
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
 .finalisation {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: $spacing-xl;
@@ -68,6 +74,33 @@ defineProps<{ prestataireName: string }>()
     color: $text-primary;
     line-height: 1.6;
     margin: 0;
+  }
+}
+
+.finalisation__close {
+  display: none;
+
+  @media (min-width: $breakpoint-desktop) {
+    position: absolute;
+    top: $spacing-m;
+    right: $spacing-l;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: $text-secondary;
+    cursor: pointer;
+    border-radius: $radius-sm;
+    transition: color 150ms ease, background 150ms ease;
+
+    &:hover {
+      color: $text-primary;
+      background: $surface-soft;
+    }
   }
 }
 
