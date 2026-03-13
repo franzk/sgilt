@@ -298,8 +298,6 @@ function nextPhoto() {
 }
 
 // ─── Disponibilités ───────────────────────────────────────────────────────────
-// const selectedDate = ref<Date | undefined>(undefined)
-
 const { dateModel } = useSearchUi()
 
 const unavailableDatesAsDate = computed<Date[]>(() =>
@@ -365,11 +363,10 @@ function onKeydown(e: KeyboardEvent) {
 // ─── Tokens locaux ────────────────────────────────────────────────────────────
 $content-max-width: 640px;
 $section-gap: 2.5rem;
-$desktop: 900px;
 
 // ─── Utilitaires responsive ───────────────────────────────────────────────────
 .mobile-only {
-  @media (min-width: $desktop) {
+  @media (min-width: $breakpoint-desktop) {
     display: none !important;
   }
 }
@@ -381,7 +378,7 @@ $desktop: 900px;
   min-height: 100dvh;
   padding-bottom: 6rem; // espace sticky CTA mobile
 
-  @media (min-width: $desktop) {
+  @media (min-width: $breakpoint-desktop) {
     padding-bottom: 0;
   }
 }
@@ -391,7 +388,7 @@ $desktop: 900px;
   display: flex;
   flex-direction: column;
 
-  @media (min-width: $desktop) {
+  @media (min-width: $breakpoint-desktop) {
     display: grid;
     grid-template-columns: 1fr 360px;
     grid-template-areas: 'main sidebar';
@@ -405,7 +402,7 @@ $desktop: 900px;
 }
 
 .page-layout__main {
-  @media (min-width: $desktop) {
+  @media (min-width: $breakpoint-desktop) {
     grid-area: main;
   }
 }
@@ -416,7 +413,7 @@ $desktop: 900px;
   gap: 1.25rem;
   padding: $spacing-m;
 
-  @media (min-width: $desktop) {
+  @media (min-width: $breakpoint-desktop) {
     grid-area: sidebar;
     position: sticky;
     top: 5rem;
@@ -437,7 +434,7 @@ $desktop: 900px;
 .sidebar-budget {
   display: none;
 
-  @media (min-width: $desktop) {
+  @media (min-width: $breakpoint-desktop) {
     display: unset;
     padding-top: 1.25rem;
     border-top: 1px solid rgba(0, 0, 0, 0.08);
@@ -462,7 +459,7 @@ $desktop: 900px;
 .sidebar-cta {
   display: none;
 
-  @media (min-width: $desktop) {
+  @media (min-width: $breakpoint-desktop) {
     display: block;
     width: 100%;
     height: 3rem;
@@ -482,7 +479,7 @@ $desktop: 900px;
   -webkit-backdrop-filter: blur(12px);
   border-top: 1px solid rgba(0, 0, 0, 0.08);
 
-  @media (min-width: $desktop) {
+  @media (min-width: $breakpoint-desktop) {
     display: none;
   }
 
@@ -529,7 +526,7 @@ $desktop: 900px;
   margin: 0 auto;
   width: 100%;
 
-  @media (min-width: $desktop) {
+  @media (min-width: $breakpoint-desktop) {
     max-width: none;
     padding: 0;
   }

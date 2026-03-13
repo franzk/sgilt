@@ -147,9 +147,11 @@ const {
 
 // Si un type d'événement valide est déjà dans le state (choisi depuis l'accueil),
 // on démarre directement à l'étape 2
-if (etapeActuelle.value === 1 && state.eventType && state.eventType.toUpperCase() !== 'AUTRE') {
-  goTo(2)
-}
+onMounted(() => {
+  if (etapeActuelle.value === 1 && state.eventType && state.eventType.toUpperCase() !== 'AUTRE') {
+    goTo(2)
+  }
+})
 
 const closeAndFinish = () => {
   reset()

@@ -35,15 +35,7 @@ import SgiltSelect from '~/components/basics/inputs/SgiltSelect.vue'
 import IconRocket from '~/components/icons/IconRocket.vue'
 import { EVENT_TYPE_OPTIONS } from '~/types/demande'
 
-useSeoMeta({
-  title: '',
-  description: '',
-})
-
-useHead({
-  title: 'Sgilt (Beta)',
-  meta: [{ name: 'theme-color', content: '#ffffff' }],
-})
+useHead({ title: 'Sgilt (Beta)' })
 
 const { showOnboarding } = useSearchUi()
 const { state } = useDemande()
@@ -56,7 +48,7 @@ const selectOptions = [
 const dateFilter = ref<Date | undefined>(undefined)
 const selectedOption = ref(selectOptions[0]!.value)
 
-showOnboarding.value = true
+onMounted(() => { showOnboarding.value = true })
 
 const launch = () => {
   state.eventType = selectedOption.value !== '1' ? selectedOption.value : ''

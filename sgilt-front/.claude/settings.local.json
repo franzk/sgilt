@@ -5,7 +5,8 @@
       "Bash(for f:*)",
       "Bash(do echo:*)",
       "Read(//c/Users/koehl/Documents/projects/sgilt/sgilt/sgilt-front/app/components/demande/**)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(grep -n \"\\\\$desktop\" \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front\\\\app\\\\pages\\\\[slug]\\\\index.vue\")"
     ]
   }
 }
