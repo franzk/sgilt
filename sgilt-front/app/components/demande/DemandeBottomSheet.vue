@@ -59,7 +59,13 @@ const drawerOpen = computed({
   },
 })
 
-const { etapeActuelle, direction, submitted, back, goTo, reset } = useDemande()
+const { etapeActuelle, direction, submitted, state, back, goTo, reset } = useDemande()
+
+watch(() => props.isOpen, (open) => {
+  if (open && etapeActuelle.value === 1 && state.eventType && state.eventType.toUpperCase() !== 'AUTRE') {
+    goTo(2)
+  }
+})
 
 const closeAndFinish = () => {
   reset()
