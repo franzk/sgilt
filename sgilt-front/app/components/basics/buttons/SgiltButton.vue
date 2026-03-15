@@ -49,6 +49,7 @@ $active-box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
   cursor: pointer;
 
   height: 100%;
+  min-height: 2rem;
 
   font-size: $font-size;
   font-weight: $font-weight;

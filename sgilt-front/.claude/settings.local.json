@@ -6,7 +6,11 @@
       "Bash(do echo:*)",
       "Read(//c/Users/koehl/Documents/projects/sgilt/sgilt/sgilt-front/app/components/demande/**)",
       "Bash(done)",
-      "Bash(grep -n \"\\\\$desktop\" \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front\\\\app\\\\pages\\\\[slug]\\\\index.vue\")"
+      "Bash(grep -n \"\\\\$desktop\" \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front\\\\app\\\\pages\\\\[slug]\\\\index.vue\")",
+      "Bash(cd \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front\" && npm install pinia @pinia/nuxt --save)",
+      "Bash(cd \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front\" && npm install pinia @pinia/nuxt --legacy-peer-deps 2>&1 | tail -5)",
+      "Bash(cd \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front\" && npm install pinia @pinia/nuxt --force 2>&1 | tail -8)",
+      "Bash(cd \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front\" && pnpm add pinia @pinia/nuxt 2>&1 | tail -8)"
     ]
   }
 }

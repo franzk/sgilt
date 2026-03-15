@@ -1,4 +1,4 @@
-import type { EventDetail } from '~/types/event'
+import type { EventDetail, EventPatch } from '~/types/event'
 
 const MOCK_EVENT: EventDetail = {
   id: 'evt-001',
@@ -8,8 +8,47 @@ const MOCK_EVENT: EventDetail = {
   ambiance: 'chic',
   ville: 'Strasbourg',
   nbInvites: '120',
-  sharedNote: '',
-  sharedNoteUpdatedAt: undefined,
+  sharedNote: "Cérémonie à 14h, vin d'honneur à 16h. Accès PMR prévu.",
+  sharedNoteUpdatedAt: '2026-02-20T11:30:00.000Z',
+  journal: [
+    {
+      id: 'log-001',
+      date: new Date('2026-01-10T09:15:00.000Z'),
+      isCreation: true,
+      modifications: [
+        { champ: 'Titre', avant: null, apres: 'Mariage de Julie & Thomas' },
+        { champ: 'Date', avant: null, apres: '14 sept. 2026' },
+        { champ: 'Type', avant: null, apres: 'Mariage' },
+      ],
+    },
+    {
+      id: 'log-002',
+      date: new Date('2026-01-22T14:05:00.000Z'),
+      isCreation: false,
+      modifications: [
+        { champ: 'Ville', avant: null, apres: 'Strasbourg' },
+        { champ: "Nombre d'invités", avant: null, apres: '120' },
+      ],
+    },
+    {
+      id: 'log-003',
+      date: new Date('2026-02-05T16:40:00.000Z'),
+      isCreation: false,
+      modifications: [{ champ: 'Ambiance', avant: null, apres: 'Chic' }],
+    },
+    {
+      id: 'log-004',
+      date: new Date('2026-02-20T11:30:00.000Z'),
+      isCreation: false,
+      modifications: [
+        {
+          champ: 'Note partagée',
+          avant: '',
+          apres: "Cérémonie à 14h, vin d'honneur à 16h. Accès PMR prévu.",
+        },
+      ],
+    },
+  ],
   reservations: [
     {
       id: 'res-001',
@@ -69,5 +108,10 @@ export const EventMockService = {
       MOCK_EVENT.sharedNoteUpdatedAt = new Date().toISOString()
     }
     return { updatedAt: MOCK_EVENT.sharedNoteUpdatedAt! }
+  },
+
+  async patchEvent(id: string, patch: EventPatch): Promise<void> {
+    await new Promise((r) => setTimeout(r, 400))
+    if (id === MOCK_EVENT.id) Object.assign(MOCK_EVENT, patch)
   },
 }
