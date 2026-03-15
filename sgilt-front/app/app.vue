@@ -1,12 +1,10 @@
 <template>
-  <AppHeader />
-  <section class="app-content">
+  <NuxtLayout>
     <NuxtPage />
-  </section>
+  </NuxtLayout>
 </template>
 
 <script setup lang="ts">
-import AppHeader from '@/components/AppHeader.vue'
 useHead({
   meta: [
     { name: 'robots', content: 'noindex, nofollow' },
@@ -22,13 +20,6 @@ useHead({
 body {
   margin: 0;
   padding: 0;
-}
-
-.app-content {
-  padding-top: $app-header-height; // pour compenser la hauteur du header fixe
-  flex: 1;
-  display: flex;
-  flex-direction: column;
 }
 
 :root {

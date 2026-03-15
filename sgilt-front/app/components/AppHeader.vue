@@ -1,61 +1,45 @@
 <template>
   <header class="app-header" :class="{ 'no-shadow': hideShadow }">
-    <!-- LOGO SGILT -->
     <h1 class="logo">
-      <NuxtLink to="/">
+      <NuxtLink :to="showNotifications ? '/app/events' : '/'">
         <img src="/sgilt-logo.svg" alt="SGILT" />
       </NuxtLink>
     </h1>
 
-    <!-- Quick Actions (plus tard / app) -->
-    <div v-if="isConnected" class="quick-actions">
-      <button
-        class="action-button"
-        type="button"
-        @click="openNotifications"
-        aria-label="Notifications"
-      >
-        <!--IconBell /-->
-      </button>
-      <button class="action-button" type="button" @click="openProfile" aria-label="Profil">
-        <!--IconProfile /-->
-      </button>
+    <div v-if="showNotifications" class="quick-actions">
+      <NuxtLink to="/app/notifications" class="action-button" aria-label="Notifications">
+        <span class="bell-wrap">
+          <IconBell />
+          <!-- badge point : à brancher sur le store notifs -->
+          <!-- <span class="bell-badge" /> -->
+        </span>
+      </NuxtLink>
+
+      <NuxtLink to="/app/profile" class="action-button" aria-label="Profil">
+        <div class="avatar">
+          <!-- avatar photo : <img v-if="user.photo" ... /> -->
+          <span class="avatar__initials">JT</span>
+        </div>
+      </NuxtLink>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
-/**
- * Pour l'instant (focus public), on mock.
- * Plus tard tu branches ton Pinia authStore (Keycloak, etc.)
- */
-const isConnected = false
+import IconBell from '~/components/icons/IconBell.vue'
 
-const openNotifications = () => {
-  console.log('Ouverture des notifications...')
-}
+const props = defineProps<{ showNotifications?: boolean }>()
 
-const openProfile = () => {
-  console.log('Ouverture du profil...')
-}
-
-// Le shadow est masqué sur mobile pour les pages où le contenu
-// doit visuellement se fondre avec le header (index, search)
 const ROUTES_WITHOUT_SHADOW_MOBILE = ['/', '/search']
-
 const route = useRoute()
 const { isMobile } = useDevice()
 
-// On n'applique la classe qu'après le montage côté client
-// pour éviter un hydration mismatch SSR/client
 const mounted = ref(false)
-onMounted(() => {
-  mounted.value = true
-})
+onMounted(() => { mounted.value = true })
 
-const hideShadow = computed(() => {
-  return mounted.value && isMobile.value && ROUTES_WITHOUT_SHADOW_MOBILE.includes(route.path)
-})
+const hideShadow = computed(
+  () => mounted.value && isMobile.value && ROUTES_WITHOUT_SHADOW_MOBILE.includes(route.path),
+)
 </script>
 
 <style lang="scss" scoped>
@@ -70,10 +54,10 @@ const hideShadow = computed(() => {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 50;
+  z-index: $z-header;
   box-shadow: $box-shadow;
   background-color: #fff;
-  padding: $spacing-xs;
+  padding: $spacing-xs $spacing-m;
   transition: box-shadow 200ms ease;
 
   &.no-shadow {
@@ -81,30 +65,71 @@ const hideShadow = computed(() => {
   }
 }
 
-/* LOGO SGILT */
 .logo {
   margin: 0;
+
   img {
     height: 2rem;
+    display: block;
   }
 }
 
-/* Quick Actions */
 .quick-actions {
   display: flex;
-  gap: $spacing-s;
+  align-items: center;
+  gap: $spacing-xs;
+}
 
-  .action-button {
-    cursor: pointer;
-    padding: $spacing-xs;
-    border: 0;
-    border-radius: $radius-md;
-    background: transparent;
-    line-height: 0;
+.action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  color: $text-primary;
+  text-decoration: none;
+  transition: background 150ms ease;
 
-    &:hover {
-      opacity: 0.7;
-    }
+  &:hover {
+    background: $surface-soft;
+  }
+}
+
+.bell-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bell-badge {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $brand-accent;
+  border: 1.5px solid #fff;
+}
+
+.avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: $brand-subtle;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  &__initials {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: $text-primary;
+    line-height: 1;
   }
 }
 </style>

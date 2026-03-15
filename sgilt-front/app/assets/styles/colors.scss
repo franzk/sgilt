@@ -56,6 +56,14 @@ $shadow-m: rgba(47, 42, 37, 0.12);
 $shadow-l: rgba(47, 42, 37, 0.18);
 
 /* ========================
+   App section (partie authentifiée)
+   ======================== */
+
+$brand-subtle: #f0ebe4;   // fond fallback avatar, surfaces très douces
+$brand-muted: $text-secondary; // labels secondaires (catégorie carte)
+$brand-border: $divider-color; // bordures de cards
+
+/* ========================
    Legacy compatibility
    (à supprimer progressivement)
    ======================== */
