@@ -17,6 +17,10 @@
             />
           </div>
         </div>
+
+        <button class="add-prestataire-btn" type="button" @click="goToSearch">
+          + Ajouter un prestataire
+        </button>
       </section>
     </div>
 
@@ -31,10 +35,6 @@
       <div class="skeleton-card skeleton-text" />
     </div>
 
-    <!-- FAB -->
-    <button class="event-fab" type="button" aria-label="Ajouter un prestataire" @click="goToSearch">
-      <span class="event-fab__plus">+</span>
-    </button>
   </div>
 </template>
 
@@ -110,9 +110,6 @@ function goToSearch() {
 </script>
 
 <style scoped lang="scss">
-$bottom-nav-h: 56px;
-$fab-size: 52px;
-
 .event-board {
   min-height: 100%;
   background: rgba($color-accent, 0.5); // $surface-soft;
@@ -156,39 +153,23 @@ $fab-size: 52px;
   }
 }
 
-// ── FAB ───────────────────────────────────────────────────────────────────────
-.event-fab {
-  position: fixed;
-  bottom: calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $spacing-m);
-  right: $spacing-m;
-  width: $fab-size;
-  height: $fab-size;
-  border-radius: 50%;
-  border: none;
-  background: $brand-accent;
-  color: #fff;
-  box-shadow:
-    0 4px 16px rgba($brand-accent, 0.45),
-    0 2px 6px rgba(0, 0, 0, 0.12);
+// ── Bouton ajout prestataire ──────────────────────────────────────────────────
+.add-prestataire-btn {
+  width: 100%;
+  padding: $spacing-s;
+  border: 1.5px dashed $brand-border;
+  border-radius: $radius-md;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $text-secondary;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    transform 120ms ease,
-    box-shadow 120ms ease;
-  z-index: $z-dropdown;
+  transition: border-color 150ms ease, color 150ms ease;
 
   &:active {
-    transform: scale(0.94);
-    box-shadow: 0 2px 8px rgba($brand-accent, 0.35);
-  }
-
-  &__plus {
-    font-size: 1.6rem;
-    line-height: 1;
-    font-weight: 300;
-    margin-top: -1px;
+    border-color: $brand-primary;
+    color: $brand-primary;
   }
 }
 
