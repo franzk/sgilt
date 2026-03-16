@@ -47,3 +47,21 @@ export interface JournalEntry {
 export type EventPatch = Partial<
   Pick<EventDetail, 'title' | 'eventType' | 'ambiance' | 'ville' | 'nbInvites' | 'sharedNote'>
 >
+
+export interface NoteAuthor {
+  id: string
+  name: string
+  photo?: string
+  role: 'client' | 'prestataire'
+}
+
+export interface ReservationNote {
+  id: string
+  author: NoteAuthor
+  content: string
+  createdAt: string // ISO datetime
+}
+
+export interface ReservationDetail extends Reservation {
+  notes: ReservationNote[]
+}
