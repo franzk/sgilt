@@ -124,7 +124,7 @@
   </section>
 
   <!-- ── Journal ─────────────────────────────────────────────────────────────── -->
-  <EventJournal v-if="journalOpen" v-model:open="journalOpen" :journal="event.journal ?? []" />
+  <EventJournal v-model:open="journalOpen" :journal="event.journal ?? []" />
 
   <!-- ── Modale abandon ───────────────────────────────────────────────────────── -->
   <Teleport to="body">
@@ -278,7 +278,7 @@ function formatDate(iso: string) {
 // ── Bloc ──────────────────────────────────────────────────────────────────────
 .event-block {
   background: #fff;
-  border-radius: $radius-md;
+  border-radius: $border-radius-m;
   padding: $spacing-m;
   display: flex;
   flex-direction: column;
@@ -365,18 +365,18 @@ function formatDate(iso: string) {
 .event-pills {
   display: flex;
   flex-wrap: wrap;
-  gap: $spacing-xs;
+  gap: 6px;
 }
 
 .event-pill {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
+  gap: 3px;
+  padding: 3px 8px;
   border-radius: 2rem;
   background: $surface-soft;
   border: 1px solid $divider-color;
-  font-size: 0.8rem;
+  font-size: 0.688rem; // ~11px
   color: $text-secondary;
   font-weight: 500;
   white-space: nowrap;

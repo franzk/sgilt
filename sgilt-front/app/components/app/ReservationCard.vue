@@ -11,19 +11,26 @@
       <span v-else class="card-media__fallback">{{ initials }}</span>
     </div>
 
-    <!-- Catégorie + Nom -->
-    <div class="card-info">
-      <span class="card-info__category">{{ reservation.category }}</span>
-      <span class="card-info__name">{{ reservation.prestataireName }}</span>
+    <!-- Grille 2 lignes -->
+    <div class="card-body">
+      <!-- Ligne 1 : catégorie + badge statut -->
+      <div class="card-row">
+        <span class="card-category">{{ reservation.category }}</span>
+        <span class="card-badge" :class="`card-badge--${reservation.status}`">
+          {{ STATUS_LABELS[reservation.status] }}
+        </span>
+      </div>
+
+      <!-- Ligne 2 : nom -->
+      <div class="card-row">
+        <span class="card-name">{{ reservation.prestataireName }}</span>
+      </div>
     </div>
 
-    <!-- Badge état + point notes -->
-    <div class="card-status">
-      <span class="card-status__badge" :class="`card-status__badge--${reservation.status}`">
-        {{ STATUS_LABELS[reservation.status] }}
-      </span>
-      <span v-if="reservation.hasNotes" class="card-status__notes-dot" />
-    </div>
+    <!-- Badge notes non lues -->
+    <span v-if="reservation.unreadNotesCount > 0" class="card-unread">
+      {{ reservation.unreadNotesCount }}
+    </span>
 
     <!-- Chevron -->
     <span class="card-chevron" aria-hidden="true">›</span>
@@ -60,11 +67,15 @@ const initials = computed(() =>
   width: 100%;
   display: flex;
   align-items: center;
+  position: relative;
   gap: $spacing-s;
   padding: 12px 14px;
-  border-radius: 16px;
+  border-radius: $border-radius-s;
   border: 0.5px solid $brand-border;
   background: #fff;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    0 1px 2px rgba(0, 0, 0, 0.04);
   cursor: pointer;
   text-align: left;
   font-family: inherit;
@@ -80,7 +91,7 @@ const initials = computed(() =>
   flex-shrink: 0;
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: 50%;
   overflow: hidden;
   background: $brand-subtle;
   display: flex;
@@ -102,87 +113,93 @@ const initials = computed(() =>
   }
 }
 
-// ─── Info ─────────────────────────────────────────────────────────────────────
-.card-info {
+// ─── Grille corps ─────────────────────────────────────────────────────────────
+.card-body {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
+}
 
-  &__category {
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: $brand-muted;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.card-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-xs;
+}
+
+// ─── Ligne 1 ──────────────────────────────────────────────────────────────────
+.card-category {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $brand-muted;
+  white-space: nowrap;
+}
+
+.card-badge {
+  flex-shrink: 0;
+  font-size: 0.625rem; // 10px
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 2rem;
+  white-space: nowrap;
+
+  &--brouillon,
+  &--terminee {
+    background: #f0efee;
+    color: #888;
   }
 
-  &__name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 17px;
-    font-weight: 500;
-    color: $brand-primary;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  &--envoyee {
+    background: #e8f0fe;
+    color: #2c5cc5;
+  }
+
+  &--recontactee {
+    background: rgba($brand-accent, 0.15);
+    color: darken(#e6b800, 20%);
+  }
+
+  &--confirmee {
+    background: rgba($state-available, 0.12);
+    color: $state-available;
+  }
+
+  &--annulee,
+  &--cloturee {
+    background: rgba($state-error, 0.1);
+    color: $state-error;
   }
 }
 
-// ─── Badge état ───────────────────────────────────────────────────────────────
-.card-status {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
+// ─── Ligne 2 ──────────────────────────────────────────────────────────────────
+.card-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px;
+  font-weight: 500;
+  color: $brand-primary;
+  line-height: 1.2;
+}
 
-  &__badge {
-    font-size: 0.7rem;
-    font-weight: 600;
-    padding: 3px 8px;
-    border-radius: 2rem;
-    white-space: nowrap;
-
-    &--brouillon,
-    &--terminee {
-      background: #f0efee;
-      color: #888;
-    }
-
-    &--envoyee {
-      background: #e8f0fe;
-      color: #2c5cc5;
-    }
-
-    &--recontactee {
-      background: rgba($brand-accent, 0.15);
-      color: darken(#e6b800, 20%);
-    }
-
-    &--confirmee {
-      background: rgba($state-available, 0.12);
-      color: $state-available;
-    }
-
-    &--annulee,
-    &--cloturee {
-      background: rgba($state-error, 0.1);
-      color: $state-error;
-    }
-  }
-
-  &__notes-dot {
-    display: block;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: $brand-accent;
-  }
+.card-unread {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+  // flex-shrink: 0;
+  //align-self: flex-end;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: $state-danger;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.688rem; // 11px
+  font-weight: 500;
+  white-space: nowrap;
+  line-height: 1.4;
 }
 
 // ─── Chevron ──────────────────────────────────────────────────────────────────
