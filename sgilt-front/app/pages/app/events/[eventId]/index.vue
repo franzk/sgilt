@@ -1,6 +1,17 @@
 <template>
   <div class="event-board">
-    <div v-if="event" class="board-content">
+    <!-- ── Bandeau couverture (desktop) ───────────────────────────────────────── -->
+  <div
+    v-if="event"
+    class="cover-banner"
+    :style="{ backgroundImage: `url(${coverImage})` }"
+  >
+    <div class="cover-banner__overlay" />
+    <span class="cover-banner__title">{{ event.title }}</span>
+    <button class="cover-banner__edit-img" type="button">Modifier l'image</button>
+  </div>
+
+  <div v-if="event" class="board-content">
       <!-- ── Bloc événement ──────────────────────────────────────────────────── -->
       <EventBlock :event="event" @updated="onEventUpdated" />
 
@@ -48,6 +59,16 @@ import type { EventDetail, EventPatch, ReservationStatus } from '~/types/event'
 
 const route = useRoute()
 const eventId = route.params.eventId as string
+
+// ── Cover image ────────────────────────────────────────────────────────────────
+const COVER_IMAGES: Record<string, string> = {
+  mariage:      'https://images.unsplash.com/photo-1519741497674-611481863552?w=1400&auto=format&fit=crop',
+  anniversaire: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=1400&auto=format&fit=crop',
+  soiree:       'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1400&auto=format&fit=crop',
+  entreprise:   'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1400&auto=format&fit=crop',
+  autre:        'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1400&auto=format&fit=crop',
+}
+const coverImage = computed(() => COVER_IMAGES[event.value?.eventType ?? ''] ?? COVER_IMAGES.autre)
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const event = ref<EventDetail | null>(null)
@@ -110,9 +131,65 @@ function goToSearch() {
 </script>
 
 <style scoped lang="scss">
+$desktop: 900px;
+
 .event-board {
   min-height: 100%;
-  background: rgba($color-accent, 0.5); // $surface-soft;
+  background: rgba($color-accent, 0.5);
+}
+
+// ── Bandeau couverture ─────────────────────────────────────────────────────────
+.cover-banner {
+  display: none;
+
+  @media (min-width: $desktop) {
+    display: flex;
+    position: relative;
+    height: 280px;
+    background-size: cover;
+    background-position: center;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: $spacing-l $spacing-xl;
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(47, 42, 37, 0.1), rgba(47, 42, 37, 0.65));
+    pointer-events: none;
+  }
+
+  &__title {
+    position: relative;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 42px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.1;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    max-width: 70%;
+  }
+
+  &__edit-img {
+    position: relative;
+    flex-shrink: 0;
+    padding: 6px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: $radius-md;
+    background: rgba(0, 0, 0, 0.3);
+    color: rgba(255, 255, 255, 0.85);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: background 150ms ease;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.45);
+    }
+  }
 }
 
 // ── Contenu ───────────────────────────────────────────────────────────────────
@@ -121,6 +198,35 @@ function goToSearch() {
   flex-direction: column;
   gap: $spacing-l;
   padding: $spacing-m;
+
+  @media (min-width: $desktop) {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 28px;
+    align-items: start;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 40px;
+  }
+}
+
+// ── Masquer le titre EventBlock sur desktop (il est dans le bandeau) ───────────
+@media (min-width: $desktop) {
+  :deep(.event-block__title),
+  :deep(.event-block__title-input) {
+    display: none;
+  }
+
+  :deep(.event-block__header) {
+    justify-content: flex-end;
+  }
+}
+
+// ── Hover card réservation (desktop) ──────────────────────────────────────────
+@media (min-width: $desktop) {
+  :deep(.reservation-card:hover) {
+    border-color: rgba($brand-primary, 0.3);
+  }
 }
 
 // ── Sections réservations ─────────────────────────────────────────────────────
