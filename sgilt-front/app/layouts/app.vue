@@ -22,5 +22,9 @@ $bottom-nav-h: 56px;
   flex: 1;
   display: flex;
   flex-direction: column;
+
+  @media (min-width: 900px) {
+    padding-bottom: 0;
+  }
 }
 </style>

@@ -1,17 +1,13 @@
 <template>
   <div class="event-board">
     <!-- ── Bandeau couverture (desktop) ───────────────────────────────────────── -->
-  <div
-    v-if="event"
-    class="cover-banner"
-    :style="{ backgroundImage: `url(${coverImage})` }"
-  >
-    <div class="cover-banner__overlay" />
-    <span class="cover-banner__title">{{ event.title }}</span>
-    <button class="cover-banner__edit-img" type="button">Modifier l'image</button>
-  </div>
+    <div v-if="event" class="cover-banner" :style="{ backgroundImage: `url(${coverImage})` }">
+      <div class="cover-banner__overlay" />
+      <span class="cover-banner__title">{{ event.title }}</span>
+      <button class="cover-banner__edit-img" type="button">Modifier l'image</button>
+    </div>
 
-  <div v-if="event" class="board-content">
+    <div v-if="event" class="board-content">
       <!-- ── Bloc événement ──────────────────────────────────────────────────── -->
       <EventBlock :event="event" @updated="onEventUpdated" />
 
@@ -45,7 +41,6 @@
       <div class="skeleton-card skeleton-text" />
       <div class="skeleton-card skeleton-text" />
     </div>
-
   </div>
 </template>
 
@@ -62,11 +57,15 @@ const eventId = route.params.eventId as string
 
 // ── Cover image ────────────────────────────────────────────────────────────────
 const COVER_IMAGES: Record<string, string> = {
-  mariage:      'https://images.unsplash.com/photo-1519741497674-611481863552?w=1400&auto=format&fit=crop',
-  anniversaire: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=1400&auto=format&fit=crop',
-  soiree:       'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1400&auto=format&fit=crop',
-  entreprise:   'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1400&auto=format&fit=crop',
-  autre:        'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1400&auto=format&fit=crop',
+  mariage:
+    'https://images.unsplash.com/photo-1519741497674-611481863552?w=1400&auto=format&fit=crop',
+  anniversaire:
+    'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=1400&auto=format&fit=crop',
+  soiree:
+    'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1400&auto=format&fit=crop',
+  entreprise:
+    'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1400&auto=format&fit=crop',
+  autre: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1400&auto=format&fit=crop',
 }
 const coverImage = computed(() => COVER_IMAGES[event.value?.eventType ?? ''] ?? COVER_IMAGES.autre)
 
@@ -135,21 +134,22 @@ $desktop: 900px;
 
 .event-board {
   min-height: 100%;
-  background: rgba($color-accent, 0.5);
+  background: rgba($color-accent, 0.3);
 }
 
 // ── Bandeau couverture ─────────────────────────────────────────────────────────
 .cover-banner {
-  display: none;
+  display: flex;
+  position: relative;
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: $spacing-m;
 
   @media (min-width: $desktop) {
-    display: flex;
-    position: relative;
-    height: 280px;
-    background-size: cover;
-    background-position: center;
-    align-items: flex-end;
-    justify-content: space-between;
+    height: 25vh;
     padding: $spacing-l $spacing-xl;
   }
 
@@ -163,31 +163,41 @@ $desktop: 900px;
   &__title {
     position: relative;
     font-family: 'Cormorant Garamond', serif;
-    font-size: 42px;
+    font-size: 30px;
     font-weight: 600;
     color: #fff;
     line-height: 1.1;
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-    max-width: 70%;
+    max-width: 85%;
+
+    @media (min-width: $desktop) {
+      font-size: 42px;
+      max-width: 70%;
+    }
   }
 
   &__edit-img {
-    position: relative;
-    flex-shrink: 0;
-    padding: 6px 14px;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: $radius-md;
-    background: rgba(0, 0, 0, 0.3);
-    color: rgba(255, 255, 255, 0.85);
-    font-family: inherit;
-    font-size: 0.8rem;
-    font-weight: 500;
-    cursor: pointer;
-    backdrop-filter: blur(4px);
-    transition: background 150ms ease;
+    display: none;
 
-    &:hover {
-      background: rgba(0, 0, 0, 0.45);
+    @media (min-width: $desktop) {
+      display: block;
+      position: relative;
+      flex-shrink: 0;
+      padding: 6px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: $radius-md;
+      background: rgba(0, 0, 0, 0.3);
+      color: rgba(255, 255, 255, 0.85);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: background 150ms ease;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.45);
+      }
     }
   }
 }
@@ -210,17 +220,27 @@ $desktop: 900px;
   }
 }
 
-// ── Masquer le titre EventBlock sur desktop (il est dans le bandeau) ───────────
-@media (min-width: $desktop) {
-  :deep(.event-block__title),
-  :deep(.event-block__title-input) {
-    display: none;
-  }
-
-  :deep(.event-block__header) {
-    justify-content: flex-end;
-  }
+// ── Titre masqué + icône crayon repositionnée en haut à droite ────────────────
+:deep(.event-block__title),
+:deep(.event-block__title-input) {
+  display: none;
 }
+
+:deep(.event-block) {
+  position: relative;
+}
+
+:deep(.event-block__header) {
+  position: absolute;
+  top: $spacing-s;
+  right: $spacing-s;
+  width: auto;
+}
+
+:deep(.event-pills) {
+  padding-right: 2.5rem;
+}
+
 
 // ── Hover card réservation (desktop) ──────────────────────────────────────────
 @media (min-width: $desktop) {
@@ -271,7 +291,9 @@ $desktop: 900px;
   font-weight: 500;
   color: $text-secondary;
   cursor: pointer;
-  transition: border-color 150ms ease, color 150ms ease;
+  transition:
+    border-color 150ms ease,
+    color 150ms ease;
 
   &:active {
     border-color: $brand-primary;

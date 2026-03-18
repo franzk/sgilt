@@ -42,6 +42,10 @@ const isEventsActive = computed(() => route.path.startsWith('/app/events'))
 $nav-h: 56px;
 
 .app-footer {
+  @media (min-width: 900px) {
+    display: none !important;
+  }
+
   position: fixed;
   bottom: 0;
   left: 0;
