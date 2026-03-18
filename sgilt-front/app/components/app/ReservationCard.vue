@@ -70,7 +70,7 @@ const initials = computed(() =>
   position: relative;
   gap: $spacing-s;
   padding: 12px 14px;
-  border-radius: $border-radius-s;
+  border-radius: $border-radius-xs;
   border: 0.5px solid $brand-border;
   background: #fff;
   box-shadow:

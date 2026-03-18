@@ -21,7 +21,7 @@
         :aria-label="title"
         @click.self="open = false"
       >
-        <div class="sgilt-dialog__panel">
+        <div class="sgilt-dialog__panel" :style="props.maxWidth ? { maxWidth: props.maxWidth } : {}">
           <div class="sgilt-dialog__header">
             <span class="sgilt-dialog__title">{{ title }}</span>
             <button
@@ -48,9 +48,10 @@ import { useDevice } from '~/composables/useDevice'
 
 const open = defineModel<boolean>('open', { required: true })
 
-defineProps<{
+const props = defineProps<{
   title: string
   description?: string
+  maxWidth?: string
 }>()
 
 const { isMobile } = useDevice()
@@ -122,6 +123,8 @@ const { isMobile } = useDevice()
 .sgilt-dialog__body {
   overflow-y: auto;
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 // ── Transition ─────────────────────────────────────────────────────────────────

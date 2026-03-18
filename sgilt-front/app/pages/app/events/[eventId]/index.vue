@@ -1,7 +1,12 @@
 <template>
   <div class="event-board">
     <!-- ── Bandeau couverture (desktop) ───────────────────────────────────────── -->
-    <div v-if="event" class="cover-banner" :style="{ backgroundImage: `url(${coverImage})` }">
+    <div
+      v-if="event"
+      ref="bannerRef"
+      class="cover-banner"
+      :style="{ backgroundImage: `url(${coverImage})` }"
+    >
       <div class="cover-banner__overlay" />
       <span class="cover-banner__title">{{ event.title }}</span>
       <button class="cover-banner__edit-img" type="button">Modifier l'image</button>
@@ -69,6 +74,26 @@ const COVER_IMAGES: Record<string, string> = {
 }
 const coverImage = computed(() => COVER_IMAGES[event.value?.eventType ?? ''] ?? COVER_IMAGES.autre)
 
+// ── Parallax ───────────────────────────────────────────────────────────────────
+const bannerRef = ref<HTMLElement | null>(null)
+let rafId: number | null = null
+
+function onScroll() {
+  if (rafId !== null) return
+  rafId = requestAnimationFrame(() => {
+    if (bannerRef.value) {
+      bannerRef.value.style.backgroundPositionY = `calc(50% + ${window.scrollY * 0.4}px)`
+    }
+    rafId = null
+  })
+}
+
+onMounted(() => window.addEventListener('scroll', onScroll, { passive: true }))
+onUnmounted(() => {
+  window.removeEventListener('scroll', onScroll)
+  if (rafId !== null) cancelAnimationFrame(rafId)
+})
+
 // ── Data ──────────────────────────────────────────────────────────────────────
 const event = ref<EventDetail | null>(null)
 const loading = ref(true)
@@ -134,7 +159,7 @@ $desktop: 900px;
 
 .event-board {
   min-height: 100%;
-  background: rgba($color-accent, 0.3);
+  background-color: #efbc49;
 }
 
 // ── Bandeau couverture ─────────────────────────────────────────────────────────
@@ -149,7 +174,7 @@ $desktop: 900px;
   padding: $spacing-m;
 
   @media (min-width: $desktop) {
-    height: 25vh;
+    height: 33vh;
     padding: $spacing-l $spacing-xl;
   }
 
@@ -241,6 +266,13 @@ $desktop: 900px;
   padding-right: 2.5rem;
 }
 
+// ── Event block sticky (desktop) ──────────────────────────────────────────────
+@media (min-width: $desktop) {
+  :deep(.event-block) {
+    position: sticky;
+    top: 60px;
+  }
+}
 
 // ── Hover card réservation (desktop) ──────────────────────────────────────────
 @media (min-width: $desktop) {
@@ -266,8 +298,8 @@ $desktop: 900px;
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: $text-secondary;
-    opacity: 0.6;
+    color: $color-white; // $text-secondary;
+    // opacity: 0.6;
     margin: 0;
     padding: 0 2px;
   }
@@ -298,6 +330,21 @@ $desktop: 900px;
   &:active {
     border-color: $brand-primary;
     color: $brand-primary;
+  }
+
+  @media (min-width: $desktop) {
+    border-color: rgba(255, 255, 255, 0.6);
+    color: $color-white;
+    transition: background 150ms ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    &:active {
+      border-color: rgba(255, 255, 255, 0.6);
+      color: $color-white;
+    }
   }
 }
 

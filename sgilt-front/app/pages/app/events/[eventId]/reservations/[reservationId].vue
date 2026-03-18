@@ -1,105 +1,87 @@
 <template>
-  <div class="reservation-detail">
-    <!-- ── Bouton back ────────────────────────────────────────────────────── -->
-    <button class="back-btn" type="button" @click="navigateTo(`/app/events/${eventId}`)">
-      ‹ Retour
-    </button>
-
-    <template v-if="reservation">
-      <!-- ── Card titre ─────────────────────────────────────────────────────── -->
-      <div class="title-card">
-        <div class="title-card__media">
-          <img
-            v-if="reservation.prestatairePhoto"
-            :src="reservation.prestatairePhoto"
-            :alt="reservation.prestataireName"
-            class="title-card__img"
-          />
-          <span v-else class="title-card__fallback">{{ initials }}</span>
+  <div class="reservation-page">
+    <!-- ── Bandeau couverture ────────────────────────────────────────────────── -->
+    <div
+      v-if="reservation"
+      ref="bannerRef"
+      class="cover-banner"
+      :style="reservation.prestatairePhoto ? { backgroundImage: `url(${reservation.prestatairePhoto})` } : {}"
+    >
+      <div class="cover-banner__overlay" />
+      <button class="back-btn" type="button" @click="navigateTo(`/app/events/${eventId}`)">
+        ‹ Retour
+      </button>
+      <div class="cover-banner__bottom">
+        <div class="cover-banner__info">
+          <span class="cover-banner__category">{{ reservation.category }}</span>
+          <span class="cover-banner__name">{{ reservation.prestataireName }}</span>
         </div>
-        <div class="title-card__info">
-          <span class="title-card__category">{{ reservation.category }}</span>
-          <span class="title-card__name">{{ reservation.prestataireName }}</span>
-        </div>
-        <span class="title-card__badge" :class="`title-card__badge--${reservation.status}`">
+        <span class="cover-banner__badge" :class="`cover-banner__badge--${reservation.status}`">
           {{ STATUS_LABELS[reservation.status] }}
         </span>
       </div>
+    </div>
 
-      <!-- ── Card notes ─────────────────────────────────────────────────────── -->
-      <div class="notes-card">
+    <!-- ── Contenu ───────────────────────────────────────────────────────────── -->
+    <div class="reservation-detail">
+      <template v-if="reservation">
+        <!-- ── Bouton ajout note (desktop) ─────────────────────────────────── -->
+        <div class="notes-card__header">
+          <button class="notes-card__add-btn" type="button" @click="noteSheetOpen = true">
+            + Ajouter une note
+          </button>
+        </div>
+
+        <!-- ── Notes ────────────────────────────────────────────────────────── -->
         <p v-if="sortedNotes.length === 0" class="notes-card__empty">Aucune note pour le moment.</p>
-        <ul v-else class="notes-list">
-          <li
-            v-for="note in sortedNotes"
-            :key="note.id"
-            class="note-item"
-            :class="`note-item--${note.author.role}`"
-          >
-            <div class="note-body">
-              <div class="note-meta">
-                <div class="note-avatar">
-                  <img
-                    v-if="note.author.photo"
-                    :src="note.author.photo"
-                    :alt="note.author.name"
-                    class="note-avatar__img"
-                  />
-                  <span v-else class="note-avatar__initials">{{
-                    authorInitials(note.author.name)
-                  }}</span>
-                </div>
-                <span class="note-meta__author">{{ note.author.name }}</span>
-                <span class="note-meta__dot" aria-hidden="true" />
-                <time class="note-meta__date">{{ formatDate(note.createdAt) }}</time>
-              </div>
-              <p class="note-content">{{ note.content }}</p>
-            </div>
+        <ul v-if="sortedNotes.length > 0" class="notes-list">
+          <li v-for="note in sortedNotes" :key="note.id">
+            <NoteCard :note="note" />
           </li>
         </ul>
-      </div>
-    </template>
+      </template>
 
-    <!-- Skeleton -->
-    <template v-else-if="loading">
-      <div class="skeleton-header skeleton-text" />
-      <div class="skeleton-notes">
-        <div v-for="i in 3" :key="i" class="skeleton-note skeleton-text" />
-      </div>
-    </template>
+      <!-- Skeleton -->
+      <template v-else-if="loading">
+        <div class="skeleton-header skeleton-text" />
+        <div class="skeleton-notes">
+          <div v-for="i in 3" :key="i" class="skeleton-note skeleton-text" />
+        </div>
+      </template>
 
-    <!-- ── FAB ────────────────────────────────────────────────────────────── -->
-    <button
-      v-if="reservation"
-      class="note-fab"
-      type="button"
-      aria-label="Ajouter une note"
-      @click="noteSheetOpen = true"
-    >
-      +
-    </button>
+      <!-- ── FAB (mobile uniquement) ──────────────────────────────────────── -->
+      <button
+        v-if="reservation && isMobile"
+        class="note-fab"
+        type="button"
+        aria-label="Ajouter une note"
+        @click="noteSheetOpen = true"
+      >
+        +
+      </button>
 
-    <!-- ── Bottom sheet / dialog ajout note ──────────────────────────────── -->
-    <SgiltDialog v-if="noteSheetOpen" v-model:open="noteSheetOpen" title="Ajouter une note">
-      <div class="note-form">
-        <textarea
-          ref="noteTextareaRef"
-          v-model="newNote"
-          class="note-form__textarea"
-          placeholder="Ajouter une note..."
-          rows="5"
-          @input="autoResize"
-        />
-        <button
-          class="note-form__send"
-          type="button"
-          :disabled="!newNote.trim() || sending"
-          @click="sendNote"
-        >
-          Ajouter la note
-        </button>
-      </div>
-    </SgiltDialog>
+      <!-- ── Dialog ajout note ─────────────────────────────────────────────── -->
+      <SgiltDialog v-if="noteSheetOpen" v-model:open="noteSheetOpen" title="Ajouter une note" max-width="800px">
+        <div class="note-form">
+          <textarea
+            ref="noteTextareaRef"
+            v-model="newNote"
+            class="note-form__textarea"
+            placeholder="Ajouter une note..."
+            rows="5"
+            @input="autoResize"
+          />
+          <button
+            class="note-form__send"
+            type="button"
+            :disabled="!newNote.trim() || sending"
+            @click="sendNote"
+          >
+            Ajouter la note
+          </button>
+        </div>
+      </SgiltDialog>
+    </div>
   </div>
 </template>
 
@@ -107,12 +89,14 @@
 import { ReservationMockService } from '~/services/reservation.mock'
 import type { ReservationDetail, ReservationStatus } from '~/types/event'
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
+import NoteCard from '~/components/app/NoteCard.vue'
 
 definePageMeta({ layout: 'app' })
 
 const route = useRoute()
 const reservationId = route.params.reservationId as string
 const eventId = route.params.eventId as string
+const { isMobile } = useDevice()
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const reservation = ref<ReservationDetail | null>(null)
@@ -121,6 +105,26 @@ const loading = ref(true)
 onMounted(async () => {
   reservation.value = await ReservationMockService.getById(reservationId)
   loading.value = false
+})
+
+// ── Parallax ───────────────────────────────────────────────────────────────────
+const bannerRef = ref<HTMLElement | null>(null)
+let rafId: number | null = null
+
+function onScroll() {
+  if (rafId !== null) return
+  rafId = requestAnimationFrame(() => {
+    if (bannerRef.value) {
+      bannerRef.value.style.backgroundPositionY = `calc(50% + ${window.scrollY * 0.4}px)`
+    }
+    rafId = null
+  })
+}
+
+onMounted(() => window.addEventListener('scroll', onScroll, { passive: true }))
+onUnmounted(() => {
+  window.removeEventListener('scroll', onScroll)
+  if (rafId !== null) cancelAnimationFrame(rafId)
 })
 
 // ── Notes ─────────────────────────────────────────────────────────────────────
@@ -167,47 +171,99 @@ const STATUS_LABELS: Record<ReservationStatus, string> = {
   terminee: 'Terminée',
 }
 
-const initials = computed(() =>
-  (reservation.value?.prestataireName ?? '')
-    .split(' ')
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase() ?? '')
-    .join(''),
-)
-
-function authorInitials(name: string) {
-  return name
-    .split(' ')
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase() ?? '')
-    .join('')
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('fr-FR', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
 </script>
 
 <style scoped lang="scss">
 $bottom-nav-h: 56px;
+$desktop: 900px;
 
-.reservation-detail {
+// ── Page wrapper ───────────────────────────────────────────────────────────────
+.reservation-page {
   min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-m;
-  padding: $spacing-m $spacing-m calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $spacing-m);
-  background: rgba(230, 184, 0, 0.5);
+  background-color: #efbc49;
 }
 
-// ── Bouton back ────────────────────────────────────────────────────────────────
+// ── Bandeau couverture ─────────────────────────────────────────────────────────
+.cover-banner {
+  position: relative;
+  height: 200px;
+  background-size: cover;
+  background-position: center 50%;
+  background-color: $brand-subtle;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: $spacing-s $spacing-m $spacing-m;
+
+  @media (min-width: $desktop) {
+    height: 280px;
+    padding: $spacing-m $spacing-xl $spacing-l;
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(47, 42, 37, 0.1), rgba(47, 42, 37, 0.65));
+    pointer-events: none;
+  }
+
+  &__bottom {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: $spacing-s;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  &__category {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  &__name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.1;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+
+    @media (min-width: $desktop) {
+      font-size: 38px;
+    }
+  }
+
+  &__badge {
+    flex-shrink: 0;
+    position: relative;
+    font-size: 0.625rem;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 2rem;
+    white-space: nowrap;
+    backdrop-filter: blur(4px);
+
+    &--brouillon, &--terminee { background: rgba(255,255,255,0.2); color: #fff; }
+    &--envoyee               { background: rgba(44,92,197,0.5);   color: #fff; }
+    &--recontactee           { background: rgba(230,184,0,0.45);  color: #fff; }
+    &--confirmee             { background: rgba(52,168,83,0.45);  color: #fff; }
+    &--annulee, &--cloturee  { background: rgba(208,0,0,0.4);     color: #fff; }
+  }
+}
+
+// ── Bouton back (dans le bandeau) ──────────────────────────────────────────────
 .back-btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -217,117 +273,62 @@ $bottom-nav-h: 56px;
   font-family: 'Inter', sans-serif;
   font-size: 0.875rem;
   font-weight: 500;
-  color: $text-secondary;
+  color: rgba(255, 255, 255, 0.85);
   cursor: pointer;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   transition: color 150ms ease;
 
   &:active {
-    color: $brand-primary;
+    color: #fff;
   }
 }
 
-// ── Card titre ─────────────────────────────────────────────────────────────────
-.title-card {
-  background: #fff;
-  border-radius: $radius-md;
-  padding: $spacing-m;
-  display: flex;
-  align-items: center;
-  gap: $spacing-s;
-  box-shadow: 0 1px 4px $shadow-s;
-
-  &__media {
-    flex-shrink: 0;
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    overflow: hidden;
-    background: $brand-subtle;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  &__img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  &__fallback {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 18px;
-    font-weight: 500;
-    color: $text-secondary;
-    line-height: 1;
-  }
-
-  &__info {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  &__category {
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: $brand-muted;
-  }
-
-  &__name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: $brand-primary;
-    line-height: 1.2;
-  }
-
-  &__badge {
-    flex-shrink: 0;
-    font-size: 0.625rem;
-    font-weight: 600;
-    padding: 2px 7px;
-    border-radius: 2rem;
-    white-space: nowrap;
-
-    &--brouillon,
-    &--terminee {
-      background: #f0efee;
-      color: #888;
-    }
-    &--envoyee {
-      background: #e8f0fe;
-      color: #2c5cc5;
-    }
-    &--recontactee {
-      background: rgba($brand-accent, 0.15);
-      color: darken(#e6b800, 20%);
-    }
-    &--confirmee {
-      background: rgba($state-available, 0.12);
-      color: $state-available;
-    }
-    &--annulee,
-    &--cloturee {
-      background: rgba($state-error, 0.1);
-      color: $state-error;
-    }
-  }
-}
-
-// ── Card notes ─────────────────────────────────────────────────────────────────
-.notes-card {
-  background: #fff;
-  padding: $spacing-m;
-  box-shadow: 0 1px 4px $shadow-s;
+// ── Contenu centré ─────────────────────────────────────────────────────────────
+.reservation-detail {
   display: flex;
   flex-direction: column;
-  gap: $spacing-s;
+  gap: $spacing-m;
+  padding: $spacing-m $spacing-m calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $spacing-m);
+
+  @media (min-width: $desktop) {
+    position: relative;
+    padding: $spacing-l 0;
+    align-items: center;
+
+    > * {
+      width: 100%;
+      max-width: 760px;
+    }
+  }
+}
+
+
+.notes-card__header {
+  display: none;
+
+  @media (min-width: $desktop) {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: $spacing-xs;
+  }
+}
+
+.notes-card__add-btn {
+  padding: 5px 14px;
+  border: 1px solid $brand-border;
+  border-radius: $radius-md;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $text-secondary;
+  cursor: pointer;
+  transition: border-color 150ms ease, color 150ms ease;
+
+  &:hover {
+    border-color: $brand-primary;
+    color: $brand-primary;
+  }
 }
 
 .notes-card__empty {
@@ -349,96 +350,8 @@ $bottom-nav-h: 56px;
   gap: $spacing-s;
 }
 
-// ── Note item ──────────────────────────────────────────────────────────────────
-.note-item {
-  display: block;
-}
 
-.note-body {
-  padding: $spacing-s;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-xs;
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.07),
-    0 1px 2px rgba(0, 0, 0, 0.04);
-
-  .note-item--client & {
-    background: rgba($brand-accent, 0.08);
-  }
-
-  .note-item--prestataire & {
-    background: $brand-subtle;
-  }
-}
-
-.note-avatar {
-  flex-shrink: 0;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: rgba($brand-muted, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-
-  &__img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  &__initials {
-    font-family: 'Inter', sans-serif;
-    font-size: 9px;
-    font-weight: 600;
-    color: $brand-muted;
-    line-height: 1;
-  }
-}
-
-.note-meta {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-
-  &__author {
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: $brand-muted;
-  }
-
-  &__dot {
-    width: 2px;
-    height: 2px;
-    border-radius: 50%;
-    background: $text-secondary;
-    opacity: 0.4;
-  }
-
-  &__date {
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    color: $text-secondary;
-    opacity: 0.6;
-  }
-}
-
-.note-content {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 400;
-  color: $text-primary;
-  line-height: 1.55;
-  margin: 0;
-  white-space: pre-wrap;
-}
-
-// ── FAB ────────────────────────────────────────────────────────────────────────
+// ── FAB (mobile uniquement) ────────────────────────────────────────────────────
 .note-fab {
   position: fixed;
   right: $spacing-m;
@@ -459,9 +372,7 @@ $bottom-nav-h: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition:
-    transform 120ms ease,
-    box-shadow 120ms ease;
+  transition: transform 120ms ease, box-shadow 120ms ease;
 
   &:active {
     transform: scale(0.94);
@@ -473,18 +384,21 @@ $bottom-nav-h: 56px;
 .note-form {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  padding: 32px;
+  gap: $spacing-l;
 
   &__textarea {
+    flex: 1;
     width: 100%;
-    min-height: calc(3 * 1.5em + 2 * #{$spacing-s});
-    padding: $spacing-s $spacing-m;
+    min-height: 300px;
+    padding: 0;
     border: none;
-    border-bottom: 0.5px solid $brand-border;
     border-radius: 0;
     resize: none;
     font-family: inherit;
-    font-size: 0.875rem;
-    line-height: 1.5;
+    font-size: 1rem;
+    line-height: 1.8;
     color: $text-primary;
     background: transparent;
     outline: none;
@@ -492,15 +406,16 @@ $bottom-nav-h: 56px;
 
     &::placeholder {
       color: $text-secondary;
-      opacity: 0.5;
+      opacity: 0.4;
     }
   }
 
   &__send {
+    flex-shrink: 0;
     width: 100%;
     height: 48px;
     border: none;
-    border-radius: 0;
+    border-radius: $radius-md;
     background: $brand-accent;
     color: $brand-primary;
     font-family: inherit;

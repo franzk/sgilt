@@ -278,7 +278,7 @@ function formatDate(iso: string) {
 // ── Bloc ──────────────────────────────────────────────────────────────────────
 .event-block {
   background: #fff;
-  border-radius: $border-radius-m;
+  border-radius: $border-radius-s;
   padding: $spacing-m;
   display: flex;
   flex-direction: column;
