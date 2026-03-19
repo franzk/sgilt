@@ -29,13 +29,6 @@ const ECLAT: NoteAuthor = {
   photo: '/images/prestataires/traiteur-gourmet.jpg',
 }
 
-const MARC: NoteAuthor = {
-  id: 'client-2',
-  name: 'Marc D.',
-  role: 'client',
-  photo: 'https://picsum.photos/seed/marc-d/64/64',
-}
-
 const GYPSY: NoteAuthor = {
   id: 'presta-1',
   name: 'Gypsy Reed Ensemble',
@@ -183,7 +176,7 @@ const MOCK_RESERVATIONS: ReservationDetail[] = [
     notes: [
       {
         id: 'note-010',
-        author: MARC,
+        author: JULIE,
         content:
           'Lieu : Villa Florentine, 25 montée Saint-Barthélemy, Lyon 5e. Entrée prestataires côté nord. Installation possible dès 16h.',
         createdAt: '2026-03-01T10:30:00.000Z',
@@ -197,7 +190,7 @@ const MOCK_RESERVATIONS: ReservationDetail[] = [
       },
       {
         id: 'note-012',
-        author: MARC,
+        author: JULIE,
         content:
           'Acompte de 30 % (360 €) réglé par virement le 05/03/2026. Référence virement : MARC50-GYPSY.',
         createdAt: '2026-03-05T16:00:00.000Z',
@@ -222,7 +215,7 @@ const MOCK_RESERVATIONS: ReservationDetail[] = [
     notes: [
       {
         id: 'note-014',
-        author: MARC,
+        author: JULIE,
         content:
           '60 couverts. Cocktail dînatoire : 8 pièces chaudes + 8 pièces froides par personne. 6 personnes végétariennes. Allergie déclarée : lactose (2 personnes).',
         createdAt: '2026-02-28T14:00:00.000Z',
@@ -236,7 +229,7 @@ const MOCK_RESERVATIONS: ReservationDetail[] = [
       },
       {
         id: 'note-016',
-        author: MARC,
+        author: JULIE,
         content:
           'Devis signé et retourné le 10/03/2026. Acompte de 1 872 € réglé par CB. Solde dû 10 jours avant l\'événement.',
         createdAt: '2026-03-10T17:30:00.000Z',
@@ -254,7 +247,7 @@ const MOCK_RESERVATIONS: ReservationDetail[] = [
     notes: [
       {
         id: 'note-017',
-        author: MARC,
+        author: JULIE,
         content:
           'Événement : anniversaire 50 ans, 23 mai 2026, 19h–23h. Lieu : Villa Florentine, Lyon 5e. Thème festif, décoration rétro années 80.',
         createdAt: '2026-03-12T11:00:00.000Z',
@@ -268,7 +261,7 @@ const MOCK_RESERVATIONS: ReservationDetail[] = [
       },
       {
         id: 'note-019',
-        author: MARC,
+        author: JULIE,
         content:
           'Option fond décor personnalisé "Marc 50 ans" demandée. En attente du devis définitif incluant cette option.',
         createdAt: '2026-03-14T15:20:00.000Z',
