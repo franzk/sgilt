@@ -29,6 +29,27 @@ const ECLAT: NoteAuthor = {
   photo: '/images/prestataires/traiteur-gourmet.jpg',
 }
 
+const MARC: NoteAuthor = {
+  id: 'client-2',
+  name: 'Marc D.',
+  role: 'client',
+  photo: 'https://picsum.photos/seed/marc-d/64/64',
+}
+
+const GYPSY: NoteAuthor = {
+  id: 'presta-1',
+  name: 'Gypsy Reed Ensemble',
+  role: 'prestataire',
+  photo: '/images/prestataires/jazz-band.jpg',
+}
+
+const STUDIO: NoteAuthor = {
+  id: 'presta-18',
+  name: 'Studio Photo Mobile',
+  role: 'prestataire',
+  photo: '/images/prestataires/studio-photo-mobile.jpg',
+}
+
 const MOCK_RESERVATIONS: ReservationDetail[] = [
   {
     id: 'res-001',
@@ -148,6 +169,111 @@ const MOCK_RESERVATIONS: ReservationDetail[] = [
     status: 'annulee',
     unreadNotesCount: 0,
     notes: [],
+  },
+
+  // ── Événement 2 : Anniversaire 50 ans de Marc ─────────────────────────────
+  {
+    id: 'res-010',
+    prestataireId: '1',
+    prestataireName: 'Gypsy Reed Ensemble',
+    prestatairePhoto: '/images/prestataires/jazz-band.jpg',
+    category: 'Musique',
+    status: 'confirmee',
+    unreadNotesCount: 2,
+    notes: [
+      {
+        id: 'note-010',
+        author: MARC,
+        content:
+          'Lieu : Villa Florentine, 25 montée Saint-Barthélemy, Lyon 5e. Entrée prestataires côté nord. Installation possible dès 16h.',
+        createdAt: '2026-03-01T10:30:00.000Z',
+      },
+      {
+        id: 'note-011',
+        author: GYPSY,
+        content:
+          'Formule retenue : trio jazz manouche 3h (19h–22h). Répertoire standards jazz, bossa nova et swing. Tarif confirmé : 1 200 € TTC.',
+        createdAt: '2026-03-03T09:15:00.000Z',
+      },
+      {
+        id: 'note-012',
+        author: MARC,
+        content:
+          'Acompte de 30 % (360 €) réglé par virement le 05/03/2026. Référence virement : MARC50-GYPSY.',
+        createdAt: '2026-03-05T16:00:00.000Z',
+      },
+      {
+        id: 'note-013',
+        author: GYPSY,
+        content:
+          'Besoins techniques : 2 retours de scène 10", 1 prise secteur 220V (16A), surface min. 6 m². Pas de sonorisation lourde requise — acoustique naturelle.',
+        createdAt: '2026-03-07T11:00:00.000Z',
+      },
+    ],
+  },
+  {
+    id: 'res-011',
+    prestataireId: '6',
+    prestataireName: 'Éclat Gourmet',
+    prestatairePhoto: '/images/prestataires/traiteur-gourmet.jpg',
+    category: 'Restauration',
+    status: 'confirmee',
+    unreadNotesCount: 1,
+    notes: [
+      {
+        id: 'note-014',
+        author: MARC,
+        content:
+          '60 couverts. Cocktail dînatoire : 8 pièces chaudes + 8 pièces froides par personne. 6 personnes végétariennes. Allergie déclarée : lactose (2 personnes).',
+        createdAt: '2026-02-28T14:00:00.000Z',
+      },
+      {
+        id: 'note-015',
+        author: ECLAT,
+        content:
+          'Formule cocktail dînatoire confirmée : 78 € HT / pers., soit 4 680 € HT pour 60 couverts. Acompte 40 % à la signature — devis envoyé par email.',
+        createdAt: '2026-03-02T08:45:00.000Z',
+      },
+      {
+        id: 'note-016',
+        author: MARC,
+        content:
+          'Devis signé et retourné le 10/03/2026. Acompte de 1 872 € réglé par CB. Solde dû 10 jours avant l\'événement.',
+        createdAt: '2026-03-10T17:30:00.000Z',
+      },
+    ],
+  },
+  {
+    id: 'res-012',
+    prestataireId: '18',
+    prestataireName: 'Studio Photo Mobile',
+    prestatairePhoto: '/images/prestataires/studio-photo-mobile.jpg',
+    category: 'Photo',
+    status: 'envoyee',
+    unreadNotesCount: 0,
+    notes: [
+      {
+        id: 'note-017',
+        author: MARC,
+        content:
+          'Événement : anniversaire 50 ans, 23 mai 2026, 19h–23h. Lieu : Villa Florentine, Lyon 5e. Thème festif, décoration rétro années 80.',
+        createdAt: '2026-03-12T11:00:00.000Z',
+      },
+      {
+        id: 'note-018',
+        author: STUDIO,
+        content:
+          'Prestation disponible : photobooth autonome 4h avec tirages instantanés illimités + clé USB photos numériques remise en fin de soirée. Tarif indicatif : 750 € TTC.',
+        createdAt: '2026-03-13T09:30:00.000Z',
+      },
+      {
+        id: 'note-019',
+        author: MARC,
+        content:
+          'Option fond décor personnalisé "Marc 50 ans" demandée. En attente du devis définitif incluant cette option.',
+        createdAt: '2026-03-14T15:20:00.000Z',
+      },
+    ],
   },
 ]
 
