@@ -310,26 +310,26 @@ $desktop: 900px;
 .add-prestataire-btn {
   width: 100%;
   padding: $spacing-s;
-  border: 1.5px dashed $brand-border;
+  border: 1.5px dashed $color-primary;
   border-radius: $radius-md;
   background: transparent;
   font-family: inherit;
   font-size: 0.875rem;
   font-weight: 500;
-  color: $text-secondary;
+  color: $text-primary;
   cursor: pointer;
   transition:
     border-color 150ms ease,
     color 150ms ease;
 
   &:active {
-    border-color: $brand-primary;
-    color: $brand-primary;
+    border-color: $color-primary;
+    color: $color-primary;
   }
 
   @media (min-width: $desktop) {
-    border-color: rgba(255, 255, 255, 0.6);
-    color: $color-white;
+    // border-color: rgba(255, 255, 255, 0);
+    // color: $color-white;
     transition: background 150ms ease;
 
     &:hover {
