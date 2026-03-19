@@ -144,7 +144,7 @@ $desktop: 900px;
 
 .event-board {
   min-height: 100%;
-  background-color: #ffffff;
+  background-color: #f5f5f3;
 }
 
 // ── Bandeau couverture ─────────────────────────────────────────────────────────
@@ -261,7 +261,7 @@ $desktop: 900px;
 
 // ── Shadows + border cards réservation ────────────────────────────────────────
 :deep(.reservation-card) {
-  border-color: rgba(47, 42, 37, 0.10);
+  border-color: rgba(47, 42, 37, 0.1);
   border-left-width: 3px;
   box-shadow: 0 1px 4px rgba(47, 42, 37, 0.08);
 }
@@ -282,7 +282,6 @@ $desktop: 900px;
   display: flex;
   flex-direction: column;
   gap: $spacing-m;
-
 }
 
 .reservation-group {
