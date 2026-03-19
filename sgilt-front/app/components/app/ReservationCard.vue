@@ -1,5 +1,10 @@
 <template>
-  <button class="reservation-card" type="button" @click="$emit('click')">
+  <button
+    class="reservation-card"
+    type="button"
+    :style="{ borderLeftColor: RESERVATION_STATUS_COLORS[reservation.status] }"
+    @click="$emit('click')"
+  >
     <!-- Photo / fallback initiales -->
     <div class="card-media">
       <img
@@ -38,20 +43,14 @@
 </template>
 
 <script setup lang="ts">
-import type { Reservation, ReservationStatus } from '~/types/event'
+import type { Reservation } from '~/types/event'
+import {
+  RESERVATION_STATUS_LABELS as STATUS_LABELS,
+  RESERVATION_STATUS_COLORS,
+} from '~/utils/reservationStatus'
 
 const props = defineProps<{ reservation: Reservation }>()
 defineEmits<{ click: [] }>()
-
-const STATUS_LABELS: Record<ReservationStatus, string> = {
-  brouillon: 'Brouillon',
-  envoyee: 'Envoyée',
-  recontactee: 'Recontactée',
-  confirmee: 'Confirmée',
-  annulee: 'Annulée',
-  cloturee: 'Clôturée',
-  terminee: 'Terminée',
-}
 
 const initials = computed(() =>
   props.reservation.prestataireName
@@ -72,6 +71,7 @@ const initials = computed(() =>
   padding: 12px 14px;
   border-radius: $border-radius-xs;
   border: 0.5px solid $brand-border;
+  border-left-width: 3px;
   background: #fff;
   box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.06),

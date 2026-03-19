@@ -5,7 +5,11 @@
       v-if="reservation"
       ref="bannerRef"
       class="cover-banner"
-      :style="reservation.prestatairePhoto ? { backgroundImage: `url(${reservation.prestatairePhoto})` } : {}"
+      :style="
+        reservation.prestatairePhoto
+          ? { backgroundImage: `url(${reservation.prestatairePhoto})` }
+          : {}
+      "
     >
       <div class="cover-banner__overlay" />
       <button class="back-btn" type="button" @click="navigateTo(`/app/events/${eventId}`)">
@@ -22,23 +26,94 @@
       </div>
     </div>
 
+    <!-- ── Onglets ────────────────────────────────────────────────────────────── -->
+    <div v-if="reservation" class="tab-bar">
+      <button
+        class="tab-btn"
+        :class="{ 'tab-btn--active': activeTab === 'notes' }"
+        type="button"
+        @click="activeTab = 'notes'"
+      >
+        Notes
+      </button>
+      <button
+        class="tab-btn"
+        :class="{ 'tab-btn--active': activeTab === 'documents' }"
+        type="button"
+        @click="activeTab = 'documents'"
+      >
+        Documents
+      </button>
+    </div>
+
     <!-- ── Contenu ───────────────────────────────────────────────────────────── -->
     <div class="reservation-detail">
       <template v-if="reservation">
-        <!-- ── Bouton ajout note (desktop) ─────────────────────────────────── -->
-        <div class="notes-card__header">
-          <button class="notes-card__add-btn" type="button" @click="noteSheetOpen = true">
-            + Ajouter une note
-          </button>
-        </div>
 
-        <!-- ── Notes ────────────────────────────────────────────────────────── -->
-        <p v-if="sortedNotes.length === 0" class="notes-card__empty">Aucune note pour le moment.</p>
-        <ul v-if="sortedNotes.length > 0" class="notes-list">
-          <li v-for="note in sortedNotes" :key="note.id">
-            <NoteCard :note="note" />
-          </li>
-        </ul>
+        <!-- ══ Onglet Notes ══════════════════════════════════════════════════ -->
+        <template v-if="activeTab === 'notes'">
+          <!-- Bouton ajout note (desktop) -->
+          <div class="tab-section-header">
+            <button class="tab-section-btn" type="button" @click="noteSheetOpen = true">
+              + Ajouter une note
+            </button>
+          </div>
+
+          <p v-if="sortedNotes.length === 0" class="tab-empty">Aucune note pour le moment.</p>
+          <ul v-else class="notes-list">
+            <li v-for="note in sortedNotes" :key="note.id">
+              <NoteCard :note="note" />
+            </li>
+          </ul>
+        </template>
+
+        <!-- ══ Onglet Documents ══════════════════════════════════════════════ -->
+        <template v-else-if="activeTab === 'documents'">
+          <!-- Bouton déposer (desktop) -->
+          <div class="tab-section-header">
+            <button class="tab-section-btn" type="button" @click="triggerUpload">
+              ↑ Déposer un document
+            </button>
+          </div>
+
+          <!-- File input caché -->
+          <input ref="fileInputRef" type="file" style="display: none" @change="handleUpload" />
+
+          <p v-if="sortedDocuments.length === 0" class="tab-empty">
+            Aucun document partagé pour le moment.
+          </p>
+          <ul v-else class="doc-list">
+            <li v-for="doc in sortedDocuments" :key="doc.id" class="doc-item">
+              <div class="doc-icon" :class="`doc-icon--${doc.fileType}`">
+                {{ doc.fileType === 'pdf' ? 'PDF' : doc.fileType === 'image' ? 'IMG' : 'DOC' }}
+              </div>
+              <div class="doc-info">
+                <span class="doc-name">{{ doc.name }}</span>
+                <span class="doc-meta">
+                  {{ doc.uploadedBy.name }} · {{ formatDocDate(doc.uploadedAt) }}
+                </span>
+              </div>
+              <div class="doc-actions">
+                <a :href="doc.url" download class="doc-btn" title="Télécharger">↓</a>
+                <button
+                  v-if="doc.uploadedBy.role === 'client'"
+                  class="doc-btn doc-btn--delete"
+                  type="button"
+                  title="Supprimer"
+                  @click="deleteDocument(doc.id)"
+                >
+                  ✕
+                </button>
+              </div>
+            </li>
+          </ul>
+
+          <!-- Bouton déposer (mobile, pleine largeur, en bas) -->
+          <button v-if="isMobile" class="upload-btn-mobile" type="button" @click="triggerUpload">
+            ↑ Déposer un document
+          </button>
+        </template>
+
       </template>
 
       <!-- Skeleton -->
@@ -49,9 +124,9 @@
         </div>
       </template>
 
-      <!-- ── FAB (mobile uniquement) ──────────────────────────────────────── -->
+      <!-- ── FAB notes (mobile uniquement) ─────────────────────────────────── -->
       <button
-        v-if="reservation && isMobile"
+        v-if="reservation && isMobile && activeTab === 'notes'"
         class="note-fab"
         type="button"
         aria-label="Ajouter une note"
@@ -61,7 +136,12 @@
       </button>
 
       <!-- ── Dialog ajout note ─────────────────────────────────────────────── -->
-      <SgiltDialog v-if="noteSheetOpen" v-model:open="noteSheetOpen" title="Ajouter une note" max-width="800px">
+      <SgiltDialog
+        v-if="noteSheetOpen"
+        v-model:open="noteSheetOpen"
+        title="Ajouter une note"
+        max-width="800px"
+      >
         <div class="note-form">
           <textarea
             ref="noteTextareaRef"
@@ -87,9 +167,10 @@
 
 <script setup lang="ts">
 import { ReservationMockService } from '~/services/reservation.mock'
-import type { ReservationDetail, ReservationStatus } from '~/types/event'
+import type { ReservationDetail, ReservationDocument, NoteAuthor } from '~/types/event'
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import NoteCard from '~/components/app/NoteCard.vue'
+import { RESERVATION_STATUS_LABELS as STATUS_LABELS } from '~/utils/reservationStatus'
 
 definePageMeta({ layout: 'app' })
 
@@ -97,6 +178,17 @@ const route = useRoute()
 const reservationId = route.params.reservationId as string
 const eventId = route.params.eventId as string
 const { isMobile } = useDevice()
+
+// ── Utilisateur connecté (mock) ────────────────────────────────────────────────
+const CURRENT_USER: NoteAuthor = {
+  id: 'client-1',
+  name: 'Julie M.',
+  role: 'client',
+  photo: 'https://picsum.photos/seed/julie-m/64/64',
+}
+
+// ── Onglets ────────────────────────────────────────────────────────────────────
+const activeTab = ref<'notes' | 'documents'>('notes')
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const reservation = ref<ReservationDetail | null>(null)
@@ -160,17 +252,52 @@ async function sendNote() {
   noteSheetOpen.value = false
 }
 
-// ── Labels ────────────────────────────────────────────────────────────────────
-const STATUS_LABELS: Record<ReservationStatus, string> = {
-  brouillon: 'Brouillon',
-  envoyee: 'Envoyée',
-  recontactee: 'Recontactée',
-  confirmee: 'Confirmée',
-  annulee: 'Annulée',
-  cloturee: 'Clôturée',
-  terminee: 'Terminée',
+// ── Documents ─────────────────────────────────────────────────────────────────
+const sortedDocuments = computed(() =>
+  [...(reservation.value?.documents ?? [])].sort(
+    (a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime(),
+  ),
+)
+
+const fileInputRef = ref<HTMLInputElement | null>(null)
+
+function triggerUpload() {
+  fileInputRef.value?.click()
 }
 
+function handleUpload(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file || !reservation.value) return
+  const fileType: ReservationDocument['fileType'] =
+    file.type === 'application/pdf'
+      ? 'pdf'
+      : file.type.startsWith('image/')
+        ? 'image'
+        : 'other'
+  const doc: ReservationDocument = {
+    id: `doc-${Date.now()}`,
+    name: file.name,
+    fileType,
+    url: URL.createObjectURL(file),
+    uploadedBy: CURRENT_USER,
+    uploadedAt: new Date().toISOString(),
+  }
+  reservation.value.documents.unshift(doc)
+  ;(e.target as HTMLInputElement).value = ''
+}
+
+function deleteDocument(id: string) {
+  if (!reservation.value) return
+  reservation.value.documents = reservation.value.documents.filter((d) => d.id !== id)
+}
+
+function formatDocDate(iso: string) {
+  return new Date(iso).toLocaleDateString('fr-FR', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  })
+}
 </script>
 
 <style scoped lang="scss">
@@ -180,7 +307,7 @@ $desktop: 900px;
 // ── Page wrapper ───────────────────────────────────────────────────────────────
 .reservation-page {
   min-height: 100%;
-  background-color: #efbc49;
+  background-color: #f5f5f3;
 }
 
 // ── Bandeau couverture ─────────────────────────────────────────────────────────
@@ -253,15 +380,32 @@ $desktop: 900px;
     white-space: nowrap;
     backdrop-filter: blur(4px);
 
-    &--brouillon, &--terminee { background: rgba(255,255,255,0.2); color: #fff; }
-    &--envoyee               { background: rgba(44,92,197,0.5);   color: #fff; }
-    &--recontactee           { background: rgba(230,184,0,0.45);  color: #fff; }
-    &--confirmee             { background: rgba(52,168,83,0.45);  color: #fff; }
-    &--annulee, &--cloturee  { background: rgba(208,0,0,0.4);     color: #fff; }
+    &--brouillon,
+    &--terminee {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+    &--envoyee {
+      background: rgba(44, 92, 197, 0.5);
+      color: #fff;
+    }
+    &--recontactee {
+      background: rgba(230, 184, 0, 0.45);
+      color: #fff;
+    }
+    &--confirmee {
+      background: rgba(52, 168, 83, 0.45);
+      color: #fff;
+    }
+    &--annulee,
+    &--cloturee {
+      background: rgba(208, 0, 0, 0.4);
+      color: #fff;
+    }
   }
 }
 
-// ── Bouton back (dans le bandeau) ──────────────────────────────────────────────
+// ── Bouton back ────────────────────────────────────────────────────────────────
 .back-btn {
   position: relative;
   display: inline-flex;
@@ -280,6 +424,46 @@ $desktop: 900px;
 
   &:active {
     color: #fff;
+  }
+}
+
+// ── Barre d'onglets ────────────────────────────────────────────────────────────
+.tab-bar {
+  display: flex;
+  background: #fff;
+  border-bottom: 1px solid $divider-color;
+  padding: 0 $spacing-m;
+
+  @media (min-width: $desktop) {
+    padding: 0 40px;
+  }
+}
+
+.tab-btn {
+  flex: 1;
+  padding: $spacing-s 0;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  background: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $text-secondary;
+  cursor: pointer;
+  transition:
+    color 150ms ease,
+    border-color 150ms ease;
+
+  &--active {
+    color: $brand-primary;
+    border-bottom-color: $brand-accent;
+    font-weight: 600;
+  }
+
+  @media (min-width: $desktop) {
+    flex: 0 1 auto;
+    padding: $spacing-s $spacing-m;
   }
 }
 
@@ -302,8 +486,8 @@ $desktop: 900px;
   }
 }
 
-
-.notes-card__header {
+// ── Header de section (desktop uniquement) ────────────────────────────────────
+.tab-section-header {
   display: none;
 
   @media (min-width: $desktop) {
@@ -313,7 +497,7 @@ $desktop: 900px;
   }
 }
 
-.notes-card__add-btn {
+.tab-section-btn {
   padding: 5px 14px;
   border: 1px solid $brand-border;
   border-radius: $radius-md;
@@ -323,7 +507,9 @@ $desktop: 900px;
   font-weight: 600;
   color: $text-secondary;
   cursor: pointer;
-  transition: border-color 150ms ease, color 150ms ease;
+  transition:
+    border-color 150ms ease,
+    color 150ms ease;
 
   &:hover {
     border-color: $brand-primary;
@@ -331,7 +517,8 @@ $desktop: 900px;
   }
 }
 
-.notes-card__empty {
+// ── État vide ─────────────────────────────────────────────────────────────────
+.tab-empty {
   font-size: 0.875rem;
   color: $text-secondary;
   opacity: 0.55;
@@ -341,6 +528,7 @@ $desktop: 900px;
   padding: $spacing-m 0;
 }
 
+// ── Liste notes ───────────────────────────────────────────────────────────────
 .notes-list {
   list-style: none;
   margin: 0;
@@ -350,8 +538,143 @@ $desktop: 900px;
   gap: $spacing-s;
 }
 
+// ── Liste documents ───────────────────────────────────────────────────────────
+.doc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-s;
+}
 
-// ── FAB (mobile uniquement) ────────────────────────────────────────────────────
+.doc-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-s;
+  padding: 10px $spacing-s;
+  background: #fff;
+  border-radius: $radius-md;
+  border: 0.5px solid rgba(47, 42, 37, 0.10);
+  box-shadow: 0 1px 4px rgba(47, 42, 37, 0.07);
+}
+
+.doc-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: $radius-sm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+
+  &--pdf {
+    background: rgba(163, 45, 45, 0.1);
+    color: #a32d2d;
+  }
+
+  &--image {
+    background: rgba(24, 95, 165, 0.1);
+    color: #185fa5;
+  }
+
+  &--other {
+    background: rgba(107, 99, 92, 0.1);
+    color: #6b635c;
+  }
+}
+
+.doc-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.doc-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.doc-meta {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  color: $text-secondary;
+  opacity: 0.7;
+}
+
+.doc-actions {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  flex-shrink: 0;
+}
+
+.doc-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: $radius-sm;
+  border: none;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  cursor: pointer;
+  text-decoration: none;
+  color: $text-secondary;
+  transition:
+    background 150ms ease,
+    color 150ms ease;
+
+  &:hover {
+    background: $surface-soft;
+    color: $text-primary;
+  }
+
+  &--delete {
+    font-size: 0.75rem;
+
+    &:hover {
+      background: rgba(163, 45, 45, 0.1);
+      color: #a32d2d;
+    }
+  }
+}
+
+// ── Bouton déposer (mobile) ────────────────────────────────────────────────────
+.upload-btn-mobile {
+  width: 100%;
+  padding: $spacing-m;
+  border: 1.5px dashed $brand-border;
+  border-radius: $radius-md;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $text-secondary;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    color 150ms ease;
+
+  &:active {
+    border-color: $brand-primary;
+    color: $brand-primary;
+  }
+}
+
+// ── FAB (mobile, notes uniquement) ────────────────────────────────────────────
 .note-fab {
   position: fixed;
   right: $spacing-m;
@@ -372,7 +695,9 @@ $desktop: 900px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 120ms ease, box-shadow 120ms ease;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease;
 
   &:active {
     transform: scale(0.94);

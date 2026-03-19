@@ -128,7 +128,7 @@ $desktop: 900px;
   flex-direction: column;
   gap: $spacing-l;
   padding: 0 $spacing-m calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $spacing-m);
-  background-color: #efbc49;
+  background-color: #f5f5f3;
 
   @media (min-width: $desktop) {
     padding: 0 0 $spacing-xl;
@@ -232,26 +232,22 @@ $desktop: 900px;
   flex-direction: column;
   border-radius: 16px;
   padding: 0;
-  border: 0.5px solid $brand-border;
+  border: 0.5px solid rgba(47, 42, 37, 0.10);
   background: #fff;
   overflow: hidden;
   text-align: left;
   font-family: inherit;
   cursor: pointer;
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.06),
-    0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 12px rgba(47, 42, 37, 0.08);
   transition: box-shadow 150ms ease;
 
   &:active {
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 4px rgba(47, 42, 37, 0.06);
   }
 
   @media (min-width: $desktop) {
     &:hover {
-      box-shadow:
-        0 6px 20px rgba(0, 0, 0, 0.1),
-        0 2px 6px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 6px 24px rgba(47, 42, 37, 0.14);
     }
   }
 

@@ -11,7 +11,8 @@
       "Bash(cd \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front\" && npm install pinia @pinia/nuxt --legacy-peer-deps 2>&1 | tail -5)",
       "Bash(cd \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front\" && npm install pinia @pinia/nuxt --force 2>&1 | tail -8)",
       "Bash(cd \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front\" && pnpm add pinia @pinia/nuxt 2>&1 | tail -8)",
-      "Bash(grep -r \"i18n\\\\|useI18n\\\\|vue-i18n\" \"C:/Users/koehl/Documents/projects/sgilt/sgilt/sgilt-front/\" --include=\"*.ts\" --include=\"*.vue\" -l 2>/dev/null | head -5)"
+      "Bash(grep -r \"i18n\\\\|useI18n\\\\|vue-i18n\" \"C:/Users/koehl/Documents/projects/sgilt/sgilt/sgilt-front/\" --include=\"*.ts\" --include=\"*.vue\" -l 2>/dev/null | head -5)",
+      "Bash(find \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front\\\\app\" -name \"*reservation*\" -o -name \"*status*\" 2>/dev/null | head -20)"
     ]
   }
 }

@@ -62,6 +62,16 @@ export interface ReservationNote {
   createdAt: string // ISO datetime
 }
 
+export interface ReservationDocument {
+  id: string
+  name: string
+  fileType: 'pdf' | 'image' | 'other'
+  url: string
+  uploadedBy: NoteAuthor
+  uploadedAt: string // ISO datetime
+}
+
 export interface ReservationDetail extends Reservation {
   notes: ReservationNote[]
+  documents: ReservationDocument[]
 }

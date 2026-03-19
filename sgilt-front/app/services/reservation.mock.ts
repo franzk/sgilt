@@ -1,4 +1,4 @@
-import type { NoteAuthor, ReservationDetail, ReservationNote } from '~/types/event'
+import type { NoteAuthor, ReservationDetail, ReservationDocument, ReservationNote } from '~/types/event'
 
 // ── Auteurs réutilisables ──────────────────────────────────────────────────────
 const JULIE: NoteAuthor = {
@@ -89,6 +89,40 @@ const MOCK_RESERVATIONS: ReservationDetail[] = [
         createdAt: '2026-02-14T16:20:00.000Z',
       },
     ],
+    documents: [
+      {
+        id: 'doc-001',
+        name: 'Contrat_DJ_Animation_14sept2026.pdf',
+        fileType: 'pdf',
+        url: '#',
+        uploadedBy: JULIE,
+        uploadedAt: '2026-02-10T10:30:00.000Z',
+      },
+      {
+        id: 'doc-002',
+        name: 'Rider_technique_et_fiche_besoins.pdf',
+        fileType: 'pdf',
+        url: '#',
+        uploadedBy: DJ,
+        uploadedAt: '2026-02-12T12:00:00.000Z',
+      },
+      {
+        id: 'doc-003',
+        name: 'Photo_salle_cocktail_Domaine_Etoiles.jpg',
+        fileType: 'image',
+        url: '#',
+        uploadedBy: DJ,
+        uploadedAt: '2026-02-18T09:15:00.000Z',
+      },
+      {
+        id: 'doc-004',
+        name: 'Facture_acompte_30pct_DJ_Animation.pdf',
+        fileType: 'pdf',
+        url: '#',
+        uploadedBy: JULIE,
+        uploadedAt: '2026-02-28T17:00:00.000Z',
+      },
+    ] satisfies ReservationDocument[],
   },
   {
     id: 'res-002',
@@ -114,6 +148,7 @@ const MOCK_RESERVATIONS: ReservationDetail[] = [
         createdAt: '2026-01-21T08:30:00.000Z',
       },
     ],
+    documents: [],
   },
   {
     id: 'res-003',
@@ -132,6 +167,7 @@ const MOCK_RESERVATIONS: ReservationDetail[] = [
         createdAt: '2026-02-01T14:00:00.000Z',
       },
     ],
+    documents: [],
   },
   {
     id: 'res-004',
@@ -142,6 +178,7 @@ const MOCK_RESERVATIONS: ReservationDetail[] = [
     status: 'brouillon',
     unreadNotesCount: 0,
     notes: [],
+    documents: [],
   },
   {
     id: 'res-005',
@@ -152,6 +189,7 @@ const MOCK_RESERVATIONS: ReservationDetail[] = [
     status: 'cloturee',
     unreadNotesCount: 0,
     notes: [],
+    documents: [],
   },
   {
     id: 'res-006',
@@ -162,6 +200,7 @@ const MOCK_RESERVATIONS: ReservationDetail[] = [
     status: 'annulee',
     unreadNotesCount: 0,
     notes: [],
+    documents: [],
   },
 
   // ── Événement 2 : Anniversaire 50 ans de Marc ─────────────────────────────
@@ -203,6 +242,7 @@ const MOCK_RESERVATIONS: ReservationDetail[] = [
         createdAt: '2026-03-07T11:00:00.000Z',
       },
     ],
+    documents: [],
   },
   {
     id: 'res-011',
@@ -235,6 +275,7 @@ const MOCK_RESERVATIONS: ReservationDetail[] = [
         createdAt: '2026-03-10T17:30:00.000Z',
       },
     ],
+    documents: [],
   },
   {
     id: 'res-012',
@@ -267,6 +308,7 @@ const MOCK_RESERVATIONS: ReservationDetail[] = [
         createdAt: '2026-03-14T15:20:00.000Z',
       },
     ],
+    documents: [],
   },
 ]
 

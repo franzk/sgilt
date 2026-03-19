@@ -56,6 +56,10 @@ import EventBlock from '~/components/app/EventBlock.vue'
 import ReservationCard from '~/components/app/ReservationCard.vue'
 import { EventMockService } from '~/services/event.mock'
 import type { EventDetail, EventPatch, ReservationStatus } from '~/types/event'
+import {
+  RESERVATION_STATUS_ORDER as STATUS_ORDER,
+  RESERVATION_STATUS_SECTION_LABELS as STATUS_SECTION_LABELS,
+} from '~/utils/reservationStatus'
 
 const route = useRoute()
 const eventId = route.params.eventId as string
@@ -108,25 +112,6 @@ function onEventUpdated(patch: EventPatch) {
 }
 
 // ── Réservations groupées ─────────────────────────────────────────────────────
-const STATUS_ORDER: ReservationStatus[] = [
-  'confirmee',
-  'recontactee',
-  'envoyee',
-  'brouillon',
-  'cloturee',
-  'annulee',
-  'terminee',
-]
-
-const STATUS_SECTION_LABELS: Record<ReservationStatus, string> = {
-  confirmee: 'Confirmées',
-  recontactee: 'Recontactées',
-  envoyee: 'Envoyées',
-  brouillon: 'Brouillons',
-  cloturee: 'Clôturées',
-  annulee: 'Annulées',
-  terminee: 'Terminées',
-}
 
 const groupedReservations = computed(() => {
   if (!event.value) return []
@@ -159,7 +144,7 @@ $desktop: 900px;
 
 .event-board {
   min-height: 100%;
-  background-color: #efbc49;
+  background-color: #ffffff;
 }
 
 // ── Bandeau couverture ─────────────────────────────────────────────────────────
@@ -274,10 +259,21 @@ $desktop: 900px;
   }
 }
 
-// ── Hover card réservation (desktop) ──────────────────────────────────────────
+// ── Shadows + border cards réservation ────────────────────────────────────────
+:deep(.reservation-card) {
+  border-color: rgba(47, 42, 37, 0.10);
+  border-left-width: 3px;
+  box-shadow: 0 1px 4px rgba(47, 42, 37, 0.08);
+}
+
+// ── Shadow event block ─────────────────────────────────────────────────────────
+:deep(.event-block) {
+  box-shadow: 0 4px 20px rgba(47, 42, 37, 0.12);
+}
+
 @media (min-width: $desktop) {
   :deep(.reservation-card:hover) {
-    border-color: rgba($brand-primary, 0.3);
+    box-shadow: 0 4px 16px rgba(47, 42, 37, 0.12);
   }
 }
 
@@ -286,6 +282,7 @@ $desktop: 900px;
   display: flex;
   flex-direction: column;
   gap: $spacing-m;
+
 }
 
 .reservation-group {
@@ -298,8 +295,7 @@ $desktop: 900px;
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: $color-white; // $text-secondary;
-    // opacity: 0.6;
+    color: $brand-accent;
     margin: 0;
     padding: 0 2px;
   }

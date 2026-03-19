@@ -49,9 +49,7 @@ const formattedDate = computed(() =>
   flex-direction: column;
   gap: $spacing-l;
   border-radius: $border-radius-xs;
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.07),
-    0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 4px rgba(47, 42, 37, 0.07);
 
   &--client {
     background: #ffffff;
