@@ -33,8 +33,20 @@
 
       <!-- ── Contenu ────────────────────────────────────────────────────────────── -->
       <div class="board-content">
-        <!-- Bloc événement -->
-        <EventBlock :event="event" @updated="onEventUpdated" />
+        <!-- Bloc événement (accordéon mobile) -->
+        <div class="event-block-wrap">
+          <button class="event-block-toggle" type="button" @click="eventBlockOpen = !eventBlockOpen">
+            <span>Détails de l'événement</span>
+            <span class="event-block-toggle__chevron" :class="{ 'event-block-toggle__chevron--open': eventBlockOpen }">
+              ▼
+            </span>
+          </button>
+          <div class="event-block-body" :class="{ 'event-block-body--open': eventBlockOpen }">
+            <div class="event-block-body__inner">
+              <EventBlock :event="event" @updated="onEventUpdated" />
+            </div>
+          </div>
+        </div>
 
         <!-- Réservations -->
         <section class="reservations">
@@ -164,6 +176,9 @@ const groupedReservations = computed(() => {
     reservations: map.get(s)!,
   }))
 })
+
+// ── Accordéon EventBlock (mobile) ─────────────────────────────────────────────
+const eventBlockOpen = ref(false)
 
 // ── FAB → recherche avec contexte ─────────────────────────────────────────────
 const { state } = useDemande()
@@ -360,6 +375,69 @@ $desktop: 900px;
   }
 }
 
+// ── Accordéon EventBlock (mobile) ─────────────────────────────────────────────
+.event-block-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.event-block-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px $spacing-s;
+  background: #fff;
+  border: none;
+  border-radius: $radius-md;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $brand-primary;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: 0 1px 4px rgba(47, 42, 37, 0.08);
+  transition: box-shadow 150ms ease;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(47, 42, 37, 0.12);
+  }
+
+  @media (min-width: $desktop) {
+    display: none;
+  }
+
+  &__chevron {
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    color: $text-secondary;
+    transition: transform 250ms ease;
+    line-height: 1;
+
+    &--open {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.event-block-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 280ms ease;
+
+  &__inner {
+    overflow: hidden;
+  }
+
+  &--open {
+    grid-template-rows: 1fr;
+  }
+
+  @media (min-width: $desktop) {
+    display: contents;
+  }
+}
+
 // ── Contenu ───────────────────────────────────────────────────────────────────
 .board-content {
   display: flex;
@@ -401,9 +479,10 @@ $desktop: 900px;
 
 // ── Event block sticky (desktop) ──────────────────────────────────────────────
 @media (min-width: $desktop) {
-  :deep(.event-block) {
+  .event-block-wrap {
     position: sticky;
     top: 60px;
+    align-self: start;
   }
 }
 
