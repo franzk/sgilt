@@ -18,41 +18,34 @@
       <p v-if="events.length === 0" class="events-list__empty">
         {{ t('events-list.empty') }}
       </p>
-      <button
+      <SgiltCard
         v-for="event in events"
         :key="event.id"
-        class="event-card"
-        type="button"
+        :image="coverImage(event.eventType)"
+        :ratio="cardRatio"
         @click="navigateTo(`/app/events/${event.id}`)"
       >
-        <!-- Cover -->
-        <div
-          class="event-card__cover"
-          :style="{ backgroundImage: `url(${coverImage(event.eventType)})` }"
-        />
-
-        <!-- Body -->
-        <div class="event-card__body">
+        <template #overlay>
           <h2 class="event-card__title">{{ event.title }}</h2>
           <p class="event-card__meta">
             <span v-if="event.date">{{ formatDate(event.date) }}</span>
-            <span v-if="event.date && event.ville" class="event-card__sep">·</span>
+            <span v-if="event.date && event.ville" aria-hidden="true"> · </span>
             <span v-if="event.ville">{{ event.ville }}</span>
           </p>
           <p class="event-card__summary">{{ reservationSummary(event) }}</p>
-        </div>
-      </button>
+        </template>
+      </SgiltCard>
     </div>
 
     <!-- Skeleton -->
     <div v-else class="events-list">
-      <div v-for="i in 2" :key="i" class="event-card event-card--skeleton">
-        <div class="event-card__cover skeleton-text" />
-        <div class="event-card__body">
-          <div class="skeleton-line skeleton-text" style="width: 60%; height: 1.4rem" />
+      <div v-for="i in 2" :key="i" class="event-card-skeleton">
+        <div class="event-card-skeleton__cover skeleton-text" />
+        <div class="event-card-skeleton__footer">
+          <div class="skeleton-text" style="width: 60%; height: 1.2rem; border-radius: 4px" />
           <div
-            class="skeleton-line skeleton-text"
-            style="width: 40%; height: 0.9rem; margin-top: 6px"
+            class="skeleton-text"
+            style="width: 40%; height: 0.85rem; border-radius: 4px; margin-top: 6px"
           />
         </div>
       </div>
@@ -63,10 +56,13 @@
 <script setup lang="ts">
 import { EventMockService } from '~/services/event.mock'
 import type { EventDetail } from '~/types/event'
+import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
 
 definePageMeta({ layout: 'app' })
 
 const { t } = useI18n()
+const { isDesktop } = useDevice()
+const cardRatio = computed(() => (isDesktop.value ? '16/9' : '3/2'))
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const events = ref<EventDetail[]>([])
@@ -226,77 +222,50 @@ $desktop: 900px;
   padding: $spacing-xl 0;
 }
 
-// ── Card événement ────────────────────────────────────────────────────────────
-.event-card {
-  display: flex;
-  flex-direction: column;
-  border-radius: 16px;
-  padding: 0;
-  border: 0.5px solid rgba(47, 42, 37, 0.1);
-  background: #fff;
+// ── Contenu overlay (slot rendu dans le scope parent) ─────────────────────────
+.event-card__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  line-height: 1.2;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.event-card__meta {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.82);
+  margin: 3px 0 0;
+}
+
+.event-card__summary {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 5px 0 0;
+}
+
+// ── Skeleton ──────────────────────────────────────────────────────────────────
+.event-card-skeleton {
+  border-radius: $radius-lg;
   overflow: hidden;
-  text-align: left;
-  font-family: inherit;
-  cursor: pointer;
-  box-shadow: 0 2px 12px rgba(47, 42, 37, 0.08);
-  transition: box-shadow 150ms ease;
-
-  &:active {
-    box-shadow: 0 1px 4px rgba(47, 42, 37, 0.06);
-  }
-
-  @media (min-width: $desktop) {
-    &:hover {
-      box-shadow: 0 6px 24px rgba(47, 42, 37, 0.14);
-    }
-  }
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(47, 42, 37, 0.06);
 
   &__cover {
     width: 100%;
-    height: 160px;
-    background-size: cover;
-    background-position: center;
-    background-color: $brand-subtle;
-    flex-shrink: 0;
-    border-radius: 16px 16px 0 0;
+    aspect-ratio: 3/2;
+
+    @media (min-width: $desktop) {
+      aspect-ratio: 16/9;
+    }
   }
 
-  &__body {
-    padding: $spacing-m;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  &__title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.375rem;
-    font-weight: 600;
-    color: $brand-primary;
-    margin: 0;
-    line-height: 1.2;
-  }
-
-  &__meta {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.8rem;
-    color: $brand-muted;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  &__sep {
-    opacity: 0.4;
-  }
-
-  &__summary {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: $text-secondary;
-    margin: 4px 0 0;
+  &__footer {
+    padding: $spacing-s;
   }
 }
 </style>
