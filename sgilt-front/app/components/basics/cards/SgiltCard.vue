@@ -77,7 +77,6 @@ withDefaults(
   }
 
   &__footer {
-    padding: $spacing-s;
     background: #fff;
   }
 }

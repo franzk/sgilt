@@ -35,9 +35,16 @@
       <div class="board-content">
         <!-- Bloc événement (accordéon mobile) -->
         <div class="event-block-wrap">
-          <button class="event-block-toggle" type="button" @click="eventBlockOpen = !eventBlockOpen">
+          <button
+            class="event-block-toggle"
+            type="button"
+            @click="eventBlockOpen = !eventBlockOpen"
+          >
             <span>Détails de l'événement</span>
-            <span class="event-block-toggle__chevron" :class="{ 'event-block-toggle__chevron--open': eventBlockOpen }">
+            <span
+              class="event-block-toggle__chevron"
+              :class="{ 'event-block-toggle__chevron--open': eventBlockOpen }"
+            >
               ▼
             </span>
           </button>
@@ -50,16 +57,29 @@
 
         <!-- Réservations -->
         <section class="reservations">
-          <div v-for="group in groupedReservations" :key="group.status" class="reservation-group">
-            <h2 class="reservation-group__title">{{ group.label }}</h2>
-            <div class="reservation-group__list">
-              <ReservationCard
-                v-for="r in group.reservations"
-                :key="r.id"
-                :reservation="r"
-                @click="navigateTo(`/app/events/${eventId}/reservations/${r.id}`)"
-              />
-            </div>
+          <div class="reservations__grid">
+            <SgiltCard
+              v-for="r in sortedReservations"
+              :key="r.id"
+              :image="r.prestatairePhoto || FALLBACK_PHOTO"
+              ratio="4/3"
+              @click="navigateTo(`/app/events/${eventId}/reservations/${r.id}`)"
+            >
+              <template #overlay>
+                <span class="res-card__category">{{ r.category }}</span>
+                <span class="res-card__name">{{ r.prestataireName }}</span>
+              </template>
+              <template #footer>
+                <div class="res-card__footer">
+                  <span class="res-card__badge" :class="`res-card__badge--${r.status}`">
+                    {{ STATUS_LABELS[r.status] }}
+                  </span>
+                  <span v-if="r.unreadNotesCount > 0" class="res-card__unread">
+                    {{ r.unreadNotesCount }}
+                  </span>
+                </div>
+              </template>
+            </SgiltCard>
           </div>
 
           <button class="add-prestataire-btn" type="button" @click="goToSearch">
@@ -83,16 +103,23 @@
 </template>
 
 <script setup lang="ts">
+import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
+
 definePageMeta({ layout: 'app' })
 
 import EventBlock from '~/components/app/EventBlock.vue'
-import ReservationCard from '~/components/app/ReservationCard.vue'
 import { EventMockService } from '~/services/event.mock'
 import type { EventDetail, EventPatch, ReservationStatus } from '~/types/event'
 import {
   RESERVATION_STATUS_ORDER as STATUS_ORDER,
-  RESERVATION_STATUS_SECTION_LABELS as STATUS_SECTION_LABELS,
+  RESERVATION_STATUS_LABELS as STATUS_LABELS,
 } from '~/utils/reservationStatus'
+
+const FALLBACK_PHOTO =
+  'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&auto=format&fit=crop'
+
+const { isDesktop } = useDevice()
+const cardRatio = computed(() => (isDesktop.value ? '16/9' : '3'))
 
 const route = useRoute()
 const eventId = route.params.eventId as string
@@ -146,12 +173,12 @@ function onEventUpdated(patch: EventPatch) {
 
 // ── Widget — pills statut ──────────────────────────────────────────────────────
 const STATUS_PILL_CONFIG: Array<{ status: ReservationStatus; icon: string; label: string }> = [
-  { status: 'confirmee',   icon: '✓', label: 'Confirmée(s)' },
+  { status: 'confirmee', icon: '✓', label: 'Confirmée(s)' },
   { status: 'recontactee', icon: '↩', label: 'Recontactée(s)' },
-  { status: 'envoyee',     icon: '→', label: 'En attente' },
-  { status: 'brouillon',   icon: '✎', label: 'Brouillon(s)' },
-  { status: 'cloturee',    icon: '✕', label: 'Clôturée(s)' },
-  { status: 'annulee',     icon: '✕', label: 'Annulée(s)' },
+  { status: 'envoyee', icon: '→', label: 'En attente' },
+  { status: 'brouillon', icon: '✎', label: 'Brouillon(s)' },
+  { status: 'cloturee', icon: '✕', label: 'Clôturée(s)' },
+  { status: 'annulee', icon: '✕', label: 'Annulée(s)' },
 ]
 
 const statusPills = computed(() => {
@@ -163,18 +190,11 @@ const statusPills = computed(() => {
 })
 
 // ── Réservations groupées ─────────────────────────────────────────────────────
-const groupedReservations = computed(() => {
+const sortedReservations = computed(() => {
   if (!event.value) return []
-  const map = new Map<ReservationStatus, typeof event.value.reservations>()
-  for (const r of event.value.reservations) {
-    if (!map.has(r.status)) map.set(r.status, [])
-    map.get(r.status)!.push(r)
-  }
-  return STATUS_ORDER.filter((s) => map.has(s)).map((s) => ({
-    status: s,
-    label: STATUS_SECTION_LABELS[s],
-    reservations: map.get(s)!,
-  }))
+  return [...event.value.reservations].sort(
+    (a, b) => STATUS_ORDER.indexOf(a.status) - STATUS_ORDER.indexOf(b.status),
+  )
 })
 
 // ── Accordéon EventBlock (mobile) ─────────────────────────────────────────────
@@ -486,51 +506,106 @@ $desktop: 900px;
   }
 }
 
-// ── Shadows + border cards réservation ────────────────────────────────────────
-:deep(.reservation-card) {
-  border-color: rgba(47, 42, 37, 0.1);
-  border-left-width: 3px;
-  box-shadow: 0 1px 4px rgba(47, 42, 37, 0.08);
-}
-
 // ── Shadow event block ─────────────────────────────────────────────────────────
 :deep(.event-block) {
   box-shadow: 0 4px 20px rgba(47, 42, 37, 0.12);
 }
 
-@media (min-width: $desktop) {
-  :deep(.reservation-card:hover) {
-    box-shadow: 0 4px 16px rgba(47, 42, 37, 0.12);
-  }
-}
-
-// ── Sections réservations ─────────────────────────────────────────────────────
+// ── Grille réservations ───────────────────────────────────────────────────────
 .reservations {
   display: flex;
   flex-direction: column;
   gap: $spacing-m;
+
+  @media (min-width: $desktop) {
+    gap: $spacing-l;
+  }
 }
 
-.reservation-group {
+.reservations__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-s;
+
+  @media (min-width: $desktop) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+// ── Cards prestataires — contenu slots ────────────────────────────────────────
+.res-card__category {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 3px;
+}
+
+.res-card__name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.2;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.res-card__footer {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
   gap: $spacing-xs;
+  padding: 8px $spacing-s;
+}
 
-  &__title {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: $brand-accent;
-    margin: 0;
-    padding: 0 2px;
+.res-card__badge {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.625rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 2rem;
+  white-space: nowrap;
+
+  &--brouillon,
+  &--terminee {
+    background: #f0efee;
+    color: #888;
   }
 
-  &__list {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-xs;
+  &--envoyee {
+    background: rgba(230, 184, 0, 0.18);
+    color: #7a5c00;
   }
+
+  &--recontactee {
+    background: #e8f0fe;
+    color: #2c5cc5;
+  }
+
+  &--confirmee {
+    background: rgba(59, 109, 17, 0.12);
+    color: #3b6d11;
+  }
+
+  &--annulee,
+  &--cloturee {
+    background: rgba(163, 45, 45, 0.1);
+    color: #a32d2d;
+  }
+}
+
+.res-card__unread {
+  flex-shrink: 0;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: $brand-accent;
+  color: $brand-primary;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1.4;
 }
 
 // ── Bouton ajout prestataire ──────────────────────────────────────────────────
