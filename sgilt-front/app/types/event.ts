@@ -1,6 +1,7 @@
 export type ReservationStatus =
   | 'brouillon'
   | 'envoyee'
+  | 'nouvelle'
   | 'recontactee'
   | 'confirmee'
   | 'annulee'
@@ -29,6 +30,8 @@ export interface EventDetail {
   sharedNoteUpdatedAt?: string // ISO datetime
   reservations: Reservation[]
   journal: JournalEntry[]
+  phrase: string
+  phraseSubtitle: string
 }
 
 export interface JournalModification {
@@ -61,7 +64,7 @@ export interface ReservationNote {
   content: string
   createdAt: string // ISO datetime
   isPersonal?: boolean       // note privée pro uniquement
-  isMessageInitial?: boolean // premier message du client
+  isMessageInitial?: boolean // premier message du tunnel demande
 }
 
 export interface ReservationDocument {
@@ -76,5 +79,22 @@ export interface ReservationDocument {
 export interface ReservationDetail extends Reservation {
   notes: ReservationNote[]
   documents: ReservationDocument[]
-  urgencyLevel?: number
+  urgencyLevel: number
+  ligneContextuelle: string
+}
+
+// ── Types pro ─────────────────────────────────────────────────────────────────
+
+export interface ProDemandeDetail extends ReservationDetail {
+  event: EventDetail
+}
+
+export interface ProDemandeSummary {
+  id: string
+  titre: string
+  date: string    // formatted display (e.g. "14 septembre 2026")
+  dateIso: string
+  statut: ReservationStatus
+  ligneContextuelle: string
+  urgencyLevel: number
 }

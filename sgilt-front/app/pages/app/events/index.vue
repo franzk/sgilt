@@ -232,7 +232,7 @@ $desktop: 900px;
   flex-direction: column;
   border-radius: 16px;
   padding: 0;
-  border: 0.5px solid rgba(47, 42, 37, 0.10);
+  border: 0.5px solid rgba(47, 42, 37, 0.1);
   background: #fff;
   overflow: hidden;
   text-align: left;

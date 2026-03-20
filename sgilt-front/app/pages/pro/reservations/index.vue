@@ -74,97 +74,25 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'pro' })
 
-// ── Types ──────────────────────────────────────────────────────────────────────
-type DemandeStatut = 'nouvelle' | 'recontactee' | 'confirmee' | 'cloturee' | 'annulee'
+import { ProMockService } from '~/services/pro.mock'
+import type { ProDemandeSummary, ReservationStatus } from '~/types/event'
 
-interface Demande {
-  id: number
-  titre: string
-  date: string
-  dateIso: string
-  statut: DemandeStatut
-  ligneContextuelle: string
-  urgencyLevel: number
-}
-
-// ── Données mockées ────────────────────────────────────────────────────────────
-const DEMANDES: Demande[] = [
-  {
-    id: 1,
-    titre: 'Mariage de Julie & Thomas',
-    date: '14 septembre 2026',
-    dateIso: '2026-09-14',
-    statut: 'confirmee',
-    ligneContextuelle: 'Événement dans 23 jours',
-    urgencyLevel: 2,
-  },
-  {
-    id: 2,
-    titre: 'Anniversaire 50 ans de Marc',
-    date: '23 mai 2026',
-    dateIso: '2026-05-23',
-    statut: 'nouvelle',
-    ligneContextuelle: 'Reçue il y a 2h',
-    urgencyLevel: 1,
-  },
-  {
-    id: 3,
-    titre: 'Soirée entreprise Alsace Tech',
-    date: '12 avril 2026',
-    dateIso: '2026-04-12',
-    statut: 'recontactee',
-    ligneContextuelle: 'En négociation depuis 5 jours',
-    urgencyLevel: 3,
-  },
-  {
-    id: 4,
-    titre: 'Mariage Dupont',
-    date: '6 juin 2026',
-    dateIso: '2026-06-06',
-    statut: 'nouvelle',
-    ligneContextuelle: 'Reçue il y a 3 jours',
-    urgencyLevel: 5,
-  },
-  {
-    id: 5,
-    titre: 'Cocktail Lancement Produit',
-    date: '4 avril 2026',
-    dateIso: '2026-04-04',
-    statut: 'confirmee',
-    ligneContextuelle: 'Événement dans 6 jours',
-    urgencyLevel: 6,
-  },
-  {
-    id: 6,
-    titre: 'Soirée privée Strasbourg',
-    date: '15 mars 2026',
-    dateIso: '2026-03-15',
-    statut: 'annulee',
-    ligneContextuelle: 'Annulée le 8 mars',
-    urgencyLevel: 1,
-  },
-  {
-    id: 7,
-    titre: 'Gala Humanitaire Grand Est',
-    date: '20 juin 2026',
-    dateIso: '2026-06-20',
-    statut: 'cloturee',
-    ligneContextuelle: 'Clôturée le 12 mars',
-    urgencyLevel: 1,
-  },
-]
-
-// ── Chargement simulé ──────────────────────────────────────────────────────────
+// ── Données ────────────────────────────────────────────────────────────────────
 const loading = ref(true)
-onMounted(() => setTimeout(() => { loading.value = false }, 400))
+const DEMANDES = ref<ProDemandeSummary[]>([])
+
+onMounted(async () => {
+  DEMANDES.value = await ProMockService.getAllDemandes()
+  loading.value = false
+})
 
 // ── Accroche ───────────────────────────────────────────────────────────────────
-const newCount = DEMANDES.filter((d) => d.statut === 'nouvelle').length
-const confirmedCount = DEMANDES.filter((d) => d.statut === 'confirmee').length
+const newCount = computed(() => DEMANDES.value.filter((d) => d.statut === 'nouvelle').length)
+const confirmedCount = computed(() => DEMANDES.value.filter((d) => d.statut === 'confirmee').length)
 
 const contextLine = computed(() => {
-  const n = newCount
-  const c = confirmedCount
+  const n = newCount.value
+  const c = confirmedCount.value
   if (n === 0 && c === 0) return 'Tout est à jour.'
   const nLabel = n > 0 ? `${n} nouvelle${n > 1 ? 's' : ''} demande${n > 1 ? 's' : ''}` : ''
   const cLabel = c > 0 ? `${c} événement${c > 1 ? 's' : ''} confirmé${c > 1 ? 's' : ''} à venir` : ''
@@ -181,10 +109,10 @@ const PILLS = [
   { id: 'annulee', label: 'Annulées' },
 ]
 
-const ALL_STATUTS: DemandeStatut[] = ['nouvelle', 'recontactee', 'confirmee', 'cloturee', 'annulee']
-const DEFAULT_PILLS: DemandeStatut[] = ['nouvelle', 'recontactee', 'confirmee']
+const ALL_STATUTS: ReservationStatus[] = ['nouvelle', 'recontactee', 'confirmee', 'cloturee', 'annulee']
+const DEFAULT_PILLS: ReservationStatus[] = ['nouvelle', 'recontactee', 'confirmee']
 
-const activePills = ref<string[]>([...DEFAULT_PILLS])
+const activePills = ref<ReservationStatus[]>([...DEFAULT_PILLS])
 
 function isPillActive(id: string): boolean {
   if (id === 'toutes') return ALL_STATUTS.every((s) => activePills.value.includes(s))
@@ -204,7 +132,7 @@ function togglePill(id: string) {
 
 // ── Filtrage + tri ─────────────────────────────────────────────────────────────
 const filteredDemandes = computed(() =>
-  DEMANDES.filter((d) => activePills.value.includes(d.statut)).sort((a, b) => {
+  DEMANDES.value.filter((d) => activePills.value.includes(d.statut as ReservationStatus)).sort((a, b) => {
     if (b.urgencyLevel !== a.urgencyLevel) return b.urgencyLevel - a.urgencyLevel
     return new Date(a.dateIso).getTime() - new Date(b.dateIso).getTime()
   }),
@@ -218,7 +146,7 @@ function urgencyTier(level: number): 'neutral' | 'warning' | 'urgent' {
 }
 
 // ── Couleur border-left des cards ─────────────────────────────────────────────
-const STATUS_BORDER: Record<DemandeStatut, string> = {
+const STATUS_BORDER: Partial<Record<ReservationStatus, string>> = {
   nouvelle: '#e6b800',
   recontactee: '#2c5cc5',
   confirmee: '#3b6d11',
@@ -226,13 +154,13 @@ const STATUS_BORDER: Record<DemandeStatut, string> = {
   annulee: '#a32d2d',
 }
 
-function cardBorderColor(demande: Demande): string {
+function cardBorderColor(demande: ProDemandeSummary): string {
   if (demande.urgencyLevel >= 5) return '#a32d2d'
-  return STATUS_BORDER[demande.statut]
+  return STATUS_BORDER[demande.statut] ?? '#6b635c'
 }
 
 // ── Labels statut ─────────────────────────────────────────────────────────────
-const STATUT_LABELS: Record<DemandeStatut, string> = {
+const STATUT_LABELS: Partial<Record<ReservationStatus, string>> = {
   nouvelle: 'Nouvelle',
   recontactee: 'Recontactée',
   confirmee: 'Confirmée',

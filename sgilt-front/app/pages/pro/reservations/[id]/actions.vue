@@ -67,7 +67,7 @@ import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import { ProMockService } from '~/services/pro.mock'
 
 const route = useRoute()
-const demandeId = Number(route.params.id)
+const demandeId = String(route.params.id)
 
 const currentStatut = ref('nouvelle')
 const loading = ref(false)
@@ -75,7 +75,7 @@ const cancelOpen = ref(false)
 
 onMounted(async () => {
   const demande = await ProMockService.getDemandeById(demandeId)
-  if (demande) currentStatut.value = demande.statut
+  if (demande) currentStatut.value = demande.status
 })
 
 async function confirmCancel() {

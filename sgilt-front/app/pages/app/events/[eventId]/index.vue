@@ -1,6 +1,6 @@
 <template>
   <div class="event-board">
-    <!-- ── Bandeau couverture (desktop) ───────────────────────────────────────── -->
+    <!-- ── Bandeau couverture ──────────────────────────────────────────────────── -->
     <div
       v-if="event"
       ref="bannerRef"
@@ -12,35 +12,56 @@
       <button class="cover-banner__edit-img" type="button">Modifier l'image</button>
     </div>
 
-    <div v-if="event" class="board-content">
-      <!-- ── Bloc événement ──────────────────────────────────────────────────── -->
-      <EventBlock :event="event" @updated="onEventUpdated" />
-
-      <!-- ── Réservations ────────────────────────────────────────────────────── -->
-      <section class="reservations">
-        <div v-for="group in groupedReservations" :key="group.status" class="reservation-group">
-          <h2 class="reservation-group__title">{{ group.label }}</h2>
-          <div class="reservation-group__list">
-            <ReservationCard
-              v-for="r in group.reservations"
-              :key="r.id"
-              :reservation="r"
-              @click="navigateTo(`/app/events/${eventId}/reservations/${r.id}`)"
-            />
-          </div>
+    <template v-if="event">
+      <!-- ── Widget ─────────────────────────────────────────────────────────────── -->
+      <div class="event-widget">
+        <p class="event-widget__phrase">{{ event.phrase }}</p>
+        <p class="event-widget__subtitle">{{ event.phraseSubtitle }}</p>
+        <div class="event-widget__pills">
+          <span
+            v-for="pill in statusPills"
+            :key="pill.status"
+            class="status-pill"
+            :class="`status-pill--${pill.status}`"
+          >
+            <span class="status-pill__icon" aria-hidden="true">{{ pill.icon }}</span>
+            <span class="status-pill__count">{{ pill.count }}</span>
+            <span class="status-pill__label">{{ pill.label }}</span>
+          </span>
         </div>
+      </div>
 
-        <button class="add-prestataire-btn" type="button" @click="goToSearch">
-          + Ajouter un prestataire
-        </button>
-      </section>
-    </div>
+      <!-- ── Contenu ────────────────────────────────────────────────────────────── -->
+      <div class="board-content">
+        <!-- Bloc événement -->
+        <EventBlock :event="event" @updated="onEventUpdated" />
+
+        <!-- Réservations -->
+        <section class="reservations">
+          <div v-for="group in groupedReservations" :key="group.status" class="reservation-group">
+            <h2 class="reservation-group__title">{{ group.label }}</h2>
+            <div class="reservation-group__list">
+              <ReservationCard
+                v-for="r in group.reservations"
+                :key="r.id"
+                :reservation="r"
+                @click="navigateTo(`/app/events/${eventId}/reservations/${r.id}`)"
+              />
+            </div>
+          </div>
+
+          <button class="add-prestataire-btn" type="button" @click="goToSearch">
+            + Ajouter un prestataire
+          </button>
+        </section>
+      </div>
+    </template>
 
     <!-- Skeleton -->
     <div v-else-if="loading" class="board-skeleton">
-      <div class="skeleton-title skeleton-text" />
+      <div class="skeleton-widget skeleton-text" />
       <div class="skeleton-pills">
-        <div v-for="i in 4" :key="i" class="skeleton-pill skeleton-text" />
+        <div v-for="i in 3" :key="i" class="skeleton-pill skeleton-text" />
       </div>
       <div class="skeleton-card skeleton-text" />
       <div class="skeleton-card skeleton-text" />
@@ -111,8 +132,25 @@ function onEventUpdated(patch: EventPatch) {
   if (event.value) Object.assign(event.value, patch)
 }
 
-// ── Réservations groupées ─────────────────────────────────────────────────────
+// ── Widget — pills statut ──────────────────────────────────────────────────────
+const STATUS_PILL_CONFIG: Array<{ status: ReservationStatus; icon: string; label: string }> = [
+  { status: 'confirmee',   icon: '✓', label: 'Confirmée(s)' },
+  { status: 'recontactee', icon: '↩', label: 'Recontactée(s)' },
+  { status: 'envoyee',     icon: '→', label: 'En attente' },
+  { status: 'brouillon',   icon: '✎', label: 'Brouillon(s)' },
+  { status: 'cloturee',    icon: '✕', label: 'Clôturée(s)' },
+  { status: 'annulee',     icon: '✕', label: 'Annulée(s)' },
+]
 
+const statusPills = computed(() => {
+  if (!event.value) return []
+  return STATUS_PILL_CONFIG.map((config) => ({
+    ...config,
+    count: event.value!.reservations.filter((r) => r.status === config.status).length,
+  })).filter((pill) => pill.count > 0)
+})
+
+// ── Réservations groupées ─────────────────────────────────────────────────────
 const groupedReservations = computed(() => {
   if (!event.value) return []
   const map = new Map<ReservationStatus, typeof event.value.reservations>()
@@ -209,6 +247,116 @@ $desktop: 900px;
         background: rgba(0, 0, 0, 0.45);
       }
     }
+  }
+}
+
+// ── Widget ─────────────────────────────────────────────────────────────────────
+.event-widget {
+  background: #fdfaf0;
+  padding: $spacing-l $spacing-m $spacing-m;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-s;
+
+  @media (min-width: $desktop) {
+    padding: $spacing-xl 40px $spacing-l;
+  }
+
+  &__phrase {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: $brand-primary;
+    margin: 0;
+    line-height: 1.15;
+
+    @media (min-width: $desktop) {
+      font-size: 2.2rem;
+    }
+  }
+
+  &__subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    color: $text-secondary;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  &__pills {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: $spacing-xs;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+    margin-top: 4px;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    @media (min-width: $desktop) {
+      flex-wrap: wrap;
+      overflow: visible;
+    }
+  }
+}
+
+// ── Pills statut ───────────────────────────────────────────────────────────────
+.status-pill {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 2rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &__icon {
+    font-size: 0.7rem;
+    line-height: 1;
+  }
+
+  &__count {
+    font-weight: 700;
+  }
+
+  &__label {
+    font-weight: 500;
+  }
+
+  &--confirmee {
+    background: rgba(59, 109, 17, 0.12);
+    color: #3b6d11;
+  }
+
+  &--recontactee {
+    background: #e8f0fe;
+    color: #2c5cc5;
+  }
+
+  &--envoyee {
+    background: rgba(230, 184, 0, 0.18);
+    color: #7a5c00;
+  }
+
+  &--brouillon {
+    background: #ebebea;
+    color: #6b6560;
+  }
+
+  &--cloturee {
+    background: #f0efee;
+    color: #6b6560;
+  }
+
+  &--annulee {
+    background: rgba(163, 45, 45, 0.1);
+    color: #a32d2d;
   }
 }
 
@@ -328,8 +476,6 @@ $desktop: 900px;
   }
 
   @media (min-width: $desktop) {
-    // border-color: rgba(255, 255, 255, 0);
-    // color: $color-white;
     transition: background 150ms ease;
 
     &:hover {
@@ -351,10 +497,9 @@ $desktop: 900px;
   gap: $spacing-m;
 }
 
-.skeleton-title {
-  height: 1.8rem;
-  width: 70%;
-  border-radius: $radius-sm;
+.skeleton-widget {
+  height: 100px;
+  border-radius: $radius-md;
 }
 
 .skeleton-pills {

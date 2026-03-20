@@ -1,6 +1,5 @@
 <template>
   <div class="pro-detail">
-
     <!-- ── Bandeau couverture ─────────────────────────────────────────────────── -->
     <div
       v-if="demande"
@@ -15,175 +14,164 @@
       <div class="cover-banner__bottom">
         <div class="cover-banner__info">
           <span class="cover-banner__category">{{ demande.category }}</span>
-          <span class="cover-banner__name">{{ demande.clientInfo.eventName }}</span>
+          <span class="cover-banner__name">{{ demande.event.title }}</span>
         </div>
-        <span class="cover-banner__badge" :class="`cover-banner__badge--${demande.statut}`">
-          {{ STATUT_LABELS[demande.statut] }}
+        <span class="cover-banner__badge" :class="`cover-banner__badge--${demande.status}`">
+          {{ STATUT_LABELS[demande.status] }}
         </span>
       </div>
     </div>
 
-    <!-- ── Layout principal ──────────────────────────────────────────────────── -->
-    <div v-if="demande" class="pro-layout">
-
-      <!-- Colonne gauche : Event block (sticky desktop) ── -->
-      <div class="pro-layout__left">
-        <EventBlock v-if="proEventDetail" :event="proEventDetail" @updated="() => {}" />
-      </div>
-
-      <!-- Colonne droite : Onglets + Contenu ───────────── -->
-      <div class="pro-layout__right">
-
-        <!-- Tab bar -->
-        <div class="tab-bar">
-          <button
-            class="tab-btn"
-            :class="{ 'tab-btn--active': activeTab === 'notes' }"
-            type="button"
-            @click="activeTab = 'notes'"
-          >
-            Notes
-          </button>
-          <button
-            class="tab-btn"
-            :class="{ 'tab-btn--active': activeTab === 'documents' }"
-            type="button"
-            @click="activeTab = 'documents'"
-          >
-            Documents
-          </button>
-        </div>
-
-        <!-- Tab content -->
-        <div class="detail-body">
-
-          <!-- ══ Onglet Notes ══════════════════════════════════════════════════ -->
-          <template v-if="activeTab === 'notes'">
-
-            <!-- Desktop: bouton ajout note -->
-            <div class="tab-section-header">
-              <button class="tab-section-btn" type="button" @click="openNoteModal">
-                + Ajouter une note
-              </button>
-            </div>
-
-            <p v-if="sortedNotes.length === 0" class="tab-empty">Aucune note pour le moment.</p>
-            <ul v-else class="notes-list">
-              <li v-for="note in sortedNotes" :key="note.id">
-
-                <!-- Message initial -->
-                <div v-if="note.isMessageInitial" class="note-initial">
-                  <span class="note-initial__label">Message initial</span>
-                  <p class="note-initial__content">{{ note.content }}</p>
-                  <span class="note-initial__meta">{{ note.authorName }} · {{ formatNoteDate(note.createdAt) }}</span>
-                </div>
-
-                <!-- Note personnelle (pro only) -->
-                <div v-else-if="note.isPersonal" class="note-card note-card--personal">
-                  <div class="note-card__header">
-                    <span class="note-card__lock" aria-label="Note privée">🔒</span>
-                    <span class="note-card__author">{{ note.authorName }}</span>
-                    <span class="note-card__date">{{ formatNoteDate(note.createdAt) }}</span>
-                  </div>
-                  <p class="note-card__content">{{ note.content }}</p>
-                </div>
-
-                <!-- Note partagée -->
-                <div
-                  v-else
-                  class="note-card"
-                  :class="note.authorRole === 'client' ? 'note-card--client' : 'note-card--pro'"
-                >
-                  <div class="note-card__header">
-                    <span class="note-card__author">{{ note.authorName }}</span>
-                    <span class="note-card__date">{{ formatNoteDate(note.createdAt) }}</span>
-                  </div>
-                  <p class="note-card__content">{{ note.content }}</p>
-                </div>
-
-              </li>
-            </ul>
-
-            <!-- Lien actions spéciales (confirmée uniquement) -->
-            <button
-              v-if="demande.statut === 'confirmee'"
-              class="actions-link"
-              type="button"
-              @click="navigateTo(`/pro/reservations/${demandeId}/actions`)"
-            >
-              Actions spéciales →
-            </button>
-
-          </template>
-
-          <!-- ══ Onglet Documents ══════════════════════════════════════════════ -->
-          <template v-else-if="activeTab === 'documents'">
-
-            <div class="tab-section-header">
-              <button
-                class="tab-section-btn"
-                type="button"
-                :disabled="demande.statut !== 'confirmee'"
-                @click="triggerUpload"
-              >
-                ↑ Déposer un document
-              </button>
-            </div>
-
-            <div v-if="demande.statut !== 'confirmee'" class="docs-info">
-              Le dépôt de documents est disponible une fois la réservation confirmée.
-            </div>
-
-            <input ref="fileInputRef" type="file" style="display: none" @change="handleUpload" />
-
-            <p v-if="sortedDocuments.length === 0" class="tab-empty">
-              Aucun document partagé pour le moment.
-            </p>
-            <ul v-else class="doc-list">
-              <li v-for="doc in sortedDocuments" :key="doc.id" class="doc-item">
-                <div class="doc-icon" :class="`doc-icon--${doc.fileType}`">
-                  {{ doc.fileType === 'pdf' ? 'PDF' : doc.fileType === 'image' ? 'IMG' : 'DOC' }}
-                </div>
-                <div class="doc-info">
-                  <span class="doc-name">{{ doc.name }}</span>
-                  <span class="doc-meta">{{ doc.uploadedByName }} · {{ formatDocDate(doc.uploadedAt) }}</span>
-                </div>
-                <div class="doc-actions">
-                  <a :href="doc.url" download class="doc-btn" title="Télécharger">↓</a>
-                  <button
-                    v-if="doc.uploadedByRole === 'pro'"
-                    class="doc-btn doc-btn--delete"
-                    type="button"
-                    title="Supprimer"
-                    @click="deleteDocument(doc.id)"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </li>
-            </ul>
-
-            <button
-              v-if="demande.statut === 'confirmee'"
-              class="upload-btn-mobile"
-              type="button"
-              @click="triggerUpload"
-            >
-              ↑ Déposer un document
-            </button>
-
-          </template>
-
-        </div>
-      </div>
+    <!-- ── Onglets (sticky sous le bandeau) ─────────────────────────────────── -->
+    <div v-if="demande" class="tab-bar">
+      <button
+        class="tab-btn"
+        :class="{ 'tab-btn--active': activeTab === 'notes' }"
+        type="button"
+        @click="activeTab = 'notes'"
+      >
+        Notes
+      </button>
+      <button
+        class="tab-btn"
+        :class="{ 'tab-btn--active': activeTab === 'documents' }"
+        type="button"
+        @click="activeTab = 'documents'"
+      >
+        Documents
+      </button>
     </div>
+
+    <!-- ── Contenu ───────────────────────────────────────────────────────────── -->
+    <template v-if="demande">
+      <!-- ══ Onglet Notes : layout 2 colonnes desktop ══════════════════════════ -->
+      <div v-if="activeTab === 'notes'" class="notes-layout">
+        <!-- Colonne gauche : Event block sticky -->
+        <div class="notes-layout__left">
+          <EventBlock v-if="proEventDetail" :event="proEventDetail" @updated="() => {}" />
+        </div>
+
+        <!-- Colonne droite : liste de notes -->
+        <div class="notes-layout__right">
+          <!-- Desktop: bouton ajout note -->
+          <div class="section-header">
+            <button class="section-btn" type="button" @click="openNoteModal">
+              + Ajouter une note
+            </button>
+          </div>
+
+          <p v-if="sortedNotes.length === 0" class="tab-empty">Aucune note pour le moment.</p>
+          <ul v-else class="notes-list">
+            <li v-for="note in sortedNotes" :key="note.id">
+              <!-- Message initial -->
+              <div v-if="note.isMessageInitial" class="note-initial">
+                <span class="note-initial__label">Message initial</span>
+                <p class="note-initial__content">{{ note.content }}</p>
+                <span class="note-initial__meta"
+                  >{{ note.author.name }} · {{ formatDate(note.createdAt) }}</span
+                >
+              </div>
+
+              <!-- Note personnelle -->
+              <div v-else-if="note.isPersonal" class="note-card note-card--personal">
+                <div class="note-card__header">
+                  <span class="note-card__lock">🔒</span>
+                  <span class="note-card__author">{{ note.author.name }}</span>
+                  <span class="note-card__date">{{ formatDate(note.createdAt) }}</span>
+                </div>
+                <p class="note-card__content">{{ note.content }}</p>
+              </div>
+
+              <!-- Note partagée -->
+              <div
+                v-else
+                class="note-card"
+                :class="note.author.role === 'client' ? 'note-card--client' : 'note-card--pro'"
+              >
+                <div class="note-card__header">
+                  <span class="note-card__author">{{ note.author.name }}</span>
+                  <span class="note-card__date">{{ formatDate(note.createdAt) }}</span>
+                </div>
+                <p class="note-card__content">{{ note.content }}</p>
+              </div>
+            </li>
+          </ul>
+
+          <!-- Lien actions spéciales -->
+          <button
+            v-if="demande.status === 'confirmee'"
+            class="actions-link"
+            type="button"
+            @click="navigateTo(`/pro/reservations/${demandeId}/actions`)"
+          >
+            Actions spéciales →
+          </button>
+        </div>
+      </div>
+
+      <!-- ══ Onglet Documents ══════════════════════════════════════════════════ -->
+      <div v-else-if="activeTab === 'documents'" class="docs-layout">
+        <div class="section-header">
+          <button
+            class="section-btn"
+            type="button"
+            :disabled="demande.status !== 'confirmee'"
+            @click="triggerUpload"
+          >
+            ↑ Déposer un document
+          </button>
+        </div>
+
+        <div v-if="demande.status !== 'confirmee'" class="docs-info">
+          Le dépôt de documents est disponible une fois la réservation confirmée.
+        </div>
+
+        <input ref="fileInputRef" type="file" style="display: none" @change="handleUpload" />
+
+        <p v-if="sortedDocuments.length === 0" class="tab-empty">
+          Aucun document partagé pour le moment.
+        </p>
+        <ul v-else class="doc-list">
+          <li v-for="doc in sortedDocuments" :key="doc.id" class="doc-item">
+            <div class="doc-icon" :class="`doc-icon--${doc.fileType}`">
+              {{ doc.fileType === 'pdf' ? 'PDF' : doc.fileType === 'image' ? 'IMG' : 'DOC' }}
+            </div>
+            <div class="doc-info">
+              <span class="doc-name">{{ doc.name }}</span>
+              <span class="doc-meta"
+                >{{ doc.uploadedBy.name }} · {{ formatDate(doc.uploadedAt) }}</span
+              >
+            </div>
+            <div class="doc-actions">
+              <a :href="doc.url" download class="doc-btn" title="Télécharger">↓</a>
+              <button
+                v-if="doc.uploadedBy.role === 'prestataire'"
+                class="doc-btn doc-btn--delete"
+                type="button"
+                title="Supprimer"
+                @click="deleteDocument(doc.id)"
+              >
+                ✕
+              </button>
+            </div>
+          </li>
+        </ul>
+
+        <button
+          v-if="demande.status === 'confirmee'"
+          class="upload-btn-mobile"
+          type="button"
+          @click="triggerUpload"
+        >
+          ↑ Déposer un document
+        </button>
+      </div>
+    </template>
 
     <!-- Skeleton -->
     <div v-else-if="loading" class="board-skeleton">
       <div class="skeleton-block skeleton-text" />
-      <div class="skeleton-notes">
-        <div v-for="i in 3" :key="i" class="skeleton-note skeleton-text" />
-      </div>
+      <div v-for="i in 3" :key="i" class="skeleton-note skeleton-text" />
     </div>
 
     <!-- ── FAB (mobile, onglet notes) ─────────────────────────────────────────── -->
@@ -200,7 +188,7 @@
     <!-- ── CTA sticky ─────────────────────────────────────────────────────────── -->
     <div v-if="demande && showCta" class="cta-bar">
       <button
-        v-if="demande.statut === 'nouvelle' || demande.statut === 'recontactee'"
+        v-if="demande.status === 'nouvelle' || demande.status === 'recontactee'"
         class="cta-bar__btn cta-bar__btn--secondary"
         type="button"
         @click="openRefusalModal"
@@ -208,7 +196,7 @@
         Refuser
       </button>
       <button
-        v-if="demande.statut === 'nouvelle'"
+        v-if="demande.status === 'nouvelle'"
         class="cta-bar__btn cta-bar__btn--primary"
         type="button"
         :disabled="ctaLoading"
@@ -217,7 +205,7 @@
         Recontacter le client
       </button>
       <button
-        v-else-if="demande.statut === 'recontactee'"
+        v-else-if="demande.status === 'recontactee'"
         class="cta-bar__btn cta-bar__btn--primary"
         type="button"
         :disabled="ctaLoading"
@@ -225,7 +213,7 @@
       >
         Confirmer la réservation
       </button>
-      <div v-else-if="demande.statut === 'confirmee'" class="cta-bar__confirmed">
+      <div v-else-if="demande.status === 'confirmee'" class="cta-bar__confirmed">
         Réservation confirmée ✓
       </div>
     </div>
@@ -290,7 +278,6 @@
         </button>
       </div>
     </SgiltDialog>
-
   </div>
 </template>
 
@@ -300,11 +287,10 @@ definePageMeta({ layout: 'pro' })
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import EventBlock from '~/components/app/EventBlock.vue'
 import { ProMockService } from '~/services/pro.mock'
-import type { ProDemandeDetail, ProDocument } from '~/services/pro.mock'
-import type { EventDetail } from '~/types/event'
+import type { ProDemandeDetail, ReservationDocument } from '~/types/event'
 
 const route = useRoute()
-const demandeId = Number(route.params.id)
+const demandeId = String(route.params.id)
 
 // ── Cover images ───────────────────────────────────────────────────────────────
 const COVER_IMAGES: Record<string, string> = {
@@ -320,7 +306,7 @@ const COVER_IMAGES: Record<string, string> = {
 }
 
 const coverImage = computed(
-  () => COVER_IMAGES[demande.value?.clientInfo.eventType ?? ''] ?? COVER_IMAGES.autre,
+  () => COVER_IMAGES[demande.value?.event.eventType ?? ''] ?? COVER_IMAGES.autre,
 )
 
 // ── Parallax ───────────────────────────────────────────────────────────────────
@@ -352,22 +338,8 @@ onMounted(async () => {
   loading.value = false
 })
 
-// ── EventDetail façade (lecture seule pour EventBlock) ────────────────────────
-const proEventDetail = computed<EventDetail | null>(() => {
-  const d = demande.value
-  if (!d) return null
-  return {
-    id: String(d.id),
-    title: d.clientInfo.eventName,
-    date: d.dateIso,
-    eventType: d.clientInfo.eventType,
-    ville: d.clientInfo.ville,
-    nbInvites: d.clientInfo.nbInvites,
-    sharedNote: '',
-    reservations: [],
-    journal: [],
-  }
-})
+// ── EventDetail façade (lecture seule) ────────────────────────────────────────
+const proEventDetail = computed(() => demande.value?.event ?? null)
 
 // ── Statut labels ─────────────────────────────────────────────────────────────
 const STATUT_LABELS: Record<string, string> = {
@@ -431,22 +403,21 @@ const sortedDocuments = computed(() =>
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
 function triggerUpload() {
-  if (demande.value?.statut !== 'confirmee') return
+  if (demande.value?.status !== 'confirmee') return
   fileInputRef.value?.click()
 }
 
 function handleUpload(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file || !demande.value) return
-  const fileType: ProDocument['fileType'] =
+  const fileType: ReservationDocument['fileType'] =
     file.type === 'application/pdf' ? 'pdf' : file.type.startsWith('image/') ? 'image' : 'other'
-  const doc: ProDocument = {
+  const doc: ReservationDocument = {
     id: `pd-${Date.now()}`,
     name: file.name,
     fileType,
     url: URL.createObjectURL(file),
-    uploadedByRole: 'pro',
-    uploadedByName: 'DJ Animation',
+    uploadedBy: { id: 'presta-3', name: 'DJ Animation', role: 'prestataire', photo: '/images/prestataires/dj-animation.jpg' },
     uploadedAt: new Date().toISOString(),
   }
   demande.value.documents.unshift(doc)
@@ -458,17 +429,17 @@ function deleteDocument(id: string) {
   demande.value.documents = demande.value.documents.filter((d) => d.id !== id)
 }
 
-// ── CTA bar ───────────────────────────────────────────────────────────────────
+// ── CTA ───────────────────────────────────────────────────────────────────────
 const ctaLoading = ref(false)
 const showCta = computed(() =>
-  demande.value ? ['nouvelle', 'recontactee', 'confirmee'].includes(demande.value.statut) : false,
+  demande.value ? ['nouvelle', 'recontactee', 'confirmee'].includes(demande.value.status) : false,
 )
 
 async function recontacter() {
   if (!demande.value || ctaLoading.value) return
   ctaLoading.value = true
   await ProMockService.updateStatut(demandeId, 'recontactee')
-  demande.value.statut = 'recontactee'
+  demande.value.status = 'recontactee'
   ctaLoading.value = false
 }
 
@@ -476,7 +447,7 @@ async function confirmer() {
   if (!demande.value || ctaLoading.value) return
   ctaLoading.value = true
   await ProMockService.updateStatut(demandeId, 'confirmee')
-  demande.value.statut = 'confirmee'
+  demande.value.status = 'confirmee'
   ctaLoading.value = false
 }
 
@@ -504,21 +475,13 @@ async function submitRefusal() {
   if (refusalReasons.value.length === 0 || refusalLoading.value) return
   refusalLoading.value = true
   await ProMockService.updateStatut(demandeId, 'annulee')
-  if (demande.value) demande.value.statut = 'annulee'
+  if (demande.value) demande.value.status = 'annulee'
   refusalLoading.value = false
   refusalModalOpen.value = false
 }
 
 // ── Format dates ──────────────────────────────────────────────────────────────
-function formatNoteDate(iso: string) {
-  return new Date(iso).toLocaleDateString('fr-FR', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  })
-}
-
-function formatDocDate(iso: string) {
+function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('fr-FR', {
     day: 'numeric',
     month: 'short',
@@ -531,6 +494,7 @@ function formatDocDate(iso: string) {
 $bottom-nav-h: 56px;
 $desktop: 900px;
 $cta-h: 72px;
+$tab-bar-h: 45px;
 
 // ── Page wrapper ───────────────────────────────────────────────────────────────
 .pro-detail {
@@ -653,56 +617,7 @@ $cta-h: 72px;
   }
 }
 
-// ── Layout principal ───────────────────────────────────────────────────────────
-.pro-layout {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-
-  @media (min-width: $desktop) {
-    display: grid;
-    grid-template-columns: 380px 1fr;
-    gap: 28px;
-    align-items: start;
-    max-width: 1200px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 32px 40px calc($cta-h + 40px);
-  }
-}
-
-// ── Colonne gauche : Event block ───────────────────────────────────────────────
-.pro-layout__left {
-  padding: $spacing-m $spacing-m 0;
-
-  @media (min-width: $desktop) {
-    padding: 0;
-    position: sticky;
-    top: calc(3.3rem + 16px);
-  }
-}
-
-// ── Colonne droite : Onglets + Contenu ─────────────────────────────────────────
-.pro-layout__right {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-// ── EventBlock overrides (read-only, header masqué) ────────────────────────────
-:deep(.event-block__header) {
-  display: none;
-}
-
-:deep(.event-note) {
-  display: none;
-}
-
-:deep(.event-block) {
-  box-shadow: 0 1px 4px rgba(47, 42, 37, 0.07);
-}
-
-// ── Barre d'onglets ────────────────────────────────────────────────────────────
+// ── Barre d'onglets (sticky sous le header app) ────────────────────────────────
 .tab-bar {
   position: sticky;
   top: 3.3rem;
@@ -713,7 +628,7 @@ $cta-h: 72px;
   padding: 0 $spacing-m;
 
   @media (min-width: $desktop) {
-    padding: 0;
+    padding: 0 40px;
   }
 }
 
@@ -742,37 +657,90 @@ $cta-h: 72px;
   @media (min-width: $desktop) {
     flex: 0 1 auto;
     padding: $spacing-s $spacing-m;
-
-    &:first-child {
-      padding-left: 0;
-    }
   }
 }
 
-// ── Corps ─────────────────────────────────────────────────────────────────────
-.detail-body {
+// ── Onglet Notes : layout 2 colonnes desktop ───────────────────────────────────
+.notes-layout {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  @media (min-width: $desktop) {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 28px;
+    align-items: start;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 32px 40px calc($cta-h + 40px);
+  }
+}
+
+.notes-layout__left {
+  padding: $spacing-m $spacing-m 0;
+
+  @media (min-width: $desktop) {
+    padding: 0;
+    position: sticky;
+    top: calc(3.3rem + $tab-bar-h + 16px);
+  }
+}
+
+.notes-layout__right {
   display: flex;
   flex-direction: column;
   gap: $spacing-m;
-  padding: $spacing-m $spacing-m calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $cta-h + $spacing-m);
+  padding: $spacing-m $spacing-m
+    calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $cta-h + $spacing-m);
+  min-width: 0;
 
   @media (min-width: $desktop) {
-    padding: $spacing-m 0 0;
+    padding: 0;
+  }
+}
+
+// ── EventBlock overrides (read-only) ──────────────────────────────────────────
+:deep(.event-block__header) {
+  display: none;
+}
+
+:deep(.event-note) {
+  display: none;
+}
+
+:deep(.event-block) {
+  box-shadow: 0 1px 4px rgba(47, 42, 37, 0.07);
+}
+
+// ── Onglet Documents ──────────────────────────────────────────────────────────
+.docs-layout {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-m;
+  padding: $spacing-m $spacing-m
+    calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $cta-h + $spacing-m);
+
+  @media (min-width: $desktop) {
+    max-width: 760px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 32px 40px calc($cta-h + 40px);
   }
 }
 
 // ── Header de section (desktop) ────────────────────────────────────────────────
-.tab-section-header {
+.section-header {
   display: none;
 
   @media (min-width: $desktop) {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: $spacing-xs;
   }
 }
 
-.tab-section-btn {
+.section-btn {
   padding: 5px 14px;
   border: 1px solid $brand-border;
   border-radius: $radius-md;
@@ -822,7 +790,7 @@ $cta-h: 72px;
 .note-initial {
   background: #fff;
   border-radius: $radius-md;
-  border: 0.5px solid rgba(47, 42, 37, 0.10);
+  border: 0.5px solid rgba(47, 42, 37, 0.1);
   border-left: 3px solid $brand-accent;
   box-shadow: 0 1px 4px rgba(47, 42, 37, 0.07);
   padding: $spacing-s $spacing-m;
@@ -860,7 +828,7 @@ $cta-h: 72px;
 .note-card {
   background: #fff;
   border-radius: $radius-md;
-  border: 0.5px solid rgba(47, 42, 37, 0.10);
+  border: 0.5px solid rgba(47, 42, 37, 0.1);
   box-shadow: 0 1px 4px rgba(47, 42, 37, 0.07);
   padding: $spacing-s $spacing-m;
   display: flex;
@@ -870,7 +838,6 @@ $cta-h: 72px;
   &--client {
     background: #fff;
   }
-
   &--pro {
     background: #f5f0e8;
   }
@@ -919,7 +886,6 @@ $cta-h: 72px;
 // ── Lien actions spéciales ────────────────────────────────────────────────────
 .actions-link {
   display: block;
-  width: 100%;
   padding: $spacing-s 0;
   border: none;
   background: none;
@@ -963,7 +929,7 @@ $cta-h: 72px;
   padding: 10px $spacing-s;
   background: #fff;
   border-radius: $radius-md;
-  border: 0.5px solid rgba(47, 42, 37, 0.10);
+  border: 0.5px solid rgba(47, 42, 37, 0.1);
   box-shadow: 0 1px 4px rgba(47, 42, 37, 0.07);
 }
 
@@ -984,12 +950,10 @@ $cta-h: 72px;
     background: rgba(163, 45, 45, 0.1);
     color: #a32d2d;
   }
-
   &--image {
     background: rgba(24, 95, 165, 0.1);
     color: #185fa5;
   }
-
   &--other {
     background: rgba(107, 99, 92, 0.1);
     color: #6b635c;
@@ -1052,7 +1016,6 @@ $cta-h: 72px;
 
   &--delete {
     font-size: 0.75rem;
-
     &:hover {
       background: rgba(163, 45, 45, 0.1);
       color: #a32d2d;
@@ -1158,7 +1121,6 @@ $cta-h: 72px;
       max-width: 280px;
       background: $brand-accent;
       color: $brand-primary;
-
       &:hover:not(:disabled) {
         opacity: 0.85;
       }
@@ -1170,7 +1132,6 @@ $cta-h: 72px;
       background: transparent;
       border: 1px solid rgba(163, 45, 45, 0.4);
       color: #a32d2d;
-
       &:hover:not(:disabled) {
         background: rgba(163, 45, 45, 0.05);
       }
@@ -1199,7 +1160,6 @@ $cta-h: 72px;
     min-height: 200px;
     padding: 0;
     border: none;
-    border-radius: 0;
     resize: none;
     font-family: inherit;
     font-size: 1rem;
@@ -1224,7 +1184,6 @@ $cta-h: 72px;
     color: $text-secondary;
     cursor: pointer;
     user-select: none;
-
     input {
       cursor: pointer;
     }
@@ -1243,7 +1202,6 @@ $cta-h: 72px;
     font-weight: 700;
     cursor: pointer;
     transition: opacity 150ms ease;
-
     &:disabled {
       opacity: 0.4;
       cursor: default;
@@ -1264,7 +1222,6 @@ $cta-h: 72px;
     color: $text-primary;
     margin: 0;
   }
-
   &__reasons {
     display: flex;
     flex-direction: column;
@@ -1282,7 +1239,6 @@ $cta-h: 72px;
     padding-top: $spacing-xs;
     border-top: 1px solid $divider-color;
     user-select: none;
-
     input {
       cursor: pointer;
     }
@@ -1300,7 +1256,6 @@ $cta-h: 72px;
     font-weight: 700;
     cursor: pointer;
     transition: opacity 150ms ease;
-
     &:disabled {
       opacity: 0.4;
       cursor: default;
@@ -1317,7 +1272,6 @@ $cta-h: 72px;
   color: $text-primary;
   cursor: pointer;
   user-select: none;
-
   input {
     cursor: pointer;
   }
@@ -1334,12 +1288,6 @@ $cta-h: 72px;
 .skeleton-block {
   height: 120px;
   border-radius: $radius-md;
-}
-
-.skeleton-notes {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-s;
 }
 
 .skeleton-note {
