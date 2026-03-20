@@ -52,6 +52,7 @@ const MOCK_RESERVATIONS: ReservationDetail[] = [
     category: 'Musique',
     status: 'confirmee',
     unreadNotesCount: 3,
+    urgencyLevel: 2,
     notes: [
       {
         id: 'note-001',
@@ -87,6 +88,22 @@ const MOCK_RESERVATIONS: ReservationDetail[] = [
         content:
           'Acompte de 30 % versé le 14/02/2026. Solde à régler 15 jours avant l\'événement.',
         createdAt: '2026-02-14T16:20:00.000Z',
+      },
+      {
+        id: 'note-priv-001',
+        author: DJ,
+        content:
+          'Client très exigeant sur le répertoire. Prévoir une sélection de musiques sans paroles pour le repas.',
+        createdAt: '2026-02-15T09:00:00.000Z',
+        isPersonal: true,
+      },
+      {
+        id: 'note-priv-002',
+        author: DJ,
+        content:
+          'Penser à apporter le câble XLR de secours — la sono du Domaine des Étoiles est vieillissante.',
+        createdAt: '2026-02-20T18:30:00.000Z',
+        isPersonal: true,
       },
     ],
     documents: [
@@ -212,6 +229,7 @@ const MOCK_RESERVATIONS: ReservationDetail[] = [
     category: 'Musique',
     status: 'confirmee',
     unreadNotesCount: 2,
+    urgencyLevel: 1,
     notes: [
       {
         id: 'note-010',

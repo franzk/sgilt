@@ -60,6 +60,8 @@ export interface ReservationNote {
   author: NoteAuthor
   content: string
   createdAt: string // ISO datetime
+  isPersonal?: boolean       // note privée pro uniquement
+  isMessageInitial?: boolean // premier message du client
 }
 
 export interface ReservationDocument {
@@ -74,4 +76,5 @@ export interface ReservationDocument {
 export interface ReservationDetail extends Reservation {
   notes: ReservationNote[]
   documents: ReservationDocument[]
+  urgencyLevel?: number
 }

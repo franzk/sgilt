@@ -221,9 +221,9 @@ onUnmounted(() => {
 
 // ── Notes ─────────────────────────────────────────────────────────────────────
 const sortedNotes = computed(() =>
-  [...(reservation.value?.notes ?? [])].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  ),
+  (reservation.value?.notes ?? [])
+    .filter((n) => !n.isPersonal)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
 )
 
 const noteSheetOpen = ref(false)

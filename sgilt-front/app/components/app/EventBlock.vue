@@ -107,7 +107,7 @@
 
       <!-- Édition -->
       <textarea
-        v-else
+        v-if="editMode"
         ref="noteRef"
         v-model="draft.sharedNote"
         class="event-note__textarea"
