@@ -31,7 +31,7 @@
       <img :src="demande.coverImage || FALLBACK_COVER" alt="" />
     </div>
 
-    <!-- Col 2 — Titre + Date (flex-grow) -->
+    <!-- Col 2 — Contenu -->
     <div class="demande-card__content">
       <span class="demande-card__titre">{{ demande.titre }}</span>
       <div class="demande-card__meta">
@@ -43,16 +43,24 @@
           >· {{ demande.ligneContextuelle }}</span
         >
       </div>
-      <!-- Progress bar — mobile only -->
-      <div
-        v-if="demande.progressType"
-        class="demande-card__progress demande-card__progress--mobile"
-      >
-        <div class="demande-card__progress-bar" :style="progressBarStyle" />
+
+      <!-- Statut + Barre — mobile uniquement -->
+      <div class="demande-card__status-row">
+        <span class="demande-card__statut-pill" :style="{ backgroundColor: statusPillColor }">
+          {{ statusLabel }}
+        </span>
+        <div v-if="demande.progressType" class="demande-card__progress">
+          <div class="demande-card__progress-bar" :style="progressBarStyle" />
+        </div>
+      </div>
+
+      <!-- Pill action — mobile uniquement, pleine largeur -->
+      <div v-if="actionLabel" class="demande-card__action demande-card__action--mobile">
+        {{ actionLabel }}
       </div>
     </div>
 
-    <!-- Col 3 — Statut + Barre (~180px, desktop only) -->
+    <!-- Col 3 — Statut + Barre (desktop uniquement) -->
     <div class="demande-card__status">
       <span class="demande-card__statut-pill" :style="{ backgroundColor: statusPillColor }">
         {{ statusLabel }}
@@ -62,8 +70,8 @@
       </div>
     </div>
 
-    <!-- Col 4 — Pill action -->
-    <div v-if="actionLabel" class="demande-card__action">
+    <!-- Col 4 — Pill action (desktop uniquement) -->
+    <div v-if="actionLabel" class="demande-card__action demande-card__action--desktop">
       {{ actionLabel }}
     </div>
   </button>
@@ -146,7 +154,7 @@ const actionLabel = computed(() => {
 </script>
 
 <style scoped lang="scss">
-$desktop: 900px;
+$desktop: 768px;
 
 @keyframes card-in {
   from {
@@ -161,7 +169,7 @@ $desktop: 900px;
 
 .demande-card {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: $spacing-s;
   padding: $spacing-s $spacing-m $spacing-s $spacing-s;
   border-radius: $radius-md;
@@ -176,6 +184,10 @@ $desktop: 900px;
   transition: box-shadow 150ms ease;
   animation: card-in 300ms ease-out both;
 
+  @media (min-width: $desktop) {
+    align-items: center;
+  }
+
   &:hover {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   }
@@ -188,10 +200,15 @@ $desktop: 900px;
 
   // ── Col 1 — Photo ───────────────────────────────────────────────────────────
   &__photo {
-    flex: 0 0 80px;
-    height: 80px;
+    flex: 0 0 72px;
+    height: 72px;
     border-radius: $radius-md;
     overflow: hidden;
+
+    @media (min-width: $desktop) {
+      flex: 0 0 80px;
+      height: 80px;
+    }
 
     img {
       width: 100%;
@@ -207,10 +224,11 @@ $desktop: 900px;
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 5px;
 
     @media (min-width: $desktop) {
       flex: 0 0 280px;
+      gap: 4px;
     }
   }
 
@@ -254,9 +272,23 @@ $desktop: 900px;
     }
   }
 
-  // ── Col 3 — Statut + Barre ──────────────────────────────────────────────────
+  // ── Ligne statut (mobile) ────────────────────────────────────────────────────
+  &__status-row {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+
+    @media (min-width: $desktop) {
+      display: none;
+    }
+
+    .demande-card__progress {
+      flex: 1;
+    }
+  }
+
+  // ── Col 3 — Statut + Barre (desktop) ────────────────────────────────────────
   &__status {
-    // Mobile: hidden — statut pill not shown, progress is in __content
     display: none;
 
     @media (min-width: $desktop) {
@@ -268,9 +300,10 @@ $desktop: 900px;
     }
   }
 
+  // ── Pill statut ──────────────────────────────────────────────────────────────
   &__statut-pill {
     display: inline-block;
-    align-self: flex-start;
+    flex-shrink: 0;
     padding: 2px $spacing-xs;
     border-radius: $radius-sm;
     font-family: 'Inter', sans-serif;
@@ -284,21 +317,12 @@ $desktop: 900px;
     }
   }
 
-  // ── Progress bar ────────────────────────────────────────────────────────────
+  // ── Progress bar ─────────────────────────────────────────────────────────────
   &__progress {
     height: 4px;
     border-radius: 2px;
     background: rgba(47, 42, 37, 0.08);
     overflow: hidden;
-
-    // Mobile version (inside __content): shown on mobile, hidden on desktop
-    &--mobile {
-      margin-top: 2px;
-
-      @media (min-width: $desktop) {
-        display: none;
-      }
-    }
   }
 
   &__progress-bar {
@@ -307,9 +331,8 @@ $desktop: 900px;
     transition: width 400ms ease;
   }
 
-  // ── Col 4 — Pill action ─────────────────────────────────────────────────────
+  // ── Pill action ──────────────────────────────────────────────────────────────
   &__action {
-    flex-shrink: 0;
     white-space: nowrap;
     padding: $spacing-xs $spacing-s;
     border-radius: $border-radius-xs;
@@ -321,6 +344,26 @@ $desktop: 900px;
     letter-spacing: 0.02em;
     text-align: center;
     line-height: 1.35;
+
+    // Mobile : pleine largeur colonne contenu
+    &--mobile {
+      display: block;
+      width: 100%;
+
+      @media (min-width: $desktop) {
+        display: none;
+      }
+    }
+
+    // Desktop : pill compacte à droite
+    &--desktop {
+      display: none;
+      flex-shrink: 0;
+
+      @media (min-width: $desktop) {
+        display: block;
+      }
+    }
   }
 }
 </style>
