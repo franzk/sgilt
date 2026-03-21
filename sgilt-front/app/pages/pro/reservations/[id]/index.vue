@@ -417,7 +417,12 @@ function handleUpload(e: Event) {
     name: file.name,
     fileType,
     url: URL.createObjectURL(file),
-    uploadedBy: { id: 'presta-3', name: 'DJ Animation', role: 'prestataire', photo: '/images/prestataires/dj-animation.jpg' },
+    uploadedBy: {
+      id: 'presta-3',
+      name: 'DJ Animation',
+      role: 'prestataire',
+      photo: '/images/prestataires/dj-animation.jpg',
+    },
     uploadedAt: new Date().toISOString(),
   }
   demande.value.documents.unshift(doc)
@@ -455,9 +460,9 @@ async function confirmer() {
 const REFUSAL_REASONS = [
   { id: 'date', label: '📅 Date non disponible' },
   { id: 'zone', label: '📍 Zone géographique trop éloignée' },
-  { id: 'jauge', label: '👥 Jauge d\'invités incompatible' },
+  { id: 'jauge', label: "👥 Jauge d'invités incompatible" },
   { id: 'budget', label: '💰 Budget incompatible' },
-  { id: 'type', label: '🎯 Type d\'événement hors de mes prestations' },
+  { id: 'type', label: "🎯 Type d'événement hors de mes prestations" },
   { id: 'autre', label: '••• Autre' },
 ]
 
@@ -1138,7 +1143,6 @@ $tab-bar-h: 45px;
       }
     }
   }
-
 }
 
 // ── Formulaire note ───────────────────────────────────────────────────────────
