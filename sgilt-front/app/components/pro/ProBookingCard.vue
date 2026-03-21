@@ -33,7 +33,6 @@
   >
     <!-- Zone texte -->
     <div class="demande-card__body">
-      <span v-if="actionLabel" class="demande-card__action">{{ actionLabel }}</span>
       <span class="demande-card__badge" :class="`demande-card__badge--${demande.statut}`">
         {{ STATUT_LABELS[demande.statut] }}
       </span>
@@ -45,6 +44,7 @@
       <div v-if="demande.progressType" class="demande-card__progress">
         <div class="demande-card__progress-bar" :style="progressBarStyle" />
       </div>
+      <span v-if="actionLabel" class="demande-card__action">{{ actionLabel }}</span>
     </div>
 
     <!-- Vignette photo -->
@@ -268,7 +268,7 @@ const actionLabel = computed(() => {
     font-size: 0.875rem;
     font-weight: 700;
     color: $brand-accent;
-    margin-bottom: 2px;
+    margin-top: 4px;
   }
 
   &__vignette {
