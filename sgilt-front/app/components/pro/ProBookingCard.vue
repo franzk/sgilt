@@ -1,22 +1,18 @@
 <template>
   <!-- Skeleton -->
   <div v-if="skeleton" class="demande-card demande-card--skeleton">
-    <div class="skeleton-body">
-      <div class="skeleton-text" style="width: 52px; height: 16px; border-radius: 2rem" />
+    <div class="demande-card__photo skeleton-text" />
+    <div class="demande-card__content">
+      <div class="skeleton-text" style="width: 65%; height: 1.1rem; border-radius: 4px" />
       <div
         class="skeleton-text"
-        style="width: 70%; height: 1.05rem; border-radius: 4px; margin-top: 6px"
+        style="width: 40%; height: 0.7rem; border-radius: 4px; margin-top: 5px"
       />
       <div
         class="skeleton-text"
-        style="width: 45%; height: 0.75rem; border-radius: 4px; margin-top: 4px"
-      />
-      <div
-        class="skeleton-text"
-        style="width: 60%; height: 0.75rem; border-radius: 4px; margin-top: 3px"
+        style="width: 55%; height: 0.7rem; border-radius: 4px; margin-top: 3px"
       />
     </div>
-    <div class="demande-card__vignette skeleton-text" />
   </div>
 
   <!-- Card -->
@@ -26,30 +22,49 @@
     type="button"
     :style="{
       borderLeftColor: cardBorderColor,
-      backgroundColor: cardBgColor,
       animationDelay: `${animationDelay}ms`,
     }"
     @click="emit('click')"
   >
-    <!-- Zone texte -->
-    <div class="demande-card__body">
-      <span class="demande-card__badge" :class="`demande-card__badge--${demande.statut}`">
-        {{ STATUT_LABELS[demande.statut] }}
-      </span>
+    <!-- Col 1 — Photo -->
+    <div class="demande-card__photo">
+      <img :src="demande.coverImage || FALLBACK_COVER" alt="" />
+    </div>
+
+    <!-- Col 2 — Titre + Date (flex-grow) -->
+    <div class="demande-card__content">
       <span class="demande-card__titre">{{ demande.titre }}</span>
-      <span class="demande-card__date">{{ demande.date }}</span>
-      <span class="demande-card__context" :class="`demande-card__context--${urgencyTier}`">
-        {{ demande.ligneContextuelle }}
+      <div class="demande-card__meta">
+        <span class="demande-card__date">{{ demande.date }}</span>
+        <span
+          v-if="demande.ligneContextuelle"
+          class="demande-card__context"
+          :class="`demande-card__context--${urgencyTier}`"
+          >· {{ demande.ligneContextuelle }}</span
+        >
+      </div>
+      <!-- Progress bar — mobile only -->
+      <div
+        v-if="demande.progressType"
+        class="demande-card__progress demande-card__progress--mobile"
+      >
+        <div class="demande-card__progress-bar" :style="progressBarStyle" />
+      </div>
+    </div>
+
+    <!-- Col 3 — Statut + Barre (~180px, desktop only) -->
+    <div class="demande-card__status">
+      <span class="demande-card__statut-pill" :style="{ backgroundColor: statusPillColor }">
+        {{ statusLabel }}
       </span>
       <div v-if="demande.progressType" class="demande-card__progress">
         <div class="demande-card__progress-bar" :style="progressBarStyle" />
       </div>
-      <span v-if="actionLabel" class="demande-card__action">{{ actionLabel }}</span>
     </div>
 
-    <!-- Vignette photo -->
-    <div class="demande-card__vignette">
-      <img :src="demande.coverImage || FALLBACK_COVER" alt="" />
+    <!-- Col 4 — Pill action -->
+    <div v-if="actionLabel" class="demande-card__action">
+      {{ actionLabel }}
     </div>
   </button>
 </template>
@@ -70,14 +85,6 @@ const { t } = useI18n()
 const FALLBACK_COVER =
   'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&auto=format&fit=crop'
 
-const STATUT_LABELS: Partial<Record<ReservationStatus, string>> = {
-  nouvelle: 'Nouvelle',
-  recontactee: 'Recontactée',
-  confirmee: 'Confirmée',
-  cloturee: 'Clôturée',
-  annulee: 'Annulée',
-}
-
 const STATUS_BORDER: Partial<Record<ReservationStatus, string>> = {
   nouvelle: '#e6b800',
   recontactee: '#6366f1',
@@ -86,12 +93,12 @@ const STATUS_BORDER: Partial<Record<ReservationStatus, string>> = {
   annulee: '#a32d2d',
 }
 
-const STATUS_BG: Partial<Record<ReservationStatus, string>> = {
-  nouvelle: 'rgba(245, 197, 24, 0.07)',
-  recontactee: 'rgba(99, 102, 241, 0.06)',
-  confirmee: 'rgba(34, 197, 94, 0.06)',
-  cloturee: 'rgba(0, 0, 0, 0.03)',
-  annulee: 'rgba(239, 68, 68, 0.05)',
+const STATUS_PILL_COLOR: Partial<Record<ReservationStatus, string>> = {
+  nouvelle: '#e6b800',
+  recontactee: '#6366f1',
+  confirmee: '#3b6d11',
+  cloturee: '#6b635c',
+  annulee: '#a32d2d',
 }
 
 const urgencyTier = computed((): 'neutral' | 'warning' | 'urgent' => {
@@ -107,9 +114,14 @@ const cardBorderColor = computed(() => {
   return STATUS_BORDER[props.demande.statut] ?? '#6b635c'
 })
 
-const cardBgColor = computed(() => {
-  if (!props.demande) return '#fff'
-  return STATUS_BG[props.demande.statut] ?? '#fff'
+const statusPillColor = computed(() => {
+  if (!props.demande) return '#6b635c'
+  return STATUS_PILL_COLOR[props.demande.statut] ?? '#6b635c'
+})
+
+const statusLabel = computed(() => {
+  if (!props.demande) return ''
+  return t(`pro.board.card.statut.${props.demande.statut}`, props.demande.statut)
 })
 
 const progressBarStyle = computed((): Record<string, string> => {
@@ -134,6 +146,8 @@ const actionLabel = computed(() => {
 </script>
 
 <style scoped lang="scss">
+$desktop: 900px;
+
 @keyframes card-in {
   from {
     opacity: 0;
@@ -147,13 +161,14 @@ const actionLabel = computed(() => {
 
 .demande-card {
   display: flex;
-  align-items: stretch;
-  gap: 0;
-  padding: 0;
+  align-items: center;
+  gap: $spacing-s;
+  padding: $spacing-s $spacing-m $spacing-s $spacing-s;
   border-radius: $radius-md;
-  border: 0.5px solid rgba(47, 42, 37, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-left-width: 3px;
-  box-shadow: 0 1px 4px rgba(47, 42, 37, 0.08);
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
   text-align: left;
   font-family: inherit;
   cursor: pointer;
@@ -162,57 +177,40 @@ const actionLabel = computed(() => {
   animation: card-in 300ms ease-out both;
 
   &:hover {
-    box-shadow: 0 4px 16px rgba(47, 42, 37, 0.12);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   }
 
   &--skeleton {
-    min-height: 88px;
-    border-left-color: transparent;
-    box-shadow: none;
     pointer-events: none;
+    box-shadow: none;
+    border-left-color: transparent;
   }
 
-  &__body {
+  // ── Col 1 — Photo ───────────────────────────────────────────────────────────
+  &__photo {
+    flex: 0 0 80px;
+    height: 80px;
+    border-radius: $radius-md;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  }
+
+  // ── Col 2 — Contenu ─────────────────────────────────────────────────────────
+  &__content {
     flex: 1;
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 3px;
-    padding: 12px $spacing-s;
-  }
+    gap: 4px;
 
-  &__badge {
-    align-self: flex-start;
-    margin-bottom: 2px;
-    font-size: 0.625rem;
-    font-weight: 600;
-    padding: 2px 7px;
-    border-radius: 2rem;
-    white-space: nowrap;
-
-    &--nouvelle {
-      background: rgba($brand-accent, 0.15);
-      color: darken(#e6b800, 20%);
-    }
-
-    &--recontactee {
-      background: rgba(99, 102, 241, 0.1);
-      color: #4f52c9;
-    }
-
-    &--confirmee {
-      background: rgba(34, 197, 94, 0.12);
-      color: #166534;
-    }
-
-    &--cloturee {
-      background: #f0efee;
-      color: #888;
-    }
-
-    &--annulee {
-      background: rgba(239, 68, 68, 0.1);
-      color: #a32d2d;
+    @media (min-width: $desktop) {
+      flex: 0 0 280px;
     }
   }
 
@@ -220,11 +218,18 @@ const actionLabel = computed(() => {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.1rem;
     font-weight: 600;
-    color: #1a1a1a;
+    color: $text-primary;
     line-height: 1.2;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    align-items: baseline;
   }
 
   &__date {
@@ -249,12 +254,51 @@ const actionLabel = computed(() => {
     }
   }
 
+  // ── Col 3 — Statut + Barre ──────────────────────────────────────────────────
+  &__status {
+    // Mobile: hidden — statut pill not shown, progress is in __content
+    display: none;
+
+    @media (min-width: $desktop) {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      flex: 1;
+    }
+  }
+
+  &__statut-pill {
+    display: inline-block;
+    align-self: flex-start;
+    padding: 2px $spacing-xs;
+    border-radius: $radius-sm;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+    // nouvelle (yellow) needs dark text
+    &[style*='#e6b800'] {
+      color: #5a4500;
+    }
+  }
+
+  // ── Progress bar ────────────────────────────────────────────────────────────
   &__progress {
-    margin-top: 6px;
     height: 4px;
     border-radius: 2px;
     background: rgba(47, 42, 37, 0.08);
     overflow: hidden;
+
+    // Mobile version (inside __content): shown on mobile, hidden on desktop
+    &--mobile {
+      margin-top: 2px;
+
+      @media (min-width: $desktop) {
+        display: none;
+      }
+    }
   }
 
   &__progress-bar {
@@ -263,32 +307,20 @@ const actionLabel = computed(() => {
     transition: width 400ms ease;
   }
 
+  // ── Col 4 — Pill action ─────────────────────────────────────────────────────
   &__action {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.875rem;
-    font-weight: 700;
-    color: $brand-accent;
-    margin-top: 4px;
-  }
-
-  &__vignette {
     flex-shrink: 0;
-    width: 72px;
-    align-self: stretch;
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+    white-space: nowrap;
+    padding: $spacing-xs $spacing-s;
+    border-radius: $border-radius-xs;
+    background: $color-accent;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-align: center;
+    line-height: 1.35;
   }
-}
-
-.skeleton-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 12px $spacing-s;
 }
 </style>

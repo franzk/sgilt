@@ -328,11 +328,18 @@
     "board": {
       "card": {
         "action": {
-          "nouvelle": "→ Recontacter le client",
-          "recontactee": "→ Confirmer ou refuser la réservation",
+          "nouvelle": "📞 À contacter",
+          "recontactee": "✅ À confirmer",
           "confirmee": "",
           "cloturee": "",
           "annulee": ""
+        },
+        "statut": {
+          "nouvelle": "Nouvelle",
+          "recontactee": "Recontactée",
+          "confirmee": "Confirmée",
+          "cloturee": "Clôturée",
+          "annulee": "Annulée"
         }
       }
     }
