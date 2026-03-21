@@ -20,7 +20,10 @@ export const EventMockService = {
       event.sharedNote = note
       event.sharedNoteUpdatedAt = new Date().toISOString()
     }
-    return { updatedAt: MOCK_EVENTS.find((e) => e.id === id)?.sharedNoteUpdatedAt ?? new Date().toISOString() }
+    return {
+      updatedAt:
+        MOCK_EVENTS.find((e) => e.id === id)?.sharedNoteUpdatedAt ?? new Date().toISOString(),
+    }
   },
 
   async patchEvent(id: string, patch: EventPatch): Promise<void> {
