@@ -26,6 +26,7 @@ export interface EventDetail {
   ambiance?: string // valeur de AMBIANCE_OPTIONS
   ville?: string
   nbInvites?: string
+  coverImage?: string
   sharedNote: string
   sharedNoteUpdatedAt?: string // ISO datetime
   reservations: Reservation[]
@@ -87,6 +88,8 @@ export interface ReservationDetail extends Reservation {
 
 export interface ProDemandeDetail extends ReservationDetail {
   event: EventDetail
+  progressType: 'deadline' | 'duration' | 'temporal' | null
+  progressValue: number | null
 }
 
 export interface ProDemandeSummary {
@@ -97,4 +100,7 @@ export interface ProDemandeSummary {
   statut: ReservationStatus
   ligneContextuelle: string
   urgencyLevel: number
+  coverImage?: string
+  progressType: 'deadline' | 'duration' | 'temporal' | null
+  progressValue: number | null
 }

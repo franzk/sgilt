@@ -27,12 +27,13 @@
       <!-- Skeleton -->
       <template v-if="loading">
         <div v-for="i in 4" :key="i" class="demande-card demande-card--skeleton">
-          <div class="skeleton-badge skeleton-text" />
           <div class="skeleton-body">
-            <div class="skeleton-line skeleton-text" style="width: 70%; height: 1.1rem" />
-            <div class="skeleton-line skeleton-text" style="width: 45%; height: 0.85rem; margin-top: 5px" />
-            <div class="skeleton-line skeleton-text" style="width: 55%; height: 0.75rem; margin-top: 4px" />
+            <div class="skeleton-text" style="width: 52px; height: 16px; border-radius: 2rem" />
+            <div class="skeleton-text" style="width: 70%; height: 1.05rem; border-radius: 4px; margin-top: 6px" />
+            <div class="skeleton-text" style="width: 45%; height: 0.75rem; border-radius: 4px; margin-top: 4px" />
+            <div class="skeleton-text" style="width: 60%; height: 0.75rem; border-radius: 4px; margin-top: 3px" />
           </div>
+          <div class="demande-card__vignette skeleton-text" />
         </div>
       </template>
 
@@ -43,18 +44,23 @@
 
       <!-- Cards -->
       <button
-        v-for="demande in filteredDemandes"
+        v-for="(demande, index) in filteredDemandes"
         v-else
         :key="demande.id"
         class="demande-card"
         type="button"
-        :style="{ borderLeftColor: cardBorderColor(demande) }"
+        :style="{
+          borderLeftColor: cardBorderColor(demande),
+          backgroundColor: cardBgColor(demande),
+          animationDelay: `${index * 60}ms`,
+        }"
         @click="navigateTo(`/pro/reservations/${demande.id}`)"
       >
-        <span class="demande-card__badge" :class="`demande-card__badge--${demande.statut}`">
-          {{ STATUT_LABELS[demande.statut] }}
-        </span>
+        <!-- Zone texte -->
         <div class="demande-card__body">
+          <span class="demande-card__badge" :class="`demande-card__badge--${demande.statut}`">
+            {{ STATUT_LABELS[demande.statut] }}
+          </span>
           <span class="demande-card__titre">{{ demande.titre }}</span>
           <span class="demande-card__date">{{ demande.date }}</span>
           <span
@@ -63,8 +69,21 @@
           >
             {{ demande.ligneContextuelle }}
           </span>
+          <div v-if="demande.progressType" class="demande-card__progress">
+            <div class="demande-card__progress-bar" :style="progressBarStyle(demande)" />
+          </div>
+          <span
+            v-if="t(`pro.board.card.action.${demande.statut}`)"
+            class="demande-card__action"
+          >
+            {{ t(`pro.board.card.action.${demande.statut}`) }}
+          </span>
         </div>
-        <span class="demande-card__chevron" aria-hidden="true">›</span>
+
+        <!-- Vignette photo -->
+        <div class="demande-card__vignette">
+          <img :src="demande.coverImage || FALLBACK_COVER" alt="" />
+        </div>
       </button>
 
     </div>
@@ -76,6 +95,8 @@ definePageMeta({ layout: 'pro' })
 
 import { ProMockService } from '~/services/pro.mock'
 import type { ProDemandeSummary, ReservationStatus } from '~/types/event'
+
+const { t } = useI18n()
 
 // ── Données ────────────────────────────────────────────────────────────────────
 const loading = ref(true)
@@ -145,10 +166,13 @@ function urgencyTier(level: number): 'neutral' | 'warning' | 'urgent' {
   return 'urgent'
 }
 
+const FALLBACK_COVER =
+  'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&auto=format&fit=crop'
+
 // ── Couleur border-left des cards ─────────────────────────────────────────────
 const STATUS_BORDER: Partial<Record<ReservationStatus, string>> = {
   nouvelle: '#e6b800',
-  recontactee: '#2c5cc5',
+  recontactee: '#6366f1',
   confirmee: '#3b6d11',
   cloturee: '#6b635c',
   annulee: '#a32d2d',
@@ -157,6 +181,34 @@ const STATUS_BORDER: Partial<Record<ReservationStatus, string>> = {
 function cardBorderColor(demande: ProDemandeSummary): string {
   if (demande.urgencyLevel >= 5) return '#a32d2d'
   return STATUS_BORDER[demande.statut] ?? '#6b635c'
+}
+
+// ── Couleur de fond par statut ─────────────────────────────────────────────────
+const STATUS_BG: Partial<Record<ReservationStatus, string>> = {
+  nouvelle:    'rgba(245, 197, 24, 0.07)',
+  recontactee: 'rgba(99, 102, 241, 0.06)',
+  confirmee:   'rgba(34, 197, 94, 0.06)',
+  cloturee:    'rgba(0, 0, 0, 0.03)',
+  annulee:     'rgba(239, 68, 68, 0.05)',
+}
+
+function cardBgColor(demande: ProDemandeSummary): string {
+  return STATUS_BG[demande.statut] ?? '#fff'
+}
+
+// ── Barre de progression ───────────────────────────────────────────────────────
+function progressBarStyle(demande: ProDemandeSummary): Record<string, string> {
+  const { progressType, progressValue } = demande
+  if (!progressType || progressValue === null) return {}
+  let color: string
+  if (progressType === 'deadline') {
+    color = progressValue > 0.5 ? '#3b6d11' : progressValue > 0.25 ? '#b06b00' : '#a32d2d'
+  } else if (progressType === 'duration') {
+    color = '#e6b800'
+  } else {
+    color = '#3b6d11'
+  }
+  return { width: `${progressValue * 100}%`, backgroundColor: color }
 }
 
 // ── Labels statut ─────────────────────────────────────────────────────────────
@@ -281,13 +333,24 @@ $max-w: 680px;
   margin: 0;
 }
 
+// ── Stagger animation ──────────────────────────────────────────────────────────
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 // ── Card demande ───────────────────────────────────────────────────────────────
 .demande-card {
   display: flex;
-  align-items: center;
-  gap: $spacing-s;
-  padding: 12px $spacing-s;
-  background: #fff;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
   border-radius: $radius-md;
   border: 0.5px solid rgba(47, 42, 37, 0.10);
   border-left-width: 3px;
@@ -295,26 +358,33 @@ $max-w: 680px;
   text-align: left;
   font-family: inherit;
   cursor: pointer;
+  overflow: hidden;
   transition: box-shadow 150ms ease;
+  animation: card-in 300ms ease-out both;
 
   &:hover {
     box-shadow: 0 4px 16px rgba(47, 42, 37, 0.12);
   }
 
   &--skeleton {
-    display: flex;
-    align-items: center;
-    gap: $spacing-s;
-    min-height: 76px;
+    min-height: 88px;
     border-left-color: transparent;
     box-shadow: none;
     pointer-events: none;
   }
 
+  &__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 12px $spacing-s;
+  }
+
   &__badge {
-    flex-shrink: 0;
     align-self: flex-start;
-    margin-top: 2px;
+    margin-bottom: 2px;
     font-size: 0.625rem;
     font-weight: 600;
     padding: 2px 7px;
@@ -327,13 +397,13 @@ $max-w: 680px;
     }
 
     &--recontactee {
-      background: #e8f0fe;
-      color: #2c5cc5;
+      background: rgba(99, 102, 241, 0.1);
+      color: #4f52c9;
     }
 
     &--confirmee {
-      background: rgba(59, 109, 17, 0.1);
-      color: #3b6d11;
+      background: rgba(34, 197, 94, 0.12);
+      color: #166534;
     }
 
     &--cloturee {
@@ -342,24 +412,16 @@ $max-w: 680px;
     }
 
     &--annulee {
-      background: rgba(163, 45, 45, 0.1);
+      background: rgba(239, 68, 68, 0.1);
       color: #a32d2d;
     }
   }
 
-  &__body {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
   &__titre {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     font-weight: 600;
-    color: $brand-primary;
+    color: #1a1a1a;
     line-height: 1.2;
     white-space: nowrap;
     overflow: hidden;
@@ -368,53 +430,60 @@ $max-w: 680px;
 
   &__date {
     font-family: 'Inter', sans-serif;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: $text-secondary;
   }
 
   &__context {
     font-family: 'Inter', sans-serif;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 500;
-    margin-top: 1px;
 
-    &--neutral {
-      color: $text-secondary;
-    }
-
-    &--warning {
-      color: #b06b00;
-    }
-
-    &--urgent {
-      color: #a32d2d;
-    }
+    &--neutral { color: $text-secondary; }
+    &--warning { color: #b06b00; }
+    &--urgent  { color: #a32d2d; }
   }
 
-  &__chevron {
+  &__progress {
+    margin-top: 6px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(47, 42, 37, 0.08);
+    overflow: hidden;
+  }
+
+  &__progress-bar {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 400ms ease;
+  }
+
+  &__action {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    color: $text-secondary;
+    margin-top: 5px;
+  }
+
+  &__vignette {
     flex-shrink: 0;
-    font-size: 1.2rem;
-    color: $brand-muted;
-    line-height: 1;
-    margin-left: 2px;
+    width: 72px;
+    align-self: stretch;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
   }
 }
 
 // ── Skeleton ───────────────────────────────────────────────────────────────────
-.skeleton-badge {
-  flex-shrink: 0;
-  width: 70px;
-  height: 20px;
-  border-radius: 2rem;
-  align-self: flex-start;
-  margin-top: 2px;
-}
-
 .skeleton-body {
   flex: 1;
-}
-
-.skeleton-line {
-  border-radius: $radius-sm;
+  display: flex;
+  flex-direction: column;
+  padding: 12px $spacing-s;
 }
 </style>

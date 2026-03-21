@@ -323,5 +323,18 @@
     "confirmed": "{n} confirmée | {n} confirmées",
     "in-progress": "{n} en cours",
     "pending": "{n} en attente"
+  },
+  "pro": {
+    "board": {
+      "card": {
+        "action": {
+          "nouvelle": "→ Recontacter le client",
+          "recontactee": "→ Confirmer ou refuser la réservation",
+          "confirmee": "",
+          "cloturee": "",
+          "annulee": ""
+        }
+      }
+    }
   }
 }

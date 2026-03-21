@@ -104,7 +104,7 @@
             type="button"
             @click="navigateTo(`/pro/reservations/${demandeId}/actions`)"
           >
-            Actions spéciales →
+            Actions spéciales
           </button>
         </div>
       </div>
@@ -202,7 +202,7 @@
         :disabled="ctaLoading"
         @click="recontacter"
       >
-        Recontacter le client
+        Confirmer le contact
       </button>
       <button
         v-else-if="demande.status === 'recontactee'"
@@ -213,9 +213,6 @@
       >
         Confirmer la réservation
       </button>
-      <div v-else-if="demande.status === 'confirmee'" class="cta-bar__confirmed">
-        Réservation confirmée ✓
-      </div>
     </div>
 
     <!-- ── Modal ajout note ───────────────────────────────────────────────────── -->
@@ -260,7 +257,7 @@
         <p class="refusal-form__lead">Pourquoi refusez-vous cette demande ?</p>
         <div class="refusal-form__reasons">
           <label v-for="r in REFUSAL_REASONS" :key="r.id" class="refusal-reason">
-            <input v-model="refusalReasons" type="checkbox" :value="r.id" />
+            <input v-model="refusalReason" type="radio" :value="r.id" />
             <span>{{ r.label }}</span>
           </label>
         </div>
@@ -271,7 +268,7 @@
         <button
           class="refusal-form__submit"
           type="button"
-          :disabled="refusalReasons.length === 0 || refusalLoading"
+          :disabled="!refusalReason || refusalLoading"
           @click="submitRefusal"
         >
           Confirmer le refus
@@ -306,7 +303,10 @@ const COVER_IMAGES: Record<string, string> = {
 }
 
 const coverImage = computed(
-  () => COVER_IMAGES[demande.value?.event.eventType ?? ''] ?? COVER_IMAGES.autre,
+  () =>
+    demande.value?.event.coverImage ??
+    COVER_IMAGES[demande.value?.event.eventType ?? ''] ??
+    COVER_IMAGES.autre,
 )
 
 // ── Parallax ───────────────────────────────────────────────────────────────────
@@ -356,7 +356,7 @@ const activeTab = ref<'notes' | 'documents'>('notes')
 // ── Notes ─────────────────────────────────────────────────────────────────────
 const sortedNotes = computed(() =>
   [...(demande.value?.notes ?? [])].sort(
-    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   ),
 )
 
@@ -432,7 +432,7 @@ function deleteDocument(id: string) {
 // ── CTA ───────────────────────────────────────────────────────────────────────
 const ctaLoading = ref(false)
 const showCta = computed(() =>
-  demande.value ? ['nouvelle', 'recontactee', 'confirmee'].includes(demande.value.status) : false,
+  demande.value ? ['nouvelle', 'recontactee'].includes(demande.value.status) : false,
 )
 
 async function recontacter() {
@@ -453,26 +453,27 @@ async function confirmer() {
 
 // ── Refus ─────────────────────────────────────────────────────────────────────
 const REFUSAL_REASONS = [
-  { id: 'indisponible', label: 'Je ne suis pas disponible à cette date' },
-  { id: 'hors-zone', label: "La localisation est hors de ma zone d'intervention" },
-  { id: 'hors-budget', label: 'Le budget indiqué est insuffisant' },
-  { id: 'incompatible', label: 'La prestation ne correspond pas à mon offre' },
-  { id: 'autre', label: 'Autre raison' },
+  { id: 'date', label: '📅 Date non disponible' },
+  { id: 'zone', label: '📍 Zone géographique trop éloignée' },
+  { id: 'jauge', label: '👥 Jauge d\'invités incompatible' },
+  { id: 'budget', label: '💰 Budget incompatible' },
+  { id: 'type', label: '🎯 Type d\'événement hors de mes prestations' },
+  { id: 'autre', label: '••• Autre' },
 ]
 
 const refusalModalOpen = ref(false)
-const refusalReasons = ref<string[]>([])
-const communicateReason = ref(false)
+const refusalReason = ref('')
+const communicateReason = ref(true)
 const refusalLoading = ref(false)
 
 function openRefusalModal() {
-  refusalReasons.value = []
-  communicateReason.value = false
+  refusalReason.value = ''
+  communicateReason.value = true
   refusalModalOpen.value = true
 }
 
 async function submitRefusal() {
-  if (refusalReasons.value.length === 0 || refusalLoading.value) return
+  if (!refusalReason.value || refusalLoading.value) return
   refusalLoading.value = true
   await ProMockService.updateStatut(demandeId, 'annulee')
   if (demande.value) demande.value.status = 'annulee'
@@ -1138,12 +1139,6 @@ $tab-bar-h: 45px;
     }
   }
 
-  &__confirmed {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #3b6d11;
-  }
 }
 
 // ── Formulaire note ───────────────────────────────────────────────────────────

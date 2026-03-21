@@ -593,6 +593,7 @@ export const MOCK_EVENTS: EventDetail[] = [
     ambiance: 'chic',
     ville: 'Strasbourg',
     nbInvites: '120',
+    coverImage: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&auto=format&fit=crop',
     sharedNote: "Cérémonie à 14h, vin d'honneur à 16h. Accès PMR prévu.",
     sharedNoteUpdatedAt: '2026-02-20T11:30:00.000Z',
     phrase: 'Votre mariage prend forme ✨',
@@ -760,6 +761,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     title: 'Anniversaire 50 ans de Marc',
     date: '2026-05-23',
     eventType: 'anniversaire',
+    coverImage: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&auto=format&fit=crop',
     ville: 'Lyon',
     nbInvites: '60',
     sharedNote: '',
@@ -783,6 +785,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     title: 'Soirée entreprise Alsace Tech',
     date: '2026-04-12',
     eventType: 'entreprise',
+    coverImage: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&auto=format&fit=crop',
     ville: 'Strasbourg',
     nbInvites: '80',
     sharedNote:
@@ -814,6 +817,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     title: 'Mariage Dupont',
     date: '2026-06-06',
     eventType: 'mariage',
+    coverImage: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&auto=format&fit=crop',
     ville: 'Colmar',
     nbInvites: '150',
     sharedNote: '',
@@ -837,6 +841,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     title: 'Cocktail Lancement Produit',
     date: '2026-04-04',
     eventType: 'entreprise',
+    coverImage: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&auto=format&fit=crop',
     ville: 'Mulhouse',
     nbInvites: '40',
     sharedNote:
@@ -874,6 +879,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     title: 'Soirée privée Strasbourg',
     date: '2026-03-15',
     eventType: 'soiree',
+    coverImage: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop',
     ville: 'Strasbourg',
     nbInvites: '30',
     sharedNote: '',
@@ -903,6 +909,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     title: 'Gala Humanitaire Grand Est',
     date: '2026-06-20',
     eventType: 'autre',
+    coverImage: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&auto=format&fit=crop',
     ville: 'Nancy',
     nbInvites: '200',
     sharedNote:
@@ -946,11 +953,11 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
 // ── Demandes pro (réservation + événement associé) ────────────────────────────
 
 export const PRO_DEMANDES: ProDemandeDetail[] = [
-  { ...MOCK_RESERVATIONS[0], event: MOCK_EVENTS[0] },          // res-001 / Mariage Julie & Thomas
-  { ...PRO_ONLY_RESERVATIONS[0], event: PRO_ONLY_EVENTS[0] },  // pro-002 / Anniversaire Marc
-  { ...PRO_ONLY_RESERVATIONS[1], event: PRO_ONLY_EVENTS[1] },  // pro-003 / Soirée entreprise
-  { ...PRO_ONLY_RESERVATIONS[2], event: PRO_ONLY_EVENTS[2] },  // pro-004 / Mariage Dupont
-  { ...PRO_ONLY_RESERVATIONS[3], event: PRO_ONLY_EVENTS[3] },  // pro-005 / Cocktail
-  { ...PRO_ONLY_RESERVATIONS[4], event: PRO_ONLY_EVENTS[4] },  // pro-006 / Soirée privée
-  { ...PRO_ONLY_RESERVATIONS[5], event: PRO_ONLY_EVENTS[5] },  // pro-007 / Gala
+  { ...MOCK_RESERVATIONS[0],      event: MOCK_EVENTS[0],         progressType: 'temporal',  progressValue: 0.35 }, // confirmee
+  { ...PRO_ONLY_RESERVATIONS[0],  event: PRO_ONLY_EVENTS[0],     progressType: 'deadline',  progressValue: 0.85 }, // nouvelle
+  { ...PRO_ONLY_RESERVATIONS[1],  event: PRO_ONLY_EVENTS[1],     progressType: 'duration',  progressValue: 0.45 }, // recontactee
+  { ...PRO_ONLY_RESERVATIONS[2],  event: PRO_ONLY_EVENTS[2],     progressType: 'deadline',  progressValue: 0.15 }, // nouvelle urgente
+  { ...PRO_ONLY_RESERVATIONS[3],  event: PRO_ONLY_EVENTS[3],     progressType: 'temporal',  progressValue: 0.92 }, // confirmee urgente
+  { ...PRO_ONLY_RESERVATIONS[4],  event: PRO_ONLY_EVENTS[4],     progressType: null,        progressValue: null  }, // annulee
+  { ...PRO_ONLY_RESERVATIONS[5],  event: PRO_ONLY_EVENTS[5],     progressType: null,        progressValue: null  }, // cloturee
 ]

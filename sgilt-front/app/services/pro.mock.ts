@@ -20,6 +20,9 @@ export const ProMockService = {
       statut: d.status,
       ligneContextuelle: d.ligneContextuelle,
       urgencyLevel: d.urgencyLevel,
+      coverImage: d.event.coverImage,
+      progressType: d.progressType,
+      progressValue: d.progressValue,
     }))
   },
 

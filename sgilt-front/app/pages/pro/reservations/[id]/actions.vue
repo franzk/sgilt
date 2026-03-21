@@ -6,7 +6,10 @@
       <button class="back-btn" type="button" @click="navigateTo(`/pro/reservations/${demandeId}`)">
         ‹ Retour
       </button>
-      <h1 class="actions-page__title">Actions spéciales</h1>
+      <div>
+        <h1 class="actions-page__title">Actions spéciales</h1>
+        <p class="actions-page__subtitle">Ces actions sont irréversibles. Procédez avec précaution.</p>
+      </div>
     </div>
 
     <!-- ── Liste des actions ────────────────────────────────────────────────── -->
@@ -118,6 +121,13 @@ $desktop: 900px;
     color: $brand-primary;
     margin: 0;
     line-height: 1.2;
+  }
+
+  &__subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    color: $text-secondary;
+    margin: 3px 0 0;
   }
 }
 
