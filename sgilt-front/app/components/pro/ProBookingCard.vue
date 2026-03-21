@@ -154,7 +154,7 @@ const actionLabel = computed(() => {
 </script>
 
 <style scoped lang="scss">
-$desktop: 768px;
+@use '@/assets/styles/base' as *;
 
 @keyframes card-in {
   from {
@@ -184,7 +184,7 @@ $desktop: 768px;
   transition: box-shadow 150ms ease;
   animation: card-in 300ms ease-out both;
 
-  @media (min-width: $desktop) {
+  @media (min-width: $breakpoint-desktop) {
     align-items: center;
   }
 
@@ -205,7 +205,7 @@ $desktop: 768px;
     border-radius: $radius-md;
     overflow: hidden;
 
-    @media (min-width: $desktop) {
+    @media (min-width: $breakpoint-desktop) {
       flex: 0 0 80px;
       height: 80px;
     }
@@ -226,7 +226,7 @@ $desktop: 768px;
     flex-direction: column;
     gap: 5px;
 
-    @media (min-width: $desktop) {
+    @media (min-width: $breakpoint-desktop) {
       flex: 0 0 280px;
       gap: 4px;
     }
@@ -278,7 +278,7 @@ $desktop: 768px;
     align-items: center;
     gap: $spacing-xs;
 
-    @media (min-width: $desktop) {
+    @media (min-width: $breakpoint-desktop) {
       display: none;
     }
 
@@ -291,7 +291,7 @@ $desktop: 768px;
   &__status {
     display: none;
 
-    @media (min-width: $desktop) {
+    @media (min-width: $breakpoint-desktop) {
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -350,7 +350,7 @@ $desktop: 768px;
       display: block;
       width: 100%;
 
-      @media (min-width: $desktop) {
+      @media (min-width: $breakpoint-desktop) {
         display: none;
       }
     }
@@ -360,7 +360,7 @@ $desktop: 768px;
       display: none;
       flex-shrink: 0;
 
-      @media (min-width: $desktop) {
+      @media (min-width: $breakpoint-desktop) {
         display: block;
       }
     }
