@@ -20,6 +20,31 @@ export const RESERVATION_STATUS_ORDER: ReservationStatus[] = [
 
 export type ReservationStatut = (typeof RESERVATION_STATUTS)[number]
 
+// ── Listes statiques ─────────────────────────────────────────────────────────
+
+export const ALL_RESERVATION_STATUTS: ReservationStatut[] = [
+  'nouvelle',
+  'recontactee',
+  'confirmee',
+  'cloturee',
+  'annulee',
+]
+
+export const DEFAULT_ACTIVE_PILLS: ReservationStatut[] = [
+  'nouvelle',
+  'recontactee',
+  'confirmee',
+]
+
+export const RESERVATION_STATUS_PILLS: { id: ReservationStatut | 'toutes' }[] = [
+  { id: 'toutes' },
+  { id: 'nouvelle' },
+  { id: 'recontactee' },
+  { id: 'confirmee' },
+  { id: 'cloturee' },
+  { id: 'annulee' },
+]
+
 // ── Config — source de vérité couleurs ───────────────────────────────────────
 
 export const RESERVATION_STATUS_CONFIG: Record<

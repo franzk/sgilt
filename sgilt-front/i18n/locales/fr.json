@@ -312,6 +312,7 @@
   },
   "reservation": {
     "statut": {
+      "toutes": "Toutes",
       "nouvelle": "Nouvelle",
       "recontactee": "Recontactée",
       "confirmee": "Confirmée",

@@ -8,14 +8,14 @@
       <!-- ── Pills de filtrage ─────────────────────────────────────────────────── -->
       <div class="pills-scroll">
         <button
-          v-for="pill in PILLS"
+          v-for="pill in RESERVATION_STATUS_PILLS"
           :key="pill.id"
           class="pill"
           :class="{ 'pill--active': isPillActive(pill.id) }"
           type="button"
           @click="togglePill(pill.id)"
         >
-          {{ pill.label }}
+          {{ t(`reservation.statut.${pill.id}`) }}
         </button>
       </div>
     </div>
@@ -49,7 +49,13 @@
 definePageMeta({ layout: 'pro' })
 
 import { ProMockService } from '~/services/pro.mock'
-import type { ProDemandeSummary, ReservationStatus } from '~/types/event'
+import type { ProDemandeSummary } from '~/types/event'
+import {
+  ALL_RESERVATION_STATUTS,
+  DEFAULT_ACTIVE_PILLS,
+  RESERVATION_STATUS_PILLS,
+} from '~/constants/reservation-status'
+import type { ReservationStatut } from '~/constants/reservation-status'
 
 // ── Données ────────────────────────────────────────────────────────────────────
 const loading = ref(true)
@@ -75,46 +81,31 @@ const contextLine = computed(() => {
 })
 
 // ── Pills ──────────────────────────────────────────────────────────────────────
-const PILLS = [
-  { id: 'toutes', label: 'Toutes' },
-  { id: 'nouvelle', label: 'Nouvelles' },
-  { id: 'recontactee', label: 'Recontactées' },
-  { id: 'confirmee', label: 'Confirmées' },
-  { id: 'cloturee', label: 'Clôturées' },
-  { id: 'annulee', label: 'Annulées' },
-]
+const { t } = useI18n()
 
-const ALL_STATUTS: ReservationStatus[] = [
-  'nouvelle',
-  'recontactee',
-  'confirmee',
-  'cloturee',
-  'annulee',
-]
-const DEFAULT_PILLS: ReservationStatus[] = ['nouvelle', 'recontactee', 'confirmee']
-
-const activePills = ref<ReservationStatus[]>([...DEFAULT_PILLS])
+const activePills = ref<ReservationStatut[]>([...DEFAULT_ACTIVE_PILLS])
 
 function isPillActive(id: string): boolean {
-  if (id === 'toutes') return ALL_STATUTS.every((s) => activePills.value.includes(s))
-  return activePills.value.includes(id)
+  if (id === 'toutes') return ALL_RESERVATION_STATUTS.every((s) => activePills.value.includes(s))
+  return activePills.value.includes(id as ReservationStatut)
 }
 
 function togglePill(id: string) {
   if (id === 'toutes') {
-    activePills.value = isPillActive('toutes') ? [...DEFAULT_PILLS] : [...ALL_STATUTS]
+    activePills.value = isPillActive('toutes') ? [...DEFAULT_ACTIVE_PILLS] : [...ALL_RESERVATION_STATUTS]
     return
   }
-  const next = activePills.value.includes(id)
-    ? activePills.value.filter((p) => p !== id)
-    : [...activePills.value, id]
-  activePills.value = next.length === 0 ? [...DEFAULT_PILLS] : next
+  const statut = id as ReservationStatut
+  const next = activePills.value.includes(statut)
+    ? activePills.value.filter((p) => p !== statut)
+    : [...activePills.value, statut]
+  activePills.value = next.length === 0 ? [...DEFAULT_ACTIVE_PILLS] : next
 }
 
 // ── Filtrage + tri ─────────────────────────────────────────────────────────────
 const filteredDemandes = computed(() =>
   DEMANDES.value
-    .filter((d) => activePills.value.includes(d.statut as ReservationStatus))
+    .filter((d) => activePills.value.includes(d.statut as ReservationStatut))
     .sort((a, b) => {
       if (b.urgencyLevel !== a.urgencyLevel) return b.urgencyLevel - a.urgencyLevel
       return new Date(a.dateIso).getTime() - new Date(b.dateIso).getTime()
