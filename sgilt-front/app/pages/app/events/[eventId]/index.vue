@@ -29,7 +29,9 @@
           >
             <span class="status-pill__icon" aria-hidden="true">{{ pill.icon }}</span>
             <span class="status-pill__count">{{ pill.count }}</span>
-            <span class="status-pill__label">{{ pill.label }}</span>
+            <span class="status-pill__label">{{
+              t(`reservation.statut_section.${pill.status}`)
+            }}</span>
           </span>
         </div>
       </div>
@@ -108,11 +110,12 @@ import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
 
 definePageMeta({ layout: 'app' })
 
+const { t } = useI18n()
+
 import EventBlock from '~/components/app/EventBlock.vue'
 import { EventMockService } from '~/services/event.mock'
 import type { EventDetail, EventPatch, ReservationStatus } from '~/types/event'
-import { RESERVATION_STATUS_ORDER as STATUS_ORDER } from '~/utils/reservationStatus'
-import { RESERVATION_STATUS_CONFIG } from '~/constants/reservation-status'
+import { RESERVATION_STATUS_CONFIG, RESERVATION_STATUS_ORDER } from '~/constants/reservation-status'
 import StatusBadge from '~/components/basics/StatusBadge.vue'
 
 const FALLBACK_PHOTO =
@@ -172,28 +175,31 @@ function onEventUpdated(patch: EventPatch) {
 }
 
 // ── Widget — pills statut ──────────────────────────────────────────────────────
-const STATUS_PILL_CONFIG: Array<{ status: ReservationStatus; icon: string; label: string }> = [
-  { status: 'confirmee', icon: '✓', label: 'Confirmée(s)' },
-  { status: 'recontactee', icon: '↩', label: 'Recontactée(s)' },
-  { status: 'envoyee', icon: '→', label: 'En attente' },
-  { status: 'brouillon', icon: '✎', label: 'Brouillon(s)' },
-  { status: 'cloturee', icon: '✕', label: 'Clôturée(s)' },
-  { status: 'annulee', icon: '✕', label: 'Annulée(s)' },
-]
+const STATUS_PILL_ICONS: Record<ReservationStatus, string> = {
+  nouvelle: '!',
+  recontactee: '↩',
+  confirmee: '✓',
+  cloturee: '✕',
+  annulee: '✕',
+}
 
 const statusPills = computed(() => {
   if (!event.value) return []
-  return STATUS_PILL_CONFIG.map((config) => ({
-    ...config,
-    count: event.value!.reservations.filter((r) => r.status === config.status).length,
-  })).filter((pill) => pill.count > 0)
+  return (Object.keys(STATUS_PILL_ICONS) as ReservationStatus[])
+    .map((status) => ({
+      status,
+      icon: STATUS_PILL_ICONS[status],
+      count: event.value!.reservations.filter((r) => r.status === status).length,
+    }))
+    .filter((pill) => pill.count > 0)
 })
 
 // ── Réservations groupées ─────────────────────────────────────────────────────
 const sortedReservations = computed(() => {
   if (!event.value) return []
   return [...event.value.reservations].sort(
-    (a, b) => STATUS_ORDER.indexOf(a.status) - STATUS_ORDER.indexOf(b.status),
+    (a, b) =>
+      RESERVATION_STATUS_ORDER.indexOf(a.status) - RESERVATION_STATUS_ORDER.indexOf(b.status),
   )
 })
 
@@ -363,7 +369,6 @@ $desktop: 900px;
   &__label {
     font-weight: 500;
   }
-
 }
 
 // ── Accordéon EventBlock (mobile) ─────────────────────────────────────────────
@@ -530,7 +535,6 @@ $desktop: 900px;
   gap: $spacing-xs;
   padding: 8px $spacing-s;
 }
-
 
 .res-card__unread {
   flex-shrink: 0;

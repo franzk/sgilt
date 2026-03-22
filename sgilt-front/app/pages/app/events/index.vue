@@ -93,13 +93,11 @@ function coverImage(eventType?: string) {
 function reservationSummary(event: EventDetail): string {
   const r = event.reservations
   const confirmed = r.filter((x) => x.status === 'confirmee').length
-  const inProgress = r.filter((x) => x.status === 'envoyee' || x.status === 'recontactee').length
-  const pending = r.filter((x) => x.status === 'brouillon').length
+  const inProgress = r.filter((x) => x.status === 'recontactee').length
 
   const parts: string[] = []
   if (confirmed) parts.push(`✓ ${t('events-list.confirmed', confirmed, { n: confirmed })}`)
   if (inProgress) parts.push(t('events-list.in-progress', inProgress, { n: inProgress }))
-  if (pending) parts.push(t('events-list.pending', pending, { n: pending }))
 
   return parts.join(' · ') || '—'
 }

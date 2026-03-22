@@ -1,12 +1,4 @@
-export type ReservationStatus =
-  | 'brouillon'
-  | 'envoyee'
-  | 'nouvelle'
-  | 'recontactee'
-  | 'confirmee'
-  | 'annulee'
-  | 'cloturee'
-  | 'terminee'
+export type ReservationStatus = 'nouvelle' | 'recontactee' | 'confirmee' | 'cloturee' | 'annulee'
 
 export interface Reservation {
   id: string

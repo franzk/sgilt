@@ -44,33 +44,6 @@
       "title": "La sélection du moment"
     }
   },
-  "reservation": {
-    "title": "Réservez maintenant",
-    "subtitle": "Validez votre réservation en quelques clics !",
-    "form": {
-      "date-label": "Choisissez une date :",
-      "date-error": "Veuillez sélectionner une date avant de continuer.",
-      "options-label": "Choisissez un service :",
-      "price-placeholder": "Sélectionnez une option",
-      "price-error": "Veuillez sélectionner une option avant de continuer.",
-      "quantity-label": "Quantité :",
-      "quantity-error": "Ce service nécessite un minimum de {count} {unity}. Vous pouvez ajuster le nombre ci-dessus 👆",
-      "pricing": "Tarif estimé:",
-      "booked": {
-        "title": "🛑 Désolé, { partnerName } n’est pas disponible ce jour-là.",
-        "subtitle": "Ne vous inquiétez pas, nous avons sélectionné d’autres talents qui pourraient vous plaire !"
-      },
-      "option": {
-        "title": "🟠 Cette date est sous option pour  { partnerName }.",
-        "subtitle": "Soyez parmi les premiers informés si la date se libère ! Rejoignez la liste d’attente en un clic. Pendant ce temps, voici d’autres prestataires similaires disponibles à cette date : 👇"
-      }
-    },
-    "button": "Réserver",
-    "help": {
-      "need": "Besoin d'assistance ?",
-      "contact": "Contactez-nous"
-    }
-  },
   "event": {
     "event-board": {
       "mobile": {
@@ -339,14 +312,18 @@
   },
   "reservation": {
     "statut": {
-      "brouillon": "Brouillon",
-      "envoyee": "Envoyée",
       "nouvelle": "Nouvelle",
       "recontactee": "Recontactée",
       "confirmee": "Confirmée",
       "cloturee": "Clôturée",
-      "annulee": "Annulée",
-      "terminee": "Terminée"
+      "annulee": "Annulée"
+    },
+    "statut_section": {
+      "nouvelle": "Nouvelles",
+      "recontactee": "Recontactées",
+      "confirmee": "Confirmées",
+      "cloturee": "Clôturées",
+      "annulee": "Annulées"
     }
   }
 }
