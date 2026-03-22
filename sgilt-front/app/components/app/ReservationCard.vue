@@ -2,7 +2,7 @@
   <button
     class="reservation-card"
     type="button"
-    :style="{ borderLeftColor: RESERVATION_STATUS_COLORS[reservation.status] }"
+    :style="{ borderLeftColor: statusConfig.color }"
     @click="$emit('click')"
   >
     <!-- Photo / fallback initiales -->
@@ -21,9 +21,7 @@
       <!-- Ligne 1 : catégorie + badge statut -->
       <div class="card-row">
         <span class="card-category">{{ reservation.category }}</span>
-        <span class="card-badge" :class="`card-badge--${reservation.status}`">
-          {{ STATUS_LABELS[reservation.status] }}
-        </span>
+        <StatusBadge :status="reservation.status" />
       </div>
 
       <!-- Ligne 2 : nom -->
@@ -44,13 +42,13 @@
 
 <script setup lang="ts">
 import type { Reservation } from '~/types/event'
-import {
-  RESERVATION_STATUS_LABELS as STATUS_LABELS,
-  RESERVATION_STATUS_COLORS,
-} from '~/utils/reservationStatus'
+import { RESERVATION_STATUS_CONFIG } from '~/constants/reservation-status'
+import StatusBadge from '~/components/basics/StatusBadge.vue'
 
 const props = defineProps<{ reservation: Reservation }>()
 defineEmits<{ click: [] }>()
+
+const statusConfig = computed(() => RESERVATION_STATUS_CONFIG[props.reservation.status])
 
 const initials = computed(() =>
   props.reservation.prestataireName
@@ -140,42 +138,6 @@ const initials = computed(() =>
   white-space: nowrap;
 }
 
-.card-badge {
-  flex-shrink: 0;
-  font-size: 0.625rem; // 10px
-  font-weight: 600;
-  padding: 2px 7px;
-  border-radius: 2rem;
-  white-space: nowrap;
-
-  &--brouillon,
-  &--terminee {
-    background: #f0efee;
-    color: #888;
-  }
-
-  &--envoyee {
-    background: #e8f0fe;
-    color: #2c5cc5;
-  }
-
-  &--recontactee {
-    background: rgba($brand-accent, 0.15);
-    color: darken(#e6b800, 20%);
-  }
-
-  &--confirmee {
-    background: rgba($state-available, 0.12);
-    color: $state-available;
-  }
-
-  &--annulee,
-  &--cloturee {
-    background: rgba($state-error, 0.1);
-    color: $state-error;
-  }
-}
-
 // ─── Ligne 2 ──────────────────────────────────────────────────────────────────
 .card-name {
   font-family: 'Cormorant Garamond', serif;
@@ -189,8 +151,6 @@ const initials = computed(() =>
   position: absolute;
   top: -0.5rem;
   right: -0.5rem;
-  // flex-shrink: 0;
-  //align-self: flex-end;
   padding: 3px 8px;
   border-radius: 999px;
   background: $state-danger;

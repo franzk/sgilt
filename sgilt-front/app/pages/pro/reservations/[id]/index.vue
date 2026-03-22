@@ -16,8 +16,8 @@
           <span class="cover-banner__category">{{ demande.category }}</span>
           <span class="cover-banner__name">{{ demande.event.title }}</span>
         </div>
-        <span class="cover-banner__badge" :class="`cover-banner__badge--${demande.status}`">
-          {{ STATUT_LABELS[demande.status] }}
+        <span class="cover-banner__badge" :style="getStatusOverlayStyle(demande.status)">
+          {{ t(`reservation.statut.${demande.status}`) }}
         </span>
       </div>
     </div>
@@ -285,6 +285,7 @@ import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import EventBlock from '~/components/app/EventBlock.vue'
 import { ProMockService } from '~/services/pro.mock'
 import type { ProDemandeDetail, ReservationDocument } from '~/types/event'
+import { getStatusOverlayStyle } from '~/constants/reservation-status'
 
 const route = useRoute()
 const demandeId = String(route.params.id)
@@ -341,14 +342,7 @@ onMounted(async () => {
 // ── EventDetail façade (lecture seule) ────────────────────────────────────────
 const proEventDetail = computed(() => demande.value?.event ?? null)
 
-// ── Statut labels ─────────────────────────────────────────────────────────────
-const STATUT_LABELS: Record<string, string> = {
-  nouvelle: 'Nouvelle',
-  recontactee: 'Recontactée',
-  confirmee: 'Confirmée',
-  cloturee: 'Clôturée',
-  annulee: 'Annulée',
-}
+const { t } = useI18n()
 
 // ── Onglets ────────────────────────────────────────────────────────────────────
 const activeTab = ref<'notes' | 'documents'>('notes')
@@ -581,23 +575,6 @@ $tab-bar-h: 45px;
     white-space: nowrap;
     backdrop-filter: blur(4px);
 
-    &--nouvelle {
-      background: rgba(230, 184, 0, 0.45);
-      color: #fff;
-    }
-    &--recontactee {
-      background: rgba(44, 92, 197, 0.45);
-      color: #fff;
-    }
-    &--confirmee {
-      background: rgba(59, 109, 17, 0.45);
-      color: #fff;
-    }
-    &--annulee,
-    &--cloturee {
-      background: rgba(163, 45, 45, 0.45);
-      color: #fff;
-    }
   }
 }
 

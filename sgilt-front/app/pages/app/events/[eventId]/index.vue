@@ -22,7 +22,10 @@
             v-for="pill in statusPills"
             :key="pill.status"
             class="status-pill"
-            :class="`status-pill--${pill.status}`"
+            :style="{
+              background: RESERVATION_STATUS_CONFIG[pill.status].bgColor,
+              color: RESERVATION_STATUS_CONFIG[pill.status].color,
+            }"
           >
             <span class="status-pill__icon" aria-hidden="true">{{ pill.icon }}</span>
             <span class="status-pill__count">{{ pill.count }}</span>
@@ -71,9 +74,7 @@
               </template>
               <template #footer>
                 <div class="res-card__footer">
-                  <span class="res-card__badge" :class="`res-card__badge--${r.status}`">
-                    {{ STATUS_LABELS[r.status] }}
-                  </span>
+                  <StatusBadge :status="r.status" />
                   <span v-if="r.unreadNotesCount > 0" class="res-card__unread">
                     {{ r.unreadNotesCount }}
                   </span>
@@ -110,10 +111,9 @@ definePageMeta({ layout: 'app' })
 import EventBlock from '~/components/app/EventBlock.vue'
 import { EventMockService } from '~/services/event.mock'
 import type { EventDetail, EventPatch, ReservationStatus } from '~/types/event'
-import {
-  RESERVATION_STATUS_ORDER as STATUS_ORDER,
-  RESERVATION_STATUS_LABELS as STATUS_LABELS,
-} from '~/utils/reservationStatus'
+import { RESERVATION_STATUS_ORDER as STATUS_ORDER } from '~/utils/reservationStatus'
+import { RESERVATION_STATUS_CONFIG } from '~/constants/reservation-status'
+import StatusBadge from '~/components/basics/StatusBadge.vue'
 
 const FALLBACK_PHOTO =
   'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&auto=format&fit=crop'
@@ -364,35 +364,6 @@ $desktop: 900px;
     font-weight: 500;
   }
 
-  &--confirmee {
-    background: rgba(59, 109, 17, 0.12);
-    color: #3b6d11;
-  }
-
-  &--recontactee {
-    background: #e8f0fe;
-    color: #2c5cc5;
-  }
-
-  &--envoyee {
-    background: rgba(230, 184, 0, 0.18);
-    color: #7a5c00;
-  }
-
-  &--brouillon {
-    background: #ebebea;
-    color: #6b6560;
-  }
-
-  &--cloturee {
-    background: #f0efee;
-    color: #6b6560;
-  }
-
-  &--annulee {
-    background: rgba(163, 45, 45, 0.1);
-    color: #a32d2d;
-  }
 }
 
 // ── Accordéon EventBlock (mobile) ─────────────────────────────────────────────
@@ -560,41 +531,6 @@ $desktop: 900px;
   padding: 8px $spacing-s;
 }
 
-.res-card__badge {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.625rem;
-  font-weight: 600;
-  padding: 2px 7px;
-  border-radius: 2rem;
-  white-space: nowrap;
-
-  &--brouillon,
-  &--terminee {
-    background: #f0efee;
-    color: #888;
-  }
-
-  &--envoyee {
-    background: rgba(230, 184, 0, 0.18);
-    color: #7a5c00;
-  }
-
-  &--recontactee {
-    background: #e8f0fe;
-    color: #2c5cc5;
-  }
-
-  &--confirmee {
-    background: rgba(59, 109, 17, 0.12);
-    color: #3b6d11;
-  }
-
-  &--annulee,
-  &--cloturee {
-    background: rgba(163, 45, 45, 0.1);
-    color: #a32d2d;
-  }
-}
 
 .res-card__unread {
   flex-shrink: 0;

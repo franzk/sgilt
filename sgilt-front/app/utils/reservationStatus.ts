@@ -30,13 +30,3 @@ export const RESERVATION_STATUS_ORDER: ReservationStatus[] = [
   'terminee',
 ]
 
-/** Couleur de la border-left des cards et badges selon le statut */
-export const RESERVATION_STATUS_COLORS: Record<ReservationStatus, string> = {
-  confirmee: '#3b6d11',
-  recontactee: '#e6b800',
-  envoyee: '#185fa5',
-  brouillon: '#6b635c',
-  cloturee: '#a32d2d',
-  annulee: '#a32d2d',
-  terminee: '#6b635c',
-}

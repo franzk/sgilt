@@ -46,9 +46,7 @@
 
       <!-- Statut + Barre — mobile uniquement -->
       <div class="demande-card__status-row">
-        <span class="demande-card__statut-pill" :style="{ backgroundColor: statusPillColor }">
-          {{ statusLabel }}
-        </span>
+        <StatusBadge :status="demande.statut" />
         <div v-if="demande.progressType" class="demande-card__progress">
           <div class="demande-card__progress-bar" :style="progressBarStyle" />
         </div>
@@ -62,9 +60,7 @@
 
     <!-- Col 3 — Statut + Barre (desktop uniquement) -->
     <div class="demande-card__status">
-      <span class="demande-card__statut-pill" :style="{ backgroundColor: statusPillColor }">
-        {{ statusLabel }}
-      </span>
+      <StatusBadge :status="demande.statut" />
       <div v-if="demande.progressType" class="demande-card__progress">
         <div class="demande-card__progress-bar" :style="progressBarStyle" />
       </div>
@@ -78,7 +74,9 @@
 </template>
 
 <script setup lang="ts">
-import type { ProDemandeSummary, ReservationStatus } from '~/types/event'
+import type { ProDemandeSummary } from '~/types/event'
+import { RESERVATION_STATUS_CONFIG } from '~/constants/reservation-status'
+import StatusBadge from '~/components/basics/StatusBadge.vue'
 
 const props = defineProps<{
   demande?: ProDemandeSummary
@@ -93,22 +91,6 @@ const { t } = useI18n()
 const FALLBACK_COVER =
   'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&auto=format&fit=crop'
 
-const STATUS_BORDER: Partial<Record<ReservationStatus, string>> = {
-  nouvelle: '#e6b800',
-  recontactee: '#6366f1',
-  confirmee: '#3b6d11',
-  cloturee: '#6b635c',
-  annulee: '#a32d2d',
-}
-
-const STATUS_PILL_COLOR: Partial<Record<ReservationStatus, string>> = {
-  nouvelle: '#e6b800',
-  recontactee: '#6366f1',
-  confirmee: '#3b6d11',
-  cloturee: '#6b635c',
-  annulee: '#a32d2d',
-}
-
 const urgencyTier = computed((): 'neutral' | 'warning' | 'urgent' => {
   const level = props.demande?.urgencyLevel ?? 0
   if (level <= 2) return 'neutral'
@@ -117,19 +99,9 @@ const urgencyTier = computed((): 'neutral' | 'warning' | 'urgent' => {
 })
 
 const cardBorderColor = computed(() => {
-  if (!props.demande) return '#6b635c'
-  if (props.demande.urgencyLevel >= 5) return '#a32d2d'
-  return STATUS_BORDER[props.demande.statut] ?? '#6b635c'
-})
-
-const statusPillColor = computed(() => {
-  if (!props.demande) return '#6b635c'
-  return STATUS_PILL_COLOR[props.demande.statut] ?? '#6b635c'
-})
-
-const statusLabel = computed(() => {
-  if (!props.demande) return ''
-  return t(`pro.board.card.statut.${props.demande.statut}`, props.demande.statut)
+  if (!props.demande) return RESERVATION_STATUS_CONFIG.cloturee.color
+  if (props.demande.urgencyLevel >= 5) return RESERVATION_STATUS_CONFIG.nouvelle.color
+  return RESERVATION_STATUS_CONFIG[props.demande.statut]?.color ?? RESERVATION_STATUS_CONFIG.cloturee.color
 })
 
 const progressBarStyle = computed((): Record<string, string> => {
@@ -138,11 +110,16 @@ const progressBarStyle = computed((): Record<string, string> => {
   if (!progressType || progressValue === null) return {}
   let color: string
   if (progressType === 'deadline') {
-    color = progressValue > 0.5 ? '#3b6d11' : progressValue > 0.25 ? '#b06b00' : '#a32d2d'
+    color =
+      progressValue > 0.5
+        ? RESERVATION_STATUS_CONFIG.confirmee.color
+        : progressValue > 0.25
+          ? RESERVATION_STATUS_CONFIG.recontactee.color
+          : RESERVATION_STATUS_CONFIG.nouvelle.color
   } else if (progressType === 'duration') {
-    color = '#e6b800'
+    color = RESERVATION_STATUS_CONFIG.recontactee.color
   } else {
-    color = '#3b6d11'
+    color = RESERVATION_STATUS_CONFIG.confirmee.color
   }
   return { width: `${progressValue * 100}%`, backgroundColor: color }
 })
@@ -297,23 +274,6 @@ const actionLabel = computed(() => {
       justify-content: center;
       gap: 6px;
       flex: 1;
-    }
-  }
-
-  // ── Pill statut ──────────────────────────────────────────────────────────────
-  &__statut-pill {
-    display: inline-block;
-    flex-shrink: 0;
-    padding: 2px $spacing-xs;
-    border-radius: $radius-sm;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: #fff;
-    white-space: nowrap;
-    // nouvelle (yellow) needs dark text
-    &[style*='#e6b800'] {
-      color: #5a4500;
     }
   }
 

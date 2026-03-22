@@ -333,15 +333,20 @@
           "confirmee": "",
           "cloturee": "",
           "annulee": ""
-        },
-        "statut": {
-          "nouvelle": "Nouvelle",
-          "recontactee": "Recontactée",
-          "confirmee": "Confirmée",
-          "cloturee": "Clôturée",
-          "annulee": "Annulée"
         }
       }
+    }
+  },
+  "reservation": {
+    "statut": {
+      "brouillon": "Brouillon",
+      "envoyee": "Envoyée",
+      "nouvelle": "Nouvelle",
+      "recontactee": "Recontactée",
+      "confirmee": "Confirmée",
+      "cloturee": "Clôturée",
+      "annulee": "Annulée",
+      "terminee": "Terminée"
     }
   }
 }

@@ -20,8 +20,8 @@
           <span class="cover-banner__category">{{ reservation.category }}</span>
           <span class="cover-banner__name">{{ reservation.prestataireName }}</span>
         </div>
-        <span class="cover-banner__badge" :class="`cover-banner__badge--${reservation.status}`">
-          {{ STATUS_LABELS[reservation.status] }}
+        <span class="cover-banner__badge" :style="getStatusOverlayStyle(reservation.status)">
+          {{ t(`reservation.statut.${reservation.status}`) }}
         </span>
       </div>
     </div>
@@ -170,10 +170,11 @@ import { ReservationMockService } from '~/services/reservation.mock'
 import type { ReservationDetail, ReservationDocument, NoteAuthor } from '~/types/event'
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import NoteCard from '~/components/app/NoteCard.vue'
-import { RESERVATION_STATUS_LABELS as STATUS_LABELS } from '~/utils/reservationStatus'
+import { getStatusOverlayStyle } from '~/constants/reservation-status'
 
 definePageMeta({ layout: 'app' })
 
+const { t } = useI18n()
 const route = useRoute()
 const reservationId = route.params.reservationId as string
 const eventId = route.params.eventId as string
@@ -380,28 +381,6 @@ $desktop: 900px;
     white-space: nowrap;
     backdrop-filter: blur(4px);
 
-    &--brouillon,
-    &--terminee {
-      background: rgba(255, 255, 255, 0.2);
-      color: #fff;
-    }
-    &--envoyee {
-      background: rgba(44, 92, 197, 0.5);
-      color: #fff;
-    }
-    &--recontactee {
-      background: rgba(230, 184, 0, 0.45);
-      color: #fff;
-    }
-    &--confirmee {
-      background: rgba(52, 168, 83, 0.45);
-      color: #fff;
-    }
-    &--annulee,
-    &--cloturee {
-      background: rgba(208, 0, 0, 0.4);
-      color: #fff;
-    }
   }
 }
 
