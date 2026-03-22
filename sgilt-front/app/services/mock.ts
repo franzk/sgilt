@@ -209,7 +209,7 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
     prestataireName: 'Léo Clairmont Photographe',
     prestatairePhoto: '/images/prestataires/photographe-mariage.jpg',
     category: 'Photo',
-    status: 'recontactee',
+    status: 'en_discussion',
     unreadNotesCount: 0,
     urgencyLevel: 3,
     ligneContextuelle: 'En négociation depuis 58 jours',
@@ -273,10 +273,10 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
     prestataireName: 'Studio Photo Mobile',
     prestatairePhoto: '/images/prestataires/studio-photo-mobile.jpg',
     category: 'Photo',
-    status: 'cloturee',
+    status: 'refusee',
     unreadNotesCount: 0,
     urgencyLevel: 1,
-    ligneContextuelle: 'Clôturée le 12 mars',
+    ligneContextuelle: 'Refusée le 12 mars',
     notes: [],
     documents: [],
   },
@@ -450,7 +450,7 @@ const PRO_ONLY_RESERVATIONS: ReservationDetail[] = [
     prestataireName: 'DJ Animation',
     prestatairePhoto: '/images/prestataires/dj-animation.jpg',
     category: 'Animation',
-    status: 'recontactee',
+    status: 'en_discussion',
     unreadNotesCount: 0,
     urgencyLevel: 3,
     ligneContextuelle: 'En négociation depuis 5 jours',
@@ -467,7 +467,7 @@ const PRO_ONLY_RESERVATIONS: ReservationDetail[] = [
         id: 'pn-302',
         author: DJ,
         content:
-          'Disponible le 12 avril. Formule Soirée Pro : sonorisation + 2 sets 1h30. Devis en cours d\'envoi.',
+          "Disponible le 12 avril. Formule Soirée Pro : sonorisation + 2 sets 1h30. Devis en cours d'envoi.",
         createdAt: '2026-03-10T09:00:00.000Z',
       },
       {
@@ -545,7 +545,7 @@ const PRO_ONLY_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'pn-601',
         author: CLAIRE_R,
-        content: 'Soirée privée, 15 mars 2026, Strasbourg. 30 personnes. Musique d\'ambiance 3h.',
+        content: "Soirée privée, 15 mars 2026, Strasbourg. 30 personnes. Musique d'ambiance 3h.",
         createdAt: '2026-02-20T14:00:00.000Z',
         isMessageInitial: true,
       },
@@ -564,10 +564,10 @@ const PRO_ONLY_RESERVATIONS: ReservationDetail[] = [
     prestataireName: 'DJ Animation',
     prestatairePhoto: '/images/prestataires/dj-animation.jpg',
     category: 'Musique',
-    status: 'cloturee',
+    status: 'refusee',
     unreadNotesCount: 0,
     urgencyLevel: 1,
-    ligneContextuelle: 'Clôturée le 12 mars',
+    ligneContextuelle: 'Refusée le 12 mars',
     notes: [
       {
         id: 'pn-701',
@@ -576,6 +576,34 @@ const PRO_ONLY_RESERVATIONS: ReservationDetail[] = [
           'Gala humanitaire, 20 juin 2026, Nancy. 200 personnes. Fond musical classique (dîner) puis animation festive (soirée dansante). Prestation 4h.',
         createdAt: '2026-01-15T10:00:00.000Z',
         isMessageInitial: true,
+      },
+    ],
+    documents: [],
+  },
+  {
+    id: 'pro-008',
+    prestataireId: '16',
+    prestataireName: 'Léo Clairmont Photographe',
+    prestatairePhoto: '/images/prestataires/photographe-mariage.jpg',
+    category: 'Photo',
+    status: 'realisee',
+    unreadNotesCount: 0,
+    urgencyLevel: 1,
+    ligneContextuelle: 'Réalisée le 14 décembre 2025',
+    notes: [
+      {
+        id: 'pn-801',
+        author: JULIE,
+        content:
+          'Mariage de Thomas & Clara, 14 décembre 2025, Metz. Reportage complet cérémonie + soirée. Très belle collaboration.',
+        createdAt: '2025-11-10T10:00:00.000Z',
+        isMessageInitial: true,
+      },
+      {
+        id: 'pn-802',
+        author: LEO,
+        content: 'Prestation effectuée. Album photo livré le 20/01/2026. Solde réglé. Merci pour la confiance.',
+        createdAt: '2026-01-20T09:00:00.000Z',
       },
     ],
     documents: [],
@@ -593,7 +621,8 @@ export const MOCK_EVENTS: EventDetail[] = [
     ambiance: 'chic',
     ville: 'Strasbourg',
     nbInvites: '120',
-    coverImage: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&auto=format&fit=crop',
+    coverImage:
+      'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&auto=format&fit=crop',
     sharedNote: "Cérémonie à 14h, vin d'honneur à 16h. Accès PMR prévu.",
     sharedNoteUpdatedAt: '2026-02-20T11:30:00.000Z',
     phrase: 'Votre mariage prend forme ✨',
@@ -653,7 +682,7 @@ export const MOCK_EVENTS: EventDetail[] = [
         prestataireName: 'Léo Clairmont Photographe',
         prestatairePhoto: '/images/prestataires/photographe-mariage.jpg',
         category: 'Photo',
-        status: 'recontactee',
+        status: 'en_discussion',
         unreadNotesCount: 0,
       },
       {
@@ -680,7 +709,7 @@ export const MOCK_EVENTS: EventDetail[] = [
         prestataireName: 'Studio Photo Mobile',
         prestatairePhoto: '/images/prestataires/studio-photo-mobile.jpg',
         category: 'Photo',
-        status: 'cloturee',
+        status: 'refusee',
         unreadNotesCount: 0,
       },
       {
@@ -705,7 +734,7 @@ export const MOCK_EVENTS: EventDetail[] = [
     sharedNote:
       'Soirée surprise — Marc ne doit pas être informé avant le 23 mai. Accès prestataires dès 16h (entrée de service, côté nord). Tenue de soirée exigée.',
     sharedNoteUpdatedAt: '2026-03-08T17:45:00.000Z',
-    phrase: 'Tout s\'organise pour la fête 🎉',
+    phrase: "Tout s'organise pour la fête 🎉",
     phraseSubtitle: '2 prestataires confirmés, 1 en attente de réponse',
     journal: [
       {
@@ -761,7 +790,8 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     title: 'Anniversaire 50 ans de Marc',
     date: '2026-05-23',
     eventType: 'anniversaire',
-    coverImage: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&auto=format&fit=crop',
+    coverImage:
+      'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&auto=format&fit=crop',
     ville: 'Lyon',
     nbInvites: '60',
     sharedNote: '',
@@ -785,7 +815,8 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     title: 'Soirée entreprise Alsace Tech',
     date: '2026-04-12',
     eventType: 'entreprise',
-    coverImage: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&auto=format&fit=crop',
+    coverImage:
+      'https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&auto=format&fit=crop',
     ville: 'Strasbourg',
     nbInvites: '80',
     sharedNote:
@@ -807,7 +838,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
         id: 'pj-302',
         date: new Date('2026-03-10T09:00:00.000Z'),
         isCreation: false,
-        modifications: [{ champ: 'Statut', avant: 'Nouvelle', apres: 'Recontactée' }],
+        modifications: [{ champ: 'Statut', avant: 'Nouvelle', apres: 'En discussion' }],
       },
     ],
     reservations: [],
@@ -817,7 +848,8 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     title: 'Mariage Dupont',
     date: '2026-06-06',
     eventType: 'mariage',
-    coverImage: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&auto=format&fit=crop',
+    coverImage:
+      'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&auto=format&fit=crop',
     ville: 'Colmar',
     nbInvites: '150',
     sharedNote: '',
@@ -841,7 +873,8 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     title: 'Cocktail Lancement Produit',
     date: '2026-04-04',
     eventType: 'entreprise',
-    coverImage: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&auto=format&fit=crop',
+    coverImage:
+      'https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&auto=format&fit=crop',
     ville: 'Mulhouse',
     nbInvites: '40',
     sharedNote:
@@ -863,13 +896,13 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
         id: 'pj-502',
         date: new Date('2026-03-03T14:00:00.000Z'),
         isCreation: false,
-        modifications: [{ champ: 'Statut', avant: 'Nouvelle', apres: 'Recontactée' }],
+        modifications: [{ champ: 'Statut', avant: 'Nouvelle', apres: 'En discussion' }],
       },
       {
         id: 'pj-503',
         date: new Date('2026-03-05T09:30:00.000Z'),
         isCreation: false,
-        modifications: [{ champ: 'Statut', avant: 'Recontactée', apres: 'Confirmée' }],
+        modifications: [{ champ: 'Statut', avant: 'En discussion', apres: 'Confirmée' }],
       },
     ],
     reservations: [],
@@ -879,7 +912,8 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     title: 'Soirée privée Strasbourg',
     date: '2026-03-15',
     eventType: 'soiree',
-    coverImage: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop',
+    coverImage:
+      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop',
     ville: 'Strasbourg',
     nbInvites: '30',
     sharedNote: '',
@@ -909,7 +943,8 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     title: 'Gala Humanitaire Grand Est',
     date: '2026-06-20',
     eventType: 'autre',
-    coverImage: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&auto=format&fit=crop',
+    coverImage:
+      'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&auto=format&fit=crop',
     ville: 'Nancy',
     nbInvites: '200',
     sharedNote:
@@ -931,19 +966,62 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
         id: 'pj-702',
         date: new Date('2026-01-18T11:00:00.000Z'),
         isCreation: false,
-        modifications: [{ champ: 'Statut', avant: 'Nouvelle', apres: 'Recontactée' }],
+        modifications: [{ champ: 'Statut', avant: 'Nouvelle', apres: 'En discussion' }],
       },
       {
         id: 'pj-703',
         date: new Date('2026-01-22T14:00:00.000Z'),
         isCreation: false,
-        modifications: [{ champ: 'Statut', avant: 'Recontactée', apres: 'Confirmée' }],
+        modifications: [{ champ: 'Statut', avant: 'En discussion', apres: 'Confirmée' }],
       },
       {
         id: 'pj-704',
         date: new Date('2026-06-21T10:00:00.000Z'),
         isCreation: false,
-        modifications: [{ champ: 'Statut', avant: 'Confirmée', apres: 'Clôturée' }],
+        modifications: [{ champ: 'Statut', avant: 'Confirmée', apres: 'Refusée' }],
+      },
+    ],
+    reservations: [],
+  },
+  {
+    id: 'evt-pro-008',
+    title: 'Mariage Thomas & Clara',
+    date: '2025-12-14',
+    eventType: 'mariage',
+    coverImage:
+      'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&auto=format&fit=crop',
+    ville: 'Metz',
+    nbInvites: '100',
+    sharedNote: '',
+    phrase: '',
+    phraseSubtitle: '',
+    journal: [
+      {
+        id: 'pj-801',
+        date: new Date('2025-11-10T10:00:00.000Z'),
+        isCreation: true,
+        modifications: [
+          { champ: 'Statut', avant: null, apres: 'Nouvelle' },
+          { champ: 'Événement', avant: null, apres: 'Mariage Thomas & Clara' },
+        ],
+      },
+      {
+        id: 'pj-802',
+        date: new Date('2025-11-15T14:00:00.000Z'),
+        isCreation: false,
+        modifications: [{ champ: 'Statut', avant: 'Nouvelle', apres: 'En discussion' }],
+      },
+      {
+        id: 'pj-803',
+        date: new Date('2025-11-20T10:00:00.000Z'),
+        isCreation: false,
+        modifications: [{ champ: 'Statut', avant: 'En discussion', apres: 'Confirmée' }],
+      },
+      {
+        id: 'pj-804',
+        date: new Date('2025-12-15T10:00:00.000Z'),
+        isCreation: false,
+        modifications: [{ champ: 'Statut', avant: 'Confirmée', apres: 'Réalisée' }],
       },
     ],
     reservations: [],
@@ -953,11 +1031,47 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
 // ── Demandes pro (réservation + événement associé) ────────────────────────────
 
 export const PRO_DEMANDES: ProDemandeDetail[] = [
-  { ...MOCK_RESERVATIONS[0],      event: MOCK_EVENTS[0],         progressType: 'temporal',  progressValue: 0.35 }, // confirmee
-  { ...PRO_ONLY_RESERVATIONS[0],  event: PRO_ONLY_EVENTS[0],     progressType: 'deadline',  progressValue: 0.85 }, // nouvelle
-  { ...PRO_ONLY_RESERVATIONS[1],  event: PRO_ONLY_EVENTS[1],     progressType: 'duration',  progressValue: 0.45 }, // recontactee
-  { ...PRO_ONLY_RESERVATIONS[2],  event: PRO_ONLY_EVENTS[2],     progressType: 'deadline',  progressValue: 0.15 }, // nouvelle urgente
-  { ...PRO_ONLY_RESERVATIONS[3],  event: PRO_ONLY_EVENTS[3],     progressType: 'temporal',  progressValue: 0.92 }, // confirmee urgente
-  { ...PRO_ONLY_RESERVATIONS[4],  event: PRO_ONLY_EVENTS[4],     progressType: null,        progressValue: null  }, // annulee
-  { ...PRO_ONLY_RESERVATIONS[5],  event: PRO_ONLY_EVENTS[5],     progressType: null,        progressValue: null  }, // cloturee
+  { ...MOCK_RESERVATIONS[0], event: MOCK_EVENTS[0], progressType: 'temporal', progressValue: 0.35 }, // confirmee
+  {
+    ...PRO_ONLY_RESERVATIONS[0],
+    event: PRO_ONLY_EVENTS[0],
+    progressType: 'deadline',
+    progressValue: 0.85,
+  }, // nouvelle
+  {
+    ...PRO_ONLY_RESERVATIONS[1],
+    event: PRO_ONLY_EVENTS[1],
+    progressType: 'duration',
+    progressValue: 0.45,
+  }, // en_discussion
+  {
+    ...PRO_ONLY_RESERVATIONS[2],
+    event: PRO_ONLY_EVENTS[2],
+    progressType: 'deadline',
+    progressValue: 0.15,
+  }, // nouvelle urgente
+  {
+    ...PRO_ONLY_RESERVATIONS[3],
+    event: PRO_ONLY_EVENTS[3],
+    progressType: 'temporal',
+    progressValue: 0.92,
+  }, // confirmee urgente
+  {
+    ...PRO_ONLY_RESERVATIONS[4],
+    event: PRO_ONLY_EVENTS[4],
+    progressType: null,
+    progressValue: null,
+  }, // annulee
+  {
+    ...PRO_ONLY_RESERVATIONS[5],
+    event: PRO_ONLY_EVENTS[5],
+    progressType: null,
+    progressValue: null,
+  }, // refusee
+  {
+    ...PRO_ONLY_RESERVATIONS[6],
+    event: PRO_ONLY_EVENTS[6],
+    progressType: null,
+    progressValue: null,
+  }, // realisee
 ]

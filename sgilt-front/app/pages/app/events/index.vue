@@ -93,7 +93,7 @@ function coverImage(eventType?: string) {
 function reservationSummary(event: EventDetail): string {
   const r = event.reservations
   const confirmed = r.filter((x) => x.status === 'confirmee').length
-  const inProgress = r.filter((x) => x.status === 'recontactee').length
+  const inProgress = r.filter((x) => x.status === 'en_discussion').length
 
   const parts: string[] = []
   if (confirmed) parts.push(`✓ ${t('events-list.confirmed', confirmed, { n: confirmed })}`)

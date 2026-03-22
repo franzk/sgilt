@@ -1,4 +1,10 @@
-export type ReservationStatus = 'nouvelle' | 'recontactee' | 'confirmee' | 'cloturee' | 'annulee'
+export type ReservationStatus =
+  | 'nouvelle'
+  | 'en_discussion'
+  | 'confirmee'
+  | 'refusee'
+  | 'annulee'
+  | 'realisee'
 
 export interface Reservation {
   id: string

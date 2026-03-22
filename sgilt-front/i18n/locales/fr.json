@@ -302,7 +302,7 @@
       "card": {
         "action": {
           "nouvelle": "📞 À contacter",
-          "recontactee": "✅ À confirmer",
+          "en_discussion": "✅ À confirmer",
           "confirmee": "",
           "cloturee": "",
           "annulee": ""
@@ -314,17 +314,19 @@
     "statut": {
       "toutes": "Toutes",
       "nouvelle": "Nouvelle",
-      "recontactee": "Recontactée",
+      "en_discussion": "En discussion",
       "confirmee": "Confirmée",
-      "cloturee": "Clôturée",
-      "annulee": "Annulée"
+      "refusee": "Refusée",
+      "annulee": "Annulée",
+      "realisee": "Réalisée"
     },
     "statut_section": {
       "nouvelle": "Nouvelles",
-      "recontactee": "Recontactées",
+      "en_discussion": "En discussion",
       "confirmee": "Confirmées",
-      "cloturee": "Clôturées",
-      "annulee": "Annulées"
+      "refusee": "Refusées",
+      "annulee": "Annulées",
+      "realisee": "Réalisées"
     }
   }
 }

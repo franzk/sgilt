@@ -99,9 +99,9 @@ const urgencyTier = computed((): 'neutral' | 'warning' | 'urgent' => {
 })
 
 const cardBorderColor = computed(() => {
-  if (!props.demande) return RESERVATION_STATUS_CONFIG.cloturee.color
+  if (!props.demande) return RESERVATION_STATUS_CONFIG.refusee.color
   if (props.demande.urgencyLevel >= 5) return RESERVATION_STATUS_CONFIG.nouvelle.color
-  return RESERVATION_STATUS_CONFIG[props.demande.statut]?.color ?? RESERVATION_STATUS_CONFIG.cloturee.color
+  return RESERVATION_STATUS_CONFIG[props.demande.statut]?.color ?? RESERVATION_STATUS_CONFIG.refusee.color
 })
 
 const progressBarStyle = computed((): Record<string, string> => {
@@ -114,10 +114,10 @@ const progressBarStyle = computed((): Record<string, string> => {
       progressValue > 0.5
         ? RESERVATION_STATUS_CONFIG.confirmee.color
         : progressValue > 0.25
-          ? RESERVATION_STATUS_CONFIG.recontactee.color
+          ? RESERVATION_STATUS_CONFIG.en_discussion.color
           : RESERVATION_STATUS_CONFIG.nouvelle.color
   } else if (progressType === 'duration') {
-    color = RESERVATION_STATUS_CONFIG.recontactee.color
+    color = RESERVATION_STATUS_CONFIG.en_discussion.color
   } else {
     color = RESERVATION_STATUS_CONFIG.confirmee.color
   }

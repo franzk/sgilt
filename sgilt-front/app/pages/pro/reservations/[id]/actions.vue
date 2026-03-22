@@ -19,14 +19,14 @@
       <button
         class="action-item action-item--danger"
         type="button"
-        :disabled="['annulee', 'cloturee'].includes(currentStatut)"
+        :disabled="['annulee', 'refusee'].includes(currentStatut)"
         @click="cancelOpen = true"
       >
         <span class="action-item__icon">✕</span>
         <div class="action-item__body">
           <span class="action-item__label">Annuler la réservation</span>
           <span class="action-item__desc">
-            {{ ['annulee', 'cloturee'].includes(currentStatut) ? 'Cette demande est déjà clôturée.' : 'Passe la demande en statut Annulée.' }}
+            {{ ['annulee', 'refusee', 'realisee'].includes(currentStatut) ? 'Cette demande ne peut plus être annulée.' : 'Passe la demande en statut Annulée.' }}
           </span>
         </div>
       </button>

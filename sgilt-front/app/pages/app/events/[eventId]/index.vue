@@ -177,10 +177,11 @@ function onEventUpdated(patch: EventPatch) {
 // ── Widget — pills statut ──────────────────────────────────────────────────────
 const STATUS_PILL_ICONS: Record<ReservationStatus, string> = {
   nouvelle: '!',
-  recontactee: '↩',
+  en_discussion: '↩',
   confirmee: '✓',
-  cloturee: '✕',
+  refusee: '✕',
   annulee: '✕',
+  realisee: '✓',
 }
 
 const statusPills = computed(() => {
