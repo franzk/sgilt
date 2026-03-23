@@ -116,10 +116,10 @@ export const CLIENT_STATUS_CONFIG: Record<
     pillText: '#ffffff',
   },
   en_discussion: {
-    color: '#E67E22',
-    bgColor: 'rgba(230, 126, 34, 0.07)',
-    pillBg: '#E67E22',
-    pillText: '#ffffff',
+    color: '#B8960C',
+    bgColor: 'rgba(245, 197, 24, 0.15)',
+    pillBg: 'rgba(245, 197, 24, 0.15)',
+    pillText: '#B8960C',
   },
   confirmee: {
     color: '#2E7D32',
