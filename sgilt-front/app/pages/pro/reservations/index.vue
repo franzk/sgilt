@@ -54,6 +54,7 @@ import {
   ALL_RESERVATION_STATUTS,
   DEFAULT_ACTIVE_PILLS,
   RESERVATION_STATUS_PILLS,
+  RESERVATION_STATUS_ORDER,
 } from '~/constants/reservation-status'
 import type { ReservationStatut } from '~/constants/reservation-status'
 
@@ -109,8 +110,11 @@ const filteredDemandes = computed(() =>
   DEMANDES.value
     .filter((d) => activePills.value.includes(d.statut as ReservationStatut))
     .sort((a, b) => {
-      if (b.urgencyLevel !== a.urgencyLevel) return b.urgencyLevel - a.urgencyLevel
-      return new Date(a.dateIso).getTime() - new Date(b.dateIso).getTime()
+      const statusDiff =
+        RESERVATION_STATUS_ORDER.indexOf(a.statut as ReservationStatut) -
+        RESERVATION_STATUS_ORDER.indexOf(b.statut as ReservationStatut)
+      if (statusDiff !== 0) return statusDiff
+      return b.urgencyLevel - a.urgencyLevel
     }),
 )
 </script>
