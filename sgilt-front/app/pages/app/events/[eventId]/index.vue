@@ -63,26 +63,26 @@
         <!-- Réservations -->
         <section class="reservations">
           <div class="reservations__grid">
-            <SgiltCard
-              v-for="r in sortedReservations"
-              :key="r.id"
-              :image="r.prestatairePhoto || FALLBACK_PHOTO"
-              ratio="4/3"
-              @click="navigateTo(`/app/events/${eventId}/reservations/${r.id}`)"
-            >
-              <template #overlay>
-                <span class="res-card__category">{{ r.category }}</span>
-                <span class="res-card__name">{{ r.prestataireName }}</span>
-              </template>
-              <template #footer>
-                <div class="res-card__footer">
-                  <StatusBadge :status="r.status" context="client" />
-                  <span v-if="r.unreadNotesCount > 0" class="res-card__unread">
-                    {{ r.unreadNotesCount }}
-                  </span>
-                </div>
-              </template>
-            </SgiltCard>
+            <div v-for="r in sortedReservations" :key="r.id" class="res-card-wrap">
+              <SgiltCard
+                :image="r.prestatairePhoto || FALLBACK_PHOTO"
+                ratio="4/3"
+                @click="navigateTo(`/app/events/${eventId}/reservations/${r.id}`)"
+              >
+                <template #overlay>
+                  <span class="res-card__category">{{ r.category }}</span>
+                  <span class="res-card__name">{{ r.prestataireName }}</span>
+                </template>
+                <template #footer>
+                  <div class="res-card__footer">
+                    <StatusBadge :status="r.status" context="client" />
+                  </div>
+                </template>
+              </SgiltCard>
+              <span v-if="r.unreadNotesCount > 0" class="res-card__unread">
+                {{ r.unreadNotesCount }}
+              </span>
+            </div>
           </div>
 
           <button class="add-prestataire-btn" type="button" @click="goToSearch">
@@ -537,16 +537,28 @@ $desktop: 900px;
   padding: 8px $spacing-s;
 }
 
+.res-card-wrap {
+  position: relative;
+}
+
 .res-card__unread {
-  flex-shrink: 0;
-  padding: 2px 7px;
+  position: absolute;
+  top: -($spacing-xs);
+  right: -($spacing-xs);
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
   border-radius: 999px;
-  background: $brand-accent;
-  color: $brand-primary;
+  background: #d93025;
+  color: #fff;
   font-family: 'Inter', sans-serif;
-  font-size: 0.625rem;
+  font-size: 0.688rem;
   font-weight: 700;
-  line-height: 1.4;
+  line-height: 18px;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 2;
 }
 
 // ── Bouton ajout prestataire ──────────────────────────────────────────────────

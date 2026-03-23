@@ -18,6 +18,11 @@
 
     <!-- Grille 2 lignes -->
     <div class="card-body">
+      <!-- Badge notes non lues -->
+      <span v-if="reservation.unreadNotesCount > 0" class="card-unread">
+        {{ reservation.unreadNotesCount }}
+      </span>
+
       <!-- Ligne 1 : catégorie + badge statut -->
       <div class="card-row">
         <span class="card-category">{{ reservation.category }}</span>
@@ -29,11 +34,6 @@
         <span class="card-name">{{ reservation.prestataireName }}</span>
       </div>
     </div>
-
-    <!-- Badge notes non lues -->
-    <span v-if="reservation.unreadNotesCount > 0" class="card-unread">
-      {{ reservation.unreadNotesCount }}
-    </span>
 
     <!-- Chevron -->
     <span class="card-chevron" aria-hidden="true">›</span>
@@ -87,10 +87,11 @@ const initials = computed(() =>
 // ─── Photo ────────────────────────────────────────────────────────────────────
 .card-media {
   flex-shrink: 0;
+  position: relative;
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  overflow: hidden;
+  overflow: visible;
   background: $brand-subtle;
   display: flex;
   align-items: center;
@@ -100,6 +101,7 @@ const initials = computed(() =>
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 50%;
   }
 
   &__fallback {
@@ -149,17 +151,20 @@ const initials = computed(() =>
 
 .card-unread {
   position: absolute;
-  top: -0.5rem;
-  right: -0.5rem;
-  padding: 3px 8px;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
   border-radius: 999px;
-  background: $state-danger;
+  background: #d93025;
   color: #fff;
   font-family: 'Inter', sans-serif;
   font-size: 0.688rem; // 11px
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
-  line-height: 1.4;
+  line-height: 18px;
+  text-align: center;
 }
 
 // ─── Chevron ──────────────────────────────────────────────────────────────────
