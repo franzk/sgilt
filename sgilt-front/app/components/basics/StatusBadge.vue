@@ -1,18 +1,29 @@
 <template>
   <span class="status-badge" :style="{ background: config.pillBg, color: config.pillText }">
-    {{ t(`reservation.statut.${status}`) }}
+    {{ t(`${i18nPrefix}.${status}`) }}
   </span>
 </template>
 
 <script setup lang="ts">
 import type { ReservationStatus } from '~/types/event'
-import { RESERVATION_STATUS_CONFIG } from '~/constants/reservation-status'
+import { RESERVATION_STATUS_CONFIG, CLIENT_STATUS_CONFIG } from '~/constants/reservation-status'
 
-const props = defineProps<{ status: ReservationStatus }>()
+const props = defineProps<{
+  status: ReservationStatus
+  context?: 'pro' | 'client'
+}>()
 
 const { t } = useI18n()
 
-const config = computed(() => RESERVATION_STATUS_CONFIG[props.status])
+const config = computed(() =>
+  props.context === 'client'
+    ? CLIENT_STATUS_CONFIG[props.status]
+    : RESERVATION_STATUS_CONFIG[props.status],
+)
+
+const i18nPrefix = computed(() =>
+  props.context === 'client' ? 'client.reservation.statut' : 'reservation.statut',
+)
 </script>
 
 <style scoped lang="scss">

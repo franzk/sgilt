@@ -306,6 +306,18 @@
       }
     }
   },
+  "client": {
+    "reservation": {
+      "statut": {
+        "nouvelle": "Demande envoyée",
+        "en_discussion": "En discussion",
+        "confirmee": "Confirmé",
+        "refusee": "Non retenu",
+        "annulee": "Annulée",
+        "realisee": "Terminée"
+      }
+    }
+  },
   "reservation": {
     "statut": {
       "toutes": "Toutes",

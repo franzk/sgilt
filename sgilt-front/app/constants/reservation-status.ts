@@ -98,6 +98,55 @@ export const RESERVATION_STATUS_CONFIG: Record<
   },
 }
 
+// ── Config couleurs — côté client ─────────────────────────────────────────────
+
+export const CLIENT_STATUS_CONFIG: Record<
+  ReservationStatus,
+  {
+    color: string
+    bgColor: string
+    pillBg: string
+    pillText: string
+  }
+> = {
+  nouvelle: {
+    color: '#E67E22',
+    bgColor: 'rgba(230, 126, 34, 0.07)',
+    pillBg: '#E67E22',
+    pillText: '#ffffff',
+  },
+  en_discussion: {
+    color: '#E67E22',
+    bgColor: 'rgba(230, 126, 34, 0.07)',
+    pillBg: '#E67E22',
+    pillText: '#ffffff',
+  },
+  confirmee: {
+    color: '#2E7D32',
+    bgColor: 'rgba(46, 125, 50, 0.06)',
+    pillBg: '#2E7D32',
+    pillText: '#ffffff',
+  },
+  refusee: {
+    color: '#6B6B6B',
+    bgColor: 'rgba(0, 0, 0, 0.03)',
+    pillBg: '#E0E0E0',
+    pillText: '#6B6B6B',
+  },
+  annulee: {
+    color: '#6B6B6B',
+    bgColor: 'rgba(0, 0, 0, 0.03)',
+    pillBg: '#E0E0E0',
+    pillText: '#6B6B6B',
+  },
+  realisee: {
+    color: '#6B6B6B',
+    bgColor: 'rgba(0, 0, 0, 0.03)',
+    pillBg: '#E0E0E0',
+    pillText: '#6B6B6B',
+  },
+}
+
 // ── Statuts qui nécessitent une action du prestataire ────────────────────────
 
 export const STATUTS_AVEC_ACTION: ReservationStatut[] = ['nouvelle', 'en_discussion']

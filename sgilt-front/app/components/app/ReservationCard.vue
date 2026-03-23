@@ -21,7 +21,7 @@
       <!-- Ligne 1 : catégorie + badge statut -->
       <div class="card-row">
         <span class="card-category">{{ reservation.category }}</span>
-        <StatusBadge :status="reservation.status" />
+        <StatusBadge :status="reservation.status" context="client" />
       </div>
 
       <!-- Ligne 2 : nom -->

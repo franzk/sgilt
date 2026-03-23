@@ -76,7 +76,7 @@
               </template>
               <template #footer>
                 <div class="res-card__footer">
-                  <StatusBadge :status="r.status" />
+                  <StatusBadge :status="r.status" context="client" />
                   <span v-if="r.unreadNotesCount > 0" class="res-card__unread">
                     {{ r.unreadNotesCount }}
                   </span>
