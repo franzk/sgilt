@@ -2,7 +2,7 @@
   <div class="pro-board">
     <!-- ── Accroche ────────────────────────────────────────────────────────────── -->
     <div class="pro-board__header">
-      <p class="pro-board__greeting">Bonjour Thomas !</p>
+      <p class="pro-board__greeting">Bonjour DJ Animation !</p>
       <p class="pro-board__context">{{ contextLine }}</p>
 
       <!-- ── Pills de filtrage ─────────────────────────────────────────────────── -->
@@ -138,7 +138,7 @@ $max-w: 780px;
   background: #fff;
   border-radius: 0;
   padding: $spacing-m;
-  margin: 0 (-$spacing-m);
+  // margin: 0 (-$spacing-m);
   display: flex;
   flex-direction: column;
   gap: $spacing-s;
