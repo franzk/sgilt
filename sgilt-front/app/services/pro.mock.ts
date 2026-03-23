@@ -17,12 +17,14 @@ export const ProMockService = {
       titre: d.event.title,
       date: d.event.date ? formatDateFR(d.event.date) : '',
       dateIso: d.event.date ?? '',
+      dateReception: d.notes[0]?.createdAt ? formatDateFR(d.notes[0].createdAt) : '',
       statut: d.status,
       ligneContextuelle: d.ligneContextuelle,
       urgencyLevel: d.urgencyLevel,
       coverImage: d.event.coverImage,
       progressType: d.progressType,
       progressValue: d.progressValue,
+      phraseUrgence: d.phraseUrgence,
     }))
   },
 

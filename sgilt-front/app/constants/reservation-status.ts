@@ -98,6 +98,10 @@ export const RESERVATION_STATUS_CONFIG: Record<
   },
 }
 
+// ── Statuts qui nécessitent une action du prestataire ────────────────────────
+
+export const STATUTS_AVEC_ACTION: ReservationStatut[] = ['nouvelle', 'en_discussion']
+
 // ── Helper — fond overlay semi-transparent pour bandeau cover ─────────────────
 
 export function getStatusOverlayStyle(

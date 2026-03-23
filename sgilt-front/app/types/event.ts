@@ -88,17 +88,20 @@ export interface ProDemandeDetail extends ReservationDetail {
   event: EventDetail
   progressType: 'deadline' | 'duration' | 'temporal' | null
   progressValue: number | null
+  phraseUrgence: string | null
 }
 
 export interface ProDemandeSummary {
   id: string
   titre: string
-  date: string    // formatted display (e.g. "14 septembre 2026")
+  date: string         // date événement formatée (e.g. "14 septembre 2026")
   dateIso: string
+  dateReception: string // date de réception de la demande formatée
   statut: ReservationStatus
   ligneContextuelle: string
   urgencyLevel: number
   coverImage?: string
   progressType: 'deadline' | 'duration' | 'temporal' | null
   progressValue: number | null
+  phraseUrgence: string | null
 }

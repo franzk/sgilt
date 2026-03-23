@@ -300,12 +300,8 @@
   "pro": {
     "board": {
       "card": {
-        "action": {
-          "nouvelle": "📞 À contacter",
-          "en_discussion": "✅ À confirmer",
-          "confirmee": "",
-          "cloturee": "",
-          "annulee": ""
+        "pill": {
+          "action_requise": "ACTION REQUISE"
         }
       }
     }

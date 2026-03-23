@@ -1031,47 +1031,12 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
 // ── Demandes pro (réservation + événement associé) ────────────────────────────
 
 export const PRO_DEMANDES: ProDemandeDetail[] = [
-  { ...MOCK_RESERVATIONS[0], event: MOCK_EVENTS[0], progressType: 'temporal', progressValue: 0.35 }, // confirmee
-  {
-    ...PRO_ONLY_RESERVATIONS[0],
-    event: PRO_ONLY_EVENTS[0],
-    progressType: 'deadline',
-    progressValue: 0.85,
-  }, // nouvelle
-  {
-    ...PRO_ONLY_RESERVATIONS[1],
-    event: PRO_ONLY_EVENTS[1],
-    progressType: 'duration',
-    progressValue: 0.45,
-  }, // en_discussion
-  {
-    ...PRO_ONLY_RESERVATIONS[2],
-    event: PRO_ONLY_EVENTS[2],
-    progressType: 'deadline',
-    progressValue: 0.15,
-  }, // nouvelle urgente
-  {
-    ...PRO_ONLY_RESERVATIONS[3],
-    event: PRO_ONLY_EVENTS[3],
-    progressType: 'temporal',
-    progressValue: 0.92,
-  }, // confirmee urgente
-  {
-    ...PRO_ONLY_RESERVATIONS[4],
-    event: PRO_ONLY_EVENTS[4],
-    progressType: null,
-    progressValue: null,
-  }, // annulee
-  {
-    ...PRO_ONLY_RESERVATIONS[5],
-    event: PRO_ONLY_EVENTS[5],
-    progressType: null,
-    progressValue: null,
-  }, // refusee
-  {
-    ...PRO_ONLY_RESERVATIONS[6],
-    event: PRO_ONLY_EVENTS[6],
-    progressType: null,
-    progressValue: null,
-  }, // realisee
+  { ...MOCK_RESERVATIONS[0],     event: MOCK_EVENTS[0],     progressType: 'temporal',  progressValue: 0.35, phraseUrgence: null }, // confirmee
+  { ...PRO_ONLY_RESERVATIONS[0], event: PRO_ONLY_EVENTS[0], progressType: 'deadline',  progressValue: 0.85, phraseUrgence: 'Il reste <strong>36h</strong> pour répondre' }, // nouvelle
+  { ...PRO_ONLY_RESERVATIONS[1], event: PRO_ONLY_EVENTS[1], progressType: 'duration',  progressValue: 0.45, phraseUrgence: 'En négociation depuis <strong>5 jours</strong>' }, // en_discussion
+  { ...PRO_ONLY_RESERVATIONS[2], event: PRO_ONLY_EVENTS[2], progressType: 'deadline',  progressValue: 0.15, phraseUrgence: 'Il reste <strong>4h</strong> pour répondre' }, // nouvelle urgente
+  { ...PRO_ONLY_RESERVATIONS[3], event: PRO_ONLY_EVENTS[3], progressType: 'temporal',  progressValue: 0.92, phraseUrgence: null }, // confirmee urgente
+  { ...PRO_ONLY_RESERVATIONS[4], event: PRO_ONLY_EVENTS[4], progressType: null,        progressValue: null, phraseUrgence: 'Annulée par le client le <strong>08/03/2026</strong>' }, // annulee
+  { ...PRO_ONLY_RESERVATIONS[5], event: PRO_ONLY_EVENTS[5], progressType: null,        progressValue: null, phraseUrgence: 'Refusée le <strong>21/06/2026</strong>' }, // refusee
+  { ...PRO_ONLY_RESERVATIONS[6], event: PRO_ONLY_EVENTS[6], progressType: null,        progressValue: null, phraseUrgence: null }, // realisee
 ]
