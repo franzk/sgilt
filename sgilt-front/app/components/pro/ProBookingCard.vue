@@ -1,19 +1,20 @@
 <template>
   <!-- Skeleton -->
   <div v-if="skeleton" class="booking-card booking-card--skeleton">
-    <div class="booking-card__img skeleton-text" />
-    <div class="booking-card__title">
-      <div class="skeleton-text" style="width: 65%; height: 1.1rem; border-radius: 4px" />
+    <div class="booking-card__row1">
+      <div class="booking-card__img skeleton-text" />
+      <div class="booking-card__title">
+        <div class="skeleton-text" style="width: 65%; height: 1.1rem; border-radius: 4px" />
+      </div>
     </div>
-    <div class="booking-card__action">
-      <div class="skeleton-text" style="width: 110px; height: 1.5rem; border-radius: 2rem" />
-    </div>
-    <div class="booking-card__date">
-      <div class="skeleton-text" style="width: 50%; height: 0.65rem; border-radius: 3px" />
-      <div
-        class="skeleton-text"
-        style="width: 80%; height: 1rem; border-radius: 4px; margin-top: 3px"
-      />
+    <div class="booking-card__row2">
+      <div class="booking-card__action">
+        <div class="skeleton-text" style="width: 110px; height: 1.5rem; border-radius: 2rem" />
+      </div>
+      <div class="booking-card__date">
+        <div class="skeleton-text" style="width: 50%; height: 0.65rem; border-radius: 3px" />
+        <div class="skeleton-text" style="width: 80%; height: 1rem; border-radius: 4px; margin-top: 3px" />
+      </div>
     </div>
   </div>
 
@@ -25,28 +26,27 @@
     :style="{ animationDelay: `${animationDelay ?? 0}ms` }"
     @click="emit('click')"
   >
-    <!-- Col 1 — Image -->
-    <img class="booking-card__img" :src="demande.coverImage || FALLBACK_COVER" alt="" />
-
-    <!-- Col 2 — Titre -->
-    <div class="booking-card__title">
-      <span>{{ demande.titre }}</span>
+    <!-- Ligne 1 — Photo + Titre -->
+    <div class="booking-card__row1">
+      <img class="booking-card__img" :src="demande.coverImage || FALLBACK_COVER" alt="" />
+      <div class="booking-card__title">
+        <span>{{ demande.titre }}</span>
+      </div>
     </div>
 
-    <!-- Col 3 — Pill statut + Phrase urgence -->
-    <div class="booking-card__action">
-      <span
-        class="booking-card__pill"
-        :style="{ background: statusConfig.pillBg, color: statusConfig.pillText }"
-        >{{ pillLabel }}</span
-      >
-      <p v-if="demande.phraseUrgence" class="booking-card__phrase" v-html="demande.phraseUrgence" />
-    </div>
-
-    <!-- Col 4 — Date de l'événement -->
-    <div class="booking-card__date">
-      <span class="booking-card__date-label">Date de l'événement</span>
-      <span class="booking-card__date-value">{{ demande.date || '—' }}</span>
+    <!-- Ligne 2 — Pill/Phrase + Date -->
+    <div class="booking-card__row2">
+      <div class="booking-card__action">
+        <span
+          class="booking-card__pill"
+          :style="{ background: statusConfig.pillBg, color: statusConfig.pillText }"
+        >{{ pillLabel }}</span>
+        <p v-if="demande.phraseUrgence" class="booking-card__phrase" v-html="demande.phraseUrgence" />
+      </div>
+      <div class="booking-card__date">
+        <span class="booking-card__date-label">Date de l'événement</span>
+        <span class="booking-card__date-value">{{ demande.date || '—' }}</span>
+      </div>
     </div>
   </button>
 </template>
@@ -100,10 +100,7 @@ const pillLabel = computed(() => {
 
 .booking-card {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  column-gap: $spacing-s;
-  row-gap: $spacing-xs;
+  flex-direction: column;
   padding: $spacing-s;
   background: #fff;
   border-radius: $radius-md;
@@ -117,7 +114,7 @@ const pillLabel = computed(() => {
   animation: card-in 300ms ease-out both;
 
   @media (min-width: $breakpoint-desktop) {
-    flex-wrap: nowrap;
+    flex-direction: row;
     align-items: center;
     gap: $spacing-m;
     padding: $spacing-s $spacing-m;
@@ -133,7 +130,40 @@ const pillLabel = computed(() => {
   }
 }
 
-// ── Col 1 — Image ──────────────────────────────────────────────────────────────
+// ── Ligne 1 — Photo + Titre ────────────────────────────────────────────────────
+
+.booking-card__row1 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: $spacing-s;
+
+  @media (min-width: $breakpoint-desktop) {
+    flex: 1;
+    gap: $spacing-m;
+  }
+}
+
+// ── Ligne 2 — Action + Date ────────────────────────────────────────────────────
+
+.booking-card__row2 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-top: 1px solid $divider-color;
+  margin-top: $spacing-s;
+  padding-top: $spacing-s;
+
+  @media (min-width: $breakpoint-desktop) {
+    flex: 0 0 auto;
+    border-top: none;
+    margin-top: 0;
+    padding-top: 0;
+    gap: $spacing-m;
+  }
+}
+
+// ── Photo ──────────────────────────────────────────────────────────────────────
 
 .booking-card__img {
   flex: 0 0 72px;
@@ -142,23 +172,25 @@ const pillLabel = computed(() => {
   object-fit: cover;
   border-radius: $radius-md;
   display: block;
-  align-self: flex-start;
 
   @media (min-width: $breakpoint-desktop) {
     flex: 0 0 80px;
     width: 80px;
     height: 80px;
-    align-self: center;
   }
 }
 
-// ── Col 2 — Titre ──────────────────────────────────────────────────────────────
+// ── Titre ──────────────────────────────────────────────────────────────────────
 
 .booking-card__title {
   flex: 1;
   min-width: 0;
   overflow: hidden;
-  align-self: center;
+  text-align: center;
+
+  @media (min-width: $breakpoint-desktop) {
+    text-align: left;
+  }
 
   span {
     display: block;
@@ -166,12 +198,14 @@ const pillLabel = computed(() => {
     font-size: 1.05rem;
     font-weight: 600;
     color: $text-primary;
+    white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
     line-height: 1.2;
   }
 }
 
-// ── Col 3 — Pill + Phrase urgence ─────────────────────────────────────────────
+// ── Action (pill + phrase) ─────────────────────────────────────────────────────
 
 .booking-card__action {
   flex: 1;
@@ -180,25 +214,31 @@ const pillLabel = computed(() => {
   flex-direction: column;
   align-items: center;
   gap: 4px;
+  padding-right: $spacing-s;
 
   @media (min-width: $breakpoint-desktop) {
     flex: 0 0 12rem;
+    align-items: flex-start;
+    padding-right: 0;
   }
 }
 
-// ── Col 4 — Date de l'événement ───────────────────────────────────────────────
+// ── Date ───────────────────────────────────────────────────────────────────────
 
 .booking-card__date {
-  // Mobile : même ligne que __action, collé à droite
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  font-family: 'Inter', sans-serif;
   align-items: center;
+  gap: 2px;
+  border-left: 1px solid $divider-color;
+  padding-left: $spacing-s;
 
   @media (min-width: $breakpoint-desktop) {
     flex: 0 0 140px;
+    align-items: flex-start;
+    border-left: none;
+    padding-left: 0;
   }
 }
 
@@ -221,7 +261,9 @@ const pillLabel = computed(() => {
   font-size: 0.75rem;
   color: $text-primary;
   line-height: 1.4;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 
   :deep(strong) {
     font-weight: 700;
@@ -237,7 +279,6 @@ const pillLabel = computed(() => {
 }
 
 .booking-card__date-value {
-  // font-family: 'Cormorant Garamond', serif;
   font-size: 0.9rem;
   font-weight: 400;
   color: $text-primary;
