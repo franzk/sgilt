@@ -23,14 +23,14 @@
             :key="pill.status"
             class="status-pill"
             :style="{
-              background: RESERVATION_STATUS_CONFIG[pill.status].bgColor,
-              color: RESERVATION_STATUS_CONFIG[pill.status].color,
+              background: CLIENT_STATUS_CONFIG[pill.status].bgColor,
+              color: CLIENT_STATUS_CONFIG[pill.status].color,
             }"
           >
             <span class="status-pill__icon" aria-hidden="true">{{ pill.icon }}</span>
             <span class="status-pill__count">{{ pill.count }}</span>
             <span class="status-pill__label">{{
-              t(`reservation.statut_section.${pill.status}`)
+              t(`client.reservation.statut.${pill.status}`)
             }}</span>
           </span>
         </div>
@@ -115,7 +115,7 @@ const { t } = useI18n()
 import EventBlock from '~/components/app/EventBlock.vue'
 import { EventMockService } from '~/services/event.mock'
 import type { EventDetail, EventPatch, ReservationStatus } from '~/types/event'
-import { RESERVATION_STATUS_CONFIG, RESERVATION_STATUS_ORDER } from '~/constants/reservation-status'
+import { CLIENT_STATUS_CONFIG, RESERVATION_STATUS_ORDER } from '~/constants/reservation-status'
 import StatusBadge from '~/components/basics/StatusBadge.vue'
 
 const FALLBACK_PHOTO =
