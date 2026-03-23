@@ -13,7 +13,10 @@
       </div>
       <div class="booking-card__date">
         <div class="skeleton-text" style="width: 50%; height: 0.65rem; border-radius: 3px" />
-        <div class="skeleton-text" style="width: 80%; height: 1rem; border-radius: 4px; margin-top: 3px" />
+        <div
+          class="skeleton-text"
+          style="width: 80%; height: 1rem; border-radius: 4px; margin-top: 3px"
+        />
       </div>
     </div>
   </div>
@@ -40,8 +43,13 @@
         <span
           class="booking-card__pill"
           :style="{ background: statusConfig.pillBg, color: statusConfig.pillText }"
-        >{{ pillLabel }}</span>
-        <p v-if="demande.phraseUrgence" class="booking-card__phrase" v-html="demande.phraseUrgence" />
+          >{{ pillLabel }}</span
+        >
+        <p
+          v-if="demande.phraseUrgence"
+          class="booking-card__phrase"
+          v-html="demande.phraseUrgence"
+        />
       </div>
       <div class="booking-card__date">
         <span class="booking-card__date-label">Date de l'événement</span>
@@ -139,8 +147,7 @@ const pillLabel = computed(() => {
   gap: $spacing-s;
 
   @media (min-width: $breakpoint-desktop) {
-    flex: 1;
-    gap: $spacing-m;
+    display: contents;
   }
 }
 
@@ -155,11 +162,7 @@ const pillLabel = computed(() => {
   padding-top: $spacing-s;
 
   @media (min-width: $breakpoint-desktop) {
-    flex: 0 0 auto;
-    border-top: none;
-    margin-top: 0;
-    padding-top: 0;
-    gap: $spacing-m;
+    display: contents;
   }
 }
 
@@ -198,10 +201,14 @@ const pillLabel = computed(() => {
     font-size: 1.05rem;
     font-weight: 600;
     color: $text-primary;
-    white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
     line-height: 1.2;
+
+    @media (min-width: $breakpoint-desktop) {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: unset;
+    }
   }
 }
 
@@ -218,7 +225,6 @@ const pillLabel = computed(() => {
 
   @media (min-width: $breakpoint-desktop) {
     flex: 0 0 12rem;
-    align-items: flex-start;
     padding-right: 0;
   }
 }
@@ -236,7 +242,6 @@ const pillLabel = computed(() => {
 
   @media (min-width: $breakpoint-desktop) {
     flex: 0 0 140px;
-    align-items: flex-start;
     border-left: none;
     padding-left: 0;
   }
