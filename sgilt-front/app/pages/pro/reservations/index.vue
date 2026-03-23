@@ -20,8 +20,8 @@
       </div>
     </div>
 
-    <!-- ── Liste des demandes ──────────────────────────────────────────────────── -->
-    <div class="demandes-list">
+    <!-- ── Liste des bookings ──────────────────────────────────────────────────── -->
+    <div class="bookings-list">
       <!-- Skeleton -->
       <template v-if="loading">
         <ProBookingCard v-for="i in 4" :key="i" skeleton />
@@ -92,7 +92,9 @@ function isPillActive(id: string): boolean {
 
 function togglePill(id: string) {
   if (id === 'toutes') {
-    activePills.value = isPillActive('toutes') ? [...DEFAULT_ACTIVE_PILLS] : [...ALL_RESERVATION_STATUTS]
+    activePills.value = isPillActive('toutes')
+      ? [...DEFAULT_ACTIVE_PILLS]
+      : [...ALL_RESERVATION_STATUTS]
     return
   }
   const statut = id as ReservationStatut
@@ -114,9 +116,11 @@ const filteredDemandes = computed(() =>
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/base' as *;
+
 $bottom-nav-h: 56px;
-$desktop: 900px;
-$max-w: 680px;
+$desktop: $breakpoint-desktop;
+$max-w: 780px;
 
 .pro-board {
   min-height: 100%;
@@ -202,7 +206,7 @@ $max-w: 680px;
 }
 
 // ── Liste demandes ─────────────────────────────────────────────────────────────
-.demandes-list {
+.bookings-list {
   display: flex;
   flex-direction: column;
   gap: $spacing-s;

@@ -10,7 +10,10 @@
     </div>
     <div class="booking-card__date">
       <div class="skeleton-text" style="width: 50%; height: 0.65rem; border-radius: 3px" />
-      <div class="skeleton-text" style="width: 80%; height: 1rem; border-radius: 4px; margin-top: 3px" />
+      <div
+        class="skeleton-text"
+        style="width: 80%; height: 1rem; border-radius: 4px; margin-top: 3px"
+      />
     </div>
   </div>
 
@@ -23,11 +26,7 @@
     @click="emit('click')"
   >
     <!-- Col 1 — Image -->
-    <img
-      class="booking-card__img"
-      :src="demande.coverImage || FALLBACK_COVER"
-      alt=""
-    />
+    <img class="booking-card__img" :src="demande.coverImage || FALLBACK_COVER" alt="" />
 
     <!-- Col 2 — Titre -->
     <div class="booking-card__title">
@@ -39,12 +38,9 @@
       <span
         class="booking-card__pill"
         :style="{ background: statusConfig.pillBg, color: statusConfig.pillText }"
-      >{{ pillLabel }}</span>
-      <p
-        v-if="demande.phraseUrgence"
-        class="booking-card__phrase"
-        v-html="demande.phraseUrgence"
-      />
+        >{{ pillLabel }}</span
+      >
+      <p v-if="demande.phraseUrgence" class="booking-card__phrase" v-html="demande.phraseUrgence" />
     </div>
 
     <!-- Col 4 — Date de l'événement -->
@@ -170,9 +166,7 @@ const pillLabel = computed(() => {
     font-size: 1.05rem;
     font-weight: 600;
     color: $text-primary;
-    white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
     line-height: 1.2;
   }
 }
@@ -180,23 +174,28 @@ const pillLabel = computed(() => {
 // ── Col 3 — Pill + Phrase urgence ─────────────────────────────────────────────
 
 .booking-card__action {
-  flex: 0 0 100%;   // pleine largeur sur mobile (nouvelle ligne)
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 4px;
 
   @media (min-width: $breakpoint-desktop) {
-    flex: 0 0 200px;
+    flex: 0 0 12rem;
   }
 }
 
 // ── Col 4 — Date de l'événement ───────────────────────────────────────────────
 
 .booking-card__date {
-  flex: 0 0 100%;   // pleine largeur sur mobile (nouvelle ligne)
+  // Mobile : même ligne que __action, collé à droite
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   gap: 2px;
+  font-family: 'Inter', sans-serif;
+  align-items: center;
 
   @media (min-width: $breakpoint-desktop) {
     flex: 0 0 140px;
@@ -206,9 +205,6 @@ const pillLabel = computed(() => {
 // ── Éléments internes ─────────────────────────────────────────────────────────
 
 .booking-card__pill {
-  display: inline-flex;
-  align-items: center;
-  align-self: flex-start;
   padding: 4px 10px;
   border-radius: 2rem;
   font-family: 'Inter', sans-serif;
@@ -225,9 +221,7 @@ const pillLabel = computed(() => {
   font-size: 0.75rem;
   color: $text-primary;
   line-height: 1.4;
-  white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
 
   :deep(strong) {
     font-weight: 700;
@@ -243,9 +237,9 @@ const pillLabel = computed(() => {
 }
 
 .booking-card__date-value {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1rem;
-  font-weight: 600;
+  // font-family: 'Cormorant Garamond', serif;
+  font-size: 0.9rem;
+  font-weight: 400;
   color: $text-primary;
   line-height: 1.2;
 }
