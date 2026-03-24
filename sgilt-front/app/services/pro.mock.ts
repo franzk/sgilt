@@ -25,6 +25,7 @@ export const ProMockService = {
       progressType: d.progressType,
       progressValue: d.progressValue,
       phraseUrgence: d.phraseUrgence,
+      unreadNotesCount: d.unreadNotesCount,
     }))
   },
 

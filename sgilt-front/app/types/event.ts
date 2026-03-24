@@ -117,4 +117,5 @@ export interface ProDemandeSummary {
   progressType: 'deadline' | 'duration' | 'temporal' | null
   progressValue: number | null
   phraseUrgence: string | null
+  unreadNotesCount: number
 }

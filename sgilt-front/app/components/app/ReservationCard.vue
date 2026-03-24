@@ -1,5 +1,5 @@
 <template>
-  <div class="res-card-wrap">
+  <BadgeableComponent :count="reservation.unreadNotesCount">
     <SgiltCard
       :image="reservation.prestatairePhoto || FALLBACK_PHOTO"
       ratio="4/3"
@@ -15,13 +15,11 @@
         </div>
       </template>
     </SgiltCard>
-    <span v-if="reservation.unreadNotesCount > 0" class="res-card__unread">
-      {{ reservation.unreadNotesCount }}
-    </span>
-  </div>
+  </BadgeableComponent>
 </template>
 
 <script setup lang="ts">
+import BadgeableComponent from '~/components/basics/BadgeableComponent.vue'
 import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
 import StatusBadge from '~/components/basics/StatusBadge.vue'
 import type { Reservation } from '~/types/event'
@@ -34,12 +32,6 @@ const FALLBACK_PHOTO =
 </script>
 
 <style scoped lang="scss">
-// ── Wrapper (pour badge absolu) ─────────────────────────────────────────────────
-.res-card-wrap {
-  position: relative;
-}
-
-// ── Overlay slots ───────────────────────────────────────────────────────────────
 .res-card__category {
   font-family: 'Inter', sans-serif;
   font-size: 0.625rem;
@@ -65,26 +57,5 @@ const FALLBACK_PHOTO =
   justify-content: space-between;
   gap: $spacing-xs;
   padding: 8px $spacing-s;
-}
-
-// ── Badge non lus ───────────────────────────────────────────────────────────────
-.res-card__unread {
-  position: absolute;
-  top: -($spacing-xs);
-  right: -($spacing-xs);
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: 999px;
-  background: #d93025;
-  color: #fff;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.688rem;
-  font-weight: 700;
-  line-height: 18px;
-  text-align: center;
-  white-space: nowrap;
-  pointer-events: none;
-  z-index: 2;
 }
 </style>

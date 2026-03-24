@@ -22,44 +22,46 @@
   </div>
 
   <!-- Card -->
-  <button
-    v-else-if="demande"
-    class="booking-card"
-    type="button"
-    :style="{ animationDelay: `${animationDelay ?? 0}ms` }"
-    @click="emit('click')"
-  >
-    <!-- Ligne 1 — Photo + Titre -->
-    <div class="booking-card__row1">
-      <img class="booking-card__img" :src="demande.coverImage || FALLBACK_COVER" alt="" />
-      <div class="booking-card__title">
-        <span>{{ demande.titre }}</span>
+  <BadgeableComponent v-else-if="demande" :count="demande.unreadNotesCount">
+    <button
+      class="booking-card"
+      type="button"
+      :style="{ animationDelay: `${animationDelay ?? 0}ms` }"
+      @click="emit('click')"
+    >
+      <!-- Ligne 1 — Photo + Titre -->
+      <div class="booking-card__row1">
+        <img class="booking-card__img" :src="demande.coverImage || FALLBACK_COVER" alt="" />
+        <div class="booking-card__title">
+          <span>{{ demande.titre }}</span>
+        </div>
       </div>
-    </div>
 
-    <!-- Ligne 2 — Pill/Phrase + Date -->
-    <div class="booking-card__row2">
-      <div class="booking-card__action">
-        <span
-          class="booking-card__pill"
-          :style="{ background: statusConfig.pillBg, color: statusConfig.pillText }"
-          >{{ pillLabel }}</span
-        >
-        <p
-          v-if="demande.phraseUrgence"
-          class="booking-card__phrase"
-          v-html="demande.phraseUrgence"
-        />
+      <!-- Ligne 2 — Pill/Phrase + Date -->
+      <div class="booking-card__row2">
+        <div class="booking-card__action">
+          <span
+            class="booking-card__pill"
+            :style="{ background: statusConfig.pillBg, color: statusConfig.pillText }"
+            >{{ pillLabel }}</span
+          >
+          <p
+            v-if="demande.phraseUrgence"
+            class="booking-card__phrase"
+            v-html="demande.phraseUrgence"
+          />
+        </div>
+        <div class="booking-card__date">
+          <span class="booking-card__date-label">Date de l'événement</span>
+          <span class="booking-card__date-value">{{ demande.date || '—' }}</span>
+        </div>
       </div>
-      <div class="booking-card__date">
-        <span class="booking-card__date-label">Date de l'événement</span>
-        <span class="booking-card__date-value">{{ demande.date || '—' }}</span>
-      </div>
-    </div>
-  </button>
+    </button>
+  </BadgeableComponent>
 </template>
 
 <script setup lang="ts">
+import BadgeableComponent from '~/components/basics/BadgeableComponent.vue'
 import type { ProDemandeSummary } from '~/types/event'
 import { RESERVATION_STATUS_CONFIG, STATUTS_AVEC_ACTION } from '~/constants/reservation-status'
 
@@ -109,6 +111,7 @@ const pillLabel = computed(() => {
 .booking-card {
   display: flex;
   flex-direction: column;
+  width: 100%;
   padding: $spacing-s;
   background: #fff;
   border-radius: $radius-md;
