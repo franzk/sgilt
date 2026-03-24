@@ -21,7 +21,7 @@ import AppFooter from '~/components/app/AppFooter.vue'
   display: flex;
   flex-direction: column;
 
-  @media (min-width: 900px) {
+  @media (min-width: $breakpoint-desktop) {
     padding-bottom: 0;
   }
 }

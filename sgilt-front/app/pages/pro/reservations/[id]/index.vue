@@ -212,7 +212,12 @@ function onUploadDocument(file: File) {
     name: file.name,
     fileType,
     url: URL.createObjectURL(file),
-    uploadedBy: { id: 'presta-3', name: 'DJ Animation', role: 'prestataire', photo: '/images/prestataires/dj-animation.jpg' },
+    uploadedBy: {
+      id: 'presta-3',
+      name: 'DJ Animation',
+      role: 'prestataire',
+      photo: '/images/prestataires/dj-animation.jpg',
+    },
     uploadedAt: new Date().toISOString(),
   }
   demande.value.documents.unshift(doc)
@@ -294,7 +299,9 @@ function formatDate(iso: string) {
 </script>
 
 <style scoped lang="scss">
-$desktop: 900px;
+@use '@/assets/styles/base' as *;
+
+$desktop: $breakpoint-desktop;
 $cta-h: 72px;
 $tab-bar-h: 45px;
 

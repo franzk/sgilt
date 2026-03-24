@@ -210,7 +210,7 @@ function stepDoneSummary(n: number): string {
 .demande-layout {
   min-height: calc(100dvh - $app-header-height);
 
-  @media (min-width: 849px) {
+  @media (min-width: $breakpoint-desktop) {
     display: grid;
     grid-template-columns: 1fr 280px;
   }

@@ -38,10 +38,11 @@ const route = useRoute()
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/base' as *;
 $nav-h: 56px;
 
 .pro-footer {
-  @media (min-width: 900px) {
+  @media (min-width: $breakpoint-desktop) {
     display: none !important;
   }
 

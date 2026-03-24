@@ -220,7 +220,9 @@ function goToSearch() {
 </script>
 
 <style scoped lang="scss">
-$desktop: 900px;
+@use '@/assets/styles/base' as *;
+
+$desktop: $breakpoint-desktop;
 
 .event-board {
   min-height: 100%;

@@ -67,6 +67,8 @@ const choiceState = computed(() => {
 </script>
 
 <style lang="scss">
+@use '@/assets/styles/base' as *;
+
 @import '@vuepic/vue-datepicker/dist/main.css';
 
 // ─── Tokens ───────────────────────────────────────────────────────────────────
@@ -123,7 +125,7 @@ $menu-background:
   --dp-cell-padding: #{$cell-padding};
 }
 
-@media (min-width: 850px) {
+@media (min-width: $breakpoint-desktop) {
   .dp__theme_light {
     --dp-cell-padding: #{$cell-padding-small};
   }

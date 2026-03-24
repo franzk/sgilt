@@ -113,7 +113,9 @@ function formatDate(iso: string) {
 </script>
 
 <style scoped lang="scss">
-$desktop: 900px;
+@use '@/assets/styles/base' as *;
+
+$desktop: $breakpoint-desktop;
 
 .events-page {
   min-height: 100%;

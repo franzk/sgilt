@@ -125,7 +125,9 @@ function onDeleteDocument(id: string) {
 </script>
 
 <style scoped lang="scss">
-$desktop: 900px;
+@use '@/assets/styles/base' as *;
+
+$desktop: $breakpoint-desktop;
 
 .reservation-page {
   min-height: 100%;
@@ -187,7 +189,9 @@ $desktop: 900px;
     line-height: 1.1;
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 
-    @media (min-width: $desktop) { font-size: 38px; }
+    @media (min-width: $desktop) {
+      font-size: 38px;
+    }
   }
 
   &__badge {
@@ -218,7 +222,9 @@ $desktop: 900px;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   transition: color 150ms ease;
 
-  &:active { color: #fff; }
+  &:active {
+    color: #fff;
+  }
 }
 
 // ── Contenu ───────────────────────────────────────────────────────────────────
@@ -241,7 +247,17 @@ $desktop: 900px;
 }
 
 // ── Skeleton ───────────────────────────────────────────────────────────────────
-.skeleton-header { height: 84px; border-radius: $radius-lg; }
-.skeleton-notes { display: flex; flex-direction: column; gap: $spacing-s; }
-.skeleton-note { height: 80px; border-radius: $radius-md; }
+.skeleton-header {
+  height: 84px;
+  border-radius: $radius-lg;
+}
+.skeleton-notes {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-s;
+}
+.skeleton-note {
+  height: 80px;
+  border-radius: $radius-md;
+}
 </style>

@@ -92,7 +92,7 @@ async function confirmCancel() {
 </script>
 
 <style scoped lang="scss">
-$desktop: 900px;
+$desktop: $breakpoint-desktop;
 
 .actions-page {
   min-height: 100%;
