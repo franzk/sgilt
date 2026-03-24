@@ -40,7 +40,8 @@ const isEventsActive = computed(() => route.path.startsWith('/app/events'))
 
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
-$nav-h: 56px;
+
+$nav-h: $bottom-nav-h;
 
 .app-footer {
   @media (min-width: $breakpoint-desktop) {

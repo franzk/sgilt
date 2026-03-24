@@ -39,7 +39,8 @@ const route = useRoute()
 
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
-$nav-h: 56px;
+
+$nav-h: $bottom-nav-h;
 
 .pro-footer {
   @media (min-width: $breakpoint-desktop) {

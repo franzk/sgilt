@@ -39,7 +39,9 @@ const isEventsActive = computed(() => route.path.startsWith('/app/events'))
 </script>
 
 <style scoped lang="scss">
-$nav-h: 56px;
+@use '@/assets/styles/base' as *;
+
+$nav-h: $bottom-nav-h;
 
 .bottom-nav {
   position: fixed;
