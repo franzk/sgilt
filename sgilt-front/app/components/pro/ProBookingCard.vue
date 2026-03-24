@@ -22,7 +22,7 @@
   </div>
 
   <!-- Card -->
-  <BadgeableComponent v-else-if="demande" :count="demande.unreadNotesCount">
+  <BadgeableComponent v-else-if="demande" :count="demande.unreadNotesCount" :size="22">
     <button
       class="booking-card"
       type="button"
