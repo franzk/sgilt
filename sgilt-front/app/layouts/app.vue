@@ -14,8 +14,6 @@ import AppFooter from '~/components/app/AppFooter.vue'
 <style lang="scss">
 @use '@/assets/styles/base' as *;
 
-$bottom-nav-h: 56px;
-
 .app-content {
   padding-top: $app-header-height;
   padding-bottom: calc($bottom-nav-h + env(safe-area-inset-bottom, 0px));

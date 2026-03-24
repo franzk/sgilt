@@ -113,7 +113,6 @@ function formatDate(iso: string) {
 </script>
 
 <style scoped lang="scss">
-$bottom-nav-h: 56px;
 $desktop: 900px;
 
 .events-page {

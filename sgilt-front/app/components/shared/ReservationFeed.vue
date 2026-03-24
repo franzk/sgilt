@@ -239,7 +239,6 @@ function formatDate(iso: string) {
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
-$bottom-nav-h: 56px;
 $desktop: $breakpoint-desktop;
 
 .feed {

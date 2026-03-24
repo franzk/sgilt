@@ -125,7 +125,6 @@ function onDeleteDocument(id: string) {
 </script>
 
 <style scoped lang="scss">
-$bottom-nav-h: 56px;
 $desktop: 900px;
 
 .reservation-page {

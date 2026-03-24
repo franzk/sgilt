@@ -294,7 +294,6 @@ function formatDate(iso: string) {
 </script>
 
 <style scoped lang="scss">
-$bottom-nav-h: 56px;
 $desktop: 900px;
 $cta-h: 72px;
 $tab-bar-h: 45px;

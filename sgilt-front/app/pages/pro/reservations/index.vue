@@ -122,7 +122,6 @@ const filteredDemandes = computed(() =>
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
-$bottom-nav-h: 56px;
 $desktop: $breakpoint-desktop;
 $max-w: 780px;
 
