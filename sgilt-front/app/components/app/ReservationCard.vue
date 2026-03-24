@@ -1,158 +1,77 @@
 <template>
-  <button
-    class="reservation-card"
-    type="button"
-    :style="{ borderLeftColor: statusConfig.color }"
-    @click="$emit('click')"
-  >
-    <!-- Photo / fallback initiales -->
-    <div class="card-media">
-      <img
-        v-if="reservation.prestatairePhoto"
-        :src="reservation.prestatairePhoto"
-        :alt="reservation.prestataireName"
-        class="card-media__img"
-      />
-      <span v-else class="card-media__fallback">{{ initials }}</span>
-    </div>
-
-    <!-- Grille 2 lignes -->
-    <div class="card-body">
-      <!-- Badge notes non lues -->
-      <span v-if="reservation.unreadNotesCount > 0" class="card-unread">
-        {{ reservation.unreadNotesCount }}
-      </span>
-
-      <!-- Ligne 1 : catégorie + badge statut -->
-      <div class="card-row">
-        <span class="card-category">{{ reservation.category }}</span>
-        <StatusBadge :status="reservation.status" context="client" />
-      </div>
-
-      <!-- Ligne 2 : nom -->
-      <div class="card-row">
-        <span class="card-name">{{ reservation.prestataireName }}</span>
-      </div>
-    </div>
-
-    <!-- Chevron -->
-    <span class="card-chevron" aria-hidden="true">›</span>
-  </button>
+  <div class="res-card-wrap">
+    <SgiltCard
+      :image="reservation.prestatairePhoto || FALLBACK_PHOTO"
+      ratio="4/3"
+      @click="$emit('click')"
+    >
+      <template #overlay>
+        <span class="res-card__category">{{ reservation.category }}</span>
+        <span class="res-card__name">{{ reservation.prestataireName }}</span>
+      </template>
+      <template #footer>
+        <div class="res-card__footer">
+          <StatusBadge :status="reservation.status" context="client" />
+        </div>
+      </template>
+    </SgiltCard>
+    <span v-if="reservation.unreadNotesCount > 0" class="res-card__unread">
+      {{ reservation.unreadNotesCount }}
+    </span>
+  </div>
 </template>
 
 <script setup lang="ts">
-import type { Reservation } from '~/types/event'
-import { RESERVATION_STATUS_CONFIG } from '~/constants/reservation-status'
+import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
 import StatusBadge from '~/components/basics/StatusBadge.vue'
+import type { Reservation } from '~/types/event'
 
-const props = defineProps<{ reservation: Reservation }>()
+defineProps<{ reservation: Reservation }>()
 defineEmits<{ click: [] }>()
 
-const statusConfig = computed(() => RESERVATION_STATUS_CONFIG[props.reservation.status])
-
-const initials = computed(() =>
-  props.reservation.prestataireName
-    .split(' ')
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase() ?? '')
-    .join(''),
-)
+const FALLBACK_PHOTO =
+  'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&auto=format&fit=crop'
 </script>
 
 <style scoped lang="scss">
-.reservation-card {
-  width: 100%;
-  display: flex;
-  align-items: center;
+// ── Wrapper (pour badge absolu) ─────────────────────────────────────────────────
+.res-card-wrap {
   position: relative;
-  gap: $spacing-s;
-  padding: 12px 14px;
-  border-radius: $border-radius-xs;
-  border: 0.5px solid $brand-border;
-  border-left-width: 3px;
-  background: #fff;
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.06),
-    0 1px 2px rgba(0, 0, 0, 0.04);
-  cursor: pointer;
-  text-align: left;
-  font-family: inherit;
-  transition: background 120ms ease;
-
-  &:active {
-    background: $surface-soft;
-  }
 }
 
-// ─── Photo ────────────────────────────────────────────────────────────────────
-.card-media {
-  flex-shrink: 0;
-  position: relative;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  overflow: visible;
-  background: $brand-subtle;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &__img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-  }
-
-  &__fallback {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 17px;
-    font-weight: 500;
-    color: $text-secondary;
-    line-height: 1;
-  }
+// ── Overlay slots ───────────────────────────────────────────────────────────────
+.res-card__category {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 3px;
 }
 
-// ─── Grille corps ─────────────────────────────────────────────────────────────
-.card-body {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
+.res-card__name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.2;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-.card-row {
+.res-card__footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: $spacing-xs;
+  padding: 8px $spacing-s;
 }
 
-// ─── Ligne 1 ──────────────────────────────────────────────────────────────────
-.card-category {
-  font-family: 'Inter', sans-serif;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: $brand-muted;
-  white-space: nowrap;
-}
-
-// ─── Ligne 2 ──────────────────────────────────────────────────────────────────
-.card-name {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 17px;
-  font-weight: 500;
-  color: $brand-primary;
-  line-height: 1.2;
-}
-
-.card-unread {
+// ── Badge non lus ───────────────────────────────────────────────────────────────
+.res-card__unread {
   position: absolute;
-  top: -4px;
-  right: -4px;
+  top: -($spacing-xs);
+  right: -($spacing-xs);
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
@@ -160,19 +79,12 @@ const initials = computed(() =>
   background: #d93025;
   color: #fff;
   font-family: 'Inter', sans-serif;
-  font-size: 0.688rem; // 11px
-  font-weight: 600;
-  white-space: nowrap;
+  font-size: 0.688rem;
+  font-weight: 700;
   line-height: 18px;
   text-align: center;
-}
-
-// ─── Chevron ──────────────────────────────────────────────────────────────────
-.card-chevron {
-  flex-shrink: 0;
-  font-size: 1.2rem;
-  color: $brand-muted;
-  line-height: 1;
-  margin-left: 2px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 2;
 }
 </style>

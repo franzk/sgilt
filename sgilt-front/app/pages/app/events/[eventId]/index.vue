@@ -63,26 +63,12 @@
         <!-- Réservations -->
         <section class="reservations">
           <div class="reservations__grid">
-            <div v-for="r in sortedReservations" :key="r.id" class="res-card-wrap">
-              <SgiltCard
-                :image="r.prestatairePhoto || FALLBACK_PHOTO"
-                ratio="4/3"
-                @click="navigateTo(`/app/events/${eventId}/reservations/${r.id}`)"
-              >
-                <template #overlay>
-                  <span class="res-card__category">{{ r.category }}</span>
-                  <span class="res-card__name">{{ r.prestataireName }}</span>
-                </template>
-                <template #footer>
-                  <div class="res-card__footer">
-                    <StatusBadge :status="r.status" context="client" />
-                  </div>
-                </template>
-              </SgiltCard>
-              <span v-if="r.unreadNotesCount > 0" class="res-card__unread">
-                {{ r.unreadNotesCount }}
-              </span>
-            </div>
+            <ReservationCard
+              v-for="r in sortedReservations"
+              :key="r.id"
+              :reservation="r"
+              @click="navigateTo(`/app/events/${eventId}/reservations/${r.id}`)"
+            />
           </div>
 
           <button class="add-prestataire-btn" type="button" @click="goToSearch">
@@ -106,23 +92,15 @@
 </template>
 
 <script setup lang="ts">
-import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
-
-definePageMeta({ layout: 'app' })
-
-const { t } = useI18n()
-
+import ReservationCard from '~/components/app/ReservationCard.vue'
 import EventBlock from '~/components/app/EventBlock.vue'
 import { EventMockService } from '~/services/event.mock'
 import type { EventDetail, EventPatch, ReservationStatus } from '~/types/event'
 import { CLIENT_STATUS_CONFIG, RESERVATION_STATUS_ORDER } from '~/constants/reservation-status'
-import StatusBadge from '~/components/basics/StatusBadge.vue'
 
-const FALLBACK_PHOTO =
-  'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&auto=format&fit=crop'
+definePageMeta({ layout: 'app' })
 
-const { isDesktop } = useDevice()
-const cardRatio = computed(() => (isDesktop.value ? '16/9' : '3'))
+const { t } = useI18n()
 
 const route = useRoute()
 const eventId = route.params.eventId as string
@@ -509,58 +487,6 @@ $desktop: $breakpoint-desktop;
   @media (min-width: $desktop) {
     grid-template-columns: repeat(3, 1fr);
   }
-}
-
-// ── Cards prestataires — contenu slots ────────────────────────────────────────
-.res-card__category {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.625rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 3px;
-}
-
-.res-card__name {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: #fff;
-  line-height: 1.2;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-.res-card__footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: $spacing-xs;
-  padding: 8px $spacing-s;
-}
-
-.res-card-wrap {
-  position: relative;
-}
-
-.res-card__unread {
-  position: absolute;
-  top: -($spacing-xs);
-  right: -($spacing-xs);
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: 999px;
-  background: #d93025;
-  color: #fff;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.688rem;
-  font-weight: 700;
-  line-height: 18px;
-  text-align: center;
-  white-space: nowrap;
-  pointer-events: none;
-  z-index: 2;
 }
 
 // ── Bouton ajout prestataire ──────────────────────────────────────────────────
