@@ -53,6 +53,16 @@
 
         <!-- Colonne droite : liste de notes -->
         <div class="notes-layout__right">
+          <!-- ── Bloc contact — statut nouvelle ─────────────────────────────── -->
+          <ContactCTABlock
+            v-if="demande.status === 'nouvelle'"
+            :client-info="demande.clientInfo"
+            :mailto-href="mailtoHref"
+            :cta-loading="ctaLoading"
+            @confirm="recontacter"
+            @refuse="openRefusalModal"
+          />
+
           <!-- Desktop: bouton ajout note -->
           <div class="section-header">
             <button class="section-btn" type="button" @click="openNoteModal">
@@ -185,27 +195,12 @@
       +
     </button>
 
-    <!-- ── CTA sticky ─────────────────────────────────────────────────────────── -->
+    <!-- ── CTA sticky (en_discussion uniquement) ─────────────────────────────── -->
     <div v-if="demande && showCta" class="cta-bar">
-      <button
-        v-if="demande.status === 'nouvelle' || demande.status === 'en_discussion'"
-        class="cta-bar__btn cta-bar__btn--secondary"
-        type="button"
-        @click="openRefusalModal"
-      >
+      <button class="cta-bar__btn cta-bar__btn--secondary" type="button" @click="openRefusalModal">
         Refuser
       </button>
       <button
-        v-if="demande.status === 'nouvelle'"
-        class="cta-bar__btn cta-bar__btn--primary"
-        type="button"
-        :disabled="ctaLoading"
-        @click="recontacter"
-      >
-        Confirmer le contact
-      </button>
-      <button
-        v-else-if="demande.status === 'en_discussion'"
         class="cta-bar__btn cta-bar__btn--primary"
         type="button"
         :disabled="ctaLoading"
@@ -279,6 +274,8 @@
 </template>
 
 <script setup lang="ts">
+import ContactCTABlock from '~/components/pro/ContactCTABlock.vue'
+
 definePageMeta({ layout: 'pro' })
 
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
@@ -430,9 +427,17 @@ function deleteDocument(id: string) {
 
 // ── CTA ───────────────────────────────────────────────────────────────────────
 const ctaLoading = ref(false)
-const showCta = computed(() =>
-  demande.value ? ['nouvelle', 'en_discussion'].includes(demande.value.status) : false,
-)
+const showCta = computed(() => demande.value?.status === 'en_discussion')
+
+const mailtoHref = computed(() => {
+  if (!demande.value) return '#'
+  const { email, firstName } = demande.value.clientInfo
+  const subject = encodeURIComponent(`Votre demande — ${demande.value.event.title}`)
+  const body = encodeURIComponent(
+    `Bonjour ${firstName},\n\nJe reviens vers vous suite à votre demande pour ${demande.value.event.title}.\n\nCordialement,\nDJ Animation`,
+  )
+  return `mailto:${email}?subject=${subject}&body=${body}`
+})
 
 async function recontacter() {
   if (!demande.value || ctaLoading.value) return
@@ -574,7 +579,6 @@ $tab-bar-h: 45px;
     border-radius: 2rem;
     white-space: nowrap;
     backdrop-filter: blur(4px);
-
   }
 }
 
@@ -1031,7 +1035,7 @@ $tab-bar-h: 45px;
 .note-fab {
   position: fixed;
   right: $spacing-m;
-  bottom: calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $cta-h + $spacing-m);
+  bottom: calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $spacing-m);
   z-index: $z-dropdown;
   width: 52px;
   height: 52px;

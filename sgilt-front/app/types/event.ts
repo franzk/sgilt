@@ -84,11 +84,18 @@ export interface ReservationDetail extends Reservation {
 
 // ── Types pro ─────────────────────────────────────────────────────────────────
 
+export interface ClientContactInfo {
+  firstName: string
+  phone: string
+  email: string
+}
+
 export interface ProDemandeDetail extends ReservationDetail {
   event: EventDetail
   progressType: 'deadline' | 'duration' | 'temporal' | null
   progressValue: number | null
   phraseUrgence: string | null
+  clientInfo: ClientContactInfo
 }
 
 export interface ProDemandeSummary {
