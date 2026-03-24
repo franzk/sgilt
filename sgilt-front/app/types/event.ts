@@ -75,6 +75,12 @@ export interface ReservationDocument {
   uploadedAt: string // ISO datetime
 }
 
+// ── Feed items (ReservationFeed) ───────────────────────────────────────────────
+
+export type FeedNote = ReservationNote & { _kind: 'note' }
+export type FeedDocument = ReservationDocument & { _kind: 'document' }
+export type FeedItem = FeedNote | FeedDocument
+
 export interface ReservationDetail extends Reservation {
   notes: ReservationNote[]
   documents: ReservationDocument[]

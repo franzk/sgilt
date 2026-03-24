@@ -22,38 +22,17 @@
       </div>
     </div>
 
-    <!-- ── Onglets (sticky sous le bandeau) ─────────────────────────────────── -->
-    <div v-if="demande" class="tab-bar">
-      <button
-        class="tab-btn"
-        :class="{ 'tab-btn--active': activeTab === 'notes' }"
-        type="button"
-        @click="activeTab = 'notes'"
-      >
-        Notes
-      </button>
-      <button
-        class="tab-btn"
-        :class="{ 'tab-btn--active': activeTab === 'documents' }"
-        type="button"
-        @click="activeTab = 'documents'"
-      >
-        Documents
-      </button>
-    </div>
-
     <!-- ── Contenu ───────────────────────────────────────────────────────────── -->
     <template v-if="demande">
-      <!-- ══ Onglet Notes : layout 2 colonnes desktop ══════════════════════════ -->
-      <div v-if="activeTab === 'notes'" class="notes-layout">
+      <div class="notes-layout">
         <!-- Colonne gauche : Event block sticky -->
         <div class="notes-layout__left">
           <EventBlock v-if="proEventDetail" :event="proEventDetail" @updated="() => {}" />
         </div>
 
-        <!-- Colonne droite : liste de notes -->
+        <!-- Colonne droite -->
         <div class="notes-layout__right">
-          <!-- ── Bloc contact — statut nouvelle ─────────────────────────────── -->
+          <!-- Bloc contact — statut nouvelle -->
           <ContactCTABlock
             v-if="demande.status === 'nouvelle'"
             :client-info="demande.clientInfo"
@@ -63,49 +42,16 @@
             @refuse="openRefusalModal"
           />
 
-          <!-- Desktop: bouton ajout note -->
-          <div class="section-header">
-            <button class="section-btn" type="button" @click="openNoteModal">
-              + Ajouter une note
-            </button>
-          </div>
-
-          <p v-if="sortedNotes.length === 0" class="tab-empty">Aucune note pour le moment.</p>
-          <ul v-else class="notes-list">
-            <li v-for="note in sortedNotes" :key="note.id">
-              <!-- Message initial -->
-              <div v-if="note.isMessageInitial" class="note-initial">
-                <span class="note-initial__label">Message initial</span>
-                <p class="note-initial__content">{{ note.content }}</p>
-                <span class="note-initial__meta"
-                  >{{ note.author.name }} · {{ formatDate(note.createdAt) }}</span
-                >
-              </div>
-
-              <!-- Note personnelle -->
-              <div v-else-if="note.isPersonal" class="note-card note-card--personal">
-                <div class="note-card__header">
-                  <span class="note-card__lock">🔒</span>
-                  <span class="note-card__author">{{ note.author.name }}</span>
-                  <span class="note-card__date">{{ formatDate(note.createdAt) }}</span>
-                </div>
-                <p class="note-card__content">{{ note.content }}</p>
-              </div>
-
-              <!-- Note partagée -->
-              <div
-                v-else
-                class="note-card"
-                :class="note.author.role === 'client' ? 'note-card--client' : 'note-card--pro'"
-              >
-                <div class="note-card__header">
-                  <span class="note-card__author">{{ note.author.name }}</span>
-                  <span class="note-card__date">{{ formatDate(note.createdAt) }}</span>
-                </div>
-                <p class="note-card__content">{{ note.content }}</p>
-              </div>
-            </li>
-          </ul>
+          <!-- Flux notes + documents -->
+          <ReservationFeed
+            :items="feedItems"
+            :can-add-note="true"
+            :can-upload-document="demande.status === 'confirmee'"
+            :show-personal-toggle="true"
+            @add-note="onAddNote"
+            @upload-document="onUploadDocument"
+            @delete-document="onDeleteDocument"
+          />
 
           <!-- Lien actions spéciales -->
           <button
@@ -118,64 +64,6 @@
           </button>
         </div>
       </div>
-
-      <!-- ══ Onglet Documents ══════════════════════════════════════════════════ -->
-      <div v-else-if="activeTab === 'documents'" class="docs-layout">
-        <div class="section-header">
-          <button
-            class="section-btn"
-            type="button"
-            :disabled="demande.status !== 'confirmee'"
-            @click="triggerUpload"
-          >
-            ↑ Déposer un document
-          </button>
-        </div>
-
-        <div v-if="demande.status !== 'confirmee'" class="docs-info">
-          Le dépôt de documents est disponible une fois la réservation confirmée.
-        </div>
-
-        <input ref="fileInputRef" type="file" style="display: none" @change="handleUpload" />
-
-        <p v-if="sortedDocuments.length === 0" class="tab-empty">
-          Aucun document partagé pour le moment.
-        </p>
-        <ul v-else class="doc-list">
-          <li v-for="doc in sortedDocuments" :key="doc.id" class="doc-item">
-            <div class="doc-icon" :class="`doc-icon--${doc.fileType}`">
-              {{ doc.fileType === 'pdf' ? 'PDF' : doc.fileType === 'image' ? 'IMG' : 'DOC' }}
-            </div>
-            <div class="doc-info">
-              <span class="doc-name">{{ doc.name }}</span>
-              <span class="doc-meta"
-                >{{ doc.uploadedBy.name }} · {{ formatDate(doc.uploadedAt) }}</span
-              >
-            </div>
-            <div class="doc-actions">
-              <a :href="doc.url" download class="doc-btn" title="Télécharger">↓</a>
-              <button
-                v-if="doc.uploadedBy.role === 'prestataire'"
-                class="doc-btn doc-btn--delete"
-                type="button"
-                title="Supprimer"
-                @click="deleteDocument(doc.id)"
-              >
-                ✕
-              </button>
-            </div>
-          </li>
-        </ul>
-
-        <button
-          v-if="demande.status === 'confirmee'"
-          class="upload-btn-mobile"
-          type="button"
-          @click="triggerUpload"
-        >
-          ↑ Déposer un document
-        </button>
-      </div>
     </template>
 
     <!-- Skeleton -->
@@ -183,17 +71,6 @@
       <div class="skeleton-block skeleton-text" />
       <div v-for="i in 3" :key="i" class="skeleton-note skeleton-text" />
     </div>
-
-    <!-- ── FAB (mobile, onglet notes) ─────────────────────────────────────────── -->
-    <button
-      v-if="demande && activeTab === 'notes'"
-      class="note-fab"
-      type="button"
-      aria-label="Ajouter une note"
-      @click="openNoteModal"
-    >
-      +
-    </button>
 
     <!-- ── CTA sticky (en_discussion uniquement) ─────────────────────────────── -->
     <div v-if="demande && showCta" class="cta-bar">
@@ -209,37 +86,6 @@
         Confirmer la réservation
       </button>
     </div>
-
-    <!-- ── Modal ajout note ───────────────────────────────────────────────────── -->
-    <SgiltDialog
-      v-if="noteModalOpen"
-      v-model:open="noteModalOpen"
-      title="Ajouter une note"
-      max-width="800px"
-    >
-      <div class="note-form">
-        <textarea
-          ref="noteTextareaRef"
-          v-model="newNote"
-          class="note-form__textarea"
-          placeholder="Ajouter une note..."
-          rows="5"
-          @input="autoResize"
-        />
-        <label class="note-form__personal">
-          <input v-model="noteIsPersonal" type="checkbox" />
-          <span>Note privée 🔒 (visible uniquement par moi)</span>
-        </label>
-        <button
-          class="note-form__send"
-          type="button"
-          :disabled="!newNote.trim() || sending"
-          @click="sendNote"
-        >
-          Ajouter la note
-        </button>
-      </div>
-    </SgiltDialog>
 
     <!-- ── Modal refus ────────────────────────────────────────────────────────── -->
     <SgiltDialog
@@ -274,14 +120,14 @@
 </template>
 
 <script setup lang="ts">
-import ContactCTABlock from '~/components/pro/ContactCTABlock.vue'
-
 definePageMeta({ layout: 'pro' })
 
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import EventBlock from '~/components/app/EventBlock.vue'
+import ReservationFeed from '~/components/shared/ReservationFeed.vue'
+import ContactCTABlock from '~/components/pro/ContactCTABlock.vue'
 import { ProMockService } from '~/services/pro.mock'
-import type { ProDemandeDetail, ReservationDocument } from '~/types/event'
+import type { ProDemandeDetail, ReservationDocument, FeedItem } from '~/types/event'
 import { getStatusOverlayStyle } from '~/constants/reservation-status'
 
 const route = useRoute()
@@ -341,66 +187,24 @@ const proEventDetail = computed(() => demande.value?.event ?? null)
 
 const { t } = useI18n()
 
-// ── Onglets ────────────────────────────────────────────────────────────────────
-const activeTab = ref<'notes' | 'documents'>('notes')
-
-// ── Notes ─────────────────────────────────────────────────────────────────────
-const sortedNotes = computed(() =>
-  [...(demande.value?.notes ?? [])].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  ),
-)
-
-const noteModalOpen = ref(false)
-const newNote = ref('')
-const noteIsPersonal = ref(false)
-const sending = ref(false)
-const noteTextareaRef = ref<HTMLTextAreaElement | null>(null)
-
-function openNoteModal() {
-  noteIsPersonal.value = false
-  noteModalOpen.value = true
-}
-
-watch(noteModalOpen, (val) => {
-  if (val) nextTick(() => noteTextareaRef.value?.focus())
+// ── Feed items ─────────────────────────────────────────────────────────────────
+const feedItems = computed<FeedItem[]>(() => {
+  if (!demande.value) return []
+  const notes: FeedItem[] = demande.value.notes.map((n) => ({ ...n, _kind: 'note' as const }))
+  const docs: FeedItem[] = demande.value.documents.map((d) => ({
+    ...d,
+    _kind: 'document' as const,
+  }))
+  return [...notes, ...docs]
 })
 
-function autoResize(e: Event) {
-  const el = e.target as HTMLTextAreaElement
-  el.style.height = 'auto'
-  el.style.height = `${el.scrollHeight}px`
-}
-
-async function sendNote() {
-  const content = newNote.value.trim()
-  if (!content || sending.value) return
-  sending.value = true
-  const note = await ProMockService.addNote(demandeId, content, noteIsPersonal.value)
+async function onAddNote(content: string, isPersonal: boolean) {
+  const note = await ProMockService.addNote(demandeId, content, isPersonal)
   demande.value?.notes.push(note)
-  newNote.value = ''
-  noteIsPersonal.value = false
-  sending.value = false
-  noteModalOpen.value = false
 }
 
-// ── Documents ─────────────────────────────────────────────────────────────────
-const sortedDocuments = computed(() =>
-  [...(demande.value?.documents ?? [])].sort(
-    (a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime(),
-  ),
-)
-
-const fileInputRef = ref<HTMLInputElement | null>(null)
-
-function triggerUpload() {
-  if (demande.value?.status !== 'confirmee') return
-  fileInputRef.value?.click()
-}
-
-function handleUpload(e: Event) {
-  const file = (e.target as HTMLInputElement).files?.[0]
-  if (!file || !demande.value) return
+function onUploadDocument(file: File) {
+  if (!demande.value) return
   const fileType: ReservationDocument['fileType'] =
     file.type === 'application/pdf' ? 'pdf' : file.type.startsWith('image/') ? 'image' : 'other'
   const doc: ReservationDocument = {
@@ -408,19 +212,13 @@ function handleUpload(e: Event) {
     name: file.name,
     fileType,
     url: URL.createObjectURL(file),
-    uploadedBy: {
-      id: 'presta-3',
-      name: 'DJ Animation',
-      role: 'prestataire',
-      photo: '/images/prestataires/dj-animation.jpg',
-    },
+    uploadedBy: { id: 'presta-3', name: 'DJ Animation', role: 'prestataire', photo: '/images/prestataires/dj-animation.jpg' },
     uploadedAt: new Date().toISOString(),
   }
   demande.value.documents.unshift(doc)
-  ;(e.target as HTMLInputElement).value = ''
 }
 
-function deleteDocument(id: string) {
+function onDeleteDocument(id: string) {
   if (!demande.value) return
   demande.value.documents = demande.value.documents.filter((d) => d.id !== id)
 }
@@ -604,49 +402,6 @@ $tab-bar-h: 45px;
   }
 }
 
-// ── Barre d'onglets (sticky sous le header app) ────────────────────────────────
-.tab-bar {
-  position: sticky;
-  top: 3.3rem;
-  z-index: $z-header;
-  display: flex;
-  background: #fff;
-  border-bottom: 1px solid $divider-color;
-  padding: 0 $spacing-m;
-
-  @media (min-width: $desktop) {
-    padding: 0 40px;
-  }
-}
-
-.tab-btn {
-  flex: 1;
-  padding: $spacing-s 0;
-  border: none;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  background: none;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: $text-secondary;
-  cursor: pointer;
-  transition:
-    color 150ms ease,
-    border-color 150ms ease;
-
-  &--active {
-    color: $brand-primary;
-    border-bottom-color: $brand-accent;
-    font-weight: 600;
-  }
-
-  @media (min-width: $desktop) {
-    flex: 0 1 auto;
-    padding: $spacing-s $spacing-m;
-  }
-}
-
 // ── Onglet Notes : layout 2 colonnes desktop ───────────────────────────────────
 .notes-layout {
   display: flex;
@@ -701,175 +456,6 @@ $tab-bar-h: 45px;
   box-shadow: 0 1px 4px rgba(47, 42, 37, 0.07);
 }
 
-// ── Onglet Documents ──────────────────────────────────────────────────────────
-.docs-layout {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-m;
-  padding: $spacing-m $spacing-m
-    calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $cta-h + $spacing-m);
-
-  @media (min-width: $desktop) {
-    max-width: 760px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 32px 40px calc($cta-h + 40px);
-  }
-}
-
-// ── Header de section (desktop) ────────────────────────────────────────────────
-.section-header {
-  display: none;
-
-  @media (min-width: $desktop) {
-    display: flex;
-    justify-content: flex-end;
-  }
-}
-
-.section-btn {
-  padding: 5px 14px;
-  border: 1px solid $brand-border;
-  border-radius: $radius-md;
-  background: transparent;
-  font-family: inherit;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: $text-secondary;
-  cursor: pointer;
-  transition:
-    border-color 150ms ease,
-    color 150ms ease;
-
-  &:hover:not(:disabled) {
-    border-color: $brand-primary;
-    color: $brand-primary;
-  }
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: default;
-  }
-}
-
-// ── État vide ─────────────────────────────────────────────────────────────────
-.tab-empty {
-  font-size: 0.875rem;
-  color: $text-secondary;
-  opacity: 0.55;
-  font-style: italic;
-  margin: 0;
-  text-align: center;
-  padding: $spacing-m 0;
-}
-
-// ── Liste notes ───────────────────────────────────────────────────────────────
-.notes-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-s;
-}
-
-// ── Message initial ───────────────────────────────────────────────────────────
-.note-initial {
-  background: #fff;
-  border-radius: $radius-md;
-  border: 0.5px solid rgba(47, 42, 37, 0.1);
-  border-left: 3px solid $brand-accent;
-  box-shadow: 0 1px 4px rgba(47, 42, 37, 0.07);
-  padding: $spacing-s $spacing-m;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-
-  &__label {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: $brand-accent;
-  }
-
-  &__content {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.9rem;
-    color: $text-primary;
-    line-height: 1.6;
-    margin: 0;
-    white-space: pre-wrap;
-  }
-
-  &__meta {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.72rem;
-    color: $text-secondary;
-    opacity: 0.65;
-  }
-}
-
-// ── Note card ─────────────────────────────────────────────────────────────────
-.note-card {
-  background: #fff;
-  border-radius: $radius-md;
-  border: 0.5px solid rgba(47, 42, 37, 0.1);
-  box-shadow: 0 1px 4px rgba(47, 42, 37, 0.07);
-  padding: $spacing-s $spacing-m;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-
-  &--client {
-    background: #fff;
-  }
-  &--pro {
-    background: #f5f0e8;
-  }
-
-  &--personal {
-    background: #f5f5f3;
-    border-style: dashed;
-    border-color: rgba(47, 42, 37, 0.15);
-  }
-
-  &__header {
-    display: flex;
-    align-items: center;
-    gap: $spacing-xs;
-  }
-
-  &__lock {
-    font-size: 0.75rem;
-  }
-
-  &__author {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: $text-primary;
-  }
-
-  &__date {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.72rem;
-    color: $text-secondary;
-    opacity: 0.65;
-    margin-left: auto;
-  }
-
-  &__content {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.875rem;
-    color: $text-primary;
-    line-height: 1.6;
-    margin: 0;
-    white-space: pre-wrap;
-  }
-}
-
 // ── Lien actions spéciales ────────────────────────────────────────────────────
 .actions-link {
   display: block;
@@ -886,183 +472,6 @@ $tab-bar-h: 45px;
 
   &:hover {
     color: $text-primary;
-  }
-}
-
-// ── Documents ─────────────────────────────────────────────────────────────────
-.docs-info {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.8rem;
-  color: $text-secondary;
-  background: rgba(47, 42, 37, 0.04);
-  border-radius: $radius-md;
-  padding: $spacing-s $spacing-m;
-  text-align: center;
-}
-
-.doc-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-s;
-}
-
-.doc-item {
-  display: flex;
-  align-items: center;
-  gap: $spacing-s;
-  padding: 10px $spacing-s;
-  background: #fff;
-  border-radius: $radius-md;
-  border: 0.5px solid rgba(47, 42, 37, 0.1);
-  box-shadow: 0 1px 4px rgba(47, 42, 37, 0.07);
-}
-
-.doc-icon {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  border-radius: $radius-sm;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Inter', sans-serif;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-
-  &--pdf {
-    background: rgba(163, 45, 45, 0.1);
-    color: #a32d2d;
-  }
-  &--image {
-    background: rgba(24, 95, 165, 0.1);
-    color: #185fa5;
-  }
-  &--other {
-    background: rgba(107, 99, 92, 0.1);
-    color: #6b635c;
-  }
-}
-
-.doc-info {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.doc-name {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: $text-primary;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.doc-meta {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.75rem;
-  color: $text-secondary;
-  opacity: 0.7;
-}
-
-.doc-actions {
-  display: flex;
-  align-items: center;
-  gap: $spacing-xs;
-  flex-shrink: 0;
-}
-
-.doc-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: $radius-sm;
-  border: none;
-  background: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.875rem;
-  cursor: pointer;
-  text-decoration: none;
-  color: $text-secondary;
-  transition:
-    background 150ms ease,
-    color 150ms ease;
-
-  &:hover {
-    background: $surface-soft;
-    color: $text-primary;
-  }
-
-  &--delete {
-    font-size: 0.75rem;
-    &:hover {
-      background: rgba(163, 45, 45, 0.1);
-      color: #a32d2d;
-    }
-  }
-}
-
-.upload-btn-mobile {
-  width: 100%;
-  padding: $spacing-m;
-  border: 1.5px dashed $brand-border;
-  border-radius: $radius-md;
-  background: transparent;
-  font-family: inherit;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: $text-secondary;
-  cursor: pointer;
-  transition:
-    border-color 150ms ease,
-    color 150ms ease;
-
-  &:active {
-    border-color: $brand-primary;
-    color: $brand-primary;
-  }
-}
-
-// ── FAB ───────────────────────────────────────────────────────────────────────
-.note-fab {
-  position: fixed;
-  right: $spacing-m;
-  bottom: calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $spacing-m);
-  z-index: $z-dropdown;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  border: none;
-  background: $brand-accent;
-  color: $brand-primary;
-  font-size: 1.75rem;
-  line-height: 1;
-  cursor: pointer;
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.15),
-    0 2px 4px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    transform 120ms ease,
-    box-shadow 120ms ease;
-
-  &:active {
-    transform: scale(0.94);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-  }
-
-  @media (min-width: $desktop) {
-    display: none;
   }
 }
 
@@ -1122,69 +531,6 @@ $tab-bar-h: 45px;
       &:hover:not(:disabled) {
         background: rgba(163, 45, 45, 0.05);
       }
-    }
-  }
-}
-
-// ── Formulaire note ───────────────────────────────────────────────────────────
-.note-form {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  padding: 32px;
-  gap: $spacing-m;
-
-  &__textarea {
-    flex: 1;
-    width: 100%;
-    min-height: 200px;
-    padding: 0;
-    border: none;
-    resize: none;
-    font-family: inherit;
-    font-size: 1rem;
-    line-height: 1.8;
-    color: $text-primary;
-    background: transparent;
-    outline: none;
-    overflow: hidden;
-
-    &::placeholder {
-      color: $text-secondary;
-      opacity: 0.4;
-    }
-  }
-
-  &__personal {
-    display: flex;
-    align-items: center;
-    gap: $spacing-xs;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.8rem;
-    color: $text-secondary;
-    cursor: pointer;
-    user-select: none;
-    input {
-      cursor: pointer;
-    }
-  }
-
-  &__send {
-    flex-shrink: 0;
-    width: 100%;
-    height: 48px;
-    border: none;
-    border-radius: $radius-md;
-    background: $brand-accent;
-    color: $brand-primary;
-    font-family: inherit;
-    font-size: 0.875rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: opacity 150ms ease;
-    &:disabled {
-      opacity: 0.4;
-      cursor: default;
     }
   }
 }
