@@ -25,14 +25,9 @@
     <!-- ── Contenu ───────────────────────────────────────────────────────────── -->
     <template v-if="demande">
       <div class="notes-layout">
-        <!-- Colonne gauche : Event block sticky -->
+        <!-- Colonne gauche : Event block + contact (statut nouvelle) -->
         <div class="notes-layout__left">
           <EventBlock v-if="proEventDetail" :event="proEventDetail" @updated="() => {}" />
-        </div>
-
-        <!-- Colonne droite -->
-        <div class="notes-layout__right">
-          <!-- Bloc contact — statut nouvelle -->
           <ContactCTABlock
             v-if="demande.status === 'nouvelle'"
             :client-info="demande.clientInfo"
@@ -41,6 +36,20 @@
             @confirm="recontacter"
             @refuse="openRefusalModal"
           />
+        </div>
+
+        <!-- Colonne droite -->
+        <div class="notes-layout__right">
+          <!-- Urgence (desktop uniquement, statut nouvelle) -->
+          <div
+            v-if="demande.status === 'nouvelle' && demande.urgencyLevel >= 2"
+            class="urgency-encart"
+            :class="demande.urgencyLevel >= 4 ? 'urgency-encart--high' : 'urgency-encart--medium'"
+          >
+            <span class="urgency-encart__label">ACTION REQUISE</span>
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <p class="urgency-encart__phrase" v-html="formattedUrgencyPhrase" />
+          </div>
 
           <!-- Flux notes + documents -->
           <ReservationFeed
@@ -231,6 +240,10 @@ function onDeleteDocument(id: string) {
 // ── CTA ───────────────────────────────────────────────────────────────────────
 const ctaLoading = ref(false)
 const showCta = computed(() => demande.value?.status === 'en_discussion')
+
+const formattedUrgencyPhrase = computed(
+  () => demande.value?.phraseUrgence?.replace(/(\d+\w*)/g, '<strong>$1</strong>') ?? '',
+)
 
 const mailtoHref = computed(() => {
   if (!demande.value) return '#'
@@ -428,6 +441,9 @@ $tab-bar-h: 45px;
 
 .notes-layout__left {
   padding: $spacing-m $spacing-m 0;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-m;
 
   @media (min-width: $desktop) {
     padding: 0;
@@ -460,6 +476,62 @@ $tab-bar-h: 45px;
 
 :deep(.event-block) {
   box-shadow: 0 1px 4px rgba(47, 42, 37, 0.07);
+}
+
+// ── Urgence (desktop uniquement, colonne droite) ──────────────────────────────
+.urgency-encart {
+  // display: none;
+
+  @media (min-width: $desktop) {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border-radius: $radius-md;
+    padding: $spacing-s $spacing-m;
+  }
+
+  &--high {
+    background: rgba(201, 48, 44, 0.08);
+    border: 1px solid rgba(201, 48, 44, 0.25);
+
+    .urgency-encart__label {
+      color: #c0392b;
+    }
+    .urgency-encart__phrase {
+      color: rgba(107, 24, 20, 0.85);
+    }
+  }
+
+  &--medium {
+    background: rgba(230, 126, 34, 0.08);
+    border: 1px solid rgba(230, 126, 34, 0.25);
+
+    .urgency-encart__label {
+      color: #e67e22;
+    }
+    .urgency-encart__phrase {
+      color: rgba(115, 63, 17, 0.85);
+    }
+  }
+
+  &__label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  &__phrase {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    margin: 0;
+
+    :deep(strong) {
+      font-weight: 700;
+    }
+  }
 }
 
 // ── Lien actions spéciales ────────────────────────────────────────────────────
