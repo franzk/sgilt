@@ -15,9 +15,9 @@
 
     <!-- Desktop layout -->
     <div class="bca-big__desktop">
-      <!-- Version cartes (rowOnDesktop) -->
-      <template v-if="rowOnDesktop">
-        <div class="bca-cards">
+      <!-- Version cartes -->
+      <template v-if="layout">
+        <div class="bca-cards" :class="`bca-cards--${layout}`">
           <!-- Carte email -->
           <div class="bca-card">
             <div class="bca-card__header">
@@ -119,7 +119,7 @@ const props = defineProps<{
   clientInfo: ClientContactInfo
   mailtoHref: string
   desktopOnly?: boolean
-  rowOnDesktop?: boolean
+  layout?: 'row' | 'column'
   showActions?: boolean
   ctaLoading?: boolean
 }>()
@@ -198,11 +198,13 @@ $desktop: $breakpoint-desktop;
   &--mail { background: #fff; color: $brand-primary; border: 1.5px solid $divider-color; }
 }
 
-// ── Cartes desktop (rowOnDesktop) ──────────────────────────────────────────────
+// ── Cartes desktop ─────────────────────────────────────────────────────────────
 .bca-cards {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: $spacing-s;
+
+  &--row { grid-template-columns: 1fr 1fr; }
+  &--column { grid-template-columns: 1fr; }
 }
 
 .bca-card {

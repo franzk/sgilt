@@ -43,6 +43,7 @@
           <BookingContactActions
             v-if="demande.status !== 'nouvelle'"
             variant="big"
+            layout="column"
             :desktop-only="demande.status === 'en_discussion'"
             :client-info="demande.clientInfo"
             :mailto-href="mailtoHref"
@@ -55,7 +56,7 @@
           <template v-if="demande.status === 'nouvelle'">
             <BookingContactActions
               variant="big"
-              :row-on-desktop="true"
+              layout="row"
               :show-actions="true"
               :cta-loading="ctaLoading"
               :client-info="demande.clientInfo"
