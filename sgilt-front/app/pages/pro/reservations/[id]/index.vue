@@ -55,6 +55,7 @@
           <template v-if="demande.status === 'nouvelle'">
             <BookingContactActions
               variant="big"
+              :row-on-desktop="true"
               :client-info="demande.clientInfo"
               :mailto-href="mailtoHref"
             />
@@ -469,6 +470,10 @@ $sticky-h: 56px;
 }
 
 .booking-layout__left {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-m;
+
   padding: $spacing-m $spacing-m 0;
 
   @media (min-width: $desktop) {

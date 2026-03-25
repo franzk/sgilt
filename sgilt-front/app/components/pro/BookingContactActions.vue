@@ -14,7 +14,7 @@
     </div>
 
     <!-- Desktop : encarts email + téléphone -->
-    <div class="bca-big__desktop">
+    <div class="bca-big__desktop" :class="{ 'bca-big__desktop--row': rowOnDesktop }">
       <!-- Email encart -->
       <div class="bca-encart">
         <a :href="mailtoHref" class="bca-encart__btn">
@@ -63,6 +63,7 @@ const props = defineProps<{
   clientInfo: ClientContactInfo
   mailtoHref: string
   desktopOnly?: boolean
+  rowOnDesktop?: boolean
 }>()
 
 const phone = computed(() => props.clientInfo.phone.replace(/\s/g, ''))
@@ -103,6 +104,16 @@ $desktop: $breakpoint-desktop;
     display: flex;
     flex-direction: column;
     gap: $spacing-s;
+  }
+
+  &--row {
+    @media (min-width: $desktop) {
+      flex-direction: row;
+
+      .bca-encart {
+        width: 100%;
+      }
+    }
   }
 }
 
