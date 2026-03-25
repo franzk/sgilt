@@ -9,7 +9,7 @@
         @click="$emit('confirm')"
       >
         <span class="booking-cta__icon">✓</span>
-        <span class="booking-cta__label">Contact effectué</span>
+        <span class="booking-cta__label">Premier contact effectué</span>
       </button>
       <button
         class="booking-cta__btn booking-cta__btn--refuse"
@@ -88,8 +88,13 @@ $desktop: $breakpoint-desktop;
   transition: opacity 150ms ease;
   padding: 16px $spacing-m;
 
-  &:disabled { opacity: 0.5; cursor: default; }
-  &:active:not(:disabled) { opacity: 0.8; }
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+  &:active:not(:disabled) {
+    opacity: 0.8;
+  }
 
   &--confirm {
     background: #2e7d32;

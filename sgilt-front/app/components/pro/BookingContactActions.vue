@@ -53,24 +53,6 @@
           </div>
         </div>
 
-        <!-- Actions en dessous des cartes -->
-        <div v-if="showActions" class="bca-actions">
-          <button
-            class="bca-actions__confirm"
-            type="button"
-            :disabled="ctaLoading"
-            @click="$emit('confirm')"
-          >
-            Contact effectué ✓
-          </button>
-          <button
-            class="bca-actions__refuse"
-            type="button"
-            @click="$emit('refuse')"
-          >
-            Refuser la demande ✗
-          </button>
-        </div>
       </template>
 
       <!-- Version encarts (défaut) -->
@@ -120,11 +102,7 @@ const props = defineProps<{
   mailtoHref: string
   desktopOnly?: boolean
   layout?: 'row' | 'column'
-  showActions?: boolean
-  ctaLoading?: boolean
 }>()
-
-defineEmits<{ confirm: []; refuse: [] }>()
 
 const phone = computed(() => props.clientInfo.phone.replace(/\s/g, ''))
 
@@ -263,63 +241,6 @@ $desktop: $breakpoint-desktop;
     transition: opacity 150ms ease;
 
     &:hover { opacity: 0.7; }
-  }
-}
-
-// ── Actions sous les cartes ────────────────────────────────────────────────────
-.bca-actions {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-xs;
-
-  @media (min-width: $desktop) {
-    flex-direction: row;
-  }
-
-  &__confirm,
-  &__refuse {
-    display: flex;
-    flex: 1;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 10px $spacing-m;
-    border-radius: $radius-md;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: opacity 150ms ease;
-
-    @media (min-width: $desktop) {
-      width: 0; // flex: 1 handles sizing
-    }
-  }
-
-  &__confirm {
-    border: none;
-    background: #2e7d32;
-    color: #fff;
-
-    &:disabled { opacity: 0.5; cursor: default; }
-    &:active:not(:disabled) { opacity: 0.8; }
-  }
-
-  &__refuse {
-    border: 1.5px solid #c0392b;
-    background: #fff;
-    color: #c0392b;
-    font-weight: 700;
-    transition:
-      background 120ms ease,
-      border-color 120ms ease;
-
-    &:hover {
-      background: rgba(192, 57, 43, 0.04);
-      border-color: rgba(192, 57, 43, 0.6);
-    }
   }
 }
 
