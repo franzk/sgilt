@@ -56,10 +56,15 @@
             <BookingContactActions
               variant="big"
               :row-on-desktop="true"
+              :show-actions="true"
+              :cta-loading="ctaLoading"
               :client-info="demande.clientInfo"
               :mailto-href="mailtoHref"
+              @confirm="recontacter"
+              @refuse="openRefusalModal"
             />
             <BookingStatusCta
+              v-if="isMobile"
               status="nouvelle"
               :loading="ctaLoading"
               @confirm="recontacter"

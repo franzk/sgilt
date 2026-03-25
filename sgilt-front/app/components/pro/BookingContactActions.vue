@@ -13,32 +13,88 @@
       </a>
     </div>
 
-    <!-- Desktop : encarts email + téléphone -->
-    <div class="bca-big__desktop" :class="{ 'bca-big__desktop--row': rowOnDesktop }">
-      <!-- Email encart -->
-      <div class="bca-encart">
-        <a :href="mailtoHref" class="bca-encart__btn">
-          ✉️ Envoyer un mail à {{ clientInfo.firstName }}
-        </a>
-        <div class="bca-encart__row">
-          <span class="bca-encart__email">{{ clientInfo.email }}</span>
+    <!-- Desktop layout -->
+    <div class="bca-big__desktop">
+      <!-- Version cartes (rowOnDesktop) -->
+      <template v-if="rowOnDesktop">
+        <div class="bca-cards">
+          <!-- Carte email -->
+          <div class="bca-card">
+            <div class="bca-card__header">
+              <span class="bca-card__icon">✉️</span>
+              <span class="bca-card__label">Email</span>
+              <button
+                class="bca-copy"
+                type="button"
+                :class="{ 'bca-copy--copied': emailCopied }"
+                :aria-label="emailCopied ? 'Copié' : 'Copier l\'email'"
+                @click="copyEmail"
+              >{{ emailCopied ? '✓' : '⎘' }}</button>
+            </div>
+            <span class="bca-card__value">{{ clientInfo.email }}</span>
+            <a :href="mailtoHref" class="bca-card__cta">Rédiger un mail</a>
+          </div>
+
+          <!-- Carte téléphone -->
+          <div class="bca-card">
+            <div class="bca-card__header">
+              <span class="bca-card__icon">📞</span>
+              <span class="bca-card__label">Téléphone</span>
+              <button
+                class="bca-copy"
+                type="button"
+                :class="{ 'bca-copy--copied': phoneCopied }"
+                :aria-label="phoneCopied ? 'Copié' : 'Copier le numéro'"
+                @click="copyPhone"
+              >{{ phoneCopied ? '✓' : '⎘' }}</button>
+            </div>
+            <span class="bca-card__value">{{ clientInfo.phone }}</span>
+            <a :href="`tel:${phone}`" class="bca-card__cta">Appeler</a>
+          </div>
+        </div>
+
+        <!-- Actions en dessous des cartes -->
+        <div v-if="showActions" class="bca-actions">
           <button
-            class="bca-copy"
+            class="bca-actions__confirm"
             type="button"
-            :class="{ 'bca-copy--copied': emailCopied }"
-            :aria-label="emailCopied ? 'Copié' : 'Copier l\'email'"
-            @click="copyEmail"
+            :disabled="ctaLoading"
+            @click="$emit('confirm')"
           >
-            {{ emailCopied ? '✓' : '⎘' }}
+            Contact effectué ✓
+          </button>
+          <button
+            class="bca-actions__refuse"
+            type="button"
+            @click="$emit('refuse')"
+          >
+            Refuser la demande
           </button>
         </div>
-      </div>
+      </template>
 
-      <!-- Téléphone encart -->
-      <div class="bca-encart">
-        <span class="bca-encart__label">TÉLÉPHONE</span>
-        <span class="bca-encart__phone">{{ clientInfo.phone }}</span>
-      </div>
+      <!-- Version encarts (défaut) -->
+      <template v-else>
+        <div class="bca-encart">
+          <a :href="mailtoHref" class="bca-encart__btn">
+            ✉️ Envoyer un mail à {{ clientInfo.firstName }}
+          </a>
+          <div class="bca-encart__row">
+            <span class="bca-encart__email">{{ clientInfo.email }}</span>
+            <button
+              class="bca-copy"
+              type="button"
+              :class="{ 'bca-copy--copied': emailCopied }"
+              :aria-label="emailCopied ? 'Copié' : 'Copier l\'email'"
+              @click="copyEmail"
+            >{{ emailCopied ? '✓' : '⎘' }}</button>
+          </div>
+        </div>
+        <div class="bca-encart">
+          <span class="bca-encart__label">TÉLÉPHONE</span>
+          <span class="bca-encart__phone">{{ clientInfo.phone }}</span>
+        </div>
+      </template>
     </div>
   </div>
 
@@ -64,16 +120,27 @@ const props = defineProps<{
   mailtoHref: string
   desktopOnly?: boolean
   rowOnDesktop?: boolean
+  showActions?: boolean
+  ctaLoading?: boolean
 }>()
+
+defineEmits<{ confirm: []; refuse: [] }>()
 
 const phone = computed(() => props.clientInfo.phone.replace(/\s/g, ''))
 
 const emailCopied = ref(false)
+const phoneCopied = ref(false)
 
 async function copyEmail() {
   await navigator.clipboard.writeText(props.clientInfo.email)
   emailCopied.value = true
   setTimeout(() => (emailCopied.value = false), 2000)
+}
+
+async function copyPhone() {
+  await navigator.clipboard.writeText(props.clientInfo.phone)
+  phoneCopied.value = true
+  setTimeout(() => (phoneCopied.value = false), 2000)
 }
 </script>
 
@@ -88,13 +155,9 @@ $desktop: $breakpoint-desktop;
   grid-template-columns: 1fr 1fr;
   gap: $spacing-s;
 
-  @media (min-width: $desktop) {
-    display: none;
-  }
+  @media (min-width: $desktop) { display: none; }
 
-  &--hidden {
-    display: none;
-  }
+  &--hidden { display: none; }
 }
 
 .bca-big__desktop {
@@ -105,19 +168,9 @@ $desktop: $breakpoint-desktop;
     flex-direction: column;
     gap: $spacing-s;
   }
-
-  &--row {
-    @media (min-width: $desktop) {
-      flex-direction: row;
-
-      .bca-encart {
-        width: 100%;
-      }
-    }
-  }
 }
 
-// Carrés mobiles
+// ── Carrés mobiles ─────────────────────────────────────────────────────────────
 .bca-square {
   display: flex;
   flex-direction: column;
@@ -132,7 +185,6 @@ $desktop: $breakpoint-desktop;
   transition: opacity 150ms ease;
 
   &:active { opacity: 0.8; }
-
   &__icon { font-size: 1.75rem; line-height: 1; }
 
   &__label {
@@ -142,20 +194,127 @@ $desktop: $breakpoint-desktop;
     line-height: 1;
   }
 
-  &--call {
-    background: $brand-accent;
-    color: $brand-primary;
-    border: none;
+  &--call { background: $brand-accent; color: $brand-primary; border: none; }
+  &--mail { background: #fff; color: $brand-primary; border: 1.5px solid $divider-color; }
+}
+
+// ── Cartes desktop (rowOnDesktop) ──────────────────────────────────────────────
+.bca-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-s;
+}
+
+.bca-card {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  background: #fff;
+  border: 1px solid $divider-color;
+  border-radius: $radius-md;
+  padding: $spacing-s $spacing-m;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 
-  &--mail {
-    background: #fff;
+  &__icon { font-size: 0.875rem; line-height: 1; flex-shrink: 0; }
+
+  &__label {
+    flex: 1;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: $text-secondary;
+  }
+
+  &__value {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    color: $text-primary;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: auto;
+    padding-top: $spacing-xs;
+    padding-bottom: 2px;
+    border: none;
+    border-top: 1px solid $divider-color;
+    background: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
     color: $brand-primary;
-    border: 1.5px solid $divider-color;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 150ms ease;
+
+    &:hover { opacity: 0.7; }
   }
 }
 
-// Encarts desktop
+// ── Actions sous les cartes ────────────────────────────────────────────────────
+.bca-actions {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+
+  &__confirm {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 10px $spacing-m;
+    border: none;
+    border-radius: $radius-md;
+    background: #2e7d32;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 150ms ease;
+
+    &:disabled { opacity: 0.5; cursor: default; }
+    &:active:not(:disabled) { opacity: 0.8; }
+  }
+
+  &__refuse {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 8px $spacing-m;
+    border-radius: $radius-md;
+    border: 1px solid rgba(192, 57, 43, 0.3);
+    background: #fff;
+    color: #c0392b;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background 120ms ease,
+      border-color 120ms ease;
+
+    &:hover {
+      background: rgba(192, 57, 43, 0.04);
+      border-color: rgba(192, 57, 43, 0.5);
+    }
+  }
+}
+
+// ── Encarts desktop (défaut) ───────────────────────────────────────────────────
 .bca-encart {
   background: #fff;
   border: 1px solid $divider-color;
@@ -221,6 +380,7 @@ $desktop: $breakpoint-desktop;
   }
 }
 
+// ── Bouton copier ──────────────────────────────────────────────────────────────
 .bca-copy {
   flex-shrink: 0;
   width: 22px;
@@ -245,9 +405,7 @@ $desktop: $breakpoint-desktop;
 
 // ── Variant sticky ─────────────────────────────────────────────────────────────
 .bca-sticky {
-  @media (min-width: $desktop) {
-    display: none;
-  }
+  @media (min-width: $desktop) { display: none; }
 
   position: fixed;
   left: 0;
@@ -263,13 +421,6 @@ $desktop: $breakpoint-desktop;
   gap: $spacing-m;
   padding: 0 $spacing-m;
 
-  @media (min-width: $desktop) {
-    bottom: 0;
-    justify-content: flex-end;
-    padding: 0 40px;
-    gap: $spacing-s;
-  }
-
   &__btn {
     display: flex;
     align-items: center;
@@ -283,9 +434,7 @@ $desktop: $breakpoint-desktop;
     cursor: pointer;
     transition: background 120ms ease;
 
-    &:hover {
-      background: $surface-soft;
-    }
+    &:hover { background: $surface-soft; }
   }
 
   &__icon { font-size: 1.1rem; line-height: 1; }
