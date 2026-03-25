@@ -1,7 +1,10 @@
 <template>
   <div class="status-banner" :class="`status-banner--${status}`">
-    <!-- eslint-disable-next-line vue/no-v-html -->
-    <p class="status-banner__phrase" v-html="phraseInfoState" />
+    <p class="status-banner__phrase">
+      <strong class="status-banner__action">ACTION REQUISE</strong>
+      <span class="status-banner__sep"> · </span><!-- eslint-disable-next-line vue/no-v-html -->
+      <span v-html="phraseInfoState" />
+    </p>
   </div>
 </template>
 
@@ -45,13 +48,19 @@ defineProps<{
     .status-banner__phrase { color: #4a4a4a; }
   }
 
+  &__action {
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+
   &__phrase {
     font-family: 'Inter', sans-serif;
     font-size: 0.8rem;
+    font-weight: 600;
     line-height: 1.4;
     margin: 0;
 
-    :deep(strong) { font-weight: 700; }
+    :deep(strong) { font-weight: 800; }
   }
 }
 </style>

@@ -8,14 +8,16 @@
         :disabled="loading"
         @click="$emit('confirm')"
       >
-        Contact effectué ✓
+        <span class="booking-cta__icon">✓</span>
+        <span class="booking-cta__label">Contact effectué</span>
       </button>
       <button
         class="booking-cta__btn booking-cta__btn--refuse"
         type="button"
         @click="$emit('refuse')"
       >
-        Refuser la demande ✗
+        <span class="booking-cta__icon">✗</span>
+        <span class="booking-cta__label">Refuser</span>
       </button>
     </template>
 
@@ -27,14 +29,16 @@
         :disabled="loading"
         @click="$emit('confirm')"
       >
-        Confirmer la réservation ✓
+        <span class="booking-cta__icon">✓</span>
+        <span class="booking-cta__label">Confirmer la réservation</span>
       </button>
       <button
         class="booking-cta__btn booking-cta__btn--refuse"
         type="button"
         @click="$emit('refuse')"
       >
-        Refuser la demande ✗
+        <span class="booking-cta__icon">✗</span>
+        <span class="booking-cta__label">Refuser</span>
       </button>
     </template>
   </div>
@@ -72,21 +76,17 @@ $desktop: $breakpoint-desktop;
 .booking-cta__btn {
   display: flex;
   flex: 1;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 4px;
   width: 100%;
   border-radius: $radius-md;
   font-family: 'Inter', sans-serif;
   font-weight: 600;
   cursor: pointer;
   transition: opacity 150ms ease;
-  padding: 12px $spacing-m;
-  font-size: 0.875rem;
-
-  @media (min-width: $desktop) {
-    padding: 10px $spacing-m;
-    font-size: 0.8rem;
-  }
+  padding: 16px $spacing-m;
 
   &:disabled { opacity: 0.5; cursor: default; }
   &:active:not(:disabled) { opacity: 0.8; }
@@ -102,33 +102,33 @@ $desktop: $breakpoint-desktop;
     border: none;
     color: #c0392b;
     font-weight: 400;
-    font-size: 0.8rem;
-    padding: 4px 0;
-    justify-content: center;
-
-    @media (min-width: $desktop) {
-      padding: 2px 0;
-    }
+    padding: 8px 0;
   }
+}
+
+.booking-cta__icon {
+  font-size: 1.25rem;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.booking-cta__label {
+  font-size: 0.8rem;
+  line-height: 1.2;
 }
 
 // ── Overrides en layout row (desktop) ──────────────────────────────────────────
 .booking-cta--row {
   @media (min-width: $desktop) {
     .booking-cta__btn--confirm {
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+      letter-spacing: 0.03em;
     }
 
     .booking-cta__btn--refuse {
       border: 1.5px solid #c0392b;
       background: #fff;
       font-weight: 700;
-      font-size: 0.8rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      padding: 10px $spacing-m;
+      padding: 16px $spacing-m;
       transition:
         background 120ms ease,
         border-color 120ms ease;

@@ -117,7 +117,7 @@ function formatDate(iso: string) {
 .booking-brief {
   background: #fff;
   border-radius: $radius-md;
-  box-shadow: 0 1px 4px rgba(47, 42, 37, 0.07);
+  box-shadow: 0 2px 10px rgba($brand-accent, 0.18);
   overflow: hidden;
 }
 

@@ -215,6 +215,7 @@ $desktop: $breakpoint-desktop;
   border: 1px solid $divider-color;
   border-radius: $radius-md;
   padding: $spacing-s $spacing-m;
+  box-shadow: 0 2px 10px rgba($brand-accent, 0.18);
 
   &__header {
     display: flex;
