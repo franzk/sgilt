@@ -105,9 +105,9 @@
       <div v-for="i in 3" :key="i" class="skeleton-note skeleton-text" />
     </div>
 
-    <!-- ── Contact sticky (en_discussion + confirmee) ─────────────────────── -->
+    <!-- ── Contact sticky mobile uniquement (en_discussion + confirmee) ─────── -->
     <BookingContactActions
-      v-if="demande && (demande.status === 'en_discussion' || demande.status === 'confirmee')"
+      v-if="isMobile && demande && (demande.status === 'en_discussion' || demande.status === 'confirmee')"
       variant="sticky"
       :client-info="demande.clientInfo"
       :mailto-href="mailtoHref"
@@ -159,6 +159,8 @@ import BookingCriticalActions from '~/components/pro/BookingCriticalActions.vue'
 import { ProMockService } from '~/services/pro.mock'
 import type { ProDemandeDetail, ReservationDocument, FeedItem } from '~/types/event'
 import { getStatusOverlayStyle } from '~/constants/reservation-status'
+
+const { isMobile } = useDevice()
 
 const route = useRoute()
 const demandeId = String(route.params.id)
