@@ -1,6 +1,5 @@
 <template>
   <div class="actions-page">
-
     <!-- ── Header ──────────────────────────────────────────────────────────── -->
     <div class="actions-page__header">
       <button class="back-btn" type="button" @click="navigateTo(`/pro/reservations/${demandeId}`)">
@@ -8,13 +7,14 @@
       </button>
       <div>
         <h1 class="actions-page__title">Actions spéciales</h1>
-        <p class="actions-page__subtitle">Ces actions sont irréversibles. Procédez avec précaution.</p>
+        <p class="actions-page__subtitle">
+          Ces actions sont irréversibles. Procédez avec précaution.
+        </p>
       </div>
     </div>
 
     <!-- ── Liste des actions ────────────────────────────────────────────────── -->
     <div class="actions-list">
-
       <!-- Annuler la réservation -->
       <button
         class="action-item action-item--danger"
@@ -26,11 +26,14 @@
         <div class="action-item__body">
           <span class="action-item__label">Annuler la réservation</span>
           <span class="action-item__desc">
-            {{ ['annulee', 'refusee', 'realisee'].includes(currentStatut) ? 'Cette demande ne peut plus être annulée.' : 'Passe la demande en statut Annulée.' }}
+            {{
+              ['annulee', 'refusee', 'realisee'].includes(currentStatut)
+                ? 'Cette demande ne peut plus être annulée.'
+                : 'Passe la demande en statut Annulée.'
+            }}
           </span>
         </div>
       </button>
-
     </div>
 
     <!-- ── Modal confirmation annulation ───────────────────────────────────── -->
@@ -42,10 +45,15 @@
     >
       <div class="confirm-form">
         <p class="confirm-form__text">
-          Êtes-vous sûr de vouloir annuler cette réservation ? Cette action est difficilement réversible.
+          Êtes-vous sûr de vouloir annuler cette réservation ? Cette action est difficilement
+          réversible.
         </p>
         <div class="confirm-form__actions">
-          <button class="confirm-form__btn confirm-form__btn--cancel" type="button" @click="cancelOpen = false">
+          <button
+            class="confirm-form__btn confirm-form__btn--cancel"
+            type="button"
+            @click="cancelOpen = false"
+          >
             Annuler
           </button>
           <button
@@ -59,7 +67,6 @@
         </div>
       </div>
     </SgiltDialog>
-
   </div>
 </template>
 
@@ -92,6 +99,8 @@ async function confirmCancel() {
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/base' as *;
+
 $desktop: $breakpoint-desktop;
 
 .actions-page {
@@ -172,7 +181,7 @@ $desktop: $breakpoint-desktop;
   padding: $spacing-m;
   background: #fff;
   border-radius: $radius-md;
-  border: 0.5px solid rgba(47, 42, 37, 0.10);
+  border: 0.5px solid rgba(47, 42, 37, 0.1);
   box-shadow: 0 1px 4px rgba(47, 42, 37, 0.07);
   text-align: left;
   cursor: pointer;
