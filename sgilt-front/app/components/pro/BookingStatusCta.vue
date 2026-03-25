@@ -76,10 +76,10 @@ $desktop: $breakpoint-desktop;
 .booking-cta__btn {
   display: flex;
   flex: 1;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 8px;
   width: 100%;
   border-radius: $radius-md;
   font-family: 'Inter', sans-serif;
@@ -120,6 +120,11 @@ $desktop: $breakpoint-desktop;
 // ── Overrides en layout row (desktop) ──────────────────────────────────────────
 .booking-cta--row {
   @media (min-width: $desktop) {
+    .booking-cta__btn {
+      flex-direction: column;
+      gap: 4px;
+    }
+
     .booking-cta__btn--confirm {
       letter-spacing: 0.03em;
     }
