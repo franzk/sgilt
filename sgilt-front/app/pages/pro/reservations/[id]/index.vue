@@ -33,15 +33,27 @@
       />
 
       <div class="booking-layout">
-        <!-- Colonne gauche : brief + contact (sauf nouvelle) -->
+        <!-- Colonne gauche : brief + CTA selon statut -->
         <div class="booking-layout__left">
           <BookingBrief
             :event="demande.event"
             :client-info="demande.clientInfo"
             :message-initial="messageInitial"
           />
+
+          <!-- nouvelle : CTA statut desktop uniquement -->
+          <BookingStatusCta
+            v-if="demande.status === 'nouvelle' && !isMobile"
+            layout="column"
+            status="nouvelle"
+            :loading="ctaLoading"
+            @confirm="recontacter"
+            @refuse="openRefusalModal"
+          />
+
+          <!-- en_discussion + confirmee : coordonnées contact -->
           <BookingContactActions
-            v-if="demande.status !== 'nouvelle'"
+            v-if="demande.status === 'en_discussion' || demande.status === 'confirmee'"
             variant="big"
             layout="column"
             :desktop-only="demande.status === 'en_discussion'"
@@ -57,13 +69,10 @@
             <BookingContactActions
               variant="big"
               layout="row"
-              :show-actions="true"
-              :cta-loading="ctaLoading"
               :client-info="demande.clientInfo"
               :mailto-href="mailtoHref"
-              @confirm="recontacter"
-              @refuse="openRefusalModal"
             />
+            <!-- CTA mobile uniquement (desktop = colonne gauche) -->
             <BookingStatusCta
               v-if="isMobile"
               status="nouvelle"
@@ -76,6 +85,7 @@
           <!-- en_discussion ────────────────────────────────────── -->
           <template v-else-if="demande.status === 'en_discussion'">
             <BookingStatusCta
+              layout="row"
               status="en_discussion"
               :loading="ctaLoading"
               @confirm="confirmer"

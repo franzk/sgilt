@@ -1,5 +1,5 @@
 <template>
-  <div class="booking-cta">
+  <div class="booking-cta" :class="layout === 'row' ? 'booking-cta--row' : ''">
     <!-- nouvelle : Contact effectué + Refuser -->
     <template v-if="status === 'nouvelle'">
       <button
@@ -15,7 +15,7 @@
         type="button"
         @click="$emit('refuse')"
       >
-        Refuser la demande
+        Refuser la demande ✗
       </button>
     </template>
 
@@ -27,14 +27,14 @@
         :disabled="loading"
         @click="$emit('confirm')"
       >
-        Confirmer la réservation
+        Confirmer la réservation ✓
       </button>
       <button
         class="booking-cta__btn booking-cta__btn--refuse"
         type="button"
         @click="$emit('refuse')"
       >
-        Refuser la demande
+        Refuser la demande ✗
       </button>
     </template>
   </div>
@@ -46,6 +46,7 @@ import type { ReservationStatus } from '~/types/event'
 defineProps<{
   status: ReservationStatus
   loading?: boolean
+  layout?: 'row' | 'column'
 }>()
 
 defineEmits<{ confirm: []; refuse: [] }>()
@@ -60,10 +61,17 @@ $desktop: $breakpoint-desktop;
   display: flex;
   flex-direction: column;
   gap: $spacing-xs;
+
+  &--row {
+    @media (min-width: $desktop) {
+      flex-direction: row;
+    }
+  }
 }
 
 .booking-cta__btn {
   display: flex;
+  flex: 1;
   align-items: center;
   justify-content: center;
   width: 100%;
@@ -80,14 +88,8 @@ $desktop: $breakpoint-desktop;
     font-size: 0.8rem;
   }
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: default;
-  }
-
-  &:active:not(:disabled) {
-    opacity: 0.8;
-  }
+  &:disabled { opacity: 0.5; cursor: default; }
+  &:active:not(:disabled) { opacity: 0.8; }
 
   &--confirm {
     background: #2e7d32;
@@ -106,6 +108,35 @@ $desktop: $breakpoint-desktop;
 
     @media (min-width: $desktop) {
       padding: 2px 0;
+    }
+  }
+}
+
+// ── Overrides en layout row (desktop) ──────────────────────────────────────────
+.booking-cta--row {
+  @media (min-width: $desktop) {
+    .booking-cta__btn--confirm {
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .booking-cta__btn--refuse {
+      border: 1.5px solid #c0392b;
+      background: #fff;
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 10px $spacing-m;
+      transition:
+        background 120ms ease,
+        border-color 120ms ease;
+
+      &:hover {
+        background: rgba(192, 57, 43, 0.04);
+        border-color: rgba(192, 57, 43, 0.6);
+      }
     }
   }
 }
