@@ -98,11 +98,10 @@ $desktop: $breakpoint-desktop;
   }
 
   &--refuse {
-    background: none;
-    border: none;
+    background: #fff;
+    border: 1.5px solid #c0392b;
     color: #c0392b;
-    font-weight: 400;
-    padding: 8px 0;
+    font-weight: 600;
   }
 }
 
@@ -130,10 +129,6 @@ $desktop: $breakpoint-desktop;
     }
 
     .booking-cta__btn--refuse {
-      border: 1.5px solid #c0392b;
-      background: #fff;
-      font-weight: 700;
-      padding: 16px $spacing-m;
       transition:
         background 120ms ease,
         border-color 120ms ease;

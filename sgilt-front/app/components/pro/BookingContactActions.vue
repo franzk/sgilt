@@ -316,17 +316,6 @@ $desktop: $breakpoint-desktop;
       background 120ms ease,
       border-color 120ms ease;
 
-    @media (max-width: #{$desktop - 1px}) {
-      border: none;
-      background: none;
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: #c0392b;
-      text-transform: none;
-      letter-spacing: 0;
-      padding: 4px 0;
-    }
-
     &:hover {
       background: rgba(192, 57, 43, 0.04);
       border-color: rgba(192, 57, 43, 0.6);

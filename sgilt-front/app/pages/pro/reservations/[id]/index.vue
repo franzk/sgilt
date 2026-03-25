@@ -30,6 +30,7 @@
         class="booking-status-banner-full"
         :phrase-info-state="demande.phraseInfoState"
         :status="demande.status"
+        :show-action-recquise="['nouvelle', 'en_discussion'].includes(demande.status)"
       />
 
       <div class="booking-layout">
