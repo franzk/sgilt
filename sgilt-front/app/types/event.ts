@@ -100,7 +100,7 @@ export interface ProDemandeDetail extends ReservationDetail {
   event: EventDetail
   progressType: 'deadline' | 'duration' | 'temporal' | null
   progressValue: number | null
-  phraseUrgence: string | null
+  phraseInfoState: string | null
   clientInfo: ClientContactInfo
 }
 
@@ -116,6 +116,6 @@ export interface ProDemandeSummary {
   coverImage?: string
   progressType: 'deadline' | 'duration' | 'temporal' | null
   progressValue: number | null
-  phraseUrgence: string | null
+  phraseInfoState: string | null
   unreadNotesCount: number
 }

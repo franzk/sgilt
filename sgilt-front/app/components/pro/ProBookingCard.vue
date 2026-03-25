@@ -46,9 +46,9 @@
             >{{ pillLabel }}</span
           >
           <p
-            v-if="demande.phraseUrgence"
+            v-if="demande.phraseInfoState"
             class="booking-card__phrase"
-            v-html="demande.phraseUrgence"
+            v-html="demande.phraseInfoState"
           />
         </div>
         <div class="booking-card__date">

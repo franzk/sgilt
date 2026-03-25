@@ -24,7 +24,7 @@ export const ProMockService = {
       coverImage: d.event.coverImage,
       progressType: d.progressType,
       progressValue: d.progressValue,
-      phraseUrgence: d.phraseUrgence,
+      phraseInfoState: d.phraseInfoState,
       unreadNotesCount: d.unreadNotesCount,
     }))
   },

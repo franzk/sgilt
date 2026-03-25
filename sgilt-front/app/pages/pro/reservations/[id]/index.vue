@@ -24,37 +24,62 @@
 
     <!-- ── Contenu ───────────────────────────────────────────────────────────── -->
     <template v-if="demande">
-      <div class="notes-layout">
-        <!-- Colonne gauche : Event block + contact (statut nouvelle) -->
-        <div class="notes-layout__left">
-          <EventBlock v-if="proEventDetail" :event="proEventDetail" @updated="() => {}" />
-          <ContactCTABlock
-            v-if="demande.status === 'nouvelle'"
+      <!-- Bannière statut — pleine largeur -->
+      <BookingStatusBanner
+        v-if="demande.phraseInfoState"
+        class="booking-status-banner-full"
+        :phrase-info-state="demande.phraseInfoState"
+        :status="demande.status"
+      />
+
+      <div class="booking-layout">
+        <!-- Colonne gauche : brief + contact (sauf nouvelle) -->
+        <div class="booking-layout__left">
+          <BookingBrief
+            :event="demande.event"
+            :client-info="demande.clientInfo"
+            :message-initial="messageInitial"
+          />
+          <BookingContactActions
+            v-if="demande.status !== 'nouvelle'"
+            variant="big"
+            :desktop-only="demande.status === 'en_discussion'"
             :client-info="demande.clientInfo"
             :mailto-href="mailtoHref"
-            :cta-loading="ctaLoading"
-            @confirm="recontacter"
-            @refuse="openRefusalModal"
           />
         </div>
 
-        <!-- Colonne droite -->
-        <div class="notes-layout__right">
-          <!-- Urgence (desktop uniquement, statut nouvelle) -->
-          <div
-            v-if="demande.status === 'nouvelle' && demande.urgencyLevel >= 2"
-            class="urgency-encart"
-            :class="demande.urgencyLevel >= 4 ? 'urgency-encart--high' : 'urgency-encart--medium'"
-          >
-            <span class="urgency-encart__label">ACTION REQUISE</span>
-            <!-- eslint-disable-next-line vue/no-v-html -->
-            <p class="urgency-encart__phrase" v-html="formattedUrgencyPhrase" />
-          </div>
+        <!-- Colonne droite : assemblage selon statut -->
+        <div class="booking-layout__right">
+          <!-- nouvelle ─────────────────────────────────────────── -->
+          <template v-if="demande.status === 'nouvelle'">
+            <BookingContactActions
+              variant="big"
+              :client-info="demande.clientInfo"
+              :mailto-href="mailtoHref"
+            />
+            <BookingStatusCta
+              status="nouvelle"
+              :loading="ctaLoading"
+              @confirm="recontacter"
+              @refuse="openRefusalModal"
+            />
+          </template>
+
+          <!-- en_discussion ────────────────────────────────────── -->
+          <template v-else-if="demande.status === 'en_discussion'">
+            <BookingStatusCta
+              status="en_discussion"
+              :loading="ctaLoading"
+              @confirm="confirmer"
+              @refuse="openRefusalModal"
+            />
+          </template>
 
           <!-- Flux notes + documents -->
           <ReservationFeed
             :items="feedItems"
-            :can-add-note="true"
+            :can-add-note="isEditable"
             :can-upload-document="demande.status === 'confirmee'"
             :show-personal-toggle="true"
             @add-note="onAddNote"
@@ -62,15 +87,14 @@
             @delete-document="onDeleteDocument"
           />
 
-          <!-- Lien actions spéciales -->
-          <button
-            v-if="demande.status === 'confirmee'"
-            class="actions-link"
-            type="button"
-            @click="navigateTo(`/pro/reservations/${demandeId}/actions`)"
-          >
-            Actions spéciales
-          </button>
+          <!-- refusee / annulee ────────────────────────────────── -->
+          <BookingResumeContactLink
+            v-if="demande.status === 'refusee' || demande.status === 'annulee'"
+            :mailto-href="mailtoHref"
+          />
+
+          <!-- confirmee ────────────────────────────────────────── -->
+          <BookingCriticalActions v-if="demande.status === 'confirmee'" :demande-id="demandeId" />
         </div>
       </div>
     </template>
@@ -81,20 +105,13 @@
       <div v-for="i in 3" :key="i" class="skeleton-note skeleton-text" />
     </div>
 
-    <!-- ── CTA sticky (en_discussion uniquement) ─────────────────────────────── -->
-    <div v-if="demande && showCta" class="cta-bar">
-      <button class="cta-bar__btn cta-bar__btn--secondary" type="button" @click="openRefusalModal">
-        Refuser
-      </button>
-      <button
-        class="cta-bar__btn cta-bar__btn--primary"
-        type="button"
-        :disabled="ctaLoading"
-        @click="confirmer"
-      >
-        Confirmer la réservation
-      </button>
-    </div>
+    <!-- ── Contact sticky (en_discussion + confirmee) ─────────────────────── -->
+    <BookingContactActions
+      v-if="demande && (demande.status === 'en_discussion' || demande.status === 'confirmee')"
+      variant="sticky"
+      :client-info="demande.clientInfo"
+      :mailto-href="mailtoHref"
+    />
 
     <!-- ── Modal refus ────────────────────────────────────────────────────────── -->
     <SgiltDialog
@@ -132,9 +149,13 @@
 definePageMeta({ layout: 'pro' })
 
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
-import EventBlock from '~/components/app/EventBlock.vue'
 import ReservationFeed from '~/components/shared/ReservationFeed.vue'
-import ContactCTABlock from '~/components/pro/ContactCTABlock.vue'
+import BookingStatusBanner from '~/components/pro/BookingStatusBanner.vue'
+import BookingContactActions from '~/components/pro/BookingContactActions.vue'
+import BookingStatusCta from '~/components/pro/BookingStatusCta.vue'
+import BookingBrief from '~/components/pro/BookingBrief.vue'
+import BookingResumeContactLink from '~/components/pro/BookingResumeContactLink.vue'
+import BookingCriticalActions from '~/components/pro/BookingCriticalActions.vue'
 import { ProMockService } from '~/services/pro.mock'
 import type { ProDemandeDetail, ReservationDocument, FeedItem } from '~/types/event'
 import { getStatusOverlayStyle } from '~/constants/reservation-status'
@@ -191,10 +212,14 @@ onMounted(async () => {
   loading.value = false
 })
 
-// ── EventDetail façade (lecture seule) ────────────────────────────────────────
-const proEventDetail = computed(() => demande.value?.event ?? null)
-
 const { t } = useI18n()
+
+const messageInitial = computed(() => demande.value?.notes.find((n) => n.isMessageInitial) ?? null)
+
+const isEditable = computed(() => {
+  const s = demande.value?.status
+  return s !== 'refusee' && s !== 'annulee' && s !== 'realisee'
+})
 
 // ── Feed items ─────────────────────────────────────────────────────────────────
 const feedItems = computed<FeedItem[]>(() => {
@@ -237,14 +262,7 @@ function onDeleteDocument(id: string) {
   demande.value.documents = demande.value.documents.filter((d) => d.id !== id)
 }
 
-// ── CTA ───────────────────────────────────────────────────────────────────────
-const ctaLoading = ref(false)
-const showCta = computed(() => demande.value?.status === 'en_discussion')
-
-const formattedUrgencyPhrase = computed(
-  () => demande.value?.phraseUrgence?.replace(/(\d+\w*)/g, '<strong>$1</strong>') ?? '',
-)
-
+// ── mailto ─────────────────────────────────────────────────────────────────────
 const mailtoHref = computed(() => {
   if (!demande.value) return '#'
   const { email, firstName } = demande.value.clientInfo
@@ -254,6 +272,9 @@ const mailtoHref = computed(() => {
   )
   return `mailto:${email}?subject=${subject}&body=${body}`
 })
+
+// ── CTA ───────────────────────────────────────────────────────────────────────
+const ctaLoading = ref(false)
 
 async function recontacter() {
   if (!demande.value || ctaLoading.value) return
@@ -300,23 +321,13 @@ async function submitRefusal() {
   refusalLoading.value = false
   refusalModalOpen.value = false
 }
-
-// ── Format dates ──────────────────────────────────────────────────────────────
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('fr-FR', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  })
-}
 </script>
 
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
 $desktop: $breakpoint-desktop;
-$cta-h: 72px;
-$tab-bar-h: 45px;
+$sticky-h: 56px;
 
 // ── Page wrapper ───────────────────────────────────────────────────────────────
 .pro-detail {
@@ -421,195 +432,56 @@ $tab-bar-h: 45px;
   }
 }
 
-// ── Onglet Notes : layout 2 colonnes desktop ───────────────────────────────────
-.notes-layout {
+// ── Bannière pleine largeur ────────────────────────────────────────────────────
+.booking-status-banner-full {
+  margin: $spacing-m $spacing-m 0;
+
+  @media (min-width: $desktop) {
+    max-width: 1200px;
+    width: calc(100% - 80px);
+    margin: 32px auto 0;
+    border-radius: $radius-md;
+  }
+}
+
+// ── Layout 2 colonnes desktop ──────────────────────────────────────────────────
+.booking-layout {
   display: flex;
   flex-direction: column;
   flex: 1;
 
   @media (min-width: $desktop) {
     display: grid;
-    grid-template-columns: 380px 1fr;
+    grid-template-columns: 340px 1fr;
     gap: 28px;
     align-items: start;
     max-width: 1200px;
     width: 100%;
     margin: 0 auto;
-    padding: 32px 40px calc($cta-h + 40px);
+    padding: 32px 40px calc($sticky-h + 40px);
   }
 }
 
-.notes-layout__left {
+.booking-layout__left {
   padding: $spacing-m $spacing-m 0;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-m;
 
   @media (min-width: $desktop) {
     padding: 0;
     position: sticky;
-    top: calc(3.3rem + $tab-bar-h + 16px);
+    top: calc(3.3rem + 16px);
   }
 }
 
-.notes-layout__right {
+.booking-layout__right {
   display: flex;
   flex-direction: column;
   gap: $spacing-m;
   padding: $spacing-m $spacing-m
-    calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $cta-h + $spacing-m);
+    calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $sticky-h + $spacing-m);
   min-width: 0;
 
   @media (min-width: $desktop) {
     padding: 0;
-  }
-}
-
-// ── EventBlock overrides (read-only) ──────────────────────────────────────────
-:deep(.event-block__header) {
-  display: none;
-}
-
-:deep(.event-note) {
-  display: none;
-}
-
-:deep(.event-block) {
-  box-shadow: 0 1px 4px rgba(47, 42, 37, 0.07);
-}
-
-// ── Urgence (desktop uniquement, colonne droite) ──────────────────────────────
-.urgency-encart {
-  // display: none;
-
-  @media (min-width: $desktop) {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    border-radius: $radius-md;
-    padding: $spacing-s $spacing-m;
-  }
-
-  &--high {
-    background: rgba(201, 48, 44, 0.08);
-    border: 1px solid rgba(201, 48, 44, 0.25);
-
-    .urgency-encart__label {
-      color: #c0392b;
-    }
-    .urgency-encart__phrase {
-      color: rgba(107, 24, 20, 0.85);
-    }
-  }
-
-  &--medium {
-    background: rgba(230, 126, 34, 0.08);
-    border: 1px solid rgba(230, 126, 34, 0.25);
-
-    .urgency-encart__label {
-      color: #e67e22;
-    }
-    .urgency-encart__phrase {
-      color: rgba(115, 63, 17, 0.85);
-    }
-  }
-
-  &__label {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  &__phrase {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.8rem;
-    line-height: 1.4;
-    margin: 0;
-
-    :deep(strong) {
-      font-weight: 700;
-    }
-  }
-}
-
-// ── Lien actions spéciales ────────────────────────────────────────────────────
-.actions-link {
-  display: block;
-  padding: $spacing-s 0;
-  border: none;
-  background: none;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: $text-secondary;
-  text-align: left;
-  cursor: pointer;
-  transition: color 150ms ease;
-
-  &:hover {
-    color: $text-primary;
-  }
-}
-
-// ── CTA sticky bar ────────────────────────────────────────────────────────────
-.cta-bar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: calc($bottom-nav-h + env(safe-area-inset-bottom, 0px));
-  z-index: $z-header;
-  height: $cta-h;
-  background: #fff;
-  border-top: 1px solid $divider-color;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: $spacing-s;
-  padding: 0 $spacing-m;
-
-  @media (min-width: $desktop) {
-    bottom: 0;
-    padding: 0 40px;
-    justify-content: flex-end;
-  }
-
-  &__btn {
-    height: 44px;
-    border-radius: $radius-md;
-    border: none;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.875rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 150ms ease;
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: default;
-    }
-
-    &--primary {
-      flex: 1;
-      max-width: 280px;
-      background: $brand-accent;
-      color: $brand-primary;
-      &:hover:not(:disabled) {
-        opacity: 0.85;
-      }
-    }
-
-    &--secondary {
-      flex-shrink: 0;
-      padding: 0 $spacing-m;
-      background: transparent;
-      border: 1px solid rgba(163, 45, 45, 0.4);
-      color: #a32d2d;
-      &:hover:not(:disabled) {
-        background: rgba(163, 45, 45, 0.05);
-      }
-    }
   }
 }
 
@@ -626,6 +498,7 @@ $tab-bar-h: 45px;
     color: $text-primary;
     margin: 0;
   }
+
   &__reasons {
     display: flex;
     flex-direction: column;
