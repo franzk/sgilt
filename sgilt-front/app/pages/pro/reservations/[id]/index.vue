@@ -80,7 +80,7 @@
           <ReservationFeed
             :items="feedItems"
             :can-add-note="isEditable"
-            :can-upload-document="demande.status === 'confirmee'"
+            :can-upload-document="['en_discussion', 'confirmee'].includes(demande.status)"
             :show-personal-toggle="true"
             @add-note="onAddNote"
             @upload-document="onUploadDocument"
@@ -107,7 +107,11 @@
 
     <!-- ── Contact sticky mobile uniquement (en_discussion + confirmee) ─────── -->
     <BookingContactActions
-      v-if="isMobile && demande && (demande.status === 'en_discussion' || demande.status === 'confirmee')"
+      v-if="
+        isMobile &&
+        demande &&
+        (demande.status === 'en_discussion' || demande.status === 'confirmee')
+      "
       variant="sticky"
       :client-info="demande.clientInfo"
       :mailto-href="mailtoHref"

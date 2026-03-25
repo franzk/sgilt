@@ -1,21 +1,29 @@
 <template>
   <div class="feed">
-    <!-- ── Pills + bouton desktop ────────────────────────────────────────────── -->
-    <div class="feed__toolbar">
-      <div class="feed__pills">
-        <button
-          v-for="pill in PILLS"
-          :key="pill.id"
-          class="feed__pill"
-          :class="{ 'feed__pill--active': activeFilter === pill.id }"
-          type="button"
-          @click="activeFilter = pill.id"
-        >
-          {{ pill.label }}
-        </button>
-      </div>
-      <button v-if="canAddNote" class="feed__add-btn" type="button" @click="openNoteModal">
-        + Note
+    <!-- ── Pills ─────────────────────────────────────────────────────────────── -->
+    <div class="feed__pills">
+      <button
+        v-for="pill in PILLS"
+        :key="pill.id"
+        class="feed__pill"
+        :class="{ 'feed__pill--active': activeFilter === pill.id }"
+        type="button"
+        @click="activeFilter = pill.id"
+      >
+        {{ pill.label }}
+      </button>
+    </div>
+
+    <!-- ── Actions ────────────────────────────────────────────────────────────── -->
+    <div v-if="canAddNote" class="feed__actions">
+      <button class="feed__action-btn" type="button" @click="openNoteModal">+ Note</button>
+      <button
+        v-if="canUploadDocument"
+        class="feed__action-btn"
+        type="button"
+        @click="fileInputRef?.click()"
+      >
+        + Document
       </button>
     </div>
 
@@ -76,27 +84,7 @@
 
     <p v-else class="feed__empty">Aucun élément pour le moment.</p>
 
-    <!-- ── Bouton déposer document ────────────────────────────────────────────── -->
-    <button
-      v-if="canUploadDocument && (activeFilter === 'all' || activeFilter === 'documents')"
-      class="feed__upload-btn"
-      type="button"
-      @click="fileInputRef?.click()"
-    >
-      ↑ Déposer un document
-    </button>
     <input ref="fileInputRef" type="file" style="display: none" @change="handleUpload" />
-
-    <!-- ── FAB mobile ─────────────────────────────────────────────────────────── -->
-    <button
-      v-if="canAddNote"
-      class="feed__fab"
-      type="button"
-      aria-label="Ajouter une note"
-      @click="openNoteModal"
-    >
-      +
-    </button>
 
     <!-- ── Modale ajout note ──────────────────────────────────────────────────── -->
     <SgiltDialog
@@ -247,14 +235,7 @@ $desktop: $breakpoint-desktop;
   gap: 1rem;
 }
 
-// ── Toolbar ────────────────────────────────────────────────────────────────────
-.feed__toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: $spacing-s;
-}
-
+// ── Pills ──────────────────────────────────────────────────────────────────────
 .feed__pills {
   display: flex;
   gap: $spacing-xs;
@@ -285,29 +266,30 @@ $desktop: $breakpoint-desktop;
   }
 }
 
-.feed__add-btn {
-  display: none;
+// ── Actions ────────────────────────────────────────────────────────────────────
+.feed__actions {
+  display: flex;
+  gap: $spacing-xs;
+}
 
-  @media (min-width: $desktop) {
-    display: block;
-    flex-shrink: 0;
-    padding: 5px 14px;
-    border: 1px solid $brand-border;
-    border-radius: $radius-md;
-    background: transparent;
-    font-family: inherit;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: $text-secondary;
-    cursor: pointer;
-    transition:
-      border-color 150ms ease,
-      color 150ms ease;
+.feed__action-btn {
+  flex-shrink: 0;
+  padding: 5px 14px;
+  border: 1px solid $brand-border;
+  border-radius: $radius-md;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $text-secondary;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    color 150ms ease;
 
-    &:hover {
-      border-color: $brand-primary;
-      color: $brand-primary;
-    }
+  &:hover {
+    border-color: $brand-primary;
+    color: $brand-primary;
   }
 }
 
@@ -509,63 +491,6 @@ $desktop: $breakpoint-desktop;
   &--delete:hover {
     background: rgba(163, 45, 45, 0.1);
     color: #a32d2d;
-  }
-}
-
-// ── Bouton déposer ─────────────────────────────────────────────────────────────
-.feed__upload-btn {
-  width: 100%;
-  padding: $spacing-m;
-  border: 1.5px dashed $brand-border;
-  border-radius: $radius-md;
-  background: transparent;
-  font-family: inherit;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: $text-secondary;
-  cursor: pointer;
-  transition:
-    border-color 150ms ease,
-    color 150ms ease;
-
-  &:active {
-    border-color: $brand-primary;
-    color: $brand-primary;
-  }
-}
-
-// ── FAB ────────────────────────────────────────────────────────────────────────
-.feed__fab {
-  position: fixed;
-  right: $spacing-m;
-  bottom: calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $spacing-m);
-  z-index: $z-dropdown;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  border: none;
-  background: $brand-accent;
-  color: $brand-primary;
-  font-size: 1.75rem;
-  line-height: 1;
-  cursor: pointer;
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.15),
-    0 2px 4px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    transform 120ms ease,
-    box-shadow 120ms ease;
-
-  &:active {
-    transform: scale(0.94);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-  }
-
-  @media (min-width: $desktop) {
-    display: none;
   }
 }
 
