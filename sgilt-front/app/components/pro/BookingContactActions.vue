@@ -68,7 +68,7 @@
             type="button"
             @click="$emit('refuse')"
           >
-            Refuser la demande
+            Refuser la demande ✗
           </button>
         </div>
       </template>
@@ -271,47 +271,64 @@ $desktop: $breakpoint-desktop;
   flex-direction: column;
   gap: $spacing-xs;
 
-  &__confirm {
+  @media (min-width: $desktop) {
+    flex-direction: row;
+  }
+
+  &__confirm,
+  &__refuse {
     display: flex;
+    flex: 1;
     align-items: center;
     justify-content: center;
-    width: 100%;
+    gap: 6px;
     padding: 10px $spacing-m;
-    border: none;
     border-radius: $radius-md;
-    background: #2e7d32;
-    color: #fff;
     font-family: 'Inter', sans-serif;
     font-size: 0.8rem;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
     cursor: pointer;
     transition: opacity 150ms ease;
+
+    @media (min-width: $desktop) {
+      width: 0; // flex: 1 handles sizing
+    }
+  }
+
+  &__confirm {
+    border: none;
+    background: #2e7d32;
+    color: #fff;
 
     &:disabled { opacity: 0.5; cursor: default; }
     &:active:not(:disabled) { opacity: 0.8; }
   }
 
   &__refuse {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 8px $spacing-m;
-    border-radius: $radius-md;
-    border: 1px solid rgba(192, 57, 43, 0.3);
+    border: 1.5px solid #c0392b;
     background: #fff;
     color: #c0392b;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 500;
-    cursor: pointer;
+    font-weight: 700;
     transition:
       background 120ms ease,
       border-color 120ms ease;
 
+    @media (max-width: #{$desktop - 1px}) {
+      border: none;
+      background: none;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #c0392b;
+      text-transform: none;
+      letter-spacing: 0;
+      padding: 4px 0;
+    }
+
     &:hover {
       background: rgba(192, 57, 43, 0.04);
-      border-color: rgba(192, 57, 43, 0.5);
+      border-color: rgba(192, 57, 43, 0.6);
     }
   }
 }
