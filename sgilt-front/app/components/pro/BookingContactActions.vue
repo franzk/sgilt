@@ -109,11 +109,8 @@ $action-icon-size: 5rem;
   border-radius: $radius-md;
   text-decoration: none;
   cursor: pointer;
-  transition: opacity 150ms ease;
 
-  &:active {
-    opacity: 0.8;
-  }
+  @include pressable;
   &__icon {
     width: $action-icon-size;
     height: $action-icon-size;
@@ -185,7 +182,7 @@ $action-icon-size: 5rem;
     text-decoration: none;
     color: $text-primary;
     cursor: pointer;
-    transition: background 120ms ease;
+    @include pressable;
 
     &.call {
       background: linear-gradient(180deg, #ffd24d 0%, #ffbf00 100%);

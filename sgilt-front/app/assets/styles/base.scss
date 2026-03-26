@@ -4,6 +4,22 @@
 @use './borders' as *;
 @use './skeleton.scss' as *;
 
+// ── Micro-animation clic ───────────────────────────────────────────────────────
+// Mixin à utiliser sur les <a> ou éléments non-button qui agissent comme CTA
+@mixin pressable {
+  transition: transform 120ms ease, box-shadow 120ms ease;
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+    box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Appliqué globalement à tous les <button>
+button {
+  @include pressable;
+}
+
 *,
 *::before,
 *::after {

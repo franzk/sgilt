@@ -62,7 +62,6 @@ const nextDay = () => {
     }
 
     &:active {
-      transform: scale(0.92); // Petit effet d'enfoncement au clic
       background: #f1f5f9;
     }
 

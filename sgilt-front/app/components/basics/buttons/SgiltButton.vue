@@ -41,9 +41,6 @@ $box-shadow:
 // hover & active
 $hover-text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 
-$active-transform: translateY(1px);
-$active-box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
-
 // style
 .sgilt-button {
   cursor: pointer;
@@ -57,20 +54,11 @@ $active-box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
   background: $background;
   color: $color;
   text-shadow: $text-shadow;
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.2s ease;
-
   border: none;
   border-radius: $border-radius;
 
   &:hover {
     text-shadow: $hover-text-shadow;
-  }
-
-  &:active {
-    transform: $active-transform;
-    box-shadow: $active-box-shadow;
   }
 
   &:focus-visible {

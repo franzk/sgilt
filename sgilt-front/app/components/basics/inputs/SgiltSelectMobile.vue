@@ -95,9 +95,6 @@ const selectOption = (val: string) => {
     border-color 150ms ease;
   -webkit-tap-highlight-color: transparent;
 
-  &:active {
-    transform: scale(0.985);
-  }
 
   &:focus-visible {
     outline: none;

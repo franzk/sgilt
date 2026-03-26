@@ -86,15 +86,11 @@ $desktop: $breakpoint-desktop;
   font-family: 'Inter', sans-serif;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 150ms ease;
   padding: 16px $spacing-m;
 
   &:disabled {
     opacity: 0.5;
     cursor: default;
-  }
-  &:active:not(:disabled) {
-    opacity: 0.8;
   }
 
   &--confirm {

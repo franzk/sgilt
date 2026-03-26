@@ -110,9 +110,6 @@ function select(value: string) {
     background: rgba($brand-accent, 0.04);
   }
 
-  &:active {
-    transform: scale(0.99);
-  }
 
   &--selected {
     border-color: $brand-accent;
