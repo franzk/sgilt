@@ -15,7 +15,8 @@
       "Bash(find \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front\\\\app\" -name \"*reservation*\" -o -name \"*status*\" 2>/dev/null | head -20)",
       "Bash(grep -n \"&--nouvelle\\\\|&--recontactee\\\\|&--confirmee\\\\|&--cloturee\\\\|&--annulee\" C:UserskoehlDocumentsprojectssgiltsgiltsgilt-frontapppagesproreservations[id]index.vue C:UserskoehlDocumentsprojectssgiltsgiltsgilt-frontapppagesappevents[eventId]index.vue C:UserskoehlDocumentsprojectssgiltsgiltsgilt-frontapppagesappevents[eventId]reservations[reservationId].vue C:UserskoehlDocumentsprojectssgiltsgiltsgilt-frontappcomponentsappReservationCard.vue)",
       "Bash(find C:UserskoehlDocumentsprojectssgiltsgiltsgilt-front -type f \\\\\\(-name *.json -o -name *.ts -o -name *.js \\\\\\) -path */locales/* -o -path *i18n*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(pnpm add:*)"
     ]
   }
 }

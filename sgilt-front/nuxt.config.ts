@@ -13,7 +13,12 @@ export default defineNuxtConfig({
     '@nuxtjs/google-fonts',
     '@vueuse/nuxt',
     '@nuxt/image',
+    'nuxt-phosphor-icons',
   ],
+
+  phosphorIcons: {
+    weight: 'light',
+  },
 
   /**
    * ======================

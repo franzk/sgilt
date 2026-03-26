@@ -21,6 +21,7 @@
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.19",
     "nuxt": "^4.3.1",
+    "nuxt-phosphor-icons": "^2.3.3",
     "pinia": "^3.0.4",
     "reka-ui": "^2.8.0",
     "vaul-vue": "^0.4.1"

@@ -10,7 +10,8 @@
         <span v-if="event.nbInvites" class="brief-pill">👥 {{ event.nbInvites }}</span>
         <span v-if="eventTypeLabel" class="brief-pill">{{ eventTypeEmoji }} {{ eventTypeLabel }}</span>
       </div>
-      <span class="booking-brief__chevron" :class="{ 'booking-brief__chevron--up': open }">›</span>
+      <PhCaretUp v-if="open" class="booking-brief__chevron" weight="light" :size="16" />
+      <PhCaretDown v-else class="booking-brief__chevron" weight="light" :size="16" />
     </button>
 
     <!-- ── Contenu déplié ────────────────────────────────────────────────────── -->
@@ -50,7 +51,10 @@
             :class="{ 'brief-copy--copied': phoneCopied }"
             :aria-label="phoneCopied ? 'Copié' : 'Copier le numéro'"
             @click="copyPhone"
-          >{{ phoneCopied ? '✓' : '⎘' }}</button>
+          >
+            <PhCheck v-if="phoneCopied" weight="bold" :size="12" />
+            <PhCopy v-else weight="light" :size="12" />
+          </button>
         </div>
         <div class="brief-contact__row">
           <span class="brief-contact__value brief-contact__value--email">{{ clientInfo.email }}</span>
@@ -60,7 +64,10 @@
             :class="{ 'brief-copy--copied': emailCopied }"
             :aria-label="emailCopied ? 'Copié' : 'Copier l\'email'"
             @click="copyEmail"
-          >{{ emailCopied ? '✓' : '⎘' }}</button>
+          >
+            <PhCheck v-if="emailCopied" weight="bold" :size="12" />
+            <PhCopy v-else weight="light" :size="12" />
+          </button>
         </div>
       </div>
     </div>
@@ -70,6 +77,7 @@
 <script setup lang="ts">
 import type { EventDetail, ClientContactInfo, ReservationNote } from '~/types/event'
 import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS } from '~/types/demande'
+import { PhCaretDown, PhCaretUp, PhCopy, PhCheck } from '@phosphor-icons/vue'
 
 const props = defineProps<{
   event: EventDetail
@@ -148,15 +156,7 @@ function formatDate(iso: string) {
 
 .booking-brief__chevron {
   flex-shrink: 0;
-  font-size: 1.1rem;
   color: $text-secondary;
-  transform: rotate(90deg);
-  transition: transform 200ms ease;
-  line-height: 1;
-
-  &--up {
-    transform: rotate(270deg);
-  }
 }
 
 .brief-pill {

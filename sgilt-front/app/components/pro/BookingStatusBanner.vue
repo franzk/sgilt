@@ -1,5 +1,6 @@
 <template>
   <div class="status-banner" :class="`status-banner--${status}`">
+    <component :is="statusIcon" class="status-banner__icon" weight="light" :size="16" />
     <p class="status-banner__phrase">
       <strong v-if="showActionRecquise" class="status-banner__action">ACTION REQUISE</strong>
       <span class="status-banner__sep"> · </span
@@ -11,18 +12,37 @@
 
 <script setup lang="ts">
 import type { ReservationStatus } from '~/types/event'
+import { PhClock, PhArrowsClockwise, PhCheckCircle, PhXCircle } from '@phosphor-icons/vue'
 
-defineProps<{
+const props = defineProps<{
   phraseInfoState: string
   status: ReservationStatus
   showActionRecquise?: boolean
 }>()
+
+const STATUS_ICONS: Record<ReservationStatus, unknown> = {
+  nouvelle: PhClock,
+  en_discussion: PhArrowsClockwise,
+  confirmee: PhCheckCircle,
+  refusee: PhXCircle,
+  annulee: PhXCircle,
+  realisee: PhCheckCircle,
+}
+
+const statusIcon = computed(() => STATUS_ICONS[props.status])
 </script>
 
 <style scoped lang="scss">
 .status-banner {
   border-radius: $radius-md;
   padding: $spacing-s $spacing-m;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+
+  &__icon {
+    flex-shrink: 0;
+  }
 
   &--nouvelle {
     background: rgba(201, 48, 44, 0.08);

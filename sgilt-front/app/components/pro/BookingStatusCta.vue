@@ -8,7 +8,7 @@
         :disabled="loading"
         @click="$emit('confirm')"
       >
-        <span class="booking-cta__icon">✓</span>
+        <PhCheckCircle class="booking-cta__icon" weight="light" :size="22" />
         <span class="booking-cta__label">Premier contact effectué</span>
       </button>
       <button
@@ -16,7 +16,7 @@
         type="button"
         @click="$emit('refuse')"
       >
-        <span class="booking-cta__icon">✗</span>
+        <PhXCircle class="booking-cta__icon" weight="light" :size="22" />
         <span class="booking-cta__label">Refuser</span>
       </button>
     </template>
@@ -29,7 +29,7 @@
         :disabled="loading"
         @click="$emit('confirm')"
       >
-        <span class="booking-cta__icon">✓</span>
+        <PhCheckCircle class="booking-cta__icon" weight="light" :size="22" />
         <span class="booking-cta__label">Confirmer la réservation</span>
       </button>
       <button
@@ -37,7 +37,7 @@
         type="button"
         @click="$emit('refuse')"
       >
-        <span class="booking-cta__icon">✗</span>
+        <PhXCircle class="booking-cta__icon" weight="light" :size="22" />
         <span class="booking-cta__label">Refuser</span>
       </button>
     </template>
@@ -46,6 +46,7 @@
 
 <script setup lang="ts">
 import type { ReservationStatus } from '~/types/event'
+import { PhCheckCircle, PhXCircle } from '@phosphor-icons/vue'
 
 defineProps<{
   status: ReservationStatus

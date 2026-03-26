@@ -4,11 +4,11 @@
     <!-- Mobile : 2 carrés iconiques (masqués si desktopOnly) -->
     <div class="bca-big__mobile" :class="{ 'bca-big__mobile--hidden': desktopOnly }">
       <a :href="`tel:${phone}`" class="bca-square bca-square--call">
-        <span class="bca-square__icon">📞</span>
+        <PhPhone class="bca-square__icon" weight="light" :size="28" />
         <span class="bca-square__label">Appeler</span>
       </a>
       <a :href="mailtoHref" class="bca-square bca-square--mail">
-        <span class="bca-square__icon">✉️</span>
+        <PhEnvelope class="bca-square__icon" weight="light" :size="28" />
         <span class="bca-square__label">Mail</span>
       </a>
     </div>
@@ -21,7 +21,7 @@
           <!-- Carte email -->
           <div class="bca-card">
             <div class="bca-card__header">
-              <span class="bca-card__icon">✉️</span>
+              <PhEnvelope class="bca-card__icon" weight="light" :size="16" />
               <span class="bca-card__label">Email</span>
               <button
                 class="bca-copy"
@@ -29,7 +29,10 @@
                 :class="{ 'bca-copy--copied': emailCopied }"
                 :aria-label="emailCopied ? 'Copié' : 'Copier l\'email'"
                 @click="copyEmail"
-              >{{ emailCopied ? '✓' : '⎘' }}</button>
+              >
+                <PhCheck v-if="emailCopied" weight="bold" :size="12" />
+                <PhCopy v-else weight="light" :size="12" />
+              </button>
             </div>
             <span class="bca-card__value">{{ clientInfo.email }}</span>
             <a :href="mailtoHref" class="bca-card__cta">Rédiger un mail</a>
@@ -38,7 +41,7 @@
           <!-- Carte téléphone -->
           <div class="bca-card">
             <div class="bca-card__header">
-              <span class="bca-card__icon">📞</span>
+              <PhPhone class="bca-card__icon" weight="light" :size="16" />
               <span class="bca-card__label">Téléphone</span>
               <button
                 class="bca-copy"
@@ -46,7 +49,10 @@
                 :class="{ 'bca-copy--copied': phoneCopied }"
                 :aria-label="phoneCopied ? 'Copié' : 'Copier le numéro'"
                 @click="copyPhone"
-              >{{ phoneCopied ? '✓' : '⎘' }}</button>
+              >
+                <PhCheck v-if="phoneCopied" weight="bold" :size="12" />
+                <PhCopy v-else weight="light" :size="12" />
+              </button>
             </div>
             <span class="bca-card__value">{{ clientInfo.phone }}</span>
             <a :href="`tel:${phone}`" class="bca-card__cta">Appeler</a>
@@ -59,7 +65,8 @@
       <template v-else>
         <div class="bca-encart">
           <a :href="mailtoHref" class="bca-encart__btn">
-            ✉️ Envoyer un mail à {{ clientInfo.firstName }}
+            <PhEnvelope weight="light" :size="16" />
+            Envoyer un mail à {{ clientInfo.firstName }}
           </a>
           <div class="bca-encart__row">
             <span class="bca-encart__email">{{ clientInfo.email }}</span>
@@ -69,7 +76,10 @@
               :class="{ 'bca-copy--copied': emailCopied }"
               :aria-label="emailCopied ? 'Copié' : 'Copier l\'email'"
               @click="copyEmail"
-            >{{ emailCopied ? '✓' : '⎘' }}</button>
+            >
+              <PhCheck v-if="emailCopied" weight="bold" :size="12" />
+              <PhCopy v-else weight="light" :size="12" />
+            </button>
           </div>
         </div>
         <div class="bca-encart">
@@ -83,11 +93,11 @@
   <!-- ── Variant 'sticky' ───────────────────────────────────────────────────── -->
   <div v-else-if="variant === 'sticky'" class="bca-sticky">
     <a :href="`tel:${phone}`" class="bca-sticky__btn" aria-label="Appeler">
-      <span class="bca-sticky__icon">📞</span>
+      <PhPhone class="bca-sticky__icon" weight="light" :size="20" />
       <span class="bca-sticky__label">Appeler</span>
     </a>
     <a :href="mailtoHref" class="bca-sticky__btn" aria-label="Envoyer un mail">
-      <span class="bca-sticky__icon">✉️</span>
+      <PhEnvelope class="bca-sticky__icon" weight="light" :size="20" />
       <span class="bca-sticky__label">Mail</span>
     </a>
   </div>
@@ -95,6 +105,7 @@
 
 <script setup lang="ts">
 import type { ClientContactInfo } from '~/types/event'
+import { PhPhone, PhEnvelope, PhCopy, PhCheck } from '@phosphor-icons/vue'
 
 const props = defineProps<{
   variant: 'big' | 'sticky'
