@@ -4,7 +4,7 @@
     <!-- Mobile : 2 carrés iconiques (masqués si desktopOnly) -->
     <div class="bca-big__mobile" :class="{ 'bca-big__mobile--hidden': desktopOnly }">
       <a :href="`tel:${phone}`" class="bca-square bca-square--call">
-        <PhPhone class="bca-square__icon" weight="light" :size="28" />
+        <PhDeviceMobile class="bca-square__icon" weight="light" :size="28" />
         <span class="bca-square__label">Appeler</span>
       </a>
       <a :href="mailtoHref" class="bca-square bca-square--mail">
@@ -41,7 +41,7 @@
           <!-- Carte téléphone -->
           <div class="bca-card">
             <div class="bca-card__header">
-              <PhPhone class="bca-card__icon" weight="light" :size="16" />
+              <PhDeviceMobile class="bca-card__icon" weight="light" :size="16" />
               <span class="bca-card__label">Téléphone</span>
               <button
                 class="bca-copy"
@@ -58,7 +58,6 @@
             <a :href="`tel:${phone}`" class="bca-card__cta">Appeler</a>
           </div>
         </div>
-
       </template>
 
       <!-- Version encarts (défaut) -->
@@ -93,7 +92,7 @@
   <!-- ── Variant 'sticky' ───────────────────────────────────────────────────── -->
   <div v-else-if="variant === 'sticky'" class="bca-sticky">
     <a :href="`tel:${phone}`" class="bca-sticky__btn" aria-label="Appeler">
-      <PhPhone class="bca-sticky__icon" weight="light" :size="20" />
+      <PhDeviceMobile class="bca-sticky__icon" weight="light" :size="20" />
       <span class="bca-sticky__label">Appeler</span>
     </a>
     <a :href="mailtoHref" class="bca-sticky__btn" aria-label="Envoyer un mail">
@@ -105,7 +104,7 @@
 
 <script setup lang="ts">
 import type { ClientContactInfo } from '~/types/event'
-import { PhPhone, PhEnvelope, PhCopy, PhCheck } from '@phosphor-icons/vue'
+import { PhPhone, PhEnvelope, PhCopy, PhCheck, PhDeviceMobile } from '@phosphor-icons/vue'
 
 const props = defineProps<{
   variant: 'big' | 'sticky'
@@ -144,9 +143,13 @@ $desktop: $breakpoint-desktop;
   grid-template-columns: 1fr 1fr;
   gap: $spacing-s;
 
-  @media (min-width: $desktop) { display: none; }
+  @media (min-width: $desktop) {
+    display: none;
+  }
 
-  &--hidden { display: none; }
+  &--hidden {
+    display: none;
+  }
 }
 
 .bca-big__desktop {
@@ -173,8 +176,13 @@ $desktop: $breakpoint-desktop;
   cursor: pointer;
   transition: opacity 150ms ease;
 
-  &:active { opacity: 0.8; }
-  &__icon { font-size: 1.75rem; line-height: 1; }
+  &:active {
+    opacity: 0.8;
+  }
+  &__icon {
+    font-size: 1.75rem;
+    line-height: 1;
+  }
 
   &__label {
     font-family: 'Inter', sans-serif;
@@ -183,8 +191,16 @@ $desktop: $breakpoint-desktop;
     line-height: 1;
   }
 
-  &--call { background: $brand-accent; color: $brand-primary; border: none; }
-  &--mail { background: #fff; color: $brand-primary; border: 1.5px solid $divider-color; }
+  &--call {
+    background: $brand-accent;
+    color: $brand-primary;
+    border: none;
+  }
+  &--mail {
+    background: #fff;
+    color: $brand-primary;
+    border: 1.5px solid $divider-color;
+  }
 }
 
 // ── Cartes desktop ─────────────────────────────────────────────────────────────
@@ -192,8 +208,12 @@ $desktop: $breakpoint-desktop;
   display: grid;
   gap: $spacing-s;
 
-  &--row { grid-template-columns: 1fr 1fr; }
-  &--column { grid-template-columns: 1fr; }
+  &--row {
+    grid-template-columns: 1fr 1fr;
+  }
+  &--column {
+    grid-template-columns: 1fr;
+  }
 }
 
 .bca-card {
@@ -212,7 +232,11 @@ $desktop: $breakpoint-desktop;
     gap: 6px;
   }
 
-  &__icon { font-size: 0.875rem; line-height: 1; flex-shrink: 0; }
+  &__icon {
+    font-size: 0.875rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
 
   &__label {
     flex: 1;
@@ -251,7 +275,9 @@ $desktop: $breakpoint-desktop;
     cursor: pointer;
     transition: opacity 150ms ease;
 
-    &:hover { opacity: 0.7; }
+    &:hover {
+      opacity: 0.7;
+    }
   }
 }
 
@@ -280,7 +306,9 @@ $desktop: $breakpoint-desktop;
     text-decoration: none;
     transition: opacity 150ms ease;
 
-    &:hover { opacity: 0.85; }
+    &:hover {
+      opacity: 0.85;
+    }
   }
 
   &__row {
@@ -335,7 +363,9 @@ $desktop: $breakpoint-desktop;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 120ms ease, color 120ms ease;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
 
   &--copied {
     background: $brand-accent;
@@ -346,7 +376,9 @@ $desktop: $breakpoint-desktop;
 
 // ── Variant sticky ─────────────────────────────────────────────────────────────
 .bca-sticky {
-  @media (min-width: $desktop) { display: none; }
+  @media (min-width: $desktop) {
+    display: none;
+  }
 
   position: fixed;
   left: 0;
@@ -375,10 +407,15 @@ $desktop: $breakpoint-desktop;
     cursor: pointer;
     transition: background 120ms ease;
 
-    &:hover { background: $surface-soft; }
+    &:hover {
+      background: $surface-soft;
+    }
   }
 
-  &__icon { font-size: 1.1rem; line-height: 1; }
+  &__icon {
+    font-size: 1.1rem;
+    line-height: 1;
+  }
 
   &__label {
     font-family: 'Inter', sans-serif;
