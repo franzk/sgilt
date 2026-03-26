@@ -112,8 +112,8 @@ export const CLIENT_STATUS_CONFIG: Record<
   nouvelle: {
     color: '#E67E22',
     bgColor: 'rgba(230, 126, 34, 0.07)',
-    pillBg: '#E67E22',
-    pillText: '#ffffff',
+    pillBg: 'rgba(230, 126, 34, 0.07)',
+    pillText: '#E67E22',
   },
   en_discussion: {
     color: '#B8960C',
@@ -124,25 +124,25 @@ export const CLIENT_STATUS_CONFIG: Record<
   confirmee: {
     color: '#2E7D32',
     bgColor: 'rgba(46, 125, 50, 0.06)',
-    pillBg: '#2E7D32',
-    pillText: '#ffffff',
+    pillBg: 'rgba(46, 125, 50, 0.06)',
+    pillText: '#2E7D32',
   },
   refusee: {
     color: '#6B6B6B',
     bgColor: 'rgba(0, 0, 0, 0.03)',
-    pillBg: '#E0E0E0',
+    pillBg: 'rgba(0, 0, 0, 0.03)',
     pillText: '#6B6B6B',
   },
   annulee: {
     color: '#6B6B6B',
     bgColor: 'rgba(0, 0, 0, 0.03)',
-    pillBg: '#E0E0E0',
+    pillBg: 'rgba(0, 0, 0, 0.03)',
     pillText: '#6B6B6B',
   },
   realisee: {
     color: '#6B6B6B',
     bgColor: 'rgba(0, 0, 0, 0.03)',
-    pillBg: '#E0E0E0',
+    pillBg: 'rgba(0, 0, 0, 0.03)',
     pillText: '#6B6B6B',
   },
 }
