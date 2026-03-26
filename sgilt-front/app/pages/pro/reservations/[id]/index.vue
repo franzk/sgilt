@@ -51,16 +51,6 @@
             @confirm="recontacter"
             @refuse="openRefusalModal"
           />
-
-          <!-- en_discussion + confirmee : coordonnées contact -->
-          <BookingContactActions
-            v-if="demande.status === 'en_discussion' || demande.status === 'confirmee'"
-            variant="big"
-            layout="column"
-            :desktop-only="demande.status === 'en_discussion'"
-            :client-info="demande.clientInfo"
-            :mailto-href="mailtoHref"
-          />
         </div>
 
         <!-- Colonne droite : assemblage selon statut -->
@@ -131,6 +121,7 @@
         (demande.status === 'en_discussion' || demande.status === 'confirmee')
       "
       variant="sticky"
+      layout="row"
       :client-info="demande.clientInfo"
       :mailto-href="mailtoHref"
     />
