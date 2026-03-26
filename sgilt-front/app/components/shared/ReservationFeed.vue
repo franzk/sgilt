@@ -1,7 +1,7 @@
 <template>
   <div class="feed">
     <!-- ── Pills ─────────────────────────────────────────────────────────────── -->
-    <div class="feed__pills">
+    <div v-if="showPills" class="feed__pills">
       <button
         v-for="pill in PILLS"
         :key="pill.id"
@@ -152,6 +152,10 @@ const PILLS: { id: FilterId; label: string }[] = [
   { id: 'documents', label: 'Documents' },
 ]
 const activeFilter = ref<FilterId>('all')
+
+const hasNotes = computed(() => props.items.some((i) => i._kind === 'note'))
+const hasDocuments = computed(() => props.items.some((i) => i._kind === 'document'))
+const showPills = computed(() => hasNotes.value && hasDocuments.value)
 
 // ── Flux filtré + trié ─────────────────────────────────────────────────────────
 function itemDate(item: FeedItem): number {
