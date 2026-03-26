@@ -9,7 +9,7 @@
 
 $brand-primary: #2f2a25; // noir chaud premium
 $brand-background: #fff;
-$brand-accent: #e6b800; // accent festif profond
+$brand-accent: #ffbf00; // accent festif profond
 
 /* ========================
    Text
@@ -59,7 +59,7 @@ $shadow-l: rgba(47, 42, 37, 0.18);
    App section (partie authentifiée)
    ======================== */
 
-$brand-subtle: #f0ebe4;   // fond fallback avatar, surfaces très douces
+$brand-subtle: #f0ebe4; // fond fallback avatar, surfaces très douces
 $brand-muted: $text-secondary; // labels secondaires (catégorie carte)
 $brand-border: $divider-color; // bordures de cards
 

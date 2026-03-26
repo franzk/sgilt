@@ -16,7 +16,8 @@
       "Bash(grep -n \"&--nouvelle\\\\|&--recontactee\\\\|&--confirmee\\\\|&--cloturee\\\\|&--annulee\" C:UserskoehlDocumentsprojectssgiltsgiltsgilt-frontapppagesproreservations[id]index.vue C:UserskoehlDocumentsprojectssgiltsgiltsgilt-frontapppagesappevents[eventId]index.vue C:UserskoehlDocumentsprojectssgiltsgiltsgilt-frontapppagesappevents[eventId]reservations[reservationId].vue C:UserskoehlDocumentsprojectssgiltsgiltsgilt-frontappcomponentsappReservationCard.vue)",
       "Bash(find C:UserskoehlDocumentsprojectssgiltsgiltsgilt-front -type f \\\\\\(-name *.json -o -name *.ts -o -name *.js \\\\\\) -path */locales/* -o -path *i18n*)",
       "Bash(grep:*)",
-      "Bash(pnpm add:*)"
+      "Bash(pnpm add:*)",
+      "Bash(pnpm remove:*)"
     ]
   }
 }

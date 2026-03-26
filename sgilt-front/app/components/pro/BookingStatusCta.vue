@@ -8,7 +8,7 @@
         :disabled="loading"
         @click="$emit('confirm')"
       >
-        <PhUserCheck class="booking-cta__icon" weight="light" :size="22" />
+        <CheckIcon class="booking-cta__icon" />
         <span class="booking-cta__label">Premier contact effectué</span>
       </button>
       <button
@@ -16,7 +16,7 @@
         type="button"
         @click="$emit('refuse')"
       >
-        <PhX class="booking-cta__icon" weight="light" :size="22" />
+        <CloseIcon class="booking-cta__icon" />
         <span class="booking-cta__label">Refuser</span>
       </button>
     </template>
@@ -29,7 +29,7 @@
         :disabled="loading"
         @click="$emit('confirm')"
       >
-        <PhUserCheck class="booking-cta__icon" weight="light" :size="22" />
+        <CheckIcon class="booking-cta__icon" />
         <span class="booking-cta__label">Confirmer la réservation</span>
       </button>
       <button
@@ -37,7 +37,7 @@
         type="button"
         @click="$emit('refuse')"
       >
-        <PhX class="booking-cta__icon" weight="light" :size="22" />
+        <CloseIcon class="booking-cta__icon" />
         <span class="booking-cta__label">Refuser</span>
       </button>
     </template>
@@ -46,7 +46,7 @@
 
 <script setup lang="ts">
 import type { ReservationStatus } from '~/types/event'
-import { PhUserCheck, PhX } from '@phosphor-icons/vue'
+import { CheckIcon, CloseIcon } from '@remixicons/vue/line'
 
 defineProps<{
   status: ReservationStatus
@@ -112,14 +112,15 @@ $desktop: $breakpoint-desktop;
 }
 
 .booking-cta__icon {
-  font-size: 1.25rem;
-  line-height: 1;
-  font-weight: 700;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
 }
 
 .booking-cta__label {
   font-size: 0.8rem;
   line-height: 1.2;
+  text-transform: uppercase;
 }
 
 // ── Overrides en layout row (desktop) ──────────────────────────────────────────

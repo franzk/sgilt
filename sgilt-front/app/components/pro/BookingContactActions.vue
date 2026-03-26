@@ -4,11 +4,11 @@
     <!-- Mobile : 2 carrés iconiques (masqués si desktopOnly) -->
     <div class="bca-big__mobile" :class="{ 'bca-big__mobile--hidden': desktopOnly }">
       <a :href="`tel:${phone}`" class="bca-square bca-square--call">
-        <PhDeviceMobile class="bca-square__icon" weight="light" :size="28" />
+        <PhoneIcon class="bca-square__icon" />
         <span class="bca-square__label">Appeler</span>
       </a>
       <a :href="mailtoHref" class="bca-square bca-square--mail">
-        <PhEnvelope class="bca-square__icon" weight="light" :size="28" />
+        <MailSendIcon class="bca-square__icon" />
         <span class="bca-square__label">Mail</span>
       </a>
     </div>
@@ -19,44 +19,20 @@
       <template v-if="layout">
         <div class="bca-cards" :class="`bca-cards--${layout}`">
           <!-- Carte email -->
-          <div class="bca-card">
-            <div class="bca-card__header">
-              <PhEnvelope class="bca-card__icon" weight="light" :size="16" />
-              <span class="bca-card__label">Email</span>
-              <button
-                class="bca-copy"
-                type="button"
-                :class="{ 'bca-copy--copied': emailCopied }"
-                :aria-label="emailCopied ? 'Copié' : 'Copier l\'email'"
-                @click="copyEmail"
-              >
-                <PhCheck v-if="emailCopied" weight="bold" :size="12" />
-                <PhCopy v-else weight="light" :size="12" />
-              </button>
-            </div>
-            <span class="bca-card__value">{{ clientInfo.email }}</span>
-            <a :href="mailtoHref" class="bca-card__cta">Rédiger un mail</a>
-          </div>
+          <ContactActionCard :copy-value="clientInfo.email">
+            <template #icon><MailSendIcon /></template>
+            <template #title>Email</template>
+            <template #content>{{ clientInfo.email }}</template>
+            <template #cta><a :href="mailtoHref">Rédiger un mail</a></template>
+          </ContactActionCard>
 
           <!-- Carte téléphone -->
-          <div class="bca-card">
-            <div class="bca-card__header">
-              <PhDeviceMobile class="bca-card__icon" weight="light" :size="16" />
-              <span class="bca-card__label">Téléphone</span>
-              <button
-                class="bca-copy"
-                type="button"
-                :class="{ 'bca-copy--copied': phoneCopied }"
-                :aria-label="phoneCopied ? 'Copié' : 'Copier le numéro'"
-                @click="copyPhone"
-              >
-                <PhCheck v-if="phoneCopied" weight="bold" :size="12" />
-                <PhCopy v-else weight="light" :size="12" />
-              </button>
-            </div>
-            <span class="bca-card__value">{{ clientInfo.phone }}</span>
-            <a :href="`tel:${phone}`" class="bca-card__cta">Appeler</a>
-          </div>
+          <ContactActionCard :copy-value="clientInfo.phone">
+            <template #icon><PhoneIcon /></template>
+            <template #title>Téléphone</template>
+            <template #content>{{ clientInfo.phone }}</template>
+            <template #cta><a :href="`tel:${phone}`">Appeler</a></template>
+          </ContactActionCard>
         </div>
       </template>
 
@@ -64,7 +40,7 @@
       <template v-else>
         <div class="bca-encart">
           <a :href="mailtoHref" class="bca-encart__btn">
-            <PhEnvelope weight="light" :size="16" />
+            <MailSendIcon class="bca-encart__icon" />
             Envoyer un mail à {{ clientInfo.firstName }}
           </a>
           <div class="bca-encart__row">
@@ -76,8 +52,8 @@
               :aria-label="emailCopied ? 'Copié' : 'Copier l\'email'"
               @click="copyEmail"
             >
-              <PhCheck v-if="emailCopied" weight="bold" :size="12" />
-              <PhCopy v-else weight="light" :size="12" />
+              <CheckIcon v-if="emailCopied" class="bca-copy__icon" />
+              <FileCopyIcon v-else class="bca-copy__icon" />
             </button>
           </div>
         </div>
@@ -92,11 +68,11 @@
   <!-- ── Variant 'sticky' ───────────────────────────────────────────────────── -->
   <div v-else-if="variant === 'sticky'" class="bca-sticky">
     <a :href="`tel:${phone}`" class="bca-sticky__btn" aria-label="Appeler">
-      <PhDeviceMobile class="bca-sticky__icon" weight="light" :size="20" />
+      <PhoneIcon class="bca-sticky__icon" />
       <span class="bca-sticky__label">Appeler</span>
     </a>
     <a :href="mailtoHref" class="bca-sticky__btn" aria-label="Envoyer un mail">
-      <PhEnvelope class="bca-sticky__icon" weight="light" :size="20" />
+      <MailSendIcon class="bca-sticky__icon" />
       <span class="bca-sticky__label">Mail</span>
     </a>
   </div>
@@ -104,7 +80,8 @@
 
 <script setup lang="ts">
 import type { ClientContactInfo } from '~/types/event'
-import { PhPhone, PhEnvelope, PhCopy, PhCheck, PhDeviceMobile } from '@phosphor-icons/vue'
+import { PhoneIcon, MailSendIcon } from '@remixicons/vue/fill'
+import ContactActionCard from '~/components/pro/ContactActionCard.vue'
 
 const props = defineProps<{
   variant: 'big' | 'sticky'
@@ -116,26 +93,13 @@ const props = defineProps<{
 
 const phone = computed(() => props.clientInfo.phone.replace(/\s/g, ''))
 
-const emailCopied = ref(false)
-const phoneCopied = ref(false)
-
-async function copyEmail() {
-  await navigator.clipboard.writeText(props.clientInfo.email)
-  emailCopied.value = true
-  setTimeout(() => (emailCopied.value = false), 2000)
-}
-
-async function copyPhone() {
-  await navigator.clipboard.writeText(props.clientInfo.phone)
-  phoneCopied.value = true
-  setTimeout(() => (phoneCopied.value = false), 2000)
-}
 </script>
 
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
 $desktop: $breakpoint-desktop;
+$action-icon-size: 48px;
 
 // ── Variant big ────────────────────────────────────────────────────────────────
 .bca-big__mobile {
@@ -180,8 +144,9 @@ $desktop: $breakpoint-desktop;
     opacity: 0.8;
   }
   &__icon {
-    font-size: 1.75rem;
-    line-height: 1;
+    width: $action-icon-size;
+    height: $action-icon-size;
+    flex-shrink: 0;
   }
 
   &__label {
@@ -216,70 +181,6 @@ $desktop: $breakpoint-desktop;
   }
 }
 
-.bca-card {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-xs;
-  background: #fff;
-  border: 1px solid $divider-color;
-  border-radius: $radius-md;
-  padding: $spacing-s $spacing-m;
-  box-shadow: 0 2px 10px rgba($brand-accent, 0.18);
-
-  &__header {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  &__icon {
-    font-size: 0.875rem;
-    line-height: 1;
-    flex-shrink: 0;
-  }
-
-  &__label {
-    flex: 1;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: $text-secondary;
-  }
-
-  &__value {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.8rem;
-    color: $text-primary;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  &__cta {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: auto;
-    padding-top: $spacing-xs;
-    padding-bottom: 2px;
-    border: none;
-    border-top: 1px solid $divider-color;
-    background: none;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: $brand-primary;
-    text-decoration: none;
-    cursor: pointer;
-    transition: opacity 150ms ease;
-
-    &:hover {
-      opacity: 0.7;
-    }
-  }
-}
 
 // ── Encarts desktop (défaut) ───────────────────────────────────────────────────
 .bca-encart {
@@ -291,10 +192,17 @@ $desktop: $breakpoint-desktop;
   flex-direction: column;
   gap: $spacing-xs;
 
+  &__icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
   &__btn {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 6px;
     width: 100%;
     padding: 9px $spacing-m;
     border-radius: $radius-sm;
@@ -349,31 +257,6 @@ $desktop: $breakpoint-desktop;
   }
 }
 
-// ── Bouton copier ──────────────────────────────────────────────────────────────
-.bca-copy {
-  flex-shrink: 0;
-  width: 22px;
-  height: 22px;
-  border-radius: $radius-sm;
-  border: 1px solid $divider-color;
-  background: none;
-  font-size: 0.75rem;
-  color: $text-secondary;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    background 120ms ease,
-    color 120ms ease;
-
-  &--copied {
-    background: $brand-accent;
-    color: $brand-primary;
-    border-color: $brand-accent;
-  }
-}
-
 // ── Variant sticky ─────────────────────────────────────────────────────────────
 .bca-sticky {
   @media (min-width: $desktop) {
@@ -413,8 +296,9 @@ $desktop: $breakpoint-desktop;
   }
 
   &__icon {
-    font-size: 1.1rem;
-    line-height: 1;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
   }
 
   &__label {

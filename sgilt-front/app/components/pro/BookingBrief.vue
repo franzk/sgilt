@@ -10,8 +10,8 @@
         <span v-if="event.nbInvites" class="brief-pill">👥 {{ event.nbInvites }}</span>
         <span v-if="eventTypeLabel" class="brief-pill">{{ eventTypeEmoji }} {{ eventTypeLabel }}</span>
       </div>
-      <PhCaretUp v-if="open" class="booking-brief__chevron" weight="light" :size="16" />
-      <PhCaretDown v-else class="booking-brief__chevron" weight="light" :size="16" />
+      <ArrowUpSIcon v-if="open" class="booking-brief__chevron" />
+      <ArrowDownSIcon v-else class="booking-brief__chevron" />
     </button>
 
     <!-- ── Contenu déplié ────────────────────────────────────────────────────── -->
@@ -52,8 +52,8 @@
             :aria-label="phoneCopied ? 'Copié' : 'Copier le numéro'"
             @click="copyPhone"
           >
-            <PhCheck v-if="phoneCopied" weight="bold" :size="12" />
-            <PhCopy v-else weight="light" :size="12" />
+            <CheckIcon v-if="phoneCopied" class="brief-copy__icon" />
+            <FileCopyIcon v-else class="brief-copy__icon" />
           </button>
         </div>
         <div class="brief-contact__row">
@@ -65,8 +65,8 @@
             :aria-label="emailCopied ? 'Copié' : 'Copier l\'email'"
             @click="copyEmail"
           >
-            <PhCheck v-if="emailCopied" weight="bold" :size="12" />
-            <PhCopy v-else weight="light" :size="12" />
+            <CheckIcon v-if="emailCopied" class="brief-copy__icon" />
+            <FileCopyIcon v-else class="brief-copy__icon" />
           </button>
         </div>
       </div>
@@ -77,7 +77,8 @@
 <script setup lang="ts">
 import type { EventDetail, ClientContactInfo, ReservationNote } from '~/types/event'
 import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS } from '~/types/demande'
-import { PhCaretDown, PhCaretUp, PhCopy, PhCheck } from '@phosphor-icons/vue'
+import { ArrowDownSIcon, ArrowUpSIcon, FileCopyIcon } from '@remixicons/vue/fill'
+import { CheckIcon } from '@remixicons/vue/line'
 
 const props = defineProps<{
   event: EventDetail
@@ -156,6 +157,8 @@ function formatDate(iso: string) {
 
 .booking-brief__chevron {
   flex-shrink: 0;
+  width: 16px;
+  height: 16px;
   color: $text-secondary;
 }
 
@@ -299,8 +302,12 @@ function formatDate(iso: string) {
   border-radius: $radius-sm;
   border: 1px solid $divider-color;
   background: none;
-  font-size: 0.75rem;
   color: $text-secondary;
+
+  &__icon {
+    width: 13px;
+    height: 13px;
+  }
   cursor: pointer;
   display: flex;
   align-items: center;
