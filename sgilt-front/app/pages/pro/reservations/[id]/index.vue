@@ -51,6 +51,14 @@
             @confirm="recontacter"
             @refuse="openRefusalModal"
           />
+
+          <BookingContactActions
+            v-if="demande.status !== 'nouvelle' && !isMobile"
+            variant="big"
+            layout="column"
+            :client-info="demande.clientInfo"
+            :mailto-href="mailtoHref"
+          />
         </div>
 
         <!-- Colonne droite : assemblage selon statut -->
