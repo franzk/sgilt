@@ -4,11 +4,17 @@
     <button class="booking-brief__toggle" type="button" @click="open = !open">
       <div class="booking-brief__pills">
         <span v-if="event.date" class="brief-pill brief-pill--date">
-          📅 {{ formatDate(event.date) }}
+          <CalendarEventIcon class="brief-pill__icon" />{{ formatDate(event.date) }}
         </span>
-        <span v-if="event.ville" class="brief-pill">📍 {{ event.ville }}</span>
-        <span v-if="event.nbInvites" class="brief-pill">👥 {{ event.nbInvites }}</span>
-        <span v-if="eventTypeLabel" class="brief-pill">{{ eventTypeEmoji }} {{ eventTypeLabel }}</span>
+        <span v-if="event.ville" class="brief-pill">
+          <MapPin2Icon class="brief-pill__icon" />{{ event.ville }}
+        </span>
+        <span v-if="event.nbInvites" class="brief-pill">
+          <GroupIcon class="brief-pill__icon" />{{ event.nbInvites }}
+        </span>
+        <span v-if="eventTypeLabel" class="brief-pill"
+          >{{ eventTypeEmoji }} {{ eventTypeLabel }}</span
+        >
       </div>
       <ArrowUpSIcon v-if="open" class="booking-brief__chevron" />
       <ArrowDownSIcon v-else class="booking-brief__chevron" />
@@ -57,7 +63,9 @@
           </button>
         </div>
         <div class="brief-contact__row">
-          <span class="brief-contact__value brief-contact__value--email">{{ clientInfo.email }}</span>
+          <span class="brief-contact__value brief-contact__value--email">{{
+            clientInfo.email
+          }}</span>
           <button
             class="brief-copy"
             type="button"
@@ -77,8 +85,15 @@
 <script setup lang="ts">
 import type { EventDetail, ClientContactInfo, ReservationNote } from '~/types/event'
 import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS } from '~/types/demande'
-import { ArrowDownSIcon, ArrowUpSIcon, FileCopyIcon } from '@remixicons/vue/fill'
-import { CheckIcon } from '@remixicons/vue/line'
+import {
+  ArrowDownSIcon,
+  ArrowUpSIcon,
+  FileCopyIcon,
+  CalendarEventIcon,
+  MapPin2Icon,
+  GroupIcon,
+  CheckIcon,
+} from '@remixicons/vue/line'
 
 const props = defineProps<{
   event: EventDetail
@@ -88,7 +103,9 @@ const props = defineProps<{
 
 const open = ref(false)
 
-const eventTypeOpt = computed(() => EVENT_TYPE_OPTIONS.find((o) => o.value === props.event.eventType))
+const eventTypeOpt = computed(() =>
+  EVENT_TYPE_OPTIONS.find((o) => o.value === props.event.eventType),
+)
 const eventTypeLabel = computed(() => eventTypeOpt.value?.label ?? null)
 const eventTypeEmoji = computed(() => eventTypeOpt.value?.emoji ?? '')
 
@@ -151,7 +168,7 @@ function formatDate(iso: string) {
   flex: 1;
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 6px;
   min-width: 0;
 }
 
@@ -165,8 +182,8 @@ function formatDate(iso: string) {
 .brief-pill {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  padding: 3px 8px;
+  gap: 6px;
+  padding: 4px 8px;
   border-radius: 2rem;
   background: $surface-soft;
   border: 1px solid $divider-color;
@@ -175,6 +192,12 @@ function formatDate(iso: string) {
   color: $text-secondary;
   font-weight: 500;
   white-space: nowrap;
+
+  &__icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
 
   &--date {
     background: rgba($brand-accent, 0.08);
@@ -312,7 +335,9 @@ function formatDate(iso: string) {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 120ms ease, color 120ms ease;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
 
   &--copied {
     background: $brand-accent;

@@ -98,7 +98,9 @@ $desktop: $breakpoint-desktop;
   }
 
   &--confirm {
-    background: #2e7d32;
+    // background: #2e7d32;
+    background: linear-gradient(180deg, #3a8f3e 0%, #2e7d32 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
     color: #fff;
     border: none;
   }
