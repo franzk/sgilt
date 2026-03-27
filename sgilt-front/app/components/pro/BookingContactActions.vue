@@ -52,14 +52,34 @@
   </div>
 
   <!-- ── Variant 'sticky' ───────────────────────────────────────────────────── -->
-  <div v-else-if="variant === 'sticky'" class="bca-sticky">
-    <a :href="`tel:${phone}`" class="bca-sticky__btn call" aria-label="Appeler">
+  <div
+    v-else-if="variant === 'sticky'"
+    class="bca-sticky"
+    :class="{ 'bca-sticky--compact': isMobilePhone }"
+  >
+    <a :href="`tel:${phone}`" class="bca-sticky__btn bca-sticky__btn--call" aria-label="Appeler">
       <PhoneIcon class="bca-sticky__icon" />
       <span class="bca-sticky__label">Appeler</span>
     </a>
-    <a :href="mailtoHref" class="bca-sticky__btn mail" aria-label="Envoyer un mail">
+    <a :href="mailtoHref" class="bca-sticky__btn" aria-label="Envoyer un mail">
       <MailSendIcon class="bca-sticky__icon" />
       <span class="bca-sticky__label">Mail</span>
+    </a>
+    <a
+      v-if="isMobilePhone"
+      :href="whatsappHref"
+      class="bca-sticky__btn bca-sticky__btn--whatsapp"
+      target="_blank"
+      rel="noopener"
+      aria-label="WhatsApp"
+    >
+      <WhatsappIcon class="bca-sticky__icon" />
+      <span class="bca-sticky__label">WhatsApp</span>
+    </a>
+
+    <a v-if="isMobilePhone" :href="smsHref" class="bca-sticky__btn" aria-label="SMS">
+      <ChatSmileIcon class="bca-sticky__icon" />
+      <span class="bca-sticky__label">SMS</span>
     </a>
   </div>
 </template>
@@ -223,19 +243,17 @@ $desktop: $breakpoint-desktop;
     cursor: pointer;
     @include pressable;
 
-    &.call {
-      background: linear-gradient(180deg, #ffd24d 0%, #ffbf00 100%);
+    &--call {
+      background: $brand-accent;
       color: #fff;
-      border: 1.5px solid $brand-accent;
+      border-color: $brand-accent;
     }
 
-    &.mail {
-      background: #fff;
-      color: #ffbf00;
-      border: 1.5px solid $divider-color;
+    &--whatsapp {
+      color: #25d366;
     }
 
-    &:hover {
+    &:hover:not(&--call) {
       background: $surface-soft;
     }
   }
@@ -250,6 +268,10 @@ $desktop: $breakpoint-desktop;
     font-family: 'Inter', sans-serif;
     font-size: 0.8rem;
     font-weight: 600;
+  }
+
+  &--compact &__label {
+    display: none;
   }
 }
 </style>
