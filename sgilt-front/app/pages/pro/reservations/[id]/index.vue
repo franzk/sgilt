@@ -41,6 +41,7 @@
             :client-info="demande.clientInfo"
             :message-initial="messageInitial"
           />
+          <hr v-if="!isMobile" class="left-divider" />
 
           <!-- nouvelle : CTA statut desktop uniquement -->
           <BookingStatusCta
@@ -479,7 +480,7 @@ $sticky-h: 56px;
 }
 
 $bento-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-$bento-radius: $radius-lg;
+$bento-radius: $radius-sm;
 
 // ── Layout 2 colonnes desktop ──────────────────────────────────────────────────
 .booking-layout {
@@ -515,6 +516,12 @@ $bento-radius: $radius-lg;
     border-radius: $bento-radius;
     box-shadow: $bento-shadow;
     border: 1px solid $divider-color;
+
+    .left-divider {
+      border: none;
+      border-top: 1px solid $divider-color;
+      margin: 0;
+    }
 
     // BookingBrief perd sa carte individuelle — le bento est la carte
     :deep(.booking-brief) {
