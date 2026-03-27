@@ -42,7 +42,7 @@
 
         <!-- Carte mobile -->
         <ContactActionCard :copy-value="clientInfo.phone">
-          <template #icon><SmartphoneIcon /></template>
+          <template #icon> <SmartphoneIcon v-if="isMobilePhone" /> <PhoneIcon v-else /> </template>
           <template #title>{{ isMobilePhone ? 'Mobile' : 'Tél' }}</template>
           <template #content>{{ clientInfo.phone }}</template>
           <template #cta>

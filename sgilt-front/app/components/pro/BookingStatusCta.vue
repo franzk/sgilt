@@ -11,9 +11,12 @@
         <CheckIcon class="booking-cta__icon" />
         <span class="booking-cta__label">Premier contact effectué</span>
       </button>
-      <button class="booking-cta__btn booking-cta__btn--refuse" type="button" @click="$emit('refuse')">
-        <CloseIcon class="booking-cta__icon booking-cta__icon--desktop" />
-        <span class="booking-cta__label">Refuser</span>
+      <button
+        class="booking-cta__btn booking-cta__btn--refuse"
+        type="button"
+        @click="$emit('refuse')"
+      >
+        <span class="booking-cta__label">Non, je refuse cette prestation</span>
       </button>
       <button class="booking-cta__refuse-link" type="button" @click="$emit('refuse')">
         Non, je refuse cette prestation.
@@ -31,9 +34,12 @@
         <CheckIcon class="booking-cta__icon" />
         <span class="booking-cta__label">Confirmer la réservation</span>
       </button>
-      <button class="booking-cta__btn booking-cta__btn--refuse" type="button" @click="$emit('refuse')">
-        <CloseIcon class="booking-cta__icon booking-cta__icon--desktop" />
-        <span class="booking-cta__label">Refuser</span>
+      <button
+        class="booking-cta__btn booking-cta__btn--refuse"
+        type="button"
+        @click="$emit('refuse')"
+      >
+        <span class="booking-cta__label">Non, je refuse cette prestation</span>
       </button>
       <button class="booking-cta__refuse-link" type="button" @click="$emit('refuse')">
         Non, je refuse cette prestation.
@@ -82,9 +88,9 @@ $desktop: $breakpoint-desktop;
   width: 100%;
   border-radius: $radius-md;
   font-family: 'Inter', sans-serif;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
-  padding: 16px $spacing-m;
+  min-height: 40px;
 
   &:disabled {
     opacity: 0.5;
@@ -122,6 +128,12 @@ $desktop: $breakpoint-desktop;
 
 // Bouton refuse — affiché uniquement sur desktop
 .booking-cta__btn--refuse {
+  border: none;
+  span {
+    font-weight: 500;
+    text-transform: none;
+  }
+
   @media (max-width: #{$desktop - 1px}) {
     display: none;
   }
@@ -157,11 +169,6 @@ $desktop: $breakpoint-desktop;
 // ── Overrides en layout row (desktop) ──────────────────────────────────────────
 .booking-cta--row {
   @media (min-width: $desktop) {
-    .booking-cta__btn {
-      flex-direction: column;
-      gap: 4px;
-    }
-
     .booking-cta__btn--confirm {
       letter-spacing: 0.03em;
     }
