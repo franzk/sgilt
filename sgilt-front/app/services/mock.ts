@@ -813,7 +813,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
   },
   {
     id: 'evt-pro-003',
-    title: 'Soirée entreprise Alsace Tech Soirée entreprise Alsace Tech',
+    title: 'Soirée entreprise Alsace Tech',
     date: '2026-04-12',
     eventType: 'entreprise',
     coverImage:
