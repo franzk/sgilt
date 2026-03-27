@@ -68,7 +68,11 @@
       <PhoneIcon class="bca-sticky__icon" />
       <span class="bca-sticky__label">Appeler</span>
     </a>
-    <a :href="mailtoHref" class="bca-sticky__btn" aria-label="Envoyer un mail">
+    <a
+      :href="mailtoHref"
+      class="bca-sticky__btn bca-sticky__btn--mail"
+      aria-label="Envoyer un mail"
+    >
       <MailSendIcon class="bca-sticky__icon" />
       <span class="bca-sticky__label">Mail</span>
     </a>
@@ -84,7 +88,12 @@
       <span class="bca-sticky__label">WhatsApp</span>
     </a>
 
-    <a v-if="isMobilePhone" :href="smsHref" class="bca-sticky__btn" aria-label="SMS">
+    <a
+      v-if="isMobilePhone"
+      :href="smsHref"
+      class="bca-sticky__btn bca-sticky__btn--sms"
+      aria-label="SMS"
+    >
       <ChatSmileIcon class="bca-sticky__icon" />
       <span class="bca-sticky__label">SMS</span>
     </a>
@@ -280,8 +289,16 @@ $desktop: $breakpoint-desktop;
       border-color: $brand-accent;
     }
 
+    &--mail {
+      color: $text-secondary;
+    }
+
     &--whatsapp {
       color: #25d366;
+    }
+
+    &--sms {
+      color: $text-secondary;
     }
 
     &:hover:not(&--call) {
