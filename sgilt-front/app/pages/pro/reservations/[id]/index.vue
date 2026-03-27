@@ -34,7 +34,7 @@
       />
 
       <div class="booking-layout">
-        <!-- Colonne gauche : brief + CTA selon statut -->
+        <!-- Colonne gauche : bloc bento unique -->
         <div class="booking-layout__left">
           <BookingBrief
             :event="demande.event"
@@ -61,56 +61,67 @@
           />
         </div>
 
-        <!-- Colonne droite : assemblage selon statut -->
+        <!-- Colonne droite : chaque bloc dans sa propre bento card -->
         <div class="booking-layout__right">
           <!-- nouvelle ─────────────────────────────────────────── -->
           <template v-if="demande.status === 'nouvelle'">
-            <BookingContactActions
-              variant="big"
-              layout="row"
-              :client-info="demande.clientInfo"
-              :mailto-href="mailtoHref"
-            />
+            <div class="bento-card">
+              <BookingContactActions
+                variant="big"
+                layout="row"
+                :client-info="demande.clientInfo"
+                :mailto-href="mailtoHref"
+              />
+            </div>
             <!-- CTA mobile uniquement (desktop = colonne gauche) -->
-            <BookingStatusCta
-              v-if="isMobile"
-              status="nouvelle"
-              :loading="ctaLoading"
-              @confirm="recontacter"
-              @refuse="openRefusalModal"
-            />
+            <div v-if="isMobile" class="bento-card">
+              <BookingStatusCta
+                status="nouvelle"
+                :loading="ctaLoading"
+                @confirm="recontacter"
+                @refuse="openRefusalModal"
+              />
+            </div>
           </template>
 
           <!-- en_discussion ────────────────────────────────────── -->
           <template v-else-if="demande.status === 'en_discussion'">
-            <BookingStatusCta
-              layout="row"
-              status="en_discussion"
-              :loading="ctaLoading"
-              @confirm="confirmer"
-              @refuse="openRefusalModal"
-            />
+            <div class="bento-card">
+              <BookingStatusCta
+                layout="row"
+                status="en_discussion"
+                :loading="ctaLoading"
+                @confirm="confirmer"
+                @refuse="openRefusalModal"
+              />
+            </div>
           </template>
 
           <!-- Flux notes + documents -->
-          <ReservationFeed
-            :items="feedItems"
-            :can-add-note="isEditable"
-            :can-upload-document="['en_discussion', 'confirmee'].includes(demande.status)"
-            :show-personal-toggle="true"
-            @add-note="onAddNote"
-            @upload-document="onUploadDocument"
-            @delete-document="onDeleteDocument"
-          />
+          <div class="bento-card">
+            <ReservationFeed
+              :items="feedItems"
+              :can-add-note="isEditable"
+              :can-upload-document="['en_discussion', 'confirmee'].includes(demande.status)"
+              :show-personal-toggle="true"
+              @add-note="onAddNote"
+              @upload-document="onUploadDocument"
+              @delete-document="onDeleteDocument"
+            />
+          </div>
 
           <!-- refusee / annulee ────────────────────────────────── -->
-          <BookingResumeContactLink
+          <div
             v-if="demande.status === 'refusee' || demande.status === 'annulee'"
-            :mailto-href="mailtoHref"
-          />
+            class="bento-card"
+          >
+            <BookingResumeContactLink :mailto-href="mailtoHref" />
+          </div>
 
           <!-- confirmee ────────────────────────────────────────── -->
-          <BookingCriticalActions v-if="demande.status === 'confirmee'" :demande-id="demandeId" />
+          <div v-if="demande.status === 'confirmee'" class="bento-card">
+            <BookingCriticalActions :demande-id="demandeId" />
+          </div>
         </div>
       </div>
     </template>
@@ -467,6 +478,9 @@ $sticky-h: 56px;
   }
 }
 
+$bento-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+$bento-radius: $radius-lg;
+
 // ── Layout 2 colonnes desktop ──────────────────────────────────────────────────
 .booking-layout {
   display: flex;
@@ -481,24 +495,42 @@ $sticky-h: 56px;
     max-width: 1200px;
     width: 100%;
     margin: 0 auto;
-    padding: 32px 40px calc($sticky-h + 40px);
+    padding: 32px 40px 60px;
   }
 }
 
+// ── Colonne gauche — bento unique sur desktop ──────────────────────────────────
 .booking-layout__left {
   display: flex;
   flex-direction: column;
   gap: $spacing-m;
-
   padding: $spacing-m $spacing-m 0;
 
   @media (min-width: $desktop) {
-    padding: 0;
+    padding: $spacing-m;
+    gap: $spacing-m;
     position: sticky;
     top: calc(3.3rem + 16px);
+    background: #fff;
+    border-radius: $bento-radius;
+    box-shadow: $bento-shadow;
+    border: 1px solid $divider-color;
+
+    // BookingBrief perd sa carte individuelle — le bento est la carte
+    :deep(.booking-brief) {
+      background: transparent;
+      box-shadow: none;
+      border-radius: 0;
+    }
+
+    // ContactActionCards dans la colonne — supprimer ombre redondante
+    :deep(.contact-card) {
+      box-shadow: none;
+    }
   }
 }
 
+// ── Colonne droite ─────────────────────────────────────────────────────────────
 .booking-layout__right {
   display: flex;
   flex-direction: column;
@@ -509,6 +541,33 @@ $sticky-h: 56px;
 
   @media (min-width: $desktop) {
     padding: 0;
+    gap: $spacing-m;
+  }
+}
+
+// ── Bento card — colonne droite ────────────────────────────────────────────────
+.bento-card {
+  @media (min-width: $desktop) {
+    background: #fff;
+    border-radius: $bento-radius;
+    box-shadow: $bento-shadow;
+    overflow: hidden;
+    padding: $spacing-m;
+
+    // ContactActionCards dans une bento — supprimer ombre redondante, gérer le débordement
+    :deep(.contact-card) {
+      box-shadow: none;
+    }
+
+    // BookingStatusCta — les boutons s'étalent sur toute la largeur
+    :deep(.booking-cta) {
+      width: 100%;
+    }
+
+    // Feed — supprimer le padding interne superflu
+    :deep(.feed) {
+      gap: $spacing-s;
+    }
   }
 }
 
