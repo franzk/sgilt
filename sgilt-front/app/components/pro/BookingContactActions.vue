@@ -84,9 +84,7 @@ const isMobilePhone = computed(() =>
 )
 
 const whatsappHref = computed(() => {
-  const intl = phone.value.startsWith('0')
-    ? '+33' + phone.value.slice(1)
-    : phone.value
+  const intl = phone.value.startsWith('0') ? '+33' + phone.value.slice(1) : phone.value
   return `https://wa.me/${intl.replace(/\+/, '')}`
 })
 
@@ -156,23 +154,23 @@ $desktop: $breakpoint-desktop;
   }
 
   &--call {
-    background: #fff;
-    color: $text-primary;
-    border: 1.5px solid $divider-color;
+    background: $brand-accent;
+    color: #fff;
+    border: 1.5px solid $brand-accent;
   }
   &--mail {
     background: #fff;
-    color: $text-primary;
+    color: $text-secondary;
     border: 1.5px solid $divider-color;
   }
   &--whatsapp {
-    background: #25d366;
-    color: #fff;
-    border: none;
+    background: #fff;
+    color: #25d366;
+    border: 1.5px solid#25d366;
   }
   &--sms {
     background: #fff;
-    color: $text-primary;
+    color: $text-secondary;
     border: 1.5px solid $divider-color;
   }
 }
