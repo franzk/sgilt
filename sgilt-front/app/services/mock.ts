@@ -1039,7 +1039,11 @@ export const PRO_DEMANDES: ProDemandeDetail[] = [
     progressType: 'deadline',
     progressValue: 0.15,
     phraseInfoState: 'Il reste <strong>4h</strong> pour répondre',
-    clientInfo: { firstName: 'Émilie', phone: '+33 6 34 56 78 90', email: 'emilie.dubois@email.fr' },
+    clientInfo: {
+      firstName: 'Émilie',
+      phone: '+33 6 34 56 78 90',
+      email: 'emilie.dubois@email.fr',
+    },
   }, // nouvelle — urgencyLevel 5
   {
     ...PRO_ONLY_RESERVATIONS[0],
@@ -1047,7 +1051,11 @@ export const PRO_DEMANDES: ProDemandeDetail[] = [
     progressType: 'deadline',
     progressValue: 0.85,
     phraseInfoState: 'Il reste <strong>36h</strong> pour répondre',
-    clientInfo: { firstName: 'Sophie', phone: '+33 6 12 34 56 78', email: 'sophie.lambert@email.fr' },
+    clientInfo: {
+      firstName: 'Sophie',
+      phone: '+33 6 12 34 56 78',
+      email: 'sophie.lambert@email.fr',
+    },
   }, // nouvelle — urgencyLevel 1
   // ── en_discussion ─────────────────────────────────────────────────────────────
   {
@@ -1065,7 +1073,11 @@ export const PRO_DEMANDES: ProDemandeDetail[] = [
     progressType: 'temporal',
     progressValue: 0.92,
     phraseInfoState: 'Événement dans <strong>6 jours</strong>',
-    clientInfo: { firstName: 'Thomas', phone: '+33 6 45 67 89 01', email: 'thomas.bernot@email.fr' },
+    clientInfo: {
+      firstName: 'Thomas',
+      phone: '+33 6 45 67 89 01',
+      email: 'thomas.bernot@email.fr',
+    },
   }, // confirmee — urgencyLevel 6
   {
     ...MOCK_RESERVATIONS[0],
@@ -1082,7 +1094,11 @@ export const PRO_DEMANDES: ProDemandeDetail[] = [
     progressType: null,
     progressValue: null,
     phraseInfoState: 'Refusée le <strong>21/06/2026</strong>',
-    clientInfo: { firstName: 'Marie', phone: '+33 6 67 89 01 23', email: 'marie.contact@aides.org' },
+    clientInfo: {
+      firstName: 'Marie',
+      phone: '+33 6 67 89 01 23',
+      email: 'marie.contact@aides.org',
+    },
   }, // refusee — urgencyLevel 1
   // ── annulee ───────────────────────────────────────────────────────────────────
   {
@@ -1091,7 +1107,11 @@ export const PRO_DEMANDES: ProDemandeDetail[] = [
     progressType: null,
     progressValue: null,
     phraseInfoState: 'Annulée par le client le <strong>08/03/2026</strong>',
-    clientInfo: { firstName: 'Claire', phone: '+33 6 56 78 90 12', email: 'claire.rousseau@email.fr' },
+    clientInfo: {
+      firstName: 'Claire',
+      phone: '+33 6 56 78 90 12',
+      email: 'claire.rousseau@email.fr',
+    },
   }, // annulee — urgencyLevel 1
   // ── realisee ──────────────────────────────────────────────────────────────────
   {

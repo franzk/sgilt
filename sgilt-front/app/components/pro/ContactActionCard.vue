@@ -159,6 +159,7 @@ async function copy() {
       flex: 1;
       align-items: center;
       justify-content: center;
+      gap: 5px;
       padding-bottom: 2px;
       border: none;
       background: none;

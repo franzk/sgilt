@@ -40,12 +40,19 @@
           <template #cta><a :href="mailtoHref">Rédiger un mail</a></template>
         </ContactActionCard>
 
-        <!-- Carte téléphone -->
+        <!-- Carte mobile -->
         <ContactActionCard :copy-value="clientInfo.phone">
-          <template #icon><PhoneIcon /></template>
-          <template #title>Téléphone</template>
+          <template #icon><SmartphoneIcon /></template>
+          <template #title>{{ isMobilePhone ? 'Mobile' : 'Tél' }}</template>
           <template #content>{{ clientInfo.phone }}</template>
-          <template #cta><a :href="`tel:${phone}`">Appeler</a></template>
+          <template #cta>
+            <a v-if="isMobilePhone" :href="whatsappHref" target="_blank" rel="noopener">
+              <WhatsappIcon class="bca-cta-icon" />WhatsApp
+            </a>
+            <button v-else disabled class="bca-cta-disabled">
+              <ForbidIcon class="bca-cta-icon" />WhatsApp
+            </button>
+          </template>
         </ContactActionCard>
       </div>
     </div>
@@ -87,6 +94,7 @@
 <script setup lang="ts">
 import type { ClientContactInfo } from '~/types/event'
 import { PhoneIcon, MailSendIcon, WhatsappIcon, ChatSmileIcon } from '@remixicons/vue/fill'
+import { ForbidIcon, SmartphoneIcon } from '@remixicons/vue/line'
 import ContactActionCard from '~/components/pro/ContactActionCard.vue'
 
 const props = defineProps<{
@@ -193,6 +201,29 @@ $desktop: $breakpoint-desktop;
     color: $text-secondary;
     border: 1.5px solid $divider-color;
   }
+}
+
+// ── CTA carte mobile ───────────────────────────────────────────────────────────
+.bca-cta-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.bca-cta-disabled {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  justify-content: center;
+  border: none;
+  background: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $text-secondary;
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 // ── Cartes desktop ─────────────────────────────────────────────────────────────
