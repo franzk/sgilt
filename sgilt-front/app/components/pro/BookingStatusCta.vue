@@ -11,13 +11,12 @@
         <CheckIcon class="booking-cta__icon" />
         <span class="booking-cta__label">Premier contact effectué</span>
       </button>
-      <button
-        class="booking-cta__btn booking-cta__btn--refuse"
-        type="button"
-        @click="$emit('refuse')"
-      >
-        <CloseIcon class="booking-cta__icon" />
+      <button class="booking-cta__btn booking-cta__btn--refuse" type="button" @click="$emit('refuse')">
+        <CloseIcon class="booking-cta__icon booking-cta__icon--desktop" />
         <span class="booking-cta__label">Refuser</span>
+      </button>
+      <button class="booking-cta__refuse-link" type="button" @click="$emit('refuse')">
+        Non, je refuse cette prestation.
       </button>
     </template>
 
@@ -32,13 +31,12 @@
         <CheckIcon class="booking-cta__icon" />
         <span class="booking-cta__label">Confirmer la réservation</span>
       </button>
-      <button
-        class="booking-cta__btn booking-cta__btn--refuse"
-        type="button"
-        @click="$emit('refuse')"
-      >
-        <CloseIcon class="booking-cta__icon" />
+      <button class="booking-cta__btn booking-cta__btn--refuse" type="button" @click="$emit('refuse')">
+        <CloseIcon class="booking-cta__icon booking-cta__icon--desktop" />
         <span class="booking-cta__label">Refuser</span>
+      </button>
+      <button class="booking-cta__refuse-link" type="button" @click="$emit('refuse')">
+        Non, je refuse cette prestation.
       </button>
     </template>
   </div>
@@ -113,6 +111,41 @@ $desktop: $breakpoint-desktop;
   width: 22px;
   height: 22px;
   flex-shrink: 0;
+
+  // Icône du bouton refuse — visible desktop uniquement
+  &--desktop {
+    @media (max-width: #{$desktop - 1px}) {
+      display: none;
+    }
+  }
+}
+
+// Bouton refuse — affiché uniquement sur desktop
+.booking-cta__btn--refuse {
+  @media (max-width: #{$desktop - 1px}) {
+    display: none;
+  }
+}
+
+// Texte de refus — affiché uniquement sur mobile
+.booking-cta__refuse-link {
+  display: none;
+
+  @media (max-width: #{$desktop - 1px}) {
+    display: block;
+    width: 100%;
+    padding: $spacing-s 0;
+    border: none;
+    background: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    color: rgba(192, 57, 43, 0.65);
+    text-align: center;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: rgba(192, 57, 43, 0.3);
+    text-underline-offset: 3px;
+  }
 }
 
 .booking-cta__label {

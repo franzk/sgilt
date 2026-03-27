@@ -1,16 +1,30 @@
 <template>
   <!-- ── Variant 'big' ──────────────────────────────────────────────────────── -->
   <div v-if="variant === 'big'" class="bca-big">
-    <!-- Mobile : 2 carrés iconiques (masqués si desktopOnly) -->
+    <!-- Mobile : boutons horizontaux (masqués si desktopOnly) -->
     <div class="bca-big__mobile" :class="{ 'bca-big__mobile--hidden': desktopOnly }">
-      <a :href="`tel:${phone}`" class="bca-square bca-square--call">
-        <PhoneIcon class="bca-square__icon" />
-        <span class="bca-square__label">Appeler</span>
-      </a>
-      <a :href="mailtoHref" class="bca-square bca-square--mail">
-        <MailSendIcon class="bca-square__icon" />
-        <span class="bca-square__label">Mail</span>
-      </a>
+      <!-- Ligne 1 : Tel + Mail -->
+      <div class="bca-btn-row">
+        <a :href="`tel:${phone}`" class="bca-btn bca-btn--call">
+          <PhoneIcon class="bca-btn__icon" />
+          <span class="bca-btn__label">Appeler</span>
+        </a>
+        <a :href="mailtoHref" class="bca-btn bca-btn--mail">
+          <MailSendIcon class="bca-btn__icon" />
+          <span class="bca-btn__label">Mail</span>
+        </a>
+      </div>
+      <!-- Ligne 2 : WhatsApp + SMS (mobile uniquement) -->
+      <div v-if="isMobilePhone" class="bca-btn-row">
+        <a :href="whatsappHref" class="bca-btn bca-btn--whatsapp" target="_blank" rel="noopener">
+          <WhatsappIcon class="bca-btn__icon" />
+          <span class="bca-btn__label">WhatsApp</span>
+        </a>
+        <a :href="smsHref" class="bca-btn bca-btn--sms">
+          <ChatSmileIcon class="bca-btn__icon" />
+          <span class="bca-btn__label">SMS</span>
+        </a>
+      </div>
     </div>
 
     <!-- Desktop layout -->
@@ -52,7 +66,7 @@
 
 <script setup lang="ts">
 import type { ClientContactInfo } from '~/types/event'
-import { PhoneIcon, MailSendIcon } from '@remixicons/vue/fill'
+import { PhoneIcon, MailSendIcon, WhatsappIcon, ChatSmileIcon } from '@remixicons/vue/fill'
 import ContactActionCard from '~/components/pro/ContactActionCard.vue'
 
 const props = defineProps<{
@@ -64,18 +78,30 @@ const props = defineProps<{
 }>()
 
 const phone = computed(() => props.clientInfo.phone.replace(/\s/g, ''))
+
+const isMobilePhone = computed(() =>
+  /^(06|07|\+336|\+337)/.test(props.clientInfo.phone.replace(/\s/g, '')),
+)
+
+const whatsappHref = computed(() => {
+  const intl = phone.value.startsWith('0')
+    ? '+33' + phone.value.slice(1)
+    : phone.value
+  return `https://wa.me/${intl.replace(/\+/, '')}`
+})
+
+const smsHref = computed(() => `sms:${phone.value}`)
 </script>
 
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
 $desktop: $breakpoint-desktop;
-$action-icon-size: 5rem;
 
 // ── Variant big ────────────────────────────────────────────────────────────────
 .bca-big__mobile {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: $spacing-s;
 
   @media (min-width: $desktop) {
@@ -97,41 +123,56 @@ $action-icon-size: 5rem;
   }
 }
 
-// ── Carrés mobiles ─────────────────────────────────────────────────────────────
-.bca-square {
+// ── Boutons mobiles horizontaux ────────────────────────────────────────────────
+.bca-btn-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-s;
+}
+
+.bca-btn {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  width: 100%;
-  aspect-ratio: 1;
+  gap: 8px;
+  padding: 14px $spacing-s;
   border-radius: $radius-md;
   text-decoration: none;
   cursor: pointer;
-
   @include pressable;
+
   &__icon {
-    width: $action-icon-size;
-    height: $action-icon-size;
+    width: 20px;
+    height: 20px;
     flex-shrink: 0;
   }
 
   &__label {
     font-family: 'Inter', sans-serif;
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-weight: 600;
     line-height: 1;
   }
 
   &--call {
-    background: linear-gradient(180deg, #ffd24d 0%, #ffbf00 100%);
-    color: #fff;
-    border: 1.5px solid $brand-accent;
+    background: #fff;
+    color: $text-primary;
+    border: 1.5px solid $divider-color;
   }
   &--mail {
     background: #fff;
-    color: #ffbf00;
+    color: $text-primary;
+    border: 1.5px solid $divider-color;
+  }
+  &--whatsapp {
+    background: #25d366;
+    color: #fff;
+    border: none;
+  }
+  &--sms {
+    background: #fff;
+    color: $text-primary;
     border: 1.5px solid $divider-color;
   }
 }

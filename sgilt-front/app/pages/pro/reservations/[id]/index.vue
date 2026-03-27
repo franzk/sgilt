@@ -66,16 +66,25 @@
         <div class="booking-layout__right">
           <!-- nouvelle ─────────────────────────────────────────── -->
           <template v-if="demande.status === 'nouvelle'">
-            <div class="bento-card">
+            <!-- Desktop : cartes contact dans leur bento -->
+            <div v-if="!isMobile" class="bento-card">
+              <BookingContactActions
+                variant="big"
+                layout="row"
+                :desktop-only="true"
+                :client-info="demande.clientInfo"
+                :mailto-href="mailtoHref"
+              />
+            </div>
+
+            <!-- Mobile : contact + CTA dans un seul bloc continu -->
+            <div v-else class="mobile-cta-block">
               <BookingContactActions
                 variant="big"
                 layout="row"
                 :client-info="demande.clientInfo"
                 :mailto-href="mailtoHref"
               />
-            </div>
-            <!-- CTA mobile uniquement (desktop = colonne gauche) -->
-            <div v-if="isMobile" class="bento-card">
               <BookingStatusCta
                 status="nouvelle"
                 :loading="ctaLoading"
@@ -550,6 +559,13 @@ $bento-radius: $radius-sm;
     padding: 0;
     gap: $spacing-m;
   }
+}
+
+// ── Bloc CTA mobile (contact + confirm + refuse) ──────────────────────────────
+.mobile-cta-block {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-s;
 }
 
 // ── Bento card — colonne droite ────────────────────────────────────────────────
