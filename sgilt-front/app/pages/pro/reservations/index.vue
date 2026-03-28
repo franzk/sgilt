@@ -1,12 +1,11 @@
 <template>
   <div class="pro-board">
-    <!-- ── En-tête ──────────────────────────────────────────────────────────────── -->
-    <div class="pro-board__header">
-      <p class="pro-board__greeting">Bonjour DJ Animation !</p>
-      <p class="pro-board__subtitle">{{ contextLine }}</p>
+    <!-- ── Header mobile (masqué desktop) ───────────────────────────────────────── -->
+    <div class="pro-board__header-mobile">
+      <ProBoardGreeting :subtitle="contextLine" />
     </div>
 
-    <!-- ── Zone filtres ─────────────────────────────────────────────────────────── -->
+    <!-- ── Filtres sticky ────────────────────────────────────────────────────────── -->
     <div class="pro-board__filters">
       <div class="pills-scroll">
         <button
@@ -22,27 +21,32 @@
       </div>
     </div>
 
-    <!-- ── Liste des bookings ──────────────────────────────────────────────────── -->
-    <div class="bookings-list">
-      <!-- Skeleton -->
-      <template v-if="loading">
-        <ProBookingCard v-for="i in 4" :key="i" skeleton />
-      </template>
+    <!-- ── Corps ────────────────────────────────────────────────────────────────── -->
+    <div class="pro-board__body">
+      <!-- Sidebar desktop (masquée mobile) -->
+      <aside class="pro-board__sidebar">
+        <ProBoardGreeting :subtitle="contextLine" />
+      </aside>
 
-      <!-- Vide -->
-      <p v-else-if="filteredDemandes.length === 0" class="demandes-empty">
-        Aucune demande pour le moment.
-      </p>
+      <!-- Liste des bookings -->
+      <div class="bookings-list">
+        <template v-if="loading">
+          <ProBookingCard v-for="i in 4" :key="i" skeleton />
+        </template>
 
-      <!-- Cards -->
-      <ProBookingCard
-        v-for="(demande, index) in filteredDemandes"
-        v-else
-        :key="demande.id"
-        :demande="demande"
-        :animation-delay="index * 60"
-        @click="navigateTo(`/pro/reservations/${demande.id}`)"
-      />
+        <p v-else-if="filteredDemandes.length === 0" class="demandes-empty">
+          Aucune demande pour le moment.
+        </p>
+
+        <ProBookingCard
+          v-for="(demande, index) in filteredDemandes"
+          v-else
+          :key="demande.id"
+          :demande="demande"
+          :animation-delay="index * 60"
+          @click="navigateTo(`/pro/reservations/${demande.id}`)"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -81,7 +85,6 @@ const contextLine = computed(() => {
 // ── Pills ──────────────────────────────────────────────────────────────────────
 const { t } = useI18n()
 
-// 'toutes' = null, sinon le statut sélectionné
 const activeFilter = ref<ReservationStatut | null>(null)
 
 function isPillActive(id: string): boolean {
@@ -111,22 +114,18 @@ const filteredDemandes = computed(() =>
 @use '@/assets/styles/base' as *;
 
 $desktop: $breakpoint-desktop;
-$max-w: 680px;
+$filter-h: 50px;
 
 .pro-board {
   min-height: 100%;
   background-color: #e8e6e3;
   display: flex;
   flex-direction: column;
-
-  @media (min-width: $desktop) {
-    padding-bottom: $spacing-xl;
-  }
 }
 
-// ── En-tête ────────────────────────────────────────────────────────────────────
+// ── Header mobile ──────────────────────────────────────────────────────────────
 
-.pro-board__header {
+.pro-board__header-mobile {
   background: #fff;
   padding: $spacing-m $spacing-m $spacing-s;
   display: flex;
@@ -134,27 +133,11 @@ $max-w: 680px;
   gap: 4px;
 
   @media (min-width: $desktop) {
-    padding: 28px max(40px, calc((100% - $max-w) / 2 + 24px)) $spacing-s;
+    display: none;
   }
 }
 
-.pro-board__greeting {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 2.1rem;
-  font-weight: 700;
-  color: $brand-primary;
-  margin: 0;
-  line-height: 1.1;
-}
-
-.pro-board__subtitle {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.8rem;
-  color: $text-secondary;
-  margin: 0;
-}
-
-// ── Zone filtres ───────────────────────────────────────────────────────────────
+// ── Filtres sticky ─────────────────────────────────────────────────────────────
 
 .pro-board__filters {
   position: sticky;
@@ -165,7 +148,7 @@ $max-w: 680px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 
   @media (min-width: $desktop) {
-    padding: $spacing-s max(40px, calc((100% - $max-w) / 2 + 24px));
+    padding: $spacing-s max($spacing-xl, calc((100% - 1200px) / 2));
   }
 }
 
@@ -197,25 +180,57 @@ $max-w: 680px;
     color 120ms ease;
 
   &--active {
-    background: $color-accent;
-    color: #fff;
+    background: $brand-accent;
+    color: $brand-primary;
     font-weight: 600;
   }
 }
 
-// ── Liste demandes ─────────────────────────────────────────────────────────────
+// ── Corps ─────────────────────────────────────────────────────────────────────
+
+.pro-board__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  @media (min-width: $desktop) {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: $spacing-xl;
+    padding: $spacing-l max($spacing-xl, calc((100% - 1200px) / 2)) $spacing-xl;
+  }
+}
+
+// ── Sidebar desktop ────────────────────────────────────────────────────────────
+
+.pro-board__sidebar {
+  display: none;
+
+  @media (min-width: $desktop) {
+    display: block;
+    position: sticky;
+    top: calc($app-header-height + $filter-h + $spacing-l);
+    min-height: 15rem;
+    align-self: start;
+    background: #fff;
+    border-radius: $radius-md;
+    border: 1px solid $divider-color;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: $spacing-m;
+  }
+}
+
+// ── Liste des cards ────────────────────────────────────────────────────────────
 
 .bookings-list {
   display: flex;
   flex-direction: column;
   gap: $spacing-s;
-  padding: $spacing-m $spacing-m calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $spacing-m);
+  padding: $spacing-s $spacing-m calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $spacing-m);
 
   @media (min-width: $desktop) {
-    max-width: $max-w;
-    width: 100%;
-    margin: 0 auto;
-    padding: $spacing-l 0 $spacing-xl;
+    gap: $spacing-m;
+    padding: 0;
   }
 }
 
