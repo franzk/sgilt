@@ -136,10 +136,37 @@
       </div>
     </template>
 
-    <!-- Skeleton -->
-    <div v-else-if="loading" class="board-skeleton">
-      <div class="skeleton-block skeleton-text" />
-      <div v-for="i in 3" :key="i" class="skeleton-note skeleton-text" />
+    <!-- Skeleton cover -->
+    <div v-else-if="loading" class="cover-banner cover-banner--skeleton skeleton-text" />
+
+    <!-- Skeleton layout -->
+    <div v-if="loading" class="booking-layout">
+      <!-- Colonne gauche -->
+      <div class="booking-layout__left">
+        <div class="sk-brief">
+          <div class="sk-row">
+            <div class="skeleton-text sk-pill" />
+            <div class="skeleton-text sk-pill" />
+            <div class="skeleton-text sk-pill" />
+          </div>
+          <div class="sk-lines">
+            <div class="skeleton-text sk-line sk-line--80" />
+            <div class="skeleton-text sk-line sk-line--60" />
+            <div class="skeleton-text sk-line sk-line--70" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Colonne droite -->
+      <div class="booking-layout__right">
+        <div class="bento-card sk-bento">
+          <div class="skeleton-text sk-line sk-line--40" />
+          <div class="skeleton-text sk-btn" />
+        </div>
+        <div class="bento-card sk-bento">
+          <div v-for="i in 3" :key="i" class="skeleton-text sk-note" />
+        </div>
+      </div>
     </div>
 
     <!-- ── Contact sticky mobile uniquement (en_discussion + confirmee) ─────── -->
@@ -395,6 +422,7 @@ $sticky-h: 56px;
 
   @media (min-width: $desktop) {
     height: 280px;
+    max-height: 30vh;
     padding: $spacing-m $spacing-xl $spacing-l;
   }
 
@@ -664,20 +692,61 @@ $bento-radius: $radius-sm;
 }
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
-.board-skeleton {
-  padding: $spacing-m;
+
+.cover-banner--skeleton {
+  background-image: none !important;
+}
+
+.sk-brief {
   display: flex;
   flex-direction: column;
-  gap: $spacing-m;
+  gap: $spacing-s;
 }
 
-.skeleton-block {
-  height: 120px;
+.sk-row {
+  display: flex;
+  gap: $spacing-xs;
+}
+
+.sk-pill {
+  height: 24px;
+  width: 72px;
+  border-radius: 2rem;
+}
+
+.sk-lines {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.sk-line {
+  height: 0.8rem;
+  border-radius: 4px;
+
+  &--40 { width: 40%; }
+  &--60 { width: 60%; }
+  &--70 { width: 70%; }
+  &--80 { width: 80%; }
+}
+
+.sk-bento {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-s;
+  padding: $spacing-m;
+  background: #fff;
+  border-radius: $bento-radius;
+  box-shadow: $bento-shadow;
+}
+
+.sk-btn {
+  height: 40px;
   border-radius: $radius-md;
 }
 
-.skeleton-note {
-  height: 80px;
-  border-radius: $radius-md;
+.sk-note {
+  height: 56px;
+  border-radius: $radius-sm;
 }
 </style>
