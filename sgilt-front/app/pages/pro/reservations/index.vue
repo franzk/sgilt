@@ -52,10 +52,7 @@ definePageMeta({ layout: 'pro' })
 
 import { ProMockService } from '~/services/pro.mock'
 import type { ProDemandeSummary } from '~/types/event'
-import {
-  RESERVATION_STATUS_PILLS,
-  RESERVATION_STATUS_ORDER,
-} from '~/constants/reservation-status'
+import { RESERVATION_STATUS_PILLS, RESERVATION_STATUS_ORDER } from '~/constants/reservation-status'
 import type { ReservationStatut } from '~/constants/reservation-status'
 
 // ── Données ────────────────────────────────────────────────────────────────────
@@ -160,7 +157,7 @@ $max-w: 680px;
 // ── Zone filtres ───────────────────────────────────────────────────────────────
 
 .pro-board__filters {
-  background: #f0eeeb;
+  background: #fff;
   padding: $spacing-s $spacing-m;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 
@@ -197,7 +194,7 @@ $max-w: 680px;
     color 120ms ease;
 
   &--active {
-    background: #2d2d2b;
+    background: $color-accent;
     color: #fff;
     font-weight: 600;
   }
