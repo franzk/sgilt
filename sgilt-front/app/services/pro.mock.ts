@@ -10,6 +10,17 @@ function formatDateFR(isoDate: string): string {
 }
 
 export const ProMockService = {
+  getGreetingSubtitle(demandes: ProDemandeSummary[]): string {
+    const n = demandes.filter((d) => d.statut === 'nouvelle').length
+    const c = demandes.filter((d) => d.statut === 'confirmee').length
+    if (n === 0 && c === 0) return 'Tout est à jour.'
+    const nLabel = n > 0 ? `${n} nouvelle${n > 1 ? 's' : ''} demande${n > 1 ? 's' : ''}` : ''
+    const cLabel = c > 0 ? `${c} événement${c > 1 ? 's' : ''} confirmé${c > 1 ? 's' : ''}` : ''
+    if (nLabel && cLabel) return `Vous avez ${nLabel} et ${cLabel}.`
+    if (nLabel) return `Vous avez ${nLabel}.`
+    return `Vous avez ${cLabel}.`
+  },
+
   async getAllDemandes(): Promise<ProDemandeSummary[]> {
     await new Promise((r) => setTimeout(r, 250))
     return PRO_DEMANDES.map((d) => ({

@@ -2,7 +2,7 @@
   <div class="pro-board">
     <!-- ── Header mobile (masqué desktop) ───────────────────────────────────────── -->
     <div class="pro-board__header-mobile">
-      <ProBoardGreeting :subtitle="contextLine" />
+      <ProBoardGreeting :subtitle="contextLine" :loading="loading" />
     </div>
 
     <!-- ── Filtres sticky ────────────────────────────────────────────────────────── -->
@@ -25,7 +25,7 @@
     <div class="pro-board__body">
       <!-- Sidebar desktop (masquée mobile) -->
       <aside class="pro-board__sidebar">
-        <ProBoardGreeting :subtitle="contextLine" />
+        <ProBoardGreeting :subtitle="contextLine" :loading="loading" />
       </aside>
 
       <!-- Liste des bookings -->
@@ -69,18 +69,7 @@ onMounted(async () => {
 })
 
 // ── En-tête ────────────────────────────────────────────────────────────────────
-const newCount = computed(() => DEMANDES.value.filter((d) => d.statut === 'nouvelle').length)
-const confirmedCount = computed(() => DEMANDES.value.filter((d) => d.statut === 'confirmee').length)
-
-const contextLine = computed(() => {
-  const n = newCount.value
-  const c = confirmedCount.value
-  if (n === 0 && c === 0) return 'Tout est à jour.'
-  const nLabel = n > 0 ? `${n} nouvelle${n > 1 ? 's' : ''} demande${n > 1 ? 's' : ''}` : ''
-  const cLabel =
-    c > 0 ? `${c} événement${c > 1 ? 's' : ''} confirmé${c > 1 ? 's' : ''} à venir` : ''
-  return [nLabel, cLabel].filter(Boolean).join(' · ')
-})
+const contextLine = computed(() => ProMockService.getGreetingSubtitle(DEMANDES.value))
 
 // ── Pills ──────────────────────────────────────────────────────────────────────
 const { t } = useI18n()

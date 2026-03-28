@@ -1,12 +1,13 @@
 <template>
   <div class="pro-greeting">
     <p class="pro-greeting__title">Bonjour DJ Animation !</p>
-    <p class="pro-greeting__subtitle">{{ subtitle }}</p>
+    <div v-if="loading" class="pro-greeting__skeleton skeleton-text" />
+    <p v-else class="pro-greeting__subtitle">{{ subtitle }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
-defineProps<{ subtitle: string }>()
+defineProps<{ subtitle: string; loading?: boolean }>()
 </script>
 
 <style scoped lang="scss">
@@ -36,5 +37,12 @@ defineProps<{ subtitle: string }>()
   color: $text-secondary;
   margin: 0;
   margin-top: 4px;
+}
+
+.pro-greeting__skeleton {
+  margin-top: 6px;
+  height: 0.8rem;
+  width: 220px;
+  border-radius: 4px;
 }
 </style>
