@@ -5,7 +5,11 @@
       class="pro-footer__item"
       :class="{ 'pro-footer__item--active': route.path.startsWith('/pro/reservations') }"
     >
-      <IconEvent class="pro-footer__icon" />
+      <CalendarEventIcon
+        v-if="route.path.startsWith('/pro/reservations')"
+        class="pro-footer__icon"
+      />
+      <CalendarEventIcon v-else class="pro-footer__icon" />
       <span class="pro-footer__label">Réservations</span>
     </NuxtLink>
 
@@ -14,7 +18,11 @@
       class="pro-footer__item"
       :class="{ 'pro-footer__item--active': route.path.startsWith('/pro/notifications') }"
     >
-      <IconBell class="pro-footer__icon" />
+      <Notification3Icon
+        v-if="route.path.startsWith('/pro/notifications')"
+        class="pro-footer__icon"
+      />
+      <Notification3Icon v-else class="pro-footer__icon" />
       <span class="pro-footer__label">Notifications</span>
     </NuxtLink>
 
@@ -23,16 +31,15 @@
       class="pro-footer__item"
       :class="{ 'pro-footer__item--active': route.path.startsWith('/pro/profil') }"
     >
-      <IconProfile class="pro-footer__icon" />
+      <UserIcon v-if="route.path.startsWith('/pro/profil')" class="pro-footer__icon" />
+      <UserIcon v-else class="pro-footer__icon" />
       <span class="pro-footer__label">Profil</span>
     </NuxtLink>
   </nav>
 </template>
 
 <script setup lang="ts">
-import IconEvent from '~/components/icons/IconEvent.vue'
-import IconBell from '~/components/icons/IconBell.vue'
-import IconProfile from '~/components/icons/IconProfile.vue'
+import { CalendarEventIcon, Notification3Icon, UserIcon } from '@remixicons/vue/line'
 
 const route = useRoute()
 </script>
@@ -56,8 +63,10 @@ $nav-h: $bottom-nav-h;
   padding-bottom: env(safe-area-inset-bottom, 0px);
   display: flex;
   align-items: stretch;
-  background: #fff;
-  border-top: 1px solid $divider-color;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255, 255, 255, 0.4);
 
   &__item {
     flex: 1;
