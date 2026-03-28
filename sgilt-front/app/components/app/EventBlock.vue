@@ -201,24 +201,30 @@
             </button>
           </template>
         </div>
-        <button
-          v-if="lastUpdateDate"
-          class="event-block__journal-btn"
-          type="button"
-          @click="journalOpen = true"
-        >
-          {{ lastUpdateDate }}
-        </button>
-        <p v-else class="event-block__field-value event-block__field-value--empty">
-          Aucune modification enregistrée.
-        </p>
+        <div class="event-block__update-date-row">
+          <button
+            v-if="lastUpdateDate"
+            class="event-block__journal-btn"
+            type="button"
+            @click="journalOpen = true"
+          >
+            {{ lastUpdateDate }}
+          </button>
+          <p v-else class="event-block__field-value event-block__field-value--empty">
+            Aucune modification enregistrée.
+          </p>
+          <button
+            v-if="editMode"
+            class="event-block__save-btn"
+            type="button"
+            :disabled="saving"
+            @click="save"
+          >
+            {{ saving ? 'Enregistrement…' : 'Enregistrer' }}
+          </button>
+        </div>
       </div>
     </div>
-
-    <!-- ── Bouton enregistrer ───────────────────────────────────────────────────── -->
-    <SgiltButton v-if="editMode" :disabled="saving" @click="save">
-      {{ saving ? 'Enregistrement…' : 'Enregistrer' }}
-    </SgiltButton>
   </section>
 
   <!-- ── Journal ─────────────────────────────────────────────────────────────────── -->
@@ -474,6 +480,22 @@ function formatDate(iso: string) {
 
     &:hover { color: $text-primary; }
   }
+
+  &__save-btn {
+    flex-shrink: 0;
+    background: none;
+    border: 1px solid $divider-color;
+    border-radius: $radius-sm;
+    font-family: inherit;
+    font-size: 0.85rem;
+    color: $text-primary;
+    cursor: pointer;
+    padding: 3px 10px;
+    transition: border-color 150ms ease, color 150ms ease;
+
+    &:hover { border-color: $brand-primary; color: $brand-primary; }
+    &:disabled { opacity: 0.45; cursor: default; }
+  }
 }
 
 // ── Toggle accordéon ──────────────────────────────────────────────────────────
@@ -556,6 +578,13 @@ function formatDate(iso: string) {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.event-block__update-date-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-s;
 }
 
 .event-block__section-label {
