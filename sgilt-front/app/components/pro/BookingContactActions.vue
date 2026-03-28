@@ -58,44 +58,26 @@
     </div>
   </div>
 
-  <!-- ── Variant 'sticky' ───────────────────────────────────────────────────── -->
-  <div
-    v-else-if="variant === 'sticky'"
-    class="bca-sticky"
-    :class="{ 'bca-sticky--compact': isMobilePhone }"
-  >
-    <a :href="`tel:${phone}`" class="bca-sticky__btn bca-sticky__btn--call" aria-label="Appeler">
-      <PhoneIcon class="bca-sticky__icon" />
-      <span class="bca-sticky__label">Appeler</span>
+  <!-- ── Variant 'sticky' — dock flottant ─────────────────────────────────── -->
+  <div v-else-if="variant === 'sticky'" class="bca-dock">
+    <a :href="`tel:${phone}`" class="bca-dock__btn bca-dock__btn--call" aria-label="Appeler">
+      <PhoneLineIcon class="bca-dock__icon" />
     </a>
-    <a
-      :href="mailtoHref"
-      class="bca-sticky__btn bca-sticky__btn--mail"
-      aria-label="Envoyer un mail"
-    >
-      <MailSendIcon class="bca-sticky__icon" />
-      <span class="bca-sticky__label">Mail</span>
+    <a :href="mailtoHref" class="bca-dock__btn" aria-label="Envoyer un mail">
+      <MailSendLineIcon class="bca-dock__icon" />
     </a>
     <a
       v-if="isMobilePhone"
       :href="whatsappHref"
-      class="bca-sticky__btn bca-sticky__btn--whatsapp"
+      class="bca-dock__btn"
       target="_blank"
       rel="noopener"
       aria-label="WhatsApp"
     >
-      <WhatsappIcon class="bca-sticky__icon" />
-      <span class="bca-sticky__label">WhatsApp</span>
+      <WhatsappLineIcon class="bca-dock__icon" />
     </a>
-
-    <a
-      v-if="isMobilePhone"
-      :href="smsHref"
-      class="bca-sticky__btn bca-sticky__btn--sms"
-      aria-label="SMS"
-    >
-      <ChatSmileIcon class="bca-sticky__icon" />
-      <span class="bca-sticky__label">SMS</span>
+    <a v-if="isMobilePhone" :href="smsHref" class="bca-dock__btn" aria-label="SMS">
+      <ChatSmileLineIcon class="bca-dock__icon" />
     </a>
   </div>
 </template>
@@ -103,7 +85,14 @@
 <script setup lang="ts">
 import type { ClientContactInfo } from '~/types/event'
 import { PhoneIcon, MailSendIcon, WhatsappIcon, ChatSmileIcon } from '@remixicons/vue/fill'
-import { ForbidIcon, SmartphoneIcon } from '@remixicons/vue/line'
+import {
+  ForbidIcon,
+  SmartphoneIcon,
+  PhoneIcon as PhoneLineIcon,
+  MailSendIcon as MailSendLineIcon,
+  WhatsappIcon as WhatsappLineIcon,
+  ChatSmileIcon as ChatSmileLineIcon,
+} from '@remixicons/vue/line'
 import ContactActionCard from '~/components/pro/ContactActionCard.vue'
 
 const props = defineProps<{
@@ -248,57 +237,56 @@ $desktop: $breakpoint-desktop;
   }
 }
 
-// ── Variant sticky ─────────────────────────────────────────────────────────────
-.bca-sticky {
+// ── Variant sticky — dock flottant ─────────────────────────────────────────────
+.bca-dock {
   @media (min-width: $desktop) {
     display: none;
   }
 
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: calc($bottom-nav-h + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $spacing-s);
   z-index: $z-header;
-  height: 3rem;
-  background: #fff;
-  // border-top: 1px solid $divider-color;
-  border-top: 1px solid #e5dfd8;
+
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: $spacing-m;
-  padding: $spacing-s $spacing-m;
+  gap: $spacing-xs $spacing-s;
+  padding: $spacing-xs $spacing-s;
+
+  /* Le Background (Glassmorphism) */
+  background: rgba(241, 243, 245, 0.15); /* Gris translucide */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  /* Bordures et coins */
+  border-radius: 9999px; /* Forme pilule parfaite */
+  border: 1px solid rgba(241, 243, 245, 0.3);
+
+  /* Ombre */
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
 
   &__btn {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 8px 18px;
-    border-radius: $radius-md;
-    border: 1.5px solid $divider-color;
-    padding: 10px 14px;
-    border-radius: 10px;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    border: none;
+    background: none;
+    color: $text-secondary;
     text-decoration: none;
-    color: $text-primary;
     cursor: pointer;
+    flex-shrink: 0;
     @include pressable;
 
     &--call {
       background: $brand-accent;
-      color: #fff;
-      border-color: $brand-accent;
-    }
-
-    &--mail {
-      color: $text-secondary;
-    }
-
-    &--whatsapp {
-      color: #25d366;
-    }
-
-    &--sms {
-      color: $text-secondary;
+      color: $brand-primary;
+      width: 56px;
     }
 
     &:hover:not(&--call) {
@@ -307,19 +295,9 @@ $desktop: $breakpoint-desktop;
   }
 
   &__icon {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     flex-shrink: 0;
-  }
-
-  &__label {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 600;
-  }
-
-  &--compact &__label {
-    display: none;
   }
 }
 </style>
