@@ -36,10 +36,10 @@
       <div class="booking-layout">
         <!-- Colonne gauche : bloc bento unique -->
         <div class="booking-layout__left">
-          <BookingBrief
+          <EventBlock
+            variant="pro"
             :event="demande.event"
             :client-info="demande.clientInfo"
-            :message-initial="messageInitial"
           />
           <hr v-if="!isMobile" class="left-divider" />
 
@@ -222,7 +222,7 @@ import ReservationFeed from '~/components/shared/ReservationFeed.vue'
 import BookingStatusBanner from '~/components/pro/BookingStatusBanner.vue'
 import BookingContactActions from '~/components/pro/BookingContactActions.vue'
 import BookingStatusCta from '~/components/pro/BookingStatusCta.vue'
-import BookingBrief from '~/components/pro/BookingBrief.vue'
+import EventBlock from '~/components/app/EventBlock.vue'
 import BookingResumeContactLink from '~/components/pro/BookingResumeContactLink.vue'
 import BookingCriticalActions from '~/components/pro/BookingCriticalActions.vue'
 import { ProMockService } from '~/services/pro.mock'
@@ -284,8 +284,6 @@ onMounted(async () => {
 })
 
 const { t } = useI18n()
-
-const messageInitial = computed(() => demande.value?.notes.find((n) => n.isMessageInitial) ?? null)
 
 const isEditable = computed(() => {
   const s = demande.value?.status
@@ -560,8 +558,8 @@ $bento-radius: $radius-sm;
       margin: 0;
     }
 
-    // BookingBrief perd sa carte individuelle — le bento est la carte
-    :deep(.booking-brief) {
+    // EventBlock perd sa carte individuelle — le bento est la carte
+    :deep(.event-block) {
       background: transparent;
       box-shadow: none;
       border-radius: 0;

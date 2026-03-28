@@ -1,132 +1,233 @@
 <template>
   <section class="event-block">
-    <!-- ── Header : titre + crayon / annuler ────────────────────────────────── -->
-    <div class="event-block__header">
-      <h1 v-if="!editMode" class="event-block__title">{{ event.title }}</h1>
-      <input
-        v-else
-        v-model="draft.title"
-        class="event-block__title-input"
-        type="text"
-        placeholder="Titre de l'événement"
-      />
-
-      <button
-        v-if="!editMode"
-        class="event-block__edit-btn"
-        type="button"
-        aria-label="Modifier l'événement"
-        @click="enterEditMode"
-      >
-        <IconEditNote />
-      </button>
-      <button v-else class="event-block__cancel-btn" type="button" @click="handleCancel">
-        Annuler
-      </button>
-    </div>
-
-    <!-- ── Pills (date fixe toujours, autres selon mode) ────────────────────── -->
-    <div class="event-pills">
-      <span v-if="event.date" class="event-pill event-pill--fixed">
-        📅 {{ formatDate(event.date) }}
-      </span>
-
-      <!-- Mode lecture -->
-      <template v-if="!editMode">
-        <span v-if="eventTypeLabel" class="event-pill"
-          >{{ eventTypeEmoji }} {{ eventTypeLabel }}</span
-        >
-        <span v-if="ambianceLabel" class="event-pill">{{ ambianceEmoji }} {{ ambianceLabel }}</span>
-        <span v-if="event.ville" class="event-pill">📍 {{ event.ville }}</span>
-        <span v-if="event.nbInvites" class="event-pill">👥 {{ event.nbInvites }} invités</span>
-      </template>
-    </div>
-
-    <!-- ── Champs édition ────────────────────────────────────────────────────── -->
-    <template v-if="editMode">
-      <div class="edit-fields">
-        <div class="edit-field">
-          <label class="edit-field__label">Type d'événement</label>
-          <select v-model="draft.eventType" class="edit-field__select">
-            <option value="">— Non renseigné</option>
-            <option v-for="o in EVENT_TYPE_OPTIONS" :key="o.value" :value="o.value">
-              {{ o.emoji }} {{ o.label }}
-            </option>
-          </select>
-        </div>
-
-        <div class="edit-field">
-          <label class="edit-field__label">Ambiance</label>
-          <select v-model="draft.ambiance" class="edit-field__select">
-            <option value="">— Non renseigné</option>
-            <option v-for="o in AMBIANCE_OPTIONS" :key="o.value" :value="o.value">
-              {{ o.emoji }} {{ o.label }}
-            </option>
-          </select>
-        </div>
-
-        <div class="edit-field">
-          <label class="edit-field__label">Ville</label>
-          <input v-model="draft.ville" class="edit-field__input" type="text" placeholder="Ville" />
-        </div>
-
-        <div class="edit-field">
-          <label class="edit-field__label">Nombre d'invités</label>
-          <input
-            v-model="draft.nbInvites"
-            class="edit-field__input"
-            type="number"
-            min="0"
-            placeholder="0"
-          />
-        </div>
+    <!-- ── Toggle accordéon : pills + actions ──────────────────────────────────── -->
+    <button class="event-block__toggle" type="button" @click="open = !open">
+      <div class="event-block__pills">
+        <span v-if="event.date" class="event-pill event-pill--date">
+          <CalendarEventIcon class="event-pill__icon" />{{ formatDate(event.date) }}
+        </span>
+        <span v-if="event.ville" class="event-pill">
+          <MapPin2Icon class="event-pill__icon" />{{ event.ville }}
+        </span>
+        <span v-if="event.nbInvites" class="event-pill">
+          <GroupIcon class="event-pill__icon" />{{ event.nbInvites }}
+        </span>
       </div>
-    </template>
+      <template v-if="variant === 'client'">
+        <button
+          v-if="!editMode"
+          class="event-block__edit-btn"
+          type="button"
+          aria-label="Modifier l'événement"
+          @click.stop="enterEditMode"
+        >
+          <IconEditNote />
+        </button>
+        <button
+          v-else
+          class="event-block__cancel-btn"
+          type="button"
+          @click.stop="handleCancel"
+        >
+          Annuler
+        </button>
+      </template>
+      <ArrowUpSIcon v-if="open" class="event-block__chevron" />
+      <ArrowDownSIcon v-else class="event-block__chevron" />
+    </button>
 
-    <!-- ── Note partagée ────────────────────────────────────────────────────── -->
-    <div class="event-note">
-      <span class="event-note__label">Note partagée avec les prestataires</span>
+    <!-- ── Corps accordéon ─────────────────────────────────────────────────────── -->
+    <div v-if="open" class="event-block__body">
+      <!-- 1. LOGISTIQUE -->
+      <div class="event-block__section">
+        <span class="event-block__section-label">Logistique</span>
+        <p v-if="!editMode" class="event-block__field-value" :class="{ 'event-block__field-value--empty': !event.lieu }">
+          {{ event.lieu || 'Salle, adresse… non renseigné' }}
+        </p>
+        <input
+          v-else
+          v-model="draft.lieu"
+          class="edit-field__input"
+          type="text"
+          placeholder="Salle, adresse…"
+        />
+      </div>
 
-      <!-- Lecture -->
-      <p
-        v-if="!editMode"
-        class="event-note__text"
-        :class="{ 'event-note__text--empty': !event.sharedNote }"
-      >
-        {{ event.sharedNote || 'Aucune note pour le moment.' }}
-      </p>
+      <hr class="event-block__divider" />
 
-      <button
-        v-if="!editMode && lastUpdateDate"
-        class="event-note__journal-btn"
-        type="button"
-        @click="journalOpen = true"
-      >
-        {{ lastUpdateDate }}
-      </button>
+      <!-- 2. NOTE PARTAGÉE -->
+      <div class="event-block__section">
+        <span class="event-block__section-label">Note partagée</span>
+        <p
+          v-if="!editMode"
+          class="event-block__note-text"
+          :class="{ 'event-block__note-text--empty': !event.sharedNote }"
+        >
+          {{ event.sharedNote || 'Aucune note pour le moment.' }}
+        </p>
+        <textarea
+          v-else
+          ref="noteRef"
+          v-model="draft.sharedNote"
+          class="edit-field__textarea"
+          placeholder="Informations utiles pour tous vos prestataires…"
+          rows="3"
+          @input="autoResize"
+        />
+      </div>
 
-      <!-- Édition -->
-      <textarea
-        v-if="editMode"
-        ref="noteRef"
-        v-model="draft.sharedNote"
-        class="event-note__textarea"
-        placeholder="Informations utiles pour tous vos prestataires : adresse du lieu, horaires, consignes particulières…"
-        rows="3"
-        @input="autoResize"
-      />
+      <hr class="event-block__divider" />
+
+      <!-- 3. COORDONNÉES -->
+      <div class="event-block__section">
+        <span class="event-block__section-label">Coordonnées</span>
+
+        <!-- Variant pro : lecture + boutons copier -->
+        <template v-if="variant === 'pro'">
+          <span class="event-block__contact-name">{{ clientInfo.firstName }}</span>
+          <div class="event-block__contact-row">
+            <span class="event-block__contact-value">{{ clientInfo.phone }}</span>
+            <button
+              class="event-block__copy-btn"
+              type="button"
+              :class="{ 'event-block__copy-btn--copied': phoneCopied }"
+              :aria-label="phoneCopied ? 'Copié' : 'Copier le numéro'"
+              @click="copyPhone"
+            >
+              <CheckIcon v-if="phoneCopied" class="event-block__copy-icon" />
+              <FileCopyIcon v-else class="event-block__copy-icon" />
+            </button>
+          </div>
+          <div class="event-block__contact-row">
+            <span class="event-block__contact-value event-block__contact-value--email">{{ clientInfo.email }}</span>
+            <button
+              class="event-block__copy-btn"
+              type="button"
+              :class="{ 'event-block__copy-btn--copied': emailCopied }"
+              :aria-label="emailCopied ? 'Copié' : 'Copier l\'email'"
+              @click="copyEmail"
+            >
+              <CheckIcon v-if="emailCopied" class="event-block__copy-icon" />
+              <FileCopyIcon v-else class="event-block__copy-icon" />
+            </button>
+          </div>
+        </template>
+
+        <!-- Variant client : lecture ou édition -->
+        <template v-else>
+          <template v-if="!editMode">
+            <span class="event-block__contact-name">
+              {{ clientInfo.firstName }}{{ clientInfo.lastName ? ' ' + clientInfo.lastName : '' }}
+            </span>
+            <span class="event-block__contact-value">{{ clientInfo.phone }}</span>
+            <span class="event-block__contact-value event-block__contact-value--email">{{ clientInfo.email }}</span>
+          </template>
+          <template v-else>
+            <div class="edit-field">
+              <label class="edit-field__label">Prénom</label>
+              <input v-model="draft.firstName" class="edit-field__input" type="text" />
+            </div>
+            <div class="edit-field">
+              <label class="edit-field__label">Nom</label>
+              <input v-model="draft.lastName" class="edit-field__input" type="text" />
+            </div>
+            <div class="edit-field">
+              <label class="edit-field__label">Téléphone</label>
+              <input v-model="draft.phone" class="edit-field__input" type="tel" />
+            </div>
+            <div class="edit-field">
+              <label class="edit-field__label">Email</label>
+              <input v-model="draft.email" class="edit-field__input" type="email" />
+            </div>
+          </template>
+        </template>
+      </div>
+
+      <hr class="event-block__divider" />
+
+      <!-- 4. LA FÊTE -->
+      <div class="event-block__section">
+        <span class="event-block__section-label">La fête</span>
+
+        <!-- Lecture -->
+        <template v-if="!editMode">
+          <dl v-if="eventTypeLabel || ambianceLabel" class="brief-fields">
+            <template v-if="eventTypeLabel">
+              <dt>Type</dt>
+              <dd>{{ eventTypeEmoji }} {{ eventTypeLabel }}</dd>
+            </template>
+            <template v-if="ambianceLabel">
+              <dt>Ambiance</dt>
+              <dd>{{ ambianceEmoji }} {{ ambianceLabel }}</dd>
+            </template>
+            <dt>Moment clé</dt>
+            <dd class="brief-fields__empty">Non renseigné</dd>
+          </dl>
+          <p v-else class="event-block__field-value event-block__field-value--empty">Non renseigné</p>
+        </template>
+
+        <!-- Édition (client uniquement) -->
+        <template v-else-if="variant === 'client'">
+          <div class="edit-fields">
+            <div class="edit-field">
+              <label class="edit-field__label">Type d'événement</label>
+              <select v-model="draft.eventType" class="edit-field__select">
+                <option value="">— Non renseigné</option>
+                <option v-for="o in EVENT_TYPE_OPTIONS" :key="o.value" :value="o.value">
+                  {{ o.emoji }} {{ o.label }}
+                </option>
+              </select>
+            </div>
+            <div class="edit-field">
+              <label class="edit-field__label">Ambiance</label>
+              <select v-model="draft.ambiance" class="edit-field__select">
+                <option value="">— Non renseigné</option>
+                <option v-for="o in AMBIANCE_OPTIONS" :key="o.value" :value="o.value">
+                  {{ o.emoji }} {{ o.label }}
+                </option>
+              </select>
+            </div>
+            <div class="edit-field">
+              <label class="edit-field__label">Ville</label>
+              <input v-model="draft.ville" class="edit-field__input" type="text" placeholder="Ville" />
+            </div>
+            <div class="edit-field">
+              <label class="edit-field__label">Nombre d'invités</label>
+              <input v-model="draft.nbInvites" class="edit-field__input" type="number" min="0" placeholder="0" />
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <hr class="event-block__divider" />
+
+      <!-- 5. MISE À JOUR -->
+      <div class="event-block__section">
+        <span class="event-block__section-label">Mise à jour</span>
+        <button
+          v-if="lastUpdateDate"
+          class="event-block__journal-btn"
+          type="button"
+          @click="journalOpen = true"
+        >
+          {{ lastUpdateDate }}
+        </button>
+        <p v-else class="event-block__field-value event-block__field-value--empty">
+          Aucune modification enregistrée.
+        </p>
+      </div>
     </div>
 
-    <!-- ── Bouton Enregistrer ────────────────────────────────────────────────── -->
+    <!-- ── Bouton enregistrer ───────────────────────────────────────────────────── -->
     <SgiltButton v-if="editMode" :disabled="saving" @click="save">
       {{ saving ? 'Enregistrement…' : 'Enregistrer' }}
     </SgiltButton>
   </section>
 
-  <!-- ── Journal ─────────────────────────────────────────────────────────────── -->
+  <!-- ── Journal ─────────────────────────────────────────────────────────────────── -->
   <EventJournal v-model:open="journalOpen" :journal="event.journal ?? []" />
 
-  <!-- ── Modale abandon ───────────────────────────────────────────────────────── -->
+  <!-- ── Modale abandon ───────────────────────────────────────────────────────────── -->
   <Teleport to="body">
     <Transition name="modal">
       <div
@@ -156,13 +257,35 @@
 <script setup lang="ts">
 import IconEditNote from '~/components/icons/IconEditNote.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
-import { EventMockService } from '~/services/event.mock'
-import type { EventDetail } from '~/types/event'
-import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS } from '~/types/demande'
 import EventJournal from '~/components/app/EventJournal.vue'
+import { EventMockService } from '~/services/event.mock'
+import type { EventDetail, ClientContactInfo } from '~/types/event'
+import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS } from '~/types/demande'
+import {
+  ArrowDownSIcon,
+  ArrowUpSIcon,
+  FileCopyIcon,
+  CalendarEventIcon,
+  MapPin2Icon,
+  GroupIcon,
+  CheckIcon,
+} from '@remixicons/vue/line'
 
-const props = defineProps<{ event: EventDetail }>()
-const emit = defineEmits<{ updated: [patch: Partial<EventDetail>] }>()
+const props = defineProps<{
+  event: EventDetail
+  clientInfo: ClientContactInfo
+  variant?: 'client' | 'pro'
+}>()
+
+const emit = defineEmits<{
+  updated: [patch: Partial<EventDetail>]
+  updatedClientInfo: [patch: Partial<ClientContactInfo>]
+}>()
+
+const variant = computed(() => props.variant ?? 'client')
+
+// ── Accordéon ─────────────────────────────────────────────────────────────────
+const open = ref(false)
 
 // ── Journal ───────────────────────────────────────────────────────────────────
 const journalOpen = ref(false)
@@ -176,38 +299,79 @@ const lastUpdateDate = computed(() => {
     : null
 })
 
+// ── Labels lecture ─────────────────────────────────────────────────────────────
+const eventTypeOpt = computed(() =>
+  EVENT_TYPE_OPTIONS.find((o) => o.value === props.event.eventType),
+)
+const eventTypeLabel = computed(() => eventTypeOpt.value?.label ?? null)
+const eventTypeEmoji = computed(() => eventTypeOpt.value?.emoji ?? '')
+
+const ambianceOpt = computed(() => AMBIANCE_OPTIONS.find((o) => o.value === props.event.ambiance))
+const ambianceLabel = computed(() => ambianceOpt.value?.label ?? null)
+const ambianceEmoji = computed(() => ambianceOpt.value?.emoji ?? '')
+
+// ── Copier (variant pro) ───────────────────────────────────────────────────────
+const phoneCopied = ref(false)
+const emailCopied = ref(false)
+
+async function copyPhone() {
+  await navigator.clipboard.writeText(props.clientInfo.phone)
+  phoneCopied.value = true
+  setTimeout(() => (phoneCopied.value = false), 2000)
+}
+
+async function copyEmail() {
+  await navigator.clipboard.writeText(props.clientInfo.email)
+  emailCopied.value = true
+  setTimeout(() => (emailCopied.value = false), 2000)
+}
+
 // ── Mode édition ──────────────────────────────────────────────────────────────
 const editMode = ref(false)
 const saving = ref(false)
 const showAbandonModal = ref(false)
 
 const draft = reactive({
-  title: '',
   eventType: '',
   ambiance: '',
   ville: '',
+  lieu: '',
   nbInvites: '',
   sharedNote: '',
+  firstName: '',
+  lastName: '',
+  phone: '',
+  email: '',
 })
 
 function enterEditMode() {
-  draft.title = props.event.title
   draft.eventType = props.event.eventType ?? ''
   draft.ambiance = props.event.ambiance ?? ''
   draft.ville = props.event.ville ?? ''
+  draft.lieu = props.event.lieu ?? ''
   draft.nbInvites = props.event.nbInvites ?? ''
   draft.sharedNote = props.event.sharedNote
+  draft.firstName = props.clientInfo.firstName
+  draft.lastName = props.clientInfo.lastName ?? ''
+  draft.phone = props.clientInfo.phone
+  draft.email = props.clientInfo.email
   editMode.value = true
+  open.value = true
+  nextTick(autoResize)
 }
 
 const isDirty = computed(
   () =>
-    draft.title !== props.event.title ||
     draft.eventType !== (props.event.eventType ?? '') ||
     draft.ambiance !== (props.event.ambiance ?? '') ||
     draft.ville !== (props.event.ville ?? '') ||
+    draft.lieu !== (props.event.lieu ?? '') ||
     draft.nbInvites !== (props.event.nbInvites ?? '') ||
-    draft.sharedNote !== props.event.sharedNote,
+    draft.sharedNote !== props.event.sharedNote ||
+    draft.firstName !== props.clientInfo.firstName ||
+    draft.lastName !== (props.clientInfo.lastName ?? '') ||
+    draft.phone !== props.clientInfo.phone ||
+    draft.email !== props.clientInfo.email,
 )
 
 function handleCancel() {
@@ -225,30 +389,28 @@ function confirmAbandon() {
 
 async function save() {
   saving.value = true
-  const patch = {
-    title: draft.title,
+  const eventPatch: Partial<EventDetail> = {
     eventType: draft.eventType || undefined,
     ambiance: draft.ambiance || undefined,
     ville: draft.ville || undefined,
+    lieu: draft.lieu || undefined,
     nbInvites: draft.nbInvites || undefined,
     sharedNote: draft.sharedNote,
   }
-  await EventMockService.patchEvent(props.event.id, patch)
-  emit('updated', patch)
+  await EventMockService.patchEvent(props.event.id, eventPatch)
+  emit('updated', eventPatch)
+
+  const clientPatch: Partial<ClientContactInfo> = {
+    firstName: draft.firstName,
+    lastName: draft.lastName || undefined,
+    phone: draft.phone,
+    email: draft.email,
+  }
+  emit('updatedClientInfo', clientPatch)
+
   saving.value = false
   editMode.value = false
 }
-
-// ── Labels lecture ─────────────────────────────────────────────────────────
-const eventTypeOpt = computed(() =>
-  EVENT_TYPE_OPTIONS.find((o) => o.value === props.event.eventType),
-)
-const eventTypeLabel = computed(() => eventTypeOpt.value?.label ?? null)
-const eventTypeEmoji = computed(() => eventTypeOpt.value?.emoji ?? '')
-
-const ambianceOpt = computed(() => AMBIANCE_OPTIONS.find((o) => o.value === props.event.ambiance))
-const ambianceLabel = computed(() => ambianceOpt.value?.label ?? null)
-const ambianceEmoji = computed(() => ambianceOpt.value?.emoji ?? '')
 
 // ── Auto-resize textarea ──────────────────────────────────────────────────────
 const noteRef = ref<HTMLTextAreaElement | null>(null)
@@ -259,10 +421,6 @@ function autoResize() {
   el.style.height = 'auto'
   el.style.height = `${el.scrollHeight}px`
 }
-
-watch(editMode, (on) => {
-  if (on) nextTick(autoResize)
-})
 
 // ── Formatage ─────────────────────────────────────────────────────────────────
 function formatDate(iso: string) {
@@ -275,52 +433,16 @@ function formatDate(iso: string) {
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/base' as *;
+
 // ── Bloc ──────────────────────────────────────────────────────────────────────
+
 .event-block {
   background: #fff;
-  border-radius: $border-radius-s;
-  padding: $spacing-m;
+  border-radius: $radius-md;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: $spacing-m;
-  box-shadow: 0 1px 4px $shadow-s;
-
-  &__header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: $spacing-s;
-  }
-
-  &__title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: $brand-primary;
-    margin: 0;
-    line-height: 1.2;
-    flex: 1;
-  }
-
-  &__title-input {
-    flex: 1;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: $brand-primary;
-    border: 1px solid $divider-color;
-    border-radius: $radius-sm;
-    padding: 4px $spacing-xs;
-    background: $surface-soft;
-    outline: none;
-    min-width: 0;
-
-    &:focus {
-      border-color: $input-focus-border-color;
-      box-shadow: $input-focus-box-shadow;
-      background: #fff;
-    }
-  }
 
   &__edit-btn {
     flex-shrink: 0;
@@ -334,9 +456,7 @@ function formatDate(iso: string) {
     color: $brand-muted;
     border-radius: $radius-sm;
     cursor: pointer;
-    transition:
-      background 150ms ease,
-      color 150ms ease;
+    transition: background 150ms ease, color 150ms ease;
 
     &:hover {
       background: $surface-soft;
@@ -355,40 +475,241 @@ function formatDate(iso: string) {
     padding: 4px 0;
     transition: color 150ms ease;
 
-    &:hover {
-      color: $text-primary;
-    }
+    &:hover { color: $text-primary; }
   }
 }
 
-// ── Pills ─────────────────────────────────────────────────────────────────────
-.event-pills {
+// ── Toggle accordéon ──────────────────────────────────────────────────────────
+
+.event-block__toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: $spacing-s;
+  padding: $spacing-s $spacing-m;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 120ms ease;
+
+  &:hover { background: $surface-soft; }
+}
+
+.event-block__pills {
+  flex: 1;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  min-width: 0;
 }
+
+.event-block__chevron {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: $text-secondary;
+}
+
+// ── Pills ─────────────────────────────────────────────────────────────────────
 
 .event-pill {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  padding: 3px 8px;
+  gap: 6px;
+  padding: 4px 8px;
   border-radius: 2rem;
   background: $surface-soft;
   border: 1px solid $divider-color;
-  font-size: 0.688rem; // ~11px
+  font-family: 'Inter', sans-serif;
+  font-size: 0.688rem;
   color: $text-secondary;
   font-weight: 500;
   white-space: nowrap;
 
-  &--fixed {
+  &__icon {
+    width: 11px;
+    height: 11px;
+    flex-shrink: 0;
+  }
+
+  &--date {
     background: rgba($brand-accent, 0.08);
     border-color: rgba($brand-accent, 0.3);
     color: darken(#e6b800, 18%);
   }
 }
 
+// ── Corps accordéon ───────────────────────────────────────────────────────────
+
+.event-block__body {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid $divider-color;
+}
+
+.event-block__section {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  padding: $spacing-s $spacing-m;
+}
+
+.event-block__section-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: $text-secondary;
+}
+
+.event-block__divider {
+  border: none;
+  border-top: 1px solid $divider-color;
+  margin: 0;
+}
+
+// ── Valeurs lecture ───────────────────────────────────────────────────────────
+
+.event-block__field-value {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: $text-primary;
+  margin: 0;
+
+  &--empty {
+    color: $text-secondary;
+    opacity: 0.55;
+    font-style: italic;
+  }
+}
+
+.event-block__note-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: $text-primary;
+  line-height: 1.55;
+  margin: 0;
+  white-space: pre-wrap;
+
+  &--empty {
+    color: $text-secondary;
+    opacity: 0.45;
+    font-style: italic;
+  }
+}
+
+.event-block__journal-btn {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-style: italic;
+  color: $text-secondary;
+  opacity: 0.6;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: opacity 150ms ease;
+
+  &:hover { opacity: 1; }
+}
+
+// ── Coordonnées ───────────────────────────────────────────────────────────────
+
+.event-block__contact-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.event-block__contact-row {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  min-width: 0;
+}
+
+.event-block__contact-value {
+  flex: 1;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  color: $text-primary;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &--email {
+    font-size: 0.75rem;
+    color: $text-secondary;
+  }
+}
+
+.event-block__copy-btn {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: $radius-sm;
+  border: 1px solid $divider-color;
+  background: none;
+  color: $text-secondary;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 120ms ease, color 120ms ease;
+
+  &--copied {
+    background: $brand-accent;
+    color: $brand-primary;
+    border-color: $brand-accent;
+  }
+}
+
+.event-block__copy-icon {
+  width: 13px;
+  height: 13px;
+}
+
+// ── Champs dt/dd lecture ──────────────────────────────────────────────────────
+
+.brief-fields {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px $spacing-s;
+  margin: 0;
+
+  dt {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: $text-secondary;
+    align-self: center;
+  }
+
+  dd {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    color: $text-primary;
+    margin: 0;
+    align-self: center;
+  }
+
+  &__empty {
+    color: $text-secondary;
+    opacity: 0.55;
+    font-style: italic;
+  }
+}
+
 // ── Champs édition ────────────────────────────────────────────────────────────
+
 .edit-fields {
   display: flex;
   flex-direction: column;
@@ -408,83 +729,7 @@ function formatDate(iso: string) {
   }
 
   &__input,
-  &__select {
-    width: 100%;
-    padding: $spacing-xs $spacing-s;
-    border: 1px solid $divider-color;
-    border-radius: $radius-sm;
-    font-family: inherit;
-    font-size: 0.9rem;
-    color: $text-primary;
-    background: $surface-soft;
-    outline: none;
-    box-sizing: border-box;
-    transition:
-      border-color 150ms ease,
-      box-shadow 150ms ease;
-    appearance: none;
-
-    &:focus {
-      border-color: $input-focus-border-color;
-      box-shadow: $input-focus-box-shadow;
-      background: #fff;
-    }
-  }
-
-  &__select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b635c' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right $spacing-s center;
-    padding-right: $spacing-xl;
-  }
-}
-
-// ── Note ──────────────────────────────────────────────────────────────────────
-.event-note {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-xs;
-
-  &__label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: $text-secondary;
-    letter-spacing: 0.02em;
-  }
-
-  &__text {
-    font-style: italic;
-    font-size: 0.9rem;
-    color: $brand-muted;
-    line-height: 1.6;
-    margin: 0;
-    white-space: pre-wrap;
-
-    &--empty {
-      opacity: 0.45;
-    }
-  }
-
-  &__journal-btn {
-    align-self: flex-start;
-    background: none;
-    border: none;
-    padding: 0;
-    font-family: inherit;
-    font-size: 0.75rem;
-    font-style: italic;
-    color: $text-secondary;
-    opacity: 0.6;
-    cursor: pointer;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-    transition: opacity 150ms ease;
-
-    &:hover {
-      opacity: 1;
-    }
-  }
-
+  &__select,
   &__textarea {
     width: 100%;
     padding: $spacing-xs $spacing-s;
@@ -493,15 +738,11 @@ function formatDate(iso: string) {
     font-family: inherit;
     font-size: 0.9rem;
     color: $text-primary;
-    line-height: 1.6;
-    resize: none;
     background: $surface-soft;
     outline: none;
     box-sizing: border-box;
-    overflow: hidden;
-    transition:
-      border-color 150ms ease,
-      box-shadow 150ms ease;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+    appearance: none;
 
     &:focus {
       border-color: $input-focus-border-color;
@@ -514,9 +755,23 @@ function formatDate(iso: string) {
       opacity: 0.45;
     }
   }
+
+  &__select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b635c' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right $spacing-s center;
+    padding-right: $spacing-xl;
+  }
+
+  &__textarea {
+    resize: none;
+    line-height: 1.6;
+    overflow: hidden;
+  }
 }
 
 // ── Modale abandon ────────────────────────────────────────────────────────────
+
 .abandon-overlay {
   position: fixed;
   inset: 0;
@@ -573,9 +828,7 @@ function formatDate(iso: string) {
     cursor: pointer;
     transition: background 150ms ease;
 
-    &:hover {
-      background: rgba($state-error, 0.18);
-    }
+    &:hover { background: rgba($state-error, 0.18); }
   }
 }
 

@@ -23,6 +23,7 @@ export interface EventDetail {
   eventType?: string // valeur de EVENT_TYPE_OPTIONS
   ambiance?: string // valeur de AMBIANCE_OPTIONS
   ville?: string
+  lieu?: string // lieu précis (salle, adresse)
   nbInvites?: string
   coverImage?: string
   sharedNote: string
@@ -47,7 +48,7 @@ export interface JournalEntry {
 }
 
 export type EventPatch = Partial<
-  Pick<EventDetail, 'title' | 'eventType' | 'ambiance' | 'ville' | 'nbInvites' | 'sharedNote'>
+  Pick<EventDetail, 'title' | 'eventType' | 'ambiance' | 'ville' | 'lieu' | 'nbInvites' | 'sharedNote'>
 >
 
 export interface NoteAuthor {
@@ -92,6 +93,7 @@ export interface ReservationDetail extends Reservation {
 
 export interface ClientContactInfo {
   firstName: string
+  lastName?: string
   phone: string
   email: string
 }
