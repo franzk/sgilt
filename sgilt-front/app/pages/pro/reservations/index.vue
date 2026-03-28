@@ -1,11 +1,13 @@
 <template>
   <div class="pro-board">
-    <!-- ── Accroche ────────────────────────────────────────────────────────────── -->
+    <!-- ── En-tête ──────────────────────────────────────────────────────────────── -->
     <div class="pro-board__header">
       <p class="pro-board__greeting">Bonjour DJ Animation !</p>
-      <p class="pro-board__context">{{ contextLine }}</p>
+      <p class="pro-board__subtitle">{{ contextLine }}</p>
+    </div>
 
-      <!-- ── Pills de filtrage ─────────────────────────────────────────────────── -->
+    <!-- ── Zone filtres ─────────────────────────────────────────────────────────── -->
+    <div class="pro-board__filters">
       <div class="pills-scroll">
         <button
           v-for="pill in RESERVATION_STATUS_PILLS"
@@ -67,7 +69,7 @@ onMounted(async () => {
   loading.value = false
 })
 
-// ── Accroche ───────────────────────────────────────────────────────────────────
+// ── En-tête ────────────────────────────────────────────────────────────────────
 const newCount = computed(() => DEMANDES.value.filter((d) => d.statut === 'nouvelle').length)
 const confirmedCount = computed(() => DEMANDES.value.filter((d) => d.statut === 'confirmee').length)
 
@@ -123,11 +125,11 @@ const filteredDemandes = computed(() =>
 @use '@/assets/styles/base' as *;
 
 $desktop: $breakpoint-desktop;
-$max-w: 780px;
+$max-w: 680px;
 
 .pro-board {
   min-height: 100%;
-  background-color: #f5f5f3;
+  background-color: #e8e6e3;
   display: flex;
   flex-direction: column;
 
@@ -136,49 +138,54 @@ $max-w: 780px;
   }
 }
 
-// ── Accroche ───────────────────────────────────────────────────────────────────
+// ── En-tête ────────────────────────────────────────────────────────────────────
+
 .pro-board__header {
   background: #fff;
-  border-radius: 0;
-  padding: $spacing-m;
-  // margin: 0 (-$spacing-m);
+  padding: $spacing-m $spacing-m $spacing-s;
   display: flex;
   flex-direction: column;
-  gap: $spacing-s;
-  box-shadow: 0 1px 4px $shadow-s;
+  gap: 4px;
 
   @media (min-width: $desktop) {
-    margin: 0;
-    padding: 24px max(40px, calc((100% - $max-w) / 2 + 24px));
-    box-shadow: none;
-    border-bottom: 1px solid $divider-color;
+    padding: 28px max(40px, calc((100% - $max-w) / 2 + 24px)) $spacing-s;
   }
 }
 
 .pro-board__greeting {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 2rem;
-  font-weight: 600;
+  font-size: 2.1rem;
+  font-weight: 700;
   color: $brand-primary;
   margin: 0;
-  line-height: 1.15;
+  line-height: 1.1;
 }
 
-.pro-board__context {
+.pro-board__subtitle {
   font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: $text-secondary;
   margin: 0;
 }
 
-// ── Pills ──────────────────────────────────────────────────────────────────────
+// ── Zone filtres ───────────────────────────────────────────────────────────────
+
+.pro-board__filters {
+  background: #f0eeeb;
+  padding: $spacing-s $spacing-m;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  @media (min-width: $desktop) {
+    padding: $spacing-s max(40px, calc((100% - $max-w) / 2 + 24px));
+  }
+}
+
 .pills-scroll {
   display: flex;
   gap: $spacing-xs;
   overflow-x: auto;
   scrollbar-width: none;
   padding-bottom: 2px;
-  margin-top: $spacing-xs;
 
   &::-webkit-scrollbar {
     display: none;
@@ -194,21 +201,21 @@ $max-w: 780px;
   font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
+  background: none;
+  color: $text-secondary;
   transition:
     background 120ms ease,
     color 120ms ease;
 
-  background: #ebebea;
-  color: $text-secondary;
-
   &--active {
-    background: $brand-accent;
-    color: $brand-primary;
+    background: #2d2d2b;
+    color: #fff;
     font-weight: 600;
   }
 }
 
 // ── Liste demandes ─────────────────────────────────────────────────────────────
+
 .bookings-list {
   display: flex;
   flex-direction: column;
