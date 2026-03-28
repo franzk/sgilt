@@ -44,7 +44,10 @@
     <!-- Colonne droite : infos -->
     <div class="booking-card__right">
       <div v-if="needsAction" class="booking-card__right-row">
-        <span class="booking-card__action-required">Action requise</span>
+        <span
+          class="booking-card__action-required"
+          :class="`booking-card__action-required--${demande.statut}`"
+        >Action requise</span>
       </div>
 
       <div v-if="demande.phraseInfoState" class="booking-card__right-row">
@@ -192,8 +195,15 @@ const needsAction = computed(() =>
   font-size: 0.72rem;
   text-transform: uppercase;
   font-weight: 600;
-  color: #d93025;
   background: none;
+
+  &--nouvelle {
+    color: #d93025;
+  }
+
+  &--en_discussion {
+    color: #e67e22;
+  }
 }
 
 .booking-card__info-label {
