@@ -13,25 +13,6 @@
           <GroupIcon class="event-pill__icon" />{{ event.nbInvites }}
         </span>
       </div>
-      <template v-if="variant === 'client'">
-        <button
-          v-if="!editMode"
-          class="event-block__edit-btn"
-          type="button"
-          aria-label="Modifier l'événement"
-          @click.stop="enterEditMode"
-        >
-          <IconEditNote />
-        </button>
-        <button
-          v-else
-          class="event-block__cancel-btn"
-          type="button"
-          @click.stop="handleCancel"
-        >
-          Annuler
-        </button>
-      </template>
       <ArrowUpSIcon v-if="open" class="event-block__chevron" />
       <ArrowDownSIcon v-else class="event-block__chevron" />
     </button>
@@ -203,7 +184,23 @@
 
       <!-- 5. MISE À JOUR -->
       <div class="event-block__section">
-        <span class="event-block__section-label">Mise à jour</span>
+        <div class="event-block__update-row">
+          <span class="event-block__section-label">Mise à jour</span>
+          <template v-if="variant === 'client'">
+            <button
+              v-if="!editMode"
+              class="event-block__edit-btn"
+              type="button"
+              aria-label="Modifier l'événement"
+              @click="enterEditMode"
+            >
+              <IconEditNote />
+            </button>
+            <button v-else class="event-block__cancel-btn" type="button" @click="handleCancel">
+              Annuler
+            </button>
+          </template>
+        </div>
         <button
           v-if="lastUpdateDate"
           class="event-block__journal-btn"
@@ -553,6 +550,12 @@ function formatDate(iso: string) {
   flex-direction: column;
   gap: $spacing-xs;
   padding: $spacing-s $spacing-m;
+}
+
+.event-block__update-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .event-block__section-label {
