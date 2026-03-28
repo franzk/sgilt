@@ -157,6 +157,9 @@ $max-w: 680px;
 // ── Zone filtres ───────────────────────────────────────────────────────────────
 
 .pro-board__filters {
+  position: sticky;
+  top: $app-header-height;
+  z-index: $z-header;
   background: #fff;
   padding: $spacing-s $spacing-m;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
