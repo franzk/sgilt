@@ -53,8 +53,6 @@ definePageMeta({ layout: 'pro' })
 import { ProMockService } from '~/services/pro.mock'
 import type { ProDemandeSummary } from '~/types/event'
 import {
-  ALL_RESERVATION_STATUTS,
-  DEFAULT_ACTIVE_PILLS,
   RESERVATION_STATUS_PILLS,
   RESERVATION_STATUS_ORDER,
 } from '~/constants/reservation-status'
@@ -86,31 +84,22 @@ const contextLine = computed(() => {
 // ── Pills ──────────────────────────────────────────────────────────────────────
 const { t } = useI18n()
 
-const activePills = ref<ReservationStatut[]>([...DEFAULT_ACTIVE_PILLS])
+// 'toutes' = null, sinon le statut sélectionné
+const activeFilter = ref<ReservationStatut | null>(null)
 
 function isPillActive(id: string): boolean {
-  if (id === 'toutes') return ALL_RESERVATION_STATUTS.every((s) => activePills.value.includes(s))
-  return activePills.value.includes(id as ReservationStatut)
+  if (id === 'toutes') return activeFilter.value === null
+  return activeFilter.value === (id as ReservationStatut)
 }
 
 function togglePill(id: string) {
-  if (id === 'toutes') {
-    activePills.value = isPillActive('toutes')
-      ? [...DEFAULT_ACTIVE_PILLS]
-      : [...ALL_RESERVATION_STATUTS]
-    return
-  }
-  const statut = id as ReservationStatut
-  const next = activePills.value.includes(statut)
-    ? activePills.value.filter((p) => p !== statut)
-    : [...activePills.value, statut]
-  activePills.value = next.length === 0 ? [...DEFAULT_ACTIVE_PILLS] : next
+  activeFilter.value = id === 'toutes' ? null : (id as ReservationStatut)
 }
 
 // ── Filtrage + tri ─────────────────────────────────────────────────────────────
 const filteredDemandes = computed(() =>
   DEMANDES.value
-    .filter((d) => activePills.value.includes(d.statut as ReservationStatut))
+    .filter((d) => activeFilter.value === null || d.statut === activeFilter.value)
     .sort((a, b) => {
       const statusDiff =
         RESERVATION_STATUS_ORDER.indexOf(a.statut as ReservationStatut) -
