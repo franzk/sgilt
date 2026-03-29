@@ -21,7 +21,7 @@
       <SgiltCard
         v-for="event in events"
         :key="event.id"
-        :image="coverImage(event.eventType)"
+        :image="coverImage(event)"
         :ratio="cardRatio"
         @click="navigateTo(`/app/events/${event.id}`)"
       >
@@ -74,19 +74,20 @@ onMounted(async () => {
 })
 
 // ── Cover images ──────────────────────────────────────────────────────────────
-const COVER_IMAGES: Record<string, string> = {
+const DEFAULT_COVERS: Record<string, string> = {
   mariage:
     'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&auto=format&fit=crop',
   anniversaire:
     'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800&auto=format&fit=crop',
-  soiree: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop',
-  entreprise:
+  soiree_privee:
+    'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop',
+  fete_entreprise:
     'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&auto=format&fit=crop',
   autre: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&auto=format&fit=crop',
 }
 
-function coverImage(eventType?: string) {
-  return COVER_IMAGES[eventType ?? ''] ?? COVER_IMAGES.autre
+function coverImage(event: EventDetail) {
+  return event.coverImage ?? DEFAULT_COVERS[event.eventType ?? ''] ?? DEFAULT_COVERS.autre
 }
 
 // ── Résumé réservations ───────────────────────────────────────────────────────

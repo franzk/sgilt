@@ -25,7 +25,7 @@ export interface EventDetail {
   ville?: string
   lieu?: string // lieu précis (salle, adresse)
   nbInvites?: string
-  coverImage?: string
+  coverImage?: string | null
   sharedNote: string
   sharedNoteUpdatedAt?: string // ISO datetime
   reservations: Reservation[]
@@ -48,7 +48,7 @@ export interface JournalEntry {
 }
 
 export type EventPatch = Partial<
-  Pick<EventDetail, 'title' | 'eventType' | 'ambiance' | 'ville' | 'lieu' | 'nbInvites' | 'sharedNote'>
+  Pick<EventDetail, 'title' | 'coverImage' | 'eventType' | 'ambiance' | 'ville' | 'lieu' | 'nbInvites' | 'sharedNote'>
 >
 
 export interface NoteAuthor {
