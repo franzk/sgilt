@@ -21,15 +21,15 @@ defineProps<{
 </script>
 
 <style scoped lang="scss">
-$btn-radius: 6px;
+$btn-radius: 0.5rem;
 $btn-height: 2.5rem;
 $btn-padding-y: 9px;
 $btn-padding-x: 18px;
 $btn-font-size: 14px;
 $btn-font-weight: 500;
 
-$btn-primary-bg-from: #f5c830;
-$btn-primary-bg-to: #e0a000;
+$btn-primary-bg-from: #fad84a;
+$btn-primary-bg-to: #e8b000;
 
 $btn-secondary-border: #e2e8f0;
 
