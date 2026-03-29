@@ -30,7 +30,7 @@
           <p class="text">{{ prestataire.budget }}</p>
         </div>
 
-        <SgiltButton class="sidebar-cta" @click="openContactModal">
+        <SgiltButton class="sidebar-cta" @click="openContactModal" :disabled="!dateModel">
           Envoyer une demande
         </SgiltButton>
       </aside>
@@ -134,7 +134,7 @@
          STICKY CTA (mobile uniquement)
     ════════════════════════════════════════════ -->
     <div class="sticky-cta">
-      <SgiltButton class="button" @click="openContactModal">
+      <SgiltButton class="button" @click="openContactModal" :disabled="!dateModel">
         Envoyer une demande
       </SgiltButton>
     </div>
@@ -163,25 +163,13 @@
         >
           <button class="modal-close" @click="closeGallery" aria-label="Fermer">✕</button>
           <div class="gallery">
-            <button
-              class="nav prev"
-              @click="prevPhoto"
-              aria-label="Photo précédente"
-            >
-              ‹
-            </button>
+            <button class="nav prev" @click="prevPhoto" aria-label="Photo précédente">‹</button>
             <img
               :src="galleryPhotos[galleryIndex]"
               :alt="`Photo ${galleryIndex + 1}`"
               class="image"
             />
-            <button
-              class="nav next"
-              @click="nextPhoto"
-              aria-label="Photo suivante"
-            >
-              ›
-            </button>
+            <button class="nav next" @click="nextPhoto" aria-label="Photo suivante">›</button>
             <div class="counter">{{ galleryIndex + 1 }} / {{ galleryPhotos.length }}</div>
           </div>
         </div>
@@ -314,9 +302,7 @@ const availabilityIcon = computed(() => (isUnavailable.value ? '✗' : '✓'))
 const availabilityLabel = computed(() =>
   isUnavailable.value ? 'Non disponible à cette date' : 'Disponible à cette date',
 )
-const availabilityClass = computed(() =>
-  isUnavailable.value ? 'unavailable' : 'available',
-)
+const availabilityClass = computed(() => (isUnavailable.value ? 'unavailable' : 'available'))
 
 // ─── Vidéo ────────────────────────────────────────────────────────────────────
 const showVideo = ref(false)
@@ -460,9 +446,9 @@ $section-gap: 2.5rem;
   display: none;
 
   @media (min-width: $breakpoint-desktop) {
-    display: block;
-    width: 100%;
-    height: 3rem;
+    display: flex;
+    height: 2.5rem;
+    align-self: center;
   }
 }
 
@@ -479,13 +465,15 @@ $section-gap: 2.5rem;
   -webkit-backdrop-filter: blur(12px);
   border-top: 1px solid rgba(0, 0, 0, 0.08);
 
+  display: flex;
+  justify-content: center;
+
   @media (min-width: $breakpoint-desktop) {
     display: none;
   }
 
   .button {
-    height: 3rem;
-    width: 100%;
+    height: 2.5rem;
   }
 }
 
