@@ -447,7 +447,6 @@ $section-gap: 2.5rem;
 
   @media (min-width: $breakpoint-desktop) {
     display: flex;
-    height: 2.5rem;
     align-self: center;
   }
 }
@@ -470,10 +469,6 @@ $section-gap: 2.5rem;
 
   @media (min-width: $breakpoint-desktop) {
     display: none;
-  }
-
-  .button {
-    height: 2.5rem;
   }
 }
 

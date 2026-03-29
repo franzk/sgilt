@@ -22,6 +22,7 @@ defineProps<{
 
 <style scoped lang="scss">
 $btn-radius: 6px;
+$btn-height: 2.5rem;
 $btn-padding-y: 9px;
 $btn-padding-x: 18px;
 $btn-font-size: 14px;
@@ -35,6 +36,7 @@ $btn-secondary-border: #e2e8f0;
 .btn {
   display: inline-flex;
   width: fit-content;
+  height: $btn-height;
   align-items: center;
   justify-content: center;
   gap: 6px;
