@@ -15,11 +15,10 @@
       de manière pertinente !
     </p>
 
-    <p class="optional">Optionnel — vous pouvez passer cette étape.</p>
-
-    <p class="next">
-      <SgiltButton class="next-btn" @click="next"> Continuer →</SgiltButton>
-    </p>
+    <div class="actions">
+      <SgiltButton @click="next">Continuer →</SgiltButton>
+      <SgiltButton variant="tertiary" @click="next">Passer cette étape</SgiltButton>
+    </div>
   </div>
 </template>
 
@@ -49,20 +48,11 @@ const placeholderText = 'Parlez-nous de votre événement, de vos envies, de ce 
     margin: 0 0 $spacing-l;
   }
 
-  .optional {
-    font-size: 0.8rem;
-    color: $text-secondary;
-    opacity: 0.6;
-    margin: $spacing-s 0 0;
-  }
-
-  .next {
-    height: 3rem;
-    width: 100%;
+  .actions {
     display: flex;
-    button {
-      width: 100%;
-    }
+    align-items: center;
+    gap: $spacing-m;
+    margin-top: $spacing-s;
   }
 }
 
