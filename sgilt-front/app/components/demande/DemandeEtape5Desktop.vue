@@ -1,9 +1,9 @@
 <template>
   <div class="etape">
-    <h2 class="etape__question">Votre événement en pratique</h2>
+    <h2 class="question">Votre événement en pratique</h2>
     <DemandeEtape5Fields :state="state" />
     <SgiltButton
-      class="etape__button"
+      class="button"
       :disabled="!state.date || !state.ville || !state.nbInvites"
       @click="next"
       >Suivant</SgiltButton
@@ -21,7 +21,7 @@ const { state, next } = useDemande()
 
 <style scoped lang="scss">
 .etape {
-  &__question {
+  .question {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.5rem;
     font-weight: 500;
@@ -29,11 +29,9 @@ const { state, next } = useDemande()
     margin: 0 0 $spacing-l;
     line-height: 1.3;
   }
-}
 
-.etape__button {
-  height: 3rem;
-  width: 100%;
-  margin-top: $spacing-l;
+  .button {
+    margin-top: $spacing-l;
+  }
 }
 </style>
