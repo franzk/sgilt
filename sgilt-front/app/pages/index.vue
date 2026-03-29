@@ -20,7 +20,7 @@
         <SgiltSelect :options="selectOptions" v-model="selectedOption">
           <template v-slot:left-icon> <IconRocket /> </template>
         </SgiltSelect>
-        <SgiltButton class="submit_button" @click="launch"> C'est parti ! </SgiltButton>
+        <SgiltHeroButton class="submit_button" @click="launch"> C'est parti ! </SgiltHeroButton>
       </div>
     </section>
     <section class="photo-layer" aria-hidden="true"></section>
@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
+import SgiltHeroButton from '~/components/basics/buttons/SgiltHeroButton.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
 import SgiltSelect from '~/components/basics/inputs/SgiltSelect.vue'
 import IconRocket from '~/components/icons/IconRocket.vue'

@@ -1,84 +1,122 @@
-import { defineProps } from "vue"
-
 <template>
   <button
-    class="sgilt-button"
-    :class="{ secondary: variant === 'secondary' }"
+    class="btn"
+    :class="[variant, { loading, disabled }]"
+    :disabled="disabled || loading"
+    type="button"
     @click="$emit('click')"
   >
-    <slot></slot>
+    <span v-if="loading" class="spinner" aria-hidden="true" />
+    <slot />
   </button>
 </template>
 
 <script setup lang="ts">
 defineEmits(['click'])
 defineProps<{
-  variant?: string
+  variant?: 'primary' | 'secondary' | 'tertiary'
+  disabled?: boolean
+  loading?: boolean
 }>()
 </script>
 
 <style scoped lang="scss">
-// TODO : vérifier le secondary
-@use 'sass:color';
+$btn-radius: 6px;
+$btn-padding-y: 9px;
+$btn-padding-x: 18px;
+$btn-font-size: 14px;
+$btn-font-weight: 500;
 
-// global
-$background: linear-gradient(to bottom, #ffd84d 0%, #f2c200 100%);
+$btn-primary-bg-from: #f5c830;
+$btn-primary-bg-to: #e0a000;
 
-// font
-$font-size: 1.125rem;
-$font-weight: 750;
-$color: #fff;
-$text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+$btn-secondary-border: #e2e8f0;
 
-// border
-$border-radius: 1.75rem;
-$border: 0.0625rem solid rgba(255, 255, 255, 0.35);
-$box-shadow:
-  0 0.25rem 0.5rem rgba(0, 0, 0, 0.14),
-  0 0.75rem 1.75rem rgba(0, 0, 0, 0.08),
-  0 0.75rem 2rem rgba(242, 194, 0, 0.18);
-
-// hover & active
-$hover-text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-
-// style
-.sgilt-button {
+.btn {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: $btn-padding-y $btn-padding-x;
+  border-radius: $btn-radius;
+  font-family: inherit;
+  font-size: $btn-font-size;
+  font-weight: $btn-font-weight;
+  line-height: 1;
   cursor: pointer;
-
-  height: 100%;
-  min-height: 2rem;
-
-  font-size: $font-size;
-  font-weight: $font-weight;
-
-  background: $background;
-  color: $color;
-  text-shadow: $text-shadow;
   border: none;
-  border-radius: $border-radius;
+  background: none;
+  white-space: nowrap;
+  transition:
+    filter 120ms ease,
+    transform 80ms ease,
+    box-shadow 80ms ease,
+    background 120ms ease,
+    color 120ms ease;
 
-  &:hover {
-    text-shadow: $hover-text-shadow;
+  &.disabled,
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
   }
 
-  &:focus-visible {
-    outline: none;
-    border-color: $input-focus-border-color;
+  // ── Primary ──────────────────────────────────────────────────────────────────
+  &.primary,
+  &:not(.secondary):not(.tertiary) {
+    background: linear-gradient(180deg, $btn-primary-bg-from 0%, $btn-primary-bg-to 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 
-    box-shadow: $input-focus-box-shadow;
+    &:hover:not(:disabled) {
+      filter: brightness(1.05);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
   }
 
-  border: $border;
+  // ── Secondary ─────────────────────────────────────────────────────────────────
+  &.secondary {
+    background: transparent;
+    border: 1px solid $btn-secondary-border;
+    color: $text-secondary;
 
-  box-shadow: $box-shadow;
+    &:hover:not(:disabled) {
+      background: $surface-soft;
+    }
+  }
+
+  // ── Tertiary ──────────────────────────────────────────────────────────────────
+  &.tertiary {
+    padding: 0;
+    color: $text-secondary;
+
+    &:hover:not(:disabled) {
+      color: $text-primary;
+    }
+  }
 }
 
-.secondary {
-  background-color: white;
-  color: $color-accent;
+// ── Spinner ───────────────────────────────────────────────────────────────────
+.spinner {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  animation: spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
 
-  &:hover {
-    background-color: color.adjust($color-secondary, $lightness: -10%);
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>
