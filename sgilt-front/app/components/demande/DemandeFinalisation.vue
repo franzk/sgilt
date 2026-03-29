@@ -1,8 +1,6 @@
 <template>
   <div class="finalisation">
-    <button class="close" type="button" @click="$emit('close')">
-      ✕
-    </button>
+    <button class="close" type="button" @click="$emit('close')">✕</button>
 
     <div class="hero">
       <div class="icon">✉️</div>
@@ -33,7 +31,6 @@ defineEmits<{ close: [] }>()
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: $spacing-xl;
 
   .hero {
     display: flex;
@@ -94,7 +91,9 @@ defineEmits<{ close: [] }>()
       color: $text-secondary;
       cursor: pointer;
       border-radius: $radius-sm;
-      transition: color 150ms ease, background 150ms ease;
+      transition:
+        color 150ms ease,
+        background 150ms ease;
 
       &:hover {
         color: $text-primary;

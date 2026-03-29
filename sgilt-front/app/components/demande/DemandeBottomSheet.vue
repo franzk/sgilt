@@ -37,11 +37,16 @@
         <DemandeRecap v-if="etapeActuelle >= 2 && etapeActuelle < 5" />
       </template>
     </div>
+
+    <div v-if="!submitted && etapeActuelle === 5" class="sheet-footer">
+      <SgiltButton :disabled="!step5Valid" @click="next">Continuer →</SgiltButton>
+    </div>
   </SgiltBottomSheet>
 </template>
 
 <script setup lang="ts">
 import SgiltBottomSheet from '~/components/basics/sheets/SgiltBottomSheet.vue'
+import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import { useDemande } from '~/composables/useDemande'
 
 const props = defineProps<{
@@ -58,7 +63,12 @@ const drawerOpen = computed({
   },
 })
 
-const { etapeActuelle, direction, submitted, state, back, goTo, reset } = useDemande()
+const { etapeActuelle, direction, submitted, state, next, back, goTo, reset } = useDemande()
+
+const step5Valid = computed(
+  () =>
+    !!state.date && !!state.ville.trim() && !!state.nbInvites.trim() && Number(state.nbInvites) > 0,
+)
 
 watch(() => props.isOpen, (open) => {
   if (open && etapeActuelle.value === 1 && state.eventType && state.eventType.toUpperCase() !== 'AUTRE') {
@@ -88,6 +98,17 @@ watch(etapeActuelle, () => nextTick(() => bodyRef.value?.scrollTo({ top: 0, beha
   padding: $spacing-m;
   overscroll-behavior: contain;
   position: relative;
+}
+
+.sheet-footer {
+  flex-shrink: 0;
+  padding: $spacing-s $spacing-m $spacing-m;
+  background: #fff;
+  border-top: 1px solid $divider-color;
+
+  :deep(button) {
+    width: 100%;
+  }
 }
 
 .slide-forward-enter-active,
