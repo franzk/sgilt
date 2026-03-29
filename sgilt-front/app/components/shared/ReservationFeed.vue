@@ -106,14 +106,9 @@
           <input v-model="noteIsPersonal" type="checkbox" />
           <span>Note privée 🔒 (visible uniquement par moi)</span>
         </label>
-        <button
-          class="send"
-          type="button"
-          :disabled="!newNote.trim() || sending"
-          @click="sendNote"
-        >
+        <SgiltButton :disabled="!newNote.trim() || sending" @click="sendNote">
           Ajouter la note
-        </button>
+        </SgiltButton>
       </div>
     </SgiltDialog>
   </div>
@@ -123,6 +118,7 @@
 import type { FeedItem, FeedDocument } from '~/types/event'
 import NoteCard from '~/components/app/NoteCard.vue'
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
+import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -537,24 +533,5 @@ $desktop: $breakpoint-desktop;
     cursor: pointer;
   }
 
-  .send {
-    flex-shrink: 0;
-    width: 100%;
-    height: 48px;
-    border: none;
-    border-radius: $radius-md;
-    background: $brand-accent;
-    color: $brand-primary;
-    font-family: inherit;
-    font-size: 0.875rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: opacity 150ms ease;
-
-    &:disabled {
-      opacity: 0.4;
-      cursor: default;
-    }
-  }
 }
 </style>
