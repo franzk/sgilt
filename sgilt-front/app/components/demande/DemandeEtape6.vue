@@ -1,6 +1,6 @@
 <template>
   <div class="etape">
-    <h2 class="etape__question">Comment vous contacter ?</h2>
+    <h2 class="question">Comment vous contacter ?</h2>
 
     <!-- Coordonnées -->
     <div class="section-title">Vos coordonnées</div>
@@ -70,7 +70,7 @@ const formValid = computed(() => !!state.email && !!state.telephone)
 
 <style scoped lang="scss">
 .etape {
-  &__question {
+  .question {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.5rem;
     font-weight: 500;
@@ -164,12 +164,6 @@ const formValid = computed(() => !!state.email && !!state.telephone)
   &::placeholder {
     color: $text-secondary;
     opacity: 0.5;
-  }
-}
-
-.submit {
-  button {
-    height: 3rem;
   }
 }
 </style>
