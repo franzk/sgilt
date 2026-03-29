@@ -1,95 +1,91 @@
 <template>
   <section class="event-block">
     <!-- ── Toggle accordéon : pills + actions ──────────────────────────────────── -->
-    <button class="event-block__toggle" type="button" @click="open = !open">
-      <div class="event-block__pills">
-        <span v-if="event.date" class="event-pill event-pill--date">
-          <CalendarEventIcon class="event-pill__icon" />{{ formatDate(event.date) }}
+    <button class="toggle" type="button" @click="open = !open">
+      <div class="pills">
+        <span v-if="event.date" class="event-pill date">
+          <CalendarEventIcon class="icon" />{{ formatDate(event.date) }}
         </span>
         <span v-if="event.ville" class="event-pill">
-          <MapPin2Icon class="event-pill__icon" />{{ event.ville }}
+          <MapPin2Icon class="icon" />{{ event.ville }}
         </span>
         <span v-if="event.nbInvites" class="event-pill">
-          <GroupIcon class="event-pill__icon" />{{ event.nbInvites }}
+          <GroupIcon class="icon" />{{ event.nbInvites }}
         </span>
       </div>
-      <ArrowUpSIcon v-if="open" class="event-block__chevron" />
-      <ArrowDownSIcon v-else class="event-block__chevron" />
+      <ArrowUpSIcon v-if="open" class="chevron" />
+      <ArrowDownSIcon v-else class="chevron" />
     </button>
 
     <!-- ── Corps accordéon ─────────────────────────────────────────────────────── -->
-    <div v-if="open" class="event-block__body">
+    <div v-if="open" class="body">
       <!-- 1. LOGISTIQUE -->
-      <div class="event-block__section">
-        <span class="event-block__section-label">Logistique</span>
-        <p v-if="!editMode" class="event-block__field-value" :class="{ 'event-block__field-value--empty': !event.lieu }">
+      <div class="section">
+        <span class="section-label">Logistique</span>
+        <p v-if="!editMode" class="field-value" :class="{ empty: !event.lieu }">
           {{ event.lieu || 'Salle, adresse… non renseigné' }}
         </p>
         <input
           v-else
           v-model="draft.lieu"
-          class="edit-field__input"
+          class="input"
           type="text"
           placeholder="Salle, adresse…"
         />
       </div>
 
-      <hr class="event-block__divider" />
+      <hr class="divider" />
 
       <!-- 2. NOTE PARTAGÉE -->
-      <div class="event-block__section">
-        <span class="event-block__section-label">Note partagée</span>
-        <p
-          v-if="!editMode"
-          class="event-block__note-text"
-          :class="{ 'event-block__note-text--empty': !event.sharedNote }"
-        >
+      <div class="section">
+        <span class="section-label">Note partagée</span>
+        <p v-if="!editMode" class="note-text" :class="{ empty: !event.sharedNote }">
           {{ event.sharedNote || 'Aucune note pour le moment.' }}
         </p>
         <textarea
           v-else
           ref="noteRef"
           v-model="draft.sharedNote"
-          class="edit-field__textarea"
+          class="textarea"
           placeholder="Informations utiles pour tous vos prestataires…"
           rows="3"
           @input="autoResize"
         />
       </div>
 
-      <hr class="event-block__divider" />
+      <hr class="divider" />
 
       <!-- 3. COORDONNÉES -->
-      <div class="event-block__section">
-        <span class="event-block__section-label">Coordonnées</span>
+      <div class="section">
+        <span class="section-label">Coordonnées</span>
 
         <!-- Variant pro : lecture + boutons copier -->
         <template v-if="variant === 'pro'">
-          <span class="event-block__contact-name">{{ clientInfo.firstName }}</span>
-          <div class="event-block__contact-row">
-            <span class="event-block__contact-value">{{ clientInfo.phone }}</span>
+          <span class="contact-name">{{ clientInfo.firstName }}</span>
+          <div class="contact-row">
+            <span class="contact-value">{{ clientInfo.phone }}</span>
             <button
-              class="event-block__copy-btn"
+              class="copy-btn"
               type="button"
-              :class="{ 'event-block__copy-btn--copied': phoneCopied }"
+              :class="{ copied: phoneCopied }"
               :aria-label="phoneCopied ? 'Copié' : 'Copier le numéro'"
               @click="copyPhone"
             >
-              <CheckIcon v-if="phoneCopied" class="event-block__copy-icon" />
-              <FileCopyIcon v-else class="event-block__copy-icon" />
+              <CheckIcon v-if="phoneCopied" class="copy-icon" />
+              <FileCopyIcon v-else class="copy-icon" />
             </button>
           </div>
-          <div class="event-block__contact-row">
-            <span class="event-block__contact-value event-block__contact-value--email">{{ clientInfo.email }}</span>
+          <div class="contact-row">
+            <span class="contact-value email">{{ clientInfo.email }}</span>
             <button
-              class="event-block__copy-btn"
+              class="copy-btn"
               type="button"
-              :class="{ 'event-block__copy-btn--copied': emailCopied }"
+              :class="{ copied: emailCopied }"
               :aria-label="emailCopied ? 'Copié' : 'Copier l\'email'"
               @click="copyEmail"
             >
-              <CheckIcon v-if="emailCopied" class="event-block__copy-icon" />
-              <FileCopyIcon v-else class="event-block__copy-icon" />
+              <CheckIcon v-if="emailCopied" class="copy-icon" />
+              <FileCopyIcon v-else class="copy-icon" />
             </button>
           </div>
         </template>
@@ -97,38 +93,38 @@
         <!-- Variant client : lecture ou édition -->
         <template v-else>
           <template v-if="!editMode">
-            <span class="event-block__contact-name">
+            <span class="contact-name">
               {{ clientInfo.firstName }}{{ clientInfo.lastName ? ' ' + clientInfo.lastName : '' }}
             </span>
-            <span class="event-block__contact-value">{{ clientInfo.phone }}</span>
-            <span class="event-block__contact-value event-block__contact-value--email">{{ clientInfo.email }}</span>
+            <span class="contact-value">{{ clientInfo.phone }}</span>
+            <span class="contact-value email">{{ clientInfo.email }}</span>
           </template>
           <template v-else>
             <div class="edit-field">
-              <label class="edit-field__label">Prénom</label>
-              <input v-model="draft.firstName" class="edit-field__input" type="text" />
+              <label class="label">Prénom</label>
+              <input v-model="draft.firstName" class="input" type="text" />
             </div>
             <div class="edit-field">
-              <label class="edit-field__label">Nom</label>
-              <input v-model="draft.lastName" class="edit-field__input" type="text" />
+              <label class="label">Nom</label>
+              <input v-model="draft.lastName" class="input" type="text" />
             </div>
             <div class="edit-field">
-              <label class="edit-field__label">Téléphone</label>
-              <input v-model="draft.phone" class="edit-field__input" type="tel" />
+              <label class="label">Téléphone</label>
+              <input v-model="draft.phone" class="input" type="tel" />
             </div>
             <div class="edit-field">
-              <label class="edit-field__label">Email</label>
-              <input v-model="draft.email" class="edit-field__input" type="email" />
+              <label class="label">Email</label>
+              <input v-model="draft.email" class="input" type="email" />
             </div>
           </template>
         </template>
       </div>
 
-      <hr class="event-block__divider" />
+      <hr class="divider" />
 
       <!-- 4. LA FÊTE -->
-      <div class="event-block__section">
-        <span class="event-block__section-label">La fête</span>
+      <div class="section">
+        <span class="section-label">La fête</span>
 
         <!-- Lecture -->
         <template v-if="!editMode">
@@ -142,17 +138,17 @@
               <dd>{{ ambianceEmoji }} {{ ambianceLabel }}</dd>
             </template>
             <dt>Moment clé</dt>
-            <dd class="brief-fields__empty">Non renseigné</dd>
+            <dd class="empty">Non renseigné</dd>
           </dl>
-          <p v-else class="event-block__field-value event-block__field-value--empty">Non renseigné</p>
+          <p v-else class="field-value empty">Non renseigné</p>
         </template>
 
         <!-- Édition (client uniquement) -->
         <template v-else-if="variant === 'client'">
           <div class="edit-fields">
             <div class="edit-field">
-              <label class="edit-field__label">Type d'événement</label>
-              <select v-model="draft.eventType" class="edit-field__select">
+              <label class="label">Type d'événement</label>
+              <select v-model="draft.eventType" class="select">
                 <option value="">— Non renseigné</option>
                 <option v-for="o in EVENT_TYPE_OPTIONS" :key="o.value" :value="o.value">
                   {{ o.emoji }} {{ o.label }}
@@ -160,8 +156,8 @@
               </select>
             </div>
             <div class="edit-field">
-              <label class="edit-field__label">Ambiance</label>
-              <select v-model="draft.ambiance" class="edit-field__select">
+              <label class="label">Ambiance</label>
+              <select v-model="draft.ambiance" class="select">
                 <option value="">— Non renseigné</option>
                 <option v-for="o in AMBIANCE_OPTIONS" :key="o.value" :value="o.value">
                   {{ o.emoji }} {{ o.label }}
@@ -169,57 +165,53 @@
               </select>
             </div>
             <div class="edit-field">
-              <label class="edit-field__label">Ville</label>
-              <input v-model="draft.ville" class="edit-field__input" type="text" placeholder="Ville" />
+              <label class="label">Ville</label>
+              <input v-model="draft.ville" class="input" type="text" placeholder="Ville" />
             </div>
             <div class="edit-field">
-              <label class="edit-field__label">Nombre d'invités</label>
-              <input v-model="draft.nbInvites" class="edit-field__input" type="number" min="0" placeholder="0" />
+              <label class="label">Nombre d'invités</label>
+              <input
+                v-model="draft.nbInvites"
+                class="input"
+                type="number"
+                min="0"
+                placeholder="0"
+              />
             </div>
           </div>
         </template>
       </div>
 
-      <hr class="event-block__divider" />
+      <hr class="divider" />
 
       <!-- 5. MISE À JOUR -->
-      <div class="event-block__section">
-        <div class="event-block__update-row">
-          <span class="event-block__section-label">Mise à jour</span>
+      <div class="section">
+        <div class="update-row">
+          <span class="section-label">Mise à jour</span>
           <template v-if="variant === 'client'">
             <button
               v-if="!editMode"
-              class="event-block__edit-btn"
+              class="edit-btn"
               type="button"
               aria-label="Modifier l'événement"
               @click="enterEditMode"
             >
               <IconEditNote />
             </button>
-            <button v-else class="event-block__cancel-btn" type="button" @click="handleCancel">
-              Annuler
-            </button>
+            <button v-else class="cancel-btn" type="button" @click="handleCancel">Annuler</button>
           </template>
         </div>
-        <div class="event-block__update-date-row">
+        <div class="update-date-row">
           <button
             v-if="lastUpdateDate"
-            class="event-block__journal-btn"
+            class="journal-btn"
             type="button"
             @click="journalOpen = true"
           >
             {{ lastUpdateDate }}
           </button>
-          <p v-else class="event-block__field-value event-block__field-value--empty">
-            Aucune modification enregistrée.
-          </p>
-          <button
-            v-if="editMode"
-            class="event-block__save-btn"
-            type="button"
-            :disabled="saving"
-            @click="save"
-          >
+          <p v-else class="field-value empty">Aucune modification enregistrée.</p>
+          <button v-if="editMode" class="save-btn" type="button" :disabled="saving" @click="save">
             {{ saving ? 'Enregistrement…' : 'Enregistrer' }}
           </button>
         </div>
@@ -241,15 +233,13 @@
         @click.self="showAbandonModal = false"
       >
         <div class="abandon-modal">
-          <h3 class="abandon-modal__title">Abandonner les modifications&nbsp;?</h3>
-          <p class="abandon-modal__body">Vos changements ne seront pas sauvegardés.</p>
-          <div class="abandon-modal__actions">
+          <h3 class="title">Abandonner les modifications&nbsp;?</h3>
+          <p class="body">Vos changements ne seront pas sauvegardés.</p>
+          <div class="actions">
             <SgiltButton variant="secondary" @click="showAbandonModal = false">
               Continuer à éditer
             </SgiltButton>
-            <button class="abandon-modal__destructive" type="button" @click="confirmAbandon">
-              Abandonner
-            </button>
+            <button class="destructive" type="button" @click="confirmAbandon">Abandonner</button>
           </div>
         </div>
       </div>
@@ -438,7 +428,7 @@ function formatDate(iso: string) {
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
-// ── Bloc ──────────────────────────────────────────────────────────────────────
+// ── Bloc principal ─────────────────────────────────────────────────────────────
 
 .event-block {
   background: #fff;
@@ -447,7 +437,185 @@ function formatDate(iso: string) {
   display: flex;
   flex-direction: column;
 
-  &__edit-btn {
+  .toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: $spacing-s;
+    padding: $spacing-s $spacing-m;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: background 120ms ease;
+
+    &:hover {
+      background: $surface-soft;
+    }
+  }
+
+  .pills {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .chevron {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    color: $text-secondary;
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid $divider-color;
+  }
+
+  .section {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+    padding: $spacing-s $spacing-m;
+  }
+
+  .section-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: $text-secondary;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid $divider-color;
+    margin: 0;
+  }
+
+  .update-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .update-date-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-s;
+  }
+
+  .field-value {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    color: $text-primary;
+    margin: 0;
+
+    &.empty {
+      color: $text-secondary;
+      opacity: 0.55;
+      font-style: italic;
+    }
+  }
+
+  .note-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    color: $text-primary;
+    line-height: 1.55;
+    margin: 0;
+    white-space: pre-wrap;
+
+    &.empty {
+      color: $text-secondary;
+      opacity: 0.45;
+      font-style: italic;
+    }
+  }
+
+  .journal-btn {
+    align-self: flex-start;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-style: italic;
+    color: $text-secondary;
+    opacity: 0.6;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: opacity 150ms ease;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .contact-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $text-primary;
+  }
+
+  .contact-row {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    min-width: 0;
+  }
+
+  .contact-value {
+    flex: 1;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    color: $text-primary;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &.email {
+      font-size: 0.75rem;
+      color: $text-secondary;
+    }
+  }
+
+  .copy-btn {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: $radius-sm;
+    border: 1px solid $divider-color;
+    background: none;
+    color: $text-secondary;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      background 120ms ease,
+      color 120ms ease;
+
+    &.copied {
+      background: $brand-accent;
+      color: $brand-primary;
+      border-color: $brand-accent;
+    }
+  }
+
+  .copy-icon {
+    width: 13px;
+    height: 13px;
+  }
+
+  .edit-btn {
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -459,7 +627,9 @@ function formatDate(iso: string) {
     color: $brand-muted;
     border-radius: $radius-sm;
     cursor: pointer;
-    transition: background 150ms ease, color 150ms ease;
+    transition:
+      background 150ms ease,
+      color 150ms ease;
 
     &:hover {
       background: $surface-soft;
@@ -467,7 +637,7 @@ function formatDate(iso: string) {
     }
   }
 
-  &__cancel-btn {
+  .cancel-btn {
     flex-shrink: 0;
     background: none;
     border: none;
@@ -478,10 +648,12 @@ function formatDate(iso: string) {
     padding: 4px 0;
     transition: color 150ms ease;
 
-    &:hover { color: $text-primary; }
+    &:hover {
+      color: $text-primary;
+    }
   }
 
-  &__save-btn {
+  .save-btn {
     flex-shrink: 0;
     background: none;
     border: 1px solid $divider-color;
@@ -491,43 +663,56 @@ function formatDate(iso: string) {
     color: $text-primary;
     cursor: pointer;
     padding: 3px 10px;
-    transition: border-color 150ms ease, color 150ms ease;
+    transition:
+      border-color 150ms ease,
+      color 150ms ease;
 
-    &:hover { border-color: $brand-primary; color: $brand-primary; }
-    &:disabled { opacity: 0.45; cursor: default; }
+    &:hover {
+      border-color: $brand-primary;
+      color: $brand-primary;
+    }
+    &:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
   }
-}
 
-// ── Toggle accordéon ──────────────────────────────────────────────────────────
+  // ── Champs édition inline (logistique, coordonnées) ──────────────────────────
 
-.event-block__toggle {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: $spacing-s;
-  padding: $spacing-s $spacing-m;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  transition: background 120ms ease;
+  .input,
+  .textarea {
+    width: 100%;
+    padding: $spacing-xs $spacing-s;
+    border: 1px solid $divider-color;
+    border-radius: $radius-sm;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: $text-primary;
+    background: $surface-soft;
+    outline: none;
+    box-sizing: border-box;
+    transition:
+      border-color 150ms ease,
+      box-shadow 150ms ease;
+    appearance: none;
 
-  &:hover { background: $surface-soft; }
-}
+    &:focus {
+      border-color: $input-focus-border-color;
+      box-shadow: $input-focus-box-shadow;
+      background: #fff;
+    }
 
-.event-block__pills {
-  flex: 1;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  min-width: 0;
-}
+    &::placeholder {
+      color: $text-secondary;
+      opacity: 0.45;
+    }
+  }
 
-.event-block__chevron {
-  flex-shrink: 0;
-  width: 16px;
-  height: 16px;
-  color: $text-secondary;
+  .textarea {
+    resize: none;
+    line-height: 1.6;
+    overflow: hidden;
+  }
 }
 
 // ── Pills ─────────────────────────────────────────────────────────────────────
@@ -546,165 +731,17 @@ function formatDate(iso: string) {
   font-weight: 500;
   white-space: nowrap;
 
-  &__icon {
+  .icon {
     width: 11px;
     height: 11px;
     flex-shrink: 0;
   }
 
-  &--date {
+  &.date {
     background: rgba($brand-accent, 0.08);
     border-color: rgba($brand-accent, 0.3);
     color: darken(#e6b800, 18%);
   }
-}
-
-// ── Corps accordéon ───────────────────────────────────────────────────────────
-
-.event-block__body {
-  display: flex;
-  flex-direction: column;
-  border-top: 1px solid $divider-color;
-}
-
-.event-block__section {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-xs;
-  padding: $spacing-s $spacing-m;
-}
-
-.event-block__update-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.event-block__update-date-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: $spacing-s;
-}
-
-.event-block__section-label {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: $text-secondary;
-}
-
-.event-block__divider {
-  border: none;
-  border-top: 1px solid $divider-color;
-  margin: 0;
-}
-
-// ── Valeurs lecture ───────────────────────────────────────────────────────────
-
-.event-block__field-value {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.85rem;
-  color: $text-primary;
-  margin: 0;
-
-  &--empty {
-    color: $text-secondary;
-    opacity: 0.55;
-    font-style: italic;
-  }
-}
-
-.event-block__note-text {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.85rem;
-  color: $text-primary;
-  line-height: 1.55;
-  margin: 0;
-  white-space: pre-wrap;
-
-  &--empty {
-    color: $text-secondary;
-    opacity: 0.45;
-    font-style: italic;
-  }
-}
-
-.event-block__journal-btn {
-  align-self: flex-start;
-  background: none;
-  border: none;
-  padding: 0;
-  font-family: inherit;
-  font-size: 0.75rem;
-  font-style: italic;
-  color: $text-secondary;
-  opacity: 0.6;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  transition: opacity 150ms ease;
-
-  &:hover { opacity: 1; }
-}
-
-// ── Coordonnées ───────────────────────────────────────────────────────────────
-
-.event-block__contact-name {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: $text-primary;
-}
-
-.event-block__contact-row {
-  display: flex;
-  align-items: center;
-  gap: $spacing-xs;
-  min-width: 0;
-}
-
-.event-block__contact-value {
-  flex: 1;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.8rem;
-  color: $text-primary;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-
-  &--email {
-    font-size: 0.75rem;
-    color: $text-secondary;
-  }
-}
-
-.event-block__copy-btn {
-  flex-shrink: 0;
-  width: 22px;
-  height: 22px;
-  border-radius: $radius-sm;
-  border: 1px solid $divider-color;
-  background: none;
-  color: $text-secondary;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 120ms ease, color 120ms ease;
-
-  &--copied {
-    background: $brand-accent;
-    color: $brand-primary;
-    border-color: $brand-accent;
-  }
-}
-
-.event-block__copy-icon {
-  width: 13px;
-  height: 13px;
 }
 
 // ── Champs dt/dd lecture ──────────────────────────────────────────────────────
@@ -733,14 +770,14 @@ function formatDate(iso: string) {
     align-self: center;
   }
 
-  &__empty {
+  .empty {
     color: $text-secondary;
     opacity: 0.55;
     font-style: italic;
   }
 }
 
-// ── Champs édition ────────────────────────────────────────────────────────────
+// ── Champs édition groupés (section La fête) ──────────────────────────────────
 
 .edit-fields {
   display: flex;
@@ -753,16 +790,16 @@ function formatDate(iso: string) {
   flex-direction: column;
   gap: 4px;
 
-  &__label {
+  .label {
     font-size: 0.75rem;
     font-weight: 600;
     color: $text-secondary;
     letter-spacing: 0.02em;
   }
 
-  &__input,
-  &__select,
-  &__textarea {
+  .input,
+  .select,
+  .textarea {
     width: 100%;
     padding: $spacing-xs $spacing-s;
     border: 1px solid $divider-color;
@@ -773,7 +810,9 @@ function formatDate(iso: string) {
     background: $surface-soft;
     outline: none;
     box-sizing: border-box;
-    transition: border-color 150ms ease, box-shadow 150ms ease;
+    transition:
+      border-color 150ms ease,
+      box-shadow 150ms ease;
     appearance: none;
 
     &:focus {
@@ -788,14 +827,14 @@ function formatDate(iso: string) {
     }
   }
 
-  &__select {
+  .select {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b635c' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right $spacing-s center;
     padding-right: $spacing-xl;
   }
 
-  &__textarea {
+  .textarea {
     resize: none;
     line-height: 1.6;
     overflow: hidden;
@@ -826,7 +865,7 @@ function formatDate(iso: string) {
   gap: $spacing-m;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
 
-  &__title {
+  .title {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.2rem;
     font-weight: 600;
@@ -834,20 +873,20 @@ function formatDate(iso: string) {
     margin: 0;
   }
 
-  &__body {
+  .body {
     font-size: 0.9rem;
     color: $text-secondary;
     margin: 0;
     line-height: 1.5;
   }
 
-  &__actions {
+  .actions {
     display: flex;
     flex-direction: column;
     gap: $spacing-xs;
   }
 
-  &__destructive {
+  .destructive {
     width: 100%;
     padding: $spacing-xs $spacing-m;
     border: none;
@@ -860,7 +899,9 @@ function formatDate(iso: string) {
     cursor: pointer;
     transition: background 150ms ease;
 
-    &:hover { background: rgba($state-error, 0.18); }
+    &:hover {
+      background: rgba($state-error, 0.18);
+    }
   }
 }
 

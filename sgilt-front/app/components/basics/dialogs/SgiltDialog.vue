@@ -15,17 +15,17 @@
     <Transition name="sgilt-dialog">
       <div
         v-if="open"
-        class="sgilt-dialog__overlay"
+        class="sgilt-dialog"
         role="dialog"
         aria-modal="true"
         :aria-label="title"
         @click.self="open = false"
       >
-        <div class="sgilt-dialog__panel" :style="props.maxWidth ? { maxWidth: props.maxWidth } : {}">
-          <div class="sgilt-dialog__header">
-            <span class="sgilt-dialog__title">{{ title }}</span>
+        <div class="panel" :style="props.maxWidth ? { maxWidth: props.maxWidth } : {}">
+          <div class="header">
+            <span class="title">{{ title }}</span>
             <button
-              class="sgilt-dialog__close"
+              class="close"
               type="button"
               :aria-label="`Fermer ${title}`"
               @click="open = false"
@@ -33,7 +33,7 @@
               ✕
             </button>
           </div>
-          <div class="sgilt-dialog__body">
+          <div class="body">
             <slot />
           </div>
         </div>
@@ -59,7 +59,7 @@ const { isMobile } = useDevice()
 
 <style scoped lang="scss">
 // ── Overlay ────────────────────────────────────────────────────────────────────
-.sgilt-dialog__overlay {
+.sgilt-dialog {
   position: fixed;
   inset: 0;
   z-index: $z-modal;
@@ -68,63 +68,63 @@ const { isMobile } = useDevice()
   align-items: center;
   justify-content: center;
   padding: $spacing-m;
-}
 
-// ── Panel ──────────────────────────────────────────────────────────────────────
-.sgilt-dialog__panel {
-  background: #fff;
-  border-radius: $radius-lg;
-  width: 100%;
-  max-width: 480px;
-  max-height: 80vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
-  overflow: hidden;
-}
-
-.sgilt-dialog__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: $spacing-s;
-  padding: $spacing-m $spacing-m $spacing-s;
-  flex-shrink: 0;
-  border-bottom: 1px solid $divider-color;
-}
-
-.sgilt-dialog__title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: $brand-primary;
-}
-
-.sgilt-dialog__close {
-  background: none;
-  border: none;
-  font-size: 0.9rem;
-  color: $text-secondary;
-  cursor: pointer;
-  padding: 4px 6px;
-  border-radius: $radius-sm;
-  line-height: 1;
-  flex-shrink: 0;
-  transition:
-    color 150ms ease,
-    background 150ms ease;
-
-  &:hover {
-    color: $text-primary;
-    background: $surface-soft;
+  // ── Panel ──────────────────────────────────────────────────────────────────────
+  .panel {
+    background: #fff;
+    border-radius: $radius-lg;
+    width: 100%;
+    max-width: 480px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+    overflow: hidden;
   }
-}
 
-.sgilt-dialog__body {
-  overflow-y: auto;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-s;
+    padding: $spacing-m $spacing-m $spacing-s;
+    flex-shrink: 0;
+    border-bottom: 1px solid $divider-color;
+  }
+
+  .title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: $brand-primary;
+  }
+
+  .close {
+    background: none;
+    border: none;
+    font-size: 0.9rem;
+    color: $text-secondary;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: $radius-sm;
+    line-height: 1;
+    flex-shrink: 0;
+    transition:
+      color 150ms ease,
+      background 150ms ease;
+
+    &:hover {
+      color: $text-primary;
+      background: $surface-soft;
+    }
+  }
+
+  .body {
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 // ── Transition ─────────────────────────────────────────────────────────────────

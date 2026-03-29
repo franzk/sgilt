@@ -23,13 +23,13 @@ const iconMap: Record<string, Component> = {
 </script>
 
 <template>
-  <div class="engagement-badge" :class="{ 'engagement-badge--eco': badge.color === '#22C55E' }">
-    <div class="engagement-badge__icon-wrap">
-      <component :is="iconMap[badge.icon]" class="engagement-badge__icon" />
+  <div class="engagement-badge" :class="{ eco: badge.color === '#22C55E' }">
+    <div class="icon-wrap">
+      <component :is="iconMap[badge.icon]" class="icon" />
     </div>
-    <div class="engagement-badge__body">
-      <span class="engagement-badge__label">{{ badge.label }}</span>
-      <span v-if="badge.description" class="engagement-badge__description">
+    <div class="body">
+      <span class="label">{{ badge.label }}</span>
+      <span v-if="badge.description" class="description">
         {{ badge.description }}
       </span>
     </div>
@@ -78,7 +78,7 @@ const iconMap: Record<string, Component> = {
   }
 
   // Variante éco — vert
-  &--eco {
+  &.eco {
     background: linear-gradient(160deg, #f0fdf4 0%, #dcfce7 100%);
     border-color: rgba(#22c55e, 0.3);
 
@@ -92,14 +92,14 @@ const iconMap: Record<string, Component> = {
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
     }
 
-    .engagement-badge__icon-wrap {
+    .icon-wrap {
       background: rgba(#22c55e, 0.12);
       color: #16a34a;
     }
   }
 
   // Icône dans un cercle doux
-  &__icon-wrap {
+  .icon-wrap {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -112,18 +112,18 @@ const iconMap: Record<string, Component> = {
     transition: background 180ms ease;
   }
 
-  &__icon {
+  .icon {
     width: 1.3rem;
     height: 1.3rem;
   }
 
-  &__body {
+  .body {
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
   }
 
-  &__label {
+  .label {
     font-size: 0.8rem;
     font-weight: 700;
     color: $color-primary;
@@ -131,7 +131,7 @@ const iconMap: Record<string, Component> = {
     letter-spacing: 0.01em;
   }
 
-  &__description {
+  .description {
     font-size: 0.72rem;
     font-weight: 400;
     color: $text-secondary;

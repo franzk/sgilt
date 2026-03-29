@@ -3,7 +3,7 @@
     <!-- Finalisation (both layouts) -->
     <template v-if="submitted">
       <DemandeFinalisation
-        class="demande-layout__finalisation"
+        class="finalisation"
         :prestataire-name="prestataire.name"
         @close="closeAndFinish"
       />
@@ -13,7 +13,7 @@
       <!-- ── DESKTOP : accordion + right panel ──────────────────────────────── -->
       <template v-if="!isMobile">
         <main class="demande-main">
-          <div class="demande-main__top">
+          <div class="top">
             <button class="main-back" type="button" @click="navigateTo(`/${slug}`)">
               ← Retour
             </button>
@@ -25,43 +25,43 @@
               :key="n"
               class="accordion-block"
               :class="{
-                'accordion-block--active': n === etapeActuelle,
-                'accordion-block--done': n < etapeActuelle,
-                'accordion-block--locked': n > etapeActuelle,
+                'active': n === etapeActuelle,
+                'done': n < etapeActuelle,
+                'locked': n > etapeActuelle,
               }"
             >
               <button
-                class="accordion-block__header"
+                class="header"
                 type="button"
                 :disabled="n > etapeActuelle"
                 @click="n < etapeActuelle ? goTo(n) : undefined"
               >
                 <span
-                  class="accordion-block__dot"
+                  class="dot"
                   :class="{
-                    'accordion-block__dot--active': n === etapeActuelle,
-                    'accordion-block__dot--done': n < etapeActuelle,
+                    'active': n === etapeActuelle,
+                    'done': n < etapeActuelle,
                   }"
                 >
                   <span v-if="n < etapeActuelle">✓</span>
                   <span v-else>{{ n }}</span>
                 </span>
 
-                <span class="accordion-block__header-text">
-                  <span class="accordion-block__label">{{ stepLabels[n - 1] }}</span>
+                <span class="header-text">
+                  <span class="label">{{ stepLabels[n - 1] }}</span>
                   <span
                     v-if="n < etapeActuelle && stepDoneSummary(n)"
-                    class="accordion-block__summary"
+                    class="summary"
                   >
                     {{ stepDoneSummary(n) }}
                   </span>
                 </span>
 
-                <span v-if="n < etapeActuelle" class="accordion-block__edit">Modifier</span>
+                <span v-if="n < etapeActuelle" class="edit">Modifier</span>
               </button>
 
               <Transition name="accordion-body">
-                <div v-if="n === etapeActuelle" class="accordion-block__body">
+                <div v-if="n === etapeActuelle" class="body">
                   <DemandeEtape1 v-if="n === 1" />
                   <DemandeEtape2 v-else-if="n === 2" />
                   <DemandeEtape3 v-else-if="n === 3" />
@@ -214,10 +214,10 @@ function stepDoneSummary(n: number): string {
     display: grid;
     grid-template-columns: 1fr 280px;
   }
-}
 
-.demande-layout__finalisation {
-  grid-column: 1 / -1;
+  .finalisation {
+    grid-column: 1 / -1;
+  }
 }
 
 // ─── Desktop center ───────────────────────────────────────────────────────────
@@ -225,12 +225,12 @@ function stepDoneSummary(n: number): string {
   display: flex;
   flex-direction: column;
   padding-bottom: $spacing-xxxl;
-}
 
-.demande-main__top {
-  display: flex;
-  justify-content: flex-start;
-  padding: $spacing-m $spacing-l;
+  .top {
+    display: flex;
+    justify-content: flex-start;
+    padding: $spacing-m $spacing-l;
+  }
 }
 
 .main-back {
@@ -266,102 +266,102 @@ function stepDoneSummary(n: number): string {
     border-top: 1px solid $divider-color;
   }
 
-  &--locked {
+  &.locked {
     opacity: 0.4;
   }
-}
 
-.accordion-block__header {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: $spacing-m;
-  padding: $spacing-m 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  font-family: inherit;
+  .header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: $spacing-m;
+    padding: $spacing-m 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
 
-  &:disabled {
-    cursor: default;
+    &:disabled {
+      cursor: default;
+    }
+
+    &:not(:disabled):hover .edit {
+      opacity: 1;
+    }
   }
 
-  &:not(:disabled):hover .accordion-block__edit {
-    opacity: 1;
-  }
-}
-
-.accordion-block__dot {
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 50%;
-  border: 2px solid $divider-color;
-  background: #fff;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: $text-secondary;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition:
-    background 200ms ease,
-    border-color 200ms ease,
-    color 200ms ease;
-
-  &--active {
-    background: $brand-accent;
-    border-color: $brand-accent;
-    color: #fff;
-  }
-
-  &--done {
-    background: $brand-accent;
-    border-color: $brand-accent;
-    color: #fff;
-    font-size: 0.7rem;
-  }
-}
-
-.accordion-block__header-text {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.accordion-block__label {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: $text-primary;
-
-  .accordion-block--locked & {
-    font-weight: 500;
+  .dot {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    border: 2px solid $divider-color;
+    background: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
     color: $text-secondary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition:
+      background 200ms ease,
+      border-color 200ms ease,
+      color 200ms ease;
+
+    &.active {
+      background: $brand-accent;
+      border-color: $brand-accent;
+      color: #fff;
+    }
+
+    &.done {
+      background: $brand-accent;
+      border-color: $brand-accent;
+      color: #fff;
+      font-size: 0.7rem;
+    }
   }
-}
 
-.accordion-block__summary {
-  font-size: 0.825rem;
-  color: $text-secondary;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+  .header-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
 
-.accordion-block__edit {
-  font-size: 0.8rem;
-  color: $brand-accent;
-  font-weight: 500;
-  opacity: 0;
-  transition: opacity 150ms ease;
-  flex-shrink: 0;
-}
+  .label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: $text-primary;
 
-.accordion-block__body {
-  padding-bottom: $spacing-l;
+    .locked & {
+      font-weight: 500;
+      color: $text-secondary;
+    }
+  }
+
+  .summary {
+    font-size: 0.825rem;
+    color: $text-secondary;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .edit {
+    font-size: 0.8rem;
+    color: $brand-accent;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 150ms ease;
+    flex-shrink: 0;
+  }
+
+  .body {
+    padding-bottom: $spacing-l;
+  }
 }
 
 .accordion-body-enter-active,

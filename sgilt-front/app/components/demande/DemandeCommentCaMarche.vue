@@ -1,17 +1,17 @@
 <template>
   <div class="flow">
-    <p class="flow__title">Comment ça marche ?</p>
-    <div class="flow__steps">
-      <div class="flow__step">
-        <span class="flow__dot">1</span>
+    <p class="title">Comment ça marche ?</p>
+    <div class="steps">
+      <div class="step">
+        <span class="dot">1</span>
         <span>Décrivez votre événement en quelques clics</span>
       </div>
-      <div class="flow__step">
-        <span class="flow__dot">2</span>
+      <div class="step">
+        <span class="dot">2</span>
         <span>Validez votre demande par email</span>
       </div>
-      <div class="flow__step">
-        <span class="flow__dot">3</span>
+      <div class="step">
+        <span class="dot">3</span>
         <span>Le prestataire vous répond</span>
       </div>
     </div>
@@ -25,7 +25,7 @@
   border: 1px solid $divider-color;
   border-radius: $radius-md;
 
-  &__title {
+  .title {
     font-size: 0.7rem;
     font-weight: 600;
     letter-spacing: 0.08em;
@@ -34,13 +34,13 @@
     margin: 0 0 $spacing-m;
   }
 
-  &__steps {
+  .steps {
     display: flex;
     flex-direction: column;
     gap: $spacing-s;
   }
 
-  &__step {
+  .step {
     display: flex;
     align-items: center;
     gap: $spacing-s;
@@ -48,7 +48,7 @@
     color: $text-secondary;
   }
 
-  &__dot {
+  .dot {
     display: flex;
     align-items: center;
     justify-content: center;

@@ -7,16 +7,16 @@
       class="cover-banner"
       :style="{ backgroundImage: `url(${coverImage})` }"
     >
-      <div class="cover-banner__overlay" />
+      <div class="overlay" />
       <button class="back-btn" type="button" @click="navigateTo('/pro/reservations')">
         ‹ Retour
       </button>
-      <div class="cover-banner__bottom">
-        <div class="cover-banner__info">
-          <span class="cover-banner__category">{{ demande.category }}</span>
-          <span class="cover-banner__name">{{ demande.event.title }}</span>
+      <div class="bottom">
+        <div class="info">
+          <span class="category">{{ demande.category }}</span>
+          <span class="name">{{ demande.event.title }}</span>
         </div>
-        <span class="cover-banner__badge" :style="getStatusOverlayStyle(demande.status)">
+        <span class="badge" :style="getStatusOverlayStyle(demande.status)">
           {{ t(`reservation.statut.${demande.status}`) }}
         </span>
       </div>
@@ -35,7 +35,7 @@
 
       <div class="booking-layout">
         <!-- Colonne gauche : bloc bento unique -->
-        <div class="booking-layout__left">
+        <div class="left">
           <EventBlock
             variant="pro"
             :event="demande.event"
@@ -63,7 +63,7 @@
         </div>
 
         <!-- Colonne droite : chaque bloc dans sa propre bento card -->
-        <div class="booking-layout__right">
+        <div class="right">
           <!-- nouvelle ─────────────────────────────────────────── -->
           <template v-if="demande.status === 'nouvelle'">
             <!-- Desktop : cartes contact dans leur bento -->
@@ -137,12 +137,12 @@
     </template>
 
     <!-- Skeleton cover -->
-    <div v-else-if="loading" class="cover-banner cover-banner--skeleton skeleton-text" />
+    <div v-else-if="loading" class="cover-banner skeleton skeleton-text" />
 
     <!-- Skeleton layout -->
     <div v-if="loading" class="booking-layout">
       <!-- Colonne gauche -->
-      <div class="booking-layout__left">
+      <div class="left">
         <div class="sk-brief">
           <div class="sk-row">
             <div class="skeleton-text sk-pill" />
@@ -158,7 +158,7 @@
       </div>
 
       <!-- Colonne droite -->
-      <div class="booking-layout__right">
+      <div class="right">
         <div class="bento-card sk-bento">
           <div class="skeleton-text sk-line sk-line--40" />
           <div class="skeleton-text sk-btn" />
@@ -190,19 +190,19 @@
       max-width="600px"
     >
       <div class="refusal-form">
-        <p class="refusal-form__lead">Pourquoi refusez-vous cette demande ?</p>
-        <div class="refusal-form__reasons">
+        <p class="lead">Pourquoi refusez-vous cette demande ?</p>
+        <div class="reasons">
           <label v-for="r in REFUSAL_REASONS" :key="r.id" class="refusal-reason">
             <input v-model="refusalReason" type="radio" :value="r.id" />
             <span>{{ r.label }}</span>
           </label>
         </div>
-        <label class="refusal-form__communicate">
+        <label class="communicate">
           <input v-model="communicateReason" type="checkbox" />
           <span>Communiquer le motif au client</span>
         </label>
         <button
-          class="refusal-form__submit"
+          class="submit"
           type="button"
           :disabled="!refusalReason || refusalLoading"
           @click="submitRefusal"
@@ -424,14 +424,18 @@ $sticky-h: 56px;
     padding: $spacing-m $spacing-xl $spacing-l;
   }
 
-  &__overlay {
+  &.skeleton {
+    background-image: none !important;
+  }
+
+  .overlay {
     position: absolute;
     inset: 0;
     background: linear-gradient(to bottom, rgba(47, 42, 37, 0.1), rgba(47, 42, 37, 0.65));
     pointer-events: none;
   }
 
-  &__bottom {
+  .bottom {
     position: relative;
     display: flex;
     align-items: flex-end;
@@ -439,13 +443,13 @@ $sticky-h: 56px;
     gap: $spacing-s;
   }
 
-  &__info {
+  .info {
     display: flex;
     flex-direction: column;
     gap: 3px;
   }
 
-  &__category {
+  .category {
     font-family: 'Inter', sans-serif;
     font-size: 11px;
     font-weight: 600;
@@ -454,7 +458,7 @@ $sticky-h: 56px;
     color: rgba(255, 255, 255, 0.75);
   }
 
-  &__name {
+  .name {
     font-family: 'Cormorant Garamond', serif;
     font-size: 26px;
     font-weight: 600;
@@ -468,7 +472,7 @@ $sticky-h: 56px;
     }
   }
 
-  &__badge {
+  .badge {
     flex-shrink: 0;
     position: relative;
     font-size: 0.625rem;
@@ -533,57 +537,57 @@ $bento-radius: $radius-sm;
     margin: 0 auto;
     padding: 32px 40px 60px;
   }
-}
 
-// ── Colonne gauche — bento unique sur desktop ──────────────────────────────────
-.booking-layout__left {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-m;
-  padding: $spacing-m $spacing-m 0;
-
-  @media (min-width: $desktop) {
-    padding: $spacing-m;
+  // ── Colonne gauche — bento unique sur desktop ──────────────────────────────────
+  .left {
+    display: flex;
+    flex-direction: column;
     gap: $spacing-m;
-    position: sticky;
-    top: calc(3.3rem + 16px);
-    background: #fff;
-    border-radius: $bento-radius;
-    box-shadow: $bento-shadow;
-    border: 1px solid $divider-color;
+    padding: $spacing-m $spacing-m 0;
 
-    .left-divider {
-      border: none;
-      border-top: 1px solid $divider-color;
-      margin: 0;
-    }
+    @media (min-width: $desktop) {
+      padding: $spacing-m;
+      gap: $spacing-m;
+      position: sticky;
+      top: calc(3.3rem + 16px);
+      background: #fff;
+      border-radius: $bento-radius;
+      box-shadow: $bento-shadow;
+      border: 1px solid $divider-color;
 
-    // EventBlock perd sa carte individuelle — le bento est la carte
-    :deep(.event-block) {
-      background: transparent;
-      box-shadow: none;
-      border-radius: 0;
-    }
+      .left-divider {
+        border: none;
+        border-top: 1px solid $divider-color;
+        margin: 0;
+      }
 
-    // ContactActionCards dans la colonne — supprimer ombre redondante
-    :deep(.contact-card) {
-      box-shadow: none;
+      // EventBlock perd sa carte individuelle — le bento est la carte
+      :deep(.event-block) {
+        background: transparent;
+        box-shadow: none;
+        border-radius: 0;
+      }
+
+      // ContactActionCards dans la colonne — supprimer ombre redondante
+      :deep(.contact-card) {
+        box-shadow: none;
+      }
     }
   }
-}
 
-// ── Colonne droite ─────────────────────────────────────────────────────────────
-.booking-layout__right {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-m;
-  padding: $spacing-m $spacing-m
-    calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $sticky-h + $spacing-m);
-  min-width: 0;
-
-  @media (min-width: $desktop) {
-    padding: 0;
+  // ── Colonne droite ─────────────────────────────────────────────────────────────
+  .right {
+    display: flex;
+    flex-direction: column;
     gap: $spacing-m;
+    padding: $spacing-m $spacing-m
+      calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $sticky-h + $spacing-m);
+    min-width: 0;
+
+    @media (min-width: $desktop) {
+      padding: 0;
+      gap: $spacing-m;
+    }
   }
 }
 
@@ -627,20 +631,20 @@ $bento-radius: $radius-sm;
   gap: $spacing-m;
   padding: 32px;
 
-  &__lead {
+  .lead {
     font-family: 'Inter', sans-serif;
     font-size: 0.9rem;
     color: $text-primary;
     margin: 0;
   }
 
-  &__reasons {
+  .reasons {
     display: flex;
     flex-direction: column;
     gap: $spacing-xs;
   }
 
-  &__communicate {
+  .communicate {
     display: flex;
     align-items: center;
     gap: $spacing-xs;
@@ -656,7 +660,7 @@ $bento-radius: $radius-sm;
     }
   }
 
-  &__submit {
+  .submit {
     width: 100%;
     height: 48px;
     border: none;
@@ -690,10 +694,6 @@ $bento-radius: $radius-sm;
 }
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
-
-.cover-banner--skeleton {
-  background-image: none !important;
-}
 
 .sk-brief {
   display: flex;

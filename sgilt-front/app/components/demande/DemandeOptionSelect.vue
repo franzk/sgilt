@@ -9,7 +9,7 @@
         <div class="autre-input">
           <input
             :value="autreValue"
-            class="autre-input__field"
+            class="field"
             type="text"
             :placeholder="autrePlaceholder"
             @input="$emit('update:autreValue', $event.target.value)"
@@ -23,12 +23,12 @@
         v-for="option in options"
         :key="option.value"
         class="option"
-        :class="{ 'option--selected': modelValue === option.value }"
+        :class="{ 'selected': modelValue === option.value }"
         type="button"
         @click="select(option.value)"
       >
-        <span class="option__emoji">{{ option.emoji }}</span>
-        <span class="option__label">{{ option.label }}</span>
+        <span class="emoji">{{ option.emoji }}</span>
+        <span class="label">{{ option.label }}</span>
       </button>
     </div>
   </div>
@@ -58,7 +58,7 @@ function select(value: string) {
   } else {
     // focus input when "autre" is selected
     nextTick(() => {
-      const input = document.querySelector('.autre-input__field') as HTMLInputElement | null
+      const input = document.querySelector('.field') as HTMLInputElement | null
       input?.focus()
       input?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     })
@@ -110,25 +110,24 @@ function select(value: string) {
     background: rgba($brand-accent, 0.04);
   }
 
-
-  &--selected {
+  &.selected {
     border-color: $brand-accent;
     background: rgba($brand-accent, 0.08);
 
-    .option__label {
+    .label {
       font-weight: 600;
       color: $text-primary;
     }
   }
 
-  &__emoji {
+  .emoji {
     font-size: 1.3rem;
     flex-shrink: 0;
     width: 1.8rem;
     text-align: center;
   }
 
-  &__label {
+  .label {
     font-size: 0.95rem;
     color: $text-primary;
     line-height: 1.3;
@@ -161,7 +160,7 @@ function select(value: string) {
       // padding: 0 $spacing-s;
     }
 
-    &__field {
+    .field {
       flex: 1;
       width: 100%;
       height: 100%;

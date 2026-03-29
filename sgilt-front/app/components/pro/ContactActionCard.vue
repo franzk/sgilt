@@ -1,34 +1,34 @@
 <template>
   <div class="contact-card">
     <!-- Ligne 1 : icône à gauche, bouton copy à droite -->
-    <div class="contact-card__header">
-      <span class="contact-card__icon">
+    <div class="header">
+      <span class="icon">
         <slot name="icon" />
       </span>
       <button
-        class="contact-card__copy"
+        class="copy"
         type="button"
-        :class="{ 'contact-card__copy--copied': copied }"
+        :class="{ copied: copied }"
         :aria-label="copied ? 'Copié' : 'Copier'"
         @click="copy"
       >
-        <CheckIcon v-if="copied" class="contact-card__copy-icon" />
-        <FileCopyIcon v-else class="contact-card__copy-icon" />
+        <CheckIcon v-if="copied" class="copy-icon" />
+        <FileCopyIcon v-else class="copy-icon" />
       </button>
     </div>
 
     <!-- Ligne 2 : label : valeur -->
-    <div class="contact-card__info">
-      <span class="contact-card__label"><slot name="title" /></span>
-      <span class="contact-card__sep">:</span>
-      <span class="contact-card__value"><slot name="content" /></span>
+    <div class="info">
+      <span class="label"><slot name="title" /></span>
+      <span class="sep">:</span>
+      <span class="value"><slot name="content" /></span>
     </div>
 
     <!-- Séparateur -->
-    <hr class="contact-card__divider" />
+    <hr class="divider" />
 
     <!-- Ligne 3 : CTA -->
-    <div class="contact-card__cta">
+    <div class="cta">
       <slot name="cta" />
     </div>
   </div>
@@ -62,13 +62,13 @@ async function copy() {
   padding: $spacing-s $spacing-m;
   box-shadow: 0 2px 10px rgba($color-accent, 0.18);
 
-  &__header {
+  .header {
     display: flex;
     justify-content: space-between;
     margin-bottom: $spacing-xs;
   }
 
-  &__icon {
+  .icon {
     display: flex;
     align-items: center;
     flex-shrink: 0;
@@ -82,7 +82,7 @@ async function copy() {
     }
   }
 
-  &__copy {
+  .copy {
     flex-shrink: 0;
     width: 2rem;
     height: 2rem;
@@ -98,18 +98,18 @@ async function copy() {
       background 120ms ease,
       color 120ms ease;
 
-    &--copied {
+    &.copied {
       color: $color-primary;
       border-color: $color-accent;
     }
   }
 
-  &__copy-icon {
+  .copy-icon {
     width: 100%;
     height: 100%;
   }
 
-  &__info {
+  .info {
     display: flex;
     align-items: baseline;
     gap: 4px;
@@ -117,7 +117,7 @@ async function copy() {
     margin-bottom: $spacing-xs;
   }
 
-  &__label {
+  .label {
     flex-shrink: 0;
     font-family: 'Inter', sans-serif;
     font-size: 0.7rem;
@@ -127,14 +127,14 @@ async function copy() {
     color: $text-secondary;
   }
 
-  &__sep {
+  .sep {
     flex-shrink: 0;
     font-family: 'Inter', sans-serif;
     font-size: 0.7rem;
     color: $text-secondary;
   }
 
-  &__value {
+  .value {
     flex: 1;
     font-family: 'Inter', sans-serif;
     font-size: 0.8rem;
@@ -144,13 +144,13 @@ async function copy() {
     white-space: nowrap;
   }
 
-  &__divider {
+  .divider {
     border: none;
     border-top: 1px solid $divider-color;
     margin: 0 0 $spacing-xs;
   }
 
-  &__cta {
+  .cta {
     display: flex;
 
     :deep(a),

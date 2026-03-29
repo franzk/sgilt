@@ -10,7 +10,7 @@
     ════════════════════════════════════════════ -->
     <div class="page-layout">
       <!-- ── Sidebar : datepicker + tarifs + CTA ── -->
-      <aside class="page-layout__sidebar">
+      <aside class="sidebar">
         <div class="sidebar-block">
           <SgiltDatePicker
             v-model="dateModel"
@@ -19,15 +19,15 @@
           />
           <Transition name="fade">
             <div v-if="dateModel" class="availability-badge" :class="availabilityClass">
-              <span class="availability-badge__icon">{{ availabilityIcon }}</span>
+              <span class="icon">{{ availabilityIcon }}</span>
               <span>{{ availabilityLabel }}</span>
             </div>
           </Transition>
         </div>
 
         <div v-if="prestataire.budget" class="sidebar-block sidebar-budget">
-          <h3 class="sidebar-budget__title">Tarifs</h3>
-          <p class="sidebar-budget__text">{{ prestataire.budget }}</p>
+          <h3 class="title">Tarifs</h3>
+          <p class="text">{{ prestataire.budget }}</p>
         </div>
 
         <SgiltButton class="sidebar-cta" @click="openContactModal">
@@ -36,11 +36,11 @@
       </aside>
 
       <!-- ── Contenu principal ── -->
-      <div class="page-layout__main">
+      <div class="main">
         <div class="provider-content">
           <!-- CE QUE NOUS PROPOSONS -->
           <section v-if="prestataire.offerings.length > 0" class="section">
-            <h2 class="section__title">Ce que nous proposons</h2>
+            <h2 class="title">Ce que nous proposons</h2>
             <ul class="offerings">
               <li v-for="item in prestataire.offerings" :key="item" class="offering-item">
                 {{ item }}
@@ -50,11 +50,11 @@
 
           <!-- TOUCHE IDENTITAIRE -->
           <section v-if="prestataire.identity" class="section identity-spotlight">
-            <div class="identity-spotlight__content">
-              <blockquote class="identity-spotlight__quote">
+            <div class="content">
+              <blockquote class="quote">
                 {{ prestataire.identity.quote }}
               </blockquote>
-              <p class="identity-spotlight__bio">{{ prestataire.identity.bio }}</p>
+              <p class="bio">{{ prestataire.identity.bio }}</p>
             </div>
           </section>
 
@@ -71,7 +71,7 @@
 
           <!-- BUDGET (mobile uniquement — sur desktop dans la sidebar) -->
           <section v-if="prestataire.budget" class="section budget-section mobile-only">
-            <h2 class="section__title">Tarifs</h2>
+            <h2 class="title">Tarifs</h2>
             <p class="budget-text">{{ prestataire.budget }}</p>
           </section>
 
@@ -80,13 +80,13 @@
             v-if="prestataire.testimonials && prestataire.testimonials.length > 0"
             class="section"
           >
-            <h2 class="section__title">Ils en parlent</h2>
+            <h2 class="title">Ils en parlent</h2>
             <div class="testimonials">
               <blockquote v-for="t in prestataire.testimonials" :key="t.author" class="testimonial">
-                <p class="testimonial__text">« {{ t.text }} »</p>
-                <footer class="testimonial__footer">
-                  <span class="testimonial__author">{{ t.author }}</span>
-                  <span v-if="t.eventType" class="testimonial__event">{{ t.eventType }}</span>
+                <p class="text">« {{ t.text }} »</p>
+                <footer class="footer">
+                  <span class="author">{{ t.author }}</span>
+                  <span v-if="t.eventType" class="event">{{ t.eventType }}</span>
                 </footer>
               </blockquote>
             </div>
@@ -94,13 +94,13 @@
 
           <!-- INFORMATIONS PRATIQUES -->
           <section v-if="hasInfosPratiques" class="section infos-section">
-            <h2 class="section__title">Informations pratiques</h2>
+            <h2 class="title">Informations pratiques</h2>
 
             <div
               v-if="prestataire.logistics && prestataire.logistics.length > 0"
               class="infos-block"
             >
-              <h3 class="infos-block__title">Logistique</h3>
+              <h3 class="title">Logistique</h3>
               <ul class="infos-list">
                 <li v-for="item in prestataire.logistics" :key="item">{{ item }}</li>
               </ul>
@@ -110,18 +110,18 @@
               v-if="prestataire.technical && prestataire.technical.length > 0"
               class="infos-block"
             >
-              <h3 class="infos-block__title">Technique</h3>
+              <h3 class="title">Technique</h3>
               <ul class="infos-list">
                 <li v-for="item in prestataire.technical" :key="item">{{ item }}</li>
               </ul>
             </div>
 
             <div v-if="prestataire.faq && prestataire.faq.length > 0" class="infos-block">
-              <h3 class="infos-block__title">Questions fréquentes</h3>
+              <h3 class="title">Questions fréquentes</h3>
               <div class="faq">
                 <div v-for="item in prestataire.faq" :key="item.question" class="faq-item">
-                  <p class="faq-item__question">{{ item.question }}</p>
-                  <p class="faq-item__answer">{{ item.answer }}</p>
+                  <p class="question">{{ item.question }}</p>
+                  <p class="answer">{{ item.answer }}</p>
                 </div>
               </div>
             </div>
@@ -134,7 +134,7 @@
          STICKY CTA (mobile uniquement)
     ════════════════════════════════════════════ -->
     <div class="sticky-cta">
-      <SgiltButton class="sticky-cta__button" @click="openContactModal">
+      <SgiltButton class="button" @click="openContactModal">
         Envoyer une demande
       </SgiltButton>
     </div>
@@ -164,7 +164,7 @@
           <button class="modal-close" @click="closeGallery" aria-label="Fermer">✕</button>
           <div class="gallery">
             <button
-              class="gallery__nav gallery__nav--prev"
+              class="nav prev"
               @click="prevPhoto"
               aria-label="Photo précédente"
             >
@@ -173,16 +173,16 @@
             <img
               :src="galleryPhotos[galleryIndex]"
               :alt="`Photo ${galleryIndex + 1}`"
-              class="gallery__image"
+              class="image"
             />
             <button
-              class="gallery__nav gallery__nav--next"
+              class="nav next"
               @click="nextPhoto"
               aria-label="Photo suivante"
             >
               ›
             </button>
-            <div class="gallery__counter">{{ galleryIndex + 1 }} / {{ galleryPhotos.length }}</div>
+            <div class="counter">{{ galleryIndex + 1 }} / {{ galleryPhotos.length }}</div>
           </div>
         </div>
       </Transition>
@@ -195,7 +195,7 @@
       <Transition name="modal">
         <div
           v-if="showVideo"
-          class="modal-overlay modal-overlay--dark"
+          class="modal-overlay dark"
           @click.self="closeVideo"
           role="dialog"
           aria-modal="true"
@@ -315,7 +315,7 @@ const availabilityLabel = computed(() =>
   isUnavailable.value ? 'Non disponible à cette date' : 'Disponible à cette date',
 )
 const availabilityClass = computed(() =>
-  isUnavailable.value ? 'availability-badge--unavailable' : 'availability-badge--available',
+  isUnavailable.value ? 'unavailable' : 'available',
 )
 
 // ─── Vidéo ────────────────────────────────────────────────────────────────────
@@ -399,29 +399,29 @@ $section-gap: 2.5rem;
     align-items: start;
     width: 100%;
   }
-}
 
-.page-layout__main {
-  @media (min-width: $breakpoint-desktop) {
-    grid-area: main;
+  .main {
+    @media (min-width: $breakpoint-desktop) {
+      grid-area: main;
+    }
   }
-}
 
-.page-layout__sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  padding: $spacing-m;
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: $spacing-m;
 
-  @media (min-width: $breakpoint-desktop) {
-    grid-area: sidebar;
-    position: sticky;
-    top: 5rem;
-    padding: 1.5rem;
-    background: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: $radius-md;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    @media (min-width: $breakpoint-desktop) {
+      grid-area: sidebar;
+      position: sticky;
+      top: 5rem;
+      padding: 1.5rem;
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: $radius-md;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    }
   }
 }
 
@@ -439,7 +439,7 @@ $section-gap: 2.5rem;
     padding-top: 1.25rem;
     border-top: 1px solid rgba(0, 0, 0, 0.08);
 
-    &__title {
+    .title {
       font-family: 'Cormorant Garamond', serif;
       font-size: 1.1rem;
       font-weight: 600;
@@ -447,7 +447,7 @@ $section-gap: 2.5rem;
       margin: 0 0 0.5rem;
     }
 
-    &__text {
+    .text {
       font-size: 0.9rem;
       color: $text-secondary;
       line-height: 1.6;
@@ -483,7 +483,7 @@ $section-gap: 2.5rem;
     display: none;
   }
 
-  &__button {
+  .button {
     height: 3rem;
     width: 100%;
   }
@@ -500,17 +500,17 @@ $section-gap: 2.5rem;
   font-weight: 600;
   width: fit-content;
 
-  &--available {
+  &.available {
     background: rgba(#2d9e6b, 0.1);
     color: #1e7a51;
   }
 
-  &--unavailable {
+  &.unavailable {
     background: rgba(#c0392b, 0.1);
     color: #a93226;
   }
 
-  &__icon {
+  .icon {
     font-size: 0.75rem;
     font-weight: 700;
   }
@@ -537,7 +537,7 @@ $section-gap: 2.5rem;
   flex-direction: column;
   gap: 1rem;
 
-  &__title {
+  .title {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.4rem;
     font-weight: 600;
@@ -595,10 +595,6 @@ $color-success: #2e7d32;
     mask-repeat: no-repeat;
     mask-size: contain;
   }
-
-  &__bullet {
-    display: none;
-  }
 }
 
 // ─── Identity ─────────────────────────────────────────────────────────────────
@@ -606,12 +602,12 @@ $color-success: #2e7d32;
   padding: 1.5rem 0;
   border-top: 1px solid #eee;
 
-  &__content {
+  .content {
     border-left: 4px solid $color-accent;
     padding-left: 1.2rem;
   }
 
-  &__quote {
+  .quote {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.2rem;
     font-style: italic;
@@ -621,7 +617,7 @@ $color-success: #2e7d32;
     line-height: 1.4;
   }
 
-  &__bio {
+  .bio {
     font-size: 1rem;
     line-height: 1.6;
     color: $text-secondary;
@@ -651,7 +647,7 @@ $color-success: #2e7d32;
   border-radius: $radius-md;
   border: 1px solid rgba(0, 0, 0, 0.06);
 
-  &__text {
+  .text {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.05rem;
     font-style: italic;
@@ -660,19 +656,19 @@ $color-success: #2e7d32;
     margin: 0 0 0.75rem;
   }
 
-  &__footer {
+  .footer {
     display: flex;
     align-items: center;
     gap: 0.5rem;
   }
 
-  &__author {
+  .author {
     font-size: 0.85rem;
     font-weight: 600;
     color: $text-secondary;
   }
 
-  &__event {
+  .event {
     font-size: 0.8rem;
     color: $text-secondary;
     opacity: 0.6;
@@ -693,7 +689,7 @@ $color-success: #2e7d32;
   flex-direction: column;
   gap: 0.6rem;
 
-  &__title {
+  .title {
     font-size: 0.8rem;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -735,14 +731,14 @@ $color-success: #2e7d32;
 }
 
 .faq-item {
-  &__question {
+  .question {
     font-size: 0.9rem;
     font-weight: 600;
     color: $color-primary;
     margin: 0 0 0.3rem;
   }
 
-  &__answer {
+  .answer {
     font-size: 0.9rem;
     line-height: 1.6;
     color: $text-secondary;
@@ -760,7 +756,7 @@ $color-success: #2e7d32;
   align-items: center;
   justify-content: center;
 
-  &--dark {
+  &.dark {
     background: rgba(0, 0, 0, 0.92);
   }
 }
@@ -796,7 +792,7 @@ $color-success: #2e7d32;
   align-items: center;
   justify-content: center;
 
-  &__image {
+  .image {
     max-width: 100%;
     max-height: 85vh;
     object-fit: contain;
@@ -804,7 +800,7 @@ $color-success: #2e7d32;
     box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
   }
 
-  &__nav {
+  .nav {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -825,16 +821,16 @@ $color-success: #2e7d32;
       background: #f5f5f5;
     }
 
-    &--prev {
+    &.prev {
       left: $spacing-m;
     }
 
-    &--next {
+    &.next {
       right: $spacing-m;
     }
   }
 
-  &__counter {
+  .counter {
     position: absolute;
     bottom: $spacing-m;
     left: 50%;

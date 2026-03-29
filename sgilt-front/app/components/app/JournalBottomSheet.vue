@@ -1,26 +1,26 @@
 <template>
   <SgiltBottomSheet v-model:open="open" title="Journal des modifications">
     <div class="journal-sheet">
-      <h2 class="journal-sheet__title">Journal des modifications</h2>
+      <h2 class="title">Journal des modifications</h2>
 
       <ul class="journal-list">
         <li v-for="entry in journal" :key="entry.id" class="journal-entry">
-          <div class="journal-entry__meta">
-            <span class="journal-entry__dot" aria-hidden="true" />
-            <time class="journal-entry__date">{{ formatDate(entry.date) }}</time>
+          <div class="meta">
+            <span class="dot" aria-hidden="true" />
+            <time class="date">{{ formatDate(entry.date) }}</time>
           </div>
 
-          <ul class="journal-entry__mods">
+          <ul class="mods">
             <li v-for="(mod, i) in entry.modifications" :key="i" class="journal-mod">
-              <span class="journal-mod__champ">{{ mod.champ }}</span>
+              <span class="champ">{{ mod.champ }}</span>
               <template v-if="entry.isCreation || mod.avant === null">
-                <span class="journal-mod__arrow" aria-hidden="true">→</span>
-                <span class="journal-mod__apres">{{ mod.apres }}</span>
+                <span class="arrow" aria-hidden="true">→</span>
+                <span class="apres">{{ mod.apres }}</span>
               </template>
               <template v-else>
-                <span class="journal-mod__avant">{{ mod.avant || '—' }}</span>
-                <span class="journal-mod__arrow" aria-hidden="true">→</span>
-                <span class="journal-mod__apres">{{ mod.apres }}</span>
+                <span class="avant">{{ mod.avant || '—' }}</span>
+                <span class="arrow" aria-hidden="true">→</span>
+                <span class="apres">{{ mod.apres }}</span>
               </template>
             </li>
           </ul>
@@ -58,14 +58,14 @@ function formatDate(date: Date) {
   flex-direction: column;
   gap: $spacing-m;
   min-height: 200px;
-}
 
-.journal-sheet__title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: $brand-primary;
-  margin: 0;
+  .title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: $brand-primary;
+    margin: 0;
+  }
 }
 
 .journal-list {
@@ -82,13 +82,13 @@ function formatDate(date: Date) {
   flex-direction: column;
   gap: $spacing-xxs;
 
-  &__meta {
+  .meta {
     display: flex;
     align-items: center;
     gap: $spacing-xs;
   }
 
-  &__dot {
+  .dot {
     width: 3px;
     height: 3px;
     border-radius: 50%;
@@ -96,13 +96,13 @@ function formatDate(date: Date) {
     opacity: 0.4;
   }
 
-  &__date {
+  .date {
     font-size: 0.75rem;
     color: $text-secondary;
     opacity: 0.7;
   }
 
-  &__mods {
+  .mods {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -119,7 +119,7 @@ function formatDate(date: Date) {
   gap: 4px;
   font-size: 0.82rem;
 
-  &__champ {
+  .champ {
     font-weight: 600;
     color: $text-secondary;
     font-size: 0.75rem;
@@ -129,19 +129,19 @@ function formatDate(date: Date) {
     flex-shrink: 0;
   }
 
-  &__arrow {
+  .arrow {
     color: $text-secondary;
     opacity: 0.4;
     flex-shrink: 0;
   }
 
-  &__avant {
+  .avant {
     color: $text-secondary;
     text-decoration: line-through;
     opacity: 0.6;
   }
 
-  &__apres {
+  .apres {
     color: $text-primary;
   }
 }

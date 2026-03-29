@@ -1,26 +1,26 @@
 <template>
   <header class="event-header">
-    <NuxtLink to="/app/events" class="event-header__logo">
+    <NuxtLink to="/app/events" class="logo">
       <img src="/sgilt-logo.svg" alt="SGILT" />
     </NuxtLink>
 
-    <div class="event-header__actions">
-      <NuxtLink to="/app/notifications" class="event-header__action" aria-label="Notifications">
-        <span class="event-header__bell-wrap">
-          <IconBell class="event-header__icon" />
-          <span v-if="hasNotifications" class="event-header__notif-dot" />
+    <div class="actions">
+      <NuxtLink to="/app/notifications" class="action" aria-label="Notifications">
+        <span class="bell-wrap">
+          <IconBell class="icon" />
+          <span v-if="hasNotifications" class="notif-dot" />
         </span>
       </NuxtLink>
 
-      <NuxtLink to="/app/profile" class="event-header__action" aria-label="Profil">
-        <div class="event-header__avatar">
+      <NuxtLink to="/app/profile" class="action" aria-label="Profil">
+        <div class="avatar">
           <img
             v-if="avatarUrl"
             :src="avatarUrl"
             :alt="initials"
-            class="event-header__avatar-img"
+            class="avatar-img"
           />
-          <span v-else class="event-header__avatar-initials">{{ initials }}</span>
+          <span v-else class="avatar-initials">{{ initials }}</span>
         </div>
       </NuxtLink>
     </div>
@@ -54,18 +54,18 @@ $header-h: 52px;
   background: #fff;
   border-bottom: 1px solid $divider-color;
 
-  &__logo img {
+  .logo img {
     height: 1.6rem;
     display: block;
   }
 
-  &__actions {
+  .actions {
     display: flex;
     align-items: center;
     gap: $spacing-s;
   }
 
-  &__action {
+  .action {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -80,19 +80,19 @@ $header-h: 52px;
     }
   }
 
-  &__icon {
+  .icon {
     width: 22px;
     height: 22px;
   }
 
-  &__bell-wrap {
+  .bell-wrap {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  &__notif-dot {
+  .notif-dot {
     position: absolute;
     top: -1px;
     right: -1px;
@@ -103,7 +103,7 @@ $header-h: 52px;
     border: 1.5px solid #fff;
   }
 
-  &__avatar {
+  .avatar {
     width: 2rem;
     height: 2rem;
     border-radius: 50%;
@@ -114,13 +114,13 @@ $header-h: 52px;
     justify-content: center;
   }
 
-  &__avatar-img {
+  .avatar-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  &__avatar-initials {
+  .avatar-initials {
     font-family: 'Cormorant Garamond', serif;
     font-size: 0.85rem;
     font-weight: 500;

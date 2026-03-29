@@ -2,29 +2,29 @@
   <nav class="bottom-nav">
     <NuxtLink
       to="/app/events"
-      class="bottom-nav__item"
-      :class="{ 'bottom-nav__item--active': isEventsActive }"
+      class="item"
+      :class="{ active: isEventsActive }"
     >
-      <IconEvent class="bottom-nav__icon" />
-      <span class="bottom-nav__label">Événements</span>
+      <IconEvent class="icon" />
+      <span class="label">Événements</span>
     </NuxtLink>
 
     <NuxtLink
       to="/app/notifications"
-      class="bottom-nav__item"
-      :class="{ 'bottom-nav__item--active': route.path.startsWith('/app/notifications') }"
+      class="item"
+      :class="{ active: route.path.startsWith('/app/notifications') }"
     >
-      <IconBell class="bottom-nav__icon" />
-      <span class="bottom-nav__label">Notifications</span>
+      <IconBell class="icon" />
+      <span class="label">Notifications</span>
     </NuxtLink>
 
     <NuxtLink
       to="/app/profile"
-      class="bottom-nav__item"
-      :class="{ 'bottom-nav__item--active': route.path.startsWith('/app/profile') }"
+      class="item"
+      :class="{ active: route.path.startsWith('/app/profile') }"
     >
-      <IconProfile class="bottom-nav__icon" />
-      <span class="bottom-nav__label">Profil</span>
+      <IconProfile class="icon" />
+      <span class="label">Profil</span>
     </NuxtLink>
   </nav>
 </template>
@@ -56,7 +56,7 @@ $nav-h: $bottom-nav-h;
   background: #fff;
   border-top: 1px solid $divider-color;
 
-  &__item {
+  .item {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -67,17 +67,17 @@ $nav-h: $bottom-nav-h;
     transition: color 150ms ease;
     text-decoration: none;
 
-    &--active {
+    &.active {
       color: $brand-accent;
     }
   }
 
-  &__icon {
+  .icon {
     width: 22px;
     height: 22px;
   }
 
-  &__label {
+  .label {
     font-size: 0.65rem;
     font-weight: 500;
     letter-spacing: 0.02em;

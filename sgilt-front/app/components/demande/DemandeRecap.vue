@@ -1,40 +1,40 @@
 <template>
-  <div v-if="hasContent" class="recap">
-    <p class="recap__title">Votre événement</p>
-    <ul class="recap__list">
+  <div v-if="hasContent" class="demande-recap">
+    <p class="title">Votre événement</p>
+    <ul class="list">
       <!-- Date -->
-      <li v-if="state.date" class="recap__item">
-        <span class="recap__emoji">📅</span>
+      <li v-if="state.date" class="item">
+        <span class="emoji">📅</span>
         <span>{{ formatDate(state.date) }}</span>
       </li>
 
       <!-- Type d'événement -->
-      <li v-if="eventTypeLabel" class="recap__item">
-        <span class="recap__emoji">{{ eventTypeEmoji }}</span>
+      <li v-if="eventTypeLabel" class="item">
+        <span class="emoji">{{ eventTypeEmoji }}</span>
         <span>{{ eventTypeLabel }}</span>
       </li>
 
       <!-- Ambiance -->
-      <li v-if="ambianceLabel" class="recap__item">
-        <span class="recap__emoji">{{ ambianceEmoji }}</span>
+      <li v-if="ambianceLabel" class="item">
+        <span class="emoji">{{ ambianceEmoji }}</span>
         <span>{{ ambianceLabel }}</span>
       </li>
 
       <!-- Moment clé -->
-      <li v-if="momentCleLabel" class="recap__item">
-        <span class="recap__emoji">{{ momentCleEmoji }}</span>
+      <li v-if="momentCleLabel" class="item">
+        <span class="emoji">{{ momentCleEmoji }}</span>
         <span>{{ momentCleLabel }}</span>
       </li>
 
       <!-- Ville -->
-      <li v-if="state.ville" class="recap__item">
-        <span class="recap__emoji">📍</span>
+      <li v-if="state.ville" class="item">
+        <span class="emoji">📍</span>
         <span>{{ state.ville }}</span>
       </li>
 
       <!-- Nombre d'invités -->
-      <li v-if="state.nbInvites" class="recap__item">
-        <span class="recap__emoji">👥</span>
+      <li v-if="state.nbInvites" class="item">
+        <span class="emoji">👥</span>
         <span>{{ state.nbInvites }} invités</span>
       </li>
     </ul>
@@ -44,7 +44,15 @@
 <script setup lang="ts">
 import { useDemande } from '~/composables/useDemande'
 
-const { state, eventTypeLabel, eventTypeEmoji, ambianceLabel, ambianceEmoji, momentCleLabel, momentCleEmoji } = useDemande()
+const {
+  state,
+  eventTypeLabel,
+  eventTypeEmoji,
+  ambianceLabel,
+  ambianceEmoji,
+  momentCleLabel,
+  momentCleEmoji,
+} = useDemande()
 
 const hasContent = computed(
   () => !!eventTypeLabel.value || !!ambianceLabel.value || !!momentCleLabel.value,
@@ -56,14 +64,14 @@ function formatDate(d: Date) {
 </script>
 
 <style scoped lang="scss">
-.recap {
+.demande-recap {
   margin-top: $spacing-l;
   padding: $spacing-m;
   background: $surface-soft;
   border: 1px solid $divider-color;
   border-radius: $radius-md;
 
-  &__title {
+  .title {
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -72,7 +80,7 @@ function formatDate(d: Date) {
     margin: 0 0 $spacing-xs;
   }
 
-  &__list {
+  .list {
     list-style: none;
     padding: 0;
     margin: 0;
@@ -81,7 +89,7 @@ function formatDate(d: Date) {
     gap: $spacing-xs;
   }
 
-  &__item {
+  .item {
     display: flex;
     align-items: center;
     gap: $spacing-xs;
@@ -90,7 +98,7 @@ function formatDate(d: Date) {
     line-height: 1.4;
   }
 
-  &__emoji {
+  .emoji {
     font-size: 1rem;
     flex-shrink: 0;
     width: 1.4rem;

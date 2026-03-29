@@ -2,38 +2,38 @@
   <nav class="pro-footer">
     <NuxtLink
       to="/pro/reservations"
-      class="pro-footer__item"
-      :class="{ 'pro-footer__item--active': route.path.startsWith('/pro/reservations') }"
+      class="item"
+      :class="{ active: route.path.startsWith('/pro/reservations') }"
     >
       <CalendarEventIcon
         v-if="route.path.startsWith('/pro/reservations')"
-        class="pro-footer__icon"
+        class="icon"
       />
-      <CalendarEventIcon v-else class="pro-footer__icon" />
-      <span class="pro-footer__label">Réservations</span>
+      <CalendarEventIcon v-else class="icon" />
+      <span class="label">Réservations</span>
     </NuxtLink>
 
     <NuxtLink
       to="/pro/notifications"
-      class="pro-footer__item"
-      :class="{ 'pro-footer__item--active': route.path.startsWith('/pro/notifications') }"
+      class="item"
+      :class="{ active: route.path.startsWith('/pro/notifications') }"
     >
       <Notification3Icon
         v-if="route.path.startsWith('/pro/notifications')"
-        class="pro-footer__icon"
+        class="icon"
       />
-      <Notification3Icon v-else class="pro-footer__icon" />
-      <span class="pro-footer__label">Notifications</span>
+      <Notification3Icon v-else class="icon" />
+      <span class="label">Notifications</span>
     </NuxtLink>
 
     <NuxtLink
       to="/pro/profil"
-      class="pro-footer__item"
-      :class="{ 'pro-footer__item--active': route.path.startsWith('/pro/profil') }"
+      class="item"
+      :class="{ active: route.path.startsWith('/pro/profil') }"
     >
-      <UserIcon v-if="route.path.startsWith('/pro/profil')" class="pro-footer__icon" />
-      <UserIcon v-else class="pro-footer__icon" />
-      <span class="pro-footer__label">Profil</span>
+      <UserIcon v-if="route.path.startsWith('/pro/profil')" class="icon" />
+      <UserIcon v-else class="icon" />
+      <span class="label">Profil</span>
     </NuxtLink>
   </nav>
 </template>
@@ -68,7 +68,7 @@ $nav-h: $bottom-nav-h;
   -webkit-backdrop-filter: blur(12px);
   border-top: 1px solid rgba(255, 255, 255, 0.4);
 
-  &__item {
+  .item {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -79,17 +79,17 @@ $nav-h: $bottom-nav-h;
     text-decoration: none;
     transition: color 150ms ease;
 
-    &--active {
+    &.active {
       color: $brand-accent;
     }
   }
 
-  &__icon {
+  .icon {
     width: 22px;
     height: 22px;
   }
 
-  &__label {
+  .label {
     font-size: 0.65rem;
     font-weight: 500;
     letter-spacing: 0.02em;

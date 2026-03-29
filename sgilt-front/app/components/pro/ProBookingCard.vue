@@ -1,21 +1,21 @@
 <template>
   <!-- Skeleton -->
-  <div v-if="skeleton" class="booking-card booking-card--skeleton">
-    <div class="booking-card__left">
-      <div class="booking-card__photo skeleton-text" />
+  <div v-if="skeleton" class="booking-card skeleton">
+    <div class="left">
+      <div class="photo skeleton-text" />
       <div
         class="skeleton-text"
         style="width: 80%; height: 0.85rem; border-radius: 4px; margin-top: 8px"
       />
     </div>
-    <div class="booking-card__right">
-      <div class="booking-card__right-row">
+    <div class="right">
+      <div class="right-row">
         <div class="skeleton-text" style="width: 90px; height: 0.8rem; border-radius: 3px" />
       </div>
-      <div class="booking-card__right-row">
+      <div class="right-row">
         <div class="skeleton-text" style="width: 75%; height: 0.8rem; border-radius: 4px" />
       </div>
-      <div class="booking-card__right-row">
+      <div class="right-row">
         <div class="skeleton-text" style="width: 55%; height: 0.65rem; border-radius: 3px" />
         <div
           class="skeleton-text"
@@ -34,29 +34,26 @@
     @click="emit('click')"
   >
     <!-- Colonne gauche : photo circulaire + badge + titre -->
-    <div class="booking-card__left">
+    <div class="left">
       <BadgeableComponent :count="demande.unreadNotesCount" :size="18">
-        <img class="booking-card__photo" :src="demande.coverImage || FALLBACK_COVER" alt="" />
+        <img class="photo" :src="demande.coverImage || FALLBACK_COVER" alt="" />
       </BadgeableComponent>
-      <p class="booking-card__title">{{ demande.titre }}</p>
+      <p class="title">{{ demande.titre }}</p>
     </div>
 
     <!-- Colonne droite : infos -->
-    <div class="booking-card__right">
-      <div v-if="needsAction" class="booking-card__right-row">
-        <span
-          class="booking-card__action-required"
-          :class="`booking-card__action-required--${demande.statut}`"
-        >Action requise</span>
+    <div class="right">
+      <div v-if="needsAction" class="right-row">
+        <span class="action-required" :class="`${demande.statut}`">Action requise</span>
       </div>
 
-      <div v-if="demande.phraseInfoState" class="booking-card__right-row">
-        <span class="booking-card__info-value" v-html="demande.phraseInfoState" />
+      <div v-if="demande.phraseInfoState" class="right-row">
+        <span class="info-value" v-html="demande.phraseInfoState" />
       </div>
 
-      <div class="booking-card__right-row">
-        <span class="booking-card__info-label">Date de l'événement</span>
-        <span class="booking-card__info-value">{{ demande.date || '—' }}</span>
+      <div class="right-row">
+        <span class="info-label">Date de l'événement</span>
+        <span class="info-value">{{ demande.date || '—' }}</span>
       </div>
     </div>
   </button>
@@ -119,111 +116,111 @@ const needsAction = computed(() =>
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
   }
 
-  &--skeleton {
+  &.skeleton {
     pointer-events: none;
     box-shadow: none;
   }
-}
 
-// ── Colonne gauche ─────────────────────────────────────────────────────────────
+  // ── Colonne gauche ───────────────────────────────────────────────────────────
 
-.booking-card__left {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: $spacing-xs;
-  padding: $spacing-m $spacing-s $spacing-m $spacing-m;
-  flex: 0 0 130px;
-}
+  .left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-m $spacing-s $spacing-m $spacing-m;
+    flex: 0 0 130px;
+  }
 
-// ── Photo circulaire ───────────────────────────────────────────────────────────
+  // ── Photo circulaire ─────────────────────────────────────────────────────────
 
-.booking-card__photo {
-  width: 56px;
-  height: 56px;
-  object-fit: cover;
-  border-radius: 50%;
-  display: block;
-  flex-shrink: 0;
-}
+  .photo {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+    flex-shrink: 0;
+  }
 
-// ── Titre événement ────────────────────────────────────────────────────────────
+  // ── Titre événement ──────────────────────────────────────────────────────────
 
-.booking-card__title {
-  width: 100%;
-  margin: 0;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: $text-primary;
-  line-height: 1.2;
-  text-align: center;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-}
+  .title {
+    width: 100%;
+    margin: 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: $text-primary;
+    line-height: 1.2;
+    text-align: center;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
 
-// ── Colonne droite ─────────────────────────────────────────────────────────────
+  // ── Colonne droite ───────────────────────────────────────────────────────────
 
-.booking-card__right {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 0;
-}
+  .right {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0;
+  }
 
-// ── Ligne droite (séparateur entre chaque) ─────────────────────────────────────
+  // ── Ligne droite (séparateur entre chaque) ───────────────────────────────────
 
-.booking-card__right-row {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  padding: $spacing-s $spacing-m $spacing-s $spacing-s;
+  .right-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: $spacing-s $spacing-m $spacing-s $spacing-s;
+  }
 
-  & + & {
+  .right-row + .right-row {
     border-top: 1px solid $divider-color;
   }
-}
 
-// ── "Action requise" ──────────────────────────────────────────────────────────
+  // ── "Action requise" ────────────────────────────────────────────────────────
 
-.booking-card__action-required {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  font-weight: 600;
-  background: none;
+  .action-required {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    background: none;
 
-  &--nouvelle {
-    color: #d93025;
+    &.nouvelle {
+      color: #d93025;
+    }
+
+    &.en_discussion {
+      color: #e67e22;
+    }
   }
 
-  &--en_discussion {
-    color: #e67e22;
+  .info-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: $text-secondary;
   }
-}
 
-.booking-card__info-label {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.6rem;
-  font-weight: 600;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: $text-secondary;
-}
+  .info-value {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: $text-primary;
+    line-height: 1.3;
 
-.booking-card__info-value {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 400;
-  color: $text-primary;
-  line-height: 1.3;
-
-  :deep(strong) {
-    font-weight: 700;
+    :deep(strong) {
+      font-weight: 700;
+    }
   }
 }
 </style>

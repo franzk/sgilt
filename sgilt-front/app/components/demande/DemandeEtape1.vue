@@ -1,6 +1,6 @@
 <template>
   <div class="etape">
-    <h2 class="etape__question">Quel événement préparez-vous&nbsp;?</h2>
+    <h2 class="question">Quel événement préparez-vous&nbsp;?</h2>
 
     <DemandeOptionSelect
       :options="EVENT_TYPE_OPTIONS"
@@ -27,7 +27,7 @@ const { state, next } = useDemande()
 @use '@/assets/styles/base' as *;
 
 .etape {
-  &__question {
+  .question {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.5rem;
     font-weight: 500;

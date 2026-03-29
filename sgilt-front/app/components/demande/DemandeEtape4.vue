@@ -1,7 +1,7 @@
 <template>
   <div class="etape">
-    <h2 class="etape__question">Racontez-nous votre événement</h2>
-    <p class="etape__subtitle">Décrivez-le comme vous l'imaginez…</p>
+    <h2 class="question">Racontez-nous votre événement</h2>
+    <p class="subtitle">Décrivez-le comme vous l'imaginez…</p>
 
     <textarea
       v-model="state.description"
@@ -10,15 +10,15 @@
       rows="6"
     />
 
-    <p class="etape__subtitle">
+    <p class="subtitle">
       Plus vous nous en dites, mieux les prestataires pourront comprendre votre projet et y répondre
       de manière pertinente !
     </p>
 
-    <p class="etape__optional">Optionnel — vous pouvez passer cette étape.</p>
+    <p class="optional">Optionnel — vous pouvez passer cette étape.</p>
 
-    <p class="etape__next">
-      <SgiltButton class="etape__next-btn" @click="next"> Continuer →</SgiltButton>
+    <p class="next">
+      <SgiltButton class="next-btn" @click="next"> Continuer →</SgiltButton>
     </p>
   </div>
 </template>
@@ -34,7 +34,7 @@ const placeholderText = 'Parlez-nous de votre événement, de vos envies, de ce 
 
 <style scoped lang="scss">
 .etape {
-  &__question {
+  .question {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.5rem;
     font-weight: 500;
@@ -43,20 +43,20 @@ const placeholderText = 'Parlez-nous de votre événement, de vos envies, de ce 
     line-height: 1.3;
   }
 
-  &__subtitle {
+  .subtitle {
     font-size: 0.9rem;
     color: $text-secondary;
     margin: 0 0 $spacing-l;
   }
 
-  &__optional {
+  .optional {
     font-size: 0.8rem;
     color: $text-secondary;
     opacity: 0.6;
     margin: $spacing-s 0 0;
   }
 
-  &__next {
+  .next {
     height: 3rem;
     width: 100%;
     display: flex;

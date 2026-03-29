@@ -1,20 +1,20 @@
 <template>
-  <div class="note-card" :class="`note-card--${note.author.role}`">
-    <div class="note-card__meta">
-      <div class="note-card__avatar">
+  <div class="note-card" :class="note.author.role">
+    <div class="meta">
+      <div class="avatar">
         <img
           v-if="note.author.photo"
           :src="note.author.photo"
           :alt="note.author.name"
-          class="note-card__avatar-img"
+          class="avatar-img"
         />
-        <span v-else class="note-card__avatar-initials">{{ initials }}</span>
+        <span v-else class="avatar-initials">{{ initials }}</span>
       </div>
-      <span class="note-card__author">{{ note.author.name }}</span>
-      <span class="note-card__dot" aria-hidden="true" />
-      <time class="note-card__date">{{ formattedDate }}</time>
+      <span class="author">{{ note.author.name }}</span>
+      <span class="dot" aria-hidden="true" />
+      <time class="date">{{ formattedDate }}</time>
     </div>
-    <p class="note-card__content">{{ note.content }}</p>
+    <p class="content">{{ note.content }}</p>
   </div>
 </template>
 
@@ -51,21 +51,21 @@ const formattedDate = computed(() =>
   border-radius: $border-radius-xs;
   box-shadow: 0 1px 4px rgba(47, 42, 37, 0.07);
 
-  &--client {
+  &.client {
     background: #ffffff;
   }
 
-  &--prestataire {
+  &.prestataire {
     background: #f5f0e8;
   }
 
-  &__meta {
+  .meta {
     display: flex;
     align-items: center;
     gap: 6px;
   }
 
-  &__avatar {
+  .avatar {
     flex-shrink: 0;
     width: 24px;
     height: 24px;
@@ -75,23 +75,23 @@ const formattedDate = computed(() =>
     align-items: center;
     justify-content: center;
     overflow: hidden;
+
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-initials {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      font-weight: 600;
+      color: $brand-muted;
+      line-height: 1;
+    }
   }
 
-  &__avatar-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  &__avatar-initials {
-    font-family: 'Inter', sans-serif;
-    font-size: 9px;
-    font-weight: 600;
-    color: $brand-muted;
-    line-height: 1;
-  }
-
-  &__author {
+  .author {
     font-family: 'Inter', sans-serif;
     font-size: 10px;
     font-weight: 600;
@@ -100,7 +100,7 @@ const formattedDate = computed(() =>
     color: $brand-muted;
   }
 
-  &__dot {
+  .dot {
     width: 2px;
     height: 2px;
     border-radius: 50%;
@@ -108,14 +108,14 @@ const formattedDate = computed(() =>
     opacity: 0.4;
   }
 
-  &__date {
+  .date {
     font-family: 'Inter', sans-serif;
     font-size: 10px;
     color: $text-secondary;
     opacity: 0.6;
   }
 
-  &__content {
+  .content {
     font-family: 'Inter', sans-serif;
     font-size: 0.875rem;
     font-weight: 400;

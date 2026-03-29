@@ -7,17 +7,17 @@
       class="cover-banner"
       :style="{ backgroundImage: `url(${coverImage})` }"
     >
-      <div class="cover-banner__overlay" />
-      <span class="cover-banner__title">{{ event.title }}</span>
-      <button class="cover-banner__edit-img" type="button">Modifier l'image</button>
+      <div class="overlay" />
+      <span class="title">{{ event.title }}</span>
+      <button class="edit-img" type="button">Modifier l'image</button>
     </div>
 
     <template v-if="event">
       <!-- ── Widget ─────────────────────────────────────────────────────────────── -->
       <div class="event-widget">
-        <p class="event-widget__phrase">{{ event.phrase }}</p>
-        <p class="event-widget__subtitle">{{ event.phraseSubtitle }}</p>
-        <div class="event-widget__pills">
+        <p class="phrase">{{ event.phrase }}</p>
+        <p class="subtitle">{{ event.phraseSubtitle }}</p>
+        <div class="pills">
           <span
             v-for="pill in statusPills"
             :key="pill.status"
@@ -27,9 +27,9 @@
               color: CLIENT_STATUS_CONFIG[pill.status].color,
             }"
           >
-            <span class="status-pill__icon" aria-hidden="true">{{ pill.icon }}</span>
-            <span class="status-pill__count">{{ pill.count }}</span>
-            <span class="status-pill__label">{{
+            <span class="icon" aria-hidden="true">{{ pill.icon }}</span>
+            <span class="count">{{ pill.count }}</span>
+            <span class="label">{{
               t(`client.reservation.statut.${pill.status}`)
             }}</span>
           </span>
@@ -51,7 +51,7 @@
 
         <!-- Réservations -->
         <section class="reservations">
-          <div class="reservations__grid">
+          <div class="grid">
             <ReservationCard
               v-for="r in sortedReservations"
               :key="r.id"
@@ -220,14 +220,14 @@ $desktop: $breakpoint-desktop;
     padding: $spacing-l $spacing-xl;
   }
 
-  &__overlay {
+  .overlay {
     position: absolute;
     inset: 0;
     background: linear-gradient(to bottom, rgba(47, 42, 37, 0.1), rgba(47, 42, 37, 0.65));
     pointer-events: none;
   }
 
-  &__title {
+  .title {
     position: relative;
     font-family: 'Cormorant Garamond', serif;
     font-size: 30px;
@@ -243,7 +243,7 @@ $desktop: $breakpoint-desktop;
     }
   }
 
-  &__edit-img {
+  .edit-img {
     display: none;
 
     @media (min-width: $desktop) {
@@ -281,7 +281,7 @@ $desktop: $breakpoint-desktop;
     padding: $spacing-xl 40px $spacing-l;
   }
 
-  &__phrase {
+  .phrase {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.75rem;
     font-weight: 600;
@@ -294,7 +294,7 @@ $desktop: $breakpoint-desktop;
     }
   }
 
-  &__subtitle {
+  .subtitle {
     font-family: 'Inter', sans-serif;
     font-size: 0.82rem;
     color: $text-secondary;
@@ -302,7 +302,7 @@ $desktop: $breakpoint-desktop;
     line-height: 1.5;
   }
 
-  &__pills {
+  .pills {
     display: flex;
     flex-wrap: nowrap;
     gap: $spacing-xs;
@@ -335,16 +335,16 @@ $desktop: $breakpoint-desktop;
   font-weight: 600;
   white-space: nowrap;
 
-  &__icon {
+  .icon {
     font-size: 0.7rem;
     line-height: 1;
   }
 
-  &__count {
+  .count {
     font-weight: 700;
   }
 
-  &__label {
+  .label {
     font-weight: 500;
   }
 }
@@ -390,15 +390,15 @@ $desktop: $breakpoint-desktop;
   @media (min-width: $desktop) {
     gap: $spacing-l;
   }
-}
 
-.reservations__grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: $spacing-s;
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-s;
 
-  @media (min-width: $desktop) {
-    grid-template-columns: repeat(3, 1fr);
+    @media (min-width: $desktop) {
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
 }
 

@@ -1,18 +1,18 @@
 <template>
   <div class="pro-board">
     <!-- ── Header mobile (masqué desktop) ───────────────────────────────────────── -->
-    <div class="pro-board__header-mobile">
+    <div class="header-mobile">
       <ProBoardGreeting :subtitle="contextLine" :loading="loading" />
     </div>
 
     <!-- ── Filtres sticky ────────────────────────────────────────────────────────── -->
-    <div class="pro-board__filters">
+    <div class="filters">
       <div class="pills-scroll">
         <button
           v-for="pill in RESERVATION_STATUS_PILLS"
           :key="pill.id"
           class="pill"
-          :class="{ 'pill--active': isPillActive(pill.id) }"
+          :class="{ active: isPillActive(pill.id) }"
           type="button"
           @click="togglePill(pill.id)"
         >
@@ -22,9 +22,9 @@
     </div>
 
     <!-- ── Corps ────────────────────────────────────────────────────────────────── -->
-    <div class="pro-board__body">
+    <div class="body">
       <!-- Sidebar desktop (masquée mobile) -->
-      <aside class="pro-board__sidebar">
+      <aside class="sidebar">
         <ProBoardGreeting :subtitle="contextLine" :loading="loading" />
       </aside>
 
@@ -34,7 +34,7 @@
           <ProBookingCard v-for="i in 4" :key="i" skeleton />
         </template>
 
-        <p v-else-if="filteredDemandes.length === 0" class="demandes-empty">
+        <p v-else-if="filteredDemandes.length === 0" class="empty">
           Aucune demande pour le moment.
         </p>
 
@@ -110,34 +110,64 @@ $filter-h: 50px;
   background-color: #e8e6e3;
   display: flex;
   flex-direction: column;
-}
 
-// ── Header mobile ──────────────────────────────────────────────────────────────
+  // ── Header mobile ──────────────────────────────────────────────────────────────
+  .header-mobile {
+    background: #fff;
+    padding: $spacing-m $spacing-m $spacing-s;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 
-.pro-board__header-mobile {
-  background: #fff;
-  padding: $spacing-m $spacing-m $spacing-s;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-
-  @media (min-width: $desktop) {
-    display: none;
+    @media (min-width: $desktop) {
+      display: none;
+    }
   }
-}
 
-// ── Filtres sticky ─────────────────────────────────────────────────────────────
+  // ── Filtres sticky ─────────────────────────────────────────────────────────────
+  .filters {
+    position: sticky;
+    top: $app-header-height;
+    z-index: $z-header;
+    background: #fff;
+    padding: $spacing-s $spacing-m;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 
-.pro-board__filters {
-  position: sticky;
-  top: $app-header-height;
-  z-index: $z-header;
-  background: #fff;
-  padding: $spacing-s $spacing-m;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    @media (min-width: $desktop) {
+      padding: $spacing-s max($spacing-xl, calc((100% - 1200px) / 2));
+    }
+  }
 
-  @media (min-width: $desktop) {
-    padding: $spacing-s max($spacing-xl, calc((100% - 1200px) / 2));
+  // ── Corps ─────────────────────────────────────────────────────────────────────
+  .body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    @media (min-width: $desktop) {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: $spacing-xl;
+      padding: $spacing-l max($spacing-xl, calc((100% - 1200px) / 2)) $spacing-xl;
+    }
+  }
+
+  // ── Sidebar desktop ────────────────────────────────────────────────────────────
+  .sidebar {
+    display: none;
+
+    @media (min-width: $desktop) {
+      display: block;
+      position: sticky;
+      top: calc($app-header-height + $filter-h + $spacing-l);
+      min-height: 15rem;
+      align-self: start;
+      background: #fff;
+      border-radius: $radius-md;
+      border: 1px solid $divider-color;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      padding: $spacing-m;
+    }
   }
 }
 
@@ -168,49 +198,14 @@ $filter-h: 50px;
     background 120ms ease,
     color 120ms ease;
 
-  &--active {
+  &.active {
     background: $brand-accent;
     color: $brand-primary;
     font-weight: 600;
   }
 }
 
-// ── Corps ─────────────────────────────────────────────────────────────────────
-
-.pro-board__body {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-
-  @media (min-width: $desktop) {
-    display: grid;
-    grid-template-columns: 400px 1fr;
-    gap: $spacing-xl;
-    padding: $spacing-l max($spacing-xl, calc((100% - 1200px) / 2)) $spacing-xl;
-  }
-}
-
-// ── Sidebar desktop ────────────────────────────────────────────────────────────
-
-.pro-board__sidebar {
-  display: none;
-
-  @media (min-width: $desktop) {
-    display: block;
-    position: sticky;
-    top: calc($app-header-height + $filter-h + $spacing-l);
-    min-height: 15rem;
-    align-self: start;
-    background: #fff;
-    border-radius: $radius-md;
-    border: 1px solid $divider-color;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    padding: $spacing-m;
-  }
-}
-
 // ── Liste des cards ────────────────────────────────────────────────────────────
-
 .bookings-list {
   display: flex;
   flex-direction: column;
@@ -221,14 +216,14 @@ $filter-h: 50px;
     gap: $spacing-m;
     padding: 0;
   }
-}
 
-.demandes-empty {
-  font-size: 0.875rem;
-  color: $text-secondary;
-  font-style: italic;
-  text-align: center;
-  padding: $spacing-xl 0;
-  margin: 0;
+  .empty {
+    font-size: 0.875rem;
+    color: $text-secondary;
+    font-style: italic;
+    text-align: center;
+    padding: $spacing-xl 0;
+    margin: 0;
+  }
 }
 </style>

@@ -2,27 +2,27 @@
   <!-- ── Variant 'big' ──────────────────────────────────────────────────────── -->
   <div v-if="variant === 'big'" class="bca-big">
     <!-- Mobile : boutons horizontaux (masqués si desktopOnly) -->
-    <div class="bca-big__mobile" :class="{ 'bca-big__mobile--hidden': desktopOnly }">
+    <div class="bca-big__mobile" :class="{ hidden: desktopOnly }">
       <!-- Ligne 1 : Tel + Mail -->
       <div class="bca-btn-row">
-        <a :href="`tel:${phone}`" class="bca-btn bca-btn--call">
-          <PhoneIcon class="bca-btn__icon" />
-          <span class="bca-btn__label">Appeler</span>
+        <a :href="`tel:${phone}`" class="bca-btn call">
+          <PhoneIcon class="icon" />
+          <span class="label">Appeler</span>
         </a>
-        <a :href="mailtoHref" class="bca-btn bca-btn--mail">
-          <MailSendIcon class="bca-btn__icon" />
-          <span class="bca-btn__label">Mail</span>
+        <a :href="mailtoHref" class="bca-btn mail">
+          <MailSendIcon class="icon" />
+          <span class="label">Mail</span>
         </a>
       </div>
       <!-- Ligne 2 : WhatsApp + SMS (mobile uniquement) -->
       <div v-if="isMobilePhone" class="bca-btn-row">
-        <a :href="whatsappHref" class="bca-btn bca-btn--whatsapp" target="_blank" rel="noopener">
-          <WhatsappIcon class="bca-btn__icon" />
-          <span class="bca-btn__label">WhatsApp</span>
+        <a :href="whatsappHref" class="bca-btn whatsapp" target="_blank" rel="noopener">
+          <WhatsappIcon class="icon" />
+          <span class="label">WhatsApp</span>
         </a>
-        <a :href="smsHref" class="bca-btn bca-btn--sms">
-          <ChatSmileIcon class="bca-btn__icon" />
-          <span class="bca-btn__label">SMS</span>
+        <a :href="smsHref" class="bca-btn sms">
+          <ChatSmileIcon class="icon" />
+          <span class="label">SMS</span>
         </a>
       </div>
     </div>
@@ -31,7 +31,7 @@
     <div class="bca-big__desktop">
       <!-- Version cartes -->
 
-      <div class="bca-cards" :class="`bca-cards--${layout}`">
+      <div class="bca-cards" :class="layout">
         <!-- Carte email -->
         <ContactActionCard :copy-value="clientInfo.email">
           <template #icon><MailSendIcon /></template>
@@ -60,24 +60,24 @@
 
   <!-- ── Variant 'sticky' — dock flottant ─────────────────────────────────── -->
   <div v-else-if="variant === 'sticky'" class="bca-dock">
-    <a :href="`tel:${phone}`" class="bca-dock__btn bca-dock__btn--call" aria-label="Appeler">
-      <PhoneLineIcon class="bca-dock__icon" />
+    <a :href="`tel:${phone}`" class="btn call" aria-label="Appeler">
+      <PhoneLineIcon class="icon" />
     </a>
-    <a :href="mailtoHref" class="bca-dock__btn" aria-label="Envoyer un mail">
-      <MailSendLineIcon class="bca-dock__icon" />
+    <a :href="mailtoHref" class="btn" aria-label="Envoyer un mail">
+      <MailSendLineIcon class="icon" />
     </a>
     <a
       v-if="isMobilePhone"
       :href="whatsappHref"
-      class="bca-dock__btn"
+      class="btn"
       target="_blank"
       rel="noopener"
       aria-label="WhatsApp"
     >
-      <WhatsappLineIcon class="bca-dock__icon" />
+      <WhatsappLineIcon class="icon" />
     </a>
-    <a v-if="isMobilePhone" :href="smsHref" class="bca-dock__btn" aria-label="SMS">
-      <ChatSmileLineIcon class="bca-dock__icon" />
+    <a v-if="isMobilePhone" :href="smsHref" class="btn" aria-label="SMS">
+      <ChatSmileLineIcon class="icon" />
     </a>
   </div>
 </template>
@@ -123,27 +123,29 @@ const smsHref = computed(() => `sms:${phone.value}`)
 $desktop: $breakpoint-desktop;
 
 // ── Variant big ────────────────────────────────────────────────────────────────
-.bca-big__mobile {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-s;
-
-  @media (min-width: $desktop) {
-    display: none;
-  }
-
-  &--hidden {
-    display: none;
-  }
-}
-
-.bca-big__desktop {
-  display: none;
-
-  @media (min-width: $desktop) {
+.bca-big {
+  &__mobile {
     display: flex;
     flex-direction: column;
     gap: $spacing-s;
+
+    @media (min-width: $desktop) {
+      display: none;
+    }
+
+    &.hidden {
+      display: none;
+    }
+  }
+
+  &__desktop {
+    display: none;
+
+    @media (min-width: $desktop) {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-s;
+    }
   }
 }
 
@@ -166,35 +168,35 @@ $desktop: $breakpoint-desktop;
   cursor: pointer;
   @include pressable;
 
-  &__icon {
+  .icon {
     width: 20px;
     height: 20px;
     flex-shrink: 0;
   }
 
-  &__label {
+  .label {
     font-family: 'Inter', sans-serif;
     font-size: 0.875rem;
     font-weight: 600;
     line-height: 1;
   }
 
-  &--call {
+  &.call {
     background: $brand-accent;
     color: #fff;
     border: 1.5px solid $brand-accent;
   }
-  &--mail {
+  &.mail {
     background: #fff;
     color: $text-secondary;
     border: 1.5px solid $divider-color;
   }
-  &--whatsapp {
+  &.whatsapp {
     background: #fff;
     color: #25d366;
     border: 1.5px solid#25d366;
   }
-  &--sms {
+  &.sms {
     background: #fff;
     color: $text-secondary;
     border: 1.5px solid $divider-color;
@@ -229,10 +231,10 @@ $desktop: $breakpoint-desktop;
   display: grid;
   gap: $spacing-s;
 
-  &--row {
+  &.row {
     grid-template-columns: 1fr 1fr;
   }
-  &--column {
+  &.column {
     grid-template-columns: 1fr;
   }
 }
@@ -268,7 +270,7 @@ $desktop: $breakpoint-desktop;
     0 10px 25px -5px rgba(0, 0, 0, 0.1),
     0 8px 10px -6px rgba(0, 0, 0, 0.1);
 
-  &__btn {
+  .btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -283,18 +285,18 @@ $desktop: $breakpoint-desktop;
     flex-shrink: 0;
     @include pressable;
 
-    &--call {
+    &.call {
       background: $brand-accent;
       color: $brand-primary;
       width: 56px;
     }
 
-    &:hover:not(&--call) {
+    &:hover:not(.call) {
       background: $surface-soft;
     }
   }
 
-  &__icon {
+  .icon {
     width: 22px;
     height: 22px;
     flex-shrink: 0;

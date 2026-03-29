@@ -6,7 +6,7 @@
         v-for="pill in PILLS"
         :key="pill.id"
         class="feed__pill"
-        :class="{ 'feed__pill--active': activeFilter === pill.id }"
+        :class="{ active: activeFilter === pill.id }"
         type="button"
         @click="activeFilter = pill.id"
       >
@@ -34,21 +34,21 @@
         <template v-if="item._kind === 'note'">
           <!-- Message initial -->
           <div v-if="item.isMessageInitial" class="note-initial">
-            <span class="note-initial__label">Message initial</span>
-            <p class="note-initial__content">{{ item.content }}</p>
-            <span class="note-initial__meta">
+            <span class="label">Message initial</span>
+            <p class="content">{{ item.content }}</p>
+            <span class="meta">
               {{ item.author.name }} · {{ formatDate(item.createdAt) }}
             </span>
           </div>
 
           <!-- Note personnelle -->
-          <div v-else-if="item.isPersonal" class="note-card note-card--personal">
-            <div class="note-card__header">
-              <span class="note-card__lock">🔒</span>
-              <span class="note-card__author">{{ item.author.name }}</span>
-              <span class="note-card__date">{{ formatDate(item.createdAt) }}</span>
+          <div v-else-if="item.isPersonal" class="note-card personal">
+            <div class="header">
+              <span class="lock">🔒</span>
+              <span class="author">{{ item.author.name }}</span>
+              <span class="date">{{ formatDate(item.createdAt) }}</span>
             </div>
-            <p class="note-card__content">{{ item.content }}</p>
+            <p class="content">{{ item.content }}</p>
           </div>
 
           <!-- Note standard -->
@@ -57,20 +57,20 @@
 
         <!-- Document -->
         <div v-else class="doc-item">
-          <div class="doc-icon" :class="`doc-icon--${item.fileType}`">
+          <div class="icon" :class="item.fileType">
             {{ item.fileType === 'pdf' ? 'PDF' : item.fileType === 'image' ? 'IMG' : 'DOC' }}
           </div>
-          <div class="doc-info">
-            <span class="doc-name">{{ item.name }}</span>
-            <span class="doc-meta">
+          <div class="info">
+            <span class="name">{{ item.name }}</span>
+            <span class="meta">
               {{ item.uploadedBy.name }} · {{ formatDate(item.uploadedAt) }}
             </span>
           </div>
-          <div class="doc-actions">
-            <a :href="item.url" download class="doc-btn" title="Télécharger">↓</a>
+          <div class="actions">
+            <a :href="item.url" download class="btn" title="Télécharger">↓</a>
             <button
               v-if="canDeleteDoc(item)"
-              class="doc-btn doc-btn--delete"
+              class="btn delete"
               type="button"
               title="Supprimer"
               @click="$emit('delete-document', item.id)"
@@ -97,17 +97,17 @@
         <textarea
           ref="noteTextareaRef"
           v-model="newNote"
-          class="note-form__textarea"
+          class="textarea"
           placeholder="Ajouter une note..."
           rows="5"
           @input="autoResize"
         />
-        <label v-if="showPersonalToggle" class="note-form__personal">
+        <label v-if="showPersonalToggle" class="personal">
           <input v-model="noteIsPersonal" type="checkbox" />
           <span>Note privée 🔒 (visible uniquement par moi)</span>
         </label>
         <button
-          class="note-form__send"
+          class="send"
           type="button"
           :disabled="!newNote.trim() || sending"
           @click="sendNote"
@@ -237,84 +237,84 @@ $desktop: $breakpoint-desktop;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-}
 
-// ── Pills ──────────────────────────────────────────────────────────────────────
-.feed__pills {
-  display: flex;
-  gap: $spacing-xs;
-  flex-wrap: nowrap;
-}
+  // ── Pills ──────────────────────────────────────────────────────────────────
+  &__pills {
+    display: flex;
+    gap: $spacing-xs;
+    flex-wrap: nowrap;
+  }
 
-.feed__pill {
-  flex-shrink: 0;
-  padding: 5px 14px;
-  border-radius: 2rem;
-  border: 1px solid $divider-color;
-  background: #fff;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: $text-secondary;
-  cursor: pointer;
-  transition:
-    background 120ms ease,
-    color 120ms ease,
-    border-color 120ms ease;
+  &__pill {
+    flex-shrink: 0;
+    padding: 5px 14px;
+    border-radius: 2rem;
+    border: 1px solid $divider-color;
+    background: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: $text-secondary;
+    cursor: pointer;
+    transition:
+      background 120ms ease,
+      color 120ms ease,
+      border-color 120ms ease;
 
-  &--active {
-    background: $brand-accent;
-    color: $brand-primary;
-    border-color: $brand-accent;
+    &.active {
+      background: $brand-accent;
+      color: $brand-primary;
+      border-color: $brand-accent;
+      font-weight: 600;
+    }
+  }
+
+  // ── Actions ────────────────────────────────────────────────────────────────
+  &__actions {
+    display: flex;
+    gap: $spacing-xs;
+  }
+
+  &__action-btn {
+    flex-shrink: 0;
+    padding: 5px 14px;
+    border: 1px solid $brand-border;
+    border-radius: $radius-md;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.8rem;
     font-weight: 600;
+    color: $text-secondary;
+    cursor: pointer;
+    transition:
+      border-color 150ms ease,
+      color 150ms ease;
+
+    &:hover {
+      border-color: $brand-primary;
+      color: $brand-primary;
+    }
   }
-}
 
-// ── Actions ────────────────────────────────────────────────────────────────────
-.feed__actions {
-  display: flex;
-  gap: $spacing-xs;
-}
-
-.feed__action-btn {
-  flex-shrink: 0;
-  padding: 5px 14px;
-  border: 1px solid $brand-border;
-  border-radius: $radius-md;
-  background: transparent;
-  font-family: inherit;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: $text-secondary;
-  cursor: pointer;
-  transition:
-    border-color 150ms ease,
-    color 150ms ease;
-
-  &:hover {
-    border-color: $brand-primary;
-    color: $brand-primary;
+  // ── Liste flux ─────────────────────────────────────────────────────────────
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-s;
   }
-}
 
-// ── Liste flux ─────────────────────────────────────────────────────────────────
-.feed__list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-s;
-}
-
-.feed__empty {
-  font-size: 0.875rem;
-  color: $text-secondary;
-  opacity: 0.55;
-  font-style: italic;
-  margin: 0;
-  text-align: center;
-  padding: $spacing-m 0;
+  &__empty {
+    font-size: 0.875rem;
+    color: $text-secondary;
+    opacity: 0.55;
+    font-style: italic;
+    margin: 0;
+    text-align: center;
+    padding: $spacing-m 0;
+  }
 }
 
 // ── Note message initial ───────────────────────────────────────────────────────
@@ -326,7 +326,7 @@ $desktop: $breakpoint-desktop;
   flex-direction: column;
   gap: $spacing-xs;
 
-  &__label {
+  .label {
     font-family: 'Inter', sans-serif;
     font-size: 0.65rem;
     font-weight: 700;
@@ -335,7 +335,7 @@ $desktop: $breakpoint-desktop;
     color: $brand-muted;
   }
 
-  &__content {
+  .content {
     font-family: 'Inter', sans-serif;
     font-size: 0.9rem;
     line-height: 1.6;
@@ -344,7 +344,7 @@ $desktop: $breakpoint-desktop;
     white-space: pre-wrap;
   }
 
-  &__meta {
+  .meta {
     font-family: 'Inter', sans-serif;
     font-size: 0.72rem;
     color: $text-secondary;
@@ -354,7 +354,7 @@ $desktop: $breakpoint-desktop;
 
 // ── Note personnelle ───────────────────────────────────────────────────────────
 .note-card {
-  &--personal {
+  &.personal {
     background: #fdfaf0;
     border: 1px dashed $brand-accent;
     border-radius: $radius-md;
@@ -364,25 +364,25 @@ $desktop: $breakpoint-desktop;
     gap: $spacing-xs;
   }
 
-  &__header {
+  .header {
     display: flex;
     align-items: center;
     gap: 6px;
   }
 
-  &__lock {
+  .lock {
     font-size: 0.75rem;
     line-height: 1;
   }
 
-  &__author {
+  .author {
     font-family: 'Inter', sans-serif;
     font-size: 0.72rem;
     font-weight: 600;
     color: $brand-muted;
   }
 
-  &__date {
+  .date {
     font-family: 'Inter', sans-serif;
     font-size: 0.72rem;
     color: $text-secondary;
@@ -390,7 +390,7 @@ $desktop: $breakpoint-desktop;
     margin-left: auto;
   }
 
-  &__content {
+  .content {
     font-family: 'Inter', sans-serif;
     font-size: 0.875rem;
     line-height: 1.55;
@@ -410,91 +410,91 @@ $desktop: $breakpoint-desktop;
   border-radius: $radius-md;
   border: 0.5px solid rgba(47, 42, 37, 0.1);
   box-shadow: 0 1px 4px rgba(47, 42, 37, 0.07);
-}
 
-.doc-icon {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  border-radius: $radius-sm;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Inter', sans-serif;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  .icon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: $radius-sm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
 
-  &--pdf {
-    background: rgba(163, 45, 45, 0.1);
-    color: #a32d2d;
+    &.pdf {
+      background: rgba(163, 45, 45, 0.1);
+      color: #a32d2d;
+    }
+    &.image {
+      background: rgba(24, 95, 165, 0.1);
+      color: #185fa5;
+    }
+    &.other {
+      background: rgba(107, 99, 92, 0.1);
+      color: #6b635c;
+    }
   }
-  &--image {
-    background: rgba(24, 95, 165, 0.1);
-    color: #185fa5;
+
+  .info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
   }
-  &--other {
-    background: rgba(107, 99, 92, 0.1);
-    color: #6b635c;
-  }
-}
 
-.doc-info {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.doc-name {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: $text-primary;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.doc-meta {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.75rem;
-  color: $text-secondary;
-  opacity: 0.7;
-}
-
-.doc-actions {
-  display: flex;
-  align-items: center;
-  gap: $spacing-xs;
-  flex-shrink: 0;
-}
-
-.doc-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: $radius-sm;
-  border: none;
-  background: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.875rem;
-  cursor: pointer;
-  text-decoration: none;
-  color: $text-secondary;
-  transition:
-    background 150ms ease,
-    color 150ms ease;
-
-  &:hover {
-    background: $surface-soft;
+  .name {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
     color: $text-primary;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  &--delete:hover {
-    background: rgba(163, 45, 45, 0.1);
-    color: #a32d2d;
+
+  .meta {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    color: $text-secondary;
+    opacity: 0.7;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    flex-shrink: 0;
+  }
+
+  .btn {
+    width: 28px;
+    height: 28px;
+    border-radius: $radius-sm;
+    border: none;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    cursor: pointer;
+    text-decoration: none;
+    color: $text-secondary;
+    transition:
+      background 150ms ease,
+      color 150ms ease;
+
+    &:hover {
+      background: $surface-soft;
+      color: $text-primary;
+    }
+    &.delete:hover {
+      background: rgba(163, 45, 45, 0.1);
+      color: #a32d2d;
+    }
   }
 }
 
@@ -506,7 +506,7 @@ $desktop: $breakpoint-desktop;
   padding: 32px;
   gap: $spacing-l;
 
-  &__textarea {
+  .textarea {
     flex: 1;
     width: 100%;
     min-height: 300px;
@@ -527,7 +527,7 @@ $desktop: $breakpoint-desktop;
     }
   }
 
-  &__personal {
+  .personal {
     display: flex;
     align-items: center;
     gap: $spacing-xs;
@@ -537,7 +537,7 @@ $desktop: $breakpoint-desktop;
     cursor: pointer;
   }
 
-  &__send {
+  .send {
     flex-shrink: 0;
     width: 100%;
     height: 48px;

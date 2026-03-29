@@ -1,13 +1,13 @@
 <template>
-  <div class="sgilt-card" :class="{ 'sgilt-card--clickable': clickable }">
-    <div class="sgilt-card__media">
+  <div class="sgilt-card" :class="{ clickable: clickable }">
+    <div class="media">
       <img :src="image" alt="" />
-      <div class="sgilt-card__gradient" aria-hidden="true" />
-      <div class="sgilt-card__overlay">
+      <div class="gradient" aria-hidden="true" />
+      <div class="overlay">
         <slot name="overlay" />
       </div>
     </div>
-    <div v-if="$slots.footer" class="sgilt-card__footer">
+    <div v-if="$slots.footer" class="footer">
       <slot name="footer" />
     </div>
   </div>
@@ -34,19 +34,19 @@ withDefaults(
   border-radius: $radius-lg;
   overflow: hidden;
 
-  &--clickable {
+  &.clickable {
     cursor: pointer;
 
-    .sgilt-card__media img {
+    .media img {
       transition: transform 300ms ease;
     }
 
-    &:hover .sgilt-card__media img {
+    &:hover .media img {
       transform: scale(1.03);
     }
   }
 
-  &__media {
+  .media {
     position: relative;
     aspect-ratio: v-bind(ratio);
     overflow: hidden;
@@ -60,14 +60,14 @@ withDefaults(
     }
   }
 
-  &__gradient {
+  .gradient {
     position: absolute;
     inset: 0;
     background: linear-gradient(to bottom, transparent 35%, rgba(0, 0, 0, 0.65) 100%);
     pointer-events: none;
   }
 
-  &__overlay {
+  .overlay {
     position: absolute;
     inset: 0;
     display: flex;
@@ -76,7 +76,7 @@ withDefaults(
     padding: $spacing-s;
   }
 
-  &__footer {
+  .footer {
     background: #fff;
   }
 }
