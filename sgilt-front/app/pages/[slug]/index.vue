@@ -3,6 +3,7 @@
     v-if="prestataire"
     :prestataire="prestataire"
     @select="onSelect"
+    @back="router.back()"
   />
 
   <div v-else-if="!loading" class="not-found">
@@ -23,6 +24,7 @@ import DemandeBottomSheet from '~/components/demande/DemandeBottomSheet.vue'
 import { SearchMockService } from '~/services/search.mock'
 import type { PrestataireDetail } from '~/types/prestataire'
 
+const router = useRouter()
 const route = useRoute()
 const slug = route.params.slug as string
 

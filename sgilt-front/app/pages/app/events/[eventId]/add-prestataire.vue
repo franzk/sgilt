@@ -15,7 +15,6 @@
         v-else-if="currentView === 'details' && selectedPrestataire"
         key="details"
         :prestataire="selectedPrestataire"
-        show-back
         disable-date
         @back="currentView = 'search'"
         @select="openContactDialog"

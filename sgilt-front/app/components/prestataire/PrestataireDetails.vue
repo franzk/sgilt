@@ -1,10 +1,12 @@
 <template>
   <div class="provider-page">
-    <!-- Back button (AddPrestatairePage seulement) -->
-    <button v-if="showBack" class="back-btn" type="button" @click="$emit('back')">← Retour</button>
-
     <!-- ── Hero ─────────────────────────────────────────────────────────────── -->
-    <PrestataireHero :prestataire="prestataire" @open-video="openVideo" @open-photo="openGallery" />
+    <PrestataireHero
+      :prestataire="prestataire"
+      @open-video="openVideo"
+      @open-photo="openGallery"
+      @back="$emit('back')"
+    />
 
     <!-- ── Layout principal ─────────────────────────────────────────────────── -->
     <div class="page-layout">
@@ -199,7 +201,6 @@ import type { PrestataireDetail } from '~/types/prestataire'
 
 const props = defineProps<{
   prestataire: PrestataireDetail
-  showBack?: boolean
   disableDate?: boolean
 }>()
 

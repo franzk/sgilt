@@ -13,6 +13,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   openVideo: []
   openPhoto: [index: number]
+  back: []
 }>()
 
 // ─── Carousel mobile ──────────────────────────────────────────────────────────
@@ -159,7 +160,7 @@ async function share() {
     </div>
 
     <!-- Bouton back (toujours visible) -->
-    <button class="back" @click="router.back()" aria-label="Retour">
+    <button class="back" @click="emit('back')" aria-label="Retour">
       <IconArrowBack />
     </button>
 
