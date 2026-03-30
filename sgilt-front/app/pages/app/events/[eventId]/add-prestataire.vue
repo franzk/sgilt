@@ -16,31 +16,22 @@
         key="details"
         :prestataire="selectedPrestataire"
         show-back
+        disable-date
         @back="currentView = 'search'"
         @select="openContactDialog"
       />
     </Transition>
 
     <!-- ── Dialog envoi demande ──────────────────────────────────────────────── -->
-    <SgiltDialog
-      v-model:open="contactDialogOpen"
-      title="Envoyer une demande"
-      max-width="520px"
-    >
+    <SgiltDialog v-model:open="contactDialogOpen" title="Envoyer une demande" max-width="520px">
       <div class="contact-form">
         <!-- Résumé événement (lecture seule) -->
         <div v-if="eventContext" class="event-summary">
           <p class="summary-title">{{ eventContext.nom }}</p>
           <div class="summary-details">
-            <span v-if="eventContext.date">
-              📅 {{ formatDate(eventContext.date) }}
-            </span>
-            <span v-if="eventContext.ville">
-              📍 {{ eventContext.ville }}
-            </span>
-            <span v-if="eventContext.invites">
-              👥 {{ eventContext.invites }} invités
-            </span>
+            <span v-if="eventContext.date"> 📅 {{ formatDate(eventContext.date) }} </span>
+            <span v-if="eventContext.ville"> 📍 {{ eventContext.ville }} </span>
+            <span v-if="eventContext.invites"> 👥 {{ eventContext.invites }} invités </span>
           </div>
         </div>
 
@@ -52,7 +43,9 @@
 
         <!-- Message optionnel -->
         <div class="field">
-          <label class="label">Message au prestataire <span class="optional">(optionnel)</span></label>
+          <label class="label"
+            >Message au prestataire <span class="optional">(optionnel)</span></label
+          >
           <textarea
             v-model="contactMessage"
             class="textarea"

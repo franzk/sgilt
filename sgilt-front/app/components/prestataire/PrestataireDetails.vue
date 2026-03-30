@@ -14,6 +14,7 @@
           <SgiltDatePicker
             v-model="dateModel"
             :booked-dates="unavailableDatesAsDate"
+            :disabled="disableDate"
             placeholder="Vérifier une date"
           />
           <Transition name="fade">
@@ -199,6 +200,7 @@ import type { PrestataireDetail } from '~/types/prestataire'
 const props = defineProps<{
   prestataire: PrestataireDetail
   showBack?: boolean
+  disableDate?: boolean
 }>()
 
 const emit = defineEmits<{
