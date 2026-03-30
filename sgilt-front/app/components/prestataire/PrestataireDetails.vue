@@ -1,12 +1,13 @@
 <template>
   <div class="provider-page">
     <!-- Back button (AddPrestatairePage seulement) -->
-    <button v-if="showBack" class="back-btn" type="button" @click="$emit('back')">
-      ← Retour
-    </button>
+    <button v-if="showBack" class="back-btn" type="button" @click="$emit('back')">← Retour</button>
 
     <!-- ── Hero ─────────────────────────────────────────────────────────────── -->
     <PrestataireHero :prestataire="prestataire" @open-video="openVideo" @open-photo="openGallery" />
+
+    {{ dateModel }}
+    <!-- DEBUG -->
 
     <!-- ── Layout principal ─────────────────────────────────────────────────── -->
     <div class="page-layout">
@@ -81,11 +82,7 @@
           >
             <h2 class="title">Ils en parlent</h2>
             <div class="testimonials">
-              <blockquote
-                v-for="t in prestataire.testimonials"
-                :key="t.author"
-                class="testimonial"
-              >
+              <blockquote v-for="t in prestataire.testimonials" :key="t.author" class="testimonial">
                 <p class="text">« {{ t.text }} »</p>
                 <footer class="footer">
                   <span class="author">{{ t.author }}</span>
@@ -176,7 +173,14 @@
           <div class="video-wrapper">
             <iframe
               :src="`https://www.youtube.com/embed/${prestataire.youtubeId}?autoplay=1`"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allow="
+                accelerometer;
+                autoplay;
+                clipboard-write;
+                encrypted-media;
+                gyroscope;
+                picture-in-picture;
+              "
               allowfullscreen
               class="video-frame"
               title="Vidéo du prestataire"
