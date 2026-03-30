@@ -1,32 +1,36 @@
 <template>
   <div class="etape">
-    <h2 class="question">Comment vous contacter ?</h2>
+    <h2 class="question">{{ isNewEventFlow ? 'Votre message' : 'Comment vous contacter ?' }}</h2>
 
-    <!-- Coordonnées -->
-    <div class="section-title">Vos coordonnées</div>
+    <!-- Coordonnées (masquées en flow new-event, récupérées depuis le profil) -->
+    <template v-if="!isNewEventFlow">
+      <div class="section-title">Vos coordonnées</div>
+      <div class="fields">
+        <div class="field-group">
+          <label class="field-label">📧 Email <span class="required">*</span></label>
+          <input
+            v-model="state.email"
+            class="field-input"
+            type="email"
+            placeholder="votre@email.fr"
+            autocomplete="email"
+          />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">📱 Téléphone <span class="required">*</span></label>
+          <input
+            v-model="state.telephone"
+            class="field-input"
+            type="tel"
+            placeholder="06 12 34 56 78"
+            autocomplete="tel"
+          />
+        </div>
+      </div>
+    </template>
+
     <div class="fields">
-      <div class="field-group">
-        <label class="field-label">📧 Email <span class="required">*</span></label>
-        <input
-          v-model="state.email"
-          class="field-input"
-          type="email"
-          placeholder="votre@email.fr"
-          autocomplete="email"
-        />
-      </div>
-
-      <div class="field-group">
-        <label class="field-label">📱 Téléphone <span class="required">*</span></label>
-        <input
-          v-model="state.telephone"
-          class="field-input"
-          type="tel"
-          placeholder="06 12 34 56 78"
-          autocomplete="tel"
-        />
-      </div>
-
       <div class="field-group">
         <textarea
           v-model="state.prestataireMessage"
@@ -65,7 +69,12 @@ const {
   momentCleEmoji,
 } = useDemande()
 
-const formValid = computed(() => !!state.email && !!state.telephone)
+const { currentFlow } = useFlow()
+const isNewEventFlow = computed(() => currentFlow.value === 'new-event')
+
+const formValid = computed(() =>
+  isNewEventFlow.value ? true : !!state.email && !!state.telephone,
+)
 </script>
 
 <style scoped lang="scss">

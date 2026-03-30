@@ -4,13 +4,14 @@
 
     <div class="hero">
       <div class="icon">✉️</div>
-      <h2 class="title">Plus qu'une étape&nbsp;!</h2>
-      <div class="cta">
+      <h2 class="title">{{ isNewEventFlow ? 'Votre demande a bien été envoyée' : 'Plus qu\'une étape\u00a0!' }}</h2>
+      <div v-if="!isNewEventFlow" class="cta">
         <p class="cta-text">
           Vérifiez vos emails et cliquez sur le lien de confirmation. Votre demande sera alors
           transmise à {{ prestataireName }}.
         </p>
       </div>
+      <SgiltButton v-else @click="navigateTo('/app/events')">Voir mon événement →</SgiltButton>
     </div>
 
     <div class="recap">
@@ -20,8 +21,18 @@
 </template>
 
 <script setup lang="ts">
+import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
+
 defineProps<{ prestataireName: string }>()
 defineEmits<{ close: [] }>()
+
+const { currentFlow, onFlowSuccess } = useFlow()
+// Capture the flow before onFlowSuccess clears it
+const isNewEventFlow = currentFlow.value === 'new-event'
+
+onMounted(() => {
+  if (isNewEventFlow) onFlowSuccess()
+})
 </script>
 
 <style scoped lang="scss">

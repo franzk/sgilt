@@ -7,7 +7,7 @@
         <p class="events-page__count">
           {{ t('events-list.count', events.length, { n: events.length }) }}
         </p>
-        <button class="events-page__create-btn" type="button">
+        <button class="events-page__create-btn" type="button" @click="useFlow().start('new-event', 'Nouvel événement')">
           {{ t('events-list.create') }}
         </button>
       </div>
