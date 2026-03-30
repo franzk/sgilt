@@ -6,7 +6,9 @@ defineProps<{
   results: PrestataireCardDetail[]
   loading: boolean
   error?: string | null
+  selectable?: boolean
 }>()
+defineEmits<{ select: [provider: PrestataireCardDetail] }>()
 </script>
 
 <template>
@@ -24,7 +26,13 @@ defineProps<{
     </div>
 
     <div v-else class="grid-container">
-      <PrestataireCard v-for="provider in results" :key="provider.id" :provider="provider" />
+      <PrestataireCard
+        v-for="provider in results"
+        :key="provider.id"
+        :provider="provider"
+        :selectable="selectable"
+        @select="$emit('select', $event)"
+      />
     </div>
   </div>
 </template>

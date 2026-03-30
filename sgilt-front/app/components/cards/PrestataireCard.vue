@@ -4,20 +4,27 @@ import SgiltImage from '~/components/basics/media/SgiltImage.vue'
 import { NuxtLink } from '#components'
 import CategoryIcon from '~/components/basics/icons/CategoryIcon.vue'
 
-defineProps<{
+const props = defineProps<{
   provider?: PrestataireCardDetail
   loading?: boolean
+  selectable?: boolean
 }>()
+const emit = defineEmits<{ select: [provider: PrestataireCardDetail] }>()
 
 const imageLoaded = ref(false)
+
+function handleClick() {
+  if (props.selectable && props.provider) emit('select', props.provider)
+}
 </script>
 
 <template>
   <component
-    :is="loading ? 'div' : NuxtLink"
-    :to="!loading ? `/${provider?.slug}` : undefined"
+    :is="props.selectable || loading ? 'div' : NuxtLink"
+    :to="!props.selectable && !loading ? `/${provider?.slug}` : undefined"
     class="provider-card"
-    :class="{ 'is-loading shimmer-container': loading }"
+    :class="[{ 'is-loading shimmer-container': loading }, { selectable: props.selectable }]"
+    @click="handleClick"
   >
     <div class="image-wrapper">
       <template v-if="!loading">
@@ -70,6 +77,10 @@ const imageLoaded = ref(false)
   box-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.02),
     0 2px 4px -1px rgba(0, 0, 0, 0.01);
+
+  &.selectable {
+    cursor: pointer;
+  }
 
   &:hover {
     transform: translateY(-6px);

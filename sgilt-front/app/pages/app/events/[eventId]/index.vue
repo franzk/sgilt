@@ -68,7 +68,11 @@
             />
           </div>
 
-          <button class="add-prestataire-btn" type="button" @click="goToSearch">
+          <button
+            class="add-prestataire-btn"
+            type="button"
+            @click="navigateTo(`/app/events/${eventId}/add-prestataire`)"
+          >
             + Ajouter un prestataire
           </button>
         </section>
@@ -198,16 +202,6 @@ const sortedReservations = computed(() => {
   )
 })
 
-// ── FAB → recherche avec contexte ─────────────────────────────────────────────
-const { state } = useDemande()
-
-function goToSearch() {
-  if (event.value?.eventType) state.eventType = event.value.eventType
-  navigateTo({
-    path: '/search',
-    query: { date: event.value?.date ?? undefined },
-  })
-}
 </script>
 
 <style scoped lang="scss">
