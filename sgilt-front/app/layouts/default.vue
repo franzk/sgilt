@@ -1,6 +1,8 @@
 <template>
   <AppHeader :show-notifications="false" />
-  <ContextBanner v-if="banner.label.value" />
+  <ClientOnly>
+    <ContextBanner v-if="banner.label.value" />
+  </ClientOnly>
   <section class="default-content">
     <slot />
   </section>
