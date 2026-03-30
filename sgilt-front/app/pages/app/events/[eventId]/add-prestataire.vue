@@ -29,17 +29,17 @@
     >
       <div class="contact-form">
         <!-- Résumé événement (lecture seule) -->
-        <div v-if="searchContext.eventContext" class="event-summary">
-          <p class="summary-title">{{ searchContext.eventContext.nom }}</p>
+        <div v-if="eventContext" class="event-summary">
+          <p class="summary-title">{{ eventContext.nom }}</p>
           <div class="summary-details">
-            <span v-if="searchContext.eventContext.date">
-              📅 {{ formatDate(searchContext.eventContext.date) }}
+            <span v-if="eventContext.date">
+              📅 {{ formatDate(eventContext.date) }}
             </span>
-            <span v-if="searchContext.eventContext.ville">
-              📍 {{ searchContext.eventContext.ville }}
+            <span v-if="eventContext.ville">
+              📍 {{ eventContext.ville }}
             </span>
-            <span v-if="searchContext.eventContext.invites">
-              👥 {{ searchContext.eventContext.invites }} invités
+            <span v-if="eventContext.invites">
+              👥 {{ eventContext.invites }} invités
             </span>
           </div>
         </div>
@@ -81,7 +81,6 @@ import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import { EventMockService } from '~/services/event.mock'
 import { SearchMockService } from '~/services/search.mock'
 import type { PrestataireCardDetail, PrestataireDetail } from '~/types/prestataire'
-import type { SearchContextState, SearchContextInjection } from '~/types/search'
 
 definePageMeta({ layout: 'default' })
 
@@ -89,40 +88,26 @@ definePageMeta({ layout: 'default' })
 const route = useRoute()
 const eventId = route.params.eventId as string
 
-// ── SearchContext ──────────────────────────────────────────────────────────────
+// ── Context ───────────────────────────────────────────────────────────────────
 // 3.3rem = $app-header-height, 44px = ContextBanner height
 const SEARCH_HEADER_OFFSET = 'calc(3.3rem + 44px)'
 
-const searchContext = useState<SearchContextState>(`searchContext:${eventId}`, () => ({
-  date: null,
-  eventContext: null,
-}))
+const { eventContext, setEventContext, abort } = useAddPrestataireContext()
+const { dateModel } = useSearchUi()
 
 onMounted(async () => {
   const event = await EventMockService.getById(eventId)
   if (!event) return
-  searchContext.value = {
+  if (event.date) dateModel.value = new Date(event.date)
+  setEventContext({
+    id: event.id,
+    nom: event.title,
     date: event.date ?? null,
-    eventContext: {
-      id: event.id,
-      nom: event.title,
-      date: event.date ?? null,
-      ville: event.ville,
-      ambiance: event.ambiance,
-      invites: event.nbInvites,
-    },
-  }
+    ville: event.ville,
+    ambiance: event.ambiance,
+    invites: event.nbInvites,
+  })
 })
-
-function abort() {
-  const id = searchContext.value.eventContext?.id ?? eventId
-  searchContext.value = { date: null, eventContext: null }
-  useState('search:date').value = undefined
-  navigateTo(`/app/events/${id}`)
-}
-
-const injection: SearchContextInjection = { searchContext, abort }
-provide('searchContext', injection)
 
 // ── Navigation entre vues ──────────────────────────────────────────────────────
 type View = 'search' | 'details'

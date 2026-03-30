@@ -48,7 +48,6 @@ import SgiltCategoryFilter from '~/components/composed/SgiltCategoryFilter.vue'
 import SgiltSubCategoryFilter from '~/components/composed/SgiltSubCategoryFilter.vue'
 import SgiltSearchResults from '~/components/composed/SgiltSearchResults.vue'
 import type { PrestataireCardDetail } from '~/types/prestataire'
-import type { SearchContextInjection } from '~/types/search'
 
 const props = defineProps<{
   selectable?: boolean
@@ -58,7 +57,7 @@ const props = defineProps<{
 defineEmits<{ select: [provider: PrestataireCardDetail] }>()
 
 // ── Search state ──────────────────────────────────────────────────────────────
-const { dateModel, stateDate, categoryId, showOnboarding, currentSubcats, toggleSubcat } =
+const { dateModel, categoryId, showOnboarding, currentSubcats, toggleSubcat } =
   useSearchUi()
 const { results, loading, subcatCounts, error } = useSearchFetch()
 
@@ -66,15 +65,6 @@ const isAllCategories = computed(() => categoryId.value === APP_CATEGORIES[0]?.i
 
 watch(categoryId, () => {
   showOnboarding.value = false
-})
-
-// ── Inject searchContext (optionnel — AddPrestatairePage seulement) ────────────
-const ctx = inject<SearchContextInjection | null>('searchContext', null)
-
-onMounted(() => {
-  if (ctx?.searchContext.value.date && !stateDate.value) {
-    stateDate.value = new Date(ctx.searchContext.value.date)
-  }
 })
 
 // ── Header height dynamique ───────────────────────────────────────────────────

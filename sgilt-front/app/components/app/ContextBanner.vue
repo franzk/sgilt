@@ -2,7 +2,7 @@
   <div class="banner">
     <div class="info">
       <span class="label">Ajouter à</span>
-      <span class="event-name">{{ ctx?.searchContext.value.eventContext?.nom }}</span>
+      <span class="event-name">{{ eventContext?.nom }}</span>
     </div>
     <button class="close" type="button" aria-label="Annuler" @click="abortOpen = true">✕</button>
   </div>
@@ -23,15 +23,14 @@
 <script setup lang="ts">
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
-import type { SearchContextInjection } from '~/types/search'
 
-const ctx = inject<SearchContextInjection | null>('searchContext', null)
+const { eventContext, abort } = useAddPrestataireContext()
 
 const abortOpen = ref(false)
 
 function confirmAbort() {
   abortOpen.value = false
-  ctx?.abort()
+  abort()
 }
 </script>
 

@@ -6,9 +6,6 @@
     <!-- ── Hero ─────────────────────────────────────────────────────────────── -->
     <PrestataireHero :prestataire="prestataire" @open-video="openVideo" @open-photo="openGallery" />
 
-    {{ dateModel }}
-    <!-- DEBUG -->
-
     <!-- ── Layout principal ─────────────────────────────────────────────────── -->
     <div class="page-layout">
       <!-- Sidebar : datepicker + tarifs + CTA -->
