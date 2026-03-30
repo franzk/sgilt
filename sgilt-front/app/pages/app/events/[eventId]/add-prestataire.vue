@@ -23,12 +23,12 @@
     <SgiltDialog v-model:open="contactDialogOpen" title="Envoyer une demande" max-width="520px">
       <div class="contact-form">
         <!-- Résumé événement (lecture seule) -->
-        <div v-if="eventContext" class="event-summary">
-          <p class="summary-title">{{ eventContext.nom }}</p>
+        <div v-if="flowPayload" class="event-summary">
+          <p class="summary-title">{{ flowPayload.nom }}</p>
           <div class="summary-details">
-            <span v-if="eventContext.date"> 📅 {{ formatDate(eventContext.date) }} </span>
-            <span v-if="eventContext.ville"> 📍 {{ eventContext.ville }} </span>
-            <span v-if="eventContext.invites"> 👥 {{ eventContext.invites }} invités </span>
+            <span v-if="flowPayload.date"> 📅 {{ formatDate(flowPayload.date) }} </span>
+            <span v-if="flowPayload.ville"> 📍 {{ flowPayload.ville }} </span>
+            <span v-if="flowPayload.invites"> 👥 {{ flowPayload.invites }} invités </span>
           </div>
         </div>
 
@@ -81,14 +81,12 @@ const eventId = route.params.eventId as string
 // 3.3rem = $app-header-height, 44px = ContextBanner height
 const SEARCH_HEADER_OFFSET = 'calc(3.3rem + 44px)'
 
-const { eventContext, setEventContext, abort } = useAddPrestataireContext()
-const { dateModel } = useSearchUi()
+const { flowPayload, start, abort, onFlowSuccess } = useFlow()
 
 onMounted(async () => {
   const event = await EventMockService.getById(eventId)
   if (!event) return
-  if (event.date) dateModel.value = new Date(event.date)
-  setEventContext({
+  start('add-prestataire', `Ajouter à ${event.title}`, {
     id: event.id,
     nom: event.title,
     date: event.date ?? null,
@@ -133,7 +131,7 @@ async function submitContact() {
   await new Promise((r) => setTimeout(r, 600))
   contactSending.value = false
   contactDialogOpen.value = false
-  abort()
+  onFlowSuccess()
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

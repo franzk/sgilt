@@ -90,7 +90,13 @@ if (import.meta.client) {
 export function useDemande() {
   // dateModel (URL) est la source de vérité pour la date — state.date suit
   const { dateModel } = useSearchUi()
-  watch(dateModel, (d) => { state.date = d }, { immediate: true })
+  watch(
+    dateModel,
+    (d) => {
+      state.date = d
+    },
+    { immediate: true },
+  )
 
   function next() {
     if (etapeActuelle.value < 6) {
@@ -118,6 +124,7 @@ export function useDemande() {
     etapeActuelle.value = 1
     direction.value = 'forward'
     submitted.value = false
+    useSearchUi().dateModel.value = undefined
     clearStorage()
   }
 
