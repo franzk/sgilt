@@ -1,7 +1,5 @@
 <template>
   <div class="add-prestataire">
-    <ContextBanner />
-
     <Transition :name="transitionName" mode="out-in">
       <PrestataireSearch
         v-if="currentView === 'search'"
@@ -65,7 +63,6 @@
 </template>
 
 <script setup lang="ts">
-import ContextBanner from '~/components/app/ContextBanner.vue'
 import PrestataireSearch from '~/components/prestataire/PrestataireSearch.vue'
 import PrestataireDetails from '~/components/prestataire/PrestataireDetails.vue'
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'

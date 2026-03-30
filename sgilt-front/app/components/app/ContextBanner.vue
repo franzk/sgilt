@@ -1,16 +1,13 @@
 <template>
   <div class="banner">
-    <div class="info">
-      <span class="label">Ajouter à</span>
-      <span class="event-name">{{ eventContext?.nom }}</span>
-    </div>
+    <span class="label">{{ banner.label.value }}</span>
     <button class="close" type="button" aria-label="Annuler" @click="abortOpen = true">✕</button>
   </div>
 
-  <SgiltDialog v-model:open="abortOpen" title="Quitter la recherche ?" max-width="400px">
+  <SgiltDialog v-model:open="abortOpen" title="Quitter ?" max-width="400px">
     <div class="abort-form">
       <p class="abort-text">
-        Votre progression ne sera pas sauvegardée. Vous retournerez à l'événement.
+        Votre progression ne sera pas sauvegardée.
       </p>
       <div class="abort-actions">
         <SgiltButton variant="secondary" @click="abortOpen = false">Continuer</SgiltButton>
@@ -24,13 +21,12 @@
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 
-const { eventContext, abort } = useAddPrestataireContext()
-
+const banner = useContextBanner()
 const abortOpen = ref(false)
 
 function confirmAbort() {
   abortOpen.value = false
-  abort()
+  banner.abortFn.value?.()
 }
 </script>
 
@@ -49,22 +45,7 @@ function confirmAbort() {
   color: #fff;
   min-height: 44px;
 
-  .info {
-    display: flex;
-    align-items: center;
-    gap: $spacing-xs;
-    min-width: 0;
-  }
-
   .label {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.72rem;
-    font-weight: 500;
-    opacity: 0.7;
-    flex-shrink: 0;
-  }
-
-  .event-name {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1rem;
     font-weight: 600;

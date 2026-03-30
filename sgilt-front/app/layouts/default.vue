@@ -1,5 +1,6 @@
 <template>
   <AppHeader :show-notifications="false" />
+  <ContextBanner v-if="banner.label.value" />
   <section class="default-content">
     <slot />
   </section>
@@ -7,6 +8,9 @@
 
 <script setup lang="ts">
 import AppHeader from '~/components/AppHeader.vue'
+import ContextBanner from '~/components/app/ContextBanner.vue'
+
+const banner = useContextBanner()
 </script>
 
 <style lang="scss">
