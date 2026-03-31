@@ -84,7 +84,7 @@ export function useFlow() {
       },
       abort: () => {
         useSearchUi().dateModel.value = undefined
-        navigateTo('/app/reservations')
+        navigateTo('/app/events')
       },
       success: () => {
         // nettoyage post-succès si besoin

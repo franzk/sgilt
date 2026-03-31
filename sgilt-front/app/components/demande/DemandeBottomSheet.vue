@@ -20,10 +20,7 @@
       </div>
 
       <template v-else>
-        <Transition
-          :name="direction === 'forward' ? 'slide-forward' : 'slide-back'"
-          mode="out-in"
-        >
+        <Transition :name="direction === 'forward' ? 'slide-forward' : 'slide-back'" mode="out-in">
           <div :key="etapeActuelle">
             <DemandeEtape1 v-if="etapeActuelle === 1" />
             <DemandeEtape2 v-else-if="etapeActuelle === 2" />
@@ -65,16 +62,21 @@ const drawerOpen = computed({
 
 const { etapeActuelle, direction, submitted, state, next, back, goTo, reset } = useDemande()
 
-const step5Valid = computed(
-  () =>
-    !!state.date && !!state.ville.trim() && !!state.nbInvites.trim() && Number(state.nbInvites) > 0,
-)
+const step5Valid = computed(() => !!state.date && !!state.ville.trim() && !!state.nbInvites.trim())
 
-watch(() => props.isOpen, (open) => {
-  if (open && etapeActuelle.value === 1 && state.eventType && state.eventType.toUpperCase() !== 'AUTRE') {
-    goTo(2)
-  }
-})
+watch(
+  () => props.isOpen,
+  (open) => {
+    if (
+      open &&
+      etapeActuelle.value === 1 &&
+      state.eventType &&
+      state.eventType.toUpperCase() !== 'AUTRE'
+    ) {
+      goTo(2)
+    }
+  },
+)
 
 const closeAndFinish = () => {
   reset()
