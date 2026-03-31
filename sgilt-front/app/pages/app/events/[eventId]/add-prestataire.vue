@@ -90,7 +90,6 @@ const { flowPayload, start, onFlowSuccess } = useFlow()
 onMounted(async () => {
   const event = await EventMockService.getById(eventId)
   if (!event) return
-  console.log('Starting flow with event', event)
   start('add-prestataire', `Ajouter à ${event.title}`, {
     id: event.id,
     nom: event.title,

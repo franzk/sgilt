@@ -130,8 +130,8 @@ export function useDemande() {
 
   async function submit() {
     submitting.value = true
+    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 800))
-    console.log('Demande envoyée:', toRaw(state))
     submitting.value = false
     // Clear storage so a refresh shows a fresh form, but keep in-memory
     // state so the confirmation screen can display the recap
