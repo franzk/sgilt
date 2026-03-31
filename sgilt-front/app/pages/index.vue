@@ -8,8 +8,13 @@
           <span class="title-bold">{{ $t('home.search-banner.title-part-2') }}</span>
         </p>
         <h3 class="tagline">
-          <span class="tagline-mobile">{{ $t('home.search-banner.tagline-mobile') }}</span>
-          <span class="tagline-desktop">{{ $t('home.search-banner.tagline-desktop') }}</span>
+          <template v-if="currentFlow === 'new-event'">
+            <span>Et si on lançait votre prochain événement&nbsp;?</span>
+          </template>
+          <template v-else>
+            <span class="tagline-mobile">{{ $t('home.search-banner.tagline-mobile') }}</span>
+            <span class="tagline-desktop">{{ $t('home.search-banner.tagline-desktop') }}</span>
+          </template>
         </h3>
       </div>
 
