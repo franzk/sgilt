@@ -15,9 +15,9 @@
 
       <!-- composants -->
       <div class="inputs">
-        <SgiltDatePicker placeholder="Votre date" v-model="dateFilter" />
+        <SgiltDatePicker placeholder="Votre date" v-model="dateFilter" :disabled="isLocked" />
 
-        <SgiltSelect :options="selectOptions" v-model="selectedOption">
+        <SgiltSelect :options="selectOptions" v-model="selectedOption" :disabled="isLocked">
           <template v-slot:left-icon> <IconRocket /> </template>
         </SgiltSelect>
         <SgiltHeroButton class="submit_button" @click="launch"> C'est parti ! </SgiltHeroButton>
@@ -39,16 +39,25 @@ useHead({ title: 'Sgilt (Beta)' })
 
 const { showOnboarding } = useSearchUi()
 const { state } = useDemande()
+const { currentFlow, flowPayload } = useFlow()
 
 const selectOptions = [
   { label: 'Votre événement', value: '1' },
   ...EVENT_TYPE_OPTIONS.map((o) => ({ label: `${o.emoji} ${o.label}`, value: o.value })),
 ]
 
+const isLocked = computed(() => currentFlow.value === 'add-prestataire')
+
 const dateFilter = ref<Date | undefined>(undefined)
 const selectedOption = ref(selectOptions[0]!.value)
 
-onMounted(() => { showOnboarding.value = true })
+onMounted(() => {
+  showOnboarding.value = true
+  if (isLocked.value) {
+    if (flowPayload.value?.date) dateFilter.value = new Date(flowPayload.value.date)
+    if (flowPayload.value?.eventType) selectedOption.value = flowPayload.value.eventType
+  }
+})
 
 const launch = () => {
   state.eventType = selectedOption.value !== '1' ? selectedOption.value : ''
