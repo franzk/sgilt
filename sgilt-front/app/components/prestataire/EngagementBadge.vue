@@ -37,6 +37,7 @@ const iconMap: Record<string, Component> = {
 </template>
 
 <style scoped lang="scss">
+@use 'sass:color';
 @use '@/assets/styles/base' as *;
 
 .engagement-badge {
@@ -107,7 +108,7 @@ const iconMap: Record<string, Component> = {
     height: 2.75rem;
     border-radius: 50%;
     background: rgba(#facc15, 0.18);
-    color: darken(#facc15, 22%);
+    color: color.adjust(#facc15, $lightness: -22%);
     flex-shrink: 0;
     transition: background 180ms ease;
   }

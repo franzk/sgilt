@@ -418,6 +418,7 @@ function autoResize() {
 </script>
 
 <style scoped lang="scss">
+@use 'sass:color';
 @use '@/assets/styles/base' as *;
 
 // ── Bloc principal ─────────────────────────────────────────────────────────────
@@ -732,7 +733,7 @@ function autoResize() {
   &.date {
     background: rgba($brand-accent, 0.08);
     border-color: rgba($brand-accent, 0.3);
-    color: darken(#e6b800, 18%);
+    color: color.adjust(#e6b800, $lightness: -18%);
   }
 }
 
