@@ -69,7 +69,7 @@
 
 <script setup lang="ts">
 import { ReservationMockService } from '~/services/reservation.mock'
-import type { ReservationDetail, ReservationDocument, FeedItem, NoteAuthor } from '~/types/event'
+import type { ReservationDetail, FeedItem } from '~/types/event'
 import ReservationFeed from '~/components/shared/ReservationFeed.vue'
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
@@ -81,13 +81,6 @@ const { t } = useI18n()
 const route = useRoute()
 const reservationId = route.params.reservationId as string
 const eventId = route.params.eventId as string
-
-const CURRENT_USER: NoteAuthor = {
-  id: 'client-1',
-  name: 'Julie M.',
-  role: 'client',
-  photo: 'https://picsum.photos/seed/julie-m/64/64',
-}
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const reservation = ref<ReservationDetail | null>(null)

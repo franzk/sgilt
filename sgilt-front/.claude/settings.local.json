@@ -17,7 +17,10 @@
       "Bash(find C:UserskoehlDocumentsprojectssgiltsgiltsgilt-front -type f \\\\\\(-name *.json -o -name *.ts -o -name *.js \\\\\\) -path */locales/* -o -path *i18n*)",
       "Bash(grep:*)",
       "Bash(pnpm add:*)",
-      "Bash(pnpm remove:*)"
+      "Bash(pnpm remove:*)",
+      "Bash(for component:*)",
+      "Bash(do)",
+      "Bash(echo \"=== $component ===\")"
     ]
   }
 }
