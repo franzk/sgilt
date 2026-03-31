@@ -1,3 +1,5 @@
+import { toISODate } from '~/utils/dateUtils'
+
 // useFlow — gestion centralisée des parcours utilisateur
 //
 // Un "flow" est un contexte de navigation guidée (ex : créer un événement,
@@ -41,9 +43,7 @@ function writeStorage(current: Flow, payload: any) {
     STORAGE_KEY,
     JSON.stringify({
       current,
-      payload: payload
-        ? { ...payload, date: payload.date instanceof Date ? payload.date.toISOString() : (payload.date ?? null) }
-        : null,
+      payload: payload ? { ...payload, date: toISODate(payload.date) } : null,
     }),
   )
 }
@@ -64,11 +64,9 @@ const flowPayload = useState<any>('flow:payload', () => _stored?.payload ?? null
 
 // Persistance réactive : toute modification de l'état est écrite en storage.
 if (import.meta.client) {
-  watch(
-    [currentFlow, flowPayload],
-    () => writeStorage(currentFlow.value, flowPayload.value),
-    { deep: true },
-  )
+  watch([currentFlow, flowPayload], () => writeStorage(currentFlow.value, flowPayload.value), {
+    deep: true,
+  })
 }
 
 // ── Composable ────────────────────────────────────────────────────────────────

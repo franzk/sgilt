@@ -1,5 +1,6 @@
 // app/composables/useSearchUI.ts
 import { APP_CATEGORIES } from '~/utils/constants'
+import { toISODate } from '~/utils/dateUtils'
 
 export function useSearchUi() {
   const route = useRoute()
@@ -39,7 +40,13 @@ export function useSearchUi() {
 
   // Quand l'URL contient une date (ex: arrivée depuis index), on la propage dans stateDate
   // pour que [slug] puisse la lire sans ?date= dans son URL
-  watch(date, (val) => { if (val) stateDate.value = new Date(val) }, { immediate: true })
+  watch(
+    date,
+    (val) => {
+      if (val) stateDate.value = new Date(val)
+    },
+    { immediate: true },
+  )
 
   const dateModel = computed({
     get: () => (date.value ? new Date(date.value) : stateDate.value),
@@ -95,11 +102,4 @@ export function useSearchUi() {
     resetSubcats: () => updateQuery({ subcats: undefined }),
     toISODate,
   }
-}
-
-export function toISODate(d: Date): string {
-  const yyyy = d.getFullYear()
-  const mm = String(d.getMonth() + 1).padStart(2, '0')
-  const dd = String(d.getDate()).padStart(2, '0')
-  return `${yyyy}-${mm}-${dd}`
 }
