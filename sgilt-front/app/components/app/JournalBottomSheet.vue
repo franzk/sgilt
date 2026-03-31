@@ -7,7 +7,7 @@
         <li v-for="entry in journal" :key="entry.id" class="journal-entry">
           <div class="meta">
             <span class="dot" aria-hidden="true" />
-            <time class="date">{{ formatDate(entry.date) }}</time>
+            <time class="date">{{ formatDateTime(entry.date) }}</time>
           </div>
 
           <ul class="mods">
@@ -37,16 +37,6 @@ const open = defineModel<boolean>('open', { required: true })
 
 const store = useEventJournalStore()
 const journal = computed(() => [...store.journal].reverse())
-
-function formatDate(date: Date) {
-  return new Date(date).toLocaleDateString('fr-FR', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
 </script>
 
 <style scoped lang="scss">

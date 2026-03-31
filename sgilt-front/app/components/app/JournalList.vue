@@ -1,7 +1,7 @@
 <template>
   <ul class="journal-list">
     <li v-for="entry in entries" :key="entry.id" class="journal-entry">
-      <time class="journal-entry__date">{{ formatDate(entry.date) }}</time>
+      <time class="journal-entry__date">{{ formatDateTime(entry.date) }}</time>
       <ul class="journal-entry__mods">
         <li v-for="(mod, i) in entry.modifications" :key="i" class="journal-mod">
           <span class="journal-mod__champ">{{ mod.champ }}&nbsp;:</span>
@@ -20,16 +20,6 @@
 import type { JournalEntry } from '~/types/event'
 
 defineProps<{ entries: JournalEntry[] }>()
-
-function formatDate(date: Date) {
-  return new Date(date).toLocaleDateString('fr-FR', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
 </script>
 
 <style scoped lang="scss">

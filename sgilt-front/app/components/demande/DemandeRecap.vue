@@ -58,9 +58,6 @@ const hasContent = computed(
   () => !!eventTypeLabel.value || !!ambianceLabel.value || !!momentCleLabel.value,
 )
 
-function formatDate(d: Date) {
-  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
-}
 </script>
 
 <style scoped lang="scss">

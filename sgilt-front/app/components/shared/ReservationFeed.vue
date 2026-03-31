@@ -37,7 +37,7 @@
             <span class="label">Message initial</span>
             <p class="content">{{ item.content }}</p>
             <span class="meta">
-              {{ item.author.name }} · {{ formatDate(item.createdAt) }}
+              {{ item.author.name }} · {{ formatDateShort(item.createdAt) }}
             </span>
           </div>
 
@@ -46,7 +46,7 @@
             <div class="header">
               <span class="lock">🔒</span>
               <span class="author">{{ item.author.name }}</span>
-              <span class="date">{{ formatDate(item.createdAt) }}</span>
+              <span class="date">{{ formatDateShort(item.createdAt) }}</span>
             </div>
             <p class="content">{{ item.content }}</p>
           </div>
@@ -63,7 +63,7 @@
           <div class="info">
             <span class="name">{{ item.name }}</span>
             <span class="meta">
-              {{ item.uploadedBy.name }} · {{ formatDate(item.uploadedAt) }}
+              {{ item.uploadedBy.name }} · {{ formatDateShort(item.uploadedAt) }}
             </span>
           </div>
           <div class="actions">
@@ -214,14 +214,6 @@ async function sendNote() {
   noteModalOpen.value = false
 }
 
-// ── Format date ────────────────────────────────────────────────────────────────
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('fr-FR', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  })
-}
 </script>
 
 <style scoped lang="scss">

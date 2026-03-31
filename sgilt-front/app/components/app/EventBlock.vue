@@ -4,7 +4,7 @@
     <button class="toggle" type="button" @click="open = !open">
       <div class="pills">
         <span v-if="event.date" class="event-pill date">
-          <CalendarEventIcon class="icon" />{{ formatDate(event.date) }}
+          <CalendarEventIcon class="icon" />{{ formatDateShort(event.date) }}
         </span>
         <span v-if="event.ville" class="event-pill">
           <MapPin2Icon class="icon" />{{ event.ville }}
@@ -415,14 +415,6 @@ function autoResize() {
   el.style.height = `${el.scrollHeight}px`
 }
 
-// ── Formatage ─────────────────────────────────────────────────────────────────
-function formatDate(value: Date) {
-  return value.toLocaleDateString('fr-FR', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  })
-}
 </script>
 
 <style scoped lang="scss">
