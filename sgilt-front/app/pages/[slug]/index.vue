@@ -2,6 +2,7 @@
   <PrestataireDetails
     v-if="prestataire"
     :prestataire="prestataire"
+    :disableDate="disableDatePicker"
     @select="onSelect"
     @back="router.back()"
   />
@@ -31,6 +32,9 @@ const slug = route.params.slug as string
 const prestataire = ref<PrestataireDetail | null>(null)
 const loading = ref(true)
 
+const { currentFlow } = useFlow()
+const disableDatePicker = computed(() => currentFlow.value === 'add-prestataire')
+
 onMounted(async () => {
   prestataire.value = (await SearchMockService.getBySlug(slug)) ?? null
   loading.value = false
@@ -49,6 +53,11 @@ const showDemande = ref(false)
 const { isDesktop } = useDevice()
 
 function onSelect(p: PrestataireDetail) {
+  if (currentFlow.value === 'add-prestataire') {
+    // ouvrir le dialogue de demande de réservation d'un prestataire dans le contexte d'un événement existant
+    return
+  }
+
   if (isDesktop.value) {
     navigateTo(`/${p.slug}/demande`)
   } else {

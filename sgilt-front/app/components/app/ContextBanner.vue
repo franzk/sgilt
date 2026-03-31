@@ -1,6 +1,6 @@
 <template>
   <div class="banner">
-    <span class="label">{{ banner.label.value }}</span>
+    <span class="label">{{ flowLabel }}</span>
     <button class="close" type="button" aria-label="Annuler" @click="abortOpen = true">✕</button>
   </div>
 
@@ -21,12 +21,12 @@
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 
-const banner = useContextBanner()
+const { flowLabel, abort } = useFlow()
 const abortOpen = ref(false)
 
 function confirmAbort() {
   abortOpen.value = false
-  banner.abortFn.value?.()
+  abort()
 }
 </script>
 

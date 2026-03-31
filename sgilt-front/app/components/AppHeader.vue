@@ -35,7 +35,9 @@ const route = useRoute()
 const { isMobile } = useDevice()
 
 const mounted = ref(false)
-onMounted(() => { mounted.value = true })
+onMounted(() => {
+  mounted.value = true
+})
 
 const hideShadow = computed(
   () => mounted.value && isMobile.value && ROUTES_WITHOUT_SHADOW_MOBILE.includes(route.path),

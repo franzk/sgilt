@@ -1,7 +1,12 @@
 <template>
   <ClientOnly>
     <div class="sgilt-select">
-      <SgiltSelectMobile v-if="isMobile" v-model="modelValue" :options="options" :disabled="disabled">
+      <SgiltSelectMobile
+        v-if="isMobile"
+        v-model="modelValue"
+        :options="options"
+        :disabled="disabled"
+      >
         <template #left-icon>
           <slot name="left-icon" />
         </template>

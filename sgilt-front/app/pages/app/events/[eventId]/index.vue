@@ -68,11 +68,7 @@
             />
           </div>
 
-          <button
-            class="add-prestataire-btn"
-            type="button"
-            @click="navigateTo(`/app/events/${eventId}/add-prestataire`)"
-          >
+          <button class="add-prestataire-btn" type="button" @click="startAddPrestataireFlow">
             + Ajouter un prestataire
           </button>
         </section>
@@ -202,6 +198,18 @@ const sortedReservations = computed(() => {
   )
 })
 
+// ── Flow ajout prestataire ─────────────────────────────────────────────────
+const { start } = useFlow()
+const startAddPrestataireFlow = () => {
+  start('add-prestataire', `Ajouter à ${event.value?.title ?? "l'événement"}`, {
+    id: event.value?.id,
+    nom: event.value?.title,
+    date: event.value?.date ?? null,
+    ville: event.value?.ville,
+    ambiance: event.value?.ambiance,
+    invites: event.value?.nbInvites,
+  })
+}
 </script>
 
 <style scoped lang="scss">

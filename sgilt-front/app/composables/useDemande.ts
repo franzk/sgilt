@@ -5,7 +5,7 @@ import {
   MOMENT_CLE_OPTIONS,
 } from '~/types/demande'
 
-const STORAGE_KEY = 'sgilt:demande'
+const DEMANDE_STORAGE_KEY = 'sgilt:demande'
 const storage = () => sessionStorage
 
 // ── Serialization (handles Date ↔ ISO string) ─────────────────────────────────
@@ -13,7 +13,7 @@ const storage = () => sessionStorage
 function readStorage(): { state: DemandeState; etape: number } | null {
   if (!import.meta.client) return null
   try {
-    const raw = storage().getItem(STORAGE_KEY)
+    const raw = storage().getItem(DEMANDE_STORAGE_KEY)
     if (!raw) return null
     const parsed = JSON.parse(raw)
     return {
@@ -31,14 +31,14 @@ function readStorage(): { state: DemandeState; etape: number } | null {
 function writeStorage(s: DemandeState, etape: number) {
   if (!import.meta.client) return
   storage().setItem(
-    STORAGE_KEY,
+    DEMANDE_STORAGE_KEY,
     JSON.stringify({ etape, state: { ...s, date: s.date?.toISOString() ?? null } }),
   )
 }
 
 function clearStorage() {
   if (!import.meta.client) return
-  storage().removeItem(STORAGE_KEY)
+  storage().removeItem(DEMANDE_STORAGE_KEY)
 }
 
 // ── Default state factory ─────────────────────────────────────────────────────

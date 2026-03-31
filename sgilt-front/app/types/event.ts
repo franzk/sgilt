@@ -19,7 +19,7 @@ export interface Reservation {
 export interface EventDetail {
   id: string
   title: string
-  date?: string // ISO date (YYYY-MM-DD)
+  date?: Date
   eventType?: string // valeur de EVENT_TYPE_OPTIONS
   ambiance?: string // valeur de AMBIANCE_OPTIONS
   ville?: string
@@ -27,7 +27,7 @@ export interface EventDetail {
   nbInvites?: string
   coverImage?: string | null
   sharedNote: string
-  sharedNoteUpdatedAt?: string // ISO datetime
+  sharedNoteUpdatedAt?: Date
   reservations: Reservation[]
   journal: JournalEntry[]
   phrase: string
@@ -48,7 +48,17 @@ export interface JournalEntry {
 }
 
 export type EventPatch = Partial<
-  Pick<EventDetail, 'title' | 'coverImage' | 'eventType' | 'ambiance' | 'ville' | 'lieu' | 'nbInvites' | 'sharedNote'>
+  Pick<
+    EventDetail,
+    | 'title'
+    | 'coverImage'
+    | 'eventType'
+    | 'ambiance'
+    | 'ville'
+    | 'lieu'
+    | 'nbInvites'
+    | 'sharedNote'
+  >
 >
 
 export interface NoteAuthor {
@@ -62,8 +72,8 @@ export interface ReservationNote {
   id: string
   author: NoteAuthor
   content: string
-  createdAt: string // ISO datetime
-  isPersonal?: boolean       // note privée pro uniquement
+  createdAt: Date
+  isPersonal?: boolean // note privée pro uniquement
   isMessageInitial?: boolean // premier message du tunnel demande
 }
 
@@ -73,7 +83,7 @@ export interface ReservationDocument {
   fileType: 'pdf' | 'image' | 'other'
   url: string
   uploadedBy: NoteAuthor
-  uploadedAt: string // ISO datetime
+  uploadedAt: Date
 }
 
 // ── Feed items (ReservationFeed) ───────────────────────────────────────────────
@@ -109,9 +119,9 @@ export interface ProDemandeDetail extends ReservationDetail {
 export interface ProDemandeSummary {
   id: string
   titre: string
-  date: string         // date événement formatée (e.g. "14 septembre 2026")
+  date: Date // date événement formatée (e.g. "14 septembre 2026")
   dateIso: string
-  dateReception: string // date de réception de la demande formatée
+  dateReception: Date // date de réception de la demande formatée
   statut: ReservationStatus
   ligneContextuelle: string
   urgencyLevel: number

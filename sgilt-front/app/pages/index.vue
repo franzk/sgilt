@@ -34,6 +34,7 @@ import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
 import SgiltSelect from '~/components/basics/inputs/SgiltSelect.vue'
 import IconRocket from '~/components/icons/IconRocket.vue'
 import { EVENT_TYPE_OPTIONS } from '~/types/demande'
+import { toISODate } from '~/utils/dateUtils'
 
 useHead({ title: 'Sgilt (Beta)' })
 

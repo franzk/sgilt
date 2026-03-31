@@ -1,8 +1,13 @@
-import type { ProDemandeDetail, ProDemandeSummary, ReservationNote, ReservationStatus } from '~/types/event'
+import type {
+  ProDemandeDetail,
+  ProDemandeSummary,
+  ReservationNote,
+  ReservationStatus,
+} from '~/types/event'
 import { PRO_DEMANDES, DJ } from '~/services/mock'
 
-function formatDateFR(isoDate: string): string {
-  return new Date(isoDate).toLocaleDateString('fr-FR', {
+function formatDateFR(input: Date): string {
+  return input.toLocaleDateString('fr-FR', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -26,9 +31,9 @@ export const ProMockService = {
     return PRO_DEMANDES.map((d) => ({
       id: d.id,
       titre: d.event.title,
-      date: d.event.date ? formatDateFR(d.event.date) : '',
-      dateIso: d.event.date ?? '',
-      dateReception: d.notes[0]?.createdAt ? formatDateFR(d.notes[0].createdAt) : '',
+      date: d.event.date,
+      dateIso: d.event.date ? d.event.date.toISOString() : '',
+      dateReception: d.notes[0]?.createdAt ? formatDateFR(new Date(d.notes[0].createdAt)) : '',
       statut: d.status,
       ligneContextuelle: d.ligneContextuelle,
       urgencyLevel: d.urgencyLevel,
@@ -57,7 +62,7 @@ export const ProMockService = {
       id: `pn-${Date.now()}`,
       author: DJ,
       content,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date(),
       isPersonal,
     }
     const demande = PRO_DEMANDES.find((d) => d.id === id)

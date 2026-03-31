@@ -1,5 +1,6 @@
 <template>
-  <div class="add-prestataire">
+  <!-- div class="add-prestataire">
+    <ContextBanner v-if="showContextBanner" />
     <Transition :name="transitionName" mode="out-in">
       <PrestataireSearch
         v-if="currentView === 'search'"
@@ -19,10 +20,10 @@
       />
     </Transition>
 
-    <!-- ── Dialog envoi demande ──────────────────────────────────────────────── -->
+    <!-- ── Dialog envoi demande ──────────────────────────────────────────────── ->
     <SgiltDialog v-model:open="contactDialogOpen" title="Envoyer une demande" max-width="520px">
       <div class="contact-form">
-        <!-- Résumé événement (lecture seule) -->
+        <!-- Résumé événement (lecture seule) ->
         <div v-if="flowPayload" class="event-summary">
           <p class="summary-title">{{ flowPayload.nom }}</p>
           <div class="summary-details">
@@ -32,13 +33,13 @@
           </div>
         </div>
 
-        <!-- Prestataire cible -->
+        <!-- Prestataire cible ->
         <div v-if="selectedPrestataire" class="prestataire-target">
           <span class="target-label">Pour</span>
           <span class="target-name">{{ selectedPrestataire.name }}</span>
         </div>
 
-        <!-- Message optionnel -->
+        <!-- Message optionnel ->
         <div class="field">
           <label class="label"
             >Message au prestataire <span class="optional">(optionnel)</span></label
@@ -59,7 +60,7 @@
         </div>
       </div>
     </SgiltDialog>
-  </div>
+  </div> -->
 </template>
 
 <script setup lang="ts">
@@ -70,8 +71,11 @@ import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import { EventMockService } from '~/services/event.mock'
 import { SearchMockService } from '~/services/search.mock'
 import type { PrestataireCardDetail, PrestataireDetail } from '~/types/prestataire'
+import ContextBanner from '~/components/app/ContextBanner.vue'
 
 definePageMeta({ layout: 'default' })
+
+const { showContextBanner } = useFlow()
 
 // ── Route ─────────────────────────────────────────────────────────────────────
 const route = useRoute()
@@ -81,11 +85,12 @@ const eventId = route.params.eventId as string
 // 3.3rem = $app-header-height, 44px = ContextBanner height
 const SEARCH_HEADER_OFFSET = 'calc(3.3rem + 44px)'
 
-const { flowPayload, start, abort, onFlowSuccess } = useFlow()
+const { flowPayload, start, onFlowSuccess } = useFlow()
 
 onMounted(async () => {
   const event = await EventMockService.getById(eventId)
   if (!event) return
+  console.log('Starting flow with event', event)
   start('add-prestataire', `Ajouter à ${event.title}`, {
     id: event.id,
     nom: event.title,

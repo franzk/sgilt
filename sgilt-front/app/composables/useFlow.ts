@@ -1,30 +1,23 @@
 import { toISODate } from '~/utils/dateUtils'
 
-// useFlow — gestion centralisée des parcours utilisateur
-//
-// Un "flow" est un contexte de navigation guidée (ex : créer un événement,
-// ajouter un prestataire). Il expose un bandeau contextuel, un payload
-// de données, et des handlers start / abort / success.
-//
-// null = aucun parcours actif (visiteur ou navigation libre)
-
 export type Flow = 'new-event' | 'add-prestataire' | null
+
+const FLOW_STORAGE_KEY = 'sgilt:flow'
+const storage = () => sessionStorage
 
 // ── Storage ───────────────────────────────────────────────────────────────────
 // Persistance dans le sessionStorage pour survivre à un refresh de page.
 // Les dates sont sérialisées en ISO string et reconstituées en Date à la lecture.
 
-const STORAGE_KEY = 'sgilt:flow'
-const storage = () => sessionStorage
-
-function readStorage(): { current: Flow; payload: any } | null {
+function readStorage(): { current: Flow; payload: any; label: string | null } | null {
   if (!import.meta.client) return null
   try {
-    const raw = storage().getItem(STORAGE_KEY)
+    const raw = storage().getItem(FLOW_STORAGE_KEY)
     if (!raw) return null
     const parsed = JSON.parse(raw)
     return {
       current: parsed.current ?? null,
+      label: parsed.label ?? null,
       payload: parsed.payload
         ? {
             ...parsed.payload,
@@ -37,12 +30,13 @@ function readStorage(): { current: Flow; payload: any } | null {
   }
 }
 
-function writeStorage(current: Flow, payload: any) {
+function writeStorage(current: Flow, payload: any, label: string | null) {
   if (!import.meta.client) return
   storage().setItem(
-    STORAGE_KEY,
+    FLOW_STORAGE_KEY,
     JSON.stringify({
       current,
+      label,
       payload: payload ? { ...payload, date: toISODate(payload.date) } : null,
     }),
   )
@@ -50,23 +44,26 @@ function writeStorage(current: Flow, payload: any) {
 
 function clearStorage() {
   if (!import.meta.client) return
-  storage().removeItem(STORAGE_KEY)
+  storage().removeItem(FLOW_STORAGE_KEY)
 }
 
 // ── Singleton state ───────────────────────────────────────────────────────────
-// État partagé entre tous les appels à useFlow(), initialisé depuis le storage
-// au démarrage du module (une seule fois pour la durée de vie de l'app).
+// Même pattern que useDemande : ref Vue au niveau module, pas useState Nuxt.
+// Initialisé depuis le storage une seule fois au démarrage du module.
 
 const _stored = import.meta.client ? readStorage() : null
 
-const currentFlow = useState<Flow>('flow:current', () => _stored?.current ?? null)
-const flowPayload = useState<any>('flow:payload', () => _stored?.payload ?? null)
+const currentFlow = ref<Flow>(_stored?.current ?? null)
+const flowPayload = ref<any>(_stored?.payload ?? null)
+const flowLabel = ref<string | null>(_stored?.label ?? null)
 
 // Persistance réactive : toute modification de l'état est écrite en storage.
 if (import.meta.client) {
-  watch([currentFlow, flowPayload], () => writeStorage(currentFlow.value, flowPayload.value), {
-    deep: true,
-  })
+  watch(
+    [currentFlow, flowPayload, flowLabel],
+    () => writeStorage(currentFlow.value, flowPayload.value, flowLabel.value),
+    { deep: true },
+  )
 }
 
 // ── Composable ────────────────────────────────────────────────────────────────
@@ -99,6 +96,7 @@ export function useFlow() {
         // Pré-remplit la date de recherche depuis le contexte de l'événement
         const date = flowPayload.value?.date
         useSearchUi().dateModel.value = date ? new Date(date) : undefined
+        navigateTo('/search')
       },
       abort: () => {
         const eventId = flowPayload.value?.id
@@ -115,10 +113,10 @@ export function useFlow() {
   }
 
   // Démarre un flow : enregistre le contexte, affiche le bandeau, lance le handler.
-  function start(flow: NonNullable<Flow>, contextLabel: string, payload?: any) {
+  function start(flow: NonNullable<Flow>, label: string, payload?: any) {
     currentFlow.value = flow
     flowPayload.value = payload ?? null
-    useContextBanner().show(contextLabel, abort)
+    flowLabel.value = label
     flows[flow].start()
   }
 
@@ -127,7 +125,7 @@ export function useFlow() {
     flows[currentFlow.value!].abort()
     currentFlow.value = null
     flowPayload.value = null
-    useContextBanner().hide()
+    flowLabel.value = null
     clearStorage()
   }
 
@@ -136,9 +134,13 @@ export function useFlow() {
     flows[currentFlow.value!].success?.()
     currentFlow.value = null
     flowPayload.value = null
-    useContextBanner().hide()
+    flowLabel.value = null
     clearStorage()
   }
 
-  return { currentFlow, flowPayload, start, abort, onFlowSuccess }
+  const showContextBanner = computed(
+    () => currentFlow.value === 'add-prestataire' || currentFlow.value === 'new-event',
+  )
+
+  return { currentFlow, flowPayload, flowLabel, showContextBanner, start, abort, onFlowSuccess }
 }

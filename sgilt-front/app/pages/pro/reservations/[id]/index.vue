@@ -36,11 +36,7 @@
       <div class="booking-layout">
         <!-- Colonne gauche : bloc bento unique -->
         <div class="left">
-          <EventBlock
-            variant="pro"
-            :event="demande.event"
-            :client-info="demande.clientInfo"
-          />
+          <EventBlock variant="pro" :event="demande.event" :client-info="demande.clientInfo" />
           <hr v-if="!isMobile" class="left-divider" />
 
           <!-- nouvelle : CTA statut desktop uniquement -->
@@ -321,7 +317,7 @@ function onUploadDocument(file: File) {
       role: 'prestataire',
       photo: '/images/prestataires/dj-animation.jpg',
     },
-    uploadedAt: new Date().toISOString(),
+    uploadedAt: new Date(),
   }
   demande.value.documents.unshift(doc)
 }
@@ -722,10 +718,18 @@ $bento-radius: $radius-sm;
   height: 0.8rem;
   border-radius: 4px;
 
-  &--40 { width: 40%; }
-  &--60 { width: 60%; }
-  &--70 { width: 70%; }
-  &--80 { width: 80%; }
+  &--40 {
+    width: 40%;
+  }
+  &--60 {
+    width: 60%;
+  }
+  &--70 {
+    width: 70%;
+  }
+  &--80 {
+    width: 80%;
+  }
 }
 
 .sk-bento {

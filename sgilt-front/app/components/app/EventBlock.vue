@@ -416,8 +416,8 @@ function autoResize() {
 }
 
 // ── Formatage ─────────────────────────────────────────────────────────────────
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('fr-FR', {
+function formatDate(value: Date) {
+  return value.toLocaleDateString('fr-FR', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',

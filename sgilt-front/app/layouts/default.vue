@@ -1,7 +1,7 @@
 <template>
   <AppHeader :show-notifications="false" />
   <ClientOnly>
-    <ContextBanner v-if="banner.label.value" />
+    <ContextBanner v-if="showContextBanner" />
   </ClientOnly>
   <section class="default-content">
     <slot />
@@ -12,7 +12,7 @@
 import AppHeader from '~/components/AppHeader.vue'
 import ContextBanner from '~/components/app/ContextBanner.vue'
 
-const banner = useContextBanner()
+const { showContextBanner } = useFlow()
 </script>
 
 <style lang="scss">

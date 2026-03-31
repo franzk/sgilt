@@ -100,6 +100,5 @@ export function useSearchUi() {
     currentSubcats,
     toggleSubcat,
     resetSubcats: () => updateQuery({ subcats: undefined }),
-    toISODate,
   }
 }
