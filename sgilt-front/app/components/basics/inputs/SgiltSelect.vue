@@ -1,13 +1,13 @@
 <template>
   <ClientOnly>
     <div class="sgilt-select">
-      <SgiltSelectMobile v-if="isMobile" v-model="modelValue" :options="options">
+      <SgiltSelectMobile v-if="isMobile" v-model="modelValue" :options="options" :disabled="disabled">
         <template #left-icon>
           <slot name="left-icon" />
         </template>
       </SgiltSelectMobile>
 
-      <SgiltSelectDesktop v-else v-model="modelValue" :options="options">
+      <SgiltSelectDesktop v-else v-model="modelValue" :options="options" :disabled="disabled">
         <template #left-icon>
           <slot name="left-icon" />
         </template>
@@ -33,6 +33,7 @@ const modelValue = defineModel<string>()
 
 defineProps<{
   options: { value: string; label: string }[]
+  disabled?: boolean
 }>()
 
 const { isMobile } = useDevice()
@@ -57,6 +58,12 @@ $left-icon-width: 2.5rem;
 }
 
 // Style du bouton qui ouvre le menu
+.sgilt-select :deep(.select-trigger:disabled),
+.sgilt-select :deep(.select-trigger[data-disabled]) {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 .sgilt-select :deep(.select-trigger) {
   position: relative;
   width: 100%;

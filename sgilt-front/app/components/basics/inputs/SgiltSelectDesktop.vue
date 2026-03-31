@@ -1,5 +1,5 @@
 <template>
-  <SelectRoot v-model="modelValue">
+  <SelectRoot v-model="modelValue" :disabled="disabled">
     <SelectTrigger asChild>
       <button ref="triggerRef" type="button" class="select-trigger">
         <div class="trigger-content">
@@ -48,10 +48,12 @@ const modelValue = defineModel<string>()
 
 interface Props {
   options: { value: string; label: string }[]
+  disabled?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   options: () => [],
+  disabled: false,
 })
 
 const triggerRef = ref<HTMLButtonElement | null>(null)

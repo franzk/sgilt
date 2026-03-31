@@ -1,7 +1,7 @@
 <template>
   <SgiltBottomSheet v-model:open="isOpen" :title="title" overlay>
     <template #trigger>
-      <button ref="triggerRef" type="button" class="select-trigger">
+      <button ref="triggerRef" type="button" class="select-trigger" :disabled="disabled">
         <div class="trigger-content">
           <span class="left-icon"><slot name="left-icon" /></span>
           <span :class="{ 'has-value': !!modelValue && modelValue !== '-1' }" class="value">
@@ -36,11 +36,13 @@ const modelValue = defineModel<string>()
 interface Props {
   options: { value: string; label: string }[]
   title?: string
+  disabled?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   options: () => [],
   title: "Qu'est-ce qu'on fête ?",
+  disabled: false,
 })
 
 const isOpen = ref(false)
@@ -136,6 +138,11 @@ const selectOption = (val: string) => {
   background: transparent;
   border: none;
   padding: 0;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
 }
 
 .trigger-content {
