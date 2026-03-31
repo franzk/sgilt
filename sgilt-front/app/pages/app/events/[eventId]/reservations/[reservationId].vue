@@ -37,6 +37,10 @@
           @add-note="onAddNote"
           @delete-document="onDeleteDocument"
         />
+
+        <button v-if="canCancel" class="cancel-btn" type="button" @click="confirmOpen = true">
+          Annuler la demande
+        </button>
       </template>
 
       <!-- Skeleton -->
@@ -48,12 +52,27 @@
       </template>
     </div>
   </div>
+
+  <!-- ── Dialog confirmation annulation ─────────────────────────────────────── -->
+  <SgiltDialog v-model:open="confirmOpen" title="Annuler la demande" max-width="400px">
+    <div class="confirm-cancel">
+      <p class="confirm-cancel__body">Êtes-vous sûr de vouloir annuler cette demande&nbsp;?</p>
+      <div class="confirm-cancel__actions">
+        <SgiltButton variant="secondary" @click="confirmOpen = false">Non, garder</SgiltButton>
+        <SgiltButton :loading="cancelling" class="destructive" @click="cancelReservation">
+          Oui, annuler
+        </SgiltButton>
+      </div>
+    </div>
+  </SgiltDialog>
 </template>
 
 <script setup lang="ts">
 import { ReservationMockService } from '~/services/reservation.mock'
 import type { ReservationDetail, ReservationDocument, FeedItem, NoteAuthor } from '~/types/event'
 import ReservationFeed from '~/components/shared/ReservationFeed.vue'
+import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
+import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import { getStatusOverlayStyle } from '~/constants/reservation-status'
 
 definePageMeta({ layout: 'app' })
@@ -111,6 +130,22 @@ const feedItems = computed<FeedItem[]>(() => {
   }))
   return [...notes, ...docs]
 })
+
+// ── Annulation ─────────────────────────────────────────────────────────────────
+const canCancel = computed(() =>
+  ['nouvelle', 'en_discussion'].includes(reservation.value?.status ?? ''),
+)
+
+const confirmOpen = ref(false)
+const cancelling = ref(false)
+
+async function cancelReservation() {
+  cancelling.value = true
+  await ReservationMockService.cancel(reservationId)
+  if (reservation.value) reservation.value = { ...reservation.value, status: 'annulee' }
+  cancelling.value = false
+  confirmOpen.value = false
+}
 
 // ── Handlers ──────────────────────────────────────────────────────────────────
 async function onAddNote(content: string, _isPersonal: boolean) {
@@ -242,6 +277,63 @@ $desktop: $breakpoint-desktop;
     > * {
       width: 100%;
       max-width: 760px;
+    }
+  }
+}
+
+// ── Bouton annulation ──────────────────────────────────────────────────────────
+.cancel-btn {
+  align-self: center;
+  background: none;
+  border: 1px solid rgba($state-error, 0.35);
+  border-radius: $radius-md;
+  padding: $spacing-xs $spacing-m;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: $state-error;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease;
+
+  &:hover {
+    background: rgba($state-error, 0.06);
+    border-color: $state-error;
+  }
+}
+
+// ── Dialog confirmation ────────────────────────────────────────────────────────
+.confirm-cancel {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-m;
+  padding: $spacing-m $spacing-l $spacing-l;
+
+  &__body {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    color: $text-primary;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-s;
+    justify-content: flex-end;
+
+    :deep(.btn.destructive) {
+      background: rgba($state-error, 0.1);
+      color: $state-error;
+      border: 1px solid rgba($state-error, 0.25);
+      box-shadow: none;
+      text-shadow: none;
+
+      &:hover:not(:disabled) {
+        background: rgba($state-error, 0.18);
+        filter: none;
+      }
     }
   }
 }

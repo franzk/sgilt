@@ -7,6 +7,12 @@ export const ReservationMockService = {
     return MOCK_RESERVATIONS.find((r) => r.id === reservationId) ?? null
   },
 
+  async cancel(reservationId: string): Promise<void> {
+    await new Promise((r) => setTimeout(r, 300))
+    const reservation = MOCK_RESERVATIONS.find((r) => r.id === reservationId)
+    if (reservation) reservation.status = 'annulee'
+  },
+
   async addNote(
     reservationId: string,
     content: string,
