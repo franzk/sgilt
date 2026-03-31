@@ -17,11 +17,18 @@
     :prestataire-name="prestataire?.name ?? ''"
     @close="showDemande = false"
   />
+
+  <FinalisationAddPrestataire
+    v-if="prestataire"
+    v-model:open="showFinalisation"
+    :prestataire-name="prestataire.name"
+  />
 </template>
 
 <script setup lang="ts">
 import PrestataireDetails from '~/components/prestataire/PrestataireDetails.vue'
 import DemandeBottomSheet from '~/components/demande/DemandeBottomSheet.vue'
+import FinalisationAddPrestataire from '~/components/prestataire/FinalisationAddPrestataire.vue'
 import { SearchMockService } from '~/services/search.mock'
 import type { PrestataireDetail } from '~/types/prestataire'
 
@@ -40,21 +47,13 @@ onMounted(async () => {
   loading.value = false
 })
 
-/* watchEffect(() => {
-  if (!prestataire.value) return
-  useSeoMeta({
-    title: `${prestataire.value.name} — Sgilt`,
-    description: prestataire.value.baseline,
-    ogImage: prestataire.value.heroImage,
-  })
-}) */
-
 const showDemande = ref(false)
+const showFinalisation = ref(false)
 const { isDesktop } = useDevice()
 
 function onSelect(p: PrestataireDetail) {
   if (currentFlow.value === 'add-prestataire') {
-    // ouvrir le dialogue de demande de réservation d'un prestataire dans le contexte d'un événement existant
+    showFinalisation.value = true
     return
   }
 
