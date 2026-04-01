@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import SgiltImage from '~/components/basics/media/SgiltImage.vue'
-import { Share2Icon, ArrowLeftIcon } from '@remixicons/vue/line'
+import { ShareIcon, ArrowLeftIcon } from '@remixicons/vue/line'
 import type { PrestataireDetail } from '~/types/prestataire'
 
 const router = useRouter()
@@ -165,7 +165,7 @@ async function share() {
 
     <!-- Bouton share (toujours visible) -->
     <button class="share" @click="share" aria-label="Partager">
-      <Share2Icon />
+      <ShareIcon />
     </button>
   </section>
 </template>
