@@ -2,11 +2,12 @@
   <div class="profile-page">
     <!-- ── Bloc 1 — Informations personnelles ────────────────────────────────── -->
     <section class="section">
+      <button v-if="!editing" class="section-edit" type="button" @click="startEdit">
+        <span><EditIcon /></span>
+      </button>
+
       <div class="section-header">
         <h2 class="section-title">Informations personnelles</h2>
-        <button v-if="!editing" class="section-edit" type="button" @click="startEdit">
-          Modifier
-        </button>
       </div>
 
       <!-- Avatar -->
@@ -107,9 +108,7 @@
         </div>
       </div>
 
-      <a href="/account/security" class="keycloak-link">
-        Modifier via mon espace sécurisé →
-      </a>
+      <a href="/account/security" class="keycloak-link"> Modifier via mon espace sécurisé → </a>
     </section>
 
     <!-- ── Suppression de compte (clients uniquement) ─────────────────────────── -->
@@ -128,8 +127,8 @@
     >
       <div class="delete-dialog">
         <p class="delete-dialog-text">
-          Êtes-vous sûr de vouloir supprimer votre compte&nbsp;? Vos événements et demandes en
-          cours seront définitivement perdus.
+          Êtes-vous sûr de vouloir supprimer votre compte&nbsp;? Vos événements et demandes en cours
+          seront définitivement perdus.
         </p>
         <div class="delete-dialog-actions">
           <SgiltButton variant="secondary" @click="deleteOpen = false">
@@ -145,7 +144,7 @@
 </template>
 
 <script setup lang="ts">
-import { CameraIcon } from '@remixicons/vue/line'
+import { CameraIcon, EditIcon } from '@remixicons/vue/line'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 
@@ -246,6 +245,7 @@ $section-radius: $radius-lg;
 // ── Section ───────────────────────────────────────────────────────────────────
 
 .section {
+  position: relative;
   background: #fff;
   border: 1px solid $divider-color;
   border-radius: $section-radius;
@@ -271,6 +271,11 @@ $section-radius: $radius-lg;
   }
 
   .section-edit {
+    position: absolute;
+    bottom: $spacing-m;
+    right: $spacing-m;
+    width: 16px;
+    height: 16px;
     background: none;
     border: none;
     font-family: inherit;
@@ -355,15 +360,13 @@ $section-radius: $radius-lg;
 
 .field {
   display: flex;
-  align-items: baseline;
-  gap: $spacing-s;
+  flex-direction: column;
+  gap: 3px;
 
   .field-label {
     font-family: 'Inter', sans-serif;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: $text-secondary;
-    min-width: 7rem;
-    flex-shrink: 0;
   }
 
   .field-value {
@@ -378,7 +381,8 @@ $section-radius: $radius-lg;
   }
 
   .field-input {
-    flex: 1;
+    width: 100%;
+    box-sizing: border-box;
     font-family: inherit;
     font-size: 0.9rem;
     color: $text-primary;
@@ -399,6 +403,7 @@ $section-radius: $radius-lg;
 
 .edit-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: $spacing-s;
   padding-top: $spacing-xs;
 }
