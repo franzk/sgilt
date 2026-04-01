@@ -196,7 +196,7 @@
               aria-label="Modifier l'événement"
               @click="enterEditMode"
             >
-              <IconEditNote />
+              <EditIcon />
             </button>
             <button v-else class="cancel-btn" type="button" @click="handleCancel">Annuler</button>
           </template>
@@ -248,7 +248,6 @@
 </template>
 
 <script setup lang="ts">
-import IconEditNote from '~/components/icons/IconEditNote.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import EventJournal from '~/components/app/EventJournal.vue'
 import { EventMockService } from '~/services/event.mock'
@@ -262,6 +261,7 @@ import {
   MapPin2Icon,
   GroupIcon,
   CheckIcon,
+  EditIcon,
 } from '@remixicons/vue/line'
 
 const props = defineProps<{

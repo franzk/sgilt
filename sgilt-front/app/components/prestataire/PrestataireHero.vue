@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import SgiltImage from '~/components/basics/media/SgiltImage.vue'
-import IconShare from '~/components/icons/IconShare.vue'
-import IconArrowBack from '~/components/icons/IconArrowBack.vue'
+import { Share2Icon, ArrowLeftIcon } from '@remixicons/vue/line'
 import type { PrestataireDetail } from '~/types/prestataire'
 
 const router = useRouter()
@@ -161,12 +160,12 @@ async function share() {
 
     <!-- Bouton back (toujours visible) -->
     <button class="back" @click="emit('back')" aria-label="Retour">
-      <IconArrowBack />
+      <ArrowLeftIcon />
     </button>
 
     <!-- Bouton share (toujours visible) -->
     <button class="share" @click="share" aria-label="Partager">
-      <IconShare />
+      <Share2Icon />
     </button>
   </section>
 </template>

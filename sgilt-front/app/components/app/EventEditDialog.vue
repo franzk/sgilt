@@ -27,7 +27,7 @@
         </div>
 
         <button class="upload-btn" type="button" @click="uploadRef?.click()">
-          <span>📎 Importer ma propre photo</span>
+          <span class="caption"><ImageAddIcon /> Importer ma propre photo</span>
         </button>
         <input
           ref="uploadRef"
@@ -60,6 +60,7 @@ import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import type { EventDetail, EventPatch } from '~/types/event'
 import { DEFAULT_COVERS, resolveEventCover } from '~/utils/eventCovers'
+import { ImageAddIcon } from '@remixicons/vue/line'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -252,6 +253,17 @@ $desktop: $breakpoint-desktop;
       &:hover {
         border-color: $brand-primary;
         color: $brand-primary;
+      }
+
+      .caption {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        svg {
+          width: 16px;
+          height: 16px;
+        }
       }
     }
 

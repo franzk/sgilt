@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { APP_CATEGORIES } from '~/utils/constants'
-import SgiltCategoryIcon from '~/components/basics/icons/CategoryIcon.vue'
+import SgiltCategoryIcon from '~/components/basics/icons/SgiltCategoryIcon.vue'
 
 const modelValue = defineModel<string>() // L'ID de la catégorie active
 

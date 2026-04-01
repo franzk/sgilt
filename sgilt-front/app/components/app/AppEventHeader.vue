@@ -7,7 +7,7 @@
     <div class="actions">
       <NuxtLink to="/app/notifications" class="action" aria-label="Notifications">
         <span class="bell-wrap">
-          <IconBell class="icon" />
+          <NotificationIcon class="icon" />
           <span v-if="hasNotifications" class="notif-dot" />
         </span>
       </NuxtLink>
@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import IconBell from '~/components/icons/IconBell.vue'
+import { NotificationIcon } from '@remixicons/vue/line'
 
 defineProps<{
   hasNotifications?: boolean

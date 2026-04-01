@@ -1,11 +1,7 @@
 <template>
   <nav class="bottom-nav">
-    <NuxtLink
-      to="/app/events"
-      class="item"
-      :class="{ active: isEventsActive }"
-    >
-      <IconEvent class="icon" />
+    <NuxtLink to="/app/events" class="item" :class="{ active: isEventsActive }">
+      <CalendarEventIcon class="icon" />
       <span class="label">Événements</span>
     </NuxtLink>
 
@@ -23,16 +19,15 @@
       class="item"
       :class="{ active: route.path.startsWith('/app/profile') }"
     >
-      <IconProfile class="icon" />
+      <UserIcon class="icon" />
       <span class="label">Profil</span>
     </NuxtLink>
   </nav>
 </template>
 
 <script setup lang="ts">
-import IconEvent from '~/components/icons/IconEvent.vue'
+import { CalendarEventIcon, UserIcon } from '@remixicons/vue/line'
 import IconBell from '~/components/icons/IconBell.vue'
-import IconProfile from '~/components/icons/IconProfile.vue'
 
 const route = useRoute()
 const isEventsActive = computed(() => route.path.startsWith('/app/events'))

@@ -1,5 +1,5 @@
 <template>
-  <AppHeader :show-notifications="true" />
+  <AppHeader show-notifications />
   <main class="app-content">
     <slot />
   </main>

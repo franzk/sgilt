@@ -1,24 +1,26 @@
 <script setup lang="ts">
 import type { EngagementBadge } from '~/utils/constants'
-import IconClock from '~/components/icons/IconClock.vue'
-import IconTune from '~/components/icons/IconTune.vue'
-import IconHandshake from '~/components/icons/IconHandshake.vue'
-import IconInventory2 from '~/components/icons/IconInventory2.vue'
-import IconPersonCheck from '~/components/icons/IconPersonCheck.vue'
-import IconEco from '~/components/icons/IconEco.vue'
 import type { Component } from 'vue'
+import {
+  TimeIcon,
+  EqualizerIcon,
+  ArchiveIcon,
+  UserFollowIcon,
+  LeafIcon,
+} from '@remixicons/vue/line'
+import IconHandshake from '~/components/icons/IconHandshake.vue'
 
 defineProps<{
   badge: EngagementBadge
 }>()
 
 const iconMap: Record<string, Component> = {
-  Clock: IconClock,
-  Tune: IconTune,
+  Clock: TimeIcon,
+  Tune: EqualizerIcon,
   Handshake: IconHandshake,
-  Inventory_2: IconInventory2,
-  Person_Check: IconPersonCheck,
-  Eco: IconEco,
+  Inventory_2: ArchiveIcon,
+  Person_Check: UserFollowIcon,
+  Eco: LeafIcon,
 }
 </script>
 

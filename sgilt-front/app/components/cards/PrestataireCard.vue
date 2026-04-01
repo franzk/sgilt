@@ -2,7 +2,7 @@
 import type { PrestataireCardDetail } from '~/types/prestataire'
 import SgiltImage from '~/components/basics/media/SgiltImage.vue'
 import { NuxtLink } from '#components'
-import CategoryIcon from '~/components/basics/icons/CategoryIcon.vue'
+import SgiltCategoryIcon from '~/components/basics/icons/SgiltCategoryIcon.vue'
 
 const props = defineProps<{
   provider?: PrestataireCardDetail
@@ -31,7 +31,7 @@ function handleClick() {
         <!--img :src="provider?.image" :alt="provider?.name" loading="lazy" /-->
         <SgiltImage :src="provider?.image" :alt="provider?.name" width="400" height="360" />
         <div class="category-tag">
-          <span><CategoryIcon :categoryId="provider?.categoryId" class="inner-icon" /></span>
+          <span><SgiltCategoryIcon :categoryId="provider?.categoryId" class="inner-icon" /></span>
           <span class="category-name">{{ provider?.categoryName }}</span>
         </div>
       </template>

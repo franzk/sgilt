@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import IconPhotoBreak from '~/components/icons/IconPhotoBreak.vue'
+import { ImageIcon } from '@remixicons/vue/line'
 
 const props = defineProps<{
   src?: string
@@ -28,7 +28,7 @@ watch(
     <div v-if="!isLoaded && !hasError" class="image-skeleton shimmer-container"></div>
 
     <div v-if="hasError" class="image-error">
-      <IconPhotoBreak />
+      <ImageIcon />
     </div>
 
     <NuxtImg

@@ -23,7 +23,7 @@
         <SgiltDatePicker placeholder="Votre date" v-model="dateFilter" :disabled="isLocked" />
 
         <SgiltSelect :options="selectOptions" v-model="selectedOption" :disabled="isLocked">
-          <template v-slot:left-icon> <IconRocket /> </template>
+          <template v-slot:left-icon> <IconConfetti size="20" /> </template>
         </SgiltSelect>
         <SgiltHeroButton class="submit_button" @click="launch"> C'est parti ! </SgiltHeroButton>
       </div>
@@ -37,7 +37,7 @@
 import SgiltHeroButton from '~/components/basics/buttons/SgiltHeroButton.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
 import SgiltSelect from '~/components/basics/inputs/SgiltSelect.vue'
-import IconRocket from '~/components/icons/IconRocket.vue'
+import IconConfetti from '~/components/icons/IconConfetti.vue'
 import { EVENT_TYPE_OPTIONS } from '~/types/demande'
 import { toISODate } from '~/utils/dateUtils'
 
