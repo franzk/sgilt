@@ -138,9 +138,17 @@ export function useFlow() {
     clearStorage()
   }
 
+  // Reset silencieux : nettoie l'état sans exécuter de handler ni naviguer.
+  function reset() {
+    currentFlow.value = null
+    flowPayload.value = null
+    flowLabel.value = null
+    clearStorage()
+  }
+
   const showContextBanner = computed(
     () => currentFlow.value === 'add-prestataire' || currentFlow.value === 'new-event',
   )
 
-  return { currentFlow, flowPayload, flowLabel, showContextBanner, start, abort, onFlowSuccess }
+  return { currentFlow, flowPayload, flowLabel, showContextBanner, start, abort, onFlowSuccess, reset }
 }

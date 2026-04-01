@@ -1,13 +1,16 @@
 <template>
-  <header class="account-header">
-    <NuxtLink to="/" class="account-header__logo">
-      <img src="/sgilt-logo.svg" alt="SGILT" />
-    </NuxtLink>
-  </header>
+  <AppHeader show-notifications />
   <main class="account-content">
     <slot />
   </main>
 </template>
+
+<script setup lang="ts">
+import AppHeader from '~/components/AppHeader.vue'
+
+const avatarRef = ref<HTMLElement | null>(null)
+const profileOpen = ref(false)
+</script>
 
 <style lang="scss">
 @use '@/assets/styles/base' as *;
@@ -28,6 +31,41 @@
   &__logo img {
     height: 2rem;
     display: block;
+  }
+
+  &__avatar {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 150ms ease;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
+
+.avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: $brand-subtle;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  &__initials {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: $text-primary;
+    line-height: 1;
   }
 }
 

@@ -9,20 +9,32 @@
     <div v-if="showNotifications" class="quick-actions">
       <NotificationBell />
 
-      <NuxtLink to="/app/profile" class="action-button" aria-label="Profil">
+      <button
+        ref="avatarRef"
+        class="action-button"
+        type="button"
+        aria-label="Menu compte"
+        @click="profileOpen = !profileOpen"
+      >
         <div class="avatar">
           <!-- avatar photo : <img v-if="user.photo" ... /> -->
           <span class="avatar__initials">JT</span>
         </div>
-      </NuxtLink>
+      </button>
+
+      <ProfileMenuPopin :open="profileOpen" :anchor-el="avatarRef" @close="profileOpen = false" />
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
 import NotificationBell from '~/components/notifications/NotificationBell.vue'
+import ProfileMenuPopin from '~/components/profile/ProfileMenuPopin.vue'
 
 const props = defineProps<{ showNotifications?: boolean }>()
+
+const avatarRef = ref<HTMLElement | null>(null)
+const profileOpen = ref(false)
 
 const ROUTES_WITHOUT_SHADOW_MOBILE = ['/', '/search']
 const route = useRoute()
@@ -101,6 +113,7 @@ const hideShadow = computed(
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  cursor: pointer;
 
   &__initials {
     font-family: 'Cormorant Garamond', serif;
