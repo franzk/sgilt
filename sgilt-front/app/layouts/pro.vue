@@ -3,7 +3,7 @@
   <main class="pro-content">
     <slot />
   </main>
-  <ProFooter />
+  <!--ProFooter /-->
 </template>
 
 <script setup lang="ts">

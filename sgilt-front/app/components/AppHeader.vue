@@ -7,13 +7,7 @@
     </h1>
 
     <div v-if="showNotifications" class="quick-actions">
-      <NuxtLink to="/app/notifications" class="action-button" aria-label="Notifications">
-        <span class="bell-wrap">
-          <IconBell />
-          <!-- badge point : à brancher sur le store notifs -->
-          <!-- <span class="bell-badge" /> -->
-        </span>
-      </NuxtLink>
+      <NotificationBell />
 
       <NuxtLink to="/app/profile" class="action-button" aria-label="Profil">
         <div class="avatar">
@@ -26,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import IconBell from '~/components/icons/IconBell.vue'
+import NotificationBell from '~/components/notifications/NotificationBell.vue'
 
 const props = defineProps<{ showNotifications?: boolean }>()
 
@@ -96,24 +90,6 @@ const hideShadow = computed(
   &:hover {
     background: $surface-soft;
   }
-}
-
-.bell-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.bell-badge {
-  position: absolute;
-  top: -1px;
-  right: -1px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: $brand-accent;
-  border: 1.5px solid #fff;
 }
 
 .avatar {

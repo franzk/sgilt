@@ -6,11 +6,11 @@
     </NuxtLink>
 
     <NuxtLink
-      to="/app/notifications"
+      to="/account/notifications"
       class="item"
-      :class="{ active: route.path.startsWith('/app/notifications') }"
+      :class="{ active: route.path.startsWith('/account/notifications') }"
     >
-      <IconBell class="icon" />
+      <BellIcon class="icon" />
       <span class="label">Notifications</span>
     </NuxtLink>
 
@@ -26,8 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { CalendarEventIcon, UserIcon } from '@remixicons/vue/line'
-import IconBell from '~/components/icons/IconBell.vue'
+import { CalendarEventIcon, UserIcon, BellIcon } from '@remixicons/vue/line'
 
 const route = useRoute()
 const isEventsActive = computed(() => route.path.startsWith('/app/events'))
