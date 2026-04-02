@@ -8,7 +8,7 @@
       :locale="fr"
       :formats="format"
       class="sgilt-date-picker"
-      :day-class="getDayClass"
+      :ui="uiConfig"
       :state="choiceState"
       :placeholder="placeholder"
       :teleport="inline ? false : 'body'"
@@ -61,6 +61,8 @@ const getDayClass = (date: Date) => {
   if (dateArrayContains(props.indisponibleDates || [], date)) return 'date indisponible'
   return ''
 }
+
+const uiConfig = computed(() => ({ dayClass: getDayClass }))
 
 const showExtraInfo = computed(
   () => (props.bookedDates?.length || 0) > 0 || (props.indisponibleDates?.length || 0) > 0,
@@ -199,10 +201,6 @@ $menu-background:
   font-weight: bold;
 }
 
-.dp__outer_menu_wrap {
-  width: 100%;
-}
-
 // ─── Points colorés sur les jours ────────────────────────────────────────────
 
 .date {
@@ -212,7 +210,7 @@ $menu-background:
   &::after {
     content: '';
     position: absolute;
-    bottom: 4px;
+    bottom: 0px;
     left: 50%;
     transform: translateX(-50%);
     width: 5px;
