@@ -9,7 +9,7 @@
   },
   "date-picker": {
     "booked": "Réservé",
-    "option": "Sous option"
+    "indisponible": "Indisponible"
   },
   "categories": {
     "music": {

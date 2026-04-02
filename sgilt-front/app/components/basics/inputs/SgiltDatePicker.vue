@@ -11,12 +11,14 @@
       :day-class="getDayClass"
       :state="choiceState"
       :placeholder="placeholder"
-      teleport="body"
+      :teleport="inline ? false : 'body'"
+      :inline="inline"
+      @update-month-year="emit('update-month-year', $event)"
     >
-      <template #action-extra>
-        <p class="extra-info" v-if="showExtraInfo">
-          <span class="dot booked" /> {{ $t('date-picker.booked') }} <span class="dot option" />
-          {{ $t('date-picker.option') }}
+      <template v-if="showExtraInfo" #action-extra>
+        <p class="extra-info">
+          <span class="dot booked" /> {{ $t('date-picker.booked') }}
+          <span class="dot indisponible" /> {{ $t('date-picker.indisponible') }}
         </p>
       </template>
     </VueDatePicker>
@@ -40,28 +42,32 @@ import { dateArrayContains } from '@/utils/ArrayUtils'
 
 const date = defineModel<Date>()
 
+const emit = defineEmits<{
+  'update-month-year': [value: { month: number; year: number }]
+}>()
+
 const format = { input: (date: Date) => dayjs(date).locale('fr').format('dddd DD MMM YYYY') }
 
 const props = defineProps<{
   bookedDates?: Date[]
-  optionDates?: Date[]
+  indisponibleDates?: Date[]
   disabled?: boolean
   placeholder?: string
+  inline?: boolean
 }>()
 
 const getDayClass = (date: Date) => {
   if (dateArrayContains(props.bookedDates || [], date)) return 'date booked'
-  if (dateArrayContains(props.optionDates || [], date)) return 'date option'
+  if (dateArrayContains(props.indisponibleDates || [], date)) return 'date indisponible'
   return ''
 }
 
 const showExtraInfo = computed(
-  () => (props.bookedDates?.length || 0) > 0 || (props.optionDates?.length || 0) > 0,
+  () => (props.bookedDates?.length || 0) > 0 || (props.indisponibleDates?.length || 0) > 0,
 )
 
 const choiceState = computed(() => {
   if (date.value && dateArrayContains(props.bookedDates || [], date.value)) return false
-  if (date.value && dateArrayContains(props.optionDates || [], date.value)) return true
   return undefined
 })
 </script>
@@ -214,8 +220,9 @@ $menu-background:
     background: $state-booked;
   }
 
-  &.option::after {
-    background: $state-option;
+  &.indisponible::after {
+    background: $text-secondary;
+    opacity: 0.45;
   }
 }
 
@@ -232,8 +239,9 @@ $menu-background:
   &.booked {
     background: $state-booked;
   }
-  &.option {
-    background: $state-option;
+  &.indisponible {
+    background: $text-secondary;
+    opacity: 0.45;
   }
 }
 
