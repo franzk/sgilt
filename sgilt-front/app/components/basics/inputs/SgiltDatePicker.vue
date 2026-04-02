@@ -199,6 +199,10 @@ $menu-background:
   font-weight: bold;
 }
 
+.dp__outer_menu_wrap {
+  width: 100%;
+}
+
 // ─── Points colorés sur les jours ────────────────────────────────────────────
 
 .date {

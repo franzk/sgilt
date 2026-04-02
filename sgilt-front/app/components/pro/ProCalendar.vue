@@ -10,18 +10,6 @@
       @update-month-year="onMonthYearChange"
     />
 
-    <!-- Légende -->
-    <div class="pro-calendar__legend">
-      <span class="legend-item">
-        <span class="dot dot--sgilt" />
-        Réservé via Sgilt
-      </span>
-      <span class="legend-item">
-        <span class="dot dot--unavailable" />
-        Indisponible
-      </span>
-    </div>
-
     <!-- Liste du mois visible -->
     <div class="pro-calendar__list">
       <p v-if="monthEntries.length === 0" class="list-empty">Aucun événement ce mois-ci.</p>
@@ -53,13 +41,15 @@
           <p class="detail-date">{{ formatDate(selectedEntry.date) }}</p>
         </div>
         <div class="detail-actions">
-          <NuxtLink
-            :to="`/pro/reservations/${selectedEntry.reservationId}`"
-            class="detail-link"
-          >
+          <NuxtLink :to="`/pro/reservations/${selectedEntry.reservationId}`" class="detail-link">
             Voir la demande →
           </NuxtLink>
-          <button class="detail-close" type="button" aria-label="Fermer" @click="selectedEntry = null">
+          <button
+            class="detail-close"
+            type="button"
+            aria-label="Fermer"
+            @click="selectedEntry = null"
+          >
             ✕
           </button>
         </div>
@@ -164,16 +154,9 @@ watch(clickedDate, async (date) => {
 
 .pro-calendar {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  // flex-wrap: wrap;
   gap: $spacing-s;
-
-  // ── Légende ────────────────────────────────────────────────────────────────
-
-  &__legend {
-    display: flex;
-    gap: $spacing-m;
-    justify-content: center;
-  }
 }
 
 .legend-item {

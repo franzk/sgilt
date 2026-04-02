@@ -21,7 +21,6 @@ definePageMeta({ layout: 'pro' })
 @use '@/assets/styles/base' as *;
 
 .calendrier-page {
-  max-width: 480px;
   margin: 0 auto;
   padding: $spacing-l $spacing-m $spacing-xxxl;
   display: flex;
