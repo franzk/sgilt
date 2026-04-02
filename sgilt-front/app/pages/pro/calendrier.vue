@@ -21,11 +21,15 @@ definePageMeta({ layout: 'pro' })
 @use '@/assets/styles/base' as *;
 
 .calendrier-page {
-  margin: 0 auto;
+  margin: 0 $spacing-m;
   padding: $spacing-l $spacing-m $spacing-xxxl;
   display: flex;
   flex-direction: column;
   gap: $spacing-m;
+
+  &__header {
+    text-align: center;
+  }
 
   &__title {
     font-family: 'Cormorant Garamond', serif;

@@ -17,8 +17,14 @@
     >
       <template v-if="showExtraInfo" #action-extra>
         <p class="extra-info">
-          <span class="dot booked" /> {{ $t('date-picker.booked') }}
-          <span class="dot indisponible" /> {{ $t('date-picker.indisponible') }}
+          <span v-if="props.bookedDates?.length" class="dot booked" />
+          <span v-if="props.bookedDates?.length && !props.indisponibleDates?.length">{{
+            $t('date-picker.indisponible')
+          }}</span>
+          <span v-else-if="props.bookedDates?.length">{{ $t('date-picker.booked') }}</span>
+
+          <span v-if="props.indisponibleDates?.length" class="dot indisponible" />
+          <span v-if="props.indisponibleDates?.length">{{ $t('date-picker.indisponible') }}</span>
         </p>
       </template>
     </VueDatePicker>

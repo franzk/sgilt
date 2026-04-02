@@ -6,12 +6,12 @@
       inline
       :booked-dates="bookedDates"
       :indisponible-dates="indisponibleDates"
-      class="pro-calendar__picker"
+      class="calendar"
       @update-month-year="onMonthYearChange"
     />
 
     <!-- Liste du mois visible -->
-    <div class="pro-calendar__list">
+    <div class="list">
       <p v-if="monthEntries.length === 0" class="list-empty">Aucun événement ce mois-ci.</p>
       <div
         v-for="entry in monthEntries"
@@ -32,29 +32,6 @@
         </NuxtLink>
       </div>
     </div>
-
-    <!-- Détail réservation Sgilt -->
-    <Transition name="detail">
-      <div v-if="selectedEntry" class="pro-calendar__detail">
-        <div class="detail-body">
-          <p class="detail-label">{{ selectedEntry.label }}</p>
-          <p class="detail-date">{{ formatDate(selectedEntry.date) }}</p>
-        </div>
-        <div class="detail-actions">
-          <NuxtLink :to="`/pro/reservations/${selectedEntry.reservationId}`" class="detail-link">
-            Voir la demande →
-          </NuxtLink>
-          <button
-            class="detail-close"
-            type="button"
-            aria-label="Fermer"
-            @click="selectedEntry = null"
-          >
-            ✕
-          </button>
-        </div>
-      </div>
-    </Transition>
   </div>
 </template>
 
@@ -66,7 +43,6 @@ import { CalendarMockService } from '~/services/calendrier.mock'
 // ── État ──────────────────────────────────────────────────────────────────────
 
 const entries = ref<CalendarEntry[]>(CalendarMockService.getAll())
-const selectedEntry = ref<CalendarEntry | null>(null)
 const clickedDate = ref<Date | undefined>(undefined)
 
 const _today = new Date()
@@ -102,15 +78,6 @@ function toDateKey(date: Date): string {
   return `${y}-${m}-${d}`
 }
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('fr-FR', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  })
-}
-
 function formatDayShort(iso: string): string {
   return new Date(iso).toLocaleDateString('fr-FR', {
     weekday: 'short',
@@ -121,7 +88,6 @@ function formatDayShort(iso: string): string {
 
 function onMonthYearChange({ month, year }: { month: number; year: number }) {
   visibleMonth.value = { month, year }
-  selectedEntry.value = null
 }
 
 // ── Gestion des clics ─────────────────────────────────────────────────────────
@@ -132,14 +98,10 @@ watch(clickedDate, async (date) => {
   const key = toDateKey(date)
   const entry = entries.value.find((e) => e.date === key)
 
-  if (entry?.type === 'sgilt') {
-    selectedEntry.value = entry
-  } else if (entry?.type === 'manual') {
-    selectedEntry.value = null
+  if (entry?.type === 'manual') {
     await CalendarMockService.removeUnavailability(key)
     entries.value = CalendarMockService.getAll()
-  } else {
-    selectedEntry.value = null
+  } else if (entry?.type !== 'sgilt') {
     await CalendarMockService.addUnavailability(key)
     entries.value = CalendarMockService.getAll()
   }
@@ -152,52 +114,42 @@ watch(clickedDate, async (date) => {
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
+:deep(.sgilt-date-picker) {
+  width: 50%;
+  flex-shrink: 0;
+
+  .dp__outer_menu_wrap {
+    width: 100%;
+  }
+}
+
 .pro-calendar {
   display: flex;
   flex-direction: row;
-  // flex-wrap: wrap;
-  gap: $spacing-s;
-}
+  gap: $spacing-m;
 
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.75rem;
-  color: $text-secondary;
-}
+  @media (max-width: $breakpoint-desktop) {
+    flex-direction: column;
 
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-  flex-shrink: 0;
-
-  &--sgilt {
-    background: rgba($brand-accent, 0.55);
+    :deep(.sgilt-date-picker) {
+      width: 100%;
+    }
   }
 
-  &--unavailable {
-    background: repeating-linear-gradient(
-      -45deg,
-      rgba(0, 0, 0, 0.15),
-      rgba(0, 0, 0, 0.15) 2px,
-      #e5e5e5 2px,
-      #e5e5e5 5px
-    );
+  .list {
+    width: 50%;
+    @media (max-width: $breakpoint-desktop) {
+      width: 100%;
+    }
+
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid $divider-color;
+    border-radius: $radius-lg;
+    overflow: hidden;
+    background: #fff;
   }
-}
-
-// ── Liste du mois ─────────────────────────────────────────────────────────────
-
-.pro-calendar__list {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid $divider-color;
-  border-radius: $radius-lg;
-  overflow: hidden;
-  background: #fff;
 }
 
 .list-empty {
@@ -260,96 +212,5 @@ watch(clickedDate, async (date) => {
       opacity: 0.7;
     }
   }
-}
-
-// ── Détail réservation ─────────────────────────────────────────────────────────
-
-.pro-calendar__detail {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: $spacing-s;
-  padding: $spacing-s $spacing-m;
-  background: rgba($brand-accent, 0.08);
-  border: 1px solid rgba($brand-accent, 0.3);
-  border-radius: $radius-md;
-
-  .detail-body {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-  }
-
-  .detail-label {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: $text-primary;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .detail-date {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.75rem;
-    color: $text-secondary;
-    margin: 0;
-    text-transform: capitalize;
-  }
-
-  .detail-actions {
-    display: flex;
-    align-items: center;
-    gap: $spacing-s;
-    flex-shrink: 0;
-  }
-
-  .detail-link {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: $brand-primary;
-    text-decoration: none;
-    white-space: nowrap;
-    transition: opacity 150ms ease;
-
-    &:hover {
-      opacity: 0.7;
-    }
-  }
-
-  .detail-close {
-    background: none;
-    border: none;
-    font-size: 0.75rem;
-    color: $text-secondary;
-    cursor: pointer;
-    padding: 2px 4px;
-    line-height: 1;
-    border-radius: $radius-sm;
-    transition: color 150ms ease;
-
-    &:hover {
-      color: $text-primary;
-    }
-  }
-}
-
-// ── Transition détail ─────────────────────────────────────────────────────────
-
-.detail-enter-active,
-.detail-leave-active {
-  transition:
-    opacity 150ms ease,
-    transform 150ms ease;
-}
-
-.detail-enter-from,
-.detail-leave-to {
-  opacity: 0;
-  transform: translateY(-4px);
 }
 </style>
