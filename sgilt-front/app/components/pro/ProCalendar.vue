@@ -116,6 +116,8 @@ watch(clickedDate, async (date) => {
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
+$desktop: $breakpoint-desktop;
+
 :deep(.sgilt-date-picker) {
   width: 50%;
   flex-shrink: 0;
@@ -130,8 +132,9 @@ watch(clickedDate, async (date) => {
   flex-direction: row;
   gap: $spacing-m;
 
-  @media (max-width: $breakpoint-desktop) {
+  @media (max-width: $desktop) {
     flex-direction: column;
+    //gap: 0;
 
     :deep(.sgilt-date-picker) {
       width: 100%;
@@ -140,16 +143,28 @@ watch(clickedDate, async (date) => {
 
   .list {
     width: 50%;
-    @media (max-width: $breakpoint-desktop) {
-      width: 100%;
-    }
-
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
     border: 1px solid $divider-color;
     border-radius: $radius-lg;
     overflow: hidden;
+    background: #fff;
+
+    @media (max-width: $desktop) {
+      width: 100%;
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+    }
+  }
+}
+
+.calendar {
+  @media (max-width: $desktop) {
+    position: sticky;
+    top: $app-header-height;
+    z-index: $z-header;
     background: #fff;
   }
 }

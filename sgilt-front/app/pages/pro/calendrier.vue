@@ -27,15 +27,25 @@ const { isMobile } = useDevice()
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
+$desktop: $breakpoint-desktop;
+
 .calendrier-page {
-  margin: 0 $spacing-m;
   padding: $spacing-l $spacing-m $spacing-xxxl;
   display: flex;
   flex-direction: column;
   gap: $spacing-m;
 
+  @media (max-width: $desktop) {
+    //padding: $spacing-l 0 $spacing-xxxl;
+    gap: 0;
+  }
+
   &__header {
     text-align: center;
+
+    @media (max-width: $desktop) {
+      padding: 0 $spacing-m $spacing-m;
+    }
   }
 
   &__title {
@@ -44,6 +54,10 @@ const { isMobile } = useDevice()
     font-weight: 500;
     color: $text-primary;
     margin: 0;
+
+    @media (max-width: $desktop) {
+      display: none;
+    }
   }
 
   &__hint {
