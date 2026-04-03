@@ -30,7 +30,20 @@
     </VueDatePicker>
 
     <template #fallback>
-      <div class="select-skeleton">
+      <div v-if="inline" class="calendar-skeleton">
+        <div class="calendar-skeleton__header">
+          <div class="skeleton-nav" />
+          <div class="skeleton-month" />
+          <div class="skeleton-nav" />
+        </div>
+        <div class="calendar-skeleton__weekdays">
+          <div v-for="i in 7" :key="i" class="skeleton-weekday" />
+        </div>
+        <div class="calendar-skeleton__grid">
+          <div v-for="i in 35" :key="i" class="skeleton-cell shimmer-container" />
+        </div>
+      </div>
+      <div v-else class="select-skeleton">
         <div class="skeleton-icon" />
         <div class="skeleton-text" />
       </div>
@@ -261,5 +274,62 @@ $menu-background:
   align-items: center;
   gap: 0.2em;
   font-size: 0.8rem;
+}
+
+// ─── Skeleton inline ──────────────────────────────────────────────────────────
+
+$skeleton-color: rgba(0, 0, 0, 0.07);
+
+.calendar-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  width: 100%;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+  }
+
+  &__weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+  }
+}
+
+.skeleton-nav {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.4rem;
+  background: $skeleton-color;
+}
+
+.skeleton-month {
+  height: 1rem;
+  width: 8rem;
+  border-radius: 0.4rem;
+  background: $skeleton-color;
+}
+
+.skeleton-weekday {
+  height: 0.75rem;
+  border-radius: 0.3rem;
+  background: $skeleton-color;
+}
+
+.skeleton-cell {
+  aspect-ratio: 1;
+  border-radius: 0.5rem;
+  background: $skeleton-color;
 }
 </style>

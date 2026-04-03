@@ -60,6 +60,12 @@
   }
 }
 
+.skeleton-cell,
+.skeleton-weekday,
+.calendar-skeleton__header * {
+  background: rgba($color-accent, 0.16);
+}
+
 @keyframes shimmer {
   100% {
     transform: translateX(100%);
