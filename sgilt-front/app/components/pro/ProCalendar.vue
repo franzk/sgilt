@@ -13,23 +13,25 @@
     <!-- Liste du mois visible -->
     <div class="list">
       <p v-if="monthEntries.length === 0" class="list-empty">Aucun événement ce mois-ci.</p>
-      <div
-        v-for="entry in monthEntries"
-        :key="entry.date"
-        class="list-item"
-        :class="`list-item--${entry.type}`"
-      >
-        <span class="list-item-date">{{ formatDayShort(entry.date) }}</span>
-        <span class="list-item-label">
-          {{ entry.type === 'manual' ? 'Indisponible' : entry.label }}
-        </span>
+      <div v-for="entry in monthEntries" :key="entry.date">
         <NuxtLink
           v-if="entry.type === 'sgilt'"
           :to="`/pro/reservations/${entry.reservationId}`"
-          class="list-item-link"
+          class="list-item"
+          :class="`list-item--${entry.type}`"
         >
-          Voir →
+          <span class="list-item-date">{{ formatDayShort(entry.date) }}</span>
+          <span class="list-item-label">
+            {{ entry.type === 'manual' ? 'Indisponible' : entry.label }}
+          </span>
+          <span class="list-item-link">Voir →</span>
         </NuxtLink>
+        <div v-else class="list-item" :class="`list-item--${entry.type}`">
+          <span class="list-item-date">{{ formatDayShort(entry.date) }}</span>
+          <span class="list-item-label">
+            {{ entry.type === 'manual' ? 'Indisponible' : entry.label }}
+          </span>
+        </div>
       </div>
     </div>
   </div>
