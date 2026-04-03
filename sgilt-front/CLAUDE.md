@@ -23,7 +23,7 @@ const p: any = fetchPrestataire()
 
 ## SCSS — Structure imbriquée qui suit le DOM
 
-Le SCSS est écrit dans le bloc `<style lang="scss" scoped>` du composant `.vue`. Les classes sont **simples et sémantiques** (pas de BEM), et l'imbrication reflète fidèlement la hiérarchie du DOM.
+Pas de BEM. Le SCSS est écrit dans le bloc `<style lang="scss" scoped>` du composant `.vue`. Les classes sont **simples et sémantiques** (pas de BEM), et l'imbrication reflète fidèlement la hiérarchie du DOM.
 
 ```vue
 <template>

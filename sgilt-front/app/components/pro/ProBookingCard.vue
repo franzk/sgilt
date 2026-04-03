@@ -15,7 +15,7 @@
       <div class="right-row">
         <div class="skeleton-text" style="width: 75%; height: 0.8rem; border-radius: 4px" />
       </div>
-      <div class="right-row">
+      <div class="right-row last-row">
         <div class="skeleton-text" style="width: 55%; height: 0.65rem; border-radius: 3px" />
         <div
           class="skeleton-text"
@@ -29,6 +29,7 @@
   <button
     v-else-if="demande"
     class="booking-card"
+    :class="demande.statut"
     type="button"
     :style="{ animationDelay: `${animationDelay ?? 0}ms` }"
     @click="emit('click')"
@@ -54,9 +55,14 @@
         <span class="info-value" v-html="demande.phraseInfoState" />
       </div>
 
-      <div class="right-row">
-        <span class="info-label">Date de l'événement</span>
-        <span class="info-value">{{ demande.date ? formatDate(demande.date) : '—' }}</span>
+      <div class="right-row last-row date-row">
+        <span class="calendar-icon icon">
+          <CalendarEventIcon />
+        </span>
+        <div class="date-info">
+          <span class="info-label">Date de l'événement</span>
+          <span class="info-value">{{ demande.date ? formatDate(demande.date) : '—' }}</span>
+        </div>
       </div>
     </div>
   </button>
@@ -66,6 +72,7 @@
 import BadgeableComponent from '~/components/basics/BadgeableComponent.vue'
 import type { ProDemandeSummary } from '~/types/event'
 import { STATUTS_AVEC_ACTION } from '~/constants/reservation-status'
+import { CalendarEventIcon } from '@remixicons/vue/line'
 
 const props = defineProps<{
   demande?: ProDemandeSummary
@@ -97,6 +104,17 @@ const needsAction = computed(() =>
   }
 }
 
+@keyframes card-in-dimmed {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 0.5;
+    transform: translateY(0);
+  }
+}
+
 // ── Card container ─────────────────────────────────────────────────────────────
 
 .booking-card {
@@ -106,13 +124,20 @@ const needsAction = computed(() =>
   width: 100%;
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.07);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  border-radius: $radius-md;
   text-align: left;
   font-family: inherit;
   cursor: pointer;
   overflow: hidden;
   transition: box-shadow 150ms ease;
   animation: card-in 280ms ease-out both;
+
+  &.refusee,
+  &.annulee,
+  &.realisee {
+    animation-name: card-in-dimmed;
+  }
 
   &:hover {
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
@@ -144,6 +169,9 @@ const needsAction = computed(() =>
     border-radius: 50%;
     display: block;
     flex-shrink: 0;
+    box-shadow:
+      0 0 0 3px rgba($brand-accent, 0.6),
+      0 0 12px 6px rgba($brand-accent, 0.4);
   }
 
   // ── Titre événement ──────────────────────────────────────────────────────────
@@ -183,8 +211,27 @@ const needsAction = computed(() =>
     padding: $spacing-s $spacing-m $spacing-s $spacing-s;
   }
 
-  .right-row + .right-row {
+  .last-row {
     border-top: 1px solid $divider-color;
+  }
+
+  .date-row {
+    flex-direction: row;
+    align-items: center;
+    gap: $spacing-xs;
+
+    .icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      color: $text-secondary;
+    }
+
+    .date-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
   }
 
   // ── "Action requise" ────────────────────────────────────────────────────────
@@ -194,14 +241,17 @@ const needsAction = computed(() =>
     font-size: 0.72rem;
     text-transform: uppercase;
     font-weight: 600;
-    background: none;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: $radius-xl;
+    letter-spacing: 0.01em;
 
     &.nouvelle {
-      color: #d93025;
+      background: #d93025;
     }
 
     &.en_discussion {
-      color: #e67e22;
+      background: #e67e22;
     }
   }
 
@@ -209,7 +259,7 @@ const needsAction = computed(() =>
     font-family: 'Inter', sans-serif;
     font-size: 0.6rem;
     font-weight: 600;
-    letter-spacing: 0.07em;
+    // letter-spacing: 0.07em;
     text-transform: uppercase;
     color: $text-secondary;
   }

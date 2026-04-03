@@ -110,6 +110,7 @@ $filter-h: 50px;
     background: #fff;
     padding: $spacing-s $spacing-m;
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    margin-bottom: $spacing-s;
 
     @media (min-width: $desktop) {
       padding: $spacing-s max($spacing-xl, calc((100% - 1200px) / 2));
@@ -121,6 +122,7 @@ $filter-h: 50px;
     display: flex;
     flex-direction: column;
     flex: 1;
+    padding: 0 $spacing-xs;
 
     @media (min-width: $desktop) {
       display: grid;
