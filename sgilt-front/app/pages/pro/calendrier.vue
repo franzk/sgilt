@@ -3,7 +3,12 @@
     <div class="calendrier-page__header">
       <h1 class="calendrier-page__title">Calendrier</h1>
       <p class="calendrier-page__hint">
-        Touchez un jour disponible pour le bloquer, touchez-le à nouveau pour le libérer.
+        <template v-if="isMobile">
+          Touchez un jour disponible pour le bloquer, touchez-le à nouveau pour le libérer.
+        </template>
+        <template v-else>
+          Cliquez sur un jour disponible pour le bloquer, cliquez à nouveau pour le libérer.
+        </template>
       </p>
     </div>
 
@@ -15,6 +20,8 @@
 import ProCalendar from '~/components/pro/ProCalendar.vue'
 
 definePageMeta({ layout: 'pro' })
+
+const { isMobile } = useDevice()
 </script>
 
 <style scoped lang="scss">
