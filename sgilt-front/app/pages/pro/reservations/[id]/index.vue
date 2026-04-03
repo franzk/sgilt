@@ -8,9 +8,7 @@
       :style="{ backgroundImage: `url(${coverImage})` }"
     >
       <div class="overlay" />
-      <button class="back-btn" type="button" @click="navigateTo('/pro/reservations')">
-        ‹ Retour
-      </button>
+      <button class="back-btn" type="button" @click="router.back()">‹ Retour</button>
       <div class="bottom">
         <div class="info">
           <span class="category">{{ demande.category }}</span>
@@ -228,6 +226,7 @@ import { getStatusOverlayStyle } from '~/constants/reservation-status'
 const { isMobile } = useDevice()
 
 const route = useRoute()
+const router = useRouter()
 const demandeId = String(route.params.id)
 
 // ── Cover images ───────────────────────────────────────────────────────────────
