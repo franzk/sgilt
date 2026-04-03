@@ -7,19 +7,7 @@
 
     <!-- ── Filtres sticky ────────────────────────────────────────────────────────── -->
     <div class="filters">
-      <div class="pills-scroll">
-        <button
-          v-for="pill in RESERVATION_STATUS_PILLS"
-          :key="pill.id"
-          class="pill"
-          :class="{ active: isPillActive(pill.id) }"
-          :style="getPillStyle(pill.id)"
-          type="button"
-          @click="togglePill(pill.id)"
-        >
-          {{ t(`reservation.statut.${pill.id}`) }}
-        </button>
-      </div>
+      <ProStatusPills v-model="activeFilter" />
     </div>
 
     <!-- ── Corps ────────────────────────────────────────────────────────────────── -->
@@ -57,12 +45,9 @@ definePageMeta({ layout: 'pro' })
 
 import { ProMockService } from '~/services/pro.mock'
 import type { ProDemandeSummary } from '~/types/event'
-import {
-  RESERVATION_STATUS_PILLS,
-  RESERVATION_STATUS_ORDER,
-  RESERVATION_STATUS_CONFIG,
-} from '~/constants/reservation-status'
+import { RESERVATION_STATUS_ORDER } from '~/constants/reservation-status'
 import type { ReservationStatut } from '~/constants/reservation-status'
+import ProStatusPills from '~/components/pro/ProStatusPills.vue'
 
 // ── Données ────────────────────────────────────────────────────────────────────
 const loading = ref(true)
@@ -76,26 +61,7 @@ onMounted(async () => {
 // ── En-tête ────────────────────────────────────────────────────────────────────
 const contextLine = computed(() => ProMockService.getGreetingSubtitle(DEMANDES.value))
 
-// ── Pills ──────────────────────────────────────────────────────────────────────
-const { t } = useI18n()
-
 const activeFilter = ref<ReservationStatut | null>(null)
-
-function isPillActive(id: string): boolean {
-  if (id === 'toutes') return activeFilter.value === null
-  return activeFilter.value === (id as ReservationStatut)
-}
-
-function togglePill(id: string) {
-  activeFilter.value = id === 'toutes' ? null : (id as ReservationStatut)
-}
-
-function getPillStyle(id: string): Record<string, string> {
-  if (id === 'toutes') return {}
-  const cfg = RESERVATION_STATUS_CONFIG[id as ReservationStatut]
-  if (!cfg) return {}
-  return { '--pill-color': cfg.color, '--pill-bg': cfg.bgColor }
-}
 
 // ── Filtrage + tri ─────────────────────────────────────────────────────────────
 const filteredDemandes = computed(() =>
@@ -179,51 +145,6 @@ $filter-h: 50px;
       border: 1px solid $divider-color;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
       padding: $spacing-m;
-    }
-  }
-}
-
-.pills-scroll {
-  display: flex;
-  gap: $spacing-xs;
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding-bottom: 2px;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-.pill {
-  position: relative;
-  flex-shrink: 0;
-  padding: 5px 12px;
-  margin-bottom: 2px;
-  border-radius: 2rem;
-  border: none;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 500;
-  cursor: pointer;
-  color: var(--pill-color, $text-secondary);
-  background: var(--pill-bg, transparent);
-  transition:
-    background 120ms ease,
-    color 120ms ease;
-
-  &.active {
-    font-weight: 600;
-
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -5px;
-      left: 0;
-      right: 0;
-      height: 2px;
-      border-radius: 999px;
-      background: $brand-accent;
     }
   }
 }
