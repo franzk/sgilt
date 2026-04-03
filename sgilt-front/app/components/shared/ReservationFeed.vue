@@ -102,13 +102,15 @@
           rows="5"
           @input="autoResize"
         />
-        <label v-if="showPersonalToggle" class="personal">
-          <input v-model="noteIsPersonal" type="checkbox" />
-          <span>Note privée 🔒 (visible uniquement par moi)</span>
-        </label>
-        <SgiltButton :disabled="!newNote.trim() || sending" @click="sendNote">
-          Ajouter la note
-        </SgiltButton>
+        <div class="note-form__footer">
+          <label v-if="showPersonalToggle" class="personal">
+            <input v-model="noteIsPersonal" type="checkbox" />
+            <span>Note privée 🔒 (visible uniquement par moi)</span>
+          </label>
+          <SgiltButton :disabled="!newNote.trim() || sending" @click="sendNote">
+            Ajouter la note
+          </SgiltButton>
+        </div>
       </div>
     </SgiltDialog>
   </div>
@@ -491,13 +493,14 @@ $desktop: $breakpoint-desktop;
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-height: 0;
   padding: 32px;
-  gap: $spacing-l;
+  gap: $spacing-m;
 
   .textarea {
     flex: 1;
+    min-height: 80px;
     width: 100%;
-    min-height: 300px;
     padding: 0;
     border: none;
     resize: none;
@@ -507,12 +510,19 @@ $desktop: $breakpoint-desktop;
     color: $text-primary;
     background: transparent;
     outline: none;
-    overflow: hidden;
+    overflow-y: auto;
 
     &::placeholder {
       color: $text-secondary;
       opacity: 0.4;
     }
+  }
+
+  &__footer {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-s;
   }
 
   .personal {
@@ -524,6 +534,5 @@ $desktop: $breakpoint-desktop;
     color: $text-secondary;
     cursor: pointer;
   }
-
 }
 </style>

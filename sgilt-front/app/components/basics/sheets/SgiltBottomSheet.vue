@@ -70,6 +70,7 @@ defineProps<{
   right: 0;
   bottom: 0;
   max-height: calc(100vh - $app-header-height);
+  max-height: calc(100dvh - $app-header-height);
   z-index: $z-modal;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
@@ -136,7 +137,7 @@ defineProps<{
   display: flex;
   flex-direction: column;
   min-height: 0;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 // ── Accessibilité ──────────────────────────────────────────────────────────────
