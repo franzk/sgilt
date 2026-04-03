@@ -90,9 +90,9 @@ watch(etapeActuelle, () => nextTick(() => bodyRef.value?.scrollTo({ top: 0, beha
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
-:global(.sgilt-sheet__content) {
-  height: calc(100vh - $app-header-height);
-}
+/*:global(.sgilt-sheet__content) {
+  max-height: calc(100vh - $app-header-height);
+}*/
 
 .sheet-body {
   flex: 1;

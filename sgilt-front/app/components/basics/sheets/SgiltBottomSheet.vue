@@ -51,6 +51,8 @@ defineProps<{
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/base' as *;
+
 // ── Overlay ────────────────────────────────────────────────────────────────────
 .sgilt-sheet__overlay {
   position: fixed;
@@ -67,6 +69,7 @@ defineProps<{
   left: 0;
   right: 0;
   bottom: 0;
+  max-height: calc(100vh - $app-header-height);
   z-index: $z-modal;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;

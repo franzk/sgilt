@@ -58,6 +58,8 @@ const { isMobile } = useDevice()
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/base' as *;
+
 // ── Overlay ────────────────────────────────────────────────────────────────────
 .sgilt-dialog {
   position: fixed;
@@ -68,6 +70,7 @@ const { isMobile } = useDevice()
   align-items: center;
   justify-content: center;
   padding: $spacing-m;
+  // max-height: calc(100vh - $app-header-height);
 
   // ── Panel ──────────────────────────────────────────────────────────────────────
   .panel {
@@ -75,7 +78,8 @@ const { isMobile } = useDevice()
     border-radius: $radius-lg;
     width: 100%;
     max-width: 480px;
-    max-height: 80vh;
+
+    //max-height: 80vh;
     display: flex;
     flex-direction: column;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
