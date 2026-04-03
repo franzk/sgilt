@@ -13,26 +13,29 @@
     <!-- Liste du mois visible -->
     <div class="list">
       <p v-if="monthEntries.length === 0" class="list-empty">Aucun événement ce mois-ci.</p>
-      <div v-for="entry in monthEntries" :key="entry.date">
-        <NuxtLink
-          v-if="entry.type === 'sgilt'"
-          :to="`/pro/reservations/${entry.reservationId}`"
-          class="list-item"
-          :class="`list-item--${entry.type}`"
+      <TransitionGroup v-else name="entry" tag="div" class="list-items">
+        <div
+          v-for="entry in monthEntries"
+          :key="entry.date"
+          class="list-item-wrap"
+          :class="{ 'is-highlighted': highlightKey === entry.date }"
+          :ref="(el) => setItemRef(el as HTMLElement | null, entry.date)"
         >
-          <span class="list-item-date">{{ formatDayShort(entry.date) }}</span>
-          <span class="list-item-label">
-            {{ entry.type === 'manual' ? 'Indisponible' : entry.label }}
-          </span>
-          <span class="list-item-link">Voir →</span>
-        </NuxtLink>
-        <div v-else class="list-item" :class="`list-item--${entry.type}`">
-          <span class="list-item-date">{{ formatDayShort(entry.date) }}</span>
-          <span class="list-item-label">
-            {{ entry.type === 'manual' ? 'Indisponible' : entry.label }}
-          </span>
+          <NuxtLink
+            v-if="entry.type === 'sgilt'"
+            :to="`/pro/reservations/${entry.reservationId}`"
+            class="list-item list-item--sgilt"
+          >
+            <span class="list-item-date">{{ formatDayShort(entry.date) }}</span>
+            <span class="list-item-label">{{ entry.label }}</span>
+            <span class="list-item-link">Voir →</span>
+          </NuxtLink>
+          <div v-else class="list-item list-item--manual">
+            <span class="list-item-date">{{ formatDayShort(entry.date) }}</span>
+            <span class="list-item-label">Indisponible</span>
+          </div>
         </div>
-      </div>
+      </TransitionGroup>
     </div>
   </div>
 </template>
@@ -42,16 +45,17 @@ import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
 import type { CalendarEntry } from '~/types/calendrier'
 import { CalendarMockService } from '~/services/calendrier.mock'
 
+const { isMobile } = useDevice()
+
 // ── État ──────────────────────────────────────────────────────────────────────
 
 const entries = ref<CalendarEntry[]>(CalendarMockService.getAll())
 const clickedDate = ref<Date | undefined>(undefined)
+const highlightKey = ref<string | null>(null)
 
 const _today = new Date()
 const visibleMonth = ref({ month: _today.getMonth(), year: _today.getFullYear() })
 
-// Clé qui change à chaque modification des entrées pour forcer le re-rendu
-// de SgiltDatePicker et recalculer getDayClass.
 const calendarKey = computed(() => entries.value.map((e) => `${e.date}:${e.type}`).join('|'))
 
 const bookedDates = computed(() =>
@@ -70,6 +74,15 @@ const monthEntries = computed(() =>
     })
     .sort((a, b) => a.date.localeCompare(b.date)),
 )
+
+// ── Refs DOM pour scroll ───────────────────────────────────────────────────────
+
+const itemRefs = new Map<string, HTMLElement>()
+
+function setItemRef(el: HTMLElement | null, key: string): void {
+  if (el) itemRefs.set(key, el)
+  else itemRefs.delete(key)
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -92,6 +105,18 @@ function onMonthYearChange({ month, year }: { month: number; year: number }) {
   visibleMonth.value = { month, year }
 }
 
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+async function scrollEntryIntoView(key: string): Promise<void> {
+  await nextTick()
+  const el = itemRefs.get(key)
+  if (!el) return
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  await delay(400)
+}
+
 // ── Gestion des clics ─────────────────────────────────────────────────────────
 
 watch(clickedDate, async (date) => {
@@ -101,11 +126,25 @@ watch(clickedDate, async (date) => {
   const entry = entries.value.find((e) => e.date === key)
 
   if (entry?.type === 'manual') {
+    // Suppression : scroll → highlight → suppression animée
+    if (isMobile.value) await scrollEntryIntoView(key)
+    highlightKey.value = key
+    await delay(400)
+    highlightKey.value = null
+    const savedScrollY = window.scrollY
     await CalendarMockService.removeUnavailability(key)
     entries.value = CalendarMockService.getAll()
+    await nextTick()
+    window.scrollTo({ top: savedScrollY, behavior: 'instant' })
   } else if (entry?.type !== 'sgilt') {
+    // Ajout : ajout → scroll → highlight
     await CalendarMockService.addUnavailability(key)
     entries.value = CalendarMockService.getAll()
+    await nextTick()
+    if (isMobile.value) await scrollEntryIntoView(key)
+    highlightKey.value = key
+    await delay(1000)
+    highlightKey.value = null
   }
 
   await nextTick()
@@ -169,6 +208,8 @@ $desktop: $breakpoint-desktop;
   }
 }
 
+// ── Liste ──────────────────────────────────────────────────────────────────────
+
 .list-empty {
   font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
@@ -179,16 +220,30 @@ $desktop: $breakpoint-desktop;
   margin: 0;
 }
 
-.list-item {
+.list-items {
+  position: relative;
   display: flex;
-  align-items: center;
-  gap: $spacing-s;
-  padding: $spacing-xs $spacing-m;
+  flex-direction: column;
+}
+
+.list-item-wrap {
   border-bottom: 1px solid $divider-color;
 
   &:last-child {
     border-bottom: none;
   }
+
+  &.is-highlighted {
+    animation: entry-highlight 1s ease forwards;
+  }
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-s;
+  padding: $spacing-xs $spacing-m;
+  text-decoration: none;
 
   &--sgilt {
     background: rgba($brand-accent, 0.04);
@@ -220,7 +275,6 @@ $desktop: $breakpoint-desktop;
     font-size: 0.75rem;
     font-weight: 500;
     color: $brand-primary;
-    text-decoration: none;
     white-space: nowrap;
     flex-shrink: 0;
     transition: opacity 150ms ease;
@@ -229,5 +283,44 @@ $desktop: $breakpoint-desktop;
       opacity: 0.7;
     }
   }
+}
+
+// ── Animations TransitionGroup ────────────────────────────────────────────────
+
+.entry-enter-active {
+  transition:
+    opacity 250ms ease,
+    transform 250ms ease;
+}
+
+.entry-leave-active {
+  transition:
+    opacity 200ms ease,
+    transform 200ms ease;
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.entry-move {
+  transition: transform 250ms ease;
+}
+
+.entry-enter-from {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+.entry-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+// ── Highlight ─────────────────────────────────────────────────────────────────
+
+@keyframes entry-highlight {
+  0%   { background-color: transparent; }
+  25%  { background-color: rgba($brand-accent, 0.18); }
+  100% { background-color: transparent; }
 }
 </style>

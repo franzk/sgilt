@@ -1,7 +1,6 @@
 <template>
   <div class="calendrier-page">
     <div class="calendrier-page__header">
-      <h1 class="calendrier-page__title">Calendrier</h1>
       <p class="calendrier-page__hint">
         <template v-if="isMobile">
           Touchez un jour disponible pour le bloquer, touchez-le à nouveau pour le libérer.
@@ -41,22 +40,9 @@ $desktop: $breakpoint-desktop;
   }
 
   &__header {
-    text-align: center;
-
     @media (max-width: $desktop) {
       padding: 0 $spacing-m $spacing-m;
-    }
-  }
-
-  &__title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.6rem;
-    font-weight: 500;
-    color: $text-primary;
-    margin: 0;
-
-    @media (max-width: $desktop) {
-      display: none;
+      text-align: center;
     }
   }
 
