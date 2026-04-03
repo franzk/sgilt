@@ -44,7 +44,10 @@
     <!-- Colonne droite : infos -->
     <div class="right">
       <div v-if="needsAction" class="right-row">
-        <span class="action-required" :class="`${demande.statut}`">Action requise</span>
+        <span class="action-required" :class="`${demande.statut}`">
+          <template v-if="demande.statut === 'nouvelle'">Contactez le client</template>
+          <template v-else-if="demande.statut === 'en_discussion'">Validez la demande</template>
+        </span>
       </div>
 
       <div v-if="demande.phraseInfoState" class="right-row">
@@ -53,7 +56,7 @@
 
       <div class="right-row">
         <span class="info-label">Date de l'événement</span>
-        <span class="info-value">{{ demande.date || '—' }}</span>
+        <span class="info-value">{{ demande.date ? formatDate(demande.date) : '—' }}</span>
       </div>
     </div>
   </button>
@@ -102,7 +105,6 @@ const needsAction = computed(() =>
   align-items: stretch;
   width: 100%;
   background: #fff;
-  border-radius: $radius-md;
   border: 1px solid rgba(0, 0, 0, 0.07);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   text-align: left;
@@ -128,7 +130,8 @@ const needsAction = computed(() =>
     flex-direction: column;
     align-items: center;
     gap: $spacing-xs;
-    padding: $spacing-m $spacing-s $spacing-m $spacing-m;
+    padding: $spacing-m 0;
+    margin: auto;
     flex: 0 0 130px;
   }
 

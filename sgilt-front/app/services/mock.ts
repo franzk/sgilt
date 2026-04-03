@@ -1119,7 +1119,7 @@ export const PRO_DEMANDES: ProDemandeDetail[] = [
     event: PRO_ONLY_EVENTS[6],
     progressType: null,
     progressValue: null,
-    phraseInfoState: null,
+    phraseInfoState: 'Réalisée le <strong>14/12/2025</strong>',
     clientInfo: { firstName: 'Julie', phone: '+33 6 78 90 12 34', email: 'julie.martin@email.fr' },
   }, // realisee — urgencyLevel 1
 ]

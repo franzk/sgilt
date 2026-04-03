@@ -210,7 +210,6 @@ $filter-h: 50px;
   display: flex;
   flex-direction: column;
   gap: $spacing-s;
-  padding: $spacing-s $spacing-m calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $spacing-m);
 
   @media (min-width: $desktop) {
     gap: $spacing-m;
