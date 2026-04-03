@@ -231,7 +231,7 @@ $menu-background:
     position: absolute;
     bottom: 0px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(calc(-50% + 1px));
     width: 5px;
     height: 5px;
     border-radius: 50%;
