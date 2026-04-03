@@ -15,7 +15,7 @@
       de manière pertinente !
     </p>
 
-    <div class="actions">
+    <div v-if="isDesktop" class="actions">
       <SgiltButton @click="next">Continuer →</SgiltButton>
       <SgiltButton variant="tertiary" @click="next">Passer cette étape</SgiltButton>
     </div>
@@ -27,6 +27,7 @@ import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import { useDemande } from '~/composables/useDemande'
 
 const { state, next } = useDemande()
+const { isDesktop } = useDevice()
 
 const placeholderText = 'Parlez-nous de votre événement, de vos envies, de ce que vous imaginez...'
 </script>

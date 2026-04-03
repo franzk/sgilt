@@ -35,8 +35,18 @@
       </template>
     </div>
 
-    <div v-if="!submitted && etapeActuelle === 5" class="sheet-footer">
-      <SgiltButton :disabled="!step5Valid" @click="next">Continuer →</SgiltButton>
+    <div
+      v-if="!submitted"
+      class="sheet-footer"
+      :class="{ 'actions-etape4': etapeActuelle === 4, 'actions-etape5': etapeActuelle === 5 }"
+    >
+      <template v-if="etapeActuelle === 4">
+        <SgiltButton @click="next">Continuer →</SgiltButton>
+        <SgiltButton variant="tertiary" @click="next">Passer cette étape</SgiltButton>
+      </template>
+      <template v-if="etapeActuelle === 5">
+        <SgiltButton :disabled="!step5Valid" @click="next">Continuer →</SgiltButton>
+      </template>
     </div>
   </SgiltBottomSheet>
 </template>
@@ -79,7 +89,9 @@ watch(
 )
 
 const closeAndFinish = () => {
-  reset()
+  if (submitted.value) {
+    reset()
+  }
   emit('close')
 }
 
@@ -89,10 +101,6 @@ watch(etapeActuelle, () => nextTick(() => bodyRef.value?.scrollTo({ top: 0, beha
 
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
-
-/*:global(.sgilt-sheet__content) {
-  max-height: calc(100vh - $app-header-height);
-}*/
 
 .sheet-body {
   flex: 1;
@@ -108,8 +116,24 @@ watch(etapeActuelle, () => nextTick(() => bodyRef.value?.scrollTo({ top: 0, beha
   background: #fff;
   border-top: 1px solid $divider-color;
 
-  :deep(button) {
-    width: 100%;
+  &.actions-etape5 {
+    :deep(button) {
+      width: 100%;
+    }
+  }
+
+  &.actions-etape4 {
+    display: flex;
+    flex-direction: row;
+    gap: $spacing-s;
+
+    /*@media (min-width: $breakpoint-desktop) {
+      flex-direction: row;
+    }*/
+
+    :deep(button) {
+      flex: 1;
+    }
   }
 }
 
