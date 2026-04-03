@@ -245,6 +245,7 @@ const needsAction = computed(() =>
     padding: 4px 8px;
     border-radius: $radius-xl;
     letter-spacing: 0.01em;
+    width: fit-content;
 
     &.nouvelle {
       background: #d93025;
