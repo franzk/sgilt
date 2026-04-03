@@ -1,14 +1,15 @@
 <template>
   <div class="pro-calendar">
-    <SgiltDatePicker
-      :key="calendarKey"
-      v-model="clickedDate"
-      inline
-      :booked-dates="bookedDates"
-      :indisponible-dates="indisponibleDates"
-      class="calendar"
-      @update-month-year="onMonthYearChange"
-    />
+    <div class="calendar">
+      <SgiltDatePicker
+        :key="calendarKey"
+        v-model="clickedDate"
+        inline
+        :booked-dates="bookedDates"
+        :indisponible-dates="indisponibleDates"
+        @update-month-year="onMonthYearChange"
+      />
+    </div>
 
     <!-- Liste du mois visible -->
     <div class="list">
@@ -157,15 +158,6 @@ watch(clickedDate, async (date) => {
 
 $desktop: $breakpoint-desktop;
 
-:deep(.sgilt-date-picker) {
-  width: 50%;
-  flex-shrink: 0;
-
-  .dp__outer_menu_wrap {
-    width: 100%;
-  }
-}
-
 .pro-calendar {
   display: flex;
   flex-direction: row;
@@ -174,15 +166,11 @@ $desktop: $breakpoint-desktop;
   @media (max-width: $desktop) {
     flex-direction: column;
     //gap: 0;
-
-    :deep(.sgilt-date-picker) {
-      width: 100%;
-    }
   }
 
   .list {
-    width: 50%;
-    flex-shrink: 0;
+    flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     border: 1px solid $divider-color;
@@ -191,7 +179,6 @@ $desktop: $breakpoint-desktop;
     background: #fff;
 
     @media (max-width: $desktop) {
-      width: 100%;
       border-radius: 0;
       border-left: none;
       border-right: none;
@@ -200,7 +187,16 @@ $desktop: $breakpoint-desktop;
 }
 
 .calendar {
+  width: 50%;
+  flex-shrink: 0;
+
+  :deep(.sgilt-date-picker),
+  :deep(.dp__outer_menu_wrap) {
+    width: 100%;
+  }
+
   @media (max-width: $desktop) {
+    width: 100%;
     position: sticky;
     top: $app-header-height;
     z-index: $z-header;
