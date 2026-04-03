@@ -106,7 +106,7 @@
             <ReservationFeed
               :items="feedItems"
               :can-add-note="isEditable"
-              :can-upload-document="['en_discussion', 'confirmee'].includes(demande.status)"
+              :can-upload-document="isEditable"
               :show-personal-toggle="true"
               @add-note="onAddNote"
               @upload-document="onUploadDocument"

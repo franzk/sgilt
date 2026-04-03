@@ -32,8 +32,8 @@
         <ReservationFeed
           :items="feedItems"
           :can-add-note="true"
-          :can-upload-document="false"
-          :show-personal-toggle="false"
+          :can-upload-document="true"
+          :show-personal-toggle="true"
           @add-note="onAddNote"
           @delete-document="onDeleteDocument"
         />
