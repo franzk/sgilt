@@ -13,6 +13,7 @@
           :key="pill.id"
           class="pill"
           :class="{ active: isPillActive(pill.id) }"
+          :style="getPillStyle(pill.id)"
           type="button"
           @click="togglePill(pill.id)"
         >
@@ -56,7 +57,11 @@ definePageMeta({ layout: 'pro' })
 
 import { ProMockService } from '~/services/pro.mock'
 import type { ProDemandeSummary } from '~/types/event'
-import { RESERVATION_STATUS_PILLS, RESERVATION_STATUS_ORDER } from '~/constants/reservation-status'
+import {
+  RESERVATION_STATUS_PILLS,
+  RESERVATION_STATUS_ORDER,
+  RESERVATION_STATUS_CONFIG,
+} from '~/constants/reservation-status'
 import type { ReservationStatut } from '~/constants/reservation-status'
 
 // ── Données ────────────────────────────────────────────────────────────────────
@@ -83,6 +88,13 @@ function isPillActive(id: string): boolean {
 
 function togglePill(id: string) {
   activeFilter.value = id === 'toutes' ? null : (id as ReservationStatut)
+}
+
+function getPillStyle(id: string): Record<string, string> {
+  if (id === 'toutes') return {}
+  const cfg = RESERVATION_STATUS_CONFIG[id as ReservationStatut]
+  if (!cfg) return {}
+  return { '--pill-color': cfg.color, '--pill-bg': cfg.bgColor }
 }
 
 // ── Filtrage + tri ─────────────────────────────────────────────────────────────
@@ -184,24 +196,35 @@ $filter-h: 50px;
 }
 
 .pill {
+  position: relative;
   flex-shrink: 0;
   padding: 5px 12px;
+  margin-bottom: 2px;
   border-radius: 2rem;
   border: none;
   font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
-  background: none;
-  color: $text-secondary;
+  color: var(--pill-color, $text-secondary);
+  background: var(--pill-bg, transparent);
   transition:
     background 120ms ease,
     color 120ms ease;
 
   &.active {
-    background: $brand-accent;
-    color: $brand-primary;
     font-weight: 600;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      border-radius: 999px;
+      background: $brand-accent;
+    }
   }
 }
 
