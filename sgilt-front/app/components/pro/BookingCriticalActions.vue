@@ -1,6 +1,10 @@
 <template>
-  <button class="critical-actions-link" type="button" @click="navigateTo(`/pro/reservations/${demandeId}/actions`)">
-    Actions spéciales
+  <button
+    class="critical-actions-link"
+    type="button"
+    @click="navigateTo(`/pro/reservations/${demandeId}/actions`)"
+  >
+    {{ $t('pro.actions.page-title') }}
   </button>
 </template>
 

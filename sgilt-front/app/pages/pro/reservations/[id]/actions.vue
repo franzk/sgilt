@@ -2,7 +2,7 @@
   <div class="actions-page">
     <!-- ── Header ──────────────────────────────────────────────────────────── -->
     <div class="actions-page__header">
-      <button class="back-btn" type="button" @click="navigateTo(`/pro/reservations/${demandeId}`)">
+      <button class="back-btn" type="button" @click="router.back()">
         {{ $t('pro.actions.back') }}
       </button>
       <div>
@@ -76,6 +76,7 @@ import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import { ProMockService } from '~/services/pro.mock'
 
 const route = useRoute()
+const router = useRouter()
 const demandeId = String(route.params.id)
 
 const currentStatut = ref('nouvelle')
