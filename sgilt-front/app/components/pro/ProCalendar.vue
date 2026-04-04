@@ -13,7 +13,7 @@
 
     <!-- Liste du mois visible -->
     <div class="list">
-      <p v-if="monthEntries.length === 0" class="list-empty">Aucun événement ce mois-ci.</p>
+      <p v-if="monthEntries.length === 0" class="list-empty">{{ $t('pro.calendrier.list-empty') }}</p>
       <TransitionGroup v-else name="entry" tag="div" class="list-items">
         <div
           v-for="entry in monthEntries"
@@ -29,11 +29,11 @@
           >
             <span class="list-item-date">{{ formatDayShort(entry.date) }}</span>
             <span class="list-item-label">{{ entry.label }}</span>
-            <span class="list-item-link">Voir →</span>
+            <span class="list-item-link">{{ $t('pro.calendrier.list-item-link') }}</span>
           </NuxtLink>
           <div v-else class="list-item list-item--manual">
             <span class="list-item-date">{{ formatDayShort(entry.date) }}</span>
-            <span class="list-item-label">Indisponible</span>
+            <span class="list-item-label">{{ $t('pro.calendrier.list-item-unavailable') }}</span>
           </div>
         </div>
       </TransitionGroup>

@@ -13,13 +13,13 @@
         <button
           class="edit-mobile"
           type="button"
-          aria-label="Modifier l'événement"
+          :aria-label="$t('event.board.edit-event-aria')"
           @click="openEditDialog"
         >
           <EditIcon class="edit-mobile-icon" />
         </button>
       </div>
-      <button class="edit-img" type="button" @click="openEditDialog">Modifier l'image</button>
+      <button class="edit-img" type="button" @click="openEditDialog">{{ $t('event.board.edit-image') }}</button>
     </div>
 
     <template v-if="event">
@@ -69,7 +69,7 @@
           </div>
 
           <button class="add-prestataire-btn" type="button" @click="startAddPrestataireFlow">
-            + Ajouter un prestataire
+            {{ $t('events.add-provider') }}
           </button>
         </section>
       </div>

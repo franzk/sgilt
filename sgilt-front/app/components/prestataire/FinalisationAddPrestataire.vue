@@ -1,5 +1,5 @@
 <template>
-  <SgiltDialog v-model:open="open" title="Envoyer une demande" max-width="520px">
+  <SgiltDialog v-model:open="open" :title="$t('tunnel.bottom-sheet.title')" max-width="520px">
     <div class="contact-form">
       <!-- Résumé événement (lecture seule) -->
       <div v-if="flowPayload" class="event-summary">
@@ -7,30 +7,30 @@
         <div class="summary-details">
           <span v-if="flowPayload.date"> 📅 {{ formatDate(flowPayload.date) }} </span>
           <span v-if="flowPayload.ville"> 📍 {{ flowPayload.ville }} </span>
-          <span v-if="flowPayload.invites"> 👥 {{ flowPayload.invites }} invités </span>
+          <span v-if="flowPayload.invites"> 👥 {{ flowPayload.invites }} {{ $t('prestataire.finalisation.guests') }} </span>
         </div>
       </div>
 
       <!-- Prestataire cible -->
       <div class="prestataire-target">
-        <span class="target-label">Pour</span>
+        <span class="target-label">{{ $t('prestataire.finalisation.target-label') }}</span>
         <span class="target-name">{{ prestataireName }}</span>
       </div>
 
       <!-- Message optionnel -->
       <div class="field">
-        <label class="label">Message au prestataire <span class="optional">(optionnel)</span></label>
+        <label class="label">{{ $t('prestataire.finalisation.message-label') }} <span class="optional">{{ $t('prestataire.finalisation.optional') }}</span></label>
         <textarea
           v-model="message"
           class="textarea"
-          placeholder="Dites-leur ce que vous avez en tête…"
+          :placeholder="$t('prestataire.finalisation.message-placeholder')"
           rows="4"
         />
       </div>
 
       <div class="form-actions">
-        <SgiltButton variant="secondary" @click="open = false">Annuler</SgiltButton>
-        <SgiltButton :loading="sending" @click="submit">Envoyer la demande</SgiltButton>
+        <SgiltButton variant="secondary" @click="open = false">{{ $t('common.cancel') }}</SgiltButton>
+        <SgiltButton :loading="sending" @click="submit">{{ $t('prestataire.finalisation.submit') }}</SgiltButton>
       </div>
     </div>
   </SgiltDialog>

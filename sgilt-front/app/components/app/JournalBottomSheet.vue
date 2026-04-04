@@ -1,7 +1,7 @@
 <template>
-  <SgiltBottomSheet v-model:open="open" title="Journal des modifications">
+  <SgiltBottomSheet v-model:open="open" :title="$t('journal.title')">
     <div class="journal-sheet">
-      <h2 class="title">Journal des modifications</h2>
+      <h2 class="title">{{ $t('journal.title') }}</h2>
 
       <ul class="journal-list">
         <li v-for="entry in journal" :key="entry.id" class="journal-entry">

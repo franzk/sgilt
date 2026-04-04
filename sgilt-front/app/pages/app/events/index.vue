@@ -2,13 +2,13 @@
   <div class="events-page">
     <!-- ── En-tête ──────────────────────────────────────────────────────────── -->
     <div class="events-page__header">
-      <p class="events-page__greeting">{{ t('events-list.welcome', { name: 'Julie' }) }}</p>
+      <p class="events-page__greeting">{{ t('events.welcome', { name: 'Julie' }) }}</p>
       <div class="events-page__subheader">
         <p class="events-page__count">
-          {{ t('events-list.count', events.length, { n: events.length }) }}
+          {{ t('events.count', events.length, { n: events.length }) }}
         </p>
         <button class="events-page__create-btn" type="button" @click="useFlow().start('new-event', 'Nouvel événement')">
-          {{ t('events-list.create') }}
+          {{ t('events.create') }}
         </button>
       </div>
     </div>
@@ -16,7 +16,7 @@
     <!-- ── Liste ────────────────────────────────────────────────────────────── -->
     <div v-if="!loading" class="events-list">
       <p v-if="events.length === 0" class="events-list__empty">
-        {{ t('events-list.empty') }}
+        {{ t('events.empty') }}
       </p>
       <SgiltCard
         v-for="event in events"
@@ -97,8 +97,8 @@ function reservationSummary(event: EventDetail): string {
   const inProgress = r.filter((x) => x.status === 'en_discussion').length
 
   const parts: string[] = []
-  if (confirmed) parts.push(`✓ ${t('events-list.confirmed', confirmed, { n: confirmed })}`)
-  if (inProgress) parts.push(t('events-list.in-progress', inProgress, { n: inProgress }))
+  if (confirmed) parts.push(`✓ ${t('events.confirmed', confirmed, { n: confirmed })}`)
+  if (inProgress) parts.push(t('events.in-progress', inProgress, { n: inProgress }))
 
   return parts.join(' · ') || '—'
 }

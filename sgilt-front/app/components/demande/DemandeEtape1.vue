@@ -1,6 +1,6 @@
 <template>
   <div class="etape">
-    <h2 class="question">Quel événement préparez-vous&nbsp;?</h2>
+    <h2 class="question">{{ $t('tunnel.etape1.question') }}</h2>
 
     <DemandeOptionSelect
       :options="EVENT_TYPE_OPTIONS"

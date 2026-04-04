@@ -7,7 +7,7 @@
       </button>
 
       <div class="section-header">
-        <h2 class="section-title">Informations personnelles</h2>
+        <h2 class="section-title">{{ $t('profile.page.personal-info-title') }}</h2>
       </div>
 
       <!-- Avatar -->
@@ -31,7 +31,7 @@
       <!-- Champs -->
       <div class="fields">
         <div class="field">
-          <label class="field-label" :for="editing ? 'field-firstname' : undefined">Prénom</label>
+          <label class="field-label" :for="editing ? 'field-firstname' : undefined">{{ $t('profile.page.field-firstname') }}</label>
           <input
             v-if="editing"
             id="field-firstname"
@@ -44,7 +44,7 @@
         </div>
 
         <div class="field">
-          <label class="field-label" :for="editing ? 'field-lastname' : undefined">Nom</label>
+          <label class="field-label" :for="editing ? 'field-lastname' : undefined">{{ $t('profile.page.field-lastname') }}</label>
           <input
             v-if="editing"
             id="field-lastname"
@@ -57,7 +57,7 @@
         </div>
 
         <div class="field">
-          <label class="field-label" :for="editing ? 'field-phone' : undefined">Téléphone</label>
+          <label class="field-label" :for="editing ? 'field-phone' : undefined">{{ $t('profile.page.field-phone') }}</label>
           <input
             v-if="editing"
             id="field-phone"
@@ -71,7 +71,7 @@
 
         <div v-if="profile.role === 'prestataire'" class="field">
           <label class="field-label" :for="editing ? 'field-company' : undefined">
-            Entreprise
+            {{ $t('profile.page.field-company') }}
           </label>
           <input
             v-if="editing"
@@ -87,55 +87,54 @@
 
       <!-- Actions édition -->
       <div v-if="editing" class="edit-actions">
-        <SgiltButton :loading="saving" @click="save">Sauvegarder</SgiltButton>
-        <SgiltButton variant="secondary" @click="cancelEdit">Annuler</SgiltButton>
+        <SgiltButton :loading="saving" @click="save">{{ $t('profile.page.save') }}</SgiltButton>
+        <SgiltButton variant="secondary" @click="cancelEdit">{{ $t('profile.page.cancel') }}</SgiltButton>
       </div>
     </section>
 
     <!-- ── Bloc 2 — Connexion ─────────────────────────────────────────────────── -->
     <section class="section">
-      <h2 class="section-title">Connexion</h2>
+      <h2 class="section-title">{{ $t('profile.page.connection-title') }}</h2>
 
       <div class="fields">
         <div class="field">
-          <span class="field-label">Email</span>
+          <span class="field-label">{{ $t('profile.page.field-email') }}</span>
           <span class="field-value">{{ profile.email }}</span>
         </div>
 
         <div class="field">
-          <span class="field-label">Mot de passe</span>
+          <span class="field-label">{{ $t('profile.page.field-password') }}</span>
           <span class="field-value field-value--password">••••••••</span>
         </div>
       </div>
 
-      <a href="/account/security" class="keycloak-link"> Modifier via mon espace sécurisé → </a>
+      <a href="/account/security" class="keycloak-link">{{ $t('profile.page.keycloak-link') }}</a>
     </section>
 
     <!-- ── Suppression de compte (clients uniquement) ─────────────────────────── -->
     <div v-if="profile.role === 'client'" class="danger-zone">
       <button class="danger-zone-btn" type="button" @click="deleteOpen = true">
-        Supprimer mon compte
+        {{ $t('profile.page.delete-account') }}
       </button>
     </div>
 
     <!-- ── Dialog confirmation suppression ───────────────────────────────────── -->
     <SgiltDialog
       v-model:open="deleteOpen"
-      title="Supprimer mon compte"
-      description="Cette action est irréversible. Toutes vos données seront supprimées."
+      :title="$t('profile.page.delete-dialog.title')"
+      :description="$t('profile.page.delete-dialog.description')"
       max-width="400px"
     >
       <div class="delete-dialog">
         <p class="delete-dialog-text">
-          Êtes-vous sûr de vouloir supprimer votre compte&nbsp;? Vos événements et demandes en cours
-          seront définitivement perdus.
+          {{ $t('profile.page.delete-dialog.body') }}
         </p>
         <div class="delete-dialog-actions">
           <SgiltButton variant="secondary" @click="deleteOpen = false">
-            Non, garder mon compte
+            {{ $t('profile.page.delete-dialog.keep') }}
           </SgiltButton>
           <SgiltButton :loading="deleting" class="btn-destructive" @click="deleteAccount">
-            Oui, supprimer
+            {{ $t('profile.page.delete-dialog.confirm') }}
           </SgiltButton>
         </div>
       </div>

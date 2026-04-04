@@ -15,7 +15,7 @@
         <main class="demande-main">
           <div class="top">
             <button class="main-back" type="button" @click="navigateTo(`/${slug}`)">
-              ← Retour
+              {{ $t('tunnel.desktop.back') }}
             </button>
           </div>
 
@@ -57,7 +57,7 @@
                   </span>
                 </span>
 
-                <span v-if="n < etapeActuelle" class="edit">Modifier</span>
+                <span v-if="n < etapeActuelle" class="edit">{{ $t('tunnel.desktop.edit') }}</span>
               </button>
 
               <Transition name="accordion-body">
@@ -91,8 +91,8 @@
   </div>
 
   <div v-else-if="!loading" class="not-found">
-    <p>Ce prestataire est introuvable.</p>
-    <NuxtLink to="/search">← Retour à la recherche</NuxtLink>
+    <p>{{ $t('provider.not-found') }}</p>
+    <NuxtLink to="/search">{{ $t('provider.back-to-search') }}</NuxtLink>
   </div>
 </template>
 
@@ -110,6 +110,8 @@ import DemandeFinalisation from '~/components/demande/DemandeFinalisation.vue'
 import { useDemande } from '~/composables/useDemande'
 import { SearchMockService } from '~/services/search.mock'
 import type { PrestataireDetail } from '~/types/prestataire'
+
+const { t } = useI18n()
 
 const route = useRoute()
 const slug = route.params.slug as string
@@ -170,14 +172,14 @@ watch(mobileSheetOpen, (open) => {
 })
 
 // ── Desktop accordion ─────────────────────────────────────────────────────────
-const stepLabels = [
-  "Type d'événement",
-  'Ambiance',
-  'Moment clé',
-  'Description',
-  'Détails pratiques',
-  'Contact',
-]
+const stepLabels = computed(() => [
+  t('tunnel.steps.labels.event-type'),
+  t('tunnel.steps.labels.ambiance'),
+  t('tunnel.steps.labels.moment-cle'),
+  t('tunnel.steps.labels.description'),
+  t('tunnel.steps.labels.details'),
+  t('tunnel.steps.labels.contact'),
+])
 
 function stepDoneSummary(n: number): string {
   switch (n) {
@@ -192,7 +194,7 @@ function stepDoneSummary(n: number): string {
         ? state.description.slice(0, 60) + (state.description.length > 60 ? '…' : '')
         : ''
     case 5: {
-      const parts = [state.ville, state.nbInvites ? `${state.nbInvites} invités` : ''].filter(
+      const parts = [state.ville, state.nbInvites ? t('tunnel.recap.guests', { n: state.nbInvites }) : ''].filter(
         Boolean,
       )
       return parts.join(' · ')

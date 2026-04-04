@@ -1,6 +1,6 @@
 <template>
   <div class="etape">
-    <h2 class="etape__question">Quel serait le moment parfait de cette soirée&nbsp;?</h2>
+    <h2 class="etape__question">{{ $t('tunnel.etape3.question') }}</h2>
 
     <DemandeOptionSelect
       :options="MOMENT_CLE_OPTIONS"

@@ -21,16 +21,16 @@
     <div v-if="open" class="body">
       <!-- 1. LOGISTIQUE -->
       <div class="section">
-        <span class="section-label">Logistique</span>
+        <span class="section-label">{{ $t('event.block.logistics-label') }}</span>
         <p v-if="!editMode" class="field-value" :class="{ empty: !event.lieu }">
-          {{ event.lieu || 'Salle, adresse… non renseigné' }}
+          {{ event.lieu || $t('event.block.logistics-empty') }}
         </p>
         <input
           v-else
           v-model="draft.lieu"
           class="input"
           type="text"
-          placeholder="Salle, adresse…"
+          :placeholder="$t('event.block.logistics-placeholder')"
         />
       </div>
 
@@ -38,16 +38,16 @@
 
       <!-- 2. NOTE PARTAGÉE -->
       <div class="section">
-        <span class="section-label">Note partagée</span>
+        <span class="section-label">{{ $t('event.block.shared-note-label') }}</span>
         <p v-if="!editMode" class="note-text" :class="{ empty: !event.sharedNote }">
-          {{ event.sharedNote || 'Aucune note pour le moment.' }}
+          {{ event.sharedNote || $t('event.block.shared-note-empty') }}
         </p>
         <textarea
           v-else
           ref="noteRef"
           v-model="draft.sharedNote"
           class="textarea"
-          placeholder="Informations utiles pour tous vos prestataires…"
+          :placeholder="$t('event.block.shared-note-placeholder')"
           rows="3"
           @input="autoResize"
         />
@@ -57,7 +57,7 @@
 
       <!-- 3. COORDONNÉES -->
       <div class="section">
-        <span class="section-label">Coordonnées</span>
+        <span class="section-label">{{ $t('event.block.coordinates-label') }}</span>
 
         <!-- Variant pro : lecture + boutons copier -->
         <template v-if="variant === 'pro'">
@@ -68,7 +68,7 @@
               class="copy-btn"
               type="button"
               :class="{ copied: phoneCopied }"
-              :aria-label="phoneCopied ? 'Copié' : 'Copier le numéro'"
+              :aria-label="phoneCopied ? $t('event.block.copied-aria') : $t('event.block.copy-phone-aria')"
               @click="copyPhone"
             >
               <CheckIcon v-if="phoneCopied" class="copy-icon" />
@@ -81,7 +81,7 @@
               class="copy-btn"
               type="button"
               :class="{ copied: emailCopied }"
-              :aria-label="emailCopied ? 'Copié' : 'Copier l\'email'"
+              :aria-label="emailCopied ? $t('event.block.copied-aria') : $t('event.block.copy-email-aria')"
               @click="copyEmail"
             >
               <CheckIcon v-if="emailCopied" class="copy-icon" />
@@ -101,19 +101,19 @@
           </template>
           <template v-else>
             <div class="edit-field">
-              <label class="label">Prénom</label>
+              <label class="label">{{ $t('event.block.edit-client-firstname') }}</label>
               <input v-model="draft.firstName" class="input" type="text" />
             </div>
             <div class="edit-field">
-              <label class="label">Nom</label>
+              <label class="label">{{ $t('event.block.edit-client-lastname') }}</label>
               <input v-model="draft.lastName" class="input" type="text" />
             </div>
             <div class="edit-field">
-              <label class="label">Téléphone</label>
+              <label class="label">{{ $t('event.block.edit-client-phone') }}</label>
               <input v-model="draft.phone" class="input" type="tel" />
             </div>
             <div class="edit-field">
-              <label class="label">Email</label>
+              <label class="label">{{ $t('event.block.edit-client-email') }}</label>
               <input v-model="draft.email" class="input" type="email" />
             </div>
           </template>
@@ -124,52 +124,52 @@
 
       <!-- 4. LA FÊTE -->
       <div class="section">
-        <span class="section-label">La fête</span>
+        <span class="section-label">{{ $t('event.block.party-label') }}</span>
 
         <!-- Lecture -->
         <template v-if="!editMode">
           <dl v-if="eventTypeLabel || ambianceLabel" class="brief-fields">
             <template v-if="eventTypeLabel">
-              <dt>Type</dt>
+              <dt>{{ $t('event.block.party-type-label') }}</dt>
               <dd>{{ eventTypeEmoji }} {{ eventTypeLabel }}</dd>
             </template>
             <template v-if="ambianceLabel">
-              <dt>Ambiance</dt>
+              <dt>{{ $t('event.block.party-ambiance-label') }}</dt>
               <dd>{{ ambianceEmoji }} {{ ambianceLabel }}</dd>
             </template>
-            <dt>Moment clé</dt>
-            <dd class="empty">Non renseigné</dd>
+            <dt>{{ $t('event.block.party-moment-label') }}</dt>
+            <dd class="empty">{{ $t('event.block.party-moment-empty') }}</dd>
           </dl>
-          <p v-else class="field-value empty">Non renseigné</p>
+          <p v-else class="field-value empty">{{ $t('event.block.party-empty') }}</p>
         </template>
 
         <!-- Édition (client uniquement) -->
         <template v-else-if="variant === 'client'">
           <div class="edit-fields">
             <div class="edit-field">
-              <label class="label">Type d'événement</label>
+              <label class="label">{{ $t('event.block.party-edit-event-type') }}</label>
               <select v-model="draft.eventType" class="select">
-                <option value="">— Non renseigné</option>
+                <option value="">{{ $t('event.block.party-select-empty') }}</option>
                 <option v-for="o in EVENT_TYPE_OPTIONS" :key="o.value" :value="o.value">
                   {{ o.emoji }} {{ o.label }}
                 </option>
               </select>
             </div>
             <div class="edit-field">
-              <label class="label">Ambiance</label>
+              <label class="label">{{ $t('event.block.party-edit-ambiance') }}</label>
               <select v-model="draft.ambiance" class="select">
-                <option value="">— Non renseigné</option>
+                <option value="">{{ $t('event.block.party-select-empty') }}</option>
                 <option v-for="o in AMBIANCE_OPTIONS" :key="o.value" :value="o.value">
                   {{ o.emoji }} {{ o.label }}
                 </option>
               </select>
             </div>
             <div class="edit-field">
-              <label class="label">Ville</label>
-              <input v-model="draft.ville" class="input" type="text" placeholder="Ville" />
+              <label class="label">{{ $t('event.block.party-edit-city') }}</label>
+              <input v-model="draft.ville" class="input" type="text" :placeholder="$t('event.block.party-city-placeholder')" />
             </div>
             <div class="edit-field">
-              <label class="label">Nombre d'invités</label>
+              <label class="label">{{ $t('event.block.party-edit-guests') }}</label>
               <input
                 v-model="draft.nbInvites"
                 class="input"
@@ -187,18 +187,18 @@
       <!-- 5. MISE À JOUR -->
       <div class="section">
         <div class="update-row">
-          <span class="section-label">Mise à jour</span>
+          <span class="section-label">{{ $t('event.block.update-label') }}</span>
           <template v-if="variant === 'client'">
             <button
               v-if="!editMode"
               class="edit-btn"
               type="button"
-              aria-label="Modifier l'événement"
+              :aria-label="$t('event.block.edit-event-aria')"
               @click="enterEditMode"
             >
               <EditIcon />
             </button>
-            <button v-else class="cancel-btn" type="button" @click="handleCancel">Annuler</button>
+            <button v-else class="cancel-btn" type="button" @click="handleCancel">{{ $t('event.block.cancel') }}</button>
           </template>
         </div>
         <div class="update-date-row">
@@ -210,9 +210,9 @@
           >
             {{ lastUpdateDate }}
           </button>
-          <p v-else class="field-value empty">Aucune modification enregistrée.</p>
+          <p v-else class="field-value empty">{{ $t('event.block.no-update') }}</p>
           <button v-if="editMode" class="save-btn" type="button" :disabled="saving" @click="save">
-            {{ saving ? 'Enregistrement…' : 'Enregistrer' }}
+            {{ saving ? $t('event.block.saving') : $t('event.block.save') }}
           </button>
         </div>
       </div>
@@ -233,13 +233,13 @@
         @click.self="showAbandonModal = false"
       >
         <div class="abandon-modal">
-          <h3 class="title">Abandonner les modifications&nbsp;?</h3>
-          <p class="body">Vos changements ne seront pas sauvegardés.</p>
+          <h3 class="title">{{ $t('event.block.abandon-title') }}</h3>
+          <p class="body">{{ $t('event.block.abandon-body') }}</p>
           <div class="actions">
             <SgiltButton variant="secondary" @click="showAbandonModal = false">
-              Continuer à éditer
+              {{ $t('event.block.abandon-continue') }}
             </SgiltButton>
-            <button class="destructive" type="button" @click="confirmAbandon">Abandonner</button>
+            <button class="destructive" type="button" @click="confirmAbandon">{{ $t('event.block.abandon-confirm') }}</button>
           </div>
         </div>
       </div>

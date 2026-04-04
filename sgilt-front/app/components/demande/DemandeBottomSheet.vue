@@ -1,8 +1,8 @@
 <template>
   <SgiltBottomSheet
     v-model:open="drawerOpen"
-    title="Envoyer une demande"
-    description="Remplissez les étapes pour contacter ce prestataire."
+    :title="$t('tunnel.bottom-sheet.title')"
+    :description="$t('tunnel.bottom-sheet.description')"
   >
     <template #header>
       <DemandeSheetHeader
@@ -41,11 +41,11 @@
       :class="{ 'actions-etape4': etapeActuelle === 4, 'actions-etape5': etapeActuelle === 5 }"
     >
       <template v-if="etapeActuelle === 4">
-        <SgiltButton @click="next">Continuer →</SgiltButton>
-        <SgiltButton variant="tertiary" @click="next">Passer cette étape</SgiltButton>
+        <SgiltButton @click="next">{{ $t('tunnel.footer.continue') }}</SgiltButton>
+        <SgiltButton variant="tertiary" @click="next">{{ $t('tunnel.footer.skip') }}</SgiltButton>
       </template>
       <template v-if="etapeActuelle === 5">
-        <SgiltButton :disabled="!step5Valid" @click="next">Continuer →</SgiltButton>
+        <SgiltButton :disabled="!step5Valid" @click="next">{{ $t('tunnel.footer.continue') }}</SgiltButton>
       </template>
     </div>
   </SgiltBottomSheet>

@@ -4,16 +4,16 @@
       <!-- title -->
       <div class="hero">
         <p class="title">
-          <span class="title-thin">{{ $t('home.search-banner.title-part-1') }}</span>
-          <span class="title-bold">{{ $t('home.search-banner.title-part-2') }}</span>
+          <span class="title-thin">{{ $t('landing.search-banner.title-part-1') }}</span>
+          <span class="title-bold">{{ $t('landing.search-banner.title-part-2') }}</span>
         </p>
         <h3 class="tagline">
           <template v-if="currentFlow === 'new-event'">
-            <span>Et si on lançait votre prochain événement&nbsp;?</span>
+            <span>{{ $t('landing.search-banner.tagline-new-event') }}</span>
           </template>
           <template v-else>
-            <span class="tagline-mobile">{{ $t('home.search-banner.tagline-mobile') }}</span>
-            <span class="tagline-desktop">{{ $t('home.search-banner.tagline-desktop') }}</span>
+            <span class="tagline-mobile">{{ $t('landing.search-banner.tagline-mobile') }}</span>
+            <span class="tagline-desktop">{{ $t('landing.search-banner.tagline-desktop') }}</span>
           </template>
         </h3>
       </div>
@@ -25,7 +25,7 @@
         <SgiltSelect :options="selectOptions" v-model="selectedOption" :disabled="isLocked">
           <template v-slot:left-icon> <IconConfetti size="20" /> </template>
         </SgiltSelect>
-        <SgiltHeroButton class="submit_button" @click="launch"> C'est parti ! </SgiltHeroButton>
+        <SgiltHeroButton class="submit_button" @click="launch"> {{ $t('landing.search-banner.cta') }} </SgiltHeroButton>
       </div>
     </section>
     <section class="photo-layer" aria-hidden="true"></section>
@@ -47,8 +47,10 @@ const { showOnboarding } = useSearchUi()
 const { state } = useDemande()
 const { currentFlow, flowPayload } = useFlow()
 
+const { t } = useI18n()
+
 const selectOptions = [
-  { label: 'Votre événement', value: '1' },
+  { label: t('landing.search-banner.your-event'), value: '1' },
   ...EVENT_TYPE_OPTIONS.map((o) => ({ label: `${o.emoji} ${o.label}`, value: o.value })),
 ]
 

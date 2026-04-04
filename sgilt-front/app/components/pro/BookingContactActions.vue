@@ -7,22 +7,22 @@
       <div class="bca-btn-row">
         <a :href="`tel:${phone}`" class="bca-btn call">
           <PhoneIcon class="icon" />
-          <span class="label">Appeler</span>
+          <span class="label">{{ $t('pro.contact.call') }}</span>
         </a>
         <a :href="mailtoHref" class="bca-btn mail">
           <MailSendIcon class="icon" />
-          <span class="label">Mail</span>
+          <span class="label">{{ $t('pro.contact.mail') }}</span>
         </a>
       </div>
       <!-- Ligne 2 : WhatsApp + SMS (mobile uniquement) -->
       <div v-if="isMobilePhone" class="bca-btn-row">
         <a :href="whatsappHref" class="bca-btn whatsapp" target="_blank" rel="noopener">
           <WhatsappIcon class="icon" />
-          <span class="label">WhatsApp</span>
+          <span class="label">{{ $t('pro.contact.whatsapp') }}</span>
         </a>
         <a :href="smsHref" class="bca-btn sms">
           <ChatSmileIcon class="icon" />
-          <span class="label">SMS</span>
+          <span class="label">{{ $t('pro.contact.sms') }}</span>
         </a>
       </div>
     </div>
@@ -37,13 +37,13 @@
           <template #icon><MailSendIcon /></template>
           <template #title>Email</template>
           <template #content>{{ clientInfo.email }}</template>
-          <template #cta><a :href="mailtoHref">Rédiger un mail</a></template>
+          <template #cta><a :href="mailtoHref">{{ $t('pro.contact.write-mail') }}</a></template>
         </ContactActionCard>
 
         <!-- Carte mobile -->
         <ContactActionCard :copy-value="clientInfo.phone">
           <template #icon> <SmartphoneIcon v-if="isMobilePhone" /> <PhoneIcon v-else /> </template>
-          <template #title>{{ isMobilePhone ? 'Mobile' : 'Tél' }}</template>
+          <template #title>{{ isMobilePhone ? $t('pro.contact.mobile') : $t('pro.contact.tel') }}</template>
           <template #content>{{ clientInfo.phone }}</template>
           <template #cta>
             <a v-if="isMobilePhone" :href="whatsappHref" target="_blank" rel="noopener">

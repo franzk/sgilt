@@ -1,6 +1,6 @@
 <template>
   <div v-if="hasContent" class="demande-recap">
-    <p class="title">Votre événement</p>
+    <p class="title">{{ $t('tunnel.recap.title') }}</p>
     <ul class="list">
       <!-- Date -->
       <li v-if="state.date" class="item">
@@ -35,7 +35,7 @@
       <!-- Nombre d'invités -->
       <li v-if="state.nbInvites" class="item">
         <span class="emoji">👥</span>
-        <span>{{ state.nbInvites }} invités</span>
+        <span>{{ $t('tunnel.recap.guests', { n: state.nbInvites }) }}</span>
       </li>
     </ul>
   </div>

@@ -1,7 +1,7 @@
 <template>
   <div class="etape">
-    <h2 class="question">Racontez-nous votre événement</h2>
-    <p class="subtitle">Décrivez-le comme vous l'imaginez…</p>
+    <h2 class="question">{{ $t('tunnel.etape4.question') }}</h2>
+    <p class="subtitle">{{ $t('tunnel.etape4.subtitle-before') }}</p>
 
     <textarea
       v-model="state.description"
@@ -10,14 +10,11 @@
       rows="6"
     />
 
-    <p class="subtitle">
-      Plus vous nous en dites, mieux les prestataires pourront comprendre votre projet et y répondre
-      de manière pertinente !
-    </p>
+    <p class="subtitle">{{ $t('tunnel.etape4.subtitle-after') }}</p>
 
     <div v-if="isDesktop" class="actions">
-      <SgiltButton @click="next">Continuer →</SgiltButton>
-      <SgiltButton variant="tertiary" @click="next">Passer cette étape</SgiltButton>
+      <SgiltButton @click="next">{{ $t('tunnel.footer.continue') }}</SgiltButton>
+      <SgiltButton variant="tertiary" @click="next">{{ $t('tunnel.footer.skip') }}</SgiltButton>
     </div>
   </div>
 </template>
@@ -29,7 +26,8 @@ import { useDemande } from '~/composables/useDemande'
 const { state, next } = useDemande()
 const { isDesktop } = useDevice()
 
-const placeholderText = 'Parlez-nous de votre événement, de vos envies, de ce que vous imaginez...'
+const { t } = useI18n()
+const placeholderText = computed(() => t('tunnel.etape4.placeholder'))
 </script>
 
 <style scoped lang="scss">

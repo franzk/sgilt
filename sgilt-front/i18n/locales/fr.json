@@ -1,5 +1,5 @@
 {
-  "app-header": {
+  "header": {
     "app-name": "S'GILT",
     "tagline": {
       "decouvrez": "DÉCOUVREZ, ",
@@ -7,9 +7,29 @@
       "celebrez": "CÉLÉBREZ !!"
     }
   },
-  "date-picker": {
-    "booked": "Réservé par Sgilt",
-    "indisponible": "Indisponible"
+  "common": {
+    "date-picker": {
+      "booked": "Réservé par Sgilt",
+      "indisponible": "Indisponible"
+    },
+    "back": "‹ Retour",
+    "back-arrow": "← Retour",
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "context-banner": {
+      "quit-title": "Quitter ?",
+      "quit-message": "Votre progression ne sera pas sauvegardée.",
+      "continue": "Continuer",
+      "quit": "Quitter"
+    },
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "yes-cancel": "Oui, annuler",
+    "no-keep": "Non, garder",
+    "empty-state": "Aucun élément pour le moment.",
+    "loading": "Chargement…"
   },
   "categories": {
     "music": {
@@ -22,20 +42,22 @@
     },
     "place": {
       "title": "Lieu",
-      "description": "Des lieux d’exception pour sublimer vos événements."
+      "description": "Des lieux d'exception pour sublimer vos événements."
     },
     "photo": {
       "title": "Photographie",
       "description": "Immortalisez chaque instant avec des clichés inoubliables."
     }
   },
-  "home": {
+  "landing": {
     "search-banner": {
       "title-part-1": "Qu'est-ce qu'on ",
       "title-part-2": "FÊTE ?",
+      "tagline-new-event": "Et si on lançait votre prochain événement\u00a0?",
       "tagline-mobile": "Des prestataires en Alsace, à votre date.",
       "tagline-desktop": "Trouvez les meilleurs prestataires pour votre événement en Alsace, à votre date.",
-      "button": "C'est Party !"
+      "your-event": "Votre événement",
+      "cta": "C'est parti !"
     },
     "categories-banner": {
       "title": "Découvrez les partenaires de votre évènement"
@@ -44,11 +66,257 @@
       "title": "La sélection du moment"
     }
   },
+  "search": {
+    "results-count": "{count} prestataires sont disponibles à votre date.",
+    "vibe-text": "Votre événement prend forme."
+  },
+  "provider": {
+    "not-found": "Ce prestataire est introuvable.",
+    "back-to-search": "← Retour à la recherche",
+    "details": {
+      "verify-date": "Vérifier une date",
+      "availability": {
+        "available": "Disponible à cette date",
+        "unavailable": "Non disponible à cette date"
+      },
+      "rates": "Tarifs",
+      "send-request": "Envoyer une demande",
+      "offerings-title": "Ce que nous proposons",
+      "testimonials-title": "Ils en parlent",
+      "infos-title": "Informations pratiques",
+      "logistics-title": "Logistique",
+      "technical-title": "Technique",
+      "faq-title": "Questions fréquentes"
+    },
+    "availability": {
+      "available": "🟢 Disponible",
+      "option": "🟠 Sous option",
+      "booked": "🔴 Réservé"
+    }
+  },
+  "tunnel": {
+    "bottom-sheet": {
+      "title": "Envoyer une demande",
+      "description": "Remplissez les étapes pour contacter ce prestataire."
+    },
+    "footer": {
+      "continue": "Continuer →",
+      "skip": "Passer cette étape"
+    },
+    "desktop": {
+      "back": "← Retour",
+      "edit": "Modifier"
+    },
+    "steps": {
+      "labels": {
+        "event-type": "Type d'événement",
+        "ambiance": "Ambiance",
+        "moment-cle": "Moment clé",
+        "description": "Description",
+        "details": "Détails pratiques",
+        "contact": "Contact"
+      }
+    },
+    "etape1": {
+      "question": "Quel événement préparez-vous\u00a0?"
+    },
+    "etape2": {
+      "question": "Quelle ambiance souhaitez-vous créer\u00a0?"
+    },
+    "etape3": {
+      "question": "Quel serait le moment parfait de cette soirée\u00a0?"
+    },
+    "etape4": {
+      "question": "Racontez-nous votre événement",
+      "subtitle-before": "Décrivez-le comme vous l'imaginez…",
+      "subtitle-after": "Plus vous nous en dites, mieux les prestataires pourront comprendre votre projet et y répondre de manière pertinente !",
+      "placeholder": "Parlez-nous de votre événement, de vos envies, de ce que vous imaginez..."
+    },
+    "etape5": {
+      "question": "Votre événement en pratique"
+    },
+    "recap": {
+      "title": "Votre événement",
+      "guests": "{n} invités"
+    },
+    "booking-flow": {
+      "step-1": {
+        "title": "📍 Détails de votre événement",
+        "subtitle": "Indiquez où et quand aura lieu votre événement.",
+        "cta": "Continuer",
+        "location": {
+          "label": "Localité de l'événement",
+          "placeholder": "Ex : Strasbourg, Rathsamhausen, Breuschwickersheim...",
+          "error": "Veuillez saisir une localité valide."
+        },
+        "date": {
+          "label": "Date de l'événement"
+        },
+        "time": {
+          "label": "Heure de l'événement",
+          "error": "Veuillez saisir une heure valide."
+        },
+        "message": {
+          "label": "Envoyez un message à {partnerName} (optionnel)",
+          "placeholder": "Ajoutez un message pour préciser vos attentes..."
+        }
+      },
+      "step-2": {
+        "title": "🔑 Connexion ou Inscription",
+        "subtitle": "Connectez-vous ou créez un compte pour finaliser votre demande.",
+        "cta": "Continuer"
+      },
+      "step-3": {
+        "title": "📝 Récapitulatif de votre demande",
+        "timeline-title": "⏳ Comment ça marche ?",
+        "timeline": {
+          "step-1": "Vous envoyez votre demande",
+          "step-2": "Votre partenaire vous contacte",
+          "step-3": "Vous validez et payez",
+          "step-4": "🎉 C'est réservé !"
+        },
+        "recap-title": {
+          "desktop": "📜 Récapitulatif de votre réservation",
+          "mobile": "📜 Votre réservation"
+        },
+        "subtitle": "Vérifiez les détails de votre réservation avant l'envoi.",
+        "titles": {
+          "email": "Votre adresse mail",
+          "message": "Message à transmettre"
+        },
+        "cta": "Confirmer & Envoyer ma demande"
+      },
+      "step-4": {
+        "title": "📩 Confirmez votre email",
+        "subtitle": "Vous y êtes presque ! 🔥🔥",
+        "infos": {
+          "first": {
+            "sub-1": "👉 Nous venons de vous envoyer un email à l'adresse",
+            "sub-2": "contenant un",
+            "sub-3": "lien d'activation"
+          },
+          "second": {
+            "sub-1": "📩 Ouvrez votre boîte de réception",
+            "sub-2": ", cliquez sur le lien et validez votre compte. Votre demande sera alors automatiquement transmise à",
+            "sub-3": " !"
+          }
+        },
+        "cta": {
+          "resend": "Renvoyer l'email",
+          "sending": "Envoi en cours...",
+          "new-mail": "Utiliser une autre adresse",
+          "event-board": "Voir mon Tableau de bord",
+          "close": "Fermer"
+        },
+        "change-mail": {
+          "title": "Changer d'adresse email",
+          "placeholder": "Nouvelle adresse email",
+          "send": "Envoyer",
+          "sending": "Envoi..."
+        },
+        "validation-info": {
+          "start": "ℹ️ Tant que votre email n'est pas confirmé,",
+          "end": "ne verra pas votre demande !"
+        }
+      },
+      "email-label": "Ou utilisez votre email :",
+      "email-placeholder": "Votre email",
+      "email-required-error": "Veuillez saisir votre adresse email.",
+      "email-invalid-error": "Veuillez saisir une adresse email valide.",
+      "back-button": "← Retour"
+    },
+    "first-reservation-modal": {
+      "title": "Réservez votre prestataire en quelques secondes",
+      "subtitle": "Choisissez une méthode pour continuer :",
+      "sso": {
+        "facebook": "Continuer avec Facebook",
+        "google": "Continuer avec Google",
+        "apple": "Continuer avec Apple"
+      },
+      "email": {
+        "title": "Ou utilisez votre email :",
+        "placeholder": "Votre email",
+        "button": "Continuer"
+      },
+      "already-account": {
+        "title": "Vous avez déjà un compte ?",
+        "link": "Connectez-vous"
+      },
+      "extra-info": {
+        "title": "Découvrez tous les avantages d'un compte Sgilt.",
+        "link": "En savoir plus"
+      }
+    }
+  },
+  "events": {
+    "welcome": "Bonjour {name} !",
+    "count": "Vous avez {n} événement en cours. | Vous avez {n} événements en cours.",
+    "create": "Créer un événement",
+    "empty": "Aucun événement pour le moment.",
+    "confirmed": "{n} confirmée | {n} confirmées",
+    "in-progress": "{n} en cours",
+    "pending": "{n} en attente",
+    "add-provider": "+ Ajouter un prestataire"
+  },
   "event": {
-    "event-board": {
+    "edit-dialog": {
+      "title": "Modifier l'événement",
+      "field-title": "Titre",
+      "title-placeholder": "Nom de l'événement",
+      "field-cover": "Image de couverture",
+      "cover-labels": {
+        "mariage": "Mariage",
+        "anniversaire": "Anniversaire",
+        "soiree_privee": "Soirée privée",
+        "fete_entreprise": "Fête d'entreprise",
+        "autre": "Autre"
+      },
+      "upload-button": "Importer ma propre photo"
+    },
+    "board": {
       "mobile": {
         "reservations": "Aucune réservation confirmée pour le moment. | 1 réservation confirmée pour le moment. | {count} réservations confirmées pour le moment."
-      }
+      },
+      "edit-image": "Modifier l'image",
+      "edit-event-aria": "Modifier l'événement"
+    },
+    "block": {
+      "logistics-label": "Logistique",
+      "logistics-empty": "Salle, adresse… non renseigné",
+      "logistics-placeholder": "Salle, adresse…",
+      "shared-note-label": "Note partagée",
+      "shared-note-empty": "Aucune note pour le moment.",
+      "shared-note-placeholder": "Informations utiles pour tous vos prestataires…",
+      "coordinates-label": "Coordonnées",
+      "party-label": "La fête",
+      "party-empty": "Non renseigné",
+      "party-type-label": "Type",
+      "party-ambiance-label": "Ambiance",
+      "party-moment-label": "Moment clé",
+      "party-moment-empty": "Non renseigné",
+      "party-edit-event-type": "Type d'événement",
+      "party-edit-ambiance": "Ambiance",
+      "party-edit-city": "Ville",
+      "party-edit-guests": "Nombre d'invités",
+      "party-select-empty": "— Non renseigné",
+      "party-city-placeholder": "Ville",
+      "update-label": "Mise à jour",
+      "no-update": "Aucune modification enregistrée.",
+      "saving": "Enregistrement…",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "edit-client-firstname": "Prénom",
+      "edit-client-lastname": "Nom",
+      "edit-client-phone": "Téléphone",
+      "edit-client-email": "Email",
+      "copy-phone-aria": "Copier le numéro",
+      "copy-email-aria": "Copier l'email",
+      "copied-aria": "Copié",
+      "edit-event-aria": "Modifier l'événement",
+      "abandon-title": "Abandonner les modifications\u00a0?",
+      "abandon-body": "Vos changements ne seront pas sauvegardés.",
+      "abandon-continue": "Continuer à éditer",
+      "abandon-confirm": "Abandonner"
     },
     "activities": {
       "reservation-sent": {
@@ -89,7 +357,7 @@
       },
       "reservation-cancelled-partner": {
         "title": "{partnerName} a annulé votre réservation",
-        "content": "Malheureusement, {partnerName} a dû annuler votre réservation. Vous pouvez le contacter pour plus d’informations ou chercher un autre prestataire."
+        "content": "Malheureusement, {partnerName} a dû annuler votre réservation. Vous pouvez le contacter pour plus d'informations ou chercher un autre prestataire."
       },
       "reservation-updated": {
         "title": "{partnerName} a mis à jour votre réservation",
@@ -109,7 +377,7 @@
         "pending": "Demande envoyée !",
         "viewed": "Votre partenaire a vu votre demande",
         "approved": "Il est prêt, à vous de payer !",
-        "paid": "C’est réservé, préparez la fête !"
+        "paid": "C'est réservé, préparez la fête !"
       },
       "action": {
         "pay": "Payer",
@@ -126,17 +394,17 @@
         },
         "step-2": {
           "title": "Votre partenaire consulte votre demande",
-          "content": "→ Il vous contacte pour valider les détails, comprendre vos attentes et confirmer sa disponibilité avant d’accepter ou refuser."
+          "content": "→ Il vous contacte pour valider les détails, comprendre vos attentes et confirmer sa disponibilité avant d'accepter ou refuser."
         },
         "step-3": {
           "title": "Votre demande est acceptée",
           "content": "→ Vous avez 48h pour finaliser le paiement et sécuriser votre réservation. Passé ce délai, la demande expire automatiquement."
         },
         "step-4": {
-          "title": "4. C’est réservé !",
+          "title": "4. C'est réservé !",
           "content": "→ Une fois le paiement validé, votre réservation est confirmée !"
         },
-        "warning": "⚠️ N’oubliez pas ! Si le paiement n’est pas effectué dans les 48h après acceptation, la réservation est annulée."
+        "warning": "⚠️ N'oubliez pas ! Si le paiement n'est pas effectué dans les 48h après acceptation, la réservation est annulée."
       },
       "contact": {
         "title": "📞 Assistance & Contact"
@@ -149,172 +417,8 @@
         },
         "cancel": {
           "title": "Puis-je annuler une réservation ?",
-          "content": "→ Oui, tant qu’elle n’est pas payée."
+          "content": "→ Oui, tant qu'elle n'est pas payée."
         }
-      }
-    }
-  },
-  "first-reservation-modal": {
-    "title": "Réservez votre prestataire en quelques secondes",
-    "subtitle": "Choisissez une méthode pour continuer :",
-    "sso": {
-      "facebook": "Continuer avec Facebook",
-      "google": "Continuer avec Google",
-      "apple": "Continuer avec Apple"
-    },
-    "email": {
-      "title": "Ou utilisez votre email :",
-      "placeholder": "Votre email",
-      "button": "Continuer"
-    },
-    "already-account": {
-      "title": "Vous avez déjà un compte ?",
-      "link": "Connectez-vous"
-    },
-    "extra-info": {
-      "title": "Découvrez tous les avantages d’un compte Sgilt.",
-      "link": "En savoir plus"
-    }
-  },
-  "booking-flow": {
-    "step-1": {
-      "title": "📍 Détails de votre événement",
-      "subtitle": "Indiquez où et quand aura lieu votre événement.",
-      "cta": "Continuer",
-      "location": {
-        "label": "Localité de l'événement",
-        "placeholder": "Ex : Strasbourg, Rathsamhausen, Breuschwickersheim...",
-        "error": "Veuillez saisir une localité valide."
-      },
-      "date": {
-        "label": "Date de l'événement"
-      },
-      "time": {
-        "label": "Heure de l'événement",
-        "error": "Veuillez saisir une heure valide."
-      },
-      "message": {
-        "label": "Envoyez un message à {partnerName} (optionnel)",
-        "placeholder": "Ajoutez un message pour préciser vos attentes..."
-      }
-    },
-    "step-2": {
-      "title": "🔑 Connexion ou Inscription",
-      "subtitle": "Connectez-vous ou créez un compte pour finaliser votre demande.",
-      "cta": "Continuer"
-    },
-    "step-3": {
-      "title": "📝 Récapitulatif de votre demande",
-      "timeline-title": "⏳ Comment ça marche ?",
-      "timeline": {
-        "step-1": "Vous envoyez votre demande",
-        "step-2": "Votre partenaire vous contacte",
-        "step-3": "Vous validez et payez",
-        "step-4": "🎉 C’est réservé !"
-      },
-      "recap-title": {
-        "desktop": "📜 Récapitulatif de votre réservation",
-        "mobile": "📜 Votre réservation"
-      },
-      "subtitle": "Vérifiez les détails de votre réservation avant l’envoi.",
-      "titles": {
-        "email": "Votre adresse mail",
-        "message": "Message à transmettre"
-      },
-      "cta": "Confirmer & Envoyer ma demande"
-    },
-    "step-4": {
-      "title": "📩 Confirmez votre email",
-      "subtitle": "Vous y êtes presque ! 🔥🔥",
-      "infos": {
-        "first": {
-          "sub-1": "👉 Nous venons de vous envoyer un email à l’adresse",
-          "sub-2": "contenant un",
-          "sub-3": "lien d’activation"
-        },
-        "second": {
-          "sub-1": "📩 Ouvrez votre boîte de réception",
-          "sub-2": ", cliquez sur le lien et validez votre compte. Votre demande sera alors automatiquement transmise à",
-          "sub-3": " !"
-        }
-      },
-      "cta": {
-        "resend": "Renvoyer l’email",
-        "sending": "Envoi en cours...",
-        "new-mail": "Utiliser une autre adresse",
-        "event-board": "Voir mon Tableau de bord",
-        "close": "Fermer"
-      },
-      "change-mail": {
-        "title": "Changer d’adresse email",
-        "placeholder": "Nouvelle adresse email",
-        "send": "Envoyer",
-        "sending": "Envoi..."
-      },
-      "validation-info": {
-        "start": "ℹ️ Tant que votre email n’est pas confirmé,",
-        "end": "ne verra pas votre demande !"
-      }
-    },
-    "email-label": "Ou utilisez votre email :",
-    "email-placeholder": "Votre email",
-    "email-required-error": "Veuillez saisir votre adresse email.",
-    "email-invalid-error": "Veuillez saisir une adresse email valide.",
-    "back-button": "← Retour"
-  },
-  "texts": {
-    "a-partir-de": "À partir de",
-    "minimum": "Minimum",
-    "maximum": "Maximum",
-    "rechercher": "Rechercher",
-    "filtres": "Filtres",
-    "resultats": "Aucun résultat. | 1 résultat | {count} résultats",
-    "voir-resultats": "Aucun résultat | Voir le résultat | Voir les {count} résultats",
-    "effacer-filtres": "Tout effacer",
-    "need-help": "Besoin d'aide ?",
-    "your-event": "Votre événement",
-    "pay-now": "Payer maintenant"
-  },
-  "errors": {
-    "404": {
-      "title": "Oups !!",
-      "message": "La page que vous recherchez n'existe pas."
-    }
-  },
-  "partner": {
-    "availability": {
-      "available": "🟢 Disponible",
-      "option": "🟠 Sous option",
-      "booked": "🔴 Réservé"
-    }
-  },
-  "events-list": {
-    "welcome": "Bonjour {name} !",
-    "count": "Vous avez {n} événement en cours. | Vous avez {n} événements en cours.",
-    "create": "Créer un événement",
-    "empty": "Aucun événement pour le moment.",
-    "confirmed": "{n} confirmée | {n} confirmées",
-    "in-progress": "{n} en cours",
-    "pending": "{n} en attente"
-  },
-  "pro": {
-    "board": {
-      "card": {
-        "pill": {
-          "action_requise": "ACTION REQUISE"
-        }
-      }
-    }
-  },
-  "client": {
-    "reservation": {
-      "statut": {
-        "nouvelle": "Demande envoyée",
-        "en_discussion": "En discussion",
-        "confirmee": "Confirmé",
-        "refusee": "Non retenu",
-        "annulee": "Annulée",
-        "realisee": "Terminée"
       }
     }
   },
@@ -335,6 +439,194 @@
       "refusee": "Refusées",
       "annulee": "Annulées",
       "realisee": "Réalisées"
+    },
+    "cancel-dialog": {
+      "title": "Annuler la demande",
+      "body": "Êtes-vous sûr de vouloir annuler cette demande\u00a0?",
+      "confirm": "Oui, annuler",
+      "keep": "Non, garder"
+    },
+    "cancel-btn": "Annuler la demande"
+  },
+  "client": {
+    "reservation": {
+      "statut": {
+        "nouvelle": "Demande envoyée",
+        "en_discussion": "En discussion",
+        "confirmee": "Confirmé",
+        "refusee": "Non retenu",
+        "annulee": "Annulée",
+        "realisee": "Terminée"
+      }
+    }
+  },
+  "notifications": {
+    "page": {
+      "heading": "Notifications",
+      "mark-all": "Tout marquer comme lu",
+      "empty": "Aucune notification.",
+      "loading": "Chargement…",
+      "group-unread": "Non lues",
+      "group-read": "Lues"
+    },
+    "item": {
+      "unread-aria": "Non lue"
+    }
+  },
+  "journal": {
+    "title": "Historique"
+  },
+  "profile": {
+    "page": {
+      "personal-info-title": "Informations personnelles",
+      "connection-title": "Connexion",
+      "field-firstname": "Prénom",
+      "field-lastname": "Nom",
+      "field-phone": "Téléphone",
+      "field-company": "Entreprise",
+      "field-email": "Email",
+      "field-password": "Mot de passe",
+      "keycloak-link": "Modifier via mon espace sécurisé →",
+      "save": "Sauvegarder",
+      "cancel": "Annuler",
+      "delete-account": "Supprimer mon compte",
+      "delete-dialog": {
+        "title": "Supprimer mon compte",
+        "description": "Cette action est irréversible. Toutes vos données seront supprimées.",
+        "body": "Êtes-vous sûr de vouloir supprimer votre compte\u00a0? Vos événements et demandes en cours seront définitivement perdus.",
+        "confirm": "Oui, supprimer",
+        "keep": "Non, garder mon compte"
+      }
+    },
+    "menu": {
+      "my-profile": "Mon profil",
+      "logout": "Déconnexion",
+      "help": "Aide",
+      "terms": "Conditions générales",
+      "privacy": "Politique de confidentialité",
+      "about": "À propos de SGILT",
+      "contact": "Nous contacter"
+    }
+  },
+  "pro": {
+    "reservations": {
+      "empty": "Aucune demande pour le moment.",
+      "filters": {
+        "toutes": "Toutes"
+      }
+    },
+    "board": {
+      "greeting": {
+        "title": "Bonjour DJ Animation !"
+      },
+      "card": {
+        "pill": {
+          "action_requise": "ACTION REQUISE"
+        },
+        "contact-client": "Contactez le client",
+        "validate-request": "Validez la demande",
+        "event-date-label": "Date de l'événement"
+      }
+    },
+    "calendrier": {
+      "hint-mobile": "Touchez un jour disponible pour le bloquer, touchez-le à nouveau pour le libérer.",
+      "hint-desktop": "Cliquez sur un jour disponible pour le bloquer, cliquez à nouveau pour le libérer.",
+      "list-empty": "Aucun événement ce mois-ci.",
+      "list-item-unavailable": "Indisponible",
+      "list-item-link": "Voir →"
+    },
+    "reservation-detail": {
+      "back": "‹ Retour",
+      "refusal-modal": {
+        "title": "Refuser la demande",
+        "lead": "Pourquoi refusez-vous cette demande ?",
+        "communicate": "Communiquer le motif au client",
+        "submit": "Confirmer le refus",
+        "reasons": {
+          "date": "📅 Date non disponible",
+          "zone": "📍 Zone géographique trop éloignée",
+          "jauge": "👥 Jauge d'invités incompatible",
+          "budget": "💰 Budget incompatible",
+          "type": "🎯 Type d'événement hors de mes prestations",
+          "autre": "••• Autre"
+        }
+      }
+    },
+    "contact": {
+      "call": "Appeler",
+      "mail": "Mail",
+      "whatsapp": "WhatsApp",
+      "sms": "SMS",
+      "write-mail": "Rédiger un mail",
+      "mobile": "Mobile",
+      "tel": "Tél"
+    },
+    "actions": {
+      "page-title": "Actions spéciales",
+      "page-subtitle": "Ces actions sont irréversibles. Procédez avec précaution.",
+      "back": "‹ Retour",
+      "cancel-reservation": {
+        "label": "Annuler la réservation",
+        "desc-active": "Passe la demande en statut Annulée.",
+        "desc-inactive": "Cette demande ne peut plus être annulée.",
+        "dialog-title": "Annuler la réservation",
+        "dialog-body": "Êtes-vous sûr de vouloir annuler cette réservation ? Cette action est difficilement réversible.",
+        "dialog-cancel": "Annuler",
+        "dialog-confirm": "Confirmer l'annulation"
+      }
+    }
+  },
+  "feed": {
+    "pills": {
+      "all": "Tout",
+      "notes": "Notes",
+      "documents": "Documents"
+    },
+    "actions": {
+      "add-note": "+ Note",
+      "add-document": "+ Document"
+    },
+    "empty": "Aucun élément pour le moment.",
+    "note-initial-label": "Message initial",
+    "add-note-dialog": {
+      "title": "Ajouter une note",
+      "placeholder": "Ajouter une note...",
+      "private-toggle": "Note privée 🔒 (visible uniquement par moi)",
+      "submit": "Ajouter la note"
+    }
+  },
+  "nav": {
+    "events": "Événements",
+    "notifications": "Notifications",
+    "profile": "Profil"
+  },
+  "texts": {
+    "a-partir-de": "À partir de",
+    "minimum": "Minimum",
+    "maximum": "Maximum",
+    "rechercher": "Rechercher",
+    "filtres": "Filtres",
+    "resultats": "Aucun résultat. | 1 résultat | {count} résultats",
+    "voir-resultats": "Aucun résultat | Voir le résultat | Voir les {count} résultats",
+    "effacer-filtres": "Tout effacer",
+    "need-help": "Besoin d'aide ?",
+    "your-event": "Votre événement",
+    "pay-now": "Payer maintenant"
+  },
+  "prestataire": {
+    "finalisation": {
+      "target-label": "Pour",
+      "message-label": "Message au prestataire",
+      "optional": "(optionnel)",
+      "message-placeholder": "Dites-leur ce que vous avez en tête…",
+      "submit": "Envoyer la demande",
+      "guests": "invités"
+    }
+  },
+  "errors": {
+    "404": {
+      "title": "Oups !!",
+      "message": "La page que vous recherchez n'existe pas."
     }
   }
 }

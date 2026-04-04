@@ -2,7 +2,7 @@
   <nav class="bottom-nav">
     <NuxtLink to="/app/events" class="item" :class="{ active: isEventsActive }">
       <CalendarEventIcon class="icon" />
-      <span class="label">Événements</span>
+      <span class="label">{{ $t('nav.events') }}</span>
     </NuxtLink>
 
     <NuxtLink
@@ -11,7 +11,7 @@
       :class="{ active: route.path.startsWith('/account/notifications') }"
     >
       <BellIcon class="icon" />
-      <span class="label">Notifications</span>
+      <span class="label">{{ $t('nav.notifications') }}</span>
     </NuxtLink>
 
     <NuxtLink
@@ -20,7 +20,7 @@
       :class="{ active: route.path.startsWith('/app/profile') }"
     >
       <UserIcon class="icon" />
-      <span class="label">Profil</span>
+      <span class="label">{{ $t('nav.profile') }}</span>
     </NuxtLink>
   </nav>
 </template>

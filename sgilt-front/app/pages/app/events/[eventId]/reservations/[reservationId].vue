@@ -13,7 +13,7 @@
     >
       <div class="cover-banner__overlay" />
       <button class="back-btn" type="button" @click="navigateTo(`/app/events/${eventId}`)">
-        ‹ Retour
+        {{ $t('common.back') }}
       </button>
       <div class="cover-banner__bottom">
         <div class="cover-banner__info">
@@ -39,7 +39,7 @@
         />
 
         <button v-if="canCancel" class="cancel-btn" type="button" @click="confirmOpen = true">
-          Annuler la demande
+          {{ $t('reservation.cancel-btn') }}
         </button>
       </template>
 
@@ -54,13 +54,13 @@
   </div>
 
   <!-- ── Dialog confirmation annulation ─────────────────────────────────────── -->
-  <SgiltDialog v-model:open="confirmOpen" title="Annuler la demande" max-width="400px">
+  <SgiltDialog v-model:open="confirmOpen" :title="t('reservation.cancel-dialog.title')" max-width="400px">
     <div class="confirm-cancel">
-      <p class="confirm-cancel__body">Êtes-vous sûr de vouloir annuler cette demande&nbsp;?</p>
+      <p class="confirm-cancel__body">{{ t('reservation.cancel-dialog.body') }}</p>
       <div class="confirm-cancel__actions">
-        <SgiltButton variant="secondary" @click="confirmOpen = false">Non, garder</SgiltButton>
+        <SgiltButton variant="secondary" @click="confirmOpen = false">{{ t('reservation.cancel-dialog.keep') }}</SgiltButton>
         <SgiltButton :loading="cancelling" class="destructive" @click="cancelReservation">
-          Oui, annuler
+          {{ t('reservation.cancel-dialog.confirm') }}
         </SgiltButton>
       </div>
     </div>

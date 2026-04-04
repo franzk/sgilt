@@ -1,17 +1,17 @@
 <template>
   <div class="banner">
     <span class="label">{{ flowLabel }}</span>
-    <button class="close" type="button" aria-label="Annuler" @click="abortOpen = true">✕</button>
+    <button class="close" type="button" :aria-label="$t('common.cancel')" @click="abortOpen = true">✕</button>
   </div>
 
-  <SgiltDialog v-model:open="abortOpen" title="Quitter ?" max-width="400px">
+  <SgiltDialog v-model:open="abortOpen" :title="$t('common.context-banner.quit-title')" max-width="400px">
     <div class="abort-form">
       <p class="abort-text">
-        Votre progression ne sera pas sauvegardée.
+        {{ $t('common.context-banner.quit-message') }}
       </p>
       <div class="abort-actions">
-        <SgiltButton variant="secondary" @click="abortOpen = false">Continuer</SgiltButton>
-        <SgiltButton @click="confirmAbort">Quitter</SgiltButton>
+        <SgiltButton variant="secondary" @click="abortOpen = false">{{ $t('common.context-banner.continue') }}</SgiltButton>
+        <SgiltButton @click="confirmAbort">{{ $t('common.context-banner.quit') }}</SgiltButton>
       </div>
     </div>
   </SgiltDialog>

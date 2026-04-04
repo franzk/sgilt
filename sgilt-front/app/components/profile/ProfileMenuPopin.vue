@@ -6,11 +6,11 @@
         <div class="group">
           <NuxtLink to="/account/profile" class="item" role="menuitem" @click="close">
             <UserIcon class="item-icon" />
-            <span>Mon profil</span>
+            <span>{{ $t('profile.menu.my-profile') }}</span>
           </NuxtLink>
           <button class="item" role="menuitem" type="button" @click="logout">
             <LogoutBoxRIcon class="item-icon" />
-            <span>Déconnexion</span>
+            <span>{{ $t('profile.menu.logout') }}</span>
           </button>
         </div>
 
@@ -20,19 +20,19 @@
         <div class="group">
           <a href="#" class="item" role="menuitem" @click.prevent="close">
             <QuestionIcon class="item-icon" />
-            <span>Aide</span>
+            <span>{{ $t('profile.menu.help') }}</span>
           </a>
           <a href="#" class="item" role="menuitem" @click.prevent="close">
             <FileTextIcon class="item-icon" />
-            <span>Conditions générales</span>
+            <span>{{ $t('profile.menu.terms') }}</span>
           </a>
           <a href="#" class="item" role="menuitem" @click.prevent="close">
             <ShieldIcon class="item-icon" />
-            <span>Politique de confidentialité</span>
+            <span>{{ $t('profile.menu.privacy') }}</span>
           </a>
           <a href="#" class="item" role="menuitem" @click.prevent="close">
             <InformationIcon class="item-icon" />
-            <span>À propos de SGILT</span>
+            <span>{{ $t('profile.menu.about') }}</span>
           </a>
         </div>
 
@@ -42,7 +42,7 @@
         <div class="group">
           <a href="#" class="item" role="menuitem" @click.prevent="close">
             <MailIcon class="item-icon" />
-            <span>Nous contacter</span>
+            <span>{{ $t('profile.menu.contact') }}</span>
           </a>
         </div>
       </div>

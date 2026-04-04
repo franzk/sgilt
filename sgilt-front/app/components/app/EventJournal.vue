@@ -1,5 +1,5 @@
 <template>
-  <SgiltDialog v-model:open="open" title="Historique">
+  <SgiltDialog v-model:open="open" :title="$t('journal.title')">
     <div class="journal-content">
       <JournalList :entries="entries" />
     </div>

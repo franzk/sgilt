@@ -1,6 +1,6 @@
 <template>
   <div class="etape">
-    <h2 class="question">Votre événement en pratique</h2>
+    <h2 class="question">{{ $t('tunnel.etape5.question') }}</h2>
     <DemandeEtape5Fields :state="state" mobile />
     <DemandeRecap />
   </div>

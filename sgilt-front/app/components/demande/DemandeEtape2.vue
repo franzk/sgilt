@@ -1,6 +1,6 @@
 <template>
   <div class="etape">
-    <h2 class="etape__question">Quelle ambiance souhaitez-vous créer&nbsp;?</h2>
+    <h2 class="etape__question">{{ $t('tunnel.etape2.question') }}</h2>
 
     <DemandeOptionSelect
       :options="AMBIANCE_OPTIONS"

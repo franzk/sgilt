@@ -8,8 +8,8 @@
   />
 
   <div v-else-if="!loading" class="not-found">
-    <p>Ce prestataire est introuvable.</p>
-    <NuxtLink to="/search">← Retour à la recherche</NuxtLink>
+    <p>{{ $t('provider.not-found') }}</p>
+    <NuxtLink to="/search">{{ $t('provider.back-to-search') }}</NuxtLink>
   </div>
 
   <DemandeBottomSheet

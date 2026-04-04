@@ -1,6 +1,6 @@
 <template>
   <div class="pro-greeting">
-    <p class="title">Bonjour DJ Animation !</p>
+    <p class="title">{{ $t('pro.board.greeting.title') }}</p>
     <div v-if="loading" class="skeleton skeleton-text" />
     <p v-else class="subtitle">{{ subtitle }}</p>
   </div>

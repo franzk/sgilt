@@ -24,7 +24,7 @@
         </template>
 
         <p v-else-if="filteredDemandes.length === 0" class="empty">
-          Aucune demande pour le moment.
+          {{ $t('pro.reservations.empty') }}
         </p>
 
         <ProBookingCard

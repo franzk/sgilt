@@ -1,15 +1,15 @@
 <template>
-  <SgiltDialog v-model:open="open" title="Modifier l'événement" max-width="560px">
+  <SgiltDialog v-model:open="open" :title="$t('event.edit-dialog.title')" max-width="560px">
     <div class="form">
       <!-- Titre -->
       <div class="field">
-        <label class="label">Titre</label>
-        <input v-model="draft.title" class="input" type="text" placeholder="Nom de l'événement" />
+        <label class="label">{{ $t('event.edit-dialog.field-title') }}</label>
+        <input v-model="draft.title" class="input" type="text" :placeholder="$t('event.edit-dialog.title-placeholder')" />
       </div>
 
       <!-- Couverture -->
       <div class="field">
-        <label class="label">Image de couverture</label>
+        <label class="label">{{ $t('event.edit-dialog.field-cover') }}</label>
 
         <div class="cover-grid">
           <button
@@ -21,13 +21,13 @@
             :style="{ backgroundImage: `url(${url})` }"
             @click="draft.coverImage = url"
           >
-            <span class="cover-label">{{ COVER_LABELS[key] }}</span>
+            <span class="cover-label">{{ $t(`event.edit-dialog.cover-labels.${key}`) }}</span>
             <span v-if="draft.coverImage === url" class="cover-check" aria-hidden="true">✓</span>
           </button>
         </div>
 
         <button class="upload-btn" type="button" @click="uploadRef?.click()">
-          <span class="caption"><ImageAddIcon /> Importer ma propre photo</span>
+          <span class="caption"><ImageAddIcon /> {{ $t('event.edit-dialog.upload-button') }}</span>
         </button>
         <input
           ref="uploadRef"
@@ -46,9 +46,9 @@
 
       <!-- Actions -->
       <div class="actions">
-        <SgiltButton variant="secondary" @click="open = false">Annuler</SgiltButton>
+        <SgiltButton variant="secondary" @click="open = false">{{ $t('common.cancel') }}</SgiltButton>
         <SgiltButton :disabled="saving" @click="handleSave">
-          {{ saving ? 'Enregistrement…' : 'Enregistrer' }}
+          {{ saving ? $t('common.saving') : $t('common.save') }}
         </SgiltButton>
       </div>
     </div>
@@ -63,14 +63,6 @@ import { DEFAULT_COVERS, resolveEventCover } from '~/utils/eventCovers'
 import { ImageAddIcon } from '@remixicons/vue/line'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
-
-const COVER_LABELS: Record<string, string> = {
-  mariage: 'Mariage',
-  anniversaire: 'Anniversaire',
-  soiree_privee: 'Soirée privée',
-  fete_entreprise: "Fête d'entreprise",
-  autre: 'Autre',
-}
 
 const coverEntries = Object.entries(DEFAULT_COVERS) as [string, string][]
 const presetUrls = new Set(Object.values(DEFAULT_COVERS))

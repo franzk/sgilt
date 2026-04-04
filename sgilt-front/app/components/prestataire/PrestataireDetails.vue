@@ -17,7 +17,7 @@
             v-model="dateModel"
             :booked-dates="unavailableDatesAsDate"
             :disabled="disableDate"
-            placeholder="Vérifier une date"
+            :placeholder="$t('provider.details.verify-date')"
           />
           <Transition name="fade">
             <div v-if="dateModel" class="availability-badge" :class="availabilityClass">
@@ -28,12 +28,12 @@
         </div>
 
         <div v-if="prestataire.budget" class="sidebar-block sidebar-budget">
-          <h3 class="title">Tarifs</h3>
+          <h3 class="title">{{ $t('provider.details.rates') }}</h3>
           <p class="text">{{ prestataire.budget }}</p>
         </div>
 
         <SgiltButton class="sidebar-cta" :disabled="!dateModel" @click="onSelect">
-          Envoyer une demande
+          {{ $t('provider.details.send-request') }}
         </SgiltButton>
       </aside>
 
@@ -42,7 +42,7 @@
         <div class="provider-content">
           <!-- CE QUE NOUS PROPOSONS -->
           <section v-if="prestataire.offerings.length > 0" class="section">
-            <h2 class="title">Ce que nous proposons</h2>
+            <h2 class="title">{{ $t('provider.details.offerings-title') }}</h2>
             <ul class="offerings">
               <li v-for="item in prestataire.offerings" :key="item" class="offering-item">
                 {{ item }}
@@ -71,7 +71,7 @@
 
           <!-- BUDGET (mobile uniquement) -->
           <section v-if="prestataire.budget" class="section budget-section mobile-only">
-            <h2 class="title">Tarifs</h2>
+            <h2 class="title">{{ $t('provider.details.rates') }}</h2>
             <p class="budget-text">{{ prestataire.budget }}</p>
           </section>
 
@@ -80,7 +80,7 @@
             v-if="prestataire.testimonials && prestataire.testimonials.length > 0"
             class="section"
           >
-            <h2 class="title">Ils en parlent</h2>
+            <h2 class="title">{{ $t('provider.details.testimonials-title') }}</h2>
             <div class="testimonials">
               <blockquote v-for="t in prestataire.testimonials" :key="t.author" class="testimonial">
                 <p class="text">« {{ t.text }} »</p>
@@ -94,12 +94,12 @@
 
           <!-- INFORMATIONS PRATIQUES -->
           <section v-if="hasInfosPratiques" class="section infos-section">
-            <h2 class="title">Informations pratiques</h2>
+            <h2 class="title">{{ $t('provider.details.infos-title') }}</h2>
             <div
               v-if="prestataire.logistics && prestataire.logistics.length > 0"
               class="infos-block"
             >
-              <h3 class="title">Logistique</h3>
+              <h3 class="title">{{ $t('provider.details.logistics-title') }}</h3>
               <ul class="infos-list">
                 <li v-for="item in prestataire.logistics" :key="item">{{ item }}</li>
               </ul>
@@ -108,13 +108,13 @@
               v-if="prestataire.technical && prestataire.technical.length > 0"
               class="infos-block"
             >
-              <h3 class="title">Technique</h3>
+              <h3 class="title">{{ $t('provider.details.technical-title') }}</h3>
               <ul class="infos-list">
                 <li v-for="item in prestataire.technical" :key="item">{{ item }}</li>
               </ul>
             </div>
             <div v-if="prestataire.faq && prestataire.faq.length > 0" class="infos-block">
-              <h3 class="title">Questions fréquentes</h3>
+              <h3 class="title">{{ $t('provider.details.faq-title') }}</h3>
               <div class="faq">
                 <div v-for="item in prestataire.faq" :key="item.question" class="faq-item">
                   <p class="question">{{ item.question }}</p>
@@ -129,7 +129,7 @@
 
     <!-- ── Sticky CTA (mobile) ───────────────────────────────────────────────── -->
     <div class="sticky-cta">
-      <SgiltButton :disabled="!dateModel" @click="onSelect">Envoyer une demande</SgiltButton>
+      <SgiltButton :disabled="!dateModel" @click="onSelect">{{ $t('provider.details.send-request') }}</SgiltButton>
     </div>
 
     <!-- ── Modale galerie ────────────────────────────────────────────────────── -->
@@ -199,6 +199,8 @@ import PrestataireHero from '~/components/prestataire/PrestataireHero.vue'
 import EngagementBadge from '~/components/prestataire/EngagementBadge.vue'
 import type { PrestataireDetail } from '~/types/prestataire'
 
+const { t } = useI18n()
+
 const props = defineProps<{
   prestataire: PrestataireDetail
   disableDate?: boolean
@@ -260,7 +262,9 @@ const isUnavailable = computed(() => {
 
 const availabilityIcon = computed(() => (isUnavailable.value ? '✗' : '✓'))
 const availabilityLabel = computed(() =>
-  isUnavailable.value ? 'Non disponible à cette date' : 'Disponible à cette date',
+  isUnavailable.value
+    ? t('provider.details.availability.unavailable')
+    : t('provider.details.availability.available'),
 )
 const availabilityClass = computed(() => (isUnavailable.value ? 'unavailable' : 'available'))
 

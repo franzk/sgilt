@@ -46,8 +46,8 @@
     <div class="right">
       <div v-if="needsAction" class="right-row">
         <span class="action-required" :class="`${demande.statut}`">
-          <template v-if="demande.statut === 'nouvelle'">Contactez le client</template>
-          <template v-else-if="demande.statut === 'en_discussion'">Validez la demande</template>
+          <template v-if="demande.statut === 'nouvelle'">{{ $t('pro.board.card.contact-client') }}</template>
+          <template v-else-if="demande.statut === 'en_discussion'">{{ $t('pro.board.card.validate-request') }}</template>
         </span>
       </div>
 
@@ -60,7 +60,7 @@
           <CalendarEventIcon />
         </span>
         <div class="date-info">
-          <span class="info-label">Date de l'événement</span>
+          <span class="info-label">{{ $t('pro.board.card.event-date-label') }}</span>
           <span class="info-value">{{ demande.date ? formatDate(demande.date) : '—' }}</span>
         </div>
       </div>

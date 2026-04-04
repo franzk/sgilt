@@ -3,10 +3,10 @@
     <div class="calendrier-page__header">
       <p class="calendrier-page__hint">
         <template v-if="isMobile">
-          Touchez un jour disponible pour le bloquer, touchez-le à nouveau pour le libérer.
+          {{ $t('pro.calendrier.hint-mobile') }}
         </template>
         <template v-else>
-          Cliquez sur un jour disponible pour le bloquer, cliquez à nouveau pour le libérer.
+          {{ $t('pro.calendrier.hint-desktop') }}
         </template>
       </p>
     </div>

@@ -8,7 +8,7 @@
       :style="{ backgroundImage: `url(${coverImage})` }"
     >
       <div class="overlay" />
-      <button class="back-btn" type="button" @click="router.back()">‹ Retour</button>
+      <button class="back-btn" type="button" @click="router.back()">{{ $t('pro.reservation-detail.back') }}</button>
       <div class="bottom">
         <div class="info">
           <span class="category">{{ demande.category }}</span>
@@ -180,11 +180,11 @@
     <SgiltDialog
       v-if="refusalModalOpen"
       v-model:open="refusalModalOpen"
-      title="Refuser la demande"
+      :title="t('pro.reservation-detail.refusal-modal.title')"
       max-width="600px"
     >
       <div class="refusal-form">
-        <p class="lead">Pourquoi refusez-vous cette demande ?</p>
+        <p class="lead">{{ t('pro.reservation-detail.refusal-modal.lead') }}</p>
         <div class="reasons">
           <label v-for="r in REFUSAL_REASONS" :key="r.id" class="refusal-reason">
             <input v-model="refusalReason" type="radio" :value="r.id" />
@@ -193,7 +193,7 @@
         </div>
         <label class="communicate">
           <input v-model="communicateReason" type="checkbox" />
-          <span>Communiquer le motif au client</span>
+          <span>{{ t('pro.reservation-detail.refusal-modal.communicate') }}</span>
         </label>
         <button
           class="submit"
@@ -201,7 +201,7 @@
           :disabled="!refusalReason || refusalLoading"
           @click="submitRefusal"
         >
-          Confirmer le refus
+          {{ t('pro.reservation-detail.refusal-modal.submit') }}
         </button>
       </div>
     </SgiltDialog>
@@ -357,14 +357,14 @@ async function confirmer() {
 }
 
 // ── Refus ─────────────────────────────────────────────────────────────────────
-const REFUSAL_REASONS = [
-  { id: 'date', label: '📅 Date non disponible' },
-  { id: 'zone', label: '📍 Zone géographique trop éloignée' },
-  { id: 'jauge', label: "👥 Jauge d'invités incompatible" },
-  { id: 'budget', label: '💰 Budget incompatible' },
-  { id: 'type', label: "🎯 Type d'événement hors de mes prestations" },
-  { id: 'autre', label: '••• Autre' },
-]
+const REFUSAL_REASONS = computed(() => [
+  { id: 'date', label: t('pro.reservation-detail.refusal-modal.reasons.date') },
+  { id: 'zone', label: t('pro.reservation-detail.refusal-modal.reasons.zone') },
+  { id: 'jauge', label: t('pro.reservation-detail.refusal-modal.reasons.jauge') },
+  { id: 'budget', label: t('pro.reservation-detail.refusal-modal.reasons.budget') },
+  { id: 'type', label: t('pro.reservation-detail.refusal-modal.reasons.type') },
+  { id: 'autre', label: t('pro.reservation-detail.refusal-modal.reasons.autre') },
+])
 
 const refusalModalOpen = ref(false)
 const refusalReason = ref('')

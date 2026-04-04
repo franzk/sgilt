@@ -16,14 +16,14 @@
 
     <!-- ── Actions ────────────────────────────────────────────────────────────── -->
     <div v-if="canAddNote" class="feed__actions">
-      <button class="feed__action-btn" type="button" @click="openNoteModal">+ Note</button>
+      <button class="feed__action-btn" type="button" @click="openNoteModal">{{ $t('feed.actions.add-note') }}</button>
       <button
         v-if="canUploadDocument"
         class="feed__action-btn"
         type="button"
         @click="fileInputRef?.click()"
       >
-        + Document
+        {{ $t('feed.actions.add-document') }}
       </button>
     </div>
 
@@ -34,7 +34,7 @@
         <template v-if="item._kind === 'note'">
           <!-- Message initial -->
           <div v-if="item.isMessageInitial" class="note-initial">
-            <span class="label">Message initial</span>
+            <span class="label">{{ $t('feed.note-initial-label') }}</span>
             <p class="content">{{ item.content }}</p>
             <span class="meta">
               {{ item.author.name }} · {{ formatDateShort(item.createdAt) }}
@@ -82,7 +82,7 @@
       </li>
     </ul>
 
-    <p v-else class="feed__empty">Aucun élément pour le moment.</p>
+    <p v-else class="feed__empty">{{ $t('feed.empty') }}</p>
 
     <input ref="fileInputRef" type="file" style="display: none" @change="handleUpload" />
 
@@ -90,7 +90,7 @@
     <SgiltDialog
       v-if="noteModalOpen"
       v-model:open="noteModalOpen"
-      title="Ajouter une note"
+      :title="$t('feed.add-note-dialog.title')"
       max-width="800px"
     >
       <div class="note-form">
@@ -98,17 +98,17 @@
           ref="noteTextareaRef"
           v-model="newNote"
           class="textarea"
-          placeholder="Ajouter une note..."
+          :placeholder="$t('feed.add-note-dialog.placeholder')"
           rows="5"
           @input="autoResize"
         />
         <div class="note-form__footer">
           <label v-if="showPersonalToggle" class="personal">
             <input v-model="noteIsPersonal" type="checkbox" />
-            <span>Note privée 🔒 (visible uniquement par moi)</span>
+            <span>{{ $t('feed.add-note-dialog.private-toggle') }}</span>
           </label>
           <SgiltButton :disabled="!newNote.trim() || sending" @click="sendNote">
-            Ajouter la note
+            {{ $t('feed.add-note-dialog.submit') }}
           </SgiltButton>
         </div>
       </div>
@@ -142,13 +142,15 @@ const emit = defineEmits<{
   'delete-document': [id: string]
 }>()
 
+const { t } = useI18n()
+
 // ── Pills ──────────────────────────────────────────────────────────────────────
 type FilterId = 'all' | 'notes' | 'documents'
-const PILLS: { id: FilterId; label: string }[] = [
-  { id: 'all', label: 'Tout' },
-  { id: 'notes', label: 'Notes' },
-  { id: 'documents', label: 'Documents' },
-]
+const PILLS = computed<{ id: FilterId; label: string }[]>(() => [
+  { id: 'all', label: t('feed.pills.all') },
+  { id: 'notes', label: t('feed.pills.notes') },
+  { id: 'documents', label: t('feed.pills.documents') },
+])
 const activeFilter = ref<FilterId>('all')
 
 const hasNotes = computed(() => props.items.some((i) => i._kind === 'note'))

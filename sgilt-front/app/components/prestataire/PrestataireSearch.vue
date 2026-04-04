@@ -17,11 +17,11 @@
 
       <div v-else class="results-meta" :class="{ 'is-onboarding': showOnboarding }">
         <Transition name="vibe-collapse">
-          <h2 v-if="showOnboarding" class="vibe-text">Votre événement prend forme.</h2>
+          <h2 v-if="showOnboarding" class="vibe-text">{{ $t('search.vibe-text') }}</h2>
         </Transition>
         <div class="count">
           <span v-if="!loading && !error">
-            {{ results.length }} prestataires sont disponibles à votre date.
+            {{ $t('search.results-count', { count: results.length }) }}
           </span>
           <span v-else-if="loading" class="skeleton-text" />
         </div>

@@ -1,20 +1,20 @@
 <template>
   <div class="notif-page">
     <div class="notif-page__toolbar">
-      <h1 class="notif-page__heading">Notifications</h1>
+      <h1 class="notif-page__heading">{{ $t('notifications.page.heading') }}</h1>
       <button
         v-if="store.unreadCount > 0"
         class="notif-page__mark-all"
         type="button"
         @click="store.markAllAsRead()"
       >
-        Tout marquer comme lu
+        {{ $t('notifications.page.mark-all') }}
       </button>
     </div>
 
     <div class="notif-page__list">
       <p v-if="store.notifications.length === 0 && !store.loading" class="notif-page__empty">
-        Aucune notification.
+        {{ $t('notifications.page.empty') }}
       </p>
 
       <template v-for="(group, index) in groups" :key="group.label">
@@ -30,7 +30,7 @@
 
       <div ref="sentinelRef" class="notif-page__sentinel" />
 
-      <p v-if="store.loading" class="notif-page__loading">Chargement…</p>
+      <p v-if="store.loading" class="notif-page__loading">{{ $t('notifications.page.loading') }}</p>
     </div>
   </div>
 </template>
@@ -41,6 +41,7 @@ import { useNotificationStore } from '~/stores/notification'
 
 definePageMeta({ layout: 'account' })
 
+const { t } = useI18n()
 const store = useNotificationStore()
 const sentinelRef = ref<HTMLElement | null>(null)
 
@@ -63,8 +64,8 @@ const groups = computed<Group[]>(() => {
   const unread = store.notifications.filter((n) => !n.read)
   const read = store.notifications.filter((n) => n.read)
   const result: Group[] = []
-  if (unread.length) result.push({ label: 'Non lues', items: unread })
-  if (read.length) result.push({ label: 'Lues', items: read })
+  if (unread.length) result.push({ label: t('notifications.page.group-unread'), items: unread })
+  if (read.length) result.push({ label: t('notifications.page.group-read'), items: read })
   return result
 })
 

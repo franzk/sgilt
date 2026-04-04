@@ -3,12 +3,12 @@
     <!-- ── Header ──────────────────────────────────────────────────────────── -->
     <div class="actions-page__header">
       <button class="back-btn" type="button" @click="navigateTo(`/pro/reservations/${demandeId}`)">
-        ‹ Retour
+        {{ $t('pro.actions.back') }}
       </button>
       <div>
-        <h1 class="actions-page__title">Actions spéciales</h1>
+        <h1 class="actions-page__title">{{ $t('pro.actions.page-title') }}</h1>
         <p class="actions-page__subtitle">
-          Ces actions sont irréversibles. Procédez avec précaution.
+          {{ $t('pro.actions.page-subtitle') }}
         </p>
       </div>
     </div>
@@ -24,12 +24,12 @@
       >
         <span class="action-item__icon">✕</span>
         <div class="action-item__body">
-          <span class="action-item__label">Annuler la réservation</span>
+          <span class="action-item__label">{{ $t('pro.actions.cancel-reservation.label') }}</span>
           <span class="action-item__desc">
             {{
               ['annulee', 'refusee', 'realisee'].includes(currentStatut)
-                ? 'Cette demande ne peut plus être annulée.'
-                : 'Passe la demande en statut Annulée.'
+                ? $t('pro.actions.cancel-reservation.desc-inactive')
+                : $t('pro.actions.cancel-reservation.desc-active')
             }}
           </span>
         </div>
@@ -40,13 +40,12 @@
     <SgiltDialog
       v-if="cancelOpen"
       v-model:open="cancelOpen"
-      title="Annuler la réservation"
+      :title="$t('pro.actions.cancel-reservation.dialog-title')"
       max-width="480px"
     >
       <div class="confirm-form">
         <p class="confirm-form__text">
-          Êtes-vous sûr de vouloir annuler cette réservation ? Cette action est difficilement
-          réversible.
+          {{ $t('pro.actions.cancel-reservation.dialog-body') }}
         </p>
         <div class="confirm-form__actions">
           <button
@@ -54,7 +53,7 @@
             type="button"
             @click="cancelOpen = false"
           >
-            Annuler
+            {{ $t('pro.actions.cancel-reservation.dialog-cancel') }}
           </button>
           <button
             class="confirm-form__btn confirm-form__btn--confirm"
@@ -62,7 +61,7 @@
             :disabled="loading"
             @click="confirmCancel"
           >
-            Confirmer l'annulation
+            {{ $t('pro.actions.cancel-reservation.dialog-confirm') }}
           </button>
         </div>
       </div>
