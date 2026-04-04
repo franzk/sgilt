@@ -626,7 +626,7 @@ export const MOCK_EVENTS: EventDetail[] = [
       'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&auto=format&fit=crop',
     sharedNote: "Cérémonie à 14h, vin d'honneur à 16h. Accès PMR prévu.",
     sharedNoteUpdatedAt: new Date('2026-02-20T11:30:00.000Z'),
-    phrase: 'Votre mariage prend forme ✨',
+    mood: 'confirmee',
     phraseSubtitle: "Plus que 87 jours — vos prestataires s'organisent",
     journal: [
       {
@@ -735,7 +735,7 @@ export const MOCK_EVENTS: EventDetail[] = [
     sharedNote:
       'Soirée surprise — Marc ne doit pas être informé avant le 23 mai. Accès prestataires dès 16h (entrée de service, côté nord). Tenue de soirée exigée.',
     sharedNoteUpdatedAt: new Date('2026-03-08T17:45:00.000Z'),
-    phrase: "Tout s'organise pour la fête 🎉",
+    mood: 'en_discussion',
     phraseSubtitle: '2 prestataires confirmés, 1 en attente de réponse',
     journal: [
       {
@@ -796,7 +796,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     ville: 'Lyon',
     nbInvites: '60',
     sharedNote: '',
-    phrase: '',
+    mood: 'defaut',
     phraseSubtitle: '',
     journal: [
       {
@@ -823,7 +823,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     sharedNote:
       'Palais des Fêtes de Strasbourg — salle Erasme. Installation prestataires dès 17h. Scène côté jardin, accès parking sous-terrain.',
     sharedNoteUpdatedAt: new Date('2026-03-10T09:30:00.000Z'),
-    phrase: '',
+    mood: 'defaut',
     phraseSubtitle: '',
     journal: [
       {
@@ -854,7 +854,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     ville: 'Colmar',
     nbInvites: '150',
     sharedNote: '',
-    phrase: '',
+    mood: 'defaut',
     phraseSubtitle: '',
     journal: [
       {
@@ -881,7 +881,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     sharedNote:
       'Espace événementiel Le Totem, Mulhouse. Accès prestataires entrée latérale (rue de la Paix). Sono légère suffisante, pas de scène.',
     sharedNoteUpdatedAt: new Date('2026-03-05T10:00:00.000Z'),
-    phrase: '',
+    mood: 'defaut',
     phraseSubtitle: '',
     journal: [
       {
@@ -918,7 +918,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     ville: 'Strasbourg',
     nbInvites: '30',
     sharedNote: '',
-    phrase: '',
+    mood: 'defaut',
     phraseSubtitle: '',
     journal: [
       {
@@ -951,7 +951,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     sharedNote:
       'Opéra national de Lorraine, Nancy. Accès prestataires rue Sainte-Catherine. Répétition de balance autorisée dès 15h. Tenue correcte exigée.',
     sharedNoteUpdatedAt: new Date('2026-01-20T09:00:00.000Z'),
-    phrase: '',
+    mood: 'defaut',
     phraseSubtitle: '',
     journal: [
       {
@@ -994,7 +994,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     ville: 'Metz',
     nbInvites: '100',
     sharedNote: '',
-    phrase: '',
+    mood: 'defaut',
     phraseSubtitle: '',
     journal: [
       {

@@ -19,13 +19,15 @@
           <EditIcon class="edit-mobile-icon" />
         </button>
       </div>
-      <button class="edit-img" type="button" @click="openEditDialog">{{ $t('event.board.edit-image') }}</button>
+      <button class="edit-img" type="button" @click="openEditDialog">
+        {{ $t('event.board.edit-image') }}
+      </button>
     </div>
 
     <template v-if="event">
       <!-- ── Widget ─────────────────────────────────────────────────────────────── -->
       <div class="event-widget">
-        <p class="phrase">{{ event.phrase }}</p>
+        <p class="phrase">{{ $t(`event.widget.mood.${event.mood}`) }}</p>
         <p class="subtitle">{{ event.phraseSubtitle }}</p>
         <div class="pills">
           <span

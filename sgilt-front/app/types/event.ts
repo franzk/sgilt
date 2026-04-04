@@ -30,7 +30,7 @@ export interface EventDetail {
   sharedNoteUpdatedAt?: Date
   reservations: Reservation[]
   journal: JournalEntry[]
-  phrase: string
+  mood: 'confirmee' | 'en_discussion' | 'nouvelle' | 'defaut'
   phraseSubtitle: string
 }
 

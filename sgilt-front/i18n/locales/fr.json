@@ -309,6 +309,14 @@
       },
       "upload-button": "Importer ma propre photo"
     },
+    "widget": {
+      "mood": {
+        "confirmee": "Ça se concrétise ✨",
+        "en_discussion": "Les échanges avancent",
+        "nouvelle": "Les réponses arrivent…",
+        "defaut": "Votre événement prend forme"
+      }
+    },
     "board": {
       "mobile": {
         "reservations": "Aucune réservation confirmée pour le moment. | 1 réservation confirmée pour le moment. | {count} réservations confirmées pour le moment."
@@ -487,12 +495,12 @@
   "client": {
     "reservation": {
       "statut": {
-        "nouvelle": "Demande envoyée",
-        "en_discussion": "En discussion",
+        "nouvelle": "En attente de réponse",
+        "en_discussion": "Échange en cours",
         "confirmee": "Confirmé",
         "refusee": "Non retenu",
-        "annulee": "Annulée",
-        "realisee": "Terminée"
+        "annulee": "Annulé",
+        "realisee": "Terminé"
       }
     }
   },
