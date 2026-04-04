@@ -627,7 +627,7 @@ export const MOCK_EVENTS: EventDetail[] = [
     sharedNote: "Cérémonie à 14h, vin d'honneur à 16h. Accès PMR prévu.",
     sharedNoteUpdatedAt: new Date('2026-02-20T11:30:00.000Z'),
     mood: 'confirmee',
-    phraseSubtitle: "Plus que 87 jours — vos prestataires s'organisent",
+    countdown: 'serein',
     journal: [
       {
         id: 'log-001',
@@ -736,7 +736,7 @@ export const MOCK_EVENTS: EventDetail[] = [
       'Soirée surprise — Marc ne doit pas être informé avant le 23 mai. Accès prestataires dès 16h (entrée de service, côté nord). Tenue de soirée exigée.',
     sharedNoteUpdatedAt: new Date('2026-03-08T17:45:00.000Z'),
     mood: 'en_discussion',
-    phraseSubtitle: '2 prestataires confirmés, 1 en attente de réponse',
+    countdown: 'proche',
     journal: [
       {
         id: 'log-005',
@@ -797,7 +797,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     nbInvites: '60',
     sharedNote: '',
     mood: 'defaut',
-    phraseSubtitle: '',
+    countdown: 'imminent',
     journal: [
       {
         id: 'pj-201',
@@ -824,7 +824,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
       'Palais des Fêtes de Strasbourg — salle Erasme. Installation prestataires dès 17h. Scène côté jardin, accès parking sous-terrain.',
     sharedNoteUpdatedAt: new Date('2026-03-10T09:30:00.000Z'),
     mood: 'defaut',
-    phraseSubtitle: '',
+    countdown: 'serein',
     journal: [
       {
         id: 'pj-301',
@@ -855,7 +855,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     nbInvites: '150',
     sharedNote: '',
     mood: 'defaut',
-    phraseSubtitle: '',
+    countdown: 'serein',
     journal: [
       {
         id: 'pj-401',
@@ -882,7 +882,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
       'Espace événementiel Le Totem, Mulhouse. Accès prestataires entrée latérale (rue de la Paix). Sono légère suffisante, pas de scène.',
     sharedNoteUpdatedAt: new Date('2026-03-05T10:00:00.000Z'),
     mood: 'defaut',
-    phraseSubtitle: '',
+    countdown: 'serein',
     journal: [
       {
         id: 'pj-501',
@@ -919,7 +919,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     nbInvites: '30',
     sharedNote: '',
     mood: 'defaut',
-    phraseSubtitle: '',
+    countdown: 'serein',
     journal: [
       {
         id: 'pj-601',
@@ -952,7 +952,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
       'Opéra national de Lorraine, Nancy. Accès prestataires rue Sainte-Catherine. Répétition de balance autorisée dès 15h. Tenue correcte exigée.',
     sharedNoteUpdatedAt: new Date('2026-01-20T09:00:00.000Z'),
     mood: 'defaut',
-    phraseSubtitle: '',
+    countdown: 'serein',
     journal: [
       {
         id: 'pj-701',
@@ -995,7 +995,7 @@ const PRO_ONLY_EVENTS: EventDetail[] = [
     nbInvites: '100',
     sharedNote: '',
     mood: 'defaut',
-    phraseSubtitle: '',
+    countdown: 'serein',
     journal: [
       {
         id: 'pj-801',

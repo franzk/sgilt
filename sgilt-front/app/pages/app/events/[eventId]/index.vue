@@ -28,7 +28,10 @@
       <!-- ── Widget ─────────────────────────────────────────────────────────────── -->
       <div class="event-widget">
         <p class="phrase">{{ $t(`event.widget.mood.${event.mood}`) }}</p>
-        <p class="subtitle">{{ event.phraseSubtitle }}</p>
+        <p class="subtitle">
+          <template v-if="daysUntilEvent !== null">J-{{ daysUntilEvent }} : </template
+          >{{ $t('event.widget.countdown.' + event.countdown) }}
+        </p>
         <div class="pills">
           <span
             v-for="pill in statusPills"
@@ -131,6 +134,16 @@ onMounted(() => window.addEventListener('scroll', onScroll, { passive: true }))
 onUnmounted(() => {
   window.removeEventListener('scroll', onScroll)
   if (rafId !== null) cancelAnimationFrame(rafId)
+})
+
+// ── Countdown ─────────────────────────────────────────────────────────────────
+const daysUntilEvent = computed(() => {
+  if (!event.value?.date) return null
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const eventDate = new Date(event.value.date)
+  eventDate.setHours(0, 0, 0, 0)
+  return Math.ceil((eventDate.getTime() - today.getTime()) / 86_400_000)
 })
 
 // ── Data ──────────────────────────────────────────────────────────────────────

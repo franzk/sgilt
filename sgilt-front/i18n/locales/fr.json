@@ -310,6 +310,11 @@
       "upload-button": "Importer ma propre photo"
     },
     "widget": {
+      "countdown": {
+        "imminent": "Dernière ligne droite",
+        "proche": "Ça approche",
+        "serein": "On a le temps de bien faire les choses"
+      },
       "mood": {
         "confirmee": "Ça se concrétise ✨",
         "en_discussion": "Les échanges avancent",

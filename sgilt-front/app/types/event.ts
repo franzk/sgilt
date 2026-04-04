@@ -31,7 +31,7 @@ export interface EventDetail {
   reservations: Reservation[]
   journal: JournalEntry[]
   mood: 'confirmee' | 'en_discussion' | 'nouvelle' | 'defaut'
-  phraseSubtitle: string
+  countdown: 'imminent' | 'proche' | 'serein'
 }
 
 export interface JournalModification {
