@@ -35,7 +35,7 @@
       <!-- Nombre d'invités -->
       <li v-if="state.nbInvites" class="item">
         <span class="emoji">👥</span>
-        <span>{{ $t('tunnel.recap.guests', { n: state.nbInvites }) }}</span>
+        <span>{{ state.nbInvites }}</span>
       </li>
     </ul>
   </div>
@@ -57,7 +57,6 @@ const {
 const hasContent = computed(
   () => !!eventTypeLabel.value || !!ambianceLabel.value || !!momentCleLabel.value,
 )
-
 </script>
 
 <style scoped lang="scss">

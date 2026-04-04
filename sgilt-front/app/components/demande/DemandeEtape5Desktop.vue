@@ -6,7 +6,7 @@
       class="button"
       :disabled="!state.date || !state.ville || !state.nbInvites"
       @click="next"
-      >Suivant</SgiltButton
+      >{{ $t('tunnel.footer.continue') }}</SgiltButton
     >
   </div>
 </template>

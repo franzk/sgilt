@@ -19,6 +19,8 @@ export interface DemandeState {
   nbInvites: string
   lieuDefini: boolean
   lieu: string
+  prenom: string
+  nom: string
   email: string
   telephone: string
   prestataireMessage?: string

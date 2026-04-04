@@ -4,14 +4,11 @@
 
     <div class="hero">
       <div class="icon">✉️</div>
-      <h2 class="title">{{ isNewEventFlow ? 'Votre demande a bien été envoyée' : 'Plus qu\'une étape\u00a0!' }}</h2>
+      <h2 class="title">{{ isNewEventFlow ? $t('tunnel.finalisation.title-sent') : $t('tunnel.finalisation.title-confirm') }}</h2>
       <div v-if="!isNewEventFlow" class="cta">
-        <p class="cta-text">
-          Vérifiez vos emails et cliquez sur le lien de confirmation. Votre demande sera alors
-          transmise à {{ prestataireName }}.
-        </p>
+        <p class="cta-text">{{ $t('tunnel.finalisation.cta-text', { name: prestataireName }) }}</p>
       </div>
-      <SgiltButton v-else @click="navigateTo('/app/events')">Voir mon événement →</SgiltButton>
+      <SgiltButton v-else @click="navigateTo('/app/events')">{{ $t('tunnel.finalisation.see-event') }}</SgiltButton>
     </div>
 
     <div class="recap">

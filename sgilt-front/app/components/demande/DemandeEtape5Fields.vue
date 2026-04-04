@@ -1,34 +1,34 @@
 <template>
   <div class="fields">
     <div class="field-group">
-      <label class="field-label">📅 Date de l'événement</label>
-      <SgiltDatePicker v-model="state.date" placeholder="Choisir une date" disabled />
+      <label class="field-label">{{ $t('tunnel.etape5.field-date') }}</label>
+      <SgiltDatePicker v-model="state.date" :placeholder="$t('tunnel.etape5.date-placeholder')" disabled />
     </div>
 
     <div class="field-group">
-      <label class="field-label">📍 Ville</label>
+      <label class="field-label">{{ $t('tunnel.etape5.field-city') }}</label>
       <input
         v-model="state.ville"
         class="field-input"
         type="text"
-        placeholder="Ex : Strasbourg"
+        :placeholder="$t('tunnel.etape5.city-placeholder')"
         @focus="onFocus"
       />
     </div>
 
     <div class="field-group">
-      <label class="field-label">👥 Nombre d'invités</label>
+      <label class="field-label">{{ $t('tunnel.etape5.field-guests') }}</label>
       <input
         v-model="state.nbInvites"
         class="field-input"
         type="text"
-        placeholder="Ex : Environ 40"
+        :placeholder="$t('tunnel.etape5.guests-placeholder')"
         @focus="onFocus"
       />
     </div>
 
     <div class="field-group field-group--row">
-      <label class="field-label">📍 Lieu défini&nbsp;?</label>
+      <label class="field-label">{{ $t('tunnel.etape5.field-venue') }}</label>
       <div class="toggle-group">
         <button
           class="toggle-btn"
@@ -36,7 +36,7 @@
           type="button"
           @click="state.lieuDefini = true"
         >
-          Oui
+          {{ $t('tunnel.etape5.venue-yes') }}
         </button>
         <button
           class="toggle-btn"
@@ -44,10 +44,10 @@
           type="button"
           @click="state.lieuDefini = false"
         >
-          Non
+          {{ $t('tunnel.etape5.venue-no') }}
         </button>
       </div>
-      <span v-if="!state.lieuDefini" class="lieu-non-defini">Lieu pas encore défini</span>
+      <span v-if="!state.lieuDefini" class="lieu-non-defini">{{ $t('tunnel.etape5.venue-undefined') }}</span>
     </div>
 
     <div v-if="state.lieuDefini" class="field-group">

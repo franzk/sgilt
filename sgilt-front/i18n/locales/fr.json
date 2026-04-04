@@ -114,11 +114,17 @@
         "moment-cle": "Moment clé",
         "description": "Description",
         "details": "Détails pratiques",
-        "contact": "Contact"
+        "coordonnees": "Vos coordonnées"
       }
     },
+    "comment-ca-marche": {
+      "title": "Comment ça marche ?",
+      "step-1": "Décrivez votre événement en quelques clics",
+      "step-2": "On transmet votre demande",
+      "step-3": "Le prestataire vous répond"
+    },
     "etape1": {
-      "question": "Quel événement préparez-vous\u00a0?"
+      "question": "Qu'est-ce que vous préparez\u00a0?"
     },
     "etape2": {
       "question": "Quelle ambiance souhaitez-vous créer\u00a0?"
@@ -127,17 +133,46 @@
       "question": "Quel serait le moment parfait de cette soirée\u00a0?"
     },
     "etape4": {
-      "question": "Racontez-nous votre événement",
+      "question": "Parlez-nous de votre événement",
       "subtitle-before": "Décrivez-le comme vous l'imaginez…",
-      "subtitle-after": "Plus vous nous en dites, mieux les prestataires pourront comprendre votre projet et y répondre de manière pertinente !",
-      "placeholder": "Parlez-nous de votre événement, de vos envies, de ce que vous imaginez..."
+      "subtitle-after": "Quelques détails aident à mieux vous répondre.",
+      "placeholder": "Ce que vous avez en tête, vos envies, le type d’ambiance…"
     },
     "etape5": {
-      "question": "Votre événement en pratique"
+      "question": "Votre événement en pratique",
+      "field-date": "📅 Date",
+      "date-placeholder": "Choisir une date",
+      "field-city": "📍 Ville",
+      "city-placeholder": "Ex : Strasbourg, Colmar, Breuschwickersheim...",
+      "field-guests": "👥 Nombre d'invités",
+      "guests-placeholder": "Ex : Environ 40 personnes",
+      "field-venue": "📍 Le lieu est déjà défini\u00a0?",
+      "venue-yes": "Oui",
+      "venue-no": "Non",
+      "venue-undefined": "Lieu pas encore défini"
+    },
+    "etape6": {
+      "question-contact": "Comment vous contacter ?",
+      "question-message": "Votre message",
+      "field-prenom": "👤 Prénom",
+      "prenom-placeholder": "Votre prénom",
+      "field-nom": "Nom",
+      "nom-placeholder": "Votre nom",
+      "field-email": "📧 Email",
+      "email-placeholder": "{'Ex: votre@email.fr'}",
+      "field-phone": "📱 Téléphone",
+      "phone-placeholder": "06 12 34 56 78",
+      "message-placeholder": "(optionnel) Votre message pour le prestataire",
+      "submit": "Envoyer la demande"
+    },
+    "finalisation": {
+      "title-sent": "Votre demande a bien été envoyée",
+      "title-confirm": "On y est presque\u00a0!",
+      "cta-text": "Vérifiez votre email et confirmez votre demande. Elle sera ensuite transmise à {name}.",
+      "see-event": "Voir mon événement →"
     },
     "recap": {
-      "title": "Votre événement",
-      "guests": "{n} invités"
+      "title": "Votre événement"
     },
     "booking-flow": {
       "step-1": {
@@ -250,7 +285,7 @@
   },
   "events": {
     "welcome": "Bonjour {name} !",
-    "count": "Vous avez {n} événement en cours. | Vous avez {n} événements en cours.",
+    "count": "Vous préparez {n} événement. | Vous préparez {n} événements.",
     "create": "Créer un événement",
     "empty": "Aucun événement pour le moment.",
     "confirmed": "{n} confirmée | {n} confirmées",

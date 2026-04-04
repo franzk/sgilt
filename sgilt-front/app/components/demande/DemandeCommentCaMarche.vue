@@ -1,18 +1,18 @@
 <template>
   <div class="flow">
-    <p class="title">Comment ça marche ?</p>
+    <p class="title">{{ $t('tunnel.comment-ca-marche.title') }}</p>
     <div class="steps">
       <div class="step">
         <span class="dot">1</span>
-        <span>Décrivez votre événement en quelques clics</span>
+        <span>{{ $t('tunnel.comment-ca-marche.step-1') }}</span>
       </div>
       <div class="step">
         <span class="dot">2</span>
-        <span>Validez votre demande par email</span>
+        <span>{{ $t('tunnel.comment-ca-marche.step-2') }}</span>
       </div>
       <div class="step">
         <span class="dot">3</span>
-        <span>Le prestataire vous répond</span>
+        <span>{{ $t('tunnel.comment-ca-marche.step-3') }}</span>
       </div>
     </div>
   </div>

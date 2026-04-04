@@ -57,6 +57,8 @@ function defaultDemandeState(): DemandeState {
     nbInvites: '',
     lieuDefini: true,
     lieu: '',
+    prenom: '',
+    nom: '',
     email: '',
     telephone: '',
     prestataireMessage: '',

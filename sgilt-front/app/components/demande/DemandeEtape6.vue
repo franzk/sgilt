@@ -1,29 +1,62 @@
 <template>
   <div class="etape">
-    <h2 class="question">{{ isNewEventFlow ? 'Votre message' : 'Comment vous contacter ?' }}</h2>
+    <h2 class="question">
+      {{
+        isNewEventFlow ? $t('tunnel.etape6.question-message') : $t('tunnel.etape6.question-contact')
+      }}
+    </h2>
 
     <!-- Coordonnées (masquées en flow new-event, récupérées depuis le profil) -->
     <template v-if="!isNewEventFlow">
-      <div class="section-title">Vos coordonnées</div>
       <div class="fields">
         <div class="field-group">
-          <label class="field-label">📧 Email <span class="required">*</span></label>
+          <label class="field-label"
+            >{{ $t('tunnel.etape6.field-prenom') }} <span class="required">*</span></label
+          >
+          <input
+            v-model="state.prenom"
+            class="field-input"
+            type="text"
+            :placeholder="$t('tunnel.etape6.prenom-placeholder')"
+            autocomplete="given-name"
+          />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label"
+            >{{ $t('tunnel.etape6.field-nom') }} <span class="required">*</span></label
+          >
+          <input
+            v-model="state.nom"
+            class="field-input"
+            type="text"
+            :placeholder="$t('tunnel.etape6.nom-placeholder')"
+            autocomplete="family-name"
+          />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label"
+            >{{ $t('tunnel.etape6.field-email') }} <span class="required">*</span></label
+          >
           <input
             v-model="state.email"
             class="field-input"
             type="email"
-            placeholder="votre@email.fr"
+            :placeholder="$t('tunnel.etape6.email-placeholder')"
             autocomplete="email"
           />
         </div>
 
         <div class="field-group">
-          <label class="field-label">📱 Téléphone <span class="required">*</span></label>
+          <label class="field-label"
+            >{{ $t('tunnel.etape6.field-phone') }} <span class="required">*</span></label
+          >
           <input
             v-model="state.telephone"
             class="field-input"
             type="tel"
-            placeholder="06 12 34 56 78"
+            :placeholder="$t('tunnel.etape6.phone-placeholder')"
             autocomplete="tel"
           />
         </div>
@@ -35,15 +68,15 @@
         <textarea
           v-model="state.prestataireMessage"
           class="description-textarea"
-          placeholder="(optionnel) Votre message pour le prestataire"
+          :placeholder="$t('tunnel.etape6.message-placeholder')"
           rows="6"
         />
       </div>
 
       <div class="field-group submit">
-        <SgiltButton type="primary" :disabled="!formValid" @click="submit"
-          >Envoyer ma demande</SgiltButton
-        >
+        <SgiltButton type="primary" :disabled="!formValid" @click="submit">
+          {{ $t('tunnel.etape6.submit') }}
+        </SgiltButton>
       </div>
     </div>
 
@@ -73,18 +106,22 @@ const { currentFlow } = useFlow()
 const isNewEventFlow = computed(() => currentFlow.value === 'new-event')
 
 const formValid = computed(() =>
-  isNewEventFlow.value ? true : !!state.email && !!state.telephone,
+  isNewEventFlow.value ? true : !!state.prenom && !!state.nom && !!state.email && !!state.telephone,
 )
 </script>
 
 <style scoped lang="scss">
 .etape {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
   .question {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.5rem;
     font-weight: 500;
     color: $text-primary;
-    margin: 0 0 $spacing-l;
+    margin: 0;
     line-height: 1.3;
   }
 }

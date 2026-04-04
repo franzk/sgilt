@@ -25,9 +25,9 @@
               :key="n"
               class="accordion-block"
               :class="{
-                'active': n === etapeActuelle,
-                'done': n < etapeActuelle,
-                'locked': n > etapeActuelle,
+                active: n === etapeActuelle,
+                done: n < etapeActuelle,
+                locked: n > etapeActuelle,
               }"
             >
               <button
@@ -39,8 +39,8 @@
                 <span
                   class="dot"
                   :class="{
-                    'active': n === etapeActuelle,
-                    'done': n < etapeActuelle,
+                    active: n === etapeActuelle,
+                    done: n < etapeActuelle,
                   }"
                 >
                   <span v-if="n < etapeActuelle">✓</span>
@@ -49,10 +49,7 @@
 
                 <span class="header-text">
                   <span class="label">{{ stepLabels[n - 1] }}</span>
-                  <span
-                    v-if="n < etapeActuelle && stepDoneSummary(n)"
-                    class="summary"
-                  >
+                  <span v-if="n < etapeActuelle && stepDoneSummary(n)" class="summary">
                     {{ stepDoneSummary(n) }}
                   </span>
                 </span>
@@ -178,7 +175,7 @@ const stepLabels = computed(() => [
   t('tunnel.steps.labels.moment-cle'),
   t('tunnel.steps.labels.description'),
   t('tunnel.steps.labels.details'),
-  t('tunnel.steps.labels.contact'),
+  t('tunnel.steps.labels.coordonnees'),
 ])
 
 function stepDoneSummary(n: number): string {
@@ -194,9 +191,10 @@ function stepDoneSummary(n: number): string {
         ? state.description.slice(0, 60) + (state.description.length > 60 ? '…' : '')
         : ''
     case 5: {
-      const parts = [state.ville, state.nbInvites ? t('tunnel.recap.guests', { n: state.nbInvites }) : ''].filter(
-        Boolean,
-      )
+      const parts = [
+        state.ville,
+        state.nbInvites ? t('tunnel.recap.guests', { n: state.nbInvites }) : '',
+      ].filter(Boolean)
       return parts.join(' · ')
     }
     default:
