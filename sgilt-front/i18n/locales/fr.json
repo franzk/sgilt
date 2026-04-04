@@ -291,7 +291,8 @@
     "confirmed": "{n} confirmée | {n} confirmées",
     "in-progress": "{n} en cours",
     "pending": "{n} en attente",
-    "add-provider": "+ Ajouter un prestataire"
+    "add-provider": "+ Ajouter un prestataire",
+    "see-event": "Voir l'événement"
   },
   "event": {
     "edit-dialog": {

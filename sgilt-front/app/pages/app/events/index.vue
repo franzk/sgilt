@@ -33,6 +33,7 @@
             <span v-if="event.ville">{{ event.ville }}</span>
           </p>
           <p class="event-card__summary">{{ reservationSummary(event) }}</p>
+          <span class="event-card__cta" aria-hidden="true">{{ t('events.see-event') }}</span>
         </template>
       </SgiltCard>
     </div>
@@ -203,6 +204,11 @@ $desktop: $breakpoint-desktop;
     width: 100%;
     margin: 0 auto;
     padding: 32px 40px;
+
+    &:has(> :only-child) {
+      grid-template-columns: 1fr;
+      max-width: 600px;
+    }
   }
 }
 
@@ -212,6 +218,16 @@ $desktop: $breakpoint-desktop;
   font-style: italic;
   text-align: center;
   padding: $spacing-xl 0;
+}
+
+// ── Cards ──────────────────────────────────────────────────────────────────────
+.events-list :deep(.sgilt-card) {
+  box-shadow: 0 4px 20px rgba(47, 42, 37, 0.12);
+  transition: box-shadow 200ms ease;
+
+  &:hover {
+    box-shadow: 0 8px 32px rgba(47, 42, 37, 0.18);
+  }
 }
 
 // ── Contenu overlay (slot rendu dans le scope parent) ─────────────────────────
@@ -238,6 +254,22 @@ $desktop: $breakpoint-desktop;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.75);
   margin: 5px 0 0;
+}
+
+.event-card__cta {
+  display: inline-block;
+  margin-top: $spacing-s;
+  padding: 6px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: $radius-xl;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+  align-self: flex-start;
 }
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
