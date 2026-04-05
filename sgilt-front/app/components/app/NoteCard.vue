@@ -57,12 +57,15 @@ const relativeDate = computed(() => {
   border-radius: $radius-sm;
   box-shadow: 0 1px 4px rgba(47, 42, 37, 0.07);
 
+  box-shadow: 0 2px 8px rgba(47, 42, 37, 0.08);
+
   &.client {
     background: #ffffff;
   }
 
   &.prestataire {
-    background: #f5f0e8;
+    background: #f8f9fa;
+    border-left: 3px solid $brand-accent;
   }
 
   .body {
