@@ -71,6 +71,7 @@ export interface NoteAuthor {
 export interface ReservationNote {
   id: string
   author: NoteAuthor
+  titre: string
   content: string
   createdAt: Date
   isPersonal?: boolean // note privée pro uniquement

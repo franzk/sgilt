@@ -1,5 +1,11 @@
 <template>
   <div class="feed">
+    <!-- ── Header ────────────────────────────────────────────────────────────── -->
+    <div class="feed__header">
+      <h3 class="title">{{ $t('feed.title') }}</h3>
+      <p class="subtitle">{{ $t('feed.subtitle') }}</p>
+    </div>
+
     <!-- ── Pills ─────────────────────────────────────────────────────────────── -->
     <div v-if="showPills" class="feed__pills">
       <button
@@ -16,7 +22,9 @@
 
     <!-- ── Actions ────────────────────────────────────────────────────────────── -->
     <div v-if="canAddNote" class="feed__actions">
-      <button class="feed__action-btn" type="button" @click="openNoteModal">{{ $t('feed.actions.add-note') }}</button>
+      <button class="feed__action-btn" type="button" @click="openNoteModal">
+        {{ $t('feed.actions.add-note') }}
+      </button>
       <button
         v-if="canUploadDocument"
         class="feed__action-btn"
@@ -35,6 +43,7 @@
           <!-- Message initial -->
           <div v-if="item.isMessageInitial" class="note-initial">
             <span class="label">{{ $t('feed.note-initial-label') }}</span>
+            <strong class="titre">{{ item.titre }}</strong>
             <p class="content">{{ item.content }}</p>
             <span class="meta">
               {{ item.author.name }} · {{ formatDateShort(item.createdAt) }}
@@ -48,6 +57,7 @@
               <span class="author">{{ item.author.name }}</span>
               <span class="date">{{ formatDateShort(item.createdAt) }}</span>
             </div>
+            <strong class="titre">{{ item.titre }}</strong>
             <p class="content">{{ item.content }}</p>
           </div>
 
@@ -94,6 +104,12 @@
       max-width="800px"
     >
       <div class="note-form">
+        <input
+          v-model="newNoteTitre"
+          class="titre-input"
+          type="text"
+          :placeholder="$t('feed.add-note-dialog.title-placeholder')"
+        />
         <textarea
           ref="noteTextareaRef"
           v-model="newNote"
@@ -107,7 +123,7 @@
             <input v-model="noteIsPersonal" type="checkbox" />
             <span>{{ $t('feed.add-note-dialog.private-toggle') }}</span>
           </label>
-          <SgiltButton :disabled="!newNote.trim() || sending" @click="sendNote">
+          <SgiltButton :disabled="!newNote.trim() || !newNoteTitre.trim() || sending" @click="sendNote">
             {{ $t('feed.add-note-dialog.submit') }}
           </SgiltButton>
         </div>
@@ -137,7 +153,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  'add-note': [content: string, isPersonal: boolean]
+  'add-note': [titre: string, content: string, isPersonal: boolean]
   'upload-document': [file: File]
   'delete-document': [id: string]
 }>()
@@ -189,12 +205,14 @@ function handleUpload(e: Event) {
 // ── Modale note ────────────────────────────────────────────────────────────────
 const noteModalOpen = ref(false)
 const newNote = ref('')
+const newNoteTitre = ref('')
 const noteIsPersonal = ref(false)
 const sending = ref(false)
 const noteTextareaRef = ref<HTMLTextAreaElement | null>(null)
 
 function openNoteModal() {
   newNote.value = ''
+  newNoteTitre.value = ''
   noteIsPersonal.value = false
   noteModalOpen.value = true
 }
@@ -210,14 +228,14 @@ function autoResize(e: Event) {
 }
 
 async function sendNote() {
+  const titre = newNoteTitre.value.trim()
   const content = newNote.value.trim()
-  if (!content || sending.value) return
+  if (!titre || !content || sending.value) return
   sending.value = true
-  emit('add-note', content, noteIsPersonal.value)
+  emit('add-note', titre, content, noteIsPersonal.value)
   sending.value = false
   noteModalOpen.value = false
 }
-
 </script>
 
 <style scoped lang="scss">
@@ -229,6 +247,29 @@ $desktop: $breakpoint-desktop;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+
+  // ── Header ─────────────────────────────────────────────────────────────────
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xxs;
+
+    .title {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: $text-primary;
+      margin: 0;
+    }
+
+    .subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      color: $text-secondary;
+      margin: 0;
+      line-height: 1.5;
+    }
+  }
 
   // ── Pills ──────────────────────────────────────────────────────────────────
   &__pills {
@@ -327,6 +368,14 @@ $desktop: $breakpoint-desktop;
     color: $brand-muted;
   }
 
+  .titre {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: $text-primary;
+    line-height: 1.3;
+  }
+
   .content {
     font-family: 'Inter', sans-serif;
     font-size: 0.9rem;
@@ -380,6 +429,14 @@ $desktop: $breakpoint-desktop;
     color: $text-secondary;
     opacity: 0.7;
     margin-left: auto;
+  }
+
+  .titre {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: $text-primary;
+    line-height: 1.3;
   }
 
   .content {
@@ -498,6 +555,26 @@ $desktop: $breakpoint-desktop;
   min-height: 0;
   padding: 32px;
   gap: $spacing-m;
+
+  .titre-input {
+    width: 100%;
+    padding: 0;
+    border: none;
+    border-bottom: 1px solid $divider-color;
+    font-family: inherit;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: $text-primary;
+    background: transparent;
+    outline: none;
+    padding-bottom: $spacing-xs;
+
+    &::placeholder {
+      color: $text-secondary;
+      opacity: 0.35;
+      font-weight: 400;
+    }
+  }
 
   .textarea {
     flex: 1;

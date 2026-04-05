@@ -626,6 +626,8 @@
     }
   },
   "feed": {
+    "title": "Notes & suivi",
+    "subtitle": "Ajoutez des notes, documents ou informations utiles pour le suivi.",
     "pills": {
       "all": "Tout",
       "notes": "Notes",
@@ -636,9 +638,10 @@
       "add-document": "+ Document"
     },
     "empty": "Aucun élément pour le moment.",
-    "note-initial-label": "Message initial",
+    "note-initial-label": "Demande initiale",
     "add-note-dialog": {
       "title": "Ajouter une note",
+      "title-placeholder": "Titre de la note",
       "placeholder": "Ajouter une note...",
       "private-toggle": "Note privée 🔒 (visible uniquement par moi)",
       "submit": "Ajouter la note"
