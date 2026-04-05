@@ -1,6 +1,7 @@
 import type {
   ProDemandeDetail,
   ProDemandeSummary,
+  ProBoardCounts,
   ReservationNote,
   ReservationStatus,
 } from '~/types/event'
@@ -24,6 +25,15 @@ export const ProMockService = {
     if (nLabel && cLabel) return `Vous avez ${nLabel} et ${cLabel}.`
     if (nLabel) return `Vous avez ${nLabel}.`
     return `Vous avez ${cLabel}.`
+  },
+
+  async getBoardCounts(): Promise<ProBoardCounts> {
+    await new Promise((r) => setTimeout(r, 250))
+    return {
+      countNouvelle: PRO_DEMANDES.filter((d) => d.status === 'nouvelle').length,
+      countEnDiscussion: PRO_DEMANDES.filter((d) => d.status === 'en_discussion').length,
+      countConfirmee: PRO_DEMANDES.filter((d) => d.status === 'confirmee').length,
+    }
   },
 
   async getAllDemandes(): Promise<ProDemandeSummary[]> {
@@ -72,4 +82,4 @@ export const ProMockService = {
 }
 
 // Re-export types for consumers
-export type { ProDemandeDetail, ProDemandeSummary }
+export type { ProDemandeDetail, ProDemandeSummary, ProBoardCounts }

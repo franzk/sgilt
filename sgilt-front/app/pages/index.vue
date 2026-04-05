@@ -23,9 +23,11 @@
         <SgiltDatePicker placeholder="Votre date" v-model="dateFilter" :disabled="isLocked" />
 
         <SgiltSelect :options="selectOptions" v-model="selectedOption" :disabled="isLocked">
-          <template v-slot:left-icon> <IconConfetti size="20" /> </template>
+          <template v-slot:left-icon> <IconConfetti :size="20" /> </template>
         </SgiltSelect>
-        <SgiltHeroButton class="submit_button" @click="launch"> {{ $t('landing.search-banner.cta') }} </SgiltHeroButton>
+        <SgiltHeroButton class="submit_button" @click="launch">
+          {{ $t('landing.search-banner.cta') }}
+        </SgiltHeroButton>
       </div>
     </section>
     <section class="photo-layer" aria-hidden="true"></section>

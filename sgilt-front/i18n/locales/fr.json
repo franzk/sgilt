@@ -558,6 +558,22 @@
     }
   },
   "pro": {
+    "greeting": {
+      "count": {
+        "nouvelle": {
+          "mobile": "À contacter",
+          "desktop": "demande à contacter | demandes à contacter"
+        },
+        "en-discussion": {
+          "mobile": "À confirmer",
+          "desktop": "demande à confirmer | demandes à confirmer"
+        },
+        "confirmee": {
+          "mobile": "À venir",
+          "desktop": "prestation confirmée à venir | prestations confirmées à venir"
+        }
+      }
+    },
     "reservations": {
       "empty": "Aucune demande pour le moment.",
       "filters": {
@@ -566,7 +582,15 @@
     },
     "board": {
       "greeting": {
-        "title": "Bonjour DJ Animation !"
+        "title": "Bonjour DJ Animation !",
+        "counts": {
+          "nouvelle": "{count} demandes à contacter",
+          "en-discussion": "{count} demandes à confirmer",
+          "confirmee": "{count} prestations confirmées à venir",
+          "nouvelle-label": "À contacter",
+          "en-discussion-label": "À confirmer",
+          "confirmee-label": "À venir"
+        }
       },
       "card": {
         "pill": {

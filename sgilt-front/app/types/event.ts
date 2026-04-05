@@ -117,6 +117,12 @@ export interface ProDemandeDetail extends ReservationDetail {
   clientInfo: ClientContactInfo
 }
 
+export interface ProBoardCounts {
+  countNouvelle: number
+  countEnDiscussion: number
+  countConfirmee: number
+}
+
 export interface ProDemandeSummary {
   id: string
   titre: string

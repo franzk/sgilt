@@ -2,7 +2,7 @@
   <div class="pro-board">
     <!-- ── Header mobile (masqué desktop) ───────────────────────────────────────── -->
     <div class="header-mobile">
-      <ProBoardGreeting :subtitle="contextLine" :loading="loading" />
+      <ProBoardGreeting :subtitle="contextLine" :loading="loading" :counts="boardCounts" @filter="activeFilter = $event" />
     </div>
 
     <!-- ── Filtres sticky ────────────────────────────────────────────────────────── -->
@@ -14,7 +14,7 @@
     <div class="body">
       <!-- Sidebar desktop (masquée mobile) -->
       <aside class="sidebar">
-        <ProBoardGreeting :subtitle="contextLine" :loading="loading" />
+        <ProBoardGreeting :subtitle="contextLine" :loading="loading" :counts="boardCounts" @filter="activeFilter = $event" />
       </aside>
 
       <!-- Liste des bookings -->
@@ -44,7 +44,7 @@
 definePageMeta({ layout: 'pro' })
 
 import { ProMockService } from '~/services/pro.mock'
-import type { ProDemandeSummary } from '~/types/event'
+import type { ProDemandeSummary, ProBoardCounts } from '~/types/event'
 import { RESERVATION_STATUS_ORDER } from '~/constants/reservation-status'
 import type { ReservationStatut } from '~/constants/reservation-status'
 import ProStatusPills from '~/components/pro/ProStatusPills.vue'
@@ -52,9 +52,13 @@ import ProStatusPills from '~/components/pro/ProStatusPills.vue'
 // ── Données ────────────────────────────────────────────────────────────────────
 const loading = ref(true)
 const DEMANDES = ref<ProDemandeSummary[]>([])
+const boardCounts = ref<ProBoardCounts>({ countNouvelle: 0, countEnDiscussion: 0, countConfirmee: 0 })
 
 onMounted(async () => {
-  DEMANDES.value = await ProMockService.getAllDemandes()
+  ;[DEMANDES.value, boardCounts.value] = await Promise.all([
+    ProMockService.getAllDemandes(),
+    ProMockService.getBoardCounts(),
+  ])
   loading.value = false
 })
 
