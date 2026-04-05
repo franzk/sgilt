@@ -105,6 +105,7 @@
           <div class="bento-card">
             <ReservationFeed
               :items="feedItems"
+              current-user-role="prestataire"
               :can-add-note="isEditable"
               :can-upload-document="isEditable"
               :show-personal-toggle="true"

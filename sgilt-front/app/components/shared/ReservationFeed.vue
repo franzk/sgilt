@@ -141,6 +141,7 @@ import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 const props = withDefaults(
   defineProps<{
     items: FeedItem[]
+    currentUserRole: 'client' | 'prestataire'
     canAddNote?: boolean
     canUploadDocument?: boolean
     showPersonalToggle?: boolean
@@ -192,7 +193,7 @@ const filteredItems = computed(() => {
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
 function canDeleteDoc(item: FeedDocument): boolean {
-  return item.uploadedBy.role === 'client' || item.uploadedBy.role === 'prestataire'
+  return item.uploadedBy.role === props.currentUserRole
 }
 
 function handleUpload(e: Event) {

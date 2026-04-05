@@ -31,6 +31,7 @@
       <template v-if="reservation">
         <ReservationFeed
           :items="feedItems"
+          current-user-role="client"
           :can-add-note="true"
           :can-upload-document="true"
           :show-personal-toggle="true"
