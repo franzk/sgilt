@@ -4,13 +4,10 @@
       <div v-if="open" ref="popinRef" class="profile-popin" role="menu" aria-label="Menu compte">
         <!-- ── Header : avatar + nom + email ──────────────────────────────────── -->
         <div class="header">
-          <div class="avatar">
-            <img v-if="user.photo" :src="user.photo" alt="" class="avatar-photo" />
-            <span v-else class="avatar-initials">{{ initials }}</span>
-          </div>
+          <UserAvatar :size="2.25" />
           <div class="header-info">
-            <span class="header-name">{{ user.fullName }}</span>
-            <span class="header-email">{{ user.email }}</span>
+            <span class="header-name">{{ currentUser.fullName }}</span>
+            <span class="header-email">{{ currentUser.email }}</span>
           </div>
         </div>
 
@@ -69,6 +66,8 @@ import {
   MailIcon,
 } from '@remixicons/vue/line'
 import { onClickOutside } from '@vueuse/core'
+import UserAvatar from '~/components/basics/UserAvatar.vue'
+import { useCurrentUser } from '~/composables/useCurrentUser'
 
 const props = defineProps<{ open: boolean; anchorEl?: HTMLElement | null }>()
 const emit = defineEmits<{ close: [] }>()
@@ -79,17 +78,7 @@ onClickOutside(popinRef, () => emit('close'), {
   ignore: [() => props.anchorEl ?? null],
 })
 
-// TODO : remplacer par les données Keycloak
-const user = {
-  fullName: 'Sophie Lambert',
-  email: 'sophie.lambert@email.fr',
-  photo: null as string | null,
-}
-
-const initials = user.fullName
-  .split(' ')
-  .map((n) => n.charAt(0).toUpperCase())
-  .join('')
+const currentUser = useCurrentUser()
 
 function close() {
   emit('close')
@@ -128,32 +117,6 @@ function logout() {
   align-items: center;
   gap: $spacing-s;
   padding: $spacing-s $spacing-m;
-}
-
-.avatar {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: $brand-accent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.avatar-photo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-}
-
-.avatar-initials {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: $brand-primary;
-  line-height: 1;
 }
 
 .header-info {

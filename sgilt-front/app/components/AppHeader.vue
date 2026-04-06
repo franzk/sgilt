@@ -33,10 +33,7 @@
         aria-label="Menu compte"
         @click="profileOpen = !profileOpen"
       >
-        <div class="avatar">
-          <!-- avatar photo : <img v-if="user.photo" ... /> -->
-          <span class="avatar__initials">JT</span>
-        </div>
+        <UserAvatar :size="2" />
       </button>
 
       <ProfileMenuPopin :open="profileOpen" :anchor-el="avatarRef" @close="profileOpen = false" />
@@ -47,6 +44,7 @@
 <script setup lang="ts">
 import NotificationBell from '~/components/notifications/NotificationBell.vue'
 import ProfileMenuPopin from '~/components/profile/ProfileMenuPopin.vue'
+import UserAvatar from '~/components/basics/UserAvatar.vue'
 // DEV — à supprimer avant prod
 import { EarthIcon, UserIcon, BriefcaseIcon, CalendarEventIcon } from '@remixicons/vue/line'
 
@@ -153,23 +151,4 @@ const hideShadow = computed(
   }
 }
 
-.avatar {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  background: $brand-subtle;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  cursor: pointer;
-
-  &__initials {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: $text-primary;
-    line-height: 1;
-  }
-}
 </style>

@@ -14,9 +14,8 @@
         <!-- Colonne gauche : avatar -->
         <div class="avatar-col">
           <div class="avatar-row">
-            <div class="avatar" @click="editing && avatarInput?.click()">
-              <img v-if="previewUrl" :src="previewUrl" alt="" class="avatar-photo" />
-              <span v-else class="avatar-initials">{{ initials }}</span>
+            <div class="avatar-wrapper" :class="{ 'avatar-wrapper--editing': editing }" @click="editing && avatarInput?.click()">
+              <UserAvatar :size="5" />
               <div v-if="editing" class="avatar-overlay" aria-hidden="true">
                 <CameraIcon class="avatar-overlay-icon" />
               </div>
@@ -166,6 +165,7 @@
 import { CameraIcon, EditIcon, ShieldIcon } from '@remixicons/vue/line'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
+import UserAvatar from '~/components/basics/UserAvatar.vue'
 
 definePageMeta({ layout: 'account' })
 
@@ -194,13 +194,6 @@ const profile = ref<UserProfile>({
 // ── Avatar ────────────────────────────────────────────────────────────────────
 
 const avatarInput = ref<HTMLInputElement | null>(null)
-const previewUrl = ref<string | null>(profile.value.photo ?? null)
-
-const initials = computed(() => {
-  const f = profile.value.firstName.charAt(0).toUpperCase()
-  const l = profile.value.lastName.charAt(0).toUpperCase()
-  return `${f}${l}`
-})
 
 function onAvatarChange(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0]
@@ -222,7 +215,6 @@ function startEdit() {
 
 function cancelEdit() {
   editing.value = false
-  previewUrl.value = profile.value.photo ?? null
 }
 
 async function save() {
@@ -337,41 +329,19 @@ $desktop: $breakpoint-desktop;
   padding: $spacing-s $spacing-m $spacing-m;
 }
 
-.avatar {
+.avatar-wrapper {
   position: relative;
-  width: 5rem;
-  height: 5rem;
   border-radius: 50%;
-  background: $surface-soft;
-  box-shadow: 0 0 0 3px $brand-accent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
   cursor: default;
 
-  &:has(.avatar-overlay) {
+  &--editing {
     cursor: pointer;
-  }
-
-  .avatar-photo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .avatar-initials {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.6rem;
-    font-weight: 500;
-    color: $text-primary;
-    line-height: 1;
-    user-select: none;
   }
 
   .avatar-overlay {
     position: absolute;
     inset: 0;
+    border-radius: 50%;
     background: rgba(0, 0, 0, 0.4);
     display: flex;
     align-items: center;
@@ -538,13 +508,9 @@ $desktop: $breakpoint-desktop;
     align-items: center;
     padding: $spacing-l $spacing-m;
 
-    .avatar {
-      width: 7rem;
-      height: 7rem;
-
-      .avatar-initials {
-        font-size: 2.2rem;
-      }
+    :deep(.user-avatar) {
+      --ua-size: 7rem;
+      --ua-font-size: 2.2rem;
     }
   }
 

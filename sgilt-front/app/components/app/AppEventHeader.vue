@@ -13,15 +13,7 @@
       </NuxtLink>
 
       <NuxtLink to="/app/profile" class="action" aria-label="Profil">
-        <div class="avatar">
-          <img
-            v-if="avatarUrl"
-            :src="avatarUrl"
-            :alt="initials"
-            class="avatar-img"
-          />
-          <span v-else class="avatar-initials">{{ initials }}</span>
-        </div>
+        <UserAvatar :size="2" />
       </NuxtLink>
     </div>
   </header>
@@ -29,11 +21,10 @@
 
 <script setup lang="ts">
 import { NotificationIcon } from '@remixicons/vue/line'
+import UserAvatar from '~/components/basics/UserAvatar.vue'
 
 defineProps<{
   hasNotifications?: boolean
-  avatarUrl?: string
-  initials?: string
 }>()
 </script>
 
@@ -103,29 +94,5 @@ $header-h: 52px;
     border: 1.5px solid #fff;
   }
 
-  .avatar {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 50%;
-    background: $brand-subtle;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .avatar-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .avatar-initials {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: $text-primary;
-    line-height: 1;
-  }
 }
 </style>
