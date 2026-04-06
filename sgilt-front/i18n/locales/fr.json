@@ -535,7 +535,7 @@
       "field-company": "Entreprise",
       "field-email": "Email",
       "field-password": "Mot de passe",
-      "keycloak-link": "Modifier via mon espace sécurisé →",
+      "keycloak-link": "Modifier via mon espace sécurisé",
       "save": "Sauvegarder",
       "cancel": "Annuler",
       "delete-account": "Supprimer mon compte",

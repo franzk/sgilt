@@ -28,9 +28,11 @@
         />
       </div>
 
-      <!-- Champs -->
-      <div class="fields">
-        <div class="field">
+      <hr class="section-sep" />
+
+      <!-- Prénom | Nom -->
+      <div class="name-row">
+        <div class="name-field">
           <label class="field-label" :for="editing ? 'field-firstname' : undefined">{{ $t('profile.page.field-firstname') }}</label>
           <input
             v-if="editing"
@@ -42,8 +44,7 @@
           />
           <span v-else class="field-value">{{ profile.firstName }}</span>
         </div>
-
-        <div class="field">
+        <div class="name-field">
           <label class="field-label" :for="editing ? 'field-lastname' : undefined">{{ $t('profile.page.field-lastname') }}</label>
           <input
             v-if="editing"
@@ -55,7 +56,12 @@
           />
           <span v-else class="field-value">{{ profile.lastName }}</span>
         </div>
+      </div>
 
+      <hr class="section-sep" />
+
+      <!-- Téléphone + Entreprise -->
+      <div class="fields">
         <div class="field">
           <label class="field-label" :for="editing ? 'field-phone' : undefined">{{ $t('profile.page.field-phone') }}</label>
           <input
@@ -102,13 +108,15 @@
           <span class="field-value">{{ profile.email }}</span>
         </div>
 
+        <hr class="field-sep" />
+
         <div class="field">
           <span class="field-label">{{ $t('profile.page.field-password') }}</span>
           <span class="field-value field-value--password">••••••••</span>
         </div>
       </div>
 
-      <a href="/account/security" class="keycloak-link">{{ $t('profile.page.keycloak-link') }}</a>
+      <a href="/account/security" class="keycloak-link">{{ $t('profile.page.keycloak-link') }} <span class="link-arrow">→</span></a>
     </section>
 
     <!-- ── Suppression de compte (clients uniquement) ─────────────────────────── -->
@@ -248,10 +256,10 @@ $section-radius: $radius-lg;
   background: #fff;
   border: 1px solid $divider-color;
   border-radius: $section-radius;
-  padding: $spacing-m;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: $spacing-m;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 
   .section-header {
     display: flex;
@@ -267,6 +275,7 @@ $section-radius: $radius-lg;
     text-transform: uppercase;
     color: $text-secondary;
     margin: 0;
+    padding: $spacing-m $spacing-m $spacing-s;
   }
 
   .section-edit {
@@ -280,7 +289,7 @@ $section-radius: $radius-lg;
     font-family: inherit;
     font-size: 0.82rem;
     font-weight: 500;
-    color: $brand-primary;
+    color: $brand-accent;
     cursor: pointer;
     padding: 0;
     transition: opacity 150ms ease;
@@ -291,11 +300,28 @@ $section-radius: $radius-lg;
   }
 }
 
+// ── Séparateurs internes ──────────────────────────────────────────────────────
+
+.section-sep {
+  border: none;
+  border-top: 1px solid $divider-color;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.field-sep {
+  border: none;
+  border-top: 1px solid $divider-color;
+  margin: 0;
+  flex-shrink: 0;
+}
+
 // ── Avatar ────────────────────────────────────────────────────────────────────
 
 .avatar-row {
   display: flex;
   justify-content: center;
+  padding: $spacing-s $spacing-m $spacing-m;
 }
 
 .avatar {
@@ -304,6 +330,7 @@ $section-radius: $radius-lg;
   height: 5rem;
   border-radius: 50%;
   background: $surface-soft;
+  box-shadow: 0 0 0 3px $brand-accent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -349,52 +376,71 @@ $section-radius: $radius-lg;
   display: none;
 }
 
+// ── Ligne Prénom | Nom ────────────────────────────────────────────────────────
+
+.name-row {
+  display: flex;
+}
+
+.name-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: $spacing-s $spacing-m;
+
+  &:first-child {
+    border-right: 1px solid $divider-color;
+  }
+}
+
 // ── Champs ────────────────────────────────────────────────────────────────────
 
 .fields {
   display: flex;
   flex-direction: column;
   gap: $spacing-s;
+  padding: $spacing-s $spacing-m $spacing-m;
 }
 
 .field {
   display: flex;
   flex-direction: column;
   gap: 3px;
+}
 
-  .field-label {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.75rem;
-    color: $text-secondary;
+.field-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  color: $text-secondary;
+}
+
+.field-value {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: $text-primary;
+  font-weight: 500;
+
+  &--password {
+    letter-spacing: 0.12em;
   }
+}
 
-  .field-value {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.9rem;
-    color: $text-primary;
-    font-weight: 500;
+.field-input {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: $text-primary;
+  background: $surface-soft;
+  border: 1px solid $divider-color;
+  border-radius: $radius-sm;
+  padding: $spacing-xs $spacing-s;
+  outline: none;
+  transition: border-color 150ms ease;
 
-    &--password {
-      letter-spacing: 0.12em;
-    }
-  }
-
-  .field-input {
-    width: 100%;
-    box-sizing: border-box;
-    font-family: inherit;
-    font-size: 0.9rem;
-    color: $text-primary;
-    background: $surface-soft;
-    border: 1px solid $divider-color;
-    border-radius: $radius-sm;
-    padding: $spacing-xs $spacing-s;
-    outline: none;
-    transition: border-color 150ms ease;
-
-    &:focus {
-      border-color: $brand-accent;
-    }
+  &:focus {
+    border-color: $brand-accent;
   }
 }
 
@@ -404,21 +450,27 @@ $section-radius: $radius-lg;
   display: flex;
   flex-wrap: wrap;
   gap: $spacing-s;
-  padding-top: $spacing-xs;
+  padding: 0 $spacing-m $spacing-m;
 }
 
 // ── Lien Keycloak ─────────────────────────────────────────────────────────────
 
 .keycloak-link {
+  display: block;
   font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
   font-weight: 500;
   color: $brand-primary;
   text-decoration: none;
   transition: opacity 150ms ease;
+  padding: 0 $spacing-m $spacing-m;
 
   &:hover {
     opacity: 0.7;
+  }
+
+  .link-arrow {
+    color: $brand-accent;
   }
 }
 
