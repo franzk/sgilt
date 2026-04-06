@@ -5,7 +5,8 @@
         <!-- ── Header : avatar + nom + email ──────────────────────────────────── -->
         <div class="header">
           <div class="avatar">
-            <span class="avatar-initials">{{ initials }}</span>
+            <img v-if="user.photo" :src="user.photo" alt="" class="avatar-photo" />
+            <span v-else class="avatar-initials">{{ initials }}</span>
           </div>
           <div class="header-info">
             <span class="header-name">{{ user.fullName }}</span>
@@ -82,6 +83,7 @@ onClickOutside(popinRef, () => emit('close'), {
 const user = {
   fullName: 'Sophie Lambert',
   email: 'sophie.lambert@email.fr',
+  photo: null as string | null,
 }
 
 const initials = user.fullName
@@ -137,6 +139,13 @@ function logout() {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.avatar-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .avatar-initials {
