@@ -10,84 +10,91 @@
         <h2 class="section-title">{{ $t('profile.page.personal-info-title') }}</h2>
       </div>
 
-      <!-- Avatar -->
-      <div class="avatar-row">
-        <div class="avatar" @click="editing && avatarInput?.click()">
-          <img v-if="previewUrl" :src="previewUrl" alt="" class="avatar-photo" />
-          <span v-else class="avatar-initials">{{ initials }}</span>
-          <div v-if="editing" class="avatar-overlay" aria-hidden="true">
-            <CameraIcon class="avatar-overlay-icon" />
+      <div class="info-layout">
+        <!-- Colonne gauche : avatar -->
+        <div class="avatar-col">
+          <div class="avatar-row">
+            <div class="avatar" @click="editing && avatarInput?.click()">
+              <img v-if="previewUrl" :src="previewUrl" alt="" class="avatar-photo" />
+              <span v-else class="avatar-initials">{{ initials }}</span>
+              <div v-if="editing" class="avatar-overlay" aria-hidden="true">
+                <CameraIcon class="avatar-overlay-icon" />
+              </div>
+            </div>
+            <input
+              ref="avatarInput"
+              type="file"
+              accept="image/*"
+              class="avatar-file-input"
+              @change="onAvatarChange"
+            />
           </div>
         </div>
-        <input
-          ref="avatarInput"
-          type="file"
-          accept="image/*"
-          class="avatar-file-input"
-          @change="onAvatarChange"
-        />
-      </div>
 
-      <hr class="section-sep" />
+        <!-- Colonne droite : champs -->
+        <div class="fields-col">
+          <hr class="section-sep" />
 
-      <!-- Prénom | Nom -->
-      <div class="name-row">
-        <div class="name-field">
-          <label class="field-label" :for="editing ? 'field-firstname' : undefined">{{ $t('profile.page.field-firstname') }}</label>
-          <input
-            v-if="editing"
-            id="field-firstname"
-            v-model="draft.firstName"
-            class="field-input"
-            type="text"
-            autocomplete="given-name"
-          />
-          <span v-else class="field-value">{{ profile.firstName }}</span>
-        </div>
-        <div class="name-field">
-          <label class="field-label" :for="editing ? 'field-lastname' : undefined">{{ $t('profile.page.field-lastname') }}</label>
-          <input
-            v-if="editing"
-            id="field-lastname"
-            v-model="draft.lastName"
-            class="field-input"
-            type="text"
-            autocomplete="family-name"
-          />
-          <span v-else class="field-value">{{ profile.lastName }}</span>
-        </div>
-      </div>
+          <!-- Prénom | Nom -->
+          <div class="name-row">
+            <div class="name-field">
+              <label class="field-label" :for="editing ? 'field-firstname' : undefined">{{ $t('profile.page.field-firstname') }}</label>
+              <input
+                v-if="editing"
+                id="field-firstname"
+                v-model="draft.firstName"
+                class="field-input"
+                type="text"
+                autocomplete="given-name"
+              />
+              <span v-else class="field-value">{{ profile.firstName }}</span>
+            </div>
+            <div class="name-field">
+              <label class="field-label" :for="editing ? 'field-lastname' : undefined">{{ $t('profile.page.field-lastname') }}</label>
+              <input
+                v-if="editing"
+                id="field-lastname"
+                v-model="draft.lastName"
+                class="field-input"
+                type="text"
+                autocomplete="family-name"
+              />
+              <span v-else class="field-value">{{ profile.lastName }}</span>
+            </div>
+          </div>
 
-      <hr class="section-sep" />
+          <hr class="section-sep" />
 
-      <!-- Téléphone + Entreprise -->
-      <div class="fields">
-        <div class="field">
-          <label class="field-label" :for="editing ? 'field-phone' : undefined">{{ $t('profile.page.field-phone') }}</label>
-          <input
-            v-if="editing"
-            id="field-phone"
-            v-model="draft.phone"
-            class="field-input"
-            type="tel"
-            autocomplete="tel"
-          />
-          <span v-else class="field-value">{{ profile.phone }}</span>
-        </div>
+          <!-- Téléphone + Entreprise -->
+          <div class="fields">
+            <div class="field">
+              <label class="field-label" :for="editing ? 'field-phone' : undefined">{{ $t('profile.page.field-phone') }}</label>
+              <input
+                v-if="editing"
+                id="field-phone"
+                v-model="draft.phone"
+                class="field-input"
+                type="tel"
+                autocomplete="tel"
+              />
+              <span v-else class="field-value">{{ profile.phone }}</span>
+            </div>
 
-        <div v-if="profile.role === 'prestataire'" class="field">
-          <label class="field-label" :for="editing ? 'field-company' : undefined">
-            {{ $t('profile.page.field-company') }}
-          </label>
-          <input
-            v-if="editing"
-            id="field-company"
-            v-model="draft.companyName"
-            class="field-input"
-            type="text"
-            autocomplete="organization"
-          />
-          <span v-else class="field-value">{{ profile.companyName }}</span>
+            <div v-if="profile.role === 'prestataire'" class="field">
+              <label class="field-label" :for="editing ? 'field-company' : undefined">
+                {{ $t('profile.page.field-company') }}
+              </label>
+              <input
+                v-if="editing"
+                id="field-company"
+                v-model="draft.companyName"
+                class="field-input"
+                type="text"
+                autocomplete="organization"
+              />
+              <span v-else class="field-value">{{ profile.companyName }}</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -102,21 +109,26 @@
     <section class="section">
       <h2 class="section-title">{{ $t('profile.page.connection-title') }}</h2>
 
-      <div class="fields">
-        <div class="field">
-          <span class="field-label">{{ $t('profile.page.field-email') }}</span>
-          <span class="field-value">{{ profile.email }}</span>
+      <div class="connection-layout">
+        <div class="fields">
+          <div class="field">
+            <span class="field-label">{{ $t('profile.page.field-email') }}</span>
+            <span class="field-value">{{ profile.email }}</span>
+          </div>
+
+          <hr class="field-sep" />
+
+          <div class="field">
+            <span class="field-label">{{ $t('profile.page.field-password') }}</span>
+            <span class="field-value field-value--password">••••••••</span>
+          </div>
         </div>
 
-        <hr class="field-sep" />
-
-        <div class="field">
-          <span class="field-label">{{ $t('profile.page.field-password') }}</span>
-          <span class="field-value field-value--password">••••••••</span>
-        </div>
+        <a href="/account/security" class="keycloak-link">
+          <ShieldIcon class="keycloak-icon" />
+          {{ $t('profile.page.keycloak-link') }} <span class="link-arrow">→</span>
+        </a>
       </div>
-
-      <a href="/account/security" class="keycloak-link">{{ $t('profile.page.keycloak-link') }} <span class="link-arrow">→</span></a>
     </section>
 
     <!-- ── Suppression de compte (clients uniquement) ─────────────────────────── -->
@@ -151,7 +163,7 @@
 </template>
 
 <script setup lang="ts">
-import { CameraIcon, EditIcon } from '@remixicons/vue/line'
+import { CameraIcon, EditIcon, ShieldIcon } from '@remixicons/vue/line'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 
@@ -239,6 +251,7 @@ async function deleteAccount() {
 @use '@/assets/styles/base' as *;
 
 $section-radius: $radius-lg;
+$desktop: $breakpoint-desktop;
 
 .profile-page {
   max-width: 560px;
@@ -456,21 +469,120 @@ $section-radius: $radius-lg;
 // ── Lien Keycloak ─────────────────────────────────────────────────────────────
 
 .keycloak-link {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  align-self: flex-start;
+  margin: 0 $spacing-m $spacing-m;
+  padding: $spacing-xs $spacing-m;
+  border-radius: 9999px;
+  background: $brand-accent;
   font-family: 'Inter', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 500;
+  font-size: 0.8rem;
+  font-weight: 600;
   color: $brand-primary;
   text-decoration: none;
   transition: opacity 150ms ease;
-  padding: 0 $spacing-m $spacing-m;
 
   &:hover {
-    opacity: 0.7;
+    opacity: 0.85;
   }
 
   .link-arrow {
-    color: $brand-accent;
+    display: none;
+  }
+}
+
+// ── Layout Bloc 1 ─────────────────────────────────────────────────────────────
+
+.info-layout {
+  display: flex;
+  flex-direction: column;
+}
+
+.avatar-col {
+  display: flex;
+  justify-content: center;
+}
+
+.fields-col {
+  display: flex;
+  flex-direction: column;
+}
+
+// ── Layout Bloc 2 ─────────────────────────────────────────────────────────────
+
+.connection-layout {
+  display: flex;
+  flex-direction: column;
+}
+
+.keycloak-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+}
+
+// ── Desktop ───────────────────────────────────────────────────────────────────
+
+@media (min-width: $desktop) {
+  // Bloc 1 — deux colonnes
+  .info-layout {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .avatar-col {
+    flex: 0 0 160px;
+    border-right: 1px solid $divider-color;
+    align-items: center;
+    padding: $spacing-l $spacing-m;
+
+    .avatar {
+      width: 7rem;
+      height: 7rem;
+
+      .avatar-initials {
+        font-size: 2.2rem;
+      }
+    }
+  }
+
+  .fields-col {
+    flex: 1;
+    min-width: 0;
+
+    // Le premier hr (séparation mobile avatar/champs) est remplacé par la bordure de colonne
+    & > .section-sep:first-child {
+      display: none;
+    }
+  }
+
+  // Prénom et Nom empilés verticalement
+  .name-row {
+    flex-direction: column;
+  }
+
+  .name-field:first-child {
+    border-right: none;
+    border-bottom: 1px solid $divider-color;
+  }
+
+  // Bloc 2 — deux colonnes
+  .connection-layout {
+    flex-direction: row;
+    align-items: stretch;
+
+    .fields {
+      flex: 1;
+      border-right: 1px solid $divider-color;
+    }
+  }
+
+  .keycloak-link {
+    flex: 0 0 auto;
+    align-self: center;
+    margin: $spacing-s $spacing-m;
   }
 }
 
