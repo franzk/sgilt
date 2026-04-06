@@ -13,7 +13,9 @@
 
     <!-- Liste du mois visible -->
     <div class="list">
-      <p v-if="monthEntries.length === 0" class="list-empty">{{ $t('pro.calendrier.list-empty') }}</p>
+      <p v-if="monthEntries.length === 0" class="list-empty">
+        {{ $t('pro.calendrier.list-empty') }}
+      </p>
       <TransitionGroup v-else name="entry" tag="div" class="list-items">
         <div
           v-for="entry in monthEntries"
@@ -29,7 +31,10 @@
           >
             <span class="list-item-date">{{ formatDayShort(entry.date) }}</span>
             <span class="list-item-label">{{ entry.label }}</span>
-            <span class="list-item-link">{{ $t('pro.calendrier.list-item-link') }}</span>
+            <span class="list-item-link">
+              <EyeIcon class="list-item-link-icon" />
+              Détails
+            </span>
           </NuxtLink>
           <div v-else class="list-item list-item--manual">
             <span class="list-item-date">{{ formatDayShort(entry.date) }}</span>
@@ -45,6 +50,7 @@
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
 import type { CalendarEntry } from '~/types/calendrier'
 import { CalendarMockService } from '~/services/calendrier.mock'
+import { EyeIcon } from '@remixicons/vue/line'
 
 const { isMobile } = useDevice()
 
@@ -173,22 +179,15 @@ $desktop: $breakpoint-desktop;
     min-width: 0;
     display: flex;
     flex-direction: column;
-    border: 1px solid $divider-color;
-    border-radius: $radius-lg;
-    overflow: hidden;
-    background: #fff;
-
-    @media (max-width: $desktop) {
-      border-radius: 0;
-      border-left: none;
-      border-right: none;
-    }
   }
 }
 
 .calendar {
   width: 50%;
   flex-shrink: 0;
+  position: sticky;
+  top: $app-header-height;
+  align-self: flex-start;
 
   :deep(.sgilt-date-picker),
   :deep(.dp__outer_menu_wrap) {
@@ -197,11 +196,13 @@ $desktop: $breakpoint-desktop;
 
   @media (max-width: $desktop) {
     width: 100%;
-    position: sticky;
-    top: $app-header-height;
     z-index: $z-header;
     background: #fff;
   }
+}
+
+:deep(.dp__menu) {
+  background: #fff;
 }
 
 // ── Liste ──────────────────────────────────────────────────────────────────────
@@ -220,17 +221,14 @@ $desktop: $breakpoint-desktop;
   position: relative;
   display: flex;
   flex-direction: column;
+  gap: $spacing-xs;
 }
 
 .list-item-wrap {
-  border-bottom: 1px solid $divider-color;
-
-  &:last-child {
-    border-bottom: none;
-  }
-
   &.is-highlighted {
-    animation: entry-highlight 1s ease forwards;
+    .list-item {
+      animation: entry-highlight 1s ease forwards;
+    }
   }
 }
 
@@ -238,11 +236,17 @@ $desktop: $breakpoint-desktop;
   display: flex;
   align-items: center;
   gap: $spacing-s;
-  padding: $spacing-xs $spacing-m;
+  padding: $spacing-s $spacing-m;
   text-decoration: none;
+  background: #fff;
+  border-radius: $radius-md;
+  border: 1px solid $divider-color;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  border-left-width: 3px;
+  border-left-color: $divider-color;
 
   &--sgilt {
-    background: rgba($brand-accent, 0.04);
+    border-left-color: $brand-accent;
   }
 
   .list-item-date {
@@ -266,17 +270,33 @@ $desktop: $breakpoint-desktop;
     white-space: nowrap;
   }
 
+  &--sgilt .list-item-label {
+    font-weight: 600;
+  }
+
   .list-item-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    padding: 3px 8px;
+    border-radius: 2rem;
+    background: $brand-accent;
     font-family: 'Inter', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 500;
+    font-size: 0.7rem;
+    font-weight: 600;
     color: $brand-primary;
     white-space: nowrap;
-    flex-shrink: 0;
     transition: opacity 150ms ease;
 
     &:hover {
-      opacity: 0.7;
+      opacity: 0.8;
+    }
+
+    .list-item-link-icon {
+      width: 13px;
+      height: 13px;
+      flex-shrink: 0;
     }
   }
 }
@@ -315,8 +335,14 @@ $desktop: $breakpoint-desktop;
 // ── Highlight ─────────────────────────────────────────────────────────────────
 
 @keyframes entry-highlight {
-  0%   { background-color: transparent; }
-  25%  { background-color: rgba($brand-accent, 0.18); }
-  100% { background-color: transparent; }
+  0% {
+    background-color: transparent;
+  }
+  25% {
+    background-color: rgba($brand-accent, 0.18);
+  }
+  100% {
+    background-color: transparent;
+  }
 }
 </style>

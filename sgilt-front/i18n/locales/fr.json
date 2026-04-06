@@ -602,8 +602,8 @@
       }
     },
     "calendrier": {
-      "hint-mobile": "Touchez un jour disponible pour le bloquer, touchez-le à nouveau pour le libérer.",
-      "hint-desktop": "Cliquez sur un jour disponible pour le bloquer, cliquez à nouveau pour le libérer.",
+      "hint-mobile": "Touchez bloquer/libérer une date.",
+      "hint-desktop": "Cliquez pour bloquer/libérer une date.",
       "list-empty": "Aucun événement ce mois-ci.",
       "list-item-unavailable": "Indisponible",
       "list-item-link": "Voir →"
