@@ -12,6 +12,7 @@
         type="button"
         @click="$emit('filter', card.statut)"
       >
+        <component :is="card.icon" class="card-icon" />
         <span class="number">{{ card.value }}</span>
         <span class="label mobile-label">{{ card.labelMobile }}</span>
         <span class="label desktop-label">{{ card.labelDesktop }}</span>
@@ -23,6 +24,7 @@
 <script setup lang="ts">
 import type { ProBoardCounts } from '~/types/event'
 import type { ReservationStatut } from '~/constants/reservation-status'
+import { PhoneIcon, CheckboxCircleIcon, CalendarIcon } from '@remixicons/vue/line'
 
 const props = defineProps<{
   subtitle: string
@@ -47,27 +49,30 @@ const visibleCards = computed(() =>
   [
     {
       statut: 'nouvelle' as ReservationStatut,
+      icon: PhoneIcon,
       value: props.counts.countNouvelle,
       labelMobile: t('pro.greeting.count.nouvelle.mobile'),
       labelDesktop: t('pro.greeting.count.nouvelle.desktop', props.counts.countNouvelle),
       color: '#dc2626',
-      bg: 'rgba(220, 38, 38, 0.05)',
+      bg: 'rgba(220, 38, 38, 0.1)',
     },
     {
       statut: 'en_discussion' as ReservationStatut,
+      icon: CheckboxCircleIcon,
       value: props.counts.countEnDiscussion,
       labelMobile: t('pro.greeting.count.en-discussion.mobile'),
       labelDesktop: t('pro.greeting.count.en-discussion.desktop', props.counts.countEnDiscussion),
       color: '#ea580c',
-      bg: 'rgba(234, 88, 12, 0.05)',
+      bg: 'rgba(234, 88, 12, 0.1)',
     },
     {
       statut: 'confirmee' as ReservationStatut,
+      icon: CalendarIcon,
       value: props.counts.countConfirmee,
       labelMobile: t('pro.greeting.count.confirmee.mobile'),
       labelDesktop: t('pro.greeting.count.confirmee.desktop', props.counts.countConfirmee),
       color: '#16a34a',
-      bg: 'rgba(22, 163, 74, 0.05)',
+      bg: 'rgba(22, 163, 74, 0.08)',
     },
   ].filter((c) => c.value > 0),
 )
@@ -114,6 +119,7 @@ const visibleCards = computed(() =>
     flex-direction: row;
     gap: $spacing-xs;
     margin-top: $spacing-s;
+    padding: 4px;
     overflow-x: auto;
     scrollbar-width: none;
 
@@ -138,9 +144,10 @@ const visibleCards = computed(() =>
     align-items: center;
     justify-content: center;
     gap: 4px;
-    border: 1.5px solid var(--card-color);
+    border: none;
     border-radius: $radius-md;
     background: var(--card-bg);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
     cursor: pointer;
     padding: $spacing-xs;
     transition:
@@ -149,7 +156,9 @@ const visibleCards = computed(() =>
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.12),
+        0 0 0 1px rgba(0, 0, 0, 0.06);
     }
 
     @media (min-width: $breakpoint-desktop) {
@@ -159,6 +168,17 @@ const visibleCards = computed(() =>
       justify-content: flex-start;
       padding: $spacing-s $spacing-m;
       gap: $spacing-s;
+    }
+
+    .card-icon {
+      font-size: 1rem;
+      color: var(--card-color);
+      line-height: 1;
+
+      @media (min-width: $breakpoint-desktop) {
+        height: 24px;
+        width: 24px;
+      }
     }
 
     .number {
