@@ -548,13 +548,13 @@
       }
     },
     "menu": {
-      "my-profile": "Mon profil",
+      "my-info": "Mes informations",
       "logout": "Déconnexion",
-      "help": "Aide",
+      "help-center": "Centre d'aide",
+      "contact-sgilt": "Contacter Sgilt",
       "terms": "Conditions générales",
-      "privacy": "Politique de confidentialité",
-      "about": "À propos de SGILT",
-      "contact": "Nous contacter"
+      "privacy": "Confidentialité",
+      "about": "À propos"
     }
   },
   "pro": {

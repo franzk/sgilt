@@ -2,13 +2,26 @@
   <Teleport to="body">
     <Transition name="popin">
       <div v-if="open" ref="popinRef" class="profile-popin" role="menu" aria-label="Menu compte">
-        <!-- Mon profil + Déconnexion -->
+        <!-- ── Header : avatar + nom + email ──────────────────────────────────── -->
+        <div class="header">
+          <div class="avatar">
+            <span class="avatar-initials">{{ initials }}</span>
+          </div>
+          <div class="header-info">
+            <span class="header-name">{{ user.fullName }}</span>
+            <span class="header-email">{{ user.email }}</span>
+          </div>
+        </div>
+
+        <div class="separator" />
+
+        <!-- ── Section 1 : compte ─────────────────────────────────────────────── -->
         <div class="group">
           <NuxtLink to="/account/profile" class="item" role="menuitem" @click="close">
             <UserIcon class="item-icon" />
-            <span>{{ $t('profile.menu.my-profile') }}</span>
+            <span>{{ $t('profile.menu.my-info') }}</span>
           </NuxtLink>
-          <button class="item" role="menuitem" type="button" @click="logout">
+          <button class="item item--danger" role="menuitem" type="button" @click="logout">
             <LogoutBoxRIcon class="item-icon" />
             <span>{{ $t('profile.menu.logout') }}</span>
           </button>
@@ -16,33 +29,30 @@
 
         <div class="separator" />
 
-        <!-- Liens informatifs -->
+        <!-- ── Section 2 : aide + contact ────────────────────────────────────── -->
         <div class="group">
           <a href="#" class="item" role="menuitem" @click.prevent="close">
             <QuestionIcon class="item-icon" />
-            <span>{{ $t('profile.menu.help') }}</span>
+            <span>{{ $t('profile.menu.help-center') }}</span>
           </a>
           <a href="#" class="item" role="menuitem" @click.prevent="close">
-            <FileTextIcon class="item-icon" />
-            <span>{{ $t('profile.menu.terms') }}</span>
-          </a>
-          <a href="#" class="item" role="menuitem" @click.prevent="close">
-            <ShieldIcon class="item-icon" />
-            <span>{{ $t('profile.menu.privacy') }}</span>
-          </a>
-          <a href="#" class="item" role="menuitem" @click.prevent="close">
-            <InformationIcon class="item-icon" />
-            <span>{{ $t('profile.menu.about') }}</span>
+            <MailIcon class="item-icon" />
+            <span>{{ $t('profile.menu.contact-sgilt') }}</span>
           </a>
         </div>
 
         <div class="separator" />
 
-        <!-- Contact -->
-        <div class="group">
+        <!-- ── Section 3 : légal ──────────────────────────────────────────────── -->
+        <div class="group group--legal">
           <a href="#" class="item" role="menuitem" @click.prevent="close">
-            <MailIcon class="item-icon" />
-            <span>{{ $t('profile.menu.contact') }}</span>
+            <span>{{ $t('profile.menu.terms') }}</span>
+          </a>
+          <a href="#" class="item" role="menuitem" @click.prevent="close">
+            <span>{{ $t('profile.menu.privacy') }}</span>
+          </a>
+          <a href="#" class="item" role="menuitem" @click.prevent="close">
+            <span>{{ $t('profile.menu.about') }}</span>
           </a>
         </div>
       </div>
@@ -55,9 +65,6 @@ import {
   UserIcon,
   LogoutBoxRIcon,
   QuestionIcon,
-  FileTextIcon,
-  ShieldIcon,
-  InformationIcon,
   MailIcon,
 } from '@remixicons/vue/line'
 import { onClickOutside } from '@vueuse/core'
@@ -70,6 +77,17 @@ const popinRef = ref<HTMLElement | null>(null)
 onClickOutside(popinRef, () => emit('close'), {
   ignore: [() => props.anchorEl ?? null],
 })
+
+// TODO : remplacer par les données Keycloak
+const user = {
+  fullName: 'Sophie Lambert',
+  email: 'sophie.lambert@email.fr',
+}
+
+const initials = user.fullName
+  .split(' ')
+  .map((n) => n.charAt(0).toUpperCase())
+  .join('')
 
 function close() {
   emit('close')
@@ -90,7 +108,7 @@ function logout() {
   top: calc($app-header-height + 6px);
   right: $spacing-m;
   z-index: $z-dropdown;
-  width: 220px;
+  width: 240px;
   background: #fff;
   border-radius: $radius-lg;
   box-shadow:
@@ -101,16 +119,76 @@ function logout() {
   padding: $spacing-xs 0;
 }
 
+// ── Header ─────────────────────────────────────────────────────────────────────
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: $spacing-s;
+  padding: $spacing-s $spacing-m;
+}
+
+.avatar {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: $brand-accent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-initials {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: $brand-primary;
+  line-height: 1;
+}
+
+.header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.header-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: $text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-email {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  color: $text-secondary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ── Séparateur ─────────────────────────────────────────────────────────────────
+
 .separator {
   height: 1px;
   background: $divider-color;
   margin: $spacing-xs 0;
 }
 
+// ── Groupes ────────────────────────────────────────────────────────────────────
+
 .group {
   display: flex;
   flex-direction: column;
 }
+
+// ── Items ──────────────────────────────────────────────────────────────────────
 
 .item {
   display: flex;
@@ -133,6 +211,14 @@ function logout() {
     background: $surface-soft;
   }
 
+  &--danger {
+    color: $state-error;
+
+    .item-icon {
+      color: $state-error;
+    }
+  }
+
   .item-icon {
     width: 1rem;
     height: 1rem;
@@ -141,7 +227,15 @@ function logout() {
   }
 }
 
+.group--legal .item {
+  font-size: 0.75rem;
+  color: $text-secondary;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
 // ── Transition ─────────────────────────────────────────────────────────────────
+
 .popin-enter-active,
 .popin-leave-active {
   transition:
