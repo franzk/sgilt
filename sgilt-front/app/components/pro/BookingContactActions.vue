@@ -58,25 +58,18 @@
     </div>
   </div>
 
-  <!-- ── Variant 'sticky' — dock flottant ─────────────────────────────────── -->
-  <div v-else-if="variant === 'sticky'" class="bca-dock">
+  <!-- ── Variant 'sticky' — barre fixe bas d'écran ────────────────────────── -->
+  <div v-else-if="variant === 'sticky'" class="bca-bar">
     <a :href="`tel:${phone}`" class="btn call" aria-label="Appeler">
       <PhoneLineIcon class="icon" />
     </a>
     <a :href="mailtoHref" class="btn" aria-label="Envoyer un mail">
       <MailSendLineIcon class="icon" />
     </a>
-    <a
-      v-if="isMobilePhone"
-      :href="whatsappHref"
-      class="btn"
-      target="_blank"
-      rel="noopener"
-      aria-label="WhatsApp"
-    >
+    <a :href="whatsappHref" class="btn" target="_blank" rel="noopener" aria-label="WhatsApp">
       <WhatsappLineIcon class="icon" />
     </a>
-    <a v-if="isMobilePhone" :href="smsHref" class="btn" aria-label="SMS">
+    <a :href="smsHref" class="btn" aria-label="SMS">
       <ChatSmileLineIcon class="icon" />
     </a>
   </div>
@@ -239,59 +232,42 @@ $desktop: $breakpoint-desktop;
   }
 }
 
-// ── Variant sticky — dock flottant ─────────────────────────────────────────────
-.bca-dock {
+// ── Variant sticky — barre fixe bas d'écran ───────────────────────────────────
+.bca-bar {
   @media (min-width: $desktop) {
     display: none;
   }
 
   position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $spacing-s);
+  left: 0;
+  right: 0;
+  bottom: calc($bottom-nav-h + env(safe-area-inset-bottom, 0px));
   z-index: $z-header;
+  height: 56px;
 
   display: flex;
-  align-items: center;
-  gap: $spacing-xs $spacing-s;
-  padding: $spacing-xs $spacing-s;
+  align-items: stretch;
 
-  /* Le Background (Glassmorphism) */
-  background: rgba(241, 243, 245, 0.15); /* Gris translucide */
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  /* Bordures et coins */
-  border-radius: 9999px; /* Forme pilule parfaite */
-  border: 1px solid rgba(241, 243, 245, 0.3);
-
-  /* Ombre */
-  box-shadow:
-    0 10px 25px -5px rgba(0, 0, 0, 0.1),
-    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  border-top: 1px solid $divider-color;
 
   .btn {
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 999px;
     border: none;
     background: none;
     color: $text-secondary;
     text-decoration: none;
     cursor: pointer;
-    flex-shrink: 0;
     @include pressable;
 
     &.call {
-      background: $brand-accent;
-      color: $brand-primary;
-      width: 56px;
+      color: $brand-accent;
     }
 
-    &:hover:not(.call) {
+    &:active {
       background: $surface-soft;
     }
   }

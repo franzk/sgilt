@@ -1,7 +1,7 @@
 <template>
   <section class="event-block">
     <!-- ── Toggle accordéon : pills + actions ──────────────────────────────────── -->
-    <button class="toggle" type="button" @click="open = !open">
+    <button class="toggle" type="button" @click="isProMobile ? (sheetOpen = true) : (open = !open)">
       <div class="pills">
         <span v-if="event.date" class="event-pill date">
           <CalendarEventIcon class="icon" />{{ formatDateShort(event.date) }}
@@ -13,12 +13,15 @@
           <GroupIcon class="icon" />{{ event.nbInvites }}
         </span>
       </div>
-      <ArrowUpSIcon v-if="open" class="chevron" />
-      <ArrowDownSIcon v-else class="chevron" />
+      <span v-if="isProMobile" class="voir-plus">Voir plus…</span>
+      <template v-else>
+        <ArrowUpSIcon v-if="open" class="chevron" />
+        <ArrowDownSIcon v-else class="chevron" />
+      </template>
     </button>
 
     <!-- ── Corps accordéon ─────────────────────────────────────────────────────── -->
-    <div v-if="open" class="body">
+    <div v-if="!isProMobile && open" class="body">
       <!-- 1. LOGISTIQUE -->
       <div class="section">
         <span class="section-label">{{ $t('event.block.logistics-label') }}</span>
@@ -219,6 +222,100 @@
     </div>
   </section>
 
+  <!-- ── Bottom sheet (pro + mobile uniquement) ───────────────────────────────────── -->
+  <SgiltBottomSheet v-if="isProMobile" v-model:open="sheetOpen" :title="event.title" :overlay="true">
+    <div class="event-block eb-sheet">
+      <div class="body">
+        <!-- 1. LOGISTIQUE -->
+        <div class="section">
+          <span class="section-label">{{ $t('event.block.logistics-label') }}</span>
+          <p class="field-value" :class="{ empty: !event.lieu }">
+            {{ event.lieu || $t('event.block.logistics-empty') }}
+          </p>
+        </div>
+
+        <hr class="divider" />
+
+        <!-- 2. NOTE PARTAGÉE -->
+        <div class="section">
+          <span class="section-label">{{ $t('event.block.shared-note-label') }}</span>
+          <p class="note-text" :class="{ empty: !event.sharedNote }">
+            {{ event.sharedNote || $t('event.block.shared-note-empty') }}
+          </p>
+        </div>
+
+        <hr class="divider" />
+
+        <!-- 3. COORDONNÉES -->
+        <div class="section">
+          <span class="section-label">{{ $t('event.block.coordinates-label') }}</span>
+          <span class="contact-name">{{ clientInfo.firstName }}</span>
+          <div class="contact-row">
+            <span class="contact-value">{{ clientInfo.phone }}</span>
+            <button
+              class="copy-btn"
+              type="button"
+              :class="{ copied: phoneCopied }"
+              :aria-label="phoneCopied ? $t('event.block.copied-aria') : $t('event.block.copy-phone-aria')"
+              @click="copyPhone"
+            >
+              <CheckIcon v-if="phoneCopied" class="copy-icon" />
+              <FileCopyIcon v-else class="copy-icon" />
+            </button>
+          </div>
+          <div class="contact-row">
+            <span class="contact-value email">{{ clientInfo.email }}</span>
+            <button
+              class="copy-btn"
+              type="button"
+              :class="{ copied: emailCopied }"
+              :aria-label="emailCopied ? $t('event.block.copied-aria') : $t('event.block.copy-email-aria')"
+              @click="copyEmail"
+            >
+              <CheckIcon v-if="emailCopied" class="copy-icon" />
+              <FileCopyIcon v-else class="copy-icon" />
+            </button>
+          </div>
+        </div>
+
+        <hr class="divider" />
+
+        <!-- 4. LA FÊTE -->
+        <div class="section">
+          <span class="section-label">{{ $t('event.block.party-label') }}</span>
+          <dl v-if="eventTypeLabel || ambianceLabel" class="brief-fields">
+            <template v-if="eventTypeLabel">
+              <dt>{{ $t('event.block.party-type-label') }}</dt>
+              <dd>{{ eventTypeEmoji }} {{ eventTypeLabel }}</dd>
+            </template>
+            <template v-if="ambianceLabel">
+              <dt>{{ $t('event.block.party-ambiance-label') }}</dt>
+              <dd>{{ ambianceEmoji }} {{ ambianceLabel }}</dd>
+            </template>
+            <dt>{{ $t('event.block.party-moment-label') }}</dt>
+            <dd class="empty">{{ $t('event.block.party-moment-empty') }}</dd>
+          </dl>
+          <p v-else class="field-value empty">{{ $t('event.block.party-empty') }}</p>
+        </div>
+
+        <hr class="divider" />
+
+        <!-- 5. MISE À JOUR -->
+        <div class="section">
+          <div class="update-row">
+            <span class="section-label">{{ $t('event.block.update-label') }}</span>
+          </div>
+          <div class="update-date-row">
+            <button v-if="lastUpdateDate" class="journal-btn" type="button" @click="journalOpen = true">
+              {{ lastUpdateDate }}
+            </button>
+            <p v-else class="field-value empty">{{ $t('event.block.no-update') }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </SgiltBottomSheet>
+
   <!-- ── Journal ─────────────────────────────────────────────────────────────────── -->
   <EventJournal v-model:open="journalOpen" :journal="event.journal ?? []" />
 
@@ -249,6 +346,7 @@
 
 <script setup lang="ts">
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
+import SgiltBottomSheet from '~/components/basics/sheets/SgiltBottomSheet.vue'
 import EventJournal from '~/components/app/EventJournal.vue'
 import { EventMockService } from '~/services/event.mock'
 import type { EventDetail, ClientContactInfo } from '~/types/event'
@@ -277,8 +375,13 @@ const emit = defineEmits<{
 
 const variant = computed(() => props.variant ?? 'client')
 
+// ── Détection mobile ──────────────────────────────────────────────────────────
+const { isMobile } = useDevice()
+const isProMobile = computed(() => variant.value === 'pro' && isMobile.value)
+
 // ── Accordéon ─────────────────────────────────────────────────────────────────
 const open = ref(false)
+const sheetOpen = ref(false)
 
 // ── Journal ───────────────────────────────────────────────────────────────────
 const journalOpen = ref(false)
@@ -460,6 +563,16 @@ function autoResize() {
     width: 16px;
     height: 16px;
     color: $text-secondary;
+  }
+
+  .voir-plus {
+    flex-shrink: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: $brand-muted;
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 
   .body {
@@ -905,5 +1018,16 @@ function autoResize() {
 .modal-enter-from,
 .modal-leave-to {
   opacity: 0;
+}
+
+// ── EventBlock dans le bottom sheet — reset styles carte ──────────────────────
+.event-block.eb-sheet {
+  background: transparent;
+  border-radius: 0;
+  overflow: visible;
+
+  .body {
+    border-top: none;
+  }
 }
 </style>
