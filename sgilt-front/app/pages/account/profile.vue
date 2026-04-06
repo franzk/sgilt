@@ -14,8 +14,13 @@
         <!-- Colonne gauche : avatar -->
         <div class="avatar-col">
           <div class="avatar-row">
-            <div class="avatar-wrapper" :class="{ 'avatar-wrapper--editing': editing }" @click="editing && avatarInput?.click()">
+            <div
+              class="avatar-wrapper"
+              :class="{ 'avatar-wrapper--editing': editing }"
+              @click="editing && avatarInput?.click()"
+            >
               <UserAvatar :size="5" />
+              <img v-if="previewUrl" :src="previewUrl" alt="" class="avatar-preview" />
               <div v-if="editing" class="avatar-overlay" aria-hidden="true">
                 <CameraIcon class="avatar-overlay-icon" />
               </div>
@@ -37,7 +42,9 @@
           <!-- Prénom | Nom -->
           <div class="name-row">
             <div class="name-field">
-              <label class="field-label" :for="editing ? 'field-firstname' : undefined">{{ $t('profile.page.field-firstname') }}</label>
+              <label class="field-label" :for="editing ? 'field-firstname' : undefined">{{
+                $t('profile.page.field-firstname')
+              }}</label>
               <input
                 v-if="editing"
                 id="field-firstname"
@@ -49,7 +56,9 @@
               <span v-else class="field-value">{{ profile.firstName }}</span>
             </div>
             <div class="name-field">
-              <label class="field-label" :for="editing ? 'field-lastname' : undefined">{{ $t('profile.page.field-lastname') }}</label>
+              <label class="field-label" :for="editing ? 'field-lastname' : undefined">{{
+                $t('profile.page.field-lastname')
+              }}</label>
               <input
                 v-if="editing"
                 id="field-lastname"
@@ -67,7 +76,9 @@
           <!-- Téléphone + Entreprise -->
           <div class="fields">
             <div class="field">
-              <label class="field-label" :for="editing ? 'field-phone' : undefined">{{ $t('profile.page.field-phone') }}</label>
+              <label class="field-label" :for="editing ? 'field-phone' : undefined">{{
+                $t('profile.page.field-phone')
+              }}</label>
               <input
                 v-if="editing"
                 id="field-phone"
@@ -100,7 +111,9 @@
       <!-- Actions édition -->
       <div v-if="editing" class="edit-actions">
         <SgiltButton :loading="saving" @click="save">{{ $t('profile.page.save') }}</SgiltButton>
-        <SgiltButton variant="secondary" @click="cancelEdit">{{ $t('profile.page.cancel') }}</SgiltButton>
+        <SgiltButton variant="secondary" @click="cancelEdit">{{
+          $t('profile.page.cancel')
+        }}</SgiltButton>
       </div>
     </section>
 
@@ -194,6 +207,7 @@ const profile = ref<UserProfile>({
 // ── Avatar ────────────────────────────────────────────────────────────────────
 
 const avatarInput = ref<HTMLInputElement | null>(null)
+const previewUrl = ref<string | null>(profile.value.photo ?? null)
 
 function onAvatarChange(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0]
@@ -215,6 +229,7 @@ function startEdit() {
 
 function cancelEdit() {
   editing.value = false
+  previewUrl.value = profile.value.photo ?? null
 }
 
 async function save() {
@@ -336,6 +351,15 @@ $desktop: $breakpoint-desktop;
 
   &--editing {
     cursor: pointer;
+  }
+
+  .avatar-preview {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
   }
 
   .avatar-overlay {
