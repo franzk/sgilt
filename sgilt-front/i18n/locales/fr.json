@@ -596,8 +596,8 @@
         "pill": {
           "action_requise": "ACTION REQUISE"
         },
-        "contact-client": "Contactez le client",
-        "validate-request": "Validez la demande",
+        "contact-client": "Contacter le client",
+        "validate-request": "Valider la demande",
         "event-date-label": "Date de l'événement"
       }
     },

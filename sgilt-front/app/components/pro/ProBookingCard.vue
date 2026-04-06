@@ -46,8 +46,14 @@
     <div class="right">
       <div v-if="needsAction" class="right-row">
         <span class="action-required" :class="`${demande.statut}`">
-          <template v-if="demande.statut === 'nouvelle'">{{ $t('pro.board.card.contact-client') }}</template>
-          <template v-else-if="demande.statut === 'en_discussion'">{{ $t('pro.board.card.validate-request') }}</template>
+          <template v-if="demande.statut === 'nouvelle'">
+            <PhoneIcon />
+            {{ $t('pro.board.card.contact-client') }}</template
+          >
+          <template v-else-if="demande.statut === 'en_discussion'">
+            <CheckboxCircleIcon />
+            {{ $t('pro.board.card.validate-request') }}</template
+          >
         </span>
       </div>
 
@@ -72,7 +78,7 @@
 import BadgeableComponent from '~/components/basics/BadgeableComponent.vue'
 import type { ProDemandeSummary } from '~/types/event'
 import { STATUTS_AVEC_ACTION } from '~/constants/reservation-status'
-import { CalendarEventIcon } from '@remixicons/vue/line'
+import { CalendarEventIcon, CheckboxCircleIcon, PhoneIcon } from '@remixicons/vue/line'
 
 const props = defineProps<{
   demande?: ProDemandeSummary
@@ -237,6 +243,15 @@ const needsAction = computed(() =>
   // ── "Action requise" ────────────────────────────────────────────────────────
 
   .action-required {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+
     font-family: 'Inter', sans-serif;
     font-size: 0.72rem;
     text-transform: uppercase;
