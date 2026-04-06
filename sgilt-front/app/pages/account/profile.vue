@@ -197,10 +197,10 @@ interface UserProfile {
 // ── Mock ──────────────────────────────────────────────────────────────────────
 
 const profile = ref<UserProfile>({
-  firstName: 'Sophie',
-  lastName: 'Lambert',
+  firstName: 'Julie',
+  lastName: 'Muller',
   phone: '+33 6 12 34 56 78',
-  email: 'sophie.lambert@email.fr',
+  email: 'julie.muller@email.fr',
   role: 'client',
 })
 

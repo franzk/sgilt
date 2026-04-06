@@ -7,7 +7,11 @@
         <p class="events-page__count">
           {{ t('events.count', events.length, { n: events.length }) }}
         </p>
-        <button class="events-page__create-btn" type="button" @click="useFlow().start('new-event', 'Nouvel événement')">
+        <button
+          class="events-page__create-btn"
+          type="button"
+          @click="useFlow().start('new-event', 'Nouvel événement')"
+        >
           {{ t('events.create') }}
         </button>
       </div>
@@ -103,7 +107,6 @@ function reservationSummary(event: EventDetail): string {
 
   return parts.join(' · ') || '—'
 }
-
 </script>
 
 <style scoped lang="scss">

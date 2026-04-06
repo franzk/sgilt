@@ -7,8 +7,8 @@ export interface CurrentUser {
 export function useCurrentUser(): CurrentUser {
   // TODO: remplacer par les données Keycloak
   return {
-    fullName: 'Sophie Lambert',
-    email: 'sophie.lambert@email.fr',
+    fullName: 'Julie Muller',
+    email: 'julie.muller@email.fr',
     photo: null,
   }
 }
