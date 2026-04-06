@@ -144,21 +144,31 @@ const visibleCards = computed(() =>
     align-items: center;
     justify-content: center;
     gap: 4px;
-    border: none;
+
     border-radius: $radius-md;
     background: var(--card-bg);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow:
+      0 4px 12px -2px rgba(0, 0, 0, 0.08),
+      0 2px 6px -1px rgba(0, 0, 0, 0.04);
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+
     cursor: pointer;
     padding: $spacing-xs;
-    transition:
-      transform 120ms ease,
-      box-shadow 120ms ease;
 
     &:hover {
       transform: translateY(-2px);
       box-shadow:
         0 4px 12px rgba(0, 0, 0, 0.12),
         0 0 0 1px rgba(0, 0, 0, 0.06);
+    }
+
+    &:active {
+      transform: scale(0.98);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     @media (min-width: $breakpoint-desktop) {
