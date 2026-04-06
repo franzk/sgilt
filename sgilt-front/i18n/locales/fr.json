@@ -474,7 +474,7 @@
   "reservation": {
     "statut": {
       "toutes": "Toutes",
-      "nouvelle": "Nouvelle",
+      "nouvelle": "Nouvelle demande",
       "en_discussion": "En discussion",
       "confirmee": "Confirmée",
       "refusee": "Refusée",
