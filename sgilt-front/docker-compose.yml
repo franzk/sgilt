@@ -1,0 +1,16 @@
+services:
+  sgilt-front:
+    build: .
+    container_name: sgilt-front-nuxt
+    environment:
+      - NUXT_PORT=3000
+      - NUXT_HOST=0.0.0.0
+    ports:
+      - '3000:3000' # optionnel si proxy interne, sinon retire
+    restart: unless-stopped
+    networks:
+      - ka-proxy-network
+
+networks:
+  ka-proxy-network:
+    external: true

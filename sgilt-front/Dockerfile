@@ -1,34 +1,59 @@
-# === Dockerfile for FRONT (Vue.js + Nginx) ===
+# syntax=docker/dockerfile:1
 
-FROM node:24-slim AS build
+###############
+# 1) deps
+###############
+FROM node:20-alpine AS deps
 WORKDIR /app
 
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# pour certains packages (sharp, etc.) selon ton projet
+RUN apk add --no-cache libc6-compat
 
-# Install dependencies
-COPY package*.json pnpm-lock.yaml ./
+# Active corepack (pnpm)
+RUN corepack enable
+
+# Copy manifest files only (better cache)
+COPY package.json pnpm-lock.yaml ./
+
+# Install deps (prod+dev needed for build)
 RUN pnpm install --frozen-lockfile
 
-# Copy source files and build the application
+###############
+# 2) build
+###############
+FROM node:20-alpine AS build
+WORKDIR /app
+RUN apk add --no-cache libc6-compat
+RUN corepack enable
+
+# Reuse node_modules from deps
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN pnpm run build
 
-# Use Nginx to serve the built application
-FROM nginx:1.27-alpine-slim
+# Build Nuxt
+RUN pnpm build
 
-# On installe envsubst (souvent déjà présent dans alpine-slim, mais par sécurité)
-RUN apk add --no-cache gettext
+###############
+# 3) runner
+###############
+FROM node:20-alpine AS runner
+WORKDIR /app
 
-# Copy built files from the build stage
-COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+ENV NODE_ENV=production
+ENV NUXT_HOST=0.0.0.0
+ENV NUXT_PORT=3000
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# (optionnel) user non-root
+RUN addgroup -S nuxt && adduser -S nuxt -G nuxt
 
-# Le dossier de travail pour Nginx
-WORKDIR /usr/share/nginx/html
+# Copy output only
+COPY --from=build /app/.output ./.output
 
-EXPOSE 80
-ENTRYPOINT ["/entrypoint.sh"]
+# Si tu as besoin de runtime deps côté serveur (rare avec .output),
+# tu peux aussi copier package.json mais généralement inutile.
+
+EXPOSE 3000
+
+USER nuxt
+
+CMD ["node", ".output/server/index.mjs"]

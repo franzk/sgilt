@@ -1,0 +1,84 @@
+/* =========================================================
+   Sgilt Design Tokens — Colors
+   Version 2.0 (warm / paper / premium local)
+   ========================================================= */
+
+/* ========================
+   Brand
+   ======================== */
+
+$brand-primary: #2f2a25; // noir chaud premium
+$brand-background: #fff;
+$brand-accent: #ffbf00; // accent festif profond
+
+/* ========================
+   Text
+   ======================== */
+
+$text-primary: $brand-primary;
+$text-secondary: #6b635c;
+$text-inverted: #ffffff;
+
+/* ========================
+   UI Elements
+   ======================== */
+
+$divider-color: #e5dfd8;
+$surface-white: #ffffff;
+$surface-soft: #fbf8f4;
+
+/* ========================
+   States
+   ======================== */
+
+$state-success: #2e9c5d;
+$state-warning: #d68c00;
+$state-error: #e5534b;
+$state-danger: #c0392b;
+
+$state-booked: #c0392b;
+$state-option: #d68c00;
+$state-available: #2e9c5d;
+
+/* ========================
+   Overlays
+   ======================== */
+
+$overlay-dark-strong: rgba(0, 0, 0, 0.8);
+$overlay-dark-medium: rgba(0, 0, 0, 0.6);
+
+/* ========================
+   Shadows (warm tone)
+   ======================== */
+
+$shadow-s: rgba(47, 42, 37, 0.08);
+$shadow-m: rgba(47, 42, 37, 0.12);
+$shadow-l: rgba(47, 42, 37, 0.18);
+
+/* ========================
+   App section (partie authentifiée)
+   ======================== */
+
+$brand-subtle: #f0ebe4; // fond fallback avatar, surfaces très douces
+$brand-muted: $text-secondary; // labels secondaires (catégorie carte)
+$brand-border: $divider-color; // bordures de cards
+
+/* ========================
+   Legacy compatibility
+   (à supprimer progressivement)
+   ======================== */
+
+$color-primary: $brand-primary;
+$color-secondary: $brand-background;
+$color-accent: $brand-accent;
+
+$color-subtext: $text-secondary;
+$color-divider: $divider-color;
+
+$color-error: $state-error;
+$color-danger: $state-danger;
+
+$color-white: $surface-white;
+
+$gallery-modal-overlay: $overlay-dark-strong;
+$booking-modal-overlay: $overlay-dark-medium;

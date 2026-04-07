@@ -1,12 +1,12 @@
-# Don't copy that in build context :
 node_modules
+.nuxt
+.output
 dist
 .git
-.vscode
-.idea
-*.log
-*.env
-.dockerignore
-
-# But don't ignore this :
-!*.env.prod
+.gitignore
+Dockerfile
+docker-compose*.yml
+README.md
+npm-debug.log*
+pnpm-debug.log*
+.DS_Store

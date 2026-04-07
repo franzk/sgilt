@@ -7,7 +7,7 @@ services:
     container_name: ka-front
     pull_policy: never
     build:
-      context: ../../sgilt-front
+      context: ../../old-front
     depends_on:
       - ka-gateway
       - ka-keycloak
