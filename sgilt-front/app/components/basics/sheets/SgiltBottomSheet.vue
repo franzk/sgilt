@@ -22,7 +22,7 @@
         </slot>
 
         <!-- Corps -->
-        <div class="sgilt-sheet__body">
+        <div class="sgilt-sheet__body" :style="bottomOffset ? { paddingBottom: `${bottomOffset}px` } : undefined">
           <slot />
         </div>
       </DrawerContent>
@@ -47,6 +47,7 @@ defineProps<{
   title: string
   description?: string
   overlay?: boolean
+  bottomOffset?: number
 }>()
 </script>
 

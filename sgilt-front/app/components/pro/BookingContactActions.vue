@@ -242,7 +242,7 @@ $desktop: $breakpoint-desktop;
   left: 0;
   right: 0;
   bottom: calc($bottom-nav-h + env(safe-area-inset-bottom, 0px));
-  z-index: $z-header;
+  z-index: $z-sticky-bar;
   height: 56px;
 
   display: flex;
