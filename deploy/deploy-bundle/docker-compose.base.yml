@@ -1,0 +1,9 @@
+# docker-compose.base.yml
+
+networks:
+  sgilt-network:
+    name: sgilt-network-${ENV}
+
+volumes:
+  sgilt_keycloak_pgdata:
+    name: sgilt_keycloak_pgdata_${ENV}
