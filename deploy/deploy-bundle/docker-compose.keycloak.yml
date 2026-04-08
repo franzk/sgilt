@@ -63,3 +63,7 @@ services:
     networks:
       - sgilt-network
     restart: unless-stopped
+
+networks:
+  sgilt-network:
+    external: true

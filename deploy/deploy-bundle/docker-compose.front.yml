@@ -14,7 +14,7 @@ services:
     depends_on:
       - sgilt-keycloak
     networks:
-      - sgilt-network-${ENV}
+      - sgilt-network
     restart: unless-stopped
 
   # =====================
@@ -34,3 +34,7 @@ services:
     networks:
       - sgilt-network
     restart: unless-stopped
+
+networks:
+  sgilt-network:
+    external: true
