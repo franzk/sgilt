@@ -55,7 +55,7 @@ services:
     ports:
       - "${NGINX_AUTH_PORT}:80"
     volumes:
-      - ./nginx/auth.conf.template:/etc/nginx/templates/auth.conf.template:ro
+      - ./nginx/auth.conf.template:/etc/nginx/templates/default.conf.template:ro
     environment:
       AUTH_DOMAIN: ${AUTH_DOMAIN}
     depends_on:
