@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+echo "📍 Working directory: $(pwd)"
+echo "📁 Contents:"
+ls -la
+
 #
 # Render Keycloak realm-import.json from realm-template.<env>.json
 # by replacing https://app.change.me with APP_URL
