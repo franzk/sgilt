@@ -37,4 +37,4 @@ services:
 
 networks:
   sgilt-network:
-    external: true
+    name: sgilt-network-${ENV}
