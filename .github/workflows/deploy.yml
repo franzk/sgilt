@@ -1,0 +1,193 @@
+# .github/workflows/deploy.yml
+
+name: Build & Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+        default: staging
+      mode:
+        description: 'Deployment mode'
+        required: true
+        type: choice
+        options:
+          - init
+          - update
+        default: update
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ghcr.io/${{ github.repository }}
+
+jobs:
+  # =====================
+  # BUILD
+  # =====================
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Read VERSION files
+        run: |
+          echo "SGILT_FRONT_VERSION=$(cat sgilt-front/VERSION)" >> $GITHUB_ENV
+          echo "SGILT_KEYCLOAK_VERSION=$(cat sgilt-keycloak/VERSION)" >> $GITHUB_ENV
+          echo "SGILT_SMTP_BRIDGE_VERSION=$(cat sgilt-smtp-bridge/VERSION)" >> $GITHUB_ENV
+          echo "SGILT_MAILER_VERSION=$(cat sgilt-mailer/VERSION)" >> $GITHUB_ENV
+
+      - name: Build and push sgilt-front
+        run: |
+          IMAGE_TAG="${{ env.IMAGE_PREFIX }}/sgilt-front:${{ env.SGILT_FRONT_VERSION }}"
+          if docker manifest inspect $IMAGE_TAG > /dev/null 2>&1; then
+            echo "⏭️ $IMAGE_TAG already exists, skipping build"
+          else
+            docker build -t $IMAGE_TAG sgilt-front
+            docker push $IMAGE_TAG
+            echo "✅ Pushed $IMAGE_TAG"
+          fi
+
+      - name: Build and push sgilt-keycloak
+        run: |
+          IMAGE_TAG="${{ env.IMAGE_PREFIX }}/sgilt-keycloak:${{ inputs.environment }}-${{ env.SGILT_KEYCLOAK_VERSION }}"
+          if [ "${{ inputs.mode }}" = "init" ]; then
+            echo "🔄 Init mode: generating realm from template"
+            mkdir -p sgilt-keycloak/realm
+            APP_URL="${{ vars.APP_URL }}" \
+              bash deploy/deploy-bundle/scripts/render-realm.sh ${{ inputs.environment }}
+            docker build -t $IMAGE_TAG sgilt-keycloak
+            docker push $IMAGE_TAG
+            echo "✅ Pushed $IMAGE_TAG"
+          elif docker manifest inspect $IMAGE_TAG > /dev/null 2>&1; then
+            echo "⏭️ $IMAGE_TAG already exists, skipping build"
+          else
+            docker build -t $IMAGE_TAG sgilt-keycloak
+            docker push $IMAGE_TAG
+            echo "✅ Pushed $IMAGE_TAG"
+          fi
+
+      - name: Build and push sgilt-smtp-bridge
+        run: |
+          IMAGE_TAG="${{ env.IMAGE_PREFIX }}/sgilt-smtp-bridge:${{ env.SGILT_SMTP_BRIDGE_VERSION }}"
+          if docker manifest inspect $IMAGE_TAG > /dev/null 2>&1; then
+            echo "⏭️ $IMAGE_TAG already exists, skipping build"
+          else
+            docker build -t $IMAGE_TAG sgilt-smtp-bridge
+            docker push $IMAGE_TAG
+            echo "✅ Pushed $IMAGE_TAG"
+          fi
+
+      - name: Build and push sgilt-mailer
+        run: |
+          IMAGE_TAG="${{ env.IMAGE_PREFIX }}/sgilt-mailer:${{ env.SGILT_MAILER_VERSION }}"
+          if docker manifest inspect $IMAGE_TAG > /dev/null 2>&1; then
+            echo "⏭️ $IMAGE_TAG already exists, skipping build"
+          else
+            docker build -t $IMAGE_TAG sgilt-mailer
+            docker push $IMAGE_TAG
+            echo "✅ Pushed $IMAGE_TAG"
+          fi
+
+  # =====================
+  # DEPLOY
+  # =====================
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Read VERSION files
+        run: |
+          echo "SGILT_FRONT_VERSION=$(cat sgilt-front/VERSION)" >> $GITHUB_ENV
+          echo "SGILT_KEYCLOAK_VERSION=$(cat sgilt-keycloak/VERSION)" >> $GITHUB_ENV
+          echo "SGILT_SMTP_BRIDGE_VERSION=$(cat sgilt-smtp-bridge/VERSION)" >> $GITHUB_ENV
+          echo "SGILT_MAILER_VERSION=$(cat sgilt-mailer/VERSION)" >> $GITHUB_ENV
+
+      - name: Generate .env
+        run: |
+          cat > deploy/deploy-bundle/.env << EOF
+          # Environment
+          ENV=${{ inputs.environment }}
+
+          # Image versions
+          SGILT_FRONT_VERSION=${{ env.SGILT_FRONT_VERSION }}
+          SGILT_KEYCLOAK_VERSION=${{ inputs.environment }}-${{ env.SGILT_KEYCLOAK_VERSION }}
+          SGILT_SMTP_BRIDGE_VERSION=${{ env.SGILT_SMTP_BRIDGE_VERSION }}
+          SGILT_MAILER_VERSION=${{ env.SGILT_MAILER_VERSION }}
+
+          # URLs
+          APP_URL=${{ vars.APP_URL }}
+          APP_DOMAIN=${{ vars.APP_DOMAIN }}
+          AUTH_URL=${{ vars.AUTH_URL }}
+          AUTH_DOMAIN=${{ vars.AUTH_DOMAIN }}
+          NUXT_PUBLIC_SITE_URL=${{ vars.APP_URL }}
+
+          # Nginx ports
+          NGINX_FRONT_PORT=${{ vars.NGINX_FRONT_PORT }}
+          NGINX_AUTH_PORT=${{ vars.NGINX_AUTH_PORT }}
+
+          # Keycloak
+          KEYCLOAK_ISSUER=${{ vars.AUTH_URL }}/realms/sgilt
+          KC_DB_PASSWORD=${{ secrets.KC_DB_PASSWORD }}
+          KC_BOOTSTRAP_ADMIN_USERNAME=${{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME }}
+          KC_BOOTSTRAP_ADMIN_PASSWORD=${{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD }}
+
+          # SMTP
+          SMTP_HOST=${{ secrets.SMTP_HOST }}
+          SMTP_PORT=${{ secrets.SMTP_PORT }}
+          SMTP_USERNAME=${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
+          SMTP_AUTH=${{ secrets.SMTP_AUTH }}
+          SMTP_SSL=${{ secrets.SMTP_SSL }}
+          EOF
+
+      - name: Copy deployment files to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "deploy/deploy-bundle/"
+          target: "${{ secrets.SSH_HOST_PATH }}/"
+          strip_components: 2
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -euo pipefail
+            cd "${{ secrets.SSH_HOST_PATH }}"
+
+            echo "🔐 Authenticating with GitHub Container Registry..."
+            echo "${{ secrets.REGISTRY_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            echo "🚀 Deploying ${{ inputs.environment }} in ${{ inputs.mode }} mode..."
+            chmod +x ./scripts/*
+            ./scripts/deploy.sh ${{ inputs.mode }} ${{ inputs.environment }}
+
+            echo "✅ Deployment complete!"

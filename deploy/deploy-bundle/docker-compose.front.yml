@@ -1,0 +1,36 @@
+# docker-compose.front.yml
+
+services:
+  # =====================
+  # SGILT-FRONT (Nuxt SSR)
+  # =====================
+  sgilt-front:
+    image: ghcr.io/franzk/sgilt/sgilt-front:${SGILT_FRONT_VERSION}
+    container_name: sgilt-front-${ENV}
+    pull_policy: always
+    environment:
+      ENV: ${ENV}
+      NUXT_PUBLIC_SITE_URL: ${NUXT_PUBLIC_SITE_URL}
+    depends_on:
+      - sgilt-keycloak
+    networks:
+      - sgilt-network-${ENV}
+    restart: unless-stopped
+
+  # =====================
+  # NGINX FRONT
+  # =====================
+  nginx-front:
+    image: nginx:alpine
+    container_name: nginx-front-${ENV}
+    ports:
+      - "${NGINX_FRONT_PORT}:80"
+    volumes:
+      - ./nginx/front.conf.template:/etc/nginx/templates/front.conf.template:ro
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN}
+    depends_on:
+      - sgilt-front
+    networks:
+      - sgilt-network
+    restart: unless-stopped

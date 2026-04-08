@@ -1,6 +1,6 @@
 {
   "id": "3402b0e2-60a4-433f-a1ad-135b271b3034",
-  "realm": "kastarter",
+  "realm": "sgilt",
   "displayName": "",
   "displayNameHtml": "",
   "notBefore": 0,
@@ -69,7 +69,7 @@
       },
       {
         "id": "2d04a1f0-45b1-4aed-944a-7508790ad266",
-        "name": "default-roles-kaserv",
+        "name": "default-roles-sgilt",
         "description": "${role_default-roles}",
         "composite": true,
         "composites": {
@@ -312,7 +312,7 @@
           "attributes": {}
         }
       ],
-      "ka-front": [],
+      "sgilt-front": [],
       "security-admin-console": [],
       "admin-cli": [],
       "account-console": [],
@@ -420,7 +420,7 @@
   "groups": [],
   "defaultRole": {
     "id": "2d04a1f0-45b1-4aed-944a-7508790ad266",
-    "name": "default-roles-kaserv",
+    "name": "default-roles-sgilt",
     "description": "${role_default-roles}",
     "composite": true,
     "clientRole": false,
@@ -495,13 +495,13 @@
       "clientId": "account",
       "name": "${client_account}",
       "rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/kastarter/account/",
+      "baseUrl": "/realms/sgilt/account/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "/realms/kastarter/account/*"
+        "/realms/sgilt/account/*"
       ],
       "webOrigins": [],
       "notBefore": 0,
@@ -542,13 +542,13 @@
       "clientId": "account-console",
       "name": "${client_account-console}",
       "rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/kastarter/account/",
+      "baseUrl": "/realms/sgilt/account/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "/realms/kastarter/account/*"
+        "/realms/sgilt/account/*"
       ],
       "webOrigins": [],
       "notBefore": 0,
@@ -684,7 +684,7 @@
     },
     {
       "id": "719909c9-12bc-449a-8d85-8ac30d2e24df",
-      "clientId": "ka-front",
+      "clientId": "sgilt-front",
       "name": "",
       "description": "",
       "rootUrl": "https://app.change.me",
@@ -717,7 +717,7 @@
         "request.object.encryption.alg": "any",
         "client.introspection.response.allow.jwt.claim.enabled": "false",
         "standard.token.exchange.enabled": "false",
-        "login_theme": "ka-theme",
+        "login_theme": "sgilt-theme",
         "frontchannel.logout.session.required": "true",
         "post.logout.redirect.uris": "https://app.change.me/*##http://localhost:5173/*",
         "oauth2.device.authorization.grant.enabled": "false",
@@ -803,13 +803,13 @@
       "clientId": "security-admin-console",
       "name": "${client_security-admin-console}",
       "rootUrl": "${authAdminUrl}",
-      "baseUrl": "/admin/kastarter/console/",
+      "baseUrl": "/admin/sgilt/console/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "/admin/kastarter/console/*"
+        "/admin/sgilt/console/*"
       ],
       "webOrigins": [
         "+"
@@ -1588,17 +1588,17 @@
     "starttls": "false",
     "auth": "",
     "port": "1025",
-    "host": "ka-smtp-bridge",
+    "host": "sgilt-smtp-bridge",
     "replyTo": "",
-    "from": "noreply@ka.local",
-    "fromDisplayName": "Ka",
+    "from": "noreply@sgilt.alsace",
+    "fromDisplayName": "Sgilt",
     "envelopeFrom": "",
     "ssl": "false"
   },
-  "loginTheme": "ka-theme",
+  "loginTheme": "sgilt-theme",
   "accountTheme": "",
   "adminTheme": "",
-  "emailTheme": "ka-theme",
+  "emailTheme": "sgilt-theme",
   "eventsEnabled": false,
   "eventsListeners": [
     "jboss-logging"
