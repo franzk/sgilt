@@ -14,8 +14,8 @@ if ! command -v perl >/dev/null 2>&1; then
   exit 1
 fi
 
-SOURCE="../../sgilt-keycloak/realm-template.${ENV}.json"
-TARGET="../../sgilt-keycloak/realm/realm-import.json"
+SOURCE="sgilt-keycloak/realm-template.${ENV}.json"
+TARGET="sgilt-keycloak/realm/realm-import.json"
 PLACEHOLDER="https://app.change.me"
 
 : "${APP_URL:?APP_URL must be set}"

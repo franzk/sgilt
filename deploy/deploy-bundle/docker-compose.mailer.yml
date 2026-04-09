@@ -16,7 +16,7 @@ services:
       SMTP_AUTH: ${SMTP_AUTH}
       SMTP_SSL: ${SMTP_SSL}
     networks:
-      - sgilt-network-${ENV}
+      - sgilt-network
     restart: unless-stopped
 
   # =====================
@@ -29,5 +29,9 @@ services:
     environment:
       MAILER_URL: http://sgilt-mailer:8080
     networks:
-      - sgilt-network-${ENV}
+      - sgilt-network
     restart: unless-stopped
+
+networks:
+  sgilt-network:
+    name: sgilt-network-${ENV}
