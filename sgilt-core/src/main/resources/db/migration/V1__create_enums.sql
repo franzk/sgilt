@@ -1,0 +1,9 @@
+CREATE TYPE evenement_status AS ENUM (
+    'DRAFT', 'ACTIVE', 'ARCHIVE'
+);
+
+CREATE TYPE reservation_status AS ENUM (
+    'DRAFT', 'NOUVELLE', 'EN_DISCUSSION',
+    'CONFIRMEE', 'REALISEE', 'REFUSEE',
+    'ANNULEE', 'ANNULEE_POST_CONFIRMATION'
+);

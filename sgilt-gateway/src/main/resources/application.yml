@@ -9,12 +9,11 @@ spring:
       server:
         webmvc:
           routes:
-            - id: backend
+            - id: onboarding-public
               uri: ${BACK_URL:http://localhost:5027}
               predicates:
-                - Path=/api/**
-              filters:
-                - StripPrefix=1
+                - Path=/api/v1/onboarding/**
+
   security:
     oauth2:
       resourceserver:

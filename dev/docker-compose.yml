@@ -49,9 +49,25 @@ services:
       - "1026:1025" # SMTP
       - "5125:8025" # Web UI
 
+  sgilt-db:
+    image: postgres:17
+    container_name: sgilt-db
+    environment:
+      POSTGRES_DB: sgilt
+      POSTGRES_USER: sgilt
+      POSTGRES_PASSWORD: sgilt
+    ports:
+      - "5432:5432"
+    volumes:
+      - sgilt_pgdata:/var/lib/postgresql/data
+    networks:
+      - sgilt-dev-net
+
 networks:
   sgilt-dev-net:
     driver: bridge
 
 volumes:
+  core_pgdata:
   keycloak_pgdata:
+  sgilt_pgdata:
