@@ -20,7 +20,7 @@ Built on a Docker-first, single-server architecture with Keycloak authentication
 ### Development cycle
 > Step-by-step workflow for developing a feature, deploying to staging, and promoting to production.
 
-👉 [doc/DEV_CYCLE.md](doc/DEV_CYCLE.md)
+👉 [DEV_CYCLE.md](doc/DEV_CYCLE.md)
 
 ### Environment setup
 > Step-by-step procedure to provision a new environment (staging or production) from scratch.

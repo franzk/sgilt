@@ -1,0 +1,12 @@
+spring:
+  application:
+        name: sgilt-core
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER:http://host.docker.internal:5028/realms/sgilt}
+
+server:
+  port: 5027
