@@ -1,4 +1,4 @@
-package net.franzka.sgilt.core.confirmationtoken.domain;
+package net.franzka.sgilt.core.onboarding.domain;
 
 import jakarta.persistence.*;
 import lombok.*;

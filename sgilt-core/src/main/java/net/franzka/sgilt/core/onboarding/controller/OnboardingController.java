@@ -3,7 +3,7 @@ package net.franzka.sgilt.core.onboarding.controller;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import net.franzka.sgilt.core.confirmationtoken.domain.ConfirmationToken;
+import net.franzka.sgilt.core.onboarding.domain.ConfirmationToken;
 import net.franzka.sgilt.core.onboarding.api.OnboardingApi;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountRequest;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountResponse;

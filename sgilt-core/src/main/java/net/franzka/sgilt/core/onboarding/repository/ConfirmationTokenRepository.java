@@ -1,6 +1,6 @@
-package net.franzka.sgilt.core.confirmationtoken.repository;
+package net.franzka.sgilt.core.onboarding.repository;
 
-import net.franzka.sgilt.core.confirmationtoken.domain.ConfirmationToken;
+import net.franzka.sgilt.core.onboarding.domain.ConfirmationToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
