@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(mvn compile:*)",
-      "Bash(./gradlew compileJava)"
+      "Bash(./gradlew compileJava)",
+      "Bash(./gradlew :sgilt-core:compileJava)"
     ]
   }
 }

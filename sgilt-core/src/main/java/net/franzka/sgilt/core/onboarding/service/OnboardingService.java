@@ -5,27 +5,21 @@ import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
-import net.franzka.sgilt.core.onboarding.domain.ConfirmationToken;
-import net.franzka.sgilt.core.onboarding.repository.ConfirmationTokenRepository;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
-import net.franzka.sgilt.core.evenement.domain.EvenementStatus;
-import net.franzka.sgilt.core.evenement.repository.EvenementRepository;
+import net.franzka.sgilt.core.evenement.service.EvenementService;
+import net.franzka.sgilt.core.onboarding.domain.ConfirmationToken;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountRequest;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountResponse;
 import net.franzka.sgilt.core.onboarding.dto.DemandeInitialeResponse;
 import net.franzka.sgilt.core.onboarding.dto.NewEvenementRequest;
 import net.franzka.sgilt.core.onboarding.dto.VerifyTokenResponse;
 import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
-import net.franzka.sgilt.core.onboarding.exception.TokenAlreadyUsedException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.mailer.OnboardingMailerService;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
-import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
-import net.franzka.sgilt.core.reservation.repository.ReservationRepository;
+import net.franzka.sgilt.core.reservation.service.ReservationService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Slf4j
@@ -33,12 +27,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class OnboardingService {
 
-    private final EvenementRepository evenementRepository;
-    private final ReservationRepository reservationRepository;
-    private final ConfirmationTokenRepository confirmationTokenRepository;
-    private final ConfirmationTokenJwtService confirmationTokenJwtService;
+    private final EvenementService evenementService;
+    private final ReservationService reservationService;
+    private final ConfirmationTokenService confirmationTokenService;
     private final SetPasswordTokenJwtService setPasswordTokenJwtService;
-    private final ConfirmationTokenProperties confirmationTokenProperties;
     private final OnboardingMailerService onboardingMailerService;
 
     /**
@@ -49,39 +41,18 @@ public class OnboardingService {
      */
     public DemandeInitialeResponse submitDemandeTunnel(NewEvenementRequest request) {
 
-        Evenement evenement = Evenement.builder()
-                .firstName(request.firstname())
-                .lastName(request.lastname())
-                .email(request.email())
-                .status(EvenementStatus.DRAFT)
-                .createdAt(LocalDateTime.now())
-                .build();
-        evenementRepository.save(evenement);
-
-        Reservation reservation = Reservation.builder()
-                .evenement(evenement)
-                .prestataireId(request.prestataireId())
-                .status(ReservationStatus.DRAFT)
-                .createdAt(LocalDateTime.now())
-                .build();
-        reservationRepository.save(reservation);
-
-        String jwt = confirmationTokenJwtService.generateToken(
-                request.email(),
-                reservation.getId(),
-                reservation.getCreatedAt()
+        Evenement evenement = evenementService.createDraft(
+                request.firstname(),
+                request.lastname(),
+                request.email()
         );
-        String jti = confirmationTokenJwtService.extractJti(jwt);
 
-        ConfirmationToken token = ConfirmationToken.builder()
-                .jti(jti)
-                .email(request.email())
-                .reservation(reservation)
-                .used(false)
-                .expiresAt(LocalDateTime.now().plusHours(confirmationTokenProperties.confirmationExpirationHours()))
-                .createdAt(LocalDateTime.now())
-                .build();
-        confirmationTokenRepository.save(token);
+        Reservation reservation = reservationService.createDraft(
+                evenement,
+                request.prestataireId()
+        );
+
+        String jwt = confirmationTokenService.createForReservation(reservation);
 
         // TODO: KC Admin API — vérifier si email existe
         // → si oui : onboardingMailerService.sendSecurityAlertEmail()
@@ -106,43 +77,16 @@ public class OnboardingService {
      * @throws TokenAlreadyUsedException si le token a déjà été consommé
      */
     public ConfirmationToken validateConfirmationToken(String token) {
-        if (confirmationTokenJwtService.isExpired(token)) {
-            throw new TokenExpiredException();
-        }
-
-        Claims claims;
-        try {
-            claims = confirmationTokenJwtService.extractClaims(token);
-        } catch (JwtException e) {
-            throw new InvalidTokenException();
-        }
-
-        ConfirmationToken confirmationToken = confirmationTokenRepository.findByJti(claims.getId())
-                .orElseThrow(EntityNotFoundException::new);
-
-        if (confirmationToken.isUsed()) {
-            throw new TokenAlreadyUsedException();
-        }
-
-        String claimedCreatedAt = claims.get("reservationCreatedAt", String.class);
-        if (!confirmationToken.getReservation().getCreatedAt().toString().equals(claimedCreatedAt)) {
-            throw new InvalidTokenException();
-        }
-
-        return confirmationToken;
+        return confirmationTokenService.validate(token);
     }
 
     /**
-     * Marque le token de confirmation comme utilisé et persiste la modification.
+     * Marque le token de confirmation comme utilisé.
      *
      * @param confirmationToken le token à consommer
-     * @throws EntityNotFoundException si le token n'existe plus en BDD
      */
     public void consumeConfirmationToken(ConfirmationToken confirmationToken) {
-        confirmationTokenRepository.findById(confirmationToken.getId())
-                .orElseThrow(EntityNotFoundException::new);
-        confirmationToken.setUsed(true);
-        confirmationTokenRepository.save(confirmationToken);
+        confirmationTokenService.markAsUsed(confirmationToken);
     }
 
     /**
@@ -161,13 +105,13 @@ public class OnboardingService {
     }
 
     /**
-     * Valide le JWT set-password, charge la réservation, passe son statut à NOUVELLE
-     * et déclenche l'envoi du mail de bienvenue.
+     * Valide le JWT set-password, charge la réservation, passe son statut à NOUVELLE,
+     * supprime le token de confirmation, et déclenche l'envoi du mail de bienvenue.
      *
      * @param request le JWT set-password et le mot de passe choisi par l'utilisateur
      * @return les tokens d'accès Keycloak (mockés en attendant l'intégration KC)
      * @throws TokenExpiredException   si le JWT set-password est expiré
-     * @throws InvalidTokenException   si le JWT est invalide ou si la réservation n'est plus en statut DRAFT
+     * @throws InvalidTokenException   si le JWT est invalide
      * @throws EntityNotFoundException si la réservation est introuvable
      */
     public ConfirmAccountResponse confirmAccount(ConfirmAccountRequest request) {
@@ -185,21 +129,14 @@ public class OnboardingService {
         }
 
         UUID reservationId = UUID.fromString(claims.get("reservationId", String.class));
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(EntityNotFoundException::new);
 
-        if (reservation.getStatus() != ReservationStatus.DRAFT) {
-            throw new InvalidTokenException();
-        }
+        reservationService.activateReservation(reservationId);
 
         // TODO: KC Admin API — créer user (email + password)
         // TODO: KC Admin API — set password (temporary=false)
         // TODO: KC — récupérer access + refresh token
 
-        // TODO: supprimer le ConfirmationToken lié à la réservation
-
-        reservation.setStatus(ReservationStatus.NOUVELLE);
-        reservationRepository.save(reservation);
+        confirmationTokenService.deleteByReservation(reservationId);
 
         String email = claims.getSubject();
         onboardingMailerService.sendWelcomeEmail(email);

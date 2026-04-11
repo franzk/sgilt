@@ -18,4 +18,12 @@ public interface ConfirmationTokenRepository extends JpaRepository<ConfirmationT
      * @return le token correspondant, ou {@link Optional#empty()} si absent
      */
     Optional<ConfirmationToken> findByJti(String jti);
+
+    /**
+     * Recherche le token de confirmation associé à une réservation donnée.
+     *
+     * @param reservationId l'identifiant de la réservation dont on cherche le token
+     * @return le token correspondant, ou {@link Optional#empty()} si absent
+     */
+    Optional<ConfirmationToken> findByReservationId(UUID reservationId);
 }

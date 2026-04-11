@@ -53,6 +53,22 @@
 - Structure **feature-first** : chaque domaine a ses propres packages `api`, `controller`, `dto`, `service`, `domain`, `repository`, `exception`, `mailer`.
 - Les services techniques partagés (JWT, mailer client) sont dans des packages racine dédiés (`jwt/`, `mailer/`).
 
+## Services et repositories
+- Un service ne manipule **jamais** le repository d'une autre entité.
+- Si un service a besoin de données d'un autre domaine, il passe par le service dédié de ce domaine.
+- Les repositories sont injectés uniquement dans le service du domaine correspondant.
+
+## Conception des services
+- Un service expose uniquement des **intentions métier**, jamais des opérations CRUD ou de lookup génériques.
+- Les méthodes `findById`, `findBy...`, `save`, `delete` ne doivent pas être exposées publiquement par un service.
+- Le lookup en BDD est une responsabilité interne du service — l'appelant exprime une intention, pas une requête de données.
+
+Exemples :
+- ❌ `reservationService.findById(id)` + `reservationService.passToNouvelle(reservation)`
+- ✅ `reservationService.activateReservation(id)`
+- ❌ `confirmationTokenService.findByReservation(reservation).ifPresent(confirmationTokenService::delete)`
+- ✅ `confirmationTokenService.deleteByReservation(reservationId)`
+
 ## Sécurité
 - Aucun secret en dur dans le code ou les fichiers de configuration commitée.
 - Les valeurs sensibles passent par des variables d'environnement.

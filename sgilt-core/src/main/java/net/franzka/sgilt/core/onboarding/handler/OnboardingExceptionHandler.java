@@ -5,6 +5,7 @@ import jakarta.persistence.EntityNotFoundException;
 import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
 import net.franzka.sgilt.core.onboarding.exception.TokenAlreadyUsedException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
+import net.franzka.sgilt.core.reservation.exception.InvalidStateException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,6 +26,11 @@ public class OnboardingExceptionHandler {
 
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<Void> handleInvalidToken(InvalidTokenException ex) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(InvalidStateException.class)
+    public ResponseEntity<Void> handleInvalidState(InvalidStateException ex) {
         return ResponseEntity.badRequest().build();
     }
 
