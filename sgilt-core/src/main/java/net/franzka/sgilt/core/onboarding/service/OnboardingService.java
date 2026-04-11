@@ -18,6 +18,7 @@ import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountResponse;
 import net.franzka.sgilt.core.onboarding.dto.VerifyTokenResponse;
 import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
 import net.franzka.sgilt.core.onboarding.exception.TokenAlreadyUsedException;
+import net.franzka.sgilt.core.onboarding.mailer.OnboardingMailerService;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
@@ -37,6 +38,7 @@ public class OnboardingService {
     private final ConfirmationTokenJwtService confirmationTokenJwtService;
     private final SetPasswordTokenJwtService setPasswordTokenJwtService;
     private final ConfirmationTokenProperties confirmationTokenProperties;
+    private final OnboardingMailerService onboardingMailerService;
 
     @Transactional
     public DemandeInitialeResponse submitDemandeTunnel(NewEvenementRequest request) {
@@ -61,6 +63,11 @@ public class OnboardingService {
                 confirmationTokenProperties.confirmationExpirationHours()
         );
         confirmationTokenRepository.save(token);
+
+        // TODO: KC Admin API — vérifier si email existe
+        // → si oui : onboardingMailerService.sendSecurityAlertEmail()
+        // → si non : onboardingMailerService.sendConfirmationEmail()
+        onboardingMailerService.sendConfirmationEmail(request.email(), jwt);
 
         // TODO: à retirer quand le mailer sera branché
         log.info("Confirmation JWT: {}", jwt);
@@ -152,6 +159,8 @@ public class OnboardingService {
         reservationRepository.updateStatus(reservationId, ReservationStatus.NOUVELLE);
 
         // 7. TODO: notifier prestataire via sgilt-mailer
+        String email = claims.getSubject();
+        onboardingMailerService.sendWelcomeEmail(email);
 
         // 8. Retourner les tokens (mockés)
         return new ConfirmAccountResponse(
