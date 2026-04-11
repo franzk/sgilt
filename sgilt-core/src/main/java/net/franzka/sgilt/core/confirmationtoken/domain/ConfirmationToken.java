@@ -19,7 +19,7 @@ public class ConfirmationToken {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String token;
+    private String jti;
     private String email;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,13 +30,13 @@ public class ConfirmationToken {
     private LocalDateTime expiresAt;
     private LocalDateTime createdAt;
 
-    public static ConfirmationToken generate(String email, Reservation reservation) {
+    public static ConfirmationToken create(String jti, String email, Reservation reservation, int expirationHours) {
         ConfirmationToken t = new ConfirmationToken();
-        t.token = UUID.randomUUID().toString();
+        t.jti = jti;
         t.email = email;
         t.reservation = reservation;
         t.used = false;
-        t.expiresAt = LocalDateTime.now().plusHours(24);
+        t.expiresAt = LocalDateTime.now().plusHours(expirationHours);
         t.createdAt = LocalDateTime.now();
         return t;
     }

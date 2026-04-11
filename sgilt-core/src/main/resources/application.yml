@@ -25,5 +25,10 @@ spring:
         jwt:
           issuer-uri: ${KEYCLOAK_ISSUER:http://host.docker.internal:5028/realms/sgilt}
 
+sgilt:
+  jwt:
+    confirmation-secret: ${CONFIRMATION_TOKEN_SECRET:sgilt-dev-confirmation-token-secret-key-change-in-production}
+    confirmation-expiration-hours: 24
+
 server:
   port: 5027
