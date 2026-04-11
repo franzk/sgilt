@@ -1,8 +1,8 @@
 package net.franzka.sgilt.core.onboarding.api;
 
 import jakarta.validation.Valid;
-import net.franzka.sgilt.core.onboarding.api.dto.DemandeInitialeResponse;
-import net.franzka.sgilt.core.onboarding.api.dto.NewEvenementRequest;
+import net.franzka.sgilt.core.onboarding.dto.DemandeInitialeResponse;
+import net.franzka.sgilt.core.onboarding.dto.NewEvenementRequest;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountRequest;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountResponse;
 import net.franzka.sgilt.core.onboarding.dto.VerifyTokenResponse;

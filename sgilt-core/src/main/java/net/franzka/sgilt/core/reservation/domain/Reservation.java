@@ -1,9 +1,7 @@
 package net.franzka.sgilt.core.reservation.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -11,10 +9,16 @@ import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Entité JPA représentant une demande de réservation associée à un événement et un prestataire.
+ */
 @Entity
 @Table(name = "reservations")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Reservation {
 
     @Id
@@ -33,13 +37,4 @@ public class Reservation {
     private ReservationStatus status;
 
     private LocalDateTime createdAt;
-
-    public static Reservation createDraft(Evenement evenement, UUID prestataireId) {
-        Reservation r = new Reservation();
-        r.evenement = evenement;
-        r.prestataireId = prestataireId;
-        r.status = ReservationStatus.DRAFT;
-        r.createdAt = LocalDateTime.now();
-        return r;
-    }
 }

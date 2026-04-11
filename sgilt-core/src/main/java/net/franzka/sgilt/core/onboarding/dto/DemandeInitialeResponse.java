@@ -1,4 +1,4 @@
-package net.franzka.sgilt.core.onboarding.api.dto;
+package net.franzka.sgilt.core.onboarding.dto;
 
 public record DemandeInitialeResponse(
         String email

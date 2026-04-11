@@ -2,18 +2,20 @@ package net.franzka.sgilt.core.confirmationtoken.repository;
 
 import net.franzka.sgilt.core.confirmationtoken.domain.ConfirmationToken;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Repository JPA pour l'entité {@link ConfirmationToken}.
+ */
 public interface ConfirmationTokenRepository extends JpaRepository<ConfirmationToken, UUID> {
 
+    /**
+     * Recherche un token de confirmation par son identifiant JWT (jti).
+     *
+     * @param jti l'identifiant unique du JWT
+     * @return le token correspondant, ou {@link Optional#empty()} si absent
+     */
     Optional<ConfirmationToken> findByJti(String jti);
-
-    @Modifying
-    @Query("UPDATE ConfirmationToken ct SET ct.used = true WHERE ct.id = :id")
-    void markAsUsed(@Param("id") UUID id);
 }

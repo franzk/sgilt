@@ -1,18 +1,24 @@
 package net.franzka.sgilt.core.confirmationtoken.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Entité JPA représentant un token de confirmation envoyé par email lors de l'onboarding.
+ * Une fois consommé, le champ {@code used} passe à {@code true}.
+ * Le token est supprimé en fin de process après création du compte Keycloak.
+ */
 @Entity
 @Table(name = "confirmation_tokens")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ConfirmationToken {
 
     @Id
@@ -29,15 +35,4 @@ public class ConfirmationToken {
     private boolean used;
     private LocalDateTime expiresAt;
     private LocalDateTime createdAt;
-
-    public static ConfirmationToken create(String jti, String email, Reservation reservation, int expirationHours) {
-        ConfirmationToken t = new ConfirmationToken();
-        t.jti = jti;
-        t.email = email;
-        t.reservation = reservation;
-        t.used = false;
-        t.expiresAt = LocalDateTime.now().plusHours(expirationHours);
-        t.createdAt = LocalDateTime.now();
-        return t;
-    }
 }
