@@ -3,10 +3,11 @@ package net.franzka.sgilt.core.onboarding.api;
 import jakarta.validation.Valid;
 import net.franzka.sgilt.core.onboarding.api.dto.DemandeInitialeResponse;
 import net.franzka.sgilt.core.onboarding.api.dto.NewEvenementRequest;
+import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountRequest;
+import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountResponse;
+import net.franzka.sgilt.core.onboarding.dto.VerifyTokenResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("api/v1/onboarding")
 public interface OnboardingApi {
@@ -14,5 +15,15 @@ public interface OnboardingApi {
     @PostMapping()
     ResponseEntity<DemandeInitialeResponse> submitDemandeTunnel(
             @RequestBody @Valid NewEvenementRequest request
+    );
+
+    @GetMapping("/verify-token")
+    ResponseEntity<VerifyTokenResponse> verifyToken(
+            @RequestParam String token
+    );
+
+    @PostMapping("/confirm-account")
+    ResponseEntity<ConfirmAccountResponse> confirmAccount(
+            @RequestBody @Valid ConfirmAccountRequest request
     );
 }
