@@ -27,7 +27,7 @@ spring:
 
 sgilt:
   jwt:
-    confirmation-secret: ${CONFIRMATION_TOKEN_SECRET:c2dpbHQtZGV2LWNvbmZpcm1hdGlvbi10b2tlbi1zZWNyZXQta2V5LWNoYW5nZS1pbi1wcm9kdWN0aW9u}
+    confirmation-secret: ${CONFIRMATION_TOKEN_SECRET}
     confirmation-expiration-hours: 24
 
 server:
