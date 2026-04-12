@@ -45,7 +45,7 @@ public class ReservationService {
      * @throws EntityNotFoundException si aucune réservation ne correspond à cet identifiant
      * @throws InvalidStateException   si la réservation n'est pas en statut DRAFT
      */
-    public void activateReservation(UUID reservationId) {
+    public void activateDemande(UUID reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(EntityNotFoundException::new);
         if (reservation.getStatus() != ReservationStatus.DRAFT) {

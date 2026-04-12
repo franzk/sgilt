@@ -6,7 +6,10 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
-public record NewEvenementRequest(
+/**
+ * DTO pour la demande de réservation initiale dans le flux d'onboarding.
+ */
+public record DemandeInitialeRequest(
         @NotBlank String firstname,
         @NotBlank String lastname,
         @NotBlank @Email String email,

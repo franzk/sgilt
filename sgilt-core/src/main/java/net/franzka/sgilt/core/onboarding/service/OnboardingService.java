@@ -11,8 +11,8 @@ import net.franzka.sgilt.core.onboarding.domain.ConfirmationToken;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountRequest;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountResponse;
 import net.franzka.sgilt.core.onboarding.dto.DemandeInitialeResponse;
-import net.franzka.sgilt.core.onboarding.dto.NewEvenementRequest;
-import net.franzka.sgilt.core.onboarding.dto.VerifyTokenResponse;
+import net.franzka.sgilt.core.onboarding.dto.DemandeInitialeRequest;
+import net.franzka.sgilt.core.onboarding.dto.SetPasswordTokenDto;
 import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.mailer.OnboardingMailerService;
@@ -34,12 +34,16 @@ public class OnboardingService {
     private final OnboardingMailerService onboardingMailerService;
 
     /**
-     * Crée un événement, une réservation et un token de confirmation, puis déclenche l'envoi du mail de confirmation.
+     * Crée
+     * - un événement en draft,
+     * - une réservation en draft
+     * - un token de confirmation
+     * --> puis déclenche l'envoi du mail de confirmation.
      *
      * @param request les données de la demande initiale (nom, email, prestataireId)
      * @return l'email de l'utilisateur encapsulé dans la réponse
      */
-    public DemandeInitialeResponse submitDemandeTunnel(NewEvenementRequest request) {
+    public DemandeInitialeResponse createDemandeReservation(DemandeInitialeRequest request) {
 
         Evenement evenement = evenementService.createDraft(
                 request.firstname(),
@@ -63,45 +67,6 @@ public class OnboardingService {
         log.info("Confirmation JWT: {}", jwt);
 
         return new DemandeInitialeResponse(request.email());
-    }
-
-    /**
-     * Valide le token de confirmation JWT : vérifie l'expiration, la signature, l'existence en BDD,
-     * l'état utilisé, et la cohérence du claim {@code reservationCreatedAt} avec la réservation en BDD.
-     *
-     * @param token le JWT de confirmation reçu par email
-     * @return l'entité {@link ConfirmationToken} validée
-     * @throws TokenExpiredException     si le token est expiré
-     * @throws InvalidTokenException     si la signature est invalide ou si les claims ne correspondent pas
-     * @throws EntityNotFoundException   si aucun token ne correspond au jti
-     * @throws TokenAlreadyUsedException si le token a déjà été consommé
-     */
-    public ConfirmationToken validateConfirmationToken(String token) {
-        return confirmationTokenService.validate(token);
-    }
-
-    /**
-     * Marque le token de confirmation comme utilisé.
-     *
-     * @param confirmationToken le token à consommer
-     */
-    public void consumeConfirmationToken(ConfirmationToken confirmationToken) {
-        confirmationTokenService.markAsUsed(confirmationToken);
-    }
-
-    /**
-     * Génère un JWT set-password à partir du token de confirmation consommé et construit la réponse.
-     *
-     * @param confirmationToken le token de confirmation validé et consommé
-     * @return la réponse contenant l'email et le JWT set-password
-     */
-    public VerifyTokenResponse generateSetPasswordResponse(ConfirmationToken confirmationToken) {
-        String email = confirmationToken.getEmail();
-        String setPasswordToken = setPasswordTokenJwtService.generateToken(
-                email,
-                confirmationToken.getReservation().getId()
-        );
-        return new VerifyTokenResponse(email, setPasswordToken);
     }
 
     /**
@@ -130,7 +95,7 @@ public class OnboardingService {
 
         UUID reservationId = UUID.fromString(claims.get("reservationId", String.class));
 
-        reservationService.activateReservation(reservationId);
+        reservationService.activateDemande(reservationId);
 
         // TODO: KC Admin API — créer user (email + password)
         // TODO: KC Admin API — set password (temporary=false)

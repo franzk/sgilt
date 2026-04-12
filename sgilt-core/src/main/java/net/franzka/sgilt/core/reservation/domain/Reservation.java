@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * Entité JPA représentant une demande de réservation associée à un événement et un prestataire.
+ * Entité JPA représentant une réservation associée à un événement et un prestataire.
  */
 @Entity
 @Table(name = "reservations")
@@ -29,6 +29,7 @@ public class Reservation {
     @JoinColumn(name = "evenement_id")
     private Evenement evenement;
 
+    //TODO : relation ManyToOne avec prestataire
     private UUID prestataireId;
 
     @Enumerated(EnumType.STRING)
