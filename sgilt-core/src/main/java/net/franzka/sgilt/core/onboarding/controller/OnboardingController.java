@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Controller HTTP du process d'onboarding.
+ * Controller HTTP du process d'onboarding :
+ * <li> Prise en charge de la demande initiale (après soumission du formulaire de demande initiale)</li>
+ * <li> Confirmation finale et création du compte client</li>
  */
 @RestController
 @RequiredArgsConstructor
