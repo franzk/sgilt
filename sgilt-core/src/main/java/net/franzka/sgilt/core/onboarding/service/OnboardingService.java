@@ -3,10 +3,10 @@ package net.franzka.sgilt.core.onboarding.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
+import net.franzka.sgilt.core.jwt.TokenJwtService;
 import net.franzka.sgilt.core.onboarding.domain.ConfirmationToken;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountRequest;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountResponse;
@@ -18,20 +18,42 @@ import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.mailer.OnboardingMailerService;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class OnboardingService {
 
     private final EvenementService evenementService;
     private final ReservationService reservationService;
     private final ConfirmationTokenService confirmationTokenService;
-    private final SetPasswordTokenJwtService setPasswordTokenJwtService;
+    private final TokenJwtService setPasswordTokenJwtService;
     private final OnboardingMailerService onboardingMailerService;
+
+    /**
+     * Construit le service avec ses dépendances.
+     *
+     * @param evenementService           le service de gestion des événements
+     * @param reservationService         le service de gestion des réservations
+     * @param confirmationTokenService   le service métier des tokens de confirmation
+     * @param setPasswordTokenJwtService le service JWT qualifié pour les tokens set-password
+     * @param onboardingMailerService    le service d'envoi de mails d'onboarding
+     */
+    public OnboardingService(
+            EvenementService evenementService,
+            ReservationService reservationService,
+            ConfirmationTokenService confirmationTokenService,
+            @Qualifier("setPasswordTokenJwtService") TokenJwtService setPasswordTokenJwtService,
+            OnboardingMailerService onboardingMailerService) {
+        this.evenementService = evenementService;
+        this.reservationService = reservationService;
+        this.confirmationTokenService = confirmationTokenService;
+        this.setPasswordTokenJwtService = setPasswordTokenJwtService;
+        this.onboardingMailerService = onboardingMailerService;
+    }
 
     /**
      * Crée

@@ -86,7 +86,7 @@ public class JwtService {
      */
     public SecretKey deriveKey(String secret, String salt) {
         try {
-            byte[] secretBytes = Decoders.BASE64.decode(secret);
+            byte[] secretBytes = Decoders.BASE64URL.decode(secret);
             byte[] saltBytes = salt.getBytes(StandardCharsets.UTF_8);
             byte[] combined = new byte[secretBytes.length + saltBytes.length];
             System.arraycopy(secretBytes, 0, combined, 0, secretBytes.length);

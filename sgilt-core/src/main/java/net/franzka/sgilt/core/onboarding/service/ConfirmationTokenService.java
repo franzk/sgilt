@@ -3,17 +3,19 @@ package net.franzka.sgilt.core.onboarding.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
 import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
+import net.franzka.sgilt.core.jwt.TokenJwtService;
 import net.franzka.sgilt.core.onboarding.domain.ConfirmationToken;
 import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
 import net.franzka.sgilt.core.onboarding.exception.TokenAlreadyUsedException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.repository.ConfirmationTokenRepository;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,12 +23,27 @@ import java.util.UUID;
  * Service métier pour l'entité {@link ConfirmationToken}.
  */
 @Service
-@RequiredArgsConstructor
 public class ConfirmationTokenService {
 
     private final ConfirmationTokenRepository confirmationTokenRepository;
-    private final ConfirmationTokenJwtService confirmationTokenJwtService;
+    private final TokenJwtService confirmationTokenJwtService;
     private final ConfirmationTokenProperties confirmationTokenProperties;
+
+    /**
+     * Construit le service avec ses dépendances.
+     *
+     * @param confirmationTokenRepository le repository des tokens de confirmation
+     * @param confirmationTokenJwtService le service JWT qualifié pour les tokens de confirmation
+     * @param confirmationTokenProperties les propriétés de configuration des tokens
+     */
+    public ConfirmationTokenService(
+            ConfirmationTokenRepository confirmationTokenRepository,
+            @Qualifier("confirmationTokenJwtService") TokenJwtService confirmationTokenJwtService,
+            ConfirmationTokenProperties confirmationTokenProperties) {
+        this.confirmationTokenRepository = confirmationTokenRepository;
+        this.confirmationTokenJwtService = confirmationTokenJwtService;
+        this.confirmationTokenProperties = confirmationTokenProperties;
+    }
 
     /**
      * Crée et persiste un token de confirmation pour la réservation donnée.
@@ -36,11 +53,11 @@ public class ConfirmationTokenService {
      * @return le JWT complet à envoyer par mail
      */
     public String createForReservation(Reservation reservation) {
-        String jwt = confirmationTokenJwtService.generateToken(
-                reservation.getEvenement().getEmail(),
-                reservation.getId(),
-                reservation.getCreatedAt()
+        Map<String, Object> claims = Map.of(
+                "reservationId", reservation.getId().toString(),
+                "reservationCreatedAt", reservation.getCreatedAt().toString()
         );
+        String jwt = confirmationTokenJwtService.generateToken(claims, reservation.getEvenement().getEmail());
         String jti = confirmationTokenJwtService.extractJti(jwt);
 
         ConfirmationToken token = ConfirmationToken.builder()
