@@ -9,7 +9,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.crypto.SecretKey;
+import java.security.SecureRandom;
 import java.time.Duration;
+import java.util.Base64;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,8 +20,14 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class TokenJwtServiceTest {
 
-    private static final String SECRET     = "c2VjcmV0Rm9yVW5pdFRlc3Rz";
+    private final String SECRET = randomBase64UrlSecret();
     private static final String SALT       = "test-salt";
+
+    private static String randomBase64UrlSecret() {
+        byte[] bytes = new byte[32];
+        new SecureRandom().nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+    }
     private static final Duration EXPIRATION = Duration.ofMinutes(10);
     private static final String TOKEN      = "header.payload.signature";
     private static final String SUBJECT    = "user@example.com";

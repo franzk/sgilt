@@ -8,7 +8,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import javax.crypto.SecretKey;
+import java.security.SecureRandom;
 import java.time.Duration;
+import java.util.Base64;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,11 +18,15 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 class JwtServiceTest {
 
-    // "secretForUnitTests" encodé en base64
-    private static final String SECRET_A = "c2VjcmV0Rm9yVW5pdFRlc3Rz";
-    // "otherSecretForTests" encodé en base64
-    private static final String SECRET_B = "b3RoZXJTZWNyZXRGb3JUZXN0cw==";
+    private final String SECRET_A = randomBase64UrlSecret();
+    private final String SECRET_B = randomBase64UrlSecret();
     private static final String SUBJECT  = "user@example.com";
+
+    private static String randomBase64UrlSecret() {
+        byte[] bytes = new byte[32];
+        new SecureRandom().nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+    }
 
     private JwtService jwtService;
     private SecretKey testKey;
