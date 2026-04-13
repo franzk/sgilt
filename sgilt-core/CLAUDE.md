@@ -74,6 +74,18 @@ Exemples :
 - Les valeurs sensibles passent par des variables d'environnement.
 - `application-local.yml` est gitignorée — ne jamais commiter de vraie valeur de secret.
 
+## Tests
+- Les noms de méthodes de test suivent le pattern `givenXxx_whenYyy_thenZzz`.
+- `given` décrit le contexte ou l'état initial.
+- `when` décrit l'action testée.
+- `then` décrit le résultat attendu.
+- Les TU utilisent **JUnit 5**, **Mockito** et **AssertJ** exclusivement.
+- `@ExtendWith(MockitoExtension.class)` sur toutes les classes de TU.
+- `@Mock` pour les dépendances, `@InjectMocks` pour la classe testée.
+- Assertions avec `assertThat` (AssertJ) — jamais `assertEquals` JUnit.
+- `@SpringBootTest` est interdit dans les TU — réservé aux TI uniquement.
+- Les classes `@Nested` organisent les tests par méthode testée.
+
 ## Ce que Claude Code ne doit pas faire
 - Toucher à Git (`git add`, `git commit`, `git push`, etc.)
 - Créer des méthodes `@Query` ou `@Modifying` dans les repositories sans validation explicite

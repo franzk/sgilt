@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -110,16 +109,6 @@ public class ConfirmationTokenService {
         }
 
         return confirmationToken;
-    }
-
-    /**
-     * Recherche un token de confirmation par son jti.
-     *
-     * @param jti l'identifiant unique du JWT
-     * @return le token correspondant, ou {@link Optional#empty()} si absent
-     */
-    public Optional<ConfirmationToken> findByJti(String jti) {
-        return confirmationTokenRepository.findByJti(jti);
     }
 
     /**
