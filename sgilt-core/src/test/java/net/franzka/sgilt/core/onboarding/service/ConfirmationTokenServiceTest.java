@@ -5,6 +5,7 @@ import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.jwt.ConfirmationTokenHmacService;
 import net.franzka.sgilt.core.onboarding.domain.ConfirmationToken;
+import net.franzka.sgilt.core.onboarding.domain.ConfirmationTokenState;
 import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
 import net.franzka.sgilt.core.onboarding.exception.TokenAlreadyUsedException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
@@ -91,7 +92,7 @@ class ConfirmationTokenServiceTest {
             ConfirmationToken saved = tokenCaptor.getValue();
             assertThat(saved.getEmail()).isEqualTo(EMAIL);
             assertThat(saved.getReservation()).isSameAs(reservation);
-            assertThat(saved.isUsed()).isFalse();
+            assertThat(saved.getState()).isEqualTo(ConfirmationTokenState.OPEN);
         }
 
         @Test
@@ -151,7 +152,7 @@ class ConfirmationTokenServiceTest {
 
         @Test
         void givenAlreadyUsedToken_whenValidate_thenThrowsTokenAlreadyUsedException() {
-            ConfirmationToken usedToken = buildConfirmationToken(true, LocalDateTime.now().plusHours(1));
+            ConfirmationToken usedToken = buildConfirmationToken(ConfirmationTokenState.USED, LocalDateTime.now().plusHours(1));
             when(confirmationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
             when(confirmationTokenRepository.findByPayload(PAYLOAD)).thenReturn(Optional.of(usedToken));
 
@@ -161,7 +162,7 @@ class ConfirmationTokenServiceTest {
 
         @Test
         void givenExpiredToken_whenValidate_thenThrowsTokenExpiredException() {
-            ConfirmationToken expiredToken = buildConfirmationToken(false, LocalDateTime.now().minusSeconds(1));
+            ConfirmationToken expiredToken = buildConfirmationToken(ConfirmationTokenState.OPEN, LocalDateTime.now().minusSeconds(1));
             when(confirmationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
             when(confirmationTokenRepository.findByPayload(PAYLOAD)).thenReturn(Optional.of(expiredToken));
 
@@ -171,7 +172,7 @@ class ConfirmationTokenServiceTest {
 
         @Test
         void givenValidToken_whenValidate_thenReturnsConfirmationToken() {
-            ConfirmationToken expectedToken = buildConfirmationToken(false, LocalDateTime.now().plusHours(1));
+            ConfirmationToken expectedToken = buildConfirmationToken(ConfirmationTokenState.OPEN, LocalDateTime.now().plusHours(1));
             when(confirmationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
             when(confirmationTokenRepository.findByPayload(PAYLOAD)).thenReturn(Optional.of(expectedToken));
 
@@ -180,10 +181,10 @@ class ConfirmationTokenServiceTest {
             assertThat(result).isSameAs(expectedToken);
         }
 
-        private ConfirmationToken buildConfirmationToken(boolean used, LocalDateTime expiresAt) {
+        private ConfirmationToken buildConfirmationToken(ConfirmationTokenState state, LocalDateTime expiresAt) {
             return ConfirmationToken.builder()
                     .payload(PAYLOAD)
-                    .used(used)
+                    .state(state)
                     .expiresAt(expiresAt)
                     .build();
         }
@@ -198,16 +199,16 @@ class ConfirmationTokenServiceTest {
 
         @Test
         void givenToken_whenMarkAsUsed_thenSetsUsedToTrue() {
-            ConfirmationToken token = ConfirmationToken.builder().used(false).build();
+            ConfirmationToken token = ConfirmationToken.builder().state(ConfirmationTokenState.OPEN).build();
 
             confirmationTokenService.markAsUsed(token);
 
-            assertThat(token.isUsed()).isTrue();
+            assertThat(token.getState()).isEqualTo(ConfirmationTokenState.USED);
         }
 
         @Test
         void givenToken_whenMarkAsUsed_thenSavesToken() {
-            ConfirmationToken token = ConfirmationToken.builder().used(false).build();
+            ConfirmationToken token = ConfirmationToken.builder().state(ConfirmationTokenState.OPEN).build();
 
             confirmationTokenService.markAsUsed(token);
 

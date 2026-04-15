@@ -3,6 +3,8 @@ package net.franzka.sgilt.core.onboarding.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -33,7 +35,11 @@ public class ConfirmationToken {
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
 
-    private boolean used;
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(columnDefinition = "confirmation_token_state")
+    private ConfirmationTokenState state;
+
     private LocalDateTime expiresAt;
     private LocalDateTime createdAt;
 }

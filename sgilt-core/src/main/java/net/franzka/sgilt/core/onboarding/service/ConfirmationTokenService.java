@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
 import net.franzka.sgilt.core.jwt.ConfirmationTokenHmacService;
 import net.franzka.sgilt.core.onboarding.domain.ConfirmationToken;
+import net.franzka.sgilt.core.onboarding.domain.ConfirmationTokenState;
 import net.franzka.sgilt.core.onboarding.exception.TokenAlreadyUsedException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.repository.ConfirmationTokenRepository;
@@ -54,7 +55,7 @@ public class ConfirmationTokenService {
                 .payload(payload)
                 .email(reservation.getEvenement().getEmail())
                 .reservation(reservation)
-                .used(false)
+                .state(ConfirmationTokenState.OPEN)
                 .expiresAt(LocalDateTime.now().plusHours(
                         confirmationTokenProperties.confirmationExpirationHours()))
                 .createdAt(LocalDateTime.now())
@@ -81,7 +82,7 @@ public class ConfirmationTokenService {
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByPayload(payload)
                 .orElseThrow(EntityNotFoundException::new);
 
-        if (confirmationToken.isUsed()) {
+        if (ConfirmationTokenState.USED.equals(confirmationToken.getState())) {
             throw new TokenAlreadyUsedException();
         }
 
@@ -98,7 +99,7 @@ public class ConfirmationTokenService {
      * @param token le token à consommer
      */
     public void markAsUsed(ConfirmationToken token) {
-        token.setUsed(true);
+        token.setState(ConfirmationTokenState.USED);
         confirmationTokenRepository.save(token);
     }
 
