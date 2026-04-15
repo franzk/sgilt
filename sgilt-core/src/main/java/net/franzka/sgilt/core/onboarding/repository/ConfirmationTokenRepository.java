@@ -12,12 +12,12 @@ import java.util.UUID;
 public interface ConfirmationTokenRepository extends JpaRepository<ConfirmationToken, UUID> {
 
     /**
-     * Recherche un token de confirmation par son identifiant JWT (jti).
+     * Recherche un token de confirmation par son payload HMAC.
      *
-     * @param jti l'identifiant unique du JWT
+     * @param payload le payload extrait du token de confirmation
      * @return le token correspondant, ou {@link Optional#empty()} si absent
      */
-    Optional<ConfirmationToken> findByJti(String jti);
+    Optional<ConfirmationToken> findByPayload(String payload);
 
     /**
      * Recherche le token de confirmation associé à une réservation donnée.

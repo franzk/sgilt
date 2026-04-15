@@ -10,8 +10,8 @@ import java.util.UUID;
  * DTO pour la demande de réservation initiale dans le flux d'onboarding.
  */
 public record DemandeInitialeRequest(
-        @NotBlank String firstname,
-        @NotBlank String lastname,
+        @NotBlank String firstName,
+        @NotBlank String lastName,
         @NotBlank @Email String email,
         @NotNull UUID prestataireId
 ) {}

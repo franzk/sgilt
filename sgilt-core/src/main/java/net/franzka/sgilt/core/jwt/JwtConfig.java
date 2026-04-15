@@ -8,31 +8,12 @@ import org.springframework.context.annotation.Configuration;
 import java.time.Duration;
 
 /**
- * Configuration Spring des beans {@link TokenJwtService}.
- * Déclare deux instances différenciées par {@link Qualifier} :
- * {@code confirmationTokenJwtService} et {@code setPasswordTokenJwtService}.
+ * Configuration Spring du bean {@link TokenJwtService}.
+ * Déclare une instance différenciée par {@link Qualifier} :
+ * {@code setPasswordTokenJwtService}.
  */
 @Configuration
 public class JwtConfig {
-
-    /**
-     * Bean JWT pour les tokens de confirmation d'email.
-     * Sel : {@code "confirmation"} — expiration depuis {@link ConfirmationTokenProperties}.
-     *
-     * @param jwtService le service JWT technique de bas niveau
-     * @param props      les propriétés de configuration des tokens
-     * @return le {@link TokenJwtService} configuré pour les tokens de confirmation
-     */
-    @Bean
-    @Qualifier("confirmationTokenJwtService")
-    public TokenJwtService confirmationTokenJwtService(JwtService jwtService, ConfirmationTokenProperties props) {
-        return new TokenJwtService(
-                jwtService,
-                props.confirmationSecret(),
-                "confirmation",
-                Duration.ofHours(props.confirmationExpirationHours())
-        );
-    }
 
     /**
      * Bean JWT pour les tokens de définition de mot de passe.

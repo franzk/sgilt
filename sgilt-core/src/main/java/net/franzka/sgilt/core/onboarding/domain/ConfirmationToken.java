@@ -26,7 +26,7 @@ public class ConfirmationToken {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String jti;
+    private String payload;
     private String email;
 
     @ManyToOne(fetch = FetchType.LAZY)

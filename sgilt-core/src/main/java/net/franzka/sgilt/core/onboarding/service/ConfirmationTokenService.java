@@ -1,21 +1,16 @@
 package net.franzka.sgilt.core.onboarding.service;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
 import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
-import net.franzka.sgilt.core.jwt.TokenJwtService;
+import net.franzka.sgilt.core.jwt.ConfirmationTokenHmacService;
 import net.franzka.sgilt.core.onboarding.domain.ConfirmationToken;
-import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
 import net.franzka.sgilt.core.onboarding.exception.TokenAlreadyUsedException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.repository.ConfirmationTokenRepository;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -25,42 +20,38 @@ import java.util.UUID;
 public class ConfirmationTokenService {
 
     private final ConfirmationTokenRepository confirmationTokenRepository;
-    private final TokenJwtService confirmationTokenJwtService;
+    private final ConfirmationTokenHmacService confirmationTokenHmacService;
     private final ConfirmationTokenProperties confirmationTokenProperties;
 
     /**
      * Construit le service avec ses dépendances.
      *
      * @param confirmationTokenRepository le repository des tokens de confirmation
-     * @param confirmationTokenJwtService le service JWT qualifié pour les tokens de confirmation
+     * @param confirmationTokenHmacService le service HMAC de génération et vérification des tokens
      * @param confirmationTokenProperties les propriétés de configuration des tokens
      */
     public ConfirmationTokenService(
             ConfirmationTokenRepository confirmationTokenRepository,
-            @Qualifier("confirmationTokenJwtService") TokenJwtService confirmationTokenJwtService,
+            ConfirmationTokenHmacService confirmationTokenHmacService,
             ConfirmationTokenProperties confirmationTokenProperties) {
         this.confirmationTokenRepository = confirmationTokenRepository;
-        this.confirmationTokenJwtService = confirmationTokenJwtService;
+        this.confirmationTokenHmacService = confirmationTokenHmacService;
         this.confirmationTokenProperties = confirmationTokenProperties;
     }
 
     /**
      * Crée et persiste un token de confirmation pour la réservation donnée.
-     * Génère le JWT en interne, extrait le jti et sauvegarde le ConfirmationToken.
+     * Génère le token HMAC en interne, extrait le payload et sauvegarde le {@link ConfirmationToken}.
      *
      * @param reservation la réservation pour laquelle créer le token
-     * @return le JWT complet à envoyer par mail
+     * @return le token complet {@code payload-signature} à envoyer par mail
      */
     public String createForReservation(Reservation reservation) {
-        Map<String, Object> claims = Map.of(
-                "reservationId", reservation.getId().toString(),
-                "reservationCreatedAt", reservation.getCreatedAt().toString()
-        );
-        String jwt = confirmationTokenJwtService.generateToken(claims, reservation.getEvenement().getEmail());
-        String jti = confirmationTokenJwtService.extractJti(jwt);
+        String token = confirmationTokenHmacService.generateToken();
+        String payload = token.substring(0, token.lastIndexOf("-"));
 
-        ConfirmationToken token = ConfirmationToken.builder()
-                .jti(jti)
+        ConfirmationToken confirmationToken = ConfirmationToken.builder()
+                .payload(payload)
                 .email(reservation.getEvenement().getEmail())
                 .reservation(reservation)
                 .used(false)
@@ -69,43 +60,33 @@ public class ConfirmationTokenService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        confirmationTokenRepository.save(token);
-        return jwt;
+        confirmationTokenRepository.save(confirmationToken);
+        return token;
     }
 
     /**
-     * Valide le JWT de confirmation : vérifie l'expiration, la signature, l'existence en BDD,
-     * l'état utilisé, et la cohérence du claim {@code reservationCreatedAt}.
+     * Valide le token de confirmation : vérifie la signature HMAC, l'existence en BDD,
+     * l'état utilisé et l'expiration.
      *
-     * @param token le JWT de confirmation reçu par email
+     * @param token le token de confirmation reçu par email, sous la forme {@code payload-signature}
      * @return l'entité {@link ConfirmationToken} validée
-     * @throws TokenExpiredException     si le token est expiré
-     * @throws InvalidTokenException     si la signature est invalide ou si les claims ne correspondent pas
-     * @throws EntityNotFoundException   si aucun token ne correspond au jti
+     * @throws net.franzka.sgilt.core.onboarding.exception.InvalidTokenException si la signature HMAC est invalide
+     * @throws EntityNotFoundException   si aucun token ne correspond au payload
      * @throws TokenAlreadyUsedException si le token a déjà été consommé
+     * @throws TokenExpiredException     si le token est expiré
      */
     public ConfirmationToken validate(String token) {
-        if (confirmationTokenJwtService.isExpired(token)) {
-            throw new TokenExpiredException();
-        }
+        String payload = confirmationTokenHmacService.verify(token);
 
-        Claims claims;
-        try {
-            claims = confirmationTokenJwtService.extractClaims(token);
-        } catch (JwtException e) {
-            throw new InvalidTokenException();
-        }
-
-        ConfirmationToken confirmationToken = confirmationTokenRepository.findByJti(claims.getId())
+        ConfirmationToken confirmationToken = confirmationTokenRepository.findByPayload(payload)
                 .orElseThrow(EntityNotFoundException::new);
 
         if (confirmationToken.isUsed()) {
             throw new TokenAlreadyUsedException();
         }
 
-        String claimedCreatedAt = claims.get("reservationCreatedAt", String.class);
-        if (!confirmationToken.getReservation().getCreatedAt().toString().equals(claimedCreatedAt)) {
-            throw new InvalidTokenException();
+        if (!confirmationToken.getExpiresAt().isAfter(LocalDateTime.now())) {
+            throw new TokenExpiredException();
         }
 
         return confirmationToken;

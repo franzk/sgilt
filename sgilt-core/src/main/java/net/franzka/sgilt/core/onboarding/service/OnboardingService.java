@@ -7,12 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.jwt.TokenJwtService;
-import net.franzka.sgilt.core.onboarding.domain.ConfirmationToken;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountRequest;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountResponse;
 import net.franzka.sgilt.core.onboarding.dto.DemandeInitialeResponse;
 import net.franzka.sgilt.core.onboarding.dto.DemandeInitialeRequest;
-import net.franzka.sgilt.core.onboarding.dto.SetPasswordTokenDto;
 import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.mailer.OnboardingMailerService;
@@ -68,8 +66,8 @@ public class OnboardingService {
     public DemandeInitialeResponse createDemandeReservation(DemandeInitialeRequest request) {
 
         Evenement evenement = evenementService.createDraft(
-                request.firstname(),
-                request.lastname(),
+                request.firstName(),
+                request.lastName(),
                 request.email()
         );
 

@@ -35,15 +35,14 @@ public class ConfirmationService {
     }
 
     /**
-     * Valide le token de confirmation JWT issu de l'url de validation envoyé par mail
-     * Retourne l'entité correspondante trouvée en BDD
+     * Valide le token de confirmation HMAC issu de l'URL de validation envoyée par mail.
+     * Retourne l'entité correspondante trouvée en BDD.
      *
-     * @param token le JWT de confirmation reçu par email
+     * @param token le token de confirmation reçu par email, sous la forme {@code payload-signature}
      * @return l'entité {@link ConfirmationToken} validée
-     *
      * @throws TokenExpiredException     si le token est expiré
-     * @throws InvalidTokenException     si la signature est invalide ou si les claims ne correspondent pas
-     * @throws EntityNotFoundException   si aucun token ne correspond au jti
+     * @throws InvalidTokenException     si la signature HMAC est invalide
+     * @throws EntityNotFoundException   si aucun token ne correspond au payload
      * @throws TokenAlreadyUsedException si le token a déjà été consommé
      */
     public ConfirmationToken validateConfirmationToken(String token) {

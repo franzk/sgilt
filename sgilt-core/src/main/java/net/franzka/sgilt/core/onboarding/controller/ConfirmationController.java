@@ -7,7 +7,6 @@ import net.franzka.sgilt.core.onboarding.domain.ConfirmationToken;
 import net.franzka.sgilt.core.onboarding.dto.SetPasswordTokenDto;
 import net.franzka.sgilt.core.onboarding.service.ConfirmationService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -25,15 +24,15 @@ public class ConfirmationController implements ConfirmationApi {
      * L'utilisateur aura 5 minutes entre le moment où il clique sur son lien de validation
      * et le moment où il saisit le mot de passe de son nouveau compte client.
      *
-     * @param urlToken le JWT de confirmation extrait du lien email
+     * @param token le token de confirmation extrait du lien email
      * @return 200 OK avec l'email et le JWT set-password
      */
     @Override
     @Transactional
-    public ResponseEntity<SetPasswordTokenDto> verifyToken(@RequestParam String urlToken)
+    public ResponseEntity<SetPasswordTokenDto> verifyToken(String token)
     {
         // 1 - validation le token et récupération de l'objet confirmationToken correspondant en BDD
-        ConfirmationToken confirmationToken = confirmationService.validateConfirmationToken(urlToken);
+        ConfirmationToken confirmationToken = confirmationService.validateConfirmationToken(token);
 
         // 2 - marquer le confirmationToken comme utilisé pour éviter les réutilisations
         confirmationService.consumeConfirmationToken(confirmationToken);

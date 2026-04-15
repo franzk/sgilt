@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ConfirmationServiceTest {
 
-    private static final String JWT = "header.payload.signature";
+    private static final String TOKEN = "testpayload123456789-" + "a".repeat(64);
     private static final String EMAIL = "user@example.com";
 
     @Mock
@@ -48,52 +48,52 @@ class ConfirmationServiceTest {
         @Test
         void givenValidJwt_whenValidateConfirmationToken_thenReturnsConfirmationToken() {
             ConfirmationToken expected = ConfirmationToken.builder().email(EMAIL).build();
-            when(confirmationTokenService.validate(JWT)).thenReturn(expected);
+            when(confirmationTokenService.validate(TOKEN)).thenReturn(expected);
 
-            ConfirmationToken result = confirmationService.validateConfirmationToken(JWT);
+            ConfirmationToken result = confirmationService.validateConfirmationToken(TOKEN);
 
             assertThat(result).isSameAs(expected);
         }
 
         @Test
         void givenJwt_whenValidateConfirmationToken_thenDelegatesToConfirmationTokenService() {
-            when(confirmationTokenService.validate(JWT)).thenReturn(ConfirmationToken.builder().build());
+            when(confirmationTokenService.validate(TOKEN)).thenReturn(ConfirmationToken.builder().build());
 
-            confirmationService.validateConfirmationToken(JWT);
+            confirmationService.validateConfirmationToken(TOKEN);
 
-            verify(confirmationTokenService).validate(JWT);
+            verify(confirmationTokenService).validate(TOKEN);
         }
 
         @Test
         void givenExpiredToken_whenValidateConfirmationToken_thenPropagatesTokenExpiredException() {
-            when(confirmationTokenService.validate(JWT)).thenThrow(new TokenExpiredException());
+            when(confirmationTokenService.validate(TOKEN)).thenThrow(new TokenExpiredException());
 
             assertThatExceptionOfType(TokenExpiredException.class)
-                    .isThrownBy(() -> confirmationService.validateConfirmationToken(JWT));
+                    .isThrownBy(() -> confirmationService.validateConfirmationToken(TOKEN));
         }
 
         @Test
         void givenInvalidToken_whenValidateConfirmationToken_thenPropagatesInvalidTokenException() {
-            when(confirmationTokenService.validate(JWT)).thenThrow(new InvalidTokenException());
+            when(confirmationTokenService.validate(TOKEN)).thenThrow(new InvalidTokenException());
 
             assertThatExceptionOfType(InvalidTokenException.class)
-                    .isThrownBy(() -> confirmationService.validateConfirmationToken(JWT));
+                    .isThrownBy(() -> confirmationService.validateConfirmationToken(TOKEN));
         }
 
         @Test
         void givenUnknownToken_whenValidateConfirmationToken_thenPropagatesEntityNotFoundException() {
-            when(confirmationTokenService.validate(JWT)).thenThrow(new EntityNotFoundException());
+            when(confirmationTokenService.validate(TOKEN)).thenThrow(new EntityNotFoundException());
 
             assertThatExceptionOfType(EntityNotFoundException.class)
-                    .isThrownBy(() -> confirmationService.validateConfirmationToken(JWT));
+                    .isThrownBy(() -> confirmationService.validateConfirmationToken(TOKEN));
         }
 
         @Test
         void givenAlreadyUsedToken_whenValidateConfirmationToken_thenPropagatesTokenAlreadyUsedException() {
-            when(confirmationTokenService.validate(JWT)).thenThrow(new TokenAlreadyUsedException());
+            when(confirmationTokenService.validate(TOKEN)).thenThrow(new TokenAlreadyUsedException());
 
             assertThatExceptionOfType(TokenAlreadyUsedException.class)
-                    .isThrownBy(() -> confirmationService.validateConfirmationToken(JWT));
+                    .isThrownBy(() -> confirmationService.validateConfirmationToken(TOKEN));
         }
     }
 
