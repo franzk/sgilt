@@ -94,6 +94,22 @@ class OnboardingServiceTest {
         }
 
         @Test
+        void givenRequest_whenCreateDemandeReservation_thenCancelsTokenBeforeCreatingConfirmationToken() {
+            DemandeInitialeRequest request = buildRequest();
+            Evenement evenement = Evenement.builder().email(EMAIL).build();
+            Reservation reservation = Reservation.builder().build();
+            when(evenementService.createDraft(FIRSTNAME, LASTNAME, EMAIL)).thenReturn(evenement);
+            when(reservationService.createDraft(evenement, PRESTATAIRE_ID)).thenReturn(reservation);
+            when(confirmationTokenService.createForReservation(reservation)).thenReturn("jwt");
+
+            InOrder inOrder = inOrder(confirmationTokenService);
+            onboardingService.createDemandeReservation(request);
+
+            inOrder.verify(confirmationTokenService).cancelExistingTokenForEmail(EMAIL);
+            inOrder.verify(confirmationTokenService).createForReservation(reservation);
+        }
+
+        @Test
         void givenRequest_whenCreateDemandeReservation_thenCreatesEvenementDraftWithRequestFields() {
             DemandeInitialeRequest request = buildRequest();
             Evenement evenement = Evenement.builder().email(EMAIL).build();
