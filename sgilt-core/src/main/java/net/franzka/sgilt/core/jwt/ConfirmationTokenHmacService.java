@@ -22,6 +22,7 @@ import java.util.Base64;
 public class ConfirmationTokenHmacService {
 
     private final ConfirmationTokenProperties confirmationTokenProperties;
+    private final SecureRandom secureRandom = new SecureRandom();
 
     /**
      * Construit le service avec ses dépendances.
@@ -33,19 +34,38 @@ public class ConfirmationTokenHmacService {
     }
 
     /**
+     * Génère un payload aléatoire de 16 octets encodé en Base64 URL-safe sans padding.
+     *
+     * @return le payload sous forme de chaîne Base64 URL-safe
+     */
+    public String generatePayload() {
+        byte[] bytes = new byte[16];
+        secureRandom.nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+    }
+
+    /**
+     * Construit un token de confirmation à partir d'un payload existant.
+     * Calcule la signature HMAC-SHA256 du payload et retourne le token complet.
+     *
+     * @param payload le payload à signer
+     * @return le token complet sous la forme {@code payload-signature}
+     */
+    public String buildToken(String payload) {
+        String signature = new HmacUtils(HmacAlgorithms.HMAC_SHA_256, confirmationTokenProperties.confirmationSecret())
+                .hmacHex(payload);
+        return payload + "-" + signature;
+    }
+
+    /**
      * Génère un token de confirmation opaque et URL-safe.
-     * Génère 16 octets aléatoires via {@link SecureRandom}, les encode en Base64 URL-safe sans padding
-     * pour former le payload, puis calcule la signature HMAC-SHA256 du payload en hexadécimal.
+     * Génère un payload aléatoire via {@link #generatePayload()},
+     * puis construit le token via {@link #buildToken(String)}.
      *
      * @return le token complet sous la forme {@code payload-signature}
      */
     public String generateToken() {
-        byte[] bytes = new byte[16];
-        new SecureRandom().nextBytes(bytes);
-        String payload = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-        String signature = new HmacUtils(HmacAlgorithms.HMAC_SHA_256, confirmationTokenProperties.confirmationSecret())
-                .hmacHex(payload);
-        return payload + "-" + signature;
+        return buildToken(generatePayload());
     }
 
     /**
