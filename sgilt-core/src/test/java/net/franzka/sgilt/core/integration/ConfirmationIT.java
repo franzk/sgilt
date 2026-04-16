@@ -106,8 +106,32 @@ class ConfirmationIT extends BaseIntegrationTest {
 
     @Test
     void givenCancelledToken_whenVerify_thenReturns403() {
-        // TDD - à implémenter quand la double soumission sera développée
-        // scénario : soumettre deux fois le même email, le premier token est CANCELLED
-        // vérifier que l'appel avec le token CANCELLED retourne 403
+        String body = """
+                {
+                    "firstName": "Franz",
+                    "lastName": "Ka",
+                    "email": "franz@ka.net",
+                    "prestataireId": "37d43573-8cd0-4eef-a838-91d9bb4f2323"
+                }
+                """;
+
+        assertThat(mockMvc.post().uri("/api/v1/onboarding")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
+                .hasStatus(202);
+
+        assertThat(mockMvc.post().uri("/api/v1/onboarding")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
+                .hasStatus(202);
+
+        ConfirmationToken cancelledToken = confirmationTokenRepository
+                .findByEmailAndState("franz@ka.net", ConfirmationTokenState.CANCELLED)
+                .orElseThrow();
+        String token = confirmationTokenHmacService.buildToken(cancelledToken.getPayload());
+
+        assertThat(mockMvc.get().uri("/confirmation")
+                .param("token", token))
+                .hasStatus(403);
     }
 }
