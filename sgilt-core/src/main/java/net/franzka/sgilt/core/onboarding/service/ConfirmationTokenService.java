@@ -67,13 +67,13 @@ public class ConfirmationTokenService {
 
     /**
      * Valide le token de confirmation : vérifie la signature HMAC, l'existence en BDD,
-     * l'état utilisé et l'expiration.
+     * l'état utilisé ou annulé, et l'expiration.
      *
      * @param token le token de confirmation reçu par email, sous la forme {@code payload-signature}
      * @return l'entité {@link ConfirmationToken} validée
      * @throws net.franzka.sgilt.core.onboarding.exception.InvalidTokenException si la signature HMAC est invalide
      * @throws EntityNotFoundException   si aucun token ne correspond au payload
-     * @throws TokenAlreadyUsedException si le token a déjà été consommé
+     * @throws TokenAlreadyUsedException si le token a déjà été consommé ou a été annulé
      * @throws TokenExpiredException     si le token est expiré
      */
     public ConfirmationToken validate(String token) {
@@ -83,6 +83,10 @@ public class ConfirmationTokenService {
                 .orElseThrow(EntityNotFoundException::new);
 
         if (ConfirmationTokenState.USED.equals(confirmationToken.getState())) {
+            throw new TokenAlreadyUsedException();
+        }
+
+        if (ConfirmationTokenState.CANCELLED.equals(confirmationToken.getState())) {
             throw new TokenAlreadyUsedException();
         }
 
@@ -101,6 +105,20 @@ public class ConfirmationTokenService {
     public void markAsUsed(ConfirmationToken token) {
         token.setState(ConfirmationTokenState.USED);
         confirmationTokenRepository.save(token);
+    }
+
+    /**
+     * Annule le token de confirmation en état OPEN associé à l'email donné, s'il en existe un.
+     * Sans effet si aucun token OPEN n'est trouvé pour cet email.
+     *
+     * @param email l'adresse email dont on cherche un token OPEN à annuler
+     */
+    public void cancelExistingTokenForEmail(String email) {
+        confirmationTokenRepository.findByEmailAndState(email, ConfirmationTokenState.OPEN)
+                .ifPresent(token -> {
+                    token.setState(ConfirmationTokenState.CANCELLED);
+                    confirmationTokenRepository.save(token);
+                });
     }
 
     /**

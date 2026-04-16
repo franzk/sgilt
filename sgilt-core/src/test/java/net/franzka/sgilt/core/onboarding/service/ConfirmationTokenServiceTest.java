@@ -161,6 +161,16 @@ class ConfirmationTokenServiceTest {
         }
 
         @Test
+        void givenCancelledToken_whenValidate_thenThrowsTokenAlreadyUsedException() {
+            ConfirmationToken cancelledToken = buildConfirmationToken(ConfirmationTokenState.CANCELLED, LocalDateTime.now().plusHours(1));
+            when(confirmationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
+            when(confirmationTokenRepository.findByPayload(PAYLOAD)).thenReturn(Optional.of(cancelledToken));
+
+            assertThatExceptionOfType(TokenAlreadyUsedException.class)
+                    .isThrownBy(() -> confirmationTokenService.validate(TOKEN));
+        }
+
+        @Test
         void givenExpiredToken_whenValidate_thenThrowsTokenExpiredException() {
             ConfirmationToken expiredToken = buildConfirmationToken(ConfirmationTokenState.OPEN, LocalDateTime.now().minusSeconds(1));
             when(confirmationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
@@ -213,6 +223,46 @@ class ConfirmationTokenServiceTest {
             confirmationTokenService.markAsUsed(token);
 
             verify(confirmationTokenRepository).save(token);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // cancelExistingTokenForEmail
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class CancelExistingTokenForEmail {
+
+        @Test
+        void givenOpenToken_whenCancelExistingTokenForEmail_thenSetsStateToCancelled() {
+            ConfirmationToken token = ConfirmationToken.builder().state(ConfirmationTokenState.OPEN).build();
+            when(confirmationTokenRepository.findByEmailAndState(EMAIL, ConfirmationTokenState.OPEN))
+                    .thenReturn(Optional.of(token));
+
+            confirmationTokenService.cancelExistingTokenForEmail(EMAIL);
+
+            assertThat(token.getState()).isEqualTo(ConfirmationTokenState.CANCELLED);
+        }
+
+        @Test
+        void givenOpenToken_whenCancelExistingTokenForEmail_thenSavesToken() {
+            ConfirmationToken token = ConfirmationToken.builder().state(ConfirmationTokenState.OPEN).build();
+            when(confirmationTokenRepository.findByEmailAndState(EMAIL, ConfirmationTokenState.OPEN))
+                    .thenReturn(Optional.of(token));
+
+            confirmationTokenService.cancelExistingTokenForEmail(EMAIL);
+
+            verify(confirmationTokenRepository).save(token);
+        }
+
+        @Test
+        void givenNoOpenToken_whenCancelExistingTokenForEmail_thenDoesNotSave() {
+            when(confirmationTokenRepository.findByEmailAndState(EMAIL, ConfirmationTokenState.OPEN))
+                    .thenReturn(Optional.empty());
+
+            confirmationTokenService.cancelExistingTokenForEmail(EMAIL);
+
+            verify(confirmationTokenRepository, never()).save(any());
         }
     }
 

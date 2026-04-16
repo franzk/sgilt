@@ -112,7 +112,7 @@ class OnboardingIT extends BaseIntegrationTest {
     @Test
     void givenSameEmailTwice_whenSubmitDemande_thenPreviousTokenCancelledAndNewTokenCreated() {
         // première soumission
-        mockMvc.post().uri("/api/v1/onboarding")
+        assertThat(mockMvc.post().uri("/api/v1/onboarding")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                 {
@@ -121,10 +121,10 @@ class OnboardingIT extends BaseIntegrationTest {
                     "email": "franz@ka.net",
                     "prestataireId": "37d43573-8cd0-4eef-a838-91d9bb4f2323"
                 }
-            """);
+            """)).hasStatus(HttpStatus.ACCEPTED);
 
         // deuxième soumission
-        mockMvc.post().uri("/api/v1/onboarding")
+        assertThat(mockMvc.post().uri("/api/v1/onboarding")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                 {
@@ -133,7 +133,7 @@ class OnboardingIT extends BaseIntegrationTest {
                     "email": "franz@ka.net",
                     "prestataireId": "37d43573-8cd0-4eef-a838-91d9bb4f2323"
                 }
-            """);
+            """)).hasStatus(HttpStatus.ACCEPTED);
 
         List<ConfirmationToken> tokens = confirmationTokenRepository.findAll();
         assertThat(tokens)

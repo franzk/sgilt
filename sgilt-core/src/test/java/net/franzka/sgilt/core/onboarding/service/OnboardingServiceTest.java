@@ -25,6 +25,8 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import org.mockito.InOrder;
+
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,6 +62,36 @@ class OnboardingServiceTest {
 
     @Nested
     class CreateDemandeReservation {
+
+        @Test
+        void givenRequest_whenCreateDemandeReservation_thenCancelsExistingTokenForEmail() {
+            DemandeInitialeRequest request = buildRequest();
+            Evenement evenement = Evenement.builder().email(EMAIL).build();
+            Reservation reservation = Reservation.builder().build();
+            when(evenementService.createDraft(FIRSTNAME, LASTNAME, EMAIL)).thenReturn(evenement);
+            when(reservationService.createDraft(evenement, PRESTATAIRE_ID)).thenReturn(reservation);
+            when(confirmationTokenService.createForReservation(reservation)).thenReturn("jwt");
+
+            onboardingService.createDemandeReservation(request);
+
+            verify(confirmationTokenService).cancelExistingTokenForEmail(EMAIL);
+        }
+
+        @Test
+        void givenRequest_whenCreateDemandeReservation_thenCancelsTokenBeforeCreatingEvenement() {
+            DemandeInitialeRequest request = buildRequest();
+            Evenement evenement = Evenement.builder().email(EMAIL).build();
+            Reservation reservation = Reservation.builder().build();
+            when(evenementService.createDraft(FIRSTNAME, LASTNAME, EMAIL)).thenReturn(evenement);
+            when(reservationService.createDraft(evenement, PRESTATAIRE_ID)).thenReturn(reservation);
+            when(confirmationTokenService.createForReservation(reservation)).thenReturn("jwt");
+
+            InOrder inOrder = inOrder(confirmationTokenService, evenementService);
+            onboardingService.createDemandeReservation(request);
+
+            inOrder.verify(confirmationTokenService).cancelExistingTokenForEmail(EMAIL);
+            inOrder.verify(evenementService).createDraft(FIRSTNAME, LASTNAME, EMAIL);
+        }
 
         @Test
         void givenRequest_whenCreateDemandeReservation_thenCreatesEvenementDraftWithRequestFields() {

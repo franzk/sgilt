@@ -65,6 +65,8 @@ public class OnboardingService {
      */
     public DemandeInitialeResponse createDemandeReservation(DemandeInitialeRequest request) {
 
+        confirmationTokenService.cancelExistingTokenForEmail(request.email());
+
         Evenement evenement = evenementService.createDraft(
                 request.firstName(),
                 request.lastName(),
@@ -109,7 +111,7 @@ public class OnboardingService {
         Claims claims;
         try {
             claims = setPasswordTokenJwtService.extractClaims(token);
-        } catch (JwtException e) {
+        } catch (JwtException ex) {
             throw new InvalidTokenException();
         }
 
