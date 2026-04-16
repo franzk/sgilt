@@ -1,6 +1,9 @@
 package net.franzka.sgilt.core.integration;
 
+import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
 import net.franzka.sgilt.core.jwt.ConfirmationTokenHmacService;
+import net.franzka.sgilt.core.jwt.JwtService;
+import net.franzka.sgilt.core.jwt.TokenJwtService;
 import net.franzka.sgilt.core.onboarding.repository.ConfirmationTokenRepository;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
@@ -12,6 +15,9 @@ import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.UnsupportedEncodingException;
+import java.time.Duration;
+import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,6 +27,8 @@ class ConfirmationAccountIT extends BaseIntegrationTest {
     @Autowired private ConfirmationTokenHmacService confirmationTokenHmacService;
     @Autowired private ReservationRepository reservationRepository;
     @Autowired private ObjectMapper objectMapper;
+    @Autowired private JwtService jwtService;
+    @Autowired private ConfirmationTokenProperties confirmationTokenProperties;
 
     ConfirmationAccountIT(WebApplicationContext wac) {
         super(wac);
@@ -121,8 +129,26 @@ class ConfirmationAccountIT extends BaseIntegrationTest {
 
     @Test
     void givenExpiredToken_whenConfirmAccount_thenReturns410() {
-        // TDD - générer un setPasswordToken expiré
-        // nécessite d'exposer une méthode pour générer un token expiré dans TokenJwtService
+        TokenJwtService expiredTokenService = new TokenJwtService(
+                jwtService,
+                confirmationTokenProperties.confirmationSecret(),
+                "set-password",
+                Duration.ZERO
+        );
+        String expiredToken = expiredTokenService.generateToken(
+                Map.of("reservationId", UUID.randomUUID().toString()),
+                "franz@ka.net"
+        );
+
+        assertThat(mockMvc.post().uri("/api/v1/onboarding/confirm-account")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                        "setPasswordToken": "%s",
+                        "password": "p@ssw0rd!"
+                    }
+                """.formatted(expiredToken)))
+                .hasStatus(410);
     }
 
     @Test
