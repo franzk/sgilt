@@ -83,10 +83,8 @@ public class OnboardingService {
         // TODO: KC Admin API — vérifier si email existe
         // → si oui : onboardingMailerService.sendSecurityAlertEmail()
         // → si non : onboardingMailerService.sendConfirmationEmail()
+        log.info("Send mail with Confirmation confirmation token to: {}", request.email());
         onboardingMailerService.sendConfirmationEmail(request.email(), jwt);
-
-        // TODO: à retirer quand le mailer sera branché
-        log.info("Confirmation JWT: {}", jwt);
 
         return new DemandeInitialeResponse(request.email());
     }

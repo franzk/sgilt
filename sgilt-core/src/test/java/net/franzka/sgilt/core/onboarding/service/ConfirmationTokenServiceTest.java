@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -237,7 +238,7 @@ class ConfirmationTokenServiceTest {
         void givenOpenToken_whenCancelExistingTokenForEmail_thenSetsStateToCancelled() {
             ConfirmationToken token = ConfirmationToken.builder().state(ConfirmationTokenState.OPEN).build();
             when(confirmationTokenRepository.findByEmailAndState(EMAIL, ConfirmationTokenState.OPEN))
-                    .thenReturn(Optional.of(token));
+                    .thenReturn(List.of(token));
 
             confirmationTokenService.cancelExistingTokenForEmail(EMAIL);
 
@@ -248,7 +249,7 @@ class ConfirmationTokenServiceTest {
         void givenOpenToken_whenCancelExistingTokenForEmail_thenSavesToken() {
             ConfirmationToken token = ConfirmationToken.builder().state(ConfirmationTokenState.OPEN).build();
             when(confirmationTokenRepository.findByEmailAndState(EMAIL, ConfirmationTokenState.OPEN))
-                    .thenReturn(Optional.of(token));
+                    .thenReturn(List.of(token));
 
             confirmationTokenService.cancelExistingTokenForEmail(EMAIL);
 
@@ -258,7 +259,7 @@ class ConfirmationTokenServiceTest {
         @Test
         void givenNoOpenToken_whenCancelExistingTokenForEmail_thenDoesNotSave() {
             when(confirmationTokenRepository.findByEmailAndState(EMAIL, ConfirmationTokenState.OPEN))
-                    .thenReturn(Optional.empty());
+                    .thenReturn(List.of());
 
             confirmationTokenService.cancelExistingTokenForEmail(EMAIL);
 

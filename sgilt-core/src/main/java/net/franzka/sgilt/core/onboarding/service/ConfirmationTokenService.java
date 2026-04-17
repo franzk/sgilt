@@ -115,7 +115,7 @@ public class ConfirmationTokenService {
      */
     public void cancelExistingTokenForEmail(String email) {
         confirmationTokenRepository.findByEmailAndState(email, ConfirmationTokenState.OPEN)
-                .ifPresent(token -> {
+                .forEach(token -> {
                     token.setState(ConfirmationTokenState.CANCELLED);
                     confirmationTokenRepository.save(token);
                 });

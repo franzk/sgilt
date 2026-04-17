@@ -5,6 +5,7 @@ import net.franzka.sgilt.core.onboarding.domain.ConfirmationTokenState;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,5 +38,5 @@ public interface ConfirmationTokenRepository extends JpaRepository<ConfirmationT
      * @param state l'état du token recherché
      * @return le token correspondant, ou {@link Optional#empty()} si absent
      */
-    Optional<ConfirmationToken> findByEmailAndState(String email, ConfirmationTokenState state);
+    List<ConfirmationToken> findByEmailAndState(String email, ConfirmationTokenState state);
 }
