@@ -1,9 +1,8 @@
 package net.franzka.sgilt.core.onboarding.mailer;
 
-import net.franzka.sgilt.core.config.FrontendProperties;
-import net.franzka.sgilt.core.config.MailerProperties;
 import net.franzka.sgilt.core.mailer.MailerClient;
 import net.franzka.sgilt.core.mailer.MailRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -16,23 +15,23 @@ import java.util.UUID;
 public class OnboardingMailerService {
 
     private final MailerClient mailerClient;
-    private final MailerProperties mailerProperties;
-    private final FrontendProperties frontendProperties;
+    private final String mailerFrom;
+    private final String frontendUrl;
 
     /**
      * Construit le service avec ses dépendances.
      *
-     * @param mailerClient       le client HTTP vers sgilt-mailer
-     * @param mailerProperties   les propriétés mailer (expéditeur)
-     * @param frontendProperties les propriétés frontend (URL de base)
+     * @param mailerClient le client HTTP vers sgilt-mailer
+     * @param mailerFrom   l'adresse email expéditrice
+     * @param frontendUrl  l'URL de base du frontend
      */
     public OnboardingMailerService(
             MailerClient mailerClient,
-            MailerProperties mailerProperties,
-            FrontendProperties frontendProperties) {
+            @Value("${sgilt.mailer.from}") String mailerFrom,
+            @Value("${sgilt.frontend.url}") String frontendUrl) {
         this.mailerClient = mailerClient;
-        this.mailerProperties = mailerProperties;
-        this.frontendProperties = frontendProperties;
+        this.mailerFrom = mailerFrom;
+        this.frontendUrl = frontendUrl;
     }
 
     /**
@@ -42,7 +41,7 @@ public class OnboardingMailerService {
      * @param confirmationToken le token de confirmation à inclure dans le lien
      */
     public void sendConfirmationEmail(String email, String confirmationToken) {
-        String confirmationUrl = frontendProperties.url() + "/confirmation?token=" + confirmationToken;
+        String confirmationUrl = frontendUrl + "/confirmation?token=" + confirmationToken;
         String html = """
                 <p>Bonjour,</p>
                 <p>Merci pour votre demande. Cliquez sur le lien ci-dessous pour confirmer votre adresse email :</p>
@@ -50,12 +49,7 @@ public class OnboardingMailerService {
                 <p>Ce lien expire dans 24 heures.</p>
                 """.formatted(confirmationUrl);
 
-        mailerClient.sendMail(new MailRequest(
-                mailerProperties.from(),
-                email,
-                "Confirmez votre demande",
-                html
-        ));
+        mailerClient.sendMail(new MailRequest(mailerFrom, email, "Confirmez votre demande", html));
     }
 
     /**
@@ -71,12 +65,7 @@ public class OnboardingMailerService {
                 <p>Si vous n'êtes pas à l'origine de cette action, ignorez ce message.</p>
                 """.formatted(prestataireId);
 
-        mailerClient.sendMail(new MailRequest(
-                mailerProperties.from(),
-                email,
-                "Activité suspecte sur votre compte",
-                html
-        ));
+        mailerClient.sendMail(new MailRequest(mailerFrom, email, "Activité suspecte sur votre compte", html));
     }
 
     /**
@@ -89,13 +78,8 @@ public class OnboardingMailerService {
                 <p>Bonjour,</p>
                 <p>Votre compte Sgilt a été créé avec succès. Bienvenue !</p>
                 <p><a href="%s">Accéder à Sgilt</a></p>
-                """.formatted(frontendProperties.url());
+                """.formatted(frontendUrl);
 
-        mailerClient.sendMail(new MailRequest(
-                mailerProperties.from(),
-                email,
-                "Bienvenue sur Sgilt",
-                html
-        ));
+        mailerClient.sendMail(new MailRequest(mailerFrom, email, "Bienvenue sur Sgilt", html));
     }
 }
