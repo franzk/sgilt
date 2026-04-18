@@ -15,16 +15,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ConfirmationIT extends BaseIntegrationTest {
 
-    @Autowired
-    private ConfirmationTokenRepository confirmationTokenRepository;
+    @Autowired private ConfirmationTokenRepository confirmationTokenRepository;
     @Autowired private ConfirmationTokenHmacService confirmationTokenHmacService;
+
+    private static final String ONBOARDING_URL = "/api/v1/onboarding";
+    private static final String CONFIRMATION_URL = "/api/v1/confirmation";
+
 
     ConfirmationIT(WebApplicationContext wac) {
         super(wac);
     }
 
     private String submitDemandeAndGetToken() {
-        assertThat(mockMvc.post().uri("/api/v1/onboarding")
+        assertThat(mockMvc.post().uri(ONBOARDING_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
@@ -45,7 +48,7 @@ class ConfirmationIT extends BaseIntegrationTest {
     void givenValidToken_whenVerify_thenReturns200WithEmailAndSetPasswordToken() {
         String token = submitDemandeAndGetToken();
 
-        var response = mockMvc.get().uri("/confirmation")
+        var response = mockMvc.get().uri(CONFIRMATION_URL)
                 .param("token", token)
                 .exchange();
 
@@ -63,7 +66,7 @@ class ConfirmationIT extends BaseIntegrationTest {
     void givenValidToken_whenVerify_thenTokenMarkedAsPendingConfirmation() {
         String token = submitDemandeAndGetToken();
 
-        assertThat(mockMvc.get().uri("/confirmation")
+        assertThat(mockMvc.get().uri(CONFIRMATION_URL)
                 .param("token", token))
                 .hasStatus(200);
 
@@ -73,7 +76,7 @@ class ConfirmationIT extends BaseIntegrationTest {
 
     @Test
     void givenInvalidToken_whenVerify_thenReturns400() {
-        assertThat(mockMvc.get().uri("/confirmation")
+        assertThat(mockMvc.get().uri(CONFIRMATION_URL)
                 .param("token", "token-invalide"))
                 .hasStatus(400);
     }
@@ -86,7 +89,7 @@ class ConfirmationIT extends BaseIntegrationTest {
         confirmationToken.setExpiresAt(LocalDateTime.now().minusHours(1));
         confirmationTokenRepository.save(confirmationToken);
 
-        assertThat(mockMvc.get().uri("/confirmation")
+        assertThat(mockMvc.get().uri(CONFIRMATION_URL)
                 .param("token", token))
                 .hasStatus(410);
     }
@@ -95,7 +98,7 @@ class ConfirmationIT extends BaseIntegrationTest {
     void givenAlreadyUsedToken_whenVerify_thenReturns403() {
         String token = submitDemandeAndGetToken();
 
-        assertThat(mockMvc.get().uri("/confirmation")
+        assertThat(mockMvc.get().uri(CONFIRMATION_URL)
                 .param("token", token))
                 .hasStatus(200);
 
@@ -104,7 +107,7 @@ class ConfirmationIT extends BaseIntegrationTest {
         confirmationToken.setState(ConfirmationTokenState.USED);
         confirmationTokenRepository.save(confirmationToken);
 
-        assertThat(mockMvc.get().uri("/confirmation")
+        assertThat(mockMvc.get().uri(CONFIRMATION_URL)
                 .param("token", token))
                 .hasStatus(403);
     }
@@ -113,11 +116,11 @@ class ConfirmationIT extends BaseIntegrationTest {
     void givenTokenInPendingConfirmation_whenVerifyWithinGracePeriod_thenReturns200() {
         String token = submitDemandeAndGetToken();
 
-        assertThat(mockMvc.get().uri("/confirmation")
+        assertThat(mockMvc.get().uri(CONFIRMATION_URL)
                 .param("token", token))
                 .hasStatus(200);
 
-        assertThat(mockMvc.get().uri("/confirmation")
+        assertThat(mockMvc.get().uri(CONFIRMATION_URL)
                 .param("token", token))
                 .hasStatus(200);
     }
@@ -126,7 +129,7 @@ class ConfirmationIT extends BaseIntegrationTest {
     void givenTokenInPendingConfirmation_whenVerifyAfterGracePeriod_thenReturns410() {
         String token = submitDemandeAndGetToken();
 
-        assertThat(mockMvc.get().uri("/confirmation")
+        assertThat(mockMvc.get().uri(CONFIRMATION_URL)
                 .param("token", token))
                 .hasStatus(200);
 
@@ -134,7 +137,7 @@ class ConfirmationIT extends BaseIntegrationTest {
         confirmationToken.setConfirmationPeriodExpiresAt(LocalDateTime.now().minusSeconds(1));
         confirmationTokenRepository.save(confirmationToken);
 
-        assertThat(mockMvc.get().uri("/confirmation")
+        assertThat(mockMvc.get().uri(CONFIRMATION_URL)
                 .param("token", token))
                 .hasStatus(410);
     }
@@ -150,12 +153,12 @@ class ConfirmationIT extends BaseIntegrationTest {
                 }
                 """;
 
-        assertThat(mockMvc.post().uri("/api/v1/onboarding")
+        assertThat(mockMvc.post().uri(ONBOARDING_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
                 .hasStatus(202);
 
-        assertThat(mockMvc.post().uri("/api/v1/onboarding")
+        assertThat(mockMvc.post().uri(ONBOARDING_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
                 .hasStatus(202);
@@ -166,7 +169,7 @@ class ConfirmationIT extends BaseIntegrationTest {
 
         String token = confirmationTokenHmacService.buildToken(cancelledToken.getPayload());
 
-        assertThat(mockMvc.get().uri("/confirmation")
+        assertThat(mockMvc.get().uri(CONFIRMATION_URL)
                 .param("token", token))
                 .hasStatus(403);
     }
