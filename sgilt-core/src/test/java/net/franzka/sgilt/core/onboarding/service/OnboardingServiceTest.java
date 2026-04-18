@@ -14,6 +14,7 @@ import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.mailer.OnboardingMailerService;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
+import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,6 +54,9 @@ class OnboardingServiceTest {
     @Mock
     private OnboardingMailerService onboardingMailerService;
 
+    @Mock
+    private UtilisateurService utilisateurService;
+
     @InjectMocks
     private OnboardingService onboardingService;
 
@@ -64,22 +68,44 @@ class OnboardingServiceTest {
     class CreateDemandeReservation {
 
         @Test
-        void givenRequest_whenCreateDemandeReservation_thenCancelsExistingTokenForEmail() {
-            DemandeInitialeRequest request = buildRequest();
-            Evenement evenement = Evenement.builder().email(EMAIL).build();
-            Reservation reservation = Reservation.builder().build();
-            when(evenementService.createDraft(FIRSTNAME, LASTNAME, EMAIL)).thenReturn(evenement);
-            when(reservationService.createDraft(evenement, PRESTATAIRE_ID)).thenReturn(reservation);
-            when(confirmationTokenService.createForReservation(reservation)).thenReturn("jwt");
+        void givenExistingUser_whenCreateDemandeReservation_thenSendsSecurityAlertEmail() {
+            when(utilisateurService.existsByEmail(EMAIL)).thenReturn(true);
 
-            onboardingService.createDemandeReservation(request);
+            onboardingService.createDemandeReservation(buildRequest());
+
+            verify(onboardingMailerService).sendSecurityAlertEmail(EMAIL, PRESTATAIRE_ID);
+        }
+
+        @Test
+        void givenExistingUser_whenCreateDemandeReservation_thenDoesNotCreateEvenement() {
+            when(utilisateurService.existsByEmail(EMAIL)).thenReturn(true);
+
+            onboardingService.createDemandeReservation(buildRequest());
+
+            verify(evenementService, never()).createDraft(any(), any(), any());
+        }
+
+        @Test
+        void givenExistingUser_whenCreateDemandeReservation_thenReturnsResponseWithEmail() {
+            when(utilisateurService.existsByEmail(EMAIL)).thenReturn(true);
+
+            DemandeInitialeResponse response = onboardingService.createDemandeReservation(buildRequest());
+
+            assertThat(response.email()).isEqualTo(EMAIL);
+        }
+
+        @Test
+        void givenNewUser_whenCreateDemandeReservation_thenCancelsExistingTokenForEmail() {
+            stubHappyPath();
+
+            onboardingService.createDemandeReservation(buildRequest());
 
             verify(confirmationTokenService).cancelExistingTokenForEmail(EMAIL);
         }
 
         @Test
-        void givenRequest_whenCreateDemandeReservation_thenCancelsTokenBeforeCreatingEvenement() {
-            DemandeInitialeRequest request = buildRequest();
+        void givenNewUser_whenCreateDemandeReservation_thenCancelsTokenBeforeCreatingEvenement() {
+            when(utilisateurService.existsByEmail(EMAIL)).thenReturn(false);
             Evenement evenement = Evenement.builder().email(EMAIL).build();
             Reservation reservation = Reservation.builder().build();
             when(evenementService.createDraft(FIRSTNAME, LASTNAME, EMAIL)).thenReturn(evenement);
@@ -87,15 +113,15 @@ class OnboardingServiceTest {
             when(confirmationTokenService.createForReservation(reservation)).thenReturn("jwt");
 
             InOrder inOrder = inOrder(confirmationTokenService, evenementService);
-            onboardingService.createDemandeReservation(request);
+            onboardingService.createDemandeReservation(buildRequest());
 
             inOrder.verify(confirmationTokenService).cancelExistingTokenForEmail(EMAIL);
             inOrder.verify(evenementService).createDraft(FIRSTNAME, LASTNAME, EMAIL);
         }
 
         @Test
-        void givenRequest_whenCreateDemandeReservation_thenCancelsTokenBeforeCreatingConfirmationToken() {
-            DemandeInitialeRequest request = buildRequest();
+        void givenNewUser_whenCreateDemandeReservation_thenCancelsTokenBeforeCreatingConfirmationToken() {
+            when(utilisateurService.existsByEmail(EMAIL)).thenReturn(false);
             Evenement evenement = Evenement.builder().email(EMAIL).build();
             Reservation reservation = Reservation.builder().build();
             when(evenementService.createDraft(FIRSTNAME, LASTNAME, EMAIL)).thenReturn(evenement);
@@ -103,80 +129,69 @@ class OnboardingServiceTest {
             when(confirmationTokenService.createForReservation(reservation)).thenReturn("jwt");
 
             InOrder inOrder = inOrder(confirmationTokenService);
-            onboardingService.createDemandeReservation(request);
+            onboardingService.createDemandeReservation(buildRequest());
 
             inOrder.verify(confirmationTokenService).cancelExistingTokenForEmail(EMAIL);
             inOrder.verify(confirmationTokenService).createForReservation(reservation);
         }
 
         @Test
-        void givenRequest_whenCreateDemandeReservation_thenCreatesEvenementDraftWithRequestFields() {
-            DemandeInitialeRequest request = buildRequest();
-            Evenement evenement = Evenement.builder().email(EMAIL).build();
-            Reservation reservation = Reservation.builder().build();
-            when(evenementService.createDraft(FIRSTNAME, LASTNAME, EMAIL)).thenReturn(evenement);
-            when(reservationService.createDraft(evenement, PRESTATAIRE_ID)).thenReturn(reservation);
-            when(confirmationTokenService.createForReservation(reservation)).thenReturn("jwt");
+        void givenNewUser_whenCreateDemandeReservation_thenCreatesEvenementDraftWithRequestFields() {
+            stubHappyPath();
 
-            onboardingService.createDemandeReservation(request);
+            onboardingService.createDemandeReservation(buildRequest());
 
             verify(evenementService).createDraft(FIRSTNAME, LASTNAME, EMAIL);
         }
 
         @Test
-        void givenRequest_whenCreateDemandeReservation_thenCreatesReservationDraftWithCreatedEvenementAndPrestataireId() {
-            DemandeInitialeRequest request = buildRequest();
-            Evenement evenement = Evenement.builder().email(EMAIL).build();
-            Reservation reservation = Reservation.builder().build();
-            when(evenementService.createDraft(FIRSTNAME, LASTNAME, EMAIL)).thenReturn(evenement);
-            when(reservationService.createDraft(evenement, PRESTATAIRE_ID)).thenReturn(reservation);
-            when(confirmationTokenService.createForReservation(reservation)).thenReturn("jwt");
+        void givenNewUser_whenCreateDemandeReservation_thenCreatesReservationDraftWithCreatedEvenementAndPrestataireId() {
+            stubHappyPath();
 
-            onboardingService.createDemandeReservation(request);
+            onboardingService.createDemandeReservation(buildRequest());
 
-            verify(reservationService).createDraft(evenement, PRESTATAIRE_ID);
+            verify(reservationService).createDraft(any(Evenement.class), eq(PRESTATAIRE_ID));
         }
 
         @Test
-        void givenRequest_whenCreateDemandeReservation_thenCreatesConfirmationTokenForReservation() {
-            DemandeInitialeRequest request = buildRequest();
-            Evenement evenement = Evenement.builder().email(EMAIL).build();
-            Reservation reservation = Reservation.builder().build();
-            when(evenementService.createDraft(FIRSTNAME, LASTNAME, EMAIL)).thenReturn(evenement);
-            when(reservationService.createDraft(evenement, PRESTATAIRE_ID)).thenReturn(reservation);
-            when(confirmationTokenService.createForReservation(reservation)).thenReturn("jwt");
+        void givenNewUser_whenCreateDemandeReservation_thenCreatesConfirmationTokenForReservation() {
+            stubHappyPath();
 
-            onboardingService.createDemandeReservation(request);
+            onboardingService.createDemandeReservation(buildRequest());
 
-            verify(confirmationTokenService).createForReservation(reservation);
+            verify(confirmationTokenService).createForReservation(any(Reservation.class));
         }
 
         @Test
-        void givenRequest_whenCreateDemandeReservation_thenSendsConfirmationEmailWithEmailAndJwt() {
-            DemandeInitialeRequest request = buildRequest();
+        void givenNewUser_whenCreateDemandeReservation_thenSendsConfirmationEmailWithEmailAndJwt() {
+            when(utilisateurService.existsByEmail(EMAIL)).thenReturn(false);
             Evenement evenement = Evenement.builder().email(EMAIL).build();
             Reservation reservation = Reservation.builder().build();
             when(evenementService.createDraft(FIRSTNAME, LASTNAME, EMAIL)).thenReturn(evenement);
             when(reservationService.createDraft(evenement, PRESTATAIRE_ID)).thenReturn(reservation);
             when(confirmationTokenService.createForReservation(reservation)).thenReturn("confirmation.jwt");
 
-            onboardingService.createDemandeReservation(request);
+            onboardingService.createDemandeReservation(buildRequest());
 
             verify(onboardingMailerService).sendConfirmationEmail(EMAIL, "confirmation.jwt");
         }
 
         @Test
-        void givenRequest_whenCreateDemandeReservation_thenReturnsResponseWithEmail() {
-            DemandeInitialeRequest request = buildRequest();
+        void givenNewUser_whenCreateDemandeReservation_thenReturnsResponseWithEmail() {
+            stubHappyPath();
+
+            DemandeInitialeResponse response = onboardingService.createDemandeReservation(buildRequest());
+
+            assertThat(response.email()).isEqualTo(EMAIL);
+        }
+
+        private void stubHappyPath() {
+            when(utilisateurService.existsByEmail(EMAIL)).thenReturn(false);
             Evenement evenement = Evenement.builder().email(EMAIL).build();
             Reservation reservation = Reservation.builder().build();
             when(evenementService.createDraft(FIRSTNAME, LASTNAME, EMAIL)).thenReturn(evenement);
             when(reservationService.createDraft(evenement, PRESTATAIRE_ID)).thenReturn(reservation);
             when(confirmationTokenService.createForReservation(reservation)).thenReturn("jwt");
-
-            DemandeInitialeResponse response = onboardingService.createDemandeReservation(request);
-
-            assertThat(response.email()).isEqualTo(EMAIL);
         }
 
         private DemandeInitialeRequest buildRequest() {
@@ -221,9 +236,7 @@ class OnboardingServiceTest {
         @Test
         void givenValidToken_whenConfirmAccount_thenActivatesReservationWithIdFromClaims() {
             UUID reservationId = UUID.randomUUID();
-            Claims claims = buildClaims(reservationId, EMAIL);
-            when(setPasswordTokenJwtService.isExpired(SP_TOKEN)).thenReturn(false);
-            when(setPasswordTokenJwtService.extractClaims(SP_TOKEN)).thenReturn(claims);
+            stubValidToken(reservationId);
 
             onboardingService.confirmAccount(buildRequest());
 
@@ -231,11 +244,19 @@ class OnboardingServiceTest {
         }
 
         @Test
+        void givenValidToken_whenConfirmAccount_thenCreatesUtilisateurFromReservationEvenement() {
+            UUID reservationId = UUID.randomUUID();
+            stubValidToken(reservationId);
+
+            onboardingService.confirmAccount(buildRequest());
+
+            verify(utilisateurService).createUtilisateur(FIRSTNAME, LASTNAME, EMAIL);
+        }
+
+        @Test
         void givenValidToken_whenConfirmAccount_thenDeletesConfirmationTokenForReservation() {
             UUID reservationId = UUID.randomUUID();
-            Claims claims = buildClaims(reservationId, EMAIL);
-            when(setPasswordTokenJwtService.isExpired(SP_TOKEN)).thenReturn(false);
-            when(setPasswordTokenJwtService.extractClaims(SP_TOKEN)).thenReturn(claims);
+            stubValidToken(reservationId);
 
             onboardingService.confirmAccount(buildRequest());
 
@@ -245,9 +266,7 @@ class OnboardingServiceTest {
         @Test
         void givenValidToken_whenConfirmAccount_thenSendsWelcomeEmailToSubject() {
             UUID reservationId = UUID.randomUUID();
-            Claims claims = buildClaims(reservationId, EMAIL);
-            when(setPasswordTokenJwtService.isExpired(SP_TOKEN)).thenReturn(false);
-            when(setPasswordTokenJwtService.extractClaims(SP_TOKEN)).thenReturn(claims);
+            stubValidToken(reservationId);
 
             onboardingService.confirmAccount(buildRequest());
 
@@ -257,15 +276,25 @@ class OnboardingServiceTest {
         @Test
         void givenValidToken_whenConfirmAccount_thenReturnsResponse() {
             UUID reservationId = UUID.randomUUID();
-            Claims claims = buildClaims(reservationId, EMAIL);
-            when(setPasswordTokenJwtService.isExpired(SP_TOKEN)).thenReturn(false);
-            when(setPasswordTokenJwtService.extractClaims(SP_TOKEN)).thenReturn(claims);
+            stubValidToken(reservationId);
 
             ConfirmAccountResponse response = onboardingService.confirmAccount(buildRequest());
 
             assertThat(response).isNotNull();
             assertThat(response.accessToken()).isNotBlank();
             assertThat(response.refreshToken()).isNotBlank();
+        }
+
+        private void stubValidToken(UUID reservationId) {
+            Claims claims = buildClaims(reservationId, EMAIL);
+            when(setPasswordTokenJwtService.isExpired(SP_TOKEN)).thenReturn(false);
+            when(setPasswordTokenJwtService.extractClaims(SP_TOKEN)).thenReturn(claims);
+            Evenement evenement = Evenement.builder()
+                    .firstName(FIRSTNAME)
+                    .lastName(LASTNAME)
+                    .email(EMAIL)
+                    .build();
+            when(reservationService.getEvenement(reservationId)).thenReturn(evenement);
         }
 
         private ConfirmAccountRequest buildRequest() {

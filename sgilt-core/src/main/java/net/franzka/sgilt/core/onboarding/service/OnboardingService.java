@@ -132,8 +132,6 @@ public class OnboardingService {
 
         confirmationTokenService.deleteByReservation(reservationId);
 
-
-
         String email = claims.getSubject();
         onboardingMailerService.sendWelcomeEmail(email);
 

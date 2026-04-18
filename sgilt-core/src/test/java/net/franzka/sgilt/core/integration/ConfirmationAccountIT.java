@@ -8,6 +8,8 @@ import net.franzka.sgilt.core.onboarding.repository.ConfirmationTokenRepository;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.repository.ReservationRepository;
+import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
+import net.franzka.sgilt.core.utilisateur.repository.UtilisateurRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -26,6 +28,7 @@ class ConfirmationAccountIT extends BaseIntegrationTest {
     @Autowired private ConfirmationTokenRepository confirmationTokenRepository;
     @Autowired private ConfirmationTokenHmacService confirmationTokenHmacService;
     @Autowired private ReservationRepository reservationRepository;
+    @Autowired private UtilisateurRepository utilisateurRepository;
     @Autowired private ObjectMapper objectMapper;
     @Autowired private JwtService jwtService;
     @Autowired private ConfirmationTokenProperties confirmationTokenProperties;
@@ -50,7 +53,7 @@ class ConfirmationAccountIT extends BaseIntegrationTest {
         String payload = confirmationTokenRepository.findAll().getFirst().getPayload();
         String confirmationToken = confirmationTokenHmacService.buildToken(payload);
 
-        var result = mockMvc.get().uri("/confirmation")
+        var result = mockMvc.get().uri("/api/v1/confirmation")
                 .param("token", confirmationToken)
                 .exchange();
 
@@ -112,6 +115,27 @@ class ConfirmationAccountIT extends BaseIntegrationTest {
                 .hasStatus(200);
 
         assertThat(confirmationTokenRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    void givenValidToken_whenConfirmAccount_thenCreatesUtilisateurWithCorrectFields() throws UnsupportedEncodingException {
+        String setPasswordToken = getSetPasswordToken();
+
+        assertThat(mockMvc.post().uri("/api/v1/onboarding/confirm-account")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                        "setPasswordToken": "%s",
+                        "password": "p@ssw0rd!"
+                    }
+                """.formatted(setPasswordToken)))
+                .hasStatus(200);
+
+        Utilisateur utilisateur = utilisateurRepository.findAll().getFirst();
+        assertThat(utilisateur.getFirstName()).isEqualTo("Franz");
+        assertThat(utilisateur.getLastName()).isEqualTo("Ka");
+        assertThat(utilisateur.getEmail()).isEqualTo("franz@ka.net");
+        assertThat(utilisateur.getCreatedAt()).isNotNull();
     }
 
     @Test
