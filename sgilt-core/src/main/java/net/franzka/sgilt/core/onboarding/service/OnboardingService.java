@@ -3,7 +3,6 @@ package net.franzka.sgilt.core.onboarding.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.jwt.TokenJwtService;
@@ -16,12 +15,12 @@ import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.mailer.OnboardingMailerService;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
+import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
-@Slf4j
 @Service
 public class OnboardingService {
 
@@ -30,6 +29,7 @@ public class OnboardingService {
     private final ConfirmationTokenService confirmationTokenService;
     private final TokenJwtService setPasswordTokenJwtService;
     private final OnboardingMailerService onboardingMailerService;
+    private final UtilisateurService utilisateurService;
 
     /**
      * Construit le service avec ses dépendances.
@@ -39,31 +39,38 @@ public class OnboardingService {
      * @param confirmationTokenService   le service métier des tokens de confirmation
      * @param setPasswordTokenJwtService le service JWT qualifié pour les tokens set-password
      * @param onboardingMailerService    le service d'envoi de mails d'onboarding
+     * @param utilisateurService         le service métier des utilisateurs
      */
     public OnboardingService(
             EvenementService evenementService,
             ReservationService reservationService,
             ConfirmationTokenService confirmationTokenService,
             @Qualifier("setPasswordTokenJwtService") TokenJwtService setPasswordTokenJwtService,
-            OnboardingMailerService onboardingMailerService) {
+            OnboardingMailerService onboardingMailerService,
+            UtilisateurService utilisateurService) {
         this.evenementService = evenementService;
         this.reservationService = reservationService;
         this.confirmationTokenService = confirmationTokenService;
         this.setPasswordTokenJwtService = setPasswordTokenJwtService;
         this.onboardingMailerService = onboardingMailerService;
+        this.utilisateurService = utilisateurService;
     }
 
     /**
-     * Crée
-     * - un événement en draft,
-     * - une réservation en draft
-     * - un token de confirmation
-     * --> puis déclenche l'envoi du mail de confirmation.
+     * Traite une demande initiale de réservation.
+     * Si l'email est déjà associé à un compte existant, envoie une alerte de sécurité et retourne sans créer de parcours.
+     * Sinon, crée un événement en draft, une réservation en draft et un token de confirmation,
+     * puis déclenche l'envoi du mail de confirmation.
      *
      * @param request les données de la demande initiale (nom, email, prestataireId)
      * @return l'email de l'utilisateur encapsulé dans la réponse
      */
     public DemandeInitialeResponse createDemandeReservation(DemandeInitialeRequest request) {
+
+        if (utilisateurService.existsByEmail(request.email())) {
+            onboardingMailerService.sendSecurityAlertEmail(request.email(), request.prestataireId());
+            return new DemandeInitialeResponse(request.email());
+        }
 
         confirmationTokenService.cancelExistingTokenForEmail(request.email());
 
@@ -80,10 +87,6 @@ public class OnboardingService {
 
         String jwt = confirmationTokenService.createForReservation(reservation);
 
-        // TODO: KC Admin API — vérifier si email existe
-        // → si oui : onboardingMailerService.sendSecurityAlertEmail()
-        // → si non : onboardingMailerService.sendConfirmationEmail()
-        log.info("Send mail with Confirmation confirmation token to: {}", request.email());
         onboardingMailerService.sendConfirmationEmail(request.email(), jwt);
 
         return new DemandeInitialeResponse(request.email());
@@ -120,8 +123,16 @@ public class OnboardingService {
         // TODO: KC Admin API — créer user (email + password)
         // TODO: KC Admin API — set password (temporary=false)
         // TODO: KC — récupérer access + refresh token
+        Evenement evenement = reservationService.getEvenement(reservationId);
+        utilisateurService.createUtilisateur(
+                evenement.getFirstName(),
+                evenement.getLastName(),
+                evenement.getEmail()
+        );
 
         confirmationTokenService.deleteByReservation(reservationId);
+
+
 
         String email = claims.getSubject();
         onboardingMailerService.sendWelcomeEmail(email);

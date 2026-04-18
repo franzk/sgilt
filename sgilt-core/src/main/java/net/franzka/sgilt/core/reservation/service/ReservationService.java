@@ -57,4 +57,10 @@ public class ReservationService {
         reservation.setStatus(ReservationStatus.NOUVELLE);
         reservationRepository.save(reservation);
     }
+
+    public Evenement getEvenement(UUID reservationId) {
+        return reservationRepository.findById(reservationId)
+                .map(Reservation::getEvenement)
+                .orElseThrow(EntityNotFoundException::new);
+    }
 }
