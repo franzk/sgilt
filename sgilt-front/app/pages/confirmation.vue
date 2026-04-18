@@ -16,7 +16,13 @@
 
       <div class="field">
         <label class="label">{{ $t('confirmation.form.password-label') }}</label>
-        <input v-model="password" class="input" type="password" required autocomplete="new-password" />
+        <input
+          v-model="password"
+          class="input"
+          type="password"
+          required
+          autocomplete="new-password"
+        />
       </div>
 
       <div class="field">
@@ -55,7 +61,11 @@ interface ConfirmationResponse {
 
 const token = Array.isArray(route.query.token) ? route.query.token[0] : route.query.token
 
-const { data, error: fetchError, status } = useApiFetch<ConfirmationResponse>('/confirmation', {
+const {
+  data,
+  error: fetchError,
+  status,
+} = useApiFetch<ConfirmationResponse>('/confirmation', {
   query: { token },
 })
 
@@ -86,7 +96,7 @@ async function submit(): Promise<void> {
   submitError.value = null
 
   try {
-    await apiFetch('/api/v1/onboarding/confirm-account', {
+    await apiFetch('/onboarding/confirm-account', {
       method: 'POST',
       body: {
         setPasswordToken: setPasswordToken.value,
