@@ -98,23 +98,6 @@ class ConfirmationServiceTest {
     }
 
     // -------------------------------------------------------------------------
-    // consumeConfirmationToken
-    // -------------------------------------------------------------------------
-
-    @Nested
-    class ConsumeConfirmationToken {
-
-        @Test
-        void givenConfirmationToken_whenConsumeConfirmationToken_thenDelegatesToConfirmationTokenService() {
-            ConfirmationToken token = ConfirmationToken.builder().email(EMAIL).build();
-
-            confirmationService.consumeConfirmationToken(token);
-
-            verify(confirmationTokenService).markAsUsed(token);
-        }
-    }
-
-    // -------------------------------------------------------------------------
     // generateSetPasswordResponse
     // -------------------------------------------------------------------------
 

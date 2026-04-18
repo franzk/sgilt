@@ -32,12 +32,10 @@ public class ConfirmationController implements ConfirmationApi {
     public ResponseEntity<SetPasswordTokenDto> verifyToken(String token)
     {
         // 1 - validation le token et récupération de l'objet confirmationToken correspondant en BDD
+        // et le passe en PENDING_CONFIRMATION
         ConfirmationToken confirmationToken = confirmationService.validateConfirmationToken(token);
 
-        // 2 - marquer le confirmationToken comme utilisé pour éviter les réutilisations
-        confirmationService.consumeConfirmationToken(confirmationToken);
-
-        // 3 - générer un token pour la saisie d'un mot de passe pour la création de compte
+        // 2 - générer un token pour la saisie d'un mot de passe pour la création de compte
         return ResponseEntity.ok(confirmationService.generateSetPasswordResponse(confirmationToken));
     }
 }

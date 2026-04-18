@@ -182,14 +182,79 @@ class ConfirmationTokenServiceTest {
         }
 
         @Test
-        void givenValidToken_whenValidate_thenReturnsConfirmationToken() {
-            ConfirmationToken expectedToken = buildConfirmationToken(ConfirmationTokenState.OPEN, LocalDateTime.now().plusHours(1));
+        void givenOpenToken_whenValidate_thenReturnsConfirmationToken() {
+            ConfirmationToken token = buildOpenToken(LocalDateTime.now().plusHours(1));
             when(confirmationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
-            when(confirmationTokenRepository.findByPayload(PAYLOAD)).thenReturn(Optional.of(expectedToken));
+            when(confirmationTokenRepository.findByPayload(PAYLOAD)).thenReturn(Optional.of(token));
 
             ConfirmationToken result = confirmationTokenService.validate(TOKEN);
 
-            assertThat(result).isSameAs(expectedToken);
+            assertThat(result).isSameAs(token);
+        }
+
+        @Test
+        void givenOpenToken_whenValidate_thenSetsStateToPendingConfirmation() {
+            ConfirmationToken token = buildOpenToken(LocalDateTime.now().plusHours(1));
+            when(confirmationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
+            when(confirmationTokenRepository.findByPayload(PAYLOAD)).thenReturn(Optional.of(token));
+
+            confirmationTokenService.validate(TOKEN);
+
+            assertThat(token.getState()).isEqualTo(ConfirmationTokenState.PENDING_CONFIRMATION);
+        }
+
+        @Test
+        void givenOpenToken_whenValidate_thenSetsConfirmationPeriodExpiresAt() {
+            ConfirmationToken token = buildOpenToken(LocalDateTime.now().plusHours(1));
+            when(confirmationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
+            when(confirmationTokenRepository.findByPayload(PAYLOAD)).thenReturn(Optional.of(token));
+
+            LocalDateTime before = LocalDateTime.now();
+            confirmationTokenService.validate(TOKEN);
+            LocalDateTime after = LocalDateTime.now();
+
+            assertThat(token.getConfirmationPeriodExpiresAt())
+                    .isBetween(before.plusMinutes(5), after.plusMinutes(5));
+        }
+
+        @Test
+        void givenOpenToken_whenValidate_thenSavesToken() {
+            ConfirmationToken token = buildOpenToken(LocalDateTime.now().plusHours(1));
+            when(confirmationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
+            when(confirmationTokenRepository.findByPayload(PAYLOAD)).thenReturn(Optional.of(token));
+
+            confirmationTokenService.validate(TOKEN);
+
+            verify(confirmationTokenRepository).save(token);
+        }
+
+        @Test
+        void givenPendingConfirmationTokenWithinGracePeriod_whenValidate_thenReturnsConfirmationToken() {
+            ConfirmationToken token = buildPendingConfirmationToken(LocalDateTime.now().plusMinutes(4));
+            when(confirmationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
+            when(confirmationTokenRepository.findByPayload(PAYLOAD)).thenReturn(Optional.of(token));
+
+            ConfirmationToken result = confirmationTokenService.validate(TOKEN);
+
+            assertThat(result).isSameAs(token);
+        }
+
+        @Test
+        void givenPendingConfirmationTokenAfterGracePeriod_whenValidate_thenThrowsTokenExpiredException() {
+            ConfirmationToken token = buildPendingConfirmationToken(LocalDateTime.now().minusSeconds(1));
+            when(confirmationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
+            when(confirmationTokenRepository.findByPayload(PAYLOAD)).thenReturn(Optional.of(token));
+
+            assertThatExceptionOfType(TokenExpiredException.class)
+                    .isThrownBy(() -> confirmationTokenService.validate(TOKEN));
+        }
+
+        private ConfirmationToken buildOpenToken(LocalDateTime expiresAt) {
+            return ConfirmationToken.builder()
+                    .payload(PAYLOAD)
+                    .state(ConfirmationTokenState.OPEN)
+                    .expiresAt(expiresAt)
+                    .build();
         }
 
         private ConfirmationToken buildConfirmationToken(ConfirmationTokenState state, LocalDateTime expiresAt) {
@@ -199,31 +264,13 @@ class ConfirmationTokenServiceTest {
                     .expiresAt(expiresAt)
                     .build();
         }
-    }
 
-    // -------------------------------------------------------------------------
-    // markAsUsed
-    // -------------------------------------------------------------------------
-
-    @Nested
-    class MarkAsUsed {
-
-        @Test
-        void givenToken_whenMarkAsUsed_thenSetsUsedToTrue() {
-            ConfirmationToken token = ConfirmationToken.builder().state(ConfirmationTokenState.OPEN).build();
-
-            confirmationTokenService.markAsUsed(token);
-
-            assertThat(token.getState()).isEqualTo(ConfirmationTokenState.USED);
-        }
-
-        @Test
-        void givenToken_whenMarkAsUsed_thenSavesToken() {
-            ConfirmationToken token = ConfirmationToken.builder().state(ConfirmationTokenState.OPEN).build();
-
-            confirmationTokenService.markAsUsed(token);
-
-            verify(confirmationTokenRepository).save(token);
+        private ConfirmationToken buildPendingConfirmationToken(LocalDateTime confirmationPeriodExpiresAt) {
+            return ConfirmationToken.builder()
+                    .payload(PAYLOAD)
+                    .state(ConfirmationTokenState.PENDING_CONFIRMATION)
+                    .confirmationPeriodExpiresAt(confirmationPeriodExpiresAt)
+                    .build();
         }
     }
 

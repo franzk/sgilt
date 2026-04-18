@@ -41,5 +41,6 @@ public class ConfirmationToken {
     private ConfirmationTokenState state;
 
     private LocalDateTime expiresAt;
+    private LocalDateTime confirmationPeriodExpiresAt;
     private LocalDateTime createdAt;
 }

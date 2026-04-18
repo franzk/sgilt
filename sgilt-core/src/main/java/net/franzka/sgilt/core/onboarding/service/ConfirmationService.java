@@ -5,8 +5,8 @@ import net.franzka.sgilt.core.jwt.TokenJwtService;
 import net.franzka.sgilt.core.onboarding.domain.ConfirmationToken;
 import net.franzka.sgilt.core.onboarding.dto.SetPasswordTokenDto;
 import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
-import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.exception.TokenAlreadyUsedException;
+import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -47,15 +47,6 @@ public class ConfirmationService {
      */
     public ConfirmationToken validateConfirmationToken(String token) {
         return confirmationTokenService.validate(token);
-    }
-
-    /**
-     * Marque le token de confirmation comme utilisé.
-     *
-     * @param confirmationToken le token à consommer
-     */
-    public void consumeConfirmationToken(ConfirmationToken confirmationToken) {
-        confirmationTokenService.markAsUsed(confirmationToken);
     }
 
     /**

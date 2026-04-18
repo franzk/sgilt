@@ -66,15 +66,19 @@ public class ConfirmationTokenService {
     }
 
     /**
-     * Valide le token de confirmation : vérifie la signature HMAC, l'existence en BDD,
-     * l'état utilisé ou annulé, et l'expiration.
+     * Valide le token de confirmation selon son état :
+     * <ul>
+     *   <li>OPEN : vérifie l'expiration, passe en PENDING_CONFIRMATION avec une période de grâce de 5 minutes et sauvegarde.</li>
+     *   <li>PENDING_CONFIRMATION : vérifie que la période de grâce n'est pas dépassée.</li>
+     *   <li>USED ou CANCELLED : lève {@link TokenAlreadyUsedException}.</li>
+     * </ul>
      *
      * @param token le token de confirmation reçu par email, sous la forme {@code payload-signature}
      * @return l'entité {@link ConfirmationToken} validée
      * @throws net.franzka.sgilt.core.onboarding.exception.InvalidTokenException si la signature HMAC est invalide
      * @throws EntityNotFoundException   si aucun token ne correspond au payload
-     * @throws TokenAlreadyUsedException si le token a déjà été consommé ou a été annulé
-     * @throws TokenExpiredException     si le token est expiré
+     * @throws TokenAlreadyUsedException si le token a déjà été consommé ou annulé
+     * @throws TokenExpiredException     si le token ou la période de grâce est expirée
      */
     public ConfirmationToken validate(String token) {
         String payload = confirmationTokenHmacService.verify(token);
@@ -82,29 +86,27 @@ public class ConfirmationTokenService {
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByPayload(payload)
                 .orElseThrow(EntityNotFoundException::new);
 
-        if (ConfirmationTokenState.USED.equals(confirmationToken.getState())) {
+        ConfirmationTokenState state = confirmationToken.getState();
+
+        if (ConfirmationTokenState.USED.equals(state) || ConfirmationTokenState.CANCELLED.equals(state)) {
             throw new TokenAlreadyUsedException();
         }
 
-        if (ConfirmationTokenState.CANCELLED.equals(confirmationToken.getState())) {
-            throw new TokenAlreadyUsedException();
+        if (ConfirmationTokenState.OPEN.equals(state)) {
+            if (!confirmationToken.getExpiresAt().isAfter(LocalDateTime.now())) {
+                throw new TokenExpiredException();
+            }
+            confirmationToken.setState(ConfirmationTokenState.PENDING_CONFIRMATION);
+            confirmationToken.setConfirmationPeriodExpiresAt(LocalDateTime.now().plusMinutes(5));
+            confirmationTokenRepository.save(confirmationToken);
         }
 
-        if (!confirmationToken.getExpiresAt().isAfter(LocalDateTime.now())) {
-            throw new TokenExpiredException();
+        if (ConfirmationTokenState.PENDING_CONFIRMATION.equals(state)
+            && confirmationToken.getConfirmationPeriodExpiresAt().isBefore(LocalDateTime.now())) {
+                throw new TokenExpiredException();
         }
 
         return confirmationToken;
-    }
-
-    /**
-     * Marque un token de confirmation comme utilisé et persiste la modification.
-     *
-     * @param token le token à consommer
-     */
-    public void markAsUsed(ConfirmationToken token) {
-        token.setState(ConfirmationTokenState.USED);
-        confirmationTokenRepository.save(token);
     }
 
     /**
