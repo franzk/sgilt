@@ -21,6 +21,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/api/v1/onboarding/**").permitAll()
+                        .requestMatchers("/api/v1/confirmation").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().denyAll()
                 )
@@ -28,7 +30,7 @@ public class SecurityConfig {
                 .build();
     }
 
-    @Value("${APP_URL:http://localhost:5173}")
+    @Value("${APP_URL:http://localhost:3000}")
     private String appUrl;
 
     @Bean

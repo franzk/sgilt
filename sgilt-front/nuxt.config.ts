@@ -4,6 +4,12 @@ export default defineNuxtConfig({
 
   devtools: { enabled: false },
 
+  runtimeConfig: {
+    public: {
+      apiUrl: '',
+    },
+  },
+
   modules: [
     '@pinia/nuxt',
     '@nuxtjs/i18n',

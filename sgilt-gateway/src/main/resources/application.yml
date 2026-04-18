@@ -14,6 +14,11 @@ spring:
               predicates:
                 - Path=/api/v1/onboarding/**
 
+            - id: confirmation-public
+              uri: ${BACK_URL:http://localhost:5027}
+              predicates:
+                - Path=/api/v1/confirmation
+
   security:
     oauth2:
       resourceserver:
