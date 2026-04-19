@@ -24,16 +24,18 @@ public class ReservationService {
     /**
      * Crée et persiste une réservation en statut DRAFT pour un événement et un prestataire donnés.
      *
-     * @param evenement     l'événement associé
-     * @param prestataireId l'identifiant du prestataire ciblé
+     * @param evenement          l'événement associé
+     * @param prestataireId      l'identifiant du prestataire ciblé (nullable)
+     * @param prestataireMessage le message à destination du prestataire (nullable)
      * @return la réservation sauvegardée
      */
-    public Reservation createDraft(Evenement evenement, UUID prestataireId) {
+    public Reservation createDraft(Evenement evenement, UUID prestataireId, String prestataireMessage) {
         Reservation reservation = Reservation.builder()
                 .evenement(evenement)
                 .prestataireId(prestataireId)
                 .status(ReservationStatus.DRAFT)
                 .createdAt(LocalDateTime.now())
+                .prestataireMessage(prestataireMessage)
                 .build();
         return reservationRepository.save(reservation);
     }
@@ -58,6 +60,13 @@ public class ReservationService {
         reservationRepository.save(reservation);
     }
 
+    /**
+     * Récupère l'événement associé à une réservation.
+     *
+     * @param reservationId l'identifiant de la réservation
+     * @return l'événement associé
+     * @throws EntityNotFoundException si aucune réservation ne correspond à cet identifiant
+     */
     public Evenement getEvenement(UUID reservationId) {
         return reservationRepository.findById(reservationId)
                 .map(Reservation::getEvenement)

@@ -38,4 +38,6 @@ public class Reservation {
     private ReservationStatus status;
 
     private LocalDateTime createdAt;
+
+    private String prestataireMessage;
 }

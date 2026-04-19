@@ -58,6 +58,7 @@ function onSelect(p: PrestataireDetail) {
   }
 
   if (isDesktop.value) {
+    useDemande().setPrestataireId('')
     navigateTo(`/${p.slug}/demande`)
   } else {
     showDemande.value = true

@@ -1,4 +1,5 @@
 import {
+  type DemandeRequest,
   type DemandeState,
   EVENT_TYPE_OPTIONS,
   AMBIANCE_OPTIONS,
@@ -45,6 +46,7 @@ function clearStorage() {
 
 function defaultDemandeState(): DemandeState {
   return {
+    prestataireId: null,
     eventType: null,
     eventTypeAutre: '',
     ambiance: null,
@@ -130,15 +132,50 @@ export function useDemande() {
     clearStorage()
   }
 
+  function setPrestataireId(id: string) {
+    state.prestataireId = id
+  }
+
   async function submit() {
     submitting.value = true
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 800))
-    submitting.value = false
-    // Clear storage so a refresh shows a fresh form, but keep in-memory
-    // state so the confirmation screen can display the recap
-    clearStorage()
-    submitted.value = true
+    try {
+      const resolvedEventType =
+        state.eventType === 'autre' ? state.eventTypeAutre || null : state.eventType
+      const resolvedAmbiance =
+        state.ambiance === 'autre' ? state.ambianceAutre || null : state.ambiance
+      const resolvedMomentCle =
+        state.momentCle === 'autre' ? state.momentCleAutre || null : state.momentCle
+
+      const d = state.date
+      const dateStr = d
+        ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+        : null
+
+      const body: DemandeRequest = {
+        firstName: state.prenom,
+        lastName: state.nom,
+        email: state.email,
+        telephone: state.telephone || null,
+        prestataireId: state.prestataireId,
+        eventType: resolvedEventType,
+        ambiance: resolvedAmbiance,
+        momentCle: resolvedMomentCle,
+        description: state.description || null,
+        date: dateStr,
+        ville: state.ville || null,
+        nbInvites: state.nbInvites || null,
+        lieu: state.lieuDefini ? state.lieu || null : null,
+        prestataireMessage: state.prestataireMessage || null,
+      }
+
+      await apiFetch('/onboarding', { method: 'POST', body })
+      // Clear storage so a refresh shows a fresh form, but keep in-memory
+      // state so the confirmation screen can display the recap
+      clearStorage()
+      submitted.value = true
+    } finally {
+      submitting.value = false
+    }
   }
 
   // ── Labels ────────────────────────────────────────────────────────────────
@@ -182,6 +219,7 @@ export function useDemande() {
     submitted,
     submitting,
     state,
+    setPrestataireId,
     next,
     back,
     goTo,

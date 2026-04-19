@@ -68,7 +68,7 @@ public class OnboardingService {
      * Sinon, crée un événement en draft, une réservation en draft et un token de confirmation,
      * puis déclenche l'envoi du mail de confirmation.
      *
-     * @param request les données de la demande initiale (nom, email, prestataireId)
+     * @param request les données de la demande initiale
      * @return l'email de l'utilisateur encapsulé dans la réponse
      */
     public DemandeInitialeResponse createDemandeReservation(DemandeInitialeRequest request) {
@@ -83,12 +83,26 @@ public class OnboardingService {
         Evenement evenement = evenementService.createDraft(
                 request.firstName(),
                 request.lastName(),
-                request.email()
+                request.email(),
+                request.eventType(),
+                request.ambiance(),
+                request.momentCle(),
+                request.description(),
+                request.date(),
+                request.ville(),
+                request.nbInvites(),
+                request.lieu(),
+                request.telephone()
         );
+
+        UUID effectivePrestataireId = request.prestataireId() != null
+                ? request.prestataireId()
+                : UUID.randomUUID();
 
         Reservation reservation = reservationService.createDraft(
                 evenement,
-                request.prestataireId()
+                effectivePrestataireId,
+                request.prestataireMessage()
         );
 
         String jwt = confirmationTokenService.createForReservation(reservation);
@@ -131,7 +145,7 @@ public class OnboardingService {
         String lastName = evenement.getLastName();
 
         keycloakAdminService.createUser(email, firstName, lastName, request.password());
-        utilisateurService.createUtilisateur(firstName, lastName, email);
+        utilisateurService.createUtilisateur(firstName, lastName, email, evenement.getTelephone());
         reservationService.activateDemande(reservationId);
         confirmationTokenService.deleteByReservation(reservationId);
         onboardingMailerService.sendWelcomeEmail(email);

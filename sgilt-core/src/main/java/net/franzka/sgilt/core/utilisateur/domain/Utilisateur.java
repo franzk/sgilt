@@ -30,4 +30,6 @@ public class Utilisateur {
 
     private String avatarUrl;
     private LocalDateTime createdAt;
+
+    private String telephone;
 }

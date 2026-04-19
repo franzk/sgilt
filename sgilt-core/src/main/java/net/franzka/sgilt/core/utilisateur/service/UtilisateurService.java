@@ -31,10 +31,11 @@ public class UtilisateurService {
      * @param firstName le prénom de l'utilisateur
      * @param lastName  le nom de l'utilisateur
      * @param email     l'adresse email de l'utilisateur
+     * @param telephone le numéro de téléphone de l'utilisateur (nullable)
      * @return l'entité {@link Utilisateur} créée et persistée
      * @throws UtilisateurAlreadyExistException si un utilisateur avec cet email existe déjà
      */
-    public Utilisateur createUtilisateur(String firstName, String lastName, String email) {
+    public Utilisateur createUtilisateur(String firstName, String lastName, String email, String telephone) {
         if (utilisateurRepository.existsByEmail(email)) {
             throw new UtilisateurAlreadyExistException();
         }
@@ -43,6 +44,7 @@ public class UtilisateurService {
                 .firstName(firstName)
                 .lastName(lastName)
                 .email(email)
+                .telephone(telephone)
                 .createdAt(LocalDateTime.now())
                 .build();
 
