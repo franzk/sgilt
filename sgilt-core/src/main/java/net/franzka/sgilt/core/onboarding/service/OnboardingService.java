@@ -12,6 +12,8 @@ import net.franzka.sgilt.core.onboarding.dto.DemandeInitialeResponse;
 import net.franzka.sgilt.core.onboarding.dto.DemandeInitialeRequest;
 import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
+import net.franzka.sgilt.core.keycloak.KeycloakAdminService;
+import net.franzka.sgilt.core.keycloak.KeycloakTokenResponse;
 import net.franzka.sgilt.core.onboarding.mailer.OnboardingMailerService;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
@@ -30,6 +32,7 @@ public class OnboardingService {
     private final TokenJwtService setPasswordTokenJwtService;
     private final OnboardingMailerService onboardingMailerService;
     private final UtilisateurService utilisateurService;
+    private final KeycloakAdminService keycloakAdminService;
 
     /**
      * Construit le service avec ses dépendances.
@@ -40,6 +43,7 @@ public class OnboardingService {
      * @param setPasswordTokenJwtService le service JWT qualifié pour les tokens set-password
      * @param onboardingMailerService    le service d'envoi de mails d'onboarding
      * @param utilisateurService         le service métier des utilisateurs
+     * @param keycloakAdminService       le service d'administration Keycloak
      */
     public OnboardingService(
             EvenementService evenementService,
@@ -47,13 +51,15 @@ public class OnboardingService {
             ConfirmationTokenService confirmationTokenService,
             @Qualifier("setPasswordTokenJwtService") TokenJwtService setPasswordTokenJwtService,
             OnboardingMailerService onboardingMailerService,
-            UtilisateurService utilisateurService) {
+            UtilisateurService utilisateurService,
+            KeycloakAdminService keycloakAdminService) {
         this.evenementService = evenementService;
         this.reservationService = reservationService;
         this.confirmationTokenService = confirmationTokenService;
         this.setPasswordTokenJwtService = setPasswordTokenJwtService;
         this.onboardingMailerService = onboardingMailerService;
         this.utilisateurService = utilisateurService;
+        this.keycloakAdminService = keycloakAdminService;
     }
 
     /**
@@ -93,11 +99,12 @@ public class OnboardingService {
     }
 
     /**
-     * Valide le JWT set-password, charge la réservation, passe son statut à NOUVELLE,
-     * supprime le token de confirmation, et déclenche l'envoi du mail de bienvenue.
+     * Valide le JWT set-password, crée le compte Keycloak, crée l'utilisateur en base,
+     * active la réservation, supprime le token de confirmation,
+     * puis récupère et retourne les tokens Keycloak pour connecter le front immédiatement.
      *
      * @param request le JWT set-password et le mot de passe choisi par l'utilisateur
-     * @return les tokens d'accès Keycloak (mockés en attendant l'intégration KC)
+     * @return les tokens d'accès Keycloak (access token et refresh token)
      * @throws TokenExpiredException   si le JWT set-password est expiré
      * @throws InvalidTokenException   si le JWT est invalide
      * @throws EntityNotFoundException si la réservation est introuvable
@@ -117,27 +124,19 @@ public class OnboardingService {
         }
 
         UUID reservationId = UUID.fromString(claims.get("reservationId", String.class));
-
-        reservationService.activateDemande(reservationId);
-
-        // TODO: KC Admin API — créer user (email + password)
-        // TODO: KC Admin API — set password (temporary=false)
-        // TODO: KC — récupérer access + refresh token
-        Evenement evenement = reservationService.getEvenement(reservationId);
-        utilisateurService.createUtilisateur(
-                evenement.getFirstName(),
-                evenement.getLastName(),
-                evenement.getEmail()
-        );
-
-        confirmationTokenService.deleteByReservation(reservationId);
-
         String email = claims.getSubject();
+
+        Evenement evenement = reservationService.getEvenement(reservationId);
+        String firstName = evenement.getFirstName();
+        String lastName = evenement.getLastName();
+
+        keycloakAdminService.createUser(email, firstName, lastName, request.password());
+        utilisateurService.createUtilisateur(firstName, lastName, email);
+        reservationService.activateDemande(reservationId);
+        confirmationTokenService.deleteByReservation(reservationId);
         onboardingMailerService.sendWelcomeEmail(email);
 
-        return new ConfirmAccountResponse(
-                "TODO_KC_ACCESS_TOKEN",
-                "TODO_KC_REFRESH_TOKEN"
-        );
+        KeycloakTokenResponse tokens = keycloakAdminService.getUserTokens(email, request.password());
+        return new ConfirmAccountResponse(tokens.accessToken(), tokens.refreshToken());
     }
 }

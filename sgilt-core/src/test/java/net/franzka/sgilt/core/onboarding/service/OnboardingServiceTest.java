@@ -13,6 +13,8 @@ import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.mailer.OnboardingMailerService;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
+import net.franzka.sgilt.core.keycloak.KeycloakAdminService;
+import net.franzka.sgilt.core.keycloak.KeycloakTokenResponse;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
 import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
 import org.junit.jupiter.api.Nested;
@@ -56,6 +58,9 @@ class OnboardingServiceTest {
 
     @Mock
     private UtilisateurService utilisateurService;
+
+    @Mock
+    private KeycloakAdminService keycloakAdminService;
 
     @InjectMocks
     private OnboardingService onboardingService;
@@ -234,13 +239,13 @@ class OnboardingServiceTest {
         }
 
         @Test
-        void givenValidToken_whenConfirmAccount_thenActivatesReservationWithIdFromClaims() {
+        void givenValidToken_whenConfirmAccount_thenCreatesKeycloakUser() {
             UUID reservationId = UUID.randomUUID();
             stubValidToken(reservationId);
 
             onboardingService.confirmAccount(buildRequest());
 
-            verify(reservationService).activateDemande(reservationId);
+            verify(keycloakAdminService).createUser(EMAIL, FIRSTNAME, LASTNAME, "p@ssw0rd!");
         }
 
         @Test
@@ -251,6 +256,16 @@ class OnboardingServiceTest {
             onboardingService.confirmAccount(buildRequest());
 
             verify(utilisateurService).createUtilisateur(FIRSTNAME, LASTNAME, EMAIL);
+        }
+
+        @Test
+        void givenValidToken_whenConfirmAccount_thenActivatesReservationWithIdFromClaims() {
+            UUID reservationId = UUID.randomUUID();
+            stubValidToken(reservationId);
+
+            onboardingService.confirmAccount(buildRequest());
+
+            verify(reservationService).activateDemande(reservationId);
         }
 
         @Test
@@ -274,15 +289,14 @@ class OnboardingServiceTest {
         }
 
         @Test
-        void givenValidToken_whenConfirmAccount_thenReturnsResponse() {
+        void givenValidToken_whenConfirmAccount_thenReturnsKeycloakTokens() {
             UUID reservationId = UUID.randomUUID();
             stubValidToken(reservationId);
 
             ConfirmAccountResponse response = onboardingService.confirmAccount(buildRequest());
 
-            assertThat(response).isNotNull();
-            assertThat(response.accessToken()).isNotBlank();
-            assertThat(response.refreshToken()).isNotBlank();
+            assertThat(response.accessToken()).isEqualTo("access-token");
+            assertThat(response.refreshToken()).isEqualTo("refresh-token");
         }
 
         private void stubValidToken(UUID reservationId) {
@@ -295,6 +309,8 @@ class OnboardingServiceTest {
                     .email(EMAIL)
                     .build();
             when(reservationService.getEvenement(reservationId)).thenReturn(evenement);
+            when(keycloakAdminService.getUserTokens(EMAIL, "p@ssw0rd!"))
+                    .thenReturn(new KeycloakTokenResponse("access-token", "refresh-token"));
         }
 
         private ConfirmAccountRequest buildRequest() {
