@@ -53,10 +53,16 @@ definePageMeta({ layout: 'app' })
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
+const { injectTokens } = useKeycloak()
 
 interface ConfirmationResponse {
   email: string
   setPasswordToken: string
+}
+
+interface ConfirmAccountResponse {
+  accessToken: string
+  refreshToken: string
 }
 
 const token = Array.isArray(route.query.token) ? route.query.token[0] : route.query.token
@@ -96,13 +102,14 @@ async function submit(): Promise<void> {
   submitError.value = null
 
   try {
-    await apiFetch('/onboarding/confirm-account', {
+    const response = await apiFetch<ConfirmAccountResponse>('/onboarding/confirm-account', {
       method: 'POST',
       body: {
         setPasswordToken: setPasswordToken.value,
         password: password.value,
       },
     })
+    injectTokens(response.accessToken, response.refreshToken)
     await router.push('/app')
   } catch (e: unknown) {
     if (e instanceof FetchError) {

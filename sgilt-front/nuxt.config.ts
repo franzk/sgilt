@@ -7,6 +7,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiUrl: '',
+      kcUrl: '',
+      kcRealm: '',
+      kcClientId: '',
     },
   },
 
