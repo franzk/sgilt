@@ -1,24 +1,35 @@
-import type { UseFetchOptions } from 'nuxt/app'
+type ResolvedFetchData<T> = T extends void ? unknown : T
+type UseApiFetchOptions<T> = Parameters<typeof useFetch<ResolvedFetchData<T>>>[1]
 
-export function useApiFetch<T>(path: string, options?: UseFetchOptions<T>) {
-  const { public: { apiUrl } } = useRuntimeConfig()
+export function useApiFetch<T = unknown>(path: string, options?: UseApiFetchOptions<T>) {
+  const {
+    public: { apiUrl },
+  } = useRuntimeConfig()
   const { keycloak, isAuthenticated } = useKeycloak()
+  const userOnRequest = options?.onRequest
 
-  return useFetch<T>(path, {
+  return useFetch<ResolvedFetchData<T>>(path, {
+    ...options,
     baseURL: apiUrl,
     server: false,
-    onRequest({ options: fetchOptions }) {
+    onRequest(context) {
+      const { options: fetchOptions } = context
       if (isAuthenticated.value && keycloak.value?.token) {
-        fetchOptions.headers = new Headers(fetchOptions.headers as HeadersInit | undefined)
+        fetchOptions.headers = new Headers(fetchOptions.headers)
         fetchOptions.headers.set('Authorization', `Bearer ${keycloak.value.token}`)
       }
+
+      if (typeof userOnRequest === 'function') {
+        return userOnRequest(context)
+      }
     },
-    ...options,
   })
 }
 
 export function apiFetch<T>(path: string, options?: Parameters<typeof $fetch>[1]) {
-  const { public: { apiUrl } } = useRuntimeConfig()
+  const {
+    public: { apiUrl },
+  } = useRuntimeConfig()
   const { keycloak, isAuthenticated } = useKeycloak()
 
   const headers: Record<string, string> = {}

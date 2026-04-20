@@ -97,6 +97,30 @@
         "clientRole": false,
         "containerId": "3402b0e2-60a4-433f-a1ad-135b271b3034",
         "attributes": {}
+      },
+      {
+        "name": "ADMIN",
+        "description": "",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "3402b0e2-60a4-433f-a1ad-135b271b3034",
+        "attributes": {}
+      },
+      {
+        "name": "PRO",
+        "description": "",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "3402b0e2-60a4-433f-a1ad-135b271b3034",
+        "attributes": {}
+      },
+      {
+        "name": "USER",
+        "description": "",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "3402b0e2-60a4-433f-a1ad-135b271b3034",
+        "attributes": {}
       }
     ],
     "client": {
@@ -470,6 +494,27 @@
   "webAuthnPolicyPasswordlessAvoidSameAuthenticatorRegister": false,
   "webAuthnPolicyPasswordlessAcceptableAaguids": [],
   "webAuthnPolicyPasswordlessExtraOrigins": [],
+  "users": [
+    {
+      "username": "service-account-sgilt-admin",
+      "emailVerified": false,
+      "enabled": true,
+      "totp": false,
+      "serviceAccountClientId": "sgilt-admin",
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "realmRoles": [
+        "default-roles-sgilt"
+      ],
+      "clientRoles": {
+        "realm-management": [
+          "manage-users"
+        ]
+      },
+      "notBefore": 0,
+      "groups": []
+    }
+  ],
   "scopeMappings": [
     {
       "clientScope": "offline_access",
@@ -683,6 +728,63 @@
       ]
     },
     {
+      "clientId": "sgilt-admin",
+      "name": "",
+      "description": "",
+      "rootUrl": "https://app.change.me",
+      "adminUrl": "https://app.change.me",
+      "baseUrl": "/",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": false,
+      "clientAuthenticatorType": "client-secret",
+      "redirectUris": [
+        "https://app.change.me/*"
+      ],
+      "webOrigins": [
+        "https://app.change.me"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "realm_client": "false",
+        "oidc.ciba.grant.enabled": "false",
+        "backchannel.logout.session.required": "true",
+        "standard.token.exchange.enabled": "false",
+        "frontchannel.logout.session.required": "true",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "display.on.consent.screen": "false",
+        "backchannel.logout.revoke.offline.tokens": "false"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "defaultClientScopes": [
+        "web-origins",
+        "service_account",
+        "acr",
+        "profile",
+        "roles",
+        "basic",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "organization",
+        "microprofile-jwt"
+      ]
+    },
+    {
       "id": "719909c9-12bc-449a-8d85-8ac30d2e24df",
       "clientId": "sgilt-front",
       "name": "",
@@ -696,11 +798,13 @@
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
         "https://app.change.me/*",
-        "http://localhost:5173/*"
+        "http://localhost:5173/*",
+        "http://localhost:3000/*"
       ],
       "webOrigins": [
         "https://app.change.me",
-        "http://localhost:5173"
+        "http://localhost:5173",
+        "http://localhost:3000"
       ],
       "notBefore": 0,
       "bearerOnly": false,
@@ -719,7 +823,7 @@
         "standard.token.exchange.enabled": "false",
         "login_theme": "sgilt-theme",
         "frontchannel.logout.session.required": "true",
-        "post.logout.redirect.uris": "https://app.change.me/*##http://localhost:5173/*",
+        "post.logout.redirect.uris": "https://app.change.me/*##http://localhost:5173/*##http://localhost:3000/*",
         "oauth2.device.authorization.grant.enabled": "false",
         "backchannel.logout.revoke.offline.tokens": "false",
         "use.refresh.tokens": "true",
