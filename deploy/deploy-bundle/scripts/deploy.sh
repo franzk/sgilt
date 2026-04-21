@@ -80,17 +80,24 @@ if [[ "$MODE" == "init" ]]; then
   done
   echo "   Keycloak ready."
 
-  echo "   Generating application secrets..."
+  echo "   Configuring application secrets..."
   CONFIRMATION_TOKEN_SECRET=$(openssl rand -hex 32)
-  KC_ADMIN_CLIENT_SECRET=$(openssl rand -hex 32)
 
-  CLIENT_UUID=$(docker exec "sgilt-keycloak-${ENV}" \
-    /opt/keycloak/bin/kcadm.sh get clients -r sgilt --fields id,clientId \
-    | jq -r '.[] | select(.clientId=="sgilt-admin") | .id')
+  KC_TOKEN=$(curl -sk -X POST \
+    "https://localhost:${NGINX_AUTH_PORT}/realms/master/protocol/openid-connect/token" \
+    -d "client_id=admin-cli&grant_type=password&username=${KC_BOOTSTRAP_ADMIN_USERNAME}&password=${KC_BOOTSTRAP_ADMIN_PASSWORD}" \
+    | jq -r '.access_token')
+  [[ -z "$KC_TOKEN" || "$KC_TOKEN" == "null" ]] && { echo "❌ Failed to get Keycloak admin token"; exit 1; }
 
-  docker exec "sgilt-keycloak-${ENV}" \
-    /opt/keycloak/bin/kcadm.sh update "clients/${CLIENT_UUID}" \
-    -r sgilt -s "secret=${KC_ADMIN_CLIENT_SECRET}"
+  CLIENT_UUID=$(curl -sk \
+    "https://localhost:${NGINX_AUTH_PORT}/admin/realms/sgilt/clients?clientId=sgilt-admin" \
+    -H "Authorization: Bearer $KC_TOKEN" | jq -r '.[0].id')
+  [[ -z "$CLIENT_UUID" || "$CLIENT_UUID" == "null" ]] && { echo "❌ Failed to get sgilt-admin client UUID"; exit 1; }
+
+  KC_ADMIN_CLIENT_SECRET=$(curl -sk \
+    "https://localhost:${NGINX_AUTH_PORT}/admin/realms/sgilt/clients/${CLIENT_UUID}/client-secret" \
+    -H "Authorization: Bearer $KC_TOKEN" | jq -r '.value')
+  [[ -z "$KC_ADMIN_CLIENT_SECRET" || "$KC_ADMIN_CLIENT_SECRET" == "null" ]] && { echo "❌ Failed to read KC_ADMIN_CLIENT_SECRET"; exit 1; }
 
   printf "KC_ADMIN_CLIENT_SECRET=%s\nCONFIRMATION_TOKEN_SECRET=%s\n" \
     "$KC_ADMIN_CLIENT_SECRET" "$CONFIRMATION_TOKEN_SECRET" > .env.secrets
