@@ -45,9 +45,7 @@ jobs:
           S_KC_DB_PASSWORD:              ${{ secrets.KC_DB_PASSWORD }}
           S_KC_BOOTSTRAP_ADMIN_USERNAME: ${{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME }}
           S_KC_BOOTSTRAP_ADMIN_PASSWORD: ${{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD }}
-          S_KC_ADMIN_CLIENT_SECRET:      ${{ secrets.KC_ADMIN_CLIENT_SECRET }}
           S_CORE_DB_PASSWORD:            ${{ secrets.CORE_DB_PASSWORD }}
-          S_CONFIRMATION_TOKEN_SECRET:   ${{ secrets.CONFIRMATION_TOKEN_SECRET }}
           S_SMTP_HOST:                   ${{ secrets.SMTP_HOST }}
           S_SMTP_PORT:                   ${{ secrets.SMTP_PORT }}
           S_SMTP_USERNAME:               ${{ secrets.SMTP_USERNAME }}
@@ -73,9 +71,7 @@ jobs:
           [[ -z "$S_KC_DB_PASSWORD" ]]              && missing+=("secret: KC_DB_PASSWORD")
           [[ -z "$S_KC_BOOTSTRAP_ADMIN_USERNAME" ]] && missing+=("secret: KC_BOOTSTRAP_ADMIN_USERNAME")
           [[ -z "$S_KC_BOOTSTRAP_ADMIN_PASSWORD" ]] && missing+=("secret: KC_BOOTSTRAP_ADMIN_PASSWORD")
-          [[ -z "$S_KC_ADMIN_CLIENT_SECRET" ]]      && missing+=("secret: KC_ADMIN_CLIENT_SECRET")
           [[ -z "$S_CORE_DB_PASSWORD" ]]            && missing+=("secret: CORE_DB_PASSWORD")
-          [[ -z "$S_CONFIRMATION_TOKEN_SECRET" ]]   && missing+=("secret: CONFIRMATION_TOKEN_SECRET")
           [[ -z "$S_SMTP_HOST" ]]                   && missing+=("secret: SMTP_HOST")
           [[ -z "$S_SMTP_PORT" ]]                   && missing+=("secret: SMTP_PORT")
           [[ -z "$S_SMTP_USERNAME" ]]               && missing+=("secret: SMTP_USERNAME")
@@ -148,7 +144,6 @@ jobs:
             echo "🔄 Init mode: generating realm from template"
             mkdir -p sgilt-keycloak/realm
             APP_URL="${{ vars.APP_URL }}" \
-              KC_ADMIN_CLIENT_SECRET="${{ secrets.KC_ADMIN_CLIENT_SECRET }}" \
               bash deploy/deploy-bundle/scripts/render-realm.sh ${{ inputs.environment }}
             docker build -t $IMAGE_TAG sgilt-keycloak
             docker push $IMAGE_TAG
@@ -239,7 +234,6 @@ jobs:
           KC_REALM=sgilt
           KC_ADMIN_URL=${{ vars.AUTH_URL }}
           KC_ADMIN_CLIENT_ID=sgilt-admin
-          KC_ADMIN_CLIENT_SECRET=${{ secrets.KC_ADMIN_CLIENT_SECRET }}
           KC_FRONT_CLIENT_ID=sgilt-front
           KC_DB_PASSWORD=${{ secrets.KC_DB_PASSWORD }}
           KC_BOOTSTRAP_ADMIN_USERNAME=${{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME }}
@@ -249,7 +243,6 @@ jobs:
           CORE_DB_PASSWORD=${{ secrets.CORE_DB_PASSWORD }}
 
           # Core app
-          CONFIRMATION_TOKEN_SECRET=${{ secrets.CONFIRMATION_TOKEN_SECRET }}
           MAILER_FROM=${{ vars.MAILER_FROM }}
 
           # SMTP

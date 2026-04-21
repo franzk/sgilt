@@ -153,9 +153,7 @@ In Settings → Secrets and variables → Actions → Repository secrets:
 | `KC_DB_PASSWORD`              | Keycloak PostgreSQL password (choose a strong password)                             |
 | `KC_BOOTSTRAP_ADMIN_USERNAME` | Keycloak admin username                                                             |
 | `KC_BOOTSTRAP_ADMIN_PASSWORD` | Keycloak admin password (choose a strong password)                                  |
-| `KC_ADMIN_CLIENT_SECRET`      | Keycloak admin client secret (choose a strong value, injected into realm at `init`) |
 | `CORE_DB_PASSWORD`            | sgilt-core PostgreSQL password (choose a strong password)                           |
-| `CONFIRMATION_TOKEN_SECRET`   | Secret key for email confirmation tokens (random string, min 32 chars)              |
 | `SMTP_HOST`                   | SMTP server hostname                                                                |
 | `SMTP_PORT`                   | SMTP port (usually `587`)                                                           |
 | `SMTP_USERNAME`               | SMTP username                                                                       |
