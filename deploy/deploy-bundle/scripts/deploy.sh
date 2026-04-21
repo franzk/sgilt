@@ -96,10 +96,15 @@ if [[ "$MODE" == "init" ]]; then
     | jq -r '.access_token')
   [[ -z "$KC_TOKEN" || "$KC_TOKEN" == "null" ]] && { echo "❌ Failed to get Keycloak admin token"; exit 1; }
 
-  CLIENT_UUID=$(curl -sk \
+  CLIENTS_JSON=$(curl -sk \
     "https://localhost:${NGINX_AUTH_PORT}/admin/realms/sgilt/clients?clientId=sgilt-admin" \
-    -H "Authorization: Bearer $KC_TOKEN" | jq -r '.[0].id')
-  [[ -z "$CLIENT_UUID" || "$CLIENT_UUID" == "null" ]] && { echo "❌ Failed to get sgilt-admin client UUID"; exit 1; }
+    -H "Authorization: Bearer $KC_TOKEN")
+  CLIENT_UUID=$(echo "$CLIENTS_JSON" | jq -r '.[0].id // empty' 2>/dev/null)
+  [[ -z "$CLIENT_UUID" || "$CLIENT_UUID" == "null" ]] && {
+    echo "❌ Failed to get sgilt-admin client UUID"
+    echo "   API response: $CLIENTS_JSON"
+    exit 1
+  }
 
   KC_ADMIN_CLIENT_SECRET=$(curl -sk \
     "https://localhost:${NGINX_AUTH_PORT}/admin/realms/sgilt/clients/${CLIENT_UUID}/client-secret" \
