@@ -75,6 +75,7 @@ jobs:
             echo "🔄 Init mode: generating realm from template"
             mkdir -p sgilt-keycloak/realm
             APP_URL="${{ vars.APP_URL }}" \
+              KC_ADMIN_CLIENT_SECRET="${{ secrets.KC_ADMIN_CLIENT_SECRET }}" \
               bash deploy/deploy-bundle/scripts/render-realm.sh ${{ inputs.environment }}
             docker build -t $IMAGE_TAG sgilt-keycloak
             docker push $IMAGE_TAG
