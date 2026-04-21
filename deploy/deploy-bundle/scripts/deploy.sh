@@ -92,8 +92,10 @@ if [[ "$MODE" == "init" ]]; then
     echo "   Token: ${KC_TOKEN:0:20}${KC_TOKEN:+...}"
     [[ -z "$KC_TOKEN" ]] && continue
     echo "   Token OK, fetching client UUID..."
-    CLIENT_UUID=$(kc_curl "${KC_BASE}/admin/realms/sgilt/clients?clientId=sgilt-admin" \
-      -H "Authorization: Bearer ${KC_TOKEN}" | jq -r '.[0].id // empty' 2>/dev/null) || true
+    CLIENTS_RESP=$(kc_curl "${KC_BASE}/admin/realms/sgilt/clients?clientId=sgilt-admin" \
+      -H "Authorization: Bearer ${KC_TOKEN}" 2>/dev/null) || true
+    echo "   Clients response: ${CLIENTS_RESP:0:200}"
+    CLIENT_UUID=$(echo "$CLIENTS_RESP" | jq -r '.[0].id // empty' 2>/dev/null) || true
     echo "   CLIENT_UUID: ${CLIENT_UUID}"
   done
   echo "   sgilt realm and clients ready."
