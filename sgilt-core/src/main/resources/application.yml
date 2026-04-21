@@ -36,10 +36,10 @@ sgilt:
     url: ${PUBLIC_SITE_URL:http://localhost:3000}
   keycloak:
     admin-url: ${KC_ADMIN_URL:http://localhost:5028}
-    realm: ${KC_REALM:sgilt}
-    admin-client-id: ${KC_ADMIN_CLIENT_ID:sgilt-admin}
+    realm: sgilt
+    admin-client-id: sgilt-admin
     admin-client-secret: ${KC_ADMIN_CLIENT_SECRET}
-    front-client-id: ${KC_FRONT_CLIENT_ID:sgilt-front}
+    front-client-id: sgilt-front
 
 server:
   port: 5027

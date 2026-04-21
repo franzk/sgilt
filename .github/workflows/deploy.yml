@@ -54,6 +54,8 @@ jobs:
           echo "SGILT_KEYCLOAK_VERSION=$(cat sgilt-keycloak/VERSION)" >> $GITHUB_ENV
           echo "SGILT_SMTP_BRIDGE_VERSION=$(cat sgilt-smtp-bridge/VERSION)" >> $GITHUB_ENV
           echo "SGILT_MAILER_VERSION=$(cat sgilt-mailer/VERSION)" >> $GITHUB_ENV
+          echo "SGILT_CORE_VERSION=$(cat sgilt-core/VERSION)" >> $GITHUB_ENV
+          echo "SGILT_GATEWAY_VERSION=$(cat sgilt-gateway/VERSION)" >> $GITHUB_ENV
 
       - name: Build and push sgilt-front
         run: |
@@ -125,6 +127,8 @@ jobs:
           echo "SGILT_KEYCLOAK_VERSION=$(cat sgilt-keycloak/VERSION)" >> $GITHUB_ENV
           echo "SGILT_SMTP_BRIDGE_VERSION=$(cat sgilt-smtp-bridge/VERSION)" >> $GITHUB_ENV
           echo "SGILT_MAILER_VERSION=$(cat sgilt-mailer/VERSION)" >> $GITHUB_ENV
+          echo "SGILT_CORE_VERSION=$(cat sgilt-core/VERSION)" >> $GITHUB_ENV
+          echo "SGILT_GATEWAY_VERSION=$(cat sgilt-gateway/VERSION)" >> $GITHUB_ENV
 
       - name: Generate .env
         run: |
@@ -137,6 +141,8 @@ jobs:
           SGILT_KEYCLOAK_VERSION=${{ inputs.environment }}-${{ env.SGILT_KEYCLOAK_VERSION }}
           SGILT_SMTP_BRIDGE_VERSION=${{ env.SGILT_SMTP_BRIDGE_VERSION }}
           SGILT_MAILER_VERSION=${{ env.SGILT_MAILER_VERSION }}
+          SGILT_CORE_VERSION=${{ env.SGILT_CORE_VERSION }}
+          SGILT_GATEWAY_VERSION=${{ env.SGILT_GATEWAY_VERSION }}
 
           # URLs
           APP_URL=${{ vars.APP_URL }}
@@ -144,16 +150,33 @@ jobs:
           AUTH_URL=${{ vars.AUTH_URL }}
           AUTH_DOMAIN=${{ vars.AUTH_DOMAIN }}
           NUXT_PUBLIC_SITE_URL=${{ vars.APP_URL }}
+          PUBLIC_SITE_URL=${{ vars.APP_URL }}
 
           # Nginx ports
           NGINX_FRONT_PORT=${{ vars.NGINX_FRONT_PORT }}
           NGINX_AUTH_PORT=${{ vars.NGINX_AUTH_PORT }}
+          NGINX_API_PORT=${{ vars.NGINX_API_PORT }}
+
+          # API
+          API_DOMAIN=${{ vars.API_DOMAIN }}
 
           # Keycloak
           KEYCLOAK_ISSUER=${{ vars.AUTH_URL }}/realms/sgilt
+          KC_REALM=sgilt
+          KC_ADMIN_URL=${{ vars.AUTH_URL }}
+          KC_ADMIN_CLIENT_ID=sgilt-admin
+          KC_ADMIN_CLIENT_SECRET=${{ secrets.KC_ADMIN_CLIENT_SECRET }}
+          KC_FRONT_CLIENT_ID=sgilt-front
           KC_DB_PASSWORD=${{ secrets.KC_DB_PASSWORD }}
           KC_BOOTSTRAP_ADMIN_USERNAME=${{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME }}
           KC_BOOTSTRAP_ADMIN_PASSWORD=${{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD }}
+
+          # Core DB
+          CORE_DB_PASSWORD=${{ secrets.CORE_DB_PASSWORD }}
+
+          # Core app
+          CONFIRMATION_TOKEN_SECRET=${{ secrets.CONFIRMATION_TOKEN_SECRET }}
+          MAILER_FROM=${{ vars.MAILER_FROM }}
 
           # SMTP
           SMTP_HOST=${{ secrets.SMTP_HOST }}
