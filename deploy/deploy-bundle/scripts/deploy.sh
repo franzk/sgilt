@@ -78,7 +78,14 @@ if [[ "$MODE" == "init" ]]; then
       --password "$KC_BOOTSTRAP_ADMIN_PASSWORD" &>/dev/null; do
     sleep 5
   done
-  echo "   Keycloak ready."
+  echo "   Keycloak master realm ready."
+
+  echo "   Waiting for sgilt realm import..."
+  until curl -sk "https://localhost:${NGINX_AUTH_PORT}/realms/sgilt" \
+    | jq -e '.realm' > /dev/null 2>&1; do
+    sleep 5
+  done
+  echo "   sgilt realm ready."
 
   echo "   Configuring application secrets..."
   CONFIRMATION_TOKEN_SECRET=$(openssl rand -hex 32)
