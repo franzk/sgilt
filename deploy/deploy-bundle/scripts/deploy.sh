@@ -77,14 +77,24 @@ if [[ "$MODE" == "init" ]]; then
   echo "── Phase 2 : Waiting for Keycloak realm import (including clients)..."
   KC_TOKEN=""
   CLIENT_UUID=""
+  KC_WAIT_ATTEMPTS=0
   until [[ -n "$CLIENT_UUID" && "$CLIENT_UUID" != "null" ]]; do
+    KC_WAIT_ATTEMPTS=$(( KC_WAIT_ATTEMPTS + 1 ))
+    if (( KC_WAIT_ATTEMPTS > 60 )); then
+      echo "❌ Timeout: Keycloak realm/client not ready after 5 minutes"
+      exit 1
+    fi
     sleep 5
+    echo "   Attempt ${KC_WAIT_ATTEMPTS}: fetching token..."
     KC_TOKEN=$(kc_curl -X POST "${KC_BASE}/realms/master/protocol/openid-connect/token" \
       -d "client_id=admin-cli&grant_type=password&username=${KC_BOOTSTRAP_ADMIN_USERNAME}&password=${KC_BOOTSTRAP_ADMIN_PASSWORD}" \
       | jq -r '.access_token // empty' 2>/dev/null) || true
+    echo "   Token: ${KC_TOKEN:0:20}${KC_TOKEN:+...}"
     [[ -z "$KC_TOKEN" ]] && continue
+    echo "   Token OK, fetching client UUID..."
     CLIENT_UUID=$(kc_curl "${KC_BASE}/admin/realms/sgilt/clients?clientId=sgilt-admin" \
       -H "Authorization: Bearer ${KC_TOKEN}" | jq -r '.[0].id // empty' 2>/dev/null) || true
+    echo "   CLIENT_UUID: ${CLIENT_UUID}"
   done
   echo "   sgilt realm and clients ready."
 
