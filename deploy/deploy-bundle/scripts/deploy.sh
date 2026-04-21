@@ -80,31 +80,24 @@ if [[ "$MODE" == "init" ]]; then
   done
   echo "   Keycloak master realm ready."
 
-  echo "   Waiting for sgilt realm import..."
-  until curl -sk "https://localhost:${NGINX_AUTH_PORT}/realms/sgilt" \
-    | jq -e '.realm' > /dev/null 2>&1; do
+  echo "   Waiting for sgilt realm import (including clients)..."
+  KC_TOKEN=""
+  CLIENT_UUID=""
+  until [[ -n "$CLIENT_UUID" && "$CLIENT_UUID" != "null" ]]; do
     sleep 5
+    KC_TOKEN=$(curl -sk -X POST \
+      "https://localhost:${NGINX_AUTH_PORT}/realms/master/protocol/openid-connect/token" \
+      -d "client_id=admin-cli&grant_type=password&username=${KC_BOOTSTRAP_ADMIN_USERNAME}&password=${KC_BOOTSTRAP_ADMIN_PASSWORD}" \
+      | jq -r '.access_token // empty')
+    [[ -z "$KC_TOKEN" ]] && continue
+    CLIENT_UUID=$(curl -sk \
+      "https://localhost:${NGINX_AUTH_PORT}/admin/realms/sgilt/clients?clientId=sgilt-admin" \
+      -H "Authorization: Bearer $KC_TOKEN" | jq -r '.[0].id // empty' 2>/dev/null)
   done
-  echo "   sgilt realm ready."
+  echo "   sgilt realm and clients ready."
 
   echo "   Configuring application secrets..."
   CONFIRMATION_TOKEN_SECRET=$(openssl rand -hex 32)
-
-  KC_TOKEN=$(curl -sk -X POST \
-    "https://localhost:${NGINX_AUTH_PORT}/realms/master/protocol/openid-connect/token" \
-    -d "client_id=admin-cli&grant_type=password&username=${KC_BOOTSTRAP_ADMIN_USERNAME}&password=${KC_BOOTSTRAP_ADMIN_PASSWORD}" \
-    | jq -r '.access_token')
-  [[ -z "$KC_TOKEN" || "$KC_TOKEN" == "null" ]] && { echo "❌ Failed to get Keycloak admin token"; exit 1; }
-
-  CLIENTS_JSON=$(curl -sk \
-    "https://localhost:${NGINX_AUTH_PORT}/admin/realms/sgilt/clients?clientId=sgilt-admin" \
-    -H "Authorization: Bearer $KC_TOKEN")
-  CLIENT_UUID=$(echo "$CLIENTS_JSON" | jq -r '.[0].id // empty' 2>/dev/null)
-  [[ -z "$CLIENT_UUID" || "$CLIENT_UUID" == "null" ]] && {
-    echo "❌ Failed to get sgilt-admin client UUID"
-    echo "   API response: $CLIENTS_JSON"
-    exit 1
-  }
 
   KC_ADMIN_CLIENT_SECRET=$(curl -sk \
     "https://localhost:${NGINX_AUTH_PORT}/admin/realms/sgilt/clients/${CLIENT_UUID}/client-secret" \
