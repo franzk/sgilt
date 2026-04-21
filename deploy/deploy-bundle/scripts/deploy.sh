@@ -81,10 +81,10 @@ if [[ "$MODE" == "init" ]]; then
     sleep 5
     KC_TOKEN=$(kc_curl -X POST "${KC_BASE}/realms/master/protocol/openid-connect/token" \
       -d "client_id=admin-cli&grant_type=password&username=${KC_BOOTSTRAP_ADMIN_USERNAME}&password=${KC_BOOTSTRAP_ADMIN_PASSWORD}" \
-      | jq -r '.access_token // empty')
+      | jq -r '.access_token // empty' 2>/dev/null) || true
     [[ -z "$KC_TOKEN" ]] && continue
     CLIENT_UUID=$(kc_curl "${KC_BASE}/admin/realms/sgilt/clients?clientId=sgilt-admin" \
-      -H "Authorization: Bearer ${KC_TOKEN}" | jq -r '.[0].id // empty')
+      -H "Authorization: Bearer ${KC_TOKEN}" | jq -r '.[0].id // empty' 2>/dev/null) || true
   done
   echo "   sgilt realm and clients ready."
 
