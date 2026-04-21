@@ -738,7 +738,6 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "__KC_ADMIN_CLIENT_SECRET__",
       "redirectUris": [
         "https://app.change.me/*"
       ],

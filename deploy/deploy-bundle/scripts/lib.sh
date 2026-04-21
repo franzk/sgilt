@@ -15,9 +15,9 @@ compose_files_for() {
   local mode="${1:?mode required}"
 
   echo "./docker-compose.base.yml"
-  echo "./docker-compose.front.yml"
   echo "./docker-compose.keycloak.yml"
-  echo "./docker-compose.mailer.yml"
+  echo "./docker-compose.back.yml"
+  echo "./docker-compose.front.yml"
 
   if [[ "$mode" == "init" ]]; then
     echo "./docker-compose.overlay-init.yml"
