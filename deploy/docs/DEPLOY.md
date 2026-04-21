@@ -1,178 +1,90 @@
-# SGILT — Deployment
+# SGILT — Documentation de Déploiement
 
-Day-to-day deployment workflow using GitHub Actions.
-
-> Prerequisites: the environment must already be set up.
-> If not, follow [SETUP.md](SETUP.md) first.
+Ce document décrit le fonctionnement du workflow de déploiement continu (CI/CD) de SGILT via GitHub Actions.
 
 ---
 
-## Overview
+## 🚀 Vue d'ensemble
 
-SGILT uses a single GitHub Actions workflow (`deploy.yml`) for both building and deploying.
-It is triggered manually from the GitHub Actions tab.
+Le déploiement est piloté par le fichier `.github/workflows/deploy.yml`. Il automatise la construction des images Docker, leur stockage sur GitHub Container Registry (GHCR) et leur mise à jour sur le serveur distant via SSH.
 
-```
-GitHub Actions → build images → push to ghcr.io → deploy to server
-```
+**Principe clé :** La version du code définit la version déployée. Il n'y a pas de configuration manuelle des versions dans des fichiers `.env` séparés.
 
 ---
 
-## Workflow inputs
+## 🛠 Paramètres du Workflow
 
-| Input | Options | Description |
-|---|---|---|
-| `environment` | `staging` / `production` | Target environment |
-| `mode` | `init` / `update` | Deployment mode |
+Le workflow se lance manuellement depuis l'onglet **Actions** de GitHub.
 
-### Init mode vs Update mode
-
-| | Init | Update |
-|---|---|---|
-| Build images | Yes (forces Keycloak rebuild with realm) | Yes (skips if image already exists) |
-| Generate .env | Yes | Yes |
-| Deploy | Yes | Yes |
-| Import Keycloak realm | Yes (`--import-realm`) | No |
-
-Use **init** only for the first deployment of an environment, or when resetting Keycloak.
-Use **update** for all subsequent deployments.
+| Paramètre | Options | Description |
+| :--- | :--- | :--- |
+| `environment` | `staging`, `production` | Détermine les variables (`vars`) et secrets utilisés, ainsi que le préfixe de l'image Keycloak. |
+| `mode` | `update`, `init` | **update** (défaut) : Déploiement standard.<br>**init** : Recrée le Realm Keycloak à partir du template. |
 
 ---
 
-## Version management
+## 📦 Gestion des Versions
 
-### How it works
+La version de chaque micro-service est gérée de manière atomique.
 
-Each environment has its own `.env` file that defines **exactly which image version is running**:
+### 1. Source de vérité
+Le workflow lit directement le contenu des fichiers `VERSION` situés à la racine de chaque dossier de service :
+* `sgilt-front/VERSION`
+* `sgilt-keycloak/VERSION`
+* `sgilt-mailer/VERSION`
+* `sgilt-smtp-bridge/VERSION`
 
-```
-deploy/staging.env       <- what runs on staging
-deploy/production.env    <- what runs on production
-```
+### 2. Comportement du Build
+Pour optimiser le temps de déploiement, le workflow utilise une vérification intelligente :
+* **Si le tag existe déjà sur GHCR :** Le build est ignoré (skip), l'image existante sera utilisée.
+* **Si le tag est nouveau :** L'image est construite et poussée sur le registre.
 
-These files are the source of truth for deployments. Staging and production are completely
-independent — changing the version in `staging.env` has no effect on production, and vice versa.
-
-The docker-compose files use these variables to pull the correct image:
-
-```yaml
-image: ghcr.io/franzk/sgilt/sgilt-front:${SGILT_FRONT_VERSION}
-```
-
-### Practical example
-
-You are working on a new feature for the frontend. Here is what the files look like at each stage:
-
-**Initial state — both envs on 1.1.0:**
-```bash
-# deploy/staging.env
-SGILT_FRONT_VERSION=1.1.0
-
-# deploy/production.env
-SGILT_FRONT_VERSION=1.1.0
-```
-
-**Step 1 — bump the VERSION file to build a new image:**
-```bash
-# sgilt-front/VERSION
-1.2.0
-```
-
-**Step 2 — deploy 1.2.0 to staging only:**
-```bash
-# deploy/staging.env
-SGILT_FRONT_VERSION=1.2.0   <- updated
-
-# deploy/production.env
-SGILT_FRONT_VERSION=1.1.0   <- unchanged, prod still on 1.1.0
-```
-
-Trigger the workflow → staging → update.
-Test on https://staging.sgilt.fr.
-
-**Step 3 — once validated, promote to production:**
-```bash
-# deploy/staging.env
-SGILT_FRONT_VERSION=1.2.0
-
-# deploy/production.env
-SGILT_FRONT_VERSION=1.2.0   <- updated
-```
-
-Merge to main, trigger the workflow → production → update.
+> **Note sur Keycloak :** Contrairement aux autres services, l'image Keycloak est liée à l'environnement. Le tag généré est au format `${env}-${version}` (ex: `staging-1.0.4`).
 
 ---
 
-## How to deploy
+## 📋 Procédure de déploiement
 
-### 1. Bump the VERSION file (if building a new image)
+### Étape 1 : Préparation (si changement de version)
+Si vous souhaitez déployer une nouvelle version d'un service :
+1. Modifiez le fichier `VERSION` du service concerné.
+2. Committez et poussez sur la branche cible (ex: `main`).
 
-Each service has a `VERSION` file at its root:
+### Étape 2 : Lancement
+1. Allez dans **Actions** > **Build & Deploy**.
+2. Cliquez sur **Run workflow**.
+3. Sélectionnez la branche, l'environnement et le mode (`update` par défaut).
+4. Cliquez sur le bouton vert **Run workflow**.
 
-```
-sgilt-front/VERSION
-sgilt-keycloak/VERSION
-sgilt-mailer/VERSION
-sgilt-smtp-bridge/VERSION
-```
-
-The workflow skips the build if the image tag already exists in ghcr.io.
-Bumping the version forces a new build.
-
-### 2. Update the target environment .env file
-
-Edit `deploy/staging.env` or `deploy/production.env` to set the version you want to deploy.
-Commit and push before triggering the workflow.
-
-### 3. Trigger the workflow
-
-In GitHub → Actions → **Build & Deploy** → **Run workflow**:
-
-1. Select the branch to deploy from
-2. Choose the target environment (`staging` or `production`)
-3. Choose the mode (`init` or `update`)
-4. Click **Run workflow**
+### Étape 3 : Que se passe-t-il sur le serveur ?
+Le workflow génère dynamiquement un fichier `.env` sur le serveur lors du déploiement. Ce fichier contient :
+* Les versions exactes extraites des fichiers `VERSION`.
+* Les URLs et secrets (DB, SMTP) configurés dans GitHub.
+* Les ports Nginx spécifiques à l'environnement.
 
 ---
 
-## Image naming convention
+## 🔄 Retour en arrière (Rollback)
 
-Images are tagged with the environment prefix for Keycloak (which embeds the realm):
+Si une version déployée pose problème, suivez cette procédure :
 
-```
-ghcr.io/franzk/sgilt/sgilt-front:1.2.0
-ghcr.io/franzk/sgilt/sgilt-keycloak:staging-1.0.0
-ghcr.io/franzk/sgilt/sgilt-keycloak:production-1.0.0
-ghcr.io/franzk/sgilt/sgilt-mailer:1.1.0
-ghcr.io/franzk/sgilt/sgilt-smtp-bridge:1.0.0
-```
-
-All other images share the same tag across environments.
+1. Repérez le numéro de la version stable précédente dans l'historique Git.
+2. Modifiez le fichier `VERSION` dans votre code pour y remettre cet ancien numéro.
+3. Committez et lancez le workflow en mode `update`.
+4. Le système détectera que l'image ancienne existe déjà sur le registre et l'installera immédiatement sur le serveur.
 
 ---
 
-## Checking deployment status
+## 🔍 Vérification et Debugging
 
-On the server:
+Une fois le déploiement terminé, vous pouvez vérifier l'état sur le serveur :
 
 ```bash
-# Check all containers are running
+# Se connecter au dossier de déploiement
+cd /chemin/vers/deploiement
+
+# Vérifier les versions injectées dans le .env
+cat deploy/deploy-bundle/.env
+
+# Vérifier que les containers tournent avec les bonnes images
 docker ps
-
-# Check logs for a specific container
-docker logs sgilt-front-staging --tail 50
-docker logs sgilt-keycloak-staging --tail 50
-docker logs nginx-front-staging --tail 50
-```
-
----
-
-## Rolling back
-
-To roll back to a previous version:
-
-1. Edit `deploy/staging.env` (or `production.env`) and set the previous version number
-2. Commit and push
-3. Trigger the workflow in **update** mode
-
-The workflow will pull the previous image from ghcr.io and restart the containers.

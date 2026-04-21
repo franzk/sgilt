@@ -1,0 +1,125 @@
+# docker-compose.back.yml
+
+services:
+  # =====================
+  # SGILT-CORE DB (Postgres)
+  # =====================
+  sgilt-core-db:
+    image: postgres:17
+    container_name: sgilt-core-db-${ENV}
+    environment:
+      POSTGRES_DB: sgilt-core
+      POSTGRES_USER: sgilt-core
+      POSTGRES_PASSWORD: ${CORE_DB_PASSWORD}
+    volumes:
+      - sgilt_core_pgdata:/var/lib/postgresql/data
+    networks:
+      - sgilt-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sgilt-core -d sgilt-core"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # =====================
+  # SGILT-CORE (Spring Boot)
+  # =====================
+  sgilt-core:
+    image: ghcr.io/franzk/sgilt/sgilt-core:${SGILT_CORE_VERSION}
+    container_name: sgilt-core-${ENV}
+    pull_policy: always
+    environment:
+      DB_URL: jdbc:postgresql://sgilt-core-db-${ENV}:5432/sgilt-core
+      DB_USERNAME: sgilt-core
+      DB_PASSWORD: ${CORE_DB_PASSWORD}
+      KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER}
+      CONFIRMATION_TOKEN_SECRET: ${CONFIRMATION_TOKEN_SECRET}
+      MAILER_URL: http://sgilt-mailer-${ENV}:8080
+      MAILER_FROM: ${MAILER_FROM}
+      PUBLIC_SITE_URL: ${PUBLIC_SITE_URL}
+      KC_ADMIN_URL: ${KC_ADMIN_URL}
+      KC_REALM: ${KC_REALM}
+      KC_ADMIN_CLIENT_ID: ${KC_ADMIN_CLIENT_ID}
+      KC_ADMIN_CLIENT_SECRET: ${KC_ADMIN_CLIENT_SECRET}
+      KC_FRONT_CLIENT_ID: ${KC_FRONT_CLIENT_ID}
+    depends_on:
+      sgilt-core-db:
+        condition: service_healthy
+    networks:
+      - sgilt-network
+    restart: unless-stopped
+
+  # =====================
+  # SGILT-GATEWAY (Spring Boot)
+  # =====================
+  sgilt-gateway:
+    image: ghcr.io/franzk/sgilt/sgilt-gateway:${SGILT_GATEWAY_VERSION}
+    container_name: sgilt-gateway-${ENV}
+    pull_policy: always
+    environment:
+      BACK_URL: http://sgilt-core-${ENV}:5027
+      KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER}
+    depends_on:
+      - sgilt-core
+    networks:
+      - sgilt-network
+    restart: unless-stopped
+
+  # =====================
+  # NGINX API
+  # =====================
+  nginx-api:
+    image: nginx:alpine
+    container_name: nginx-api-${ENV}
+    ports:
+      - "${NGINX_API_PORT}:443"
+    volumes:
+      - ./nginx/api.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - /etc/ssl/sgilt:/etc/ssl/sgilt:ro
+    environment:
+      API_DOMAIN: ${API_DOMAIN}
+    depends_on:
+      - sgilt-gateway
+    networks:
+      - sgilt-network
+    restart: unless-stopped
+
+  # =====================
+  # SGILT-MAILER (Spring Boot)
+  # =====================
+  sgilt-mailer:
+    image: ghcr.io/franzk/sgilt/sgilt-mailer:${SGILT_MAILER_VERSION}
+    container_name: sgilt-mailer-${ENV}
+    pull_policy: always
+    environment:
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_AUTH: ${SMTP_AUTH}
+      SMTP_SSL: ${SMTP_SSL}
+    networks:
+      - sgilt-network
+    restart: unless-stopped
+
+  # =====================
+  # SGILT-SMTP-BRIDGE (Node.js)
+  # =====================
+  sgilt-smtp-bridge:
+    image: ghcr.io/franzk/sgilt/sgilt-smtp-bridge:${SGILT_SMTP_BRIDGE_VERSION}
+    container_name: sgilt-smtp-bridge-${ENV}
+    pull_policy: always
+    environment:
+      MAILER_URL: http://sgilt-mailer-${ENV}:8080
+    networks:
+      - sgilt-network
+    restart: unless-stopped
+
+volumes:
+  sgilt_core_pgdata:
+    name: sgilt_core_pgdata_${ENV}
+
+networks:
+  sgilt-network:
+    name: sgilt-network-${ENV}

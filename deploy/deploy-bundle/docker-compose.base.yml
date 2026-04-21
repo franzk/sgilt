@@ -7,3 +7,5 @@ networks:
 volumes:
   sgilt_keycloak_pgdata:
     name: sgilt_keycloak_pgdata_${ENV}
+  sgilt_core_pgdata:
+    name: sgilt_core_pgdata_${ENV}
