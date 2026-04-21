@@ -69,39 +69,31 @@ if [[ "$MODE" == "init" ]]; then
 
   # ── Phase 2 : wait for Keycloak, generate and configure secrets ───────────
   echo ""
-  echo "── Phase 2 : Waiting for Keycloak to be ready..."
-  until docker exec "sgilt-keycloak-${ENV}" \
-    /opt/keycloak/bin/kcadm.sh config credentials \
-      --server http://localhost:8080 \
-      --realm master \
-      --user "$KC_BOOTSTRAP_ADMIN_USERNAME" \
-      --password "$KC_BOOTSTRAP_ADMIN_PASSWORD" &>/dev/null; do
-    sleep 5
-  done
-  echo "   Keycloak master realm ready."
+  kc_curl() {
+    docker run --rm --network "sgilt-network-${ENV}" curlimages/curl -s "$@"
+  }
+  KC_BASE="http://sgilt-keycloak-${ENV}:8080"
 
-  echo "   Waiting for sgilt realm import (including clients)..."
+  echo "── Phase 2 : Waiting for Keycloak realm import (including clients)..."
   KC_TOKEN=""
   CLIENT_UUID=""
   until [[ -n "$CLIENT_UUID" && "$CLIENT_UUID" != "null" ]]; do
     sleep 5
-    KC_TOKEN=$(curl -sk -X POST \
-      "https://localhost:${NGINX_AUTH_PORT}/realms/master/protocol/openid-connect/token" \
+    KC_TOKEN=$(kc_curl -X POST "${KC_BASE}/realms/master/protocol/openid-connect/token" \
       -d "client_id=admin-cli&grant_type=password&username=${KC_BOOTSTRAP_ADMIN_USERNAME}&password=${KC_BOOTSTRAP_ADMIN_PASSWORD}" \
       | jq -r '.access_token // empty')
     [[ -z "$KC_TOKEN" ]] && continue
-    CLIENT_UUID=$(curl -sk \
-      "https://localhost:${NGINX_AUTH_PORT}/admin/realms/sgilt/clients?clientId=sgilt-admin" \
-      -H "Authorization: Bearer $KC_TOKEN" | jq -r '.[0].id // empty' 2>/dev/null)
+    CLIENT_UUID=$(kc_curl "${KC_BASE}/admin/realms/sgilt/clients?clientId=sgilt-admin" \
+      -H "Authorization: Bearer ${KC_TOKEN}" | jq -r '.[0].id // empty')
   done
   echo "   sgilt realm and clients ready."
 
   echo "   Configuring application secrets..."
   CONFIRMATION_TOKEN_SECRET=$(openssl rand -hex 32)
 
-  KC_ADMIN_CLIENT_SECRET=$(curl -sk \
-    "https://localhost:${NGINX_AUTH_PORT}/admin/realms/sgilt/clients/${CLIENT_UUID}/client-secret" \
-    -H "Authorization: Bearer $KC_TOKEN" | jq -r '.value')
+  KC_ADMIN_CLIENT_SECRET=$(kc_curl \
+    "${KC_BASE}/admin/realms/sgilt/clients/${CLIENT_UUID}/client-secret" \
+    -H "Authorization: Bearer ${KC_TOKEN}" | jq -r '.value')
   [[ -z "$KC_ADMIN_CLIENT_SECRET" || "$KC_ADMIN_CLIENT_SECRET" == "null" ]] && { echo "❌ Failed to read KC_ADMIN_CLIENT_SECRET"; exit 1; }
 
   printf "KC_ADMIN_CLIENT_SECRET=%s\nCONFIRMATION_TOKEN_SECRET=%s\n" \
