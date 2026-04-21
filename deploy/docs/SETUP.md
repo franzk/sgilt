@@ -147,9 +147,9 @@ In Settings → Secrets and variables → Actions → Repository secrets:
 | Secret                        | Description                                                                         |
 |-------------------------------|-------------------------------------------------------------------------------------|
 | `SSH_HOST`                    | Server IP or hostname                                                               |
-| `SSH_USER`                    | `deployer`                                                                          |
-| `SSH_PRIVATE_KEY`             | Content of `~/.ssh/sgilt_deploy`                                                    |
-| `SSH_HOST_PATH`               | `/home/sgilt-server`                                                                |
+| `SSH_USER`                    | e.g. `deployer`                                                                     |
+| `SSH_PRIVATE_KEY`             | e.g. content of `~/.ssh/sgilt_deploy`                                               |
+| `SSH_HOST_PATH`               | e.g. `/home/sgilt-server`                                                           |
 | `KC_DB_PASSWORD`              | Keycloak PostgreSQL password (choose a strong password)                             |
 | `KC_BOOTSTRAP_ADMIN_USERNAME` | Keycloak admin username                                                             |
 | `KC_BOOTSTRAP_ADMIN_PASSWORD` | Keycloak admin password (choose a strong password)                                  |
