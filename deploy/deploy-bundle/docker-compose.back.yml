@@ -35,7 +35,7 @@ services:
       DB_PASSWORD: ${CORE_DB_PASSWORD}
       KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER}
       CONFIRMATION_TOKEN_SECRET: ${CONFIRMATION_TOKEN_SECRET}
-      MAILER_URL: http://sgilt-mailer-${ENV}:8080
+      MAILER_URL: http://sgilt-mailer-${ENV}:5030
       MAILER_FROM: ${MAILER_FROM}
       PUBLIC_SITE_URL: ${PUBLIC_SITE_URL}
       KC_ADMIN_URL: ${KC_ADMIN_URL}
@@ -109,7 +109,7 @@ services:
     container_name: sgilt-smtp-bridge-${ENV}
     pull_policy: always
     environment:
-      MAILER_URL: http://sgilt-mailer-${ENV}:8080
+      MAILER_URL: http://sgilt-mailer-${ENV}:5030
     networks:
       - sgilt-network
     restart: unless-stopped
