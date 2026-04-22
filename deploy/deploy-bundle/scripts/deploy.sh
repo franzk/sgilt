@@ -56,6 +56,14 @@ if [[ "$MODE" == "init" ]]; then
   # ── Phase 1 : start Keycloak only (realm import on first start) ───────────
   echo ""
   echo "── Phase 1 : Starting Keycloak..."
+
+  # Stop existing KC containers and wipe DB volume so --import-realm runs fresh
+  docker compose -p "$PROJECT" \
+    -f ./docker-compose.base.yml \
+    -f ./docker-compose.keycloak.yml \
+    down --remove-orphans 2>/dev/null || true
+  docker volume rm "sgilt_keycloak_pgdata_${ENV}" 2>/dev/null || true
+
   docker compose -p "$PROJECT" \
     -f ./docker-compose.base.yml \
     -f ./docker-compose.keycloak.yml \
