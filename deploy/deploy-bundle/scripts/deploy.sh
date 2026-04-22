@@ -44,7 +44,7 @@ PROJECT="sgilt-${ENV}"
 
 echo "🚀 Starting SGILT deployment — env: $ENV, mode: $MODE"
 
-mapfile -t COMPOSE_FILES < <(compose_files_for "$MODE")
+mapfile -t COMPOSE_FILES < <(compose_files_for)
 
 echo "-> Mode     : $MODE"
 echo "-> Env      : $ENV"

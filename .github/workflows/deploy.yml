@@ -167,6 +167,28 @@ jobs:
             echo "✅ Pushed $IMAGE_TAG"
           fi
 
+      - name: Build and push sgilt-core
+        run: |
+          IMAGE_TAG="${{ env.IMAGE_PREFIX }}/sgilt-core:${{ env.SGILT_CORE_VERSION }}"
+          if docker manifest inspect $IMAGE_TAG > /dev/null 2>&1; then
+            echo "⏭️ $IMAGE_TAG already exists, skipping build"
+          else
+            docker build -t $IMAGE_TAG sgilt-core
+            docker push $IMAGE_TAG
+            echo "✅ Pushed $IMAGE_TAG"
+          fi
+
+      - name: Build and push sgilt-gateway
+        run: |
+          IMAGE_TAG="${{ env.IMAGE_PREFIX }}/sgilt-gateway:${{ env.SGILT_GATEWAY_VERSION }}"
+          if docker manifest inspect $IMAGE_TAG > /dev/null 2>&1; then
+            echo "⏭️ $IMAGE_TAG already exists, skipping build"
+          else
+            docker build -t $IMAGE_TAG sgilt-gateway
+            docker push $IMAGE_TAG
+            echo "✅ Pushed $IMAGE_TAG"
+          fi
+
       - name: Build and push sgilt-mailer
         run: |
           IMAGE_TAG="${{ env.IMAGE_PREFIX }}/sgilt-mailer:${{ env.SGILT_MAILER_VERSION }}"
