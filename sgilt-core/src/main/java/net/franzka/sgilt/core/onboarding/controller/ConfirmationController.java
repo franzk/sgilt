@@ -2,6 +2,7 @@ package net.franzka.sgilt.core.onboarding.controller;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.onboarding.api.ConfirmationApi;
 import net.franzka.sgilt.core.onboarding.domain.ConfirmationToken;
 import net.franzka.sgilt.core.onboarding.dto.SetPasswordTokenDto;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class ConfirmationController implements ConfirmationApi {
 
     private final ConfirmationService confirmationService;
@@ -33,6 +35,7 @@ public class ConfirmationController implements ConfirmationApi {
     {
         // 1 - validation le token et récupération de l'objet confirmationToken correspondant en BDD
         // et le passe en PENDING_CONFIRMATION
+        log.info("GET /confirmation — token présent: {}", token != null && !token.isBlank());
         ConfirmationToken confirmationToken = confirmationService.validateConfirmationToken(token);
 
         // 2 - générer un token pour la saisie d'un mot de passe pour la création de compte

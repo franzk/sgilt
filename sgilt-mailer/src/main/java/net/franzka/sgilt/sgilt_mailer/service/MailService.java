@@ -41,6 +41,7 @@ public class MailService {
 
         log.info("Sending mail from {} to {} with subject {}", defaultFromAddress, request.getTo(), request.getSubject());
         mailSender.send(message);
+        log.info("Mail sent successfully to {}", request.getTo());
     }
 
 }

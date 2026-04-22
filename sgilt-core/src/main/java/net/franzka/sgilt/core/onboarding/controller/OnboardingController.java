@@ -3,6 +3,7 @@ package net.franzka.sgilt.core.onboarding.controller;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.onboarding.api.OnboardingApi;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountRequest;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountResponse;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class OnboardingController implements OnboardingApi {
 
     private final OnboardingService onboardingService;
@@ -35,6 +37,7 @@ public class OnboardingController implements OnboardingApi {
     public ResponseEntity<DemandeInitialeResponse> submitDemandeInitiale(
             @RequestBody @Valid DemandeInitialeRequest request
     ) {
+        log.info("POST /onboarding — email={} prestataireId={}", request.email(), request.prestataireId());
         return ResponseEntity.accepted().body(onboardingService.createDemandeReservation(request));
     }
 
@@ -52,6 +55,7 @@ public class OnboardingController implements OnboardingApi {
     @Override
     @Transactional
     public ResponseEntity<ConfirmAccountResponse> confirmAccount(@RequestBody @Valid ConfirmAccountRequest request) {
+        log.info("POST /onboarding/confirm-account");
         return ResponseEntity.ok(onboardingService.confirmAccount(request));
     }
 }

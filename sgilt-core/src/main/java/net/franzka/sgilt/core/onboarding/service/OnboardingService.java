@@ -18,12 +18,14 @@ import net.franzka.sgilt.core.onboarding.mailer.OnboardingMailerService;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
 import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class OnboardingService {
 
     private final EvenementService evenementService;
@@ -74,10 +76,12 @@ public class OnboardingService {
     public DemandeInitialeResponse createDemandeReservation(DemandeInitialeRequest request) {
 
         if (utilisateurService.existsByEmail(request.email())) {
+            log.info("createDemandeReservation — email déjà connu, envoi alerte sécurité : {}", request.email());
             onboardingMailerService.sendSecurityAlertEmail(request.email(), request.prestataireId());
             return new DemandeInitialeResponse(request.email());
         }
 
+        log.info("createDemandeReservation — nouvel email, création du parcours : {}", request.email());
         confirmationTokenService.cancelExistingTokenForEmail(request.email());
 
         Evenement evenement = evenementService.createDraft(
@@ -107,6 +111,7 @@ public class OnboardingService {
 
         String jwt = confirmationTokenService.createForReservation(reservation);
 
+        log.info("createDemandeReservation — réservation {} créée, envoi mail confirmation à {}", reservation.getId(), request.email());
         onboardingMailerService.sendConfirmationEmail(request.email(), jwt);
 
         return new DemandeInitialeResponse(request.email());
@@ -144,13 +149,16 @@ public class OnboardingService {
         String firstName = evenement.getFirstName();
         String lastName = evenement.getLastName();
 
+        log.info("confirmAccount — création compte Keycloak pour {}", email);
         keycloakAdminService.createUser(email, firstName, lastName, request.password());
         utilisateurService.createUtilisateur(firstName, lastName, email, evenement.getTelephone());
         reservationService.activateDemande(reservationId);
         confirmationTokenService.deleteByReservation(reservationId);
+        log.info("confirmAccount — compte créé, envoi mail bienvenue à {}", email);
         onboardingMailerService.sendWelcomeEmail(email);
 
         KeycloakTokenResponse tokens = keycloakAdminService.getUserTokens(email, request.password());
+        log.info("confirmAccount — tokens Keycloak récupérés pour {}", email);
         return new ConfirmAccountResponse(tokens.accessToken(), tokens.refreshToken());
     }
 }

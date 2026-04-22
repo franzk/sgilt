@@ -1,5 +1,6 @@
 package net.franzka.sgilt.core.onboarding.mailer;
 
+import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.mailer.MailerClient;
 import net.franzka.sgilt.core.mailer.MailRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,7 @@ import java.util.UUID;
  * Délègue l'envoi effectif à {@link MailerClient}.
  */
 @Service
+@Slf4j
 public class OnboardingMailerService {
 
     private final MailerClient mailerClient;
@@ -49,6 +51,7 @@ public class OnboardingMailerService {
                 <p>Ce lien expire dans 24 heures.</p>
                 """.formatted(confirmationUrl);
 
+        log.info("sendConfirmationEmail → {}", email);
         mailerClient.sendMail(new MailRequest(mailerFrom, email, "Confirmez votre demande", html));
     }
 
@@ -65,6 +68,7 @@ public class OnboardingMailerService {
                 <p>Si vous n'êtes pas à l'origine de cette action, ignorez ce message.</p>
                 """.formatted(prestataireId);
 
+        log.info("sendSecurityAlertEmail → {}", email);
         mailerClient.sendMail(new MailRequest(mailerFrom, email, "Activité suspecte sur votre compte", html));
     }
 
@@ -80,6 +84,7 @@ public class OnboardingMailerService {
                 <p><a href="%s">Accéder à Sgilt</a></p>
                 """.formatted(frontendUrl);
 
+        log.info("sendWelcomeEmail → {}", email);
         mailerClient.sendMail(new MailRequest(mailerFrom, email, "Bienvenue sur Sgilt", html));
     }
 }
