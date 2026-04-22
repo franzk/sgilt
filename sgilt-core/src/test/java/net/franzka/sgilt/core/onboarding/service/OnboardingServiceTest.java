@@ -1,0 +1,348 @@
+package net.franzka.sgilt.core.onboarding.service;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import net.franzka.sgilt.core.evenement.domain.Evenement;
+import net.franzka.sgilt.core.evenement.service.EvenementService;
+import net.franzka.sgilt.core.jwt.TokenJwtService;
+import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountRequest;
+import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountResponse;
+import net.franzka.sgilt.core.onboarding.dto.DemandeInitialeRequest;
+import net.franzka.sgilt.core.onboarding.dto.DemandeInitialeResponse;
+import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
+import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
+import net.franzka.sgilt.core.onboarding.mailer.OnboardingMailerService;
+import net.franzka.sgilt.core.reservation.domain.Reservation;
+import net.franzka.sgilt.core.keycloak.KeycloakAdminService;
+import net.franzka.sgilt.core.keycloak.KeycloakTokenResponse;
+import net.franzka.sgilt.core.reservation.service.ReservationService;
+import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDate;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import org.mockito.InOrder;
+
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class OnboardingServiceTest {
+
+    private static final String    FIRSTNAME         = "Jean";
+    private static final String    LASTNAME          = "Dupont";
+    private static final String    EMAIL             = "jean.dupont@example.com";
+    private static final UUID      PRESTATAIRE_ID    = UUID.randomUUID();
+    private static final String    EVENT_TYPE        = "anniversaire";
+    private static final String    AMBIANCE          = "festif";
+    private static final String    MOMENT_CLE        = "danse";
+    private static final String    DESCRIPTION       = "Description test";
+    private static final LocalDate DATE              = LocalDate.of(2025, 6, 15);
+    private static final String    VILLE             = "Paris";
+    private static final String    NB_INVITES        = "50";
+    private static final String    LIEU              = "Salle des Fêtes";
+    private static final String    TELEPHONE         = "0612345678";
+    private static final String    PRESTATAIRE_MSG   = "Message prestataire";
+    private static final String    SP_TOKEN          = "sp.header.payload.signature";
+
+    @Mock
+    private EvenementService evenementService;
+
+    @Mock
+    private ReservationService reservationService;
+
+    @Mock
+    private ConfirmationTokenService confirmationTokenService;
+
+    @Mock
+    private TokenJwtService setPasswordTokenJwtService;
+
+    @Mock
+    private OnboardingMailerService onboardingMailerService;
+
+    @Mock
+    private UtilisateurService utilisateurService;
+
+    @Mock
+    private KeycloakAdminService keycloakAdminService;
+
+    @InjectMocks
+    private OnboardingService onboardingService;
+
+    // -------------------------------------------------------------------------
+    // createDemandeReservation
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class CreateDemandeReservation {
+
+        @Test
+        void givenExistingUser_whenCreateDemandeReservation_thenSendsSecurityAlertEmail() {
+            when(utilisateurService.existsByEmail(EMAIL)).thenReturn(true);
+
+            onboardingService.createDemandeReservation(buildRequest());
+
+            verify(onboardingMailerService).sendSecurityAlertEmail(EMAIL, PRESTATAIRE_ID);
+        }
+
+        @Test
+        void givenExistingUser_whenCreateDemandeReservation_thenDoesNotCreateEvenement() {
+            when(utilisateurService.existsByEmail(EMAIL)).thenReturn(true);
+
+            onboardingService.createDemandeReservation(buildRequest());
+
+            verify(evenementService, never()).createDraft(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any());
+        }
+
+        @Test
+        void givenExistingUser_whenCreateDemandeReservation_thenReturnsResponseWithEmail() {
+            when(utilisateurService.existsByEmail(EMAIL)).thenReturn(true);
+
+            DemandeInitialeResponse response = onboardingService.createDemandeReservation(buildRequest());
+
+            assertThat(response.email()).isEqualTo(EMAIL);
+        }
+
+        @Test
+        void givenNewUser_whenCreateDemandeReservation_thenCancelsExistingTokenForEmail() {
+            stubHappyPath();
+
+            onboardingService.createDemandeReservation(buildRequest());
+
+            verify(confirmationTokenService).cancelExistingTokenForEmail(EMAIL);
+        }
+
+        @Test
+        void givenNewUser_whenCreateDemandeReservation_thenCancelsTokenBeforeCreatingEvenement() {
+            when(utilisateurService.existsByEmail(EMAIL)).thenReturn(false);
+            Evenement evenement = Evenement.builder().email(EMAIL).build();
+            Reservation reservation = Reservation.builder().build();
+            when(evenementService.createDraft(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(evenement);
+            when(reservationService.createDraft(any(Evenement.class), any(), any())).thenReturn(reservation);
+            when(confirmationTokenService.createForReservation(reservation)).thenReturn("jwt");
+
+            InOrder inOrder = inOrder(confirmationTokenService, evenementService);
+            onboardingService.createDemandeReservation(buildRequest());
+
+            inOrder.verify(confirmationTokenService).cancelExistingTokenForEmail(EMAIL);
+            inOrder.verify(evenementService).createDraft(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any());
+        }
+
+        @Test
+        void givenNewUser_whenCreateDemandeReservation_thenCancelsTokenBeforeCreatingConfirmationToken() {
+            when(utilisateurService.existsByEmail(EMAIL)).thenReturn(false);
+            Evenement evenement = Evenement.builder().email(EMAIL).build();
+            Reservation reservation = Reservation.builder().build();
+            when(evenementService.createDraft(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(evenement);
+            when(reservationService.createDraft(any(Evenement.class), any(), any())).thenReturn(reservation);
+            when(confirmationTokenService.createForReservation(reservation)).thenReturn("jwt");
+
+            InOrder inOrder = inOrder(confirmationTokenService);
+            onboardingService.createDemandeReservation(buildRequest());
+
+            inOrder.verify(confirmationTokenService).cancelExistingTokenForEmail(EMAIL);
+            inOrder.verify(confirmationTokenService).createForReservation(reservation);
+        }
+
+        @Test
+        void givenNewUser_whenCreateDemandeReservation_thenCreatesEvenementDraftWithRequestFields() {
+            stubHappyPath();
+
+            onboardingService.createDemandeReservation(buildRequest());
+
+            verify(evenementService).createDraft(
+                    FIRSTNAME, LASTNAME, EMAIL,
+                    EVENT_TYPE, AMBIANCE, MOMENT_CLE, DESCRIPTION, DATE,
+                    VILLE, NB_INVITES, LIEU, TELEPHONE);
+        }
+
+        @Test
+        void givenNewUser_whenCreateDemandeReservation_thenCreatesReservationDraftWithCreatedEvenementAndPrestataireId() {
+            stubHappyPath();
+
+            onboardingService.createDemandeReservation(buildRequest());
+
+            verify(reservationService).createDraft(any(Evenement.class), eq(PRESTATAIRE_ID), eq(PRESTATAIRE_MSG));
+        }
+
+        @Test
+        void givenNewUser_whenCreateDemandeReservation_thenCreatesConfirmationTokenForReservation() {
+            stubHappyPath();
+
+            onboardingService.createDemandeReservation(buildRequest());
+
+            verify(confirmationTokenService).createForReservation(any(Reservation.class));
+        }
+
+        @Test
+        void givenNewUser_whenCreateDemandeReservation_thenSendsConfirmationEmailWithEmailAndJwt() {
+            when(utilisateurService.existsByEmail(EMAIL)).thenReturn(false);
+            Evenement evenement = Evenement.builder().email(EMAIL).build();
+            Reservation reservation = Reservation.builder().build();
+            when(evenementService.createDraft(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(evenement);
+            when(reservationService.createDraft(any(Evenement.class), any(), any())).thenReturn(reservation);
+            when(confirmationTokenService.createForReservation(reservation)).thenReturn("confirmation.jwt");
+
+            onboardingService.createDemandeReservation(buildRequest());
+
+            verify(onboardingMailerService).sendConfirmationEmail(EMAIL, "confirmation.jwt");
+        }
+
+        @Test
+        void givenNewUser_whenCreateDemandeReservation_thenReturnsResponseWithEmail() {
+            stubHappyPath();
+
+            DemandeInitialeResponse response = onboardingService.createDemandeReservation(buildRequest());
+
+            assertThat(response.email()).isEqualTo(EMAIL);
+        }
+
+        private void stubHappyPath() {
+            when(utilisateurService.existsByEmail(EMAIL)).thenReturn(false);
+            Evenement evenement = Evenement.builder().email(EMAIL).build();
+            Reservation reservation = Reservation.builder().build();
+            when(evenementService.createDraft(
+                    FIRSTNAME, LASTNAME, EMAIL,
+                    EVENT_TYPE, AMBIANCE, MOMENT_CLE, DESCRIPTION, DATE,
+                    VILLE, NB_INVITES, LIEU, TELEPHONE)).thenReturn(evenement);
+            when(reservationService.createDraft(evenement, PRESTATAIRE_ID, PRESTATAIRE_MSG)).thenReturn(reservation);
+            when(confirmationTokenService.createForReservation(reservation)).thenReturn("jwt");
+        }
+
+        private DemandeInitialeRequest buildRequest() {
+            return new DemandeInitialeRequest(
+                    FIRSTNAME, LASTNAME, EMAIL, PRESTATAIRE_ID,
+                    EVENT_TYPE, AMBIANCE, MOMENT_CLE, DESCRIPTION, DATE,
+                    VILLE, NB_INVITES, LIEU, TELEPHONE, PRESTATAIRE_MSG);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // confirmAccount
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ConfirmAccount {
+
+        @Test
+        void givenExpiredToken_whenConfirmAccount_thenThrowsTokenExpiredException() {
+            when(setPasswordTokenJwtService.isExpired(SP_TOKEN)).thenReturn(true);
+
+            assertThatExceptionOfType(TokenExpiredException.class)
+                    .isThrownBy(() -> onboardingService.confirmAccount(buildRequest()));
+        }
+
+        @Test
+        void givenExpiredToken_whenConfirmAccount_thenDoesNotExtractClaims() {
+            when(setPasswordTokenJwtService.isExpired(SP_TOKEN)).thenReturn(true);
+
+            assertThatExceptionOfType(TokenExpiredException.class)
+                    .isThrownBy(() -> onboardingService.confirmAccount(buildRequest()));
+
+            verify(setPasswordTokenJwtService, never()).extractClaims(any());
+        }
+
+        @Test
+        void givenJwtException_whenConfirmAccount_thenThrowsInvalidTokenException() {
+            when(setPasswordTokenJwtService.isExpired(SP_TOKEN)).thenReturn(false);
+            when(setPasswordTokenJwtService.extractClaims(SP_TOKEN)).thenThrow(new JwtException("bad token"));
+
+            assertThatExceptionOfType(InvalidTokenException.class)
+                    .isThrownBy(() -> onboardingService.confirmAccount(buildRequest()));
+        }
+
+        @Test
+        void givenValidToken_whenConfirmAccount_thenCreatesKeycloakUser() {
+            UUID reservationId = UUID.randomUUID();
+            stubValidToken(reservationId);
+
+            onboardingService.confirmAccount(buildRequest());
+
+            verify(keycloakAdminService).createUser(EMAIL, FIRSTNAME, LASTNAME, "p@ssw0rd!");
+        }
+
+        @Test
+        void givenValidToken_whenConfirmAccount_thenCreatesUtilisateurFromReservationEvenement() {
+            UUID reservationId = UUID.randomUUID();
+            stubValidToken(reservationId);
+
+            onboardingService.confirmAccount(buildRequest());
+
+            verify(utilisateurService).createUtilisateur(FIRSTNAME, LASTNAME, EMAIL, TELEPHONE);
+        }
+
+        @Test
+        void givenValidToken_whenConfirmAccount_thenActivatesReservationWithIdFromClaims() {
+            UUID reservationId = UUID.randomUUID();
+            stubValidToken(reservationId);
+
+            onboardingService.confirmAccount(buildRequest());
+
+            verify(reservationService).activateDemande(reservationId);
+        }
+
+        @Test
+        void givenValidToken_whenConfirmAccount_thenDeletesConfirmationTokenForReservation() {
+            UUID reservationId = UUID.randomUUID();
+            stubValidToken(reservationId);
+
+            onboardingService.confirmAccount(buildRequest());
+
+            verify(confirmationTokenService).deleteByReservation(reservationId);
+        }
+
+        @Test
+        void givenValidToken_whenConfirmAccount_thenSendsWelcomeEmailToSubject() {
+            UUID reservationId = UUID.randomUUID();
+            stubValidToken(reservationId);
+
+            onboardingService.confirmAccount(buildRequest());
+
+            verify(onboardingMailerService).sendWelcomeEmail(EMAIL);
+        }
+
+        @Test
+        void givenValidToken_whenConfirmAccount_thenReturnsKeycloakTokens() {
+            UUID reservationId = UUID.randomUUID();
+            stubValidToken(reservationId);
+
+            ConfirmAccountResponse response = onboardingService.confirmAccount(buildRequest());
+
+            assertThat(response.accessToken()).isEqualTo("access-token");
+            assertThat(response.refreshToken()).isEqualTo("refresh-token");
+        }
+
+        private void stubValidToken(UUID reservationId) {
+            Claims claims = buildClaims(reservationId, EMAIL);
+            when(setPasswordTokenJwtService.isExpired(SP_TOKEN)).thenReturn(false);
+            when(setPasswordTokenJwtService.extractClaims(SP_TOKEN)).thenReturn(claims);
+            Evenement evenement = Evenement.builder()
+                    .firstName(FIRSTNAME)
+                    .lastName(LASTNAME)
+                    .email(EMAIL)
+                    .telephone(TELEPHONE)
+                    .build();
+            when(reservationService.getEvenement(reservationId)).thenReturn(evenement);
+            when(keycloakAdminService.getUserTokens(EMAIL, "p@ssw0rd!"))
+                    .thenReturn(new KeycloakTokenResponse("access-token", "refresh-token"));
+        }
+
+        private ConfirmAccountRequest buildRequest() {
+            return new ConfirmAccountRequest(SP_TOKEN, "p@ssw0rd!");
+        }
+
+        private Claims buildClaims(UUID reservationId, String subject) {
+            Claims claims = mock(Claims.class);
+            when(claims.get("reservationId", String.class)).thenReturn(reservationId.toString());
+            when(claims.getSubject()).thenReturn(subject);
+            return claims;
+        }
+    }
+}

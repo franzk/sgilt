@@ -1,0 +1,25 @@
+meta {
+  name: onboarding - 1. start flow
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:5027/api/v1/onboarding
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "firstName": "Franz",
+    "lastName": "Ka",
+    "email": "franz@ka.net",
+    "prestataireId": "37d43573-8cd0-4eef-a838-91d9bb4f2323"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

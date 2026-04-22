@@ -11,6 +11,10 @@ services:
     environment:
       ENV: ${ENV}
       NUXT_PUBLIC_SITE_URL: ${NUXT_PUBLIC_SITE_URL}
+      NUXT_PUBLIC_API_URL: ${API_URL}
+      NUXT_PUBLIC_KC_URL: ${AUTH_URL}
+      NUXT_PUBLIC_KC_REALM: ${KC_REALM}
+      NUXT_PUBLIC_KC_CLIENT_ID: ${KC_FRONT_CLIENT_ID}
     depends_on:
       - sgilt-keycloak
     networks:

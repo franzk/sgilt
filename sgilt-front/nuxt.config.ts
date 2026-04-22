@@ -4,6 +4,15 @@ export default defineNuxtConfig({
 
   devtools: { enabled: false },
 
+  runtimeConfig: {
+    public: {
+      apiUrl: '',
+      kcUrl: '',
+      kcRealm: '',
+      kcClientId: '',
+    },
+  },
+
   modules: [
     '@pinia/nuxt',
     '@nuxtjs/i18n',

@@ -76,23 +76,27 @@ In the Ionos panel, open the following TCP ports:
 
 In Cloudflare DNS for the target domain, add A records pointing to the server IP:
 
-| Environment | Records |
-|---|---|
-| Staging (`sgilt.fr`) | `staging` → server IP (Proxied 🟠) |
-| Staging (`sgilt.fr`) | `auth-staging` → server IP (Proxied 🟠) |
-| Production (`sgilt.alsace`) | `@` → server IP (Proxied 🟠) |
-| Production (`sgilt.alsace`) | `auth` → server IP (Proxied 🟠) |
+| Environment                 | Records                                 |
+|-----------------------------|-----------------------------------------|
+| Staging (`sgilt.fr`)        | `staging` → server IP (Proxied 🟠)      |
+| Staging (`sgilt.fr`)        | `auth-staging` → server IP (Proxied 🟠) |
+| Staging (`sgilt.fr`)        | `api-staging` → server IP (Proxied 🟠)  |
+| Production (`sgilt.alsace`) | `@` → server IP (Proxied 🟠)            |
+| Production (`sgilt.alsace`) | `auth` → server IP (Proxied 🟠)         |
+| Production (`sgilt.alsace`) | `api` → server IP (Proxied 🟠)          |
 
 ### 2.2 Configure Origin Rules
 
 In Cloudflare → Rules → Origin Rules, create the following rules:
 
-| Name | Match | Action |
-|---|---|---|
-| Staging Front | `https://staging.sgilt.fr/*` | Rewrite port to `8443` |
-| Staging Auth | `https://auth-staging.sgilt.fr/*` | Rewrite port to `2053` |
-| Production Front | `https://sgilt.alsace/*` | Rewrite port to `443` |
-| Production Auth | `https://auth.sgilt.alsace/*` | Rewrite port to `2053` |
+| Name             | Match                             | Action                 |
+|------------------|-----------------------------------|------------------------|
+| Staging Front    | `https://staging.sgilt.fr/*`      | Rewrite port to `8443` |
+| Staging Auth     | `https://auth-staging.sgilt.fr/*` | Rewrite port to `2053` |
+| Staging API      | `https://api-staging.sgilt.fr/*`  | Rewrite port to `2096` |
+| Production Front | `https://sgilt.alsace/*`          | Rewrite port to `443`  |
+| Production Auth  | `https://auth.sgilt.alsace/*`     | Rewrite port to `2053` |
+| Production API   | `https://api.sgilt.fr/*`          | Rewrite port to `2096` |
 
 > Note: Production port 443 does not need an Origin Rule since it is the default HTTPS port.
 
@@ -134,38 +138,43 @@ Name it `staging` or `production`.
 
 In Settings → Secrets and variables → Actions → Repository secrets:
 
-| Secret | Value |
-|---|---|
+| Secret           | Value                                 |
+|------------------|---------------------------------------|
 | `REGISTRY_TOKEN` | GitHub PAT with `read:packages` scope |
 
 ### 4.3 Add Environment secrets
 
-| Secret | Description |
-|---|---|
-| `SSH_HOST` | Server IP or hostname |
-| `SSH_USER` | `deployer` |
-| `SSH_PRIVATE_KEY` | Content of `~/.ssh/sgilt_deploy` |
-| `SSH_HOST_PATH` | `/home/sgilt-server` |
-| `KC_DB_PASSWORD` | Keycloak PostgreSQL password (choose a strong password) |
-| `KC_BOOTSTRAP_ADMIN_USERNAME` | Keycloak admin username |
-| `KC_BOOTSTRAP_ADMIN_PASSWORD` | Keycloak admin password (choose a strong password) |
-| `SMTP_HOST` | SMTP server hostname |
-| `SMTP_PORT` | SMTP port (usually `587`) |
-| `SMTP_USERNAME` | SMTP username |
-| `SMTP_PASSWORD` | SMTP password |
-| `SMTP_AUTH` | `true` |
-| `SMTP_SSL` | `true` |
+| Secret                        | Description                                                                         |
+|-------------------------------|-------------------------------------------------------------------------------------|
+| `SSH_HOST`                    | Server IP or hostname                                                               |
+| `SSH_USER`                    | e.g. `deployer`                                                                     |
+| `SSH_PRIVATE_KEY`             | e.g. content of `~/.ssh/sgilt_deploy`                                               |
+| `SSH_HOST_PATH`               | e.g. `/home/sgilt-server`                                                           |
+| `KC_DB_PASSWORD`              | Keycloak PostgreSQL password (choose a strong password)                             |
+| `KC_BOOTSTRAP_ADMIN_USERNAME` | Keycloak admin username                                                             |
+| `KC_BOOTSTRAP_ADMIN_PASSWORD` | Keycloak admin password (choose a strong password)                                  |
+| `CORE_DB_PASSWORD`            | sgilt-core PostgreSQL password (choose a strong password)                           |
+| `SMTP_HOST`                   | SMTP server hostname                                                                |
+| `SMTP_PORT`                   | SMTP port (usually `587`)                                                           |
+| `SMTP_USERNAME`               | SMTP username                                                                       |
+| `SMTP_PASSWORD`               | SMTP password                                                                       |
+| `SMTP_AUTH`                   | `true`                                                                              |
+| `SMTP_SSL`                    | `true`                                                                              |
 
 ### 4.4 Add Environment variables
 
-| Variable | Staging | Production |
-|---|---|---|
-| `APP_URL` | `https://staging.sgilt.fr` | `https://sgilt.alsace` |
-| `APP_DOMAIN` | `staging.sgilt.fr` | `sgilt.alsace` |
-| `AUTH_URL` | `https://auth-staging.sgilt.fr` | `https://auth.sgilt.alsace` |
-| `AUTH_DOMAIN` | `auth-staging.sgilt.fr` | `auth.sgilt.alsace` |
-| `NGINX_FRONT_PORT` | `8443` | `443` |
-| `NGINX_AUTH_PORT` | `2053` | `2053` |
+| Variable             | Staging                         | Production                  |
+|----------------------|---------------------------------|-----------------------------|
+| `APP_URL`            | `https://staging.sgilt.fr`      | `https://sgilt.alsace`      |
+| `APP_DOMAIN`         | `staging.sgilt.fr`              | `sgilt.alsace`              |
+| `AUTH_URL`           | `https://auth-staging.sgilt.fr` | `https://auth.sgilt.alsace` |
+| `AUTH_DOMAIN`        | `auth-staging.sgilt.fr`         | `auth.sgilt.alsace`         |
+| `API_URL`            | `https://api-staging.sgilt.fr`  | `https://api.sgilt.fr`      |
+| `API_DOMAIN`         | `api-staging.sgilt.fr`          | `api.sgilt.fr`              |
+| `NGINX_FRONT_PORT`   | `8443`                          | `443`                       |
+| `NGINX_AUTH_PORT`    | `2053`                          | `2053`                      |
+| `NGINX_API_PORT`     | `2096`                          | `2096`                      |
+| `MAILER_FROM`        | `noreply@sgilt.fr`              | `noreply@sgilt.alsace`      |
 
 ---
 
@@ -176,7 +185,7 @@ In GitHub → Actions → **Build & Deploy** → Run workflow:
 - **environment**: `staging` or `production`
 - **mode**: `init`
 
-> Init mode generates the Keycloak realm from the template and imports it on first startup.
+> Init mode generates the Keycloak realm from the template and imports it on the first startup.
 
 The workflow will:
 1. Build all Docker images and push them to ghcr.io
@@ -188,7 +197,7 @@ The workflow will:
 
 ## Step 6 — Verify
 
-Once the workflow completes, verify:
+Once the workflow is completed, verify:
 
 ```bash
 docker ps
@@ -196,9 +205,9 @@ docker ps
 
 All containers should be `Up`. Check:
 
-| URL | Expected |
-|---|---|
-| `https://staging.sgilt.fr` | SGILT landing page |
+| URL                             | Expected            |
+|---------------------------------|---------------------|
+| `https://staging.sgilt.fr`      | SGILT landing page  |
 | `https://auth-staging.sgilt.fr` | Keycloak login page |
 
 ---

@@ -28,10 +28,81 @@ env:
 
 jobs:
   # =====================
+  # VALIDATE
+  # =====================
+  validate:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Check secrets and variables
+        env:
+          S_REGISTRY_TOKEN:              ${{ secrets.REGISTRY_TOKEN }}
+          S_SSH_HOST:                    ${{ secrets.SSH_HOST }}
+          S_SSH_USER:                    ${{ secrets.SSH_USER }}
+          S_SSH_PRIVATE_KEY:             ${{ secrets.SSH_PRIVATE_KEY }}
+          S_SSH_HOST_PATH:               ${{ secrets.SSH_HOST_PATH }}
+          S_KC_DB_PASSWORD:              ${{ secrets.KC_DB_PASSWORD }}
+          S_KC_BOOTSTRAP_ADMIN_USERNAME: ${{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME }}
+          S_KC_BOOTSTRAP_ADMIN_PASSWORD: ${{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD }}
+          S_CORE_DB_PASSWORD:            ${{ secrets.CORE_DB_PASSWORD }}
+          S_SMTP_HOST:                   ${{ secrets.SMTP_HOST }}
+          S_SMTP_PORT:                   ${{ secrets.SMTP_PORT }}
+          S_SMTP_USERNAME:               ${{ secrets.SMTP_USERNAME }}
+          S_SMTP_PASSWORD:               ${{ secrets.SMTP_PASSWORD }}
+          S_SMTP_AUTH:                   ${{ secrets.SMTP_AUTH }}
+          S_SMTP_SSL:                    ${{ secrets.SMTP_SSL }}
+          V_APP_URL:                     ${{ vars.APP_URL }}
+          V_APP_DOMAIN:                  ${{ vars.APP_DOMAIN }}
+          V_AUTH_URL:                    ${{ vars.AUTH_URL }}
+          V_AUTH_DOMAIN:                 ${{ vars.AUTH_DOMAIN }}
+          V_API_DOMAIN:                  ${{ vars.API_DOMAIN }}
+          V_API_URL:                     ${{ vars.API_URL }}
+          V_NGINX_FRONT_PORT:            ${{ vars.NGINX_FRONT_PORT }}
+          V_NGINX_AUTH_PORT:             ${{ vars.NGINX_AUTH_PORT }}
+          V_NGINX_API_PORT:              ${{ vars.NGINX_API_PORT }}
+          V_MAILER_FROM:                 ${{ vars.MAILER_FROM }}
+        run: |
+          missing=()
+          [[ -z "$S_REGISTRY_TOKEN" ]]              && missing+=("secret: REGISTRY_TOKEN")
+          [[ -z "$S_SSH_HOST" ]]                    && missing+=("secret: SSH_HOST")
+          [[ -z "$S_SSH_USER" ]]                    && missing+=("secret: SSH_USER")
+          [[ -z "$S_SSH_PRIVATE_KEY" ]]             && missing+=("secret: SSH_PRIVATE_KEY")
+          [[ -z "$S_SSH_HOST_PATH" ]]               && missing+=("secret: SSH_HOST_PATH")
+          [[ -z "$S_KC_DB_PASSWORD" ]]              && missing+=("secret: KC_DB_PASSWORD")
+          [[ -z "$S_KC_BOOTSTRAP_ADMIN_USERNAME" ]] && missing+=("secret: KC_BOOTSTRAP_ADMIN_USERNAME")
+          [[ -z "$S_KC_BOOTSTRAP_ADMIN_PASSWORD" ]] && missing+=("secret: KC_BOOTSTRAP_ADMIN_PASSWORD")
+          [[ -z "$S_CORE_DB_PASSWORD" ]]            && missing+=("secret: CORE_DB_PASSWORD")
+          [[ -z "$S_SMTP_HOST" ]]                   && missing+=("secret: SMTP_HOST")
+          [[ -z "$S_SMTP_PORT" ]]                   && missing+=("secret: SMTP_PORT")
+          [[ -z "$S_SMTP_USERNAME" ]]               && missing+=("secret: SMTP_USERNAME")
+          [[ -z "$S_SMTP_PASSWORD" ]]               && missing+=("secret: SMTP_PASSWORD")
+          [[ -z "$S_SMTP_AUTH" ]]                   && missing+=("secret: SMTP_AUTH")
+          [[ -z "$S_SMTP_SSL" ]]                    && missing+=("secret: SMTP_SSL")
+          [[ -z "$V_APP_URL" ]]                     && missing+=("var: APP_URL")
+          [[ -z "$V_APP_DOMAIN" ]]                  && missing+=("var: APP_DOMAIN")
+          [[ -z "$V_AUTH_URL" ]]                    && missing+=("var: AUTH_URL")
+          [[ -z "$V_AUTH_DOMAIN" ]]                 && missing+=("var: AUTH_DOMAIN")
+          [[ -z "$V_API_DOMAIN" ]]                  && missing+=("var: API_DOMAIN")
+          [[ -z "$V_API_URL" ]]                     && missing+=("var: API_URL")
+          [[ -z "$V_NGINX_FRONT_PORT" ]]            && missing+=("var: NGINX_FRONT_PORT")
+          [[ -z "$V_NGINX_AUTH_PORT" ]]             && missing+=("var: NGINX_AUTH_PORT")
+          [[ -z "$V_NGINX_API_PORT" ]]              && missing+=("var: NGINX_API_PORT")
+          [[ -z "$V_MAILER_FROM" ]]                 && missing+=("var: MAILER_FROM")
+
+          if [[ ${#missing[@]} -gt 0 ]]; then
+            echo "❌ Missing secrets/variables:"
+            printf "  - %s\n" "${missing[@]}"
+            exit 1
+          fi
+          echo "✅ All secrets and variables are configured"
+
+  # =====================
   # BUILD
   # =====================
   build:
     runs-on: ubuntu-latest
+    needs: validate
     environment: ${{ inputs.environment }}
     permissions:
       contents: read
@@ -54,6 +125,8 @@ jobs:
           echo "SGILT_KEYCLOAK_VERSION=$(cat sgilt-keycloak/VERSION)" >> $GITHUB_ENV
           echo "SGILT_SMTP_BRIDGE_VERSION=$(cat sgilt-smtp-bridge/VERSION)" >> $GITHUB_ENV
           echo "SGILT_MAILER_VERSION=$(cat sgilt-mailer/VERSION)" >> $GITHUB_ENV
+          echo "SGILT_CORE_VERSION=$(cat sgilt-core/VERSION)" >> $GITHUB_ENV
+          echo "SGILT_GATEWAY_VERSION=$(cat sgilt-gateway/VERSION)" >> $GITHUB_ENV
 
       - name: Build and push sgilt-front
         run: |
@@ -96,6 +169,28 @@ jobs:
             echo "✅ Pushed $IMAGE_TAG"
           fi
 
+      - name: Build and push sgilt-core
+        run: |
+          IMAGE_TAG="${{ env.IMAGE_PREFIX }}/sgilt-core:${{ env.SGILT_CORE_VERSION }}"
+          if docker manifest inspect $IMAGE_TAG > /dev/null 2>&1; then
+            echo "⏭️ $IMAGE_TAG already exists, skipping build"
+          else
+            docker build -t $IMAGE_TAG sgilt-core
+            docker push $IMAGE_TAG
+            echo "✅ Pushed $IMAGE_TAG"
+          fi
+
+      - name: Build and push sgilt-gateway
+        run: |
+          IMAGE_TAG="${{ env.IMAGE_PREFIX }}/sgilt-gateway:${{ env.SGILT_GATEWAY_VERSION }}"
+          if docker manifest inspect $IMAGE_TAG > /dev/null 2>&1; then
+            echo "⏭️ $IMAGE_TAG already exists, skipping build"
+          else
+            docker build -t $IMAGE_TAG sgilt-gateway
+            docker push $IMAGE_TAG
+            echo "✅ Pushed $IMAGE_TAG"
+          fi
+
       - name: Build and push sgilt-mailer
         run: |
           IMAGE_TAG="${{ env.IMAGE_PREFIX }}/sgilt-mailer:${{ env.SGILT_MAILER_VERSION }}"
@@ -125,6 +220,8 @@ jobs:
           echo "SGILT_KEYCLOAK_VERSION=$(cat sgilt-keycloak/VERSION)" >> $GITHUB_ENV
           echo "SGILT_SMTP_BRIDGE_VERSION=$(cat sgilt-smtp-bridge/VERSION)" >> $GITHUB_ENV
           echo "SGILT_MAILER_VERSION=$(cat sgilt-mailer/VERSION)" >> $GITHUB_ENV
+          echo "SGILT_CORE_VERSION=$(cat sgilt-core/VERSION)" >> $GITHUB_ENV
+          echo "SGILT_GATEWAY_VERSION=$(cat sgilt-gateway/VERSION)" >> $GITHUB_ENV
 
       - name: Generate .env
         run: |
@@ -137,6 +234,8 @@ jobs:
           SGILT_KEYCLOAK_VERSION=${{ inputs.environment }}-${{ env.SGILT_KEYCLOAK_VERSION }}
           SGILT_SMTP_BRIDGE_VERSION=${{ env.SGILT_SMTP_BRIDGE_VERSION }}
           SGILT_MAILER_VERSION=${{ env.SGILT_MAILER_VERSION }}
+          SGILT_CORE_VERSION=${{ env.SGILT_CORE_VERSION }}
+          SGILT_GATEWAY_VERSION=${{ env.SGILT_GATEWAY_VERSION }}
 
           # URLs
           APP_URL=${{ vars.APP_URL }}
@@ -144,16 +243,32 @@ jobs:
           AUTH_URL=${{ vars.AUTH_URL }}
           AUTH_DOMAIN=${{ vars.AUTH_DOMAIN }}
           NUXT_PUBLIC_SITE_URL=${{ vars.APP_URL }}
+          PUBLIC_SITE_URL=${{ vars.APP_URL }}
 
           # Nginx ports
           NGINX_FRONT_PORT=${{ vars.NGINX_FRONT_PORT }}
           NGINX_AUTH_PORT=${{ vars.NGINX_AUTH_PORT }}
+          NGINX_API_PORT=${{ vars.NGINX_API_PORT }}
+
+          # API
+          API_DOMAIN=${{ vars.API_DOMAIN }}
+          API_URL=${{ vars.API_URL }}
 
           # Keycloak
           KEYCLOAK_ISSUER=${{ vars.AUTH_URL }}/realms/sgilt
+          KC_REALM=sgilt
+          KC_ADMIN_URL=${{ vars.AUTH_URL }}
+          KC_ADMIN_CLIENT_ID=sgilt-admin
+          KC_FRONT_CLIENT_ID=sgilt-front
           KC_DB_PASSWORD=${{ secrets.KC_DB_PASSWORD }}
           KC_BOOTSTRAP_ADMIN_USERNAME=${{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME }}
           KC_BOOTSTRAP_ADMIN_PASSWORD=${{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD }}
+
+          # Core DB
+          CORE_DB_PASSWORD=${{ secrets.CORE_DB_PASSWORD }}
+
+          # Core app
+          MAILER_FROM=${{ vars.MAILER_FROM }}
 
           # SMTP
           SMTP_HOST=${{ secrets.SMTP_HOST }}

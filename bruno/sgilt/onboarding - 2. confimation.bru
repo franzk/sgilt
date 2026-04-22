@@ -1,0 +1,20 @@
+meta {
+  name: onboarding - 2. confimation
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://localhost:5027/confirmation?token=GvfvS_Mg8Ly2so-GskPYdQ-ee94bf6a9584ecbae077d0e69f704dfd0707ae4d00c47b3f3778897b4ab2e9a9
+  body: none
+  auth: inherit
+}
+
+params:query {
+  token: GvfvS_Mg8Ly2so-GskPYdQ-ee94bf6a9584ecbae077d0e69f704dfd0707ae4d00c47b3f3778897b4ab2e9a9
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,178 +1,138 @@
-# SGILT — Deployment
+# SGILT — Pipeline de déploiement
 
-Day-to-day deployment workflow using GitHub Actions.
-
-> Prerequisites: the environment must already be set up.
-> If not, follow [SETUP.md](SETUP.md) first.
+Ce document décrit le fonctionnement du workflow `.github/workflows/deploy.yml`.
 
 ---
 
-## Overview
+## Paramètres
 
-SGILT uses a single GitHub Actions workflow (`deploy.yml`) for both building and deploying.
-It is triggered manually from the GitHub Actions tab.
+Le workflow se lance manuellement depuis **Actions → Build & Deploy → Run workflow**.
 
-```
-GitHub Actions → build images → push to ghcr.io → deploy to server
-```
-
----
-
-## Workflow inputs
-
-| Input | Options | Description |
-|---|---|---|
-| `environment` | `staging` / `production` | Target environment |
-| `mode` | `init` / `update` | Deployment mode |
-
-### Init mode vs Update mode
-
-| | Init | Update |
-|---|---|---|
-| Build images | Yes (forces Keycloak rebuild with realm) | Yes (skips if image already exists) |
-| Generate .env | Yes | Yes |
-| Deploy | Yes | Yes |
-| Import Keycloak realm | Yes (`--import-realm`) | No |
-
-Use **init** only for the first deployment of an environment, or when resetting Keycloak.
-Use **update** for all subsequent deployments.
+| Paramètre     | Options                     | Description                                        |
+|---------------|-----------------------------|----------------------------------------------------|
+| `environment` | `staging`, `production`     | Détermine les secrets et variables GitHub utilisés |
+| `mode`        | `update` *(défaut)*, `init` | Voir détail ci-dessous                             |
 
 ---
 
-## Version management
+## Structure du workflow
 
-### How it works
-
-Each environment has its own `.env` file that defines **exactly which image version is running**:
+Le workflow est composé de trois jobs séquentiels :
 
 ```
-deploy/staging.env       <- what runs on staging
-deploy/production.env    <- what runs on production
+validate → build → deploy
 ```
 
-These files are the source of truth for deployments. Staging and production are completely
-independent — changing the version in `staging.env` has no effect on production, and vice versa.
+### Job 1 — validate
 
-The docker-compose files use these variables to pull the correct image:
+Vérifie que tous les secrets et variables GitHub de l'environnement cible sont renseignés.
+Échoue immédiatement en listant tout ce qui manque, avant de consommer du temps de build.
 
-```yaml
-image: ghcr.io/franzk/sgilt/sgilt-front:${SGILT_FRONT_VERSION}
-```
+### Job 2 — build
 
-### Practical example
+Construit et pousse les images Docker sur GitHub Container Registry (GHCR).
 
-You are working on a new feature for the frontend. Here is what the files look like at each stage:
+**Optimisation :** Pour chaque image, le workflow vérifie si le tag existe déjà sur GHCR.
+Si oui, le build est ignoré — l'image existante sera utilisée telle quelle.
 
-**Initial state — both envs on 1.1.0:**
-```bash
-# deploy/staging.env
-SGILT_FRONT_VERSION=1.1.0
+Les tags sont dérivés des fichiers `VERSION` à la racine de chaque service :
 
-# deploy/production.env
-SGILT_FRONT_VERSION=1.1.0
-```
+| Service             | Fichier VERSION             | Format du tag             |
+|---------------------|-----------------------------|---------------------------|
+| `sgilt-front`       | `sgilt-front/VERSION`       | `{version}`               |
+| `sgilt-core`        | `sgilt-core/VERSION`        | `{version}`               |
+| `sgilt-gateway`     | `sgilt-gateway/VERSION`     | `{version}`               |
+| `sgilt-mailer`      | `sgilt-mailer/VERSION`      | `{version}`               |
+| `sgilt-smtp-bridge` | `sgilt-smtp-bridge/VERSION` | `{version}`               |
+| `sgilt-keycloak`    | `sgilt-keycloak/VERSION`    | `{environment}-{version}` |
 
-**Step 1 — bump the VERSION file to build a new image:**
-```bash
-# sgilt-front/VERSION
-1.2.0
-```
+> Keycloak est taggué avec l'environnement car son image embarque le realm configuré pour cet environnement.
 
-**Step 2 — deploy 1.2.0 to staging only:**
-```bash
-# deploy/staging.env
-SGILT_FRONT_VERSION=1.2.0   <- updated
+### Job 3 — deploy
 
-# deploy/production.env
-SGILT_FRONT_VERSION=1.1.0   <- unchanged, prod still on 1.1.0
-```
-
-Trigger the workflow → staging → update.
-Test on https://staging.sgilt.fr.
-
-**Step 3 — once validated, promote to production:**
-```bash
-# deploy/staging.env
-SGILT_FRONT_VERSION=1.2.0
-
-# deploy/production.env
-SGILT_FRONT_VERSION=1.2.0   <- updated
-```
-
-Merge to main, trigger the workflow → production → update.
+Génère le fichier `.env` depuis les secrets et variables GitHub, copie les fichiers de déploiement sur le serveur via SCP, puis lance `deploy.sh` via SSH.
 
 ---
 
-## How to deploy
+## Mode `update` — déploiement standard
 
-### 1. Bump the VERSION file (if building a new image)
+Cas d'usage : nouvelle version d'un ou plusieurs services, ou changement de configuration.
 
-Each service has a `VERSION` file at its root:
+**Ce qui se passe :**
 
-```
-sgilt-front/VERSION
-sgilt-keycloak/VERSION
-sgilt-mailer/VERSION
-sgilt-smtp-bridge/VERSION
-```
+1. `validate` — vérifie les secrets/variables
+2. `build` — reconstruit uniquement les images dont le tag a changé
+3. `deploy` :
+   - Génère `.env` depuis GitHub (versions, URLs, ports, secrets SMTP/DB)
+   - Copie `.env` et les fichiers de déploiement sur le serveur
+   - Lance `docker compose pull && up -d`
 
-The workflow skips the build if the image tag already exists in ghcr.io.
-Bumping the version forces a new build.
-
-### 2. Update the target environment .env file
-
-Edit `deploy/staging.env` or `deploy/production.env` to set the version you want to deploy.
-Commit and push before triggering the workflow.
-
-### 3. Trigger the workflow
-
-In GitHub → Actions → **Build & Deploy** → **Run workflow**:
-
-1. Select the branch to deploy from
-2. Choose the target environment (`staging` or `production`)
-3. Choose the mode (`init` or `update`)
-4. Click **Run workflow**
+**`.env.secrets` n'est pas touché.** Le fichier existant sur le serveur (créé à l'init) est préservé.
 
 ---
 
-## Image naming convention
+## Mode `init` — premier déploiement ou recréation du realm
 
-Images are tagged with the environment prefix for Keycloak (which embeds the realm):
+Cas d'usage : premier déploiement d'un environnement, ou recréation complète du realm Keycloak suite à une modification du template.
 
-```
-ghcr.io/franzk/sgilt/sgilt-front:1.2.0
-ghcr.io/franzk/sgilt/sgilt-keycloak:staging-1.0.0
-ghcr.io/franzk/sgilt/sgilt-keycloak:production-1.0.0
-ghcr.io/franzk/sgilt/sgilt-mailer:1.1.0
-ghcr.io/franzk/sgilt/sgilt-smtp-bridge:1.0.0
-```
+> ⚠️ Relancer en mode `init` recrée l'image Keycloak et génère de nouveaux secrets applicatifs.
+> Utiliser uniquement sur un environnement vierge ou après une suppression volontaire des données.
 
-All other images share the same tag across environments.
+**Ce qui se passe :**
+
+1. `validate` — vérifie les secrets/variables
+
+2. `build` :
+   - **Génère le realm Keycloak** depuis le template (`render-realm.sh`) en substituant l'`APP_URL`
+   - **Construit l'image `sgilt-keycloak`** avec le realm embarqué et la pousse sur GHCR (le client `sgilt-admin` démarre avec un secret aléatoire généré par Keycloak à l'import)
+   - Reconstruit les autres images si nécessaire
+
+3. `deploy` :
+   - Génère `.env` depuis GitHub
+   - Copie `.env` et les fichiers de déploiement sur le serveur
+   - Lance `deploy.sh init` via SSH, qui s'exécute en 3 phases sur le serveur :
+
+   **Phase 1** — Démarre uniquement Keycloak (et sa DB) avec le flag `--import-realm`. Le realm est importé, le client `sgilt-admin` est créé avec un secret aléatoire.
+
+   **Phase 2** — Attend que Keycloak soit prêt, puis :
+   - Génère `KC_ADMIN_CLIENT_SECRET` et `CONFIRMATION_TOKEN_SECRET` via `openssl rand -hex 32`
+   - Écrase le secret du client `sgilt-admin` dans Keycloak via `kcadm.sh`
+   - Écrit `.env.secrets` sur le serveur
+
+   **Phase 3** — Démarre tous les conteneurs restants (backend, frontend). `sgilt-core` démarre avec le `KC_ADMIN_CLIENT_SECRET` correct chargé depuis `.env.secrets`.
 
 ---
 
-## Checking deployment status
+## Fichiers d'environnement sur le serveur
 
-On the server:
+Le déploiement utilise deux fichiers distincts dans le répertoire de déploiement :
 
-```bash
-# Check all containers are running
-docker ps
+| Fichier        | Contenu                                               | Cycle de vie                                    |
+|----------------|-------------------------------------------------------|-------------------------------------------------|
+| `.env`         | Versions, URLs, ports, SMTP, KC_DB_PASSWORD, etc.     | Régénéré à chaque run depuis GitHub             |
+| `.env.secrets` | `KC_ADMIN_CLIENT_SECRET`, `CONFIRMATION_TOKEN_SECRET` | Généré une seule fois à l'`init`, jamais écrasé |
 
-# Check logs for a specific container
-docker logs sgilt-front-staging --tail 50
-docker logs sgilt-keycloak-staging --tail 50
-docker logs nginx-front-staging --tail 50
-```
+`deploy.sh` charge les deux fichiers au démarrage. Si `.env.secrets` n'existe pas (environnement non initialisé), le démarrage échoue sur les variables manquantes.
+
+> **Disaster recovery :** Si le serveur est recréé, relancer en mode `init` recrée `.env.secrets`.
+> `CORE_DB_PASSWORD` est quant à lui conservé dans les secrets GitHub pour permettre la restauration d'un dump PostgreSQL existant.
 
 ---
 
-## Rolling back
+## Déployer une nouvelle version
 
-To roll back to a previous version:
+1. Modifier le fichier `VERSION` du service concerné
+2. Committer sur `main`
+3. Lancer le workflow en mode `update`
 
-1. Edit `deploy/staging.env` (or `production.env`) and set the previous version number
-2. Commit and push
-3. Trigger the workflow in **update** mode
+Le workflow détectera que le nouveau tag n'existe pas sur GHCR et reconstruira uniquement ce service.
 
-The workflow will pull the previous image from ghcr.io and restart the containers.
+---
+
+## Rollback
+
+1. Remettre l'ancienne version dans le fichier `VERSION`
+2. Committer sur `main`
+3. Lancer le workflow en mode `update`
+
+L'ancienne image existe déjà sur GHCR — le build est ignoré, le déploiement est immédiat.

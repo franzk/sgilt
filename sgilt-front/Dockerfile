@@ -3,13 +3,13 @@
 ###############
 # 1) deps
 ###############
-FROM node:20-alpine AS deps
+FROM node:24-alpine AS deps
 WORKDIR /app
 
-# pour certains packages (sharp, etc.) selon ton projet
+# Required for some native packages (sharp, etc.)
 RUN apk add --no-cache libc6-compat
 
-# Active corepack (pnpm)
+# Enable corepack (pnpm)
 RUN corepack enable
 
 # Copy manifest files only (better cache)
@@ -21,12 +21,12 @@ RUN pnpm install --frozen-lockfile
 ###############
 # 2) build
 ###############
-FROM node:20-alpine AS build
+FROM node:24-alpine AS build
 WORKDIR /app
 RUN apk add --no-cache libc6-compat
 RUN corepack enable
 
-# Reuse node_modules from deps
+# Reuse node_modules from deps stage
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
@@ -36,21 +36,18 @@ RUN pnpm build
 ###############
 # 3) runner
 ###############
-FROM node:20-alpine AS runner
+FROM node:24-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NUXT_HOST=0.0.0.0
 ENV NUXT_PORT=3000
 
-# (optionnel) user non-root
+# Non-root user for security
 RUN addgroup -S nuxt && adduser -S nuxt -G nuxt
 
 # Copy output only
 COPY --from=build /app/.output ./.output
-
-# Si tu as besoin de runtime deps côté serveur (rare avec .output),
-# tu peux aussi copier package.json mais généralement inutile.
 
 EXPOSE 3000
 

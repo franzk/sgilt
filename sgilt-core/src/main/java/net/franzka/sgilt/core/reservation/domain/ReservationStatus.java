@@ -1,0 +1,14 @@
+package net.franzka.sgilt.core.reservation.domain;
+
+public enum ReservationStatus {
+    DRAFT,
+    NOUVELLE,
+    EN_DISCUSSION,
+    CONFIRMEE,
+    REALISEE,
+    REFUSEE_PAR_PRESTATAIRE_PRE_CONTACT,
+    REFUSEE_PAR_PRESTATAIRE_POST_CONTACT,
+    ANNULEE_PAR_CLIENT_PRE_CONTACT,
+    ANNULEE_PAR_CLIENT_POST_CONTACT,
+    ANNULEE_POST_CONFIRMATION
+}

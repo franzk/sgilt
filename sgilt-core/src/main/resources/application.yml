@@ -1,0 +1,45 @@
+spring:
+  application:
+        name: sgilt-core
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/sgilt}
+    username: ${DB_USERNAME:sgilt}
+    password: ${DB_PASSWORD:sgilt}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER:http://host.docker.internal:5028/realms/sgilt}
+
+sgilt:
+  jwt:
+    confirmation-secret: ${CONFIRMATION_TOKEN_SECRET}
+    confirmation-expiration-hours: 24
+  mailer:
+    url: ${MAILER_URL:http://localhost:5030}
+    from: ${MAILER_FROM:contact@sgilt.alsace}
+  frontend:
+    url: ${PUBLIC_SITE_URL:http://localhost:3000}
+  keycloak:
+    admin-url: ${KC_ADMIN_URL:http://localhost:5028}
+    realm: sgilt
+    admin-client-id: sgilt-admin
+    admin-client-secret: ${KC_ADMIN_CLIENT_SECRET}
+    front-client-id: sgilt-front
+
+server:
+  port: 5027

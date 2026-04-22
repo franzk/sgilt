@@ -1,5 +1,5 @@
 # Use official Keycloak base image
-FROM quay.io/keycloak/keycloak:26.2.2
+FROM quay.io/keycloak/keycloak:26.6.0
 
 # Enable production features
 ENV KC_DB=postgres

@@ -1,5 +1,22 @@
 // app/types/demande.ts
 
+export interface DemandeRequest {
+  firstName: string
+  lastName: string
+  email: string
+  telephone: string | null
+  prestataireId: string | null
+  eventType: string | null
+  ambiance: string | null
+  momentCle: string | null
+  description: string | null
+  date: string | null
+  ville: string | null
+  nbInvites: string | null
+  lieu: string | null
+  prestataireMessage: string | null
+}
+
 export interface DemandeOption {
   value: string
   label: string
@@ -7,6 +24,7 @@ export interface DemandeOption {
 }
 
 export interface DemandeState {
+  prestataireId: string | null
   eventType: string | null
   eventTypeAutre: string
   ambiance: string | null

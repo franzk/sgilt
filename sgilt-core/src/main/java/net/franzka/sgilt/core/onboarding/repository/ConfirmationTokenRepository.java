@@ -1,0 +1,42 @@
+package net.franzka.sgilt.core.onboarding.repository;
+
+import net.franzka.sgilt.core.onboarding.domain.ConfirmationToken;
+import net.franzka.sgilt.core.onboarding.domain.ConfirmationTokenState;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+/**
+ * Repository JPA pour l'entité {@link ConfirmationToken}.
+ */
+@Repository
+public interface ConfirmationTokenRepository extends JpaRepository<ConfirmationToken, UUID> {
+
+    /**
+     * Recherche un token de confirmation par son payload HMAC.
+     *
+     * @param payload le payload extrait du token de confirmation
+     * @return le token correspondant, ou {@link Optional#empty()} si absent
+     */
+    Optional<ConfirmationToken> findByPayload(String payload);
+
+    /**
+     * Recherche le token de confirmation associé à une réservation donnée.
+     *
+     * @param reservationId l'identifiant de la réservation dont on cherche le token
+     * @return le token correspondant, ou {@link Optional#empty()} si absent
+     */
+    Optional<ConfirmationToken> findByReservationId(UUID reservationId);
+
+    /**
+     * Recherche un token de confirmation par email et état.
+     *
+     * @param email l'adresse email associée au token
+     * @param state l'état du token recherché
+     * @return le token correspondant, ou {@link Optional#empty()} si absent
+     */
+    List<ConfirmationToken> findByEmailAndState(String email, ConfirmationTokenState state);
+}
