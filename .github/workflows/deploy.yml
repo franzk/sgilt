@@ -57,6 +57,7 @@ jobs:
           V_AUTH_URL:                    ${{ vars.AUTH_URL }}
           V_AUTH_DOMAIN:                 ${{ vars.AUTH_DOMAIN }}
           V_API_DOMAIN:                  ${{ vars.API_DOMAIN }}
+          V_API_URL:                     ${{ vars.API_URL }}
           V_NGINX_FRONT_PORT:            ${{ vars.NGINX_FRONT_PORT }}
           V_NGINX_AUTH_PORT:             ${{ vars.NGINX_AUTH_PORT }}
           V_NGINX_API_PORT:              ${{ vars.NGINX_API_PORT }}
@@ -83,6 +84,7 @@ jobs:
           [[ -z "$V_AUTH_URL" ]]                    && missing+=("var: AUTH_URL")
           [[ -z "$V_AUTH_DOMAIN" ]]                 && missing+=("var: AUTH_DOMAIN")
           [[ -z "$V_API_DOMAIN" ]]                  && missing+=("var: API_DOMAIN")
+          [[ -z "$V_API_URL" ]]                     && missing+=("var: API_URL")
           [[ -z "$V_NGINX_FRONT_PORT" ]]            && missing+=("var: NGINX_FRONT_PORT")
           [[ -z "$V_NGINX_AUTH_PORT" ]]             && missing+=("var: NGINX_AUTH_PORT")
           [[ -z "$V_NGINX_API_PORT" ]]              && missing+=("var: NGINX_API_PORT")
@@ -250,6 +252,7 @@ jobs:
 
           # API
           API_DOMAIN=${{ vars.API_DOMAIN }}
+          API_URL=${{ vars.API_URL }}
 
           # Keycloak
           KEYCLOAK_ISSUER=${{ vars.AUTH_URL }}/realms/sgilt

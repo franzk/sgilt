@@ -75,6 +75,7 @@ const etapeActuelle = ref<number>(_stored?.etape ?? 1)
 const direction = ref<'forward' | 'back'>('forward')
 const submitted = ref(false)
 const submitting = ref(false)
+const submitError = ref<string | null>(null)
 const state = reactive<DemandeState>({
   ...defaultDemandeState(),
   ...(_stored?.state ?? {}),
@@ -138,6 +139,7 @@ export function useDemande() {
 
   async function submit() {
     submitting.value = true
+    submitError.value = null
     try {
       const resolvedEventType =
         state.eventType === 'autre' ? state.eventTypeAutre || null : state.eventType
@@ -173,6 +175,9 @@ export function useDemande() {
       // state so the confirmation screen can display the recap
       clearStorage()
       submitted.value = true
+    } catch (err) {
+      console.error('submit error:', err)
+      submitError.value = 'Une erreur est survenue. Veuillez réessayer.'
     } finally {
       submitting.value = false
     }
@@ -218,6 +223,7 @@ export function useDemande() {
     direction,
     submitted,
     submitting,
+    submitError,
     state,
     setPrestataireId,
     next,

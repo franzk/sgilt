@@ -57,6 +57,7 @@ services:
     environment:
       BACK_URL: http://sgilt-core-${ENV}:5027
       KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER}
+      APP_URL: ${APP_URL}
     depends_on:
       - sgilt-core
     networks:

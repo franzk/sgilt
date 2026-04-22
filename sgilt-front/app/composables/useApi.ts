@@ -10,7 +10,7 @@ export function useApiFetch<T = unknown>(path: string, options?: UseApiFetchOpti
 
   return useFetch<ResolvedFetchData<T>>(path, {
     ...options,
-    baseURL: apiUrl,
+    baseURL: `${apiUrl}/api/v1`,
     server: false,
     onRequest(context) {
       const { options: fetchOptions } = context
@@ -38,7 +38,7 @@ export function apiFetch<T>(path: string, options?: Parameters<typeof $fetch>[1]
   }
 
   return $fetch<T>(path, {
-    baseURL: apiUrl,
+    baseURL: `${apiUrl}/api/v1`,
     headers,
     ...options,
   })

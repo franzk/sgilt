@@ -74,9 +74,10 @@
       </div>
 
       <div class="field-group submit">
-        <SgiltButton type="primary" :disabled="!formValid" @click="submit">
+        <SgiltButton type="primary" :disabled="!formValid" :loading="submitting" @click="submit">
           {{ $t('tunnel.etape6.submit') }}
         </SgiltButton>
+        <p v-if="submitError" class="submit-error">{{ submitError }}</p>
       </div>
     </div>
 
@@ -94,6 +95,8 @@ defineProps<{ showRecap?: boolean }>()
 const {
   state,
   submit,
+  submitting,
+  submitError,
   eventTypeLabel,
   eventTypeEmoji,
   ambianceLabel,
@@ -139,6 +142,12 @@ const formValid = computed(() =>
   display: flex;
   flex-direction: column;
   gap: $spacing-m;
+}
+
+.submit-error {
+  font-size: 0.85rem;
+  color: $state-error;
+  margin: 0;
 }
 
 .field-group {
