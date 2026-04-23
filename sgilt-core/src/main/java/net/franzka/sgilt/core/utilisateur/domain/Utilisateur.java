@@ -35,6 +35,10 @@ public class Utilisateur {
 
     private String avatarUrl;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UtilisateurStatus status;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

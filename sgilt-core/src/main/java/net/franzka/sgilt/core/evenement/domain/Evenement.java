@@ -46,6 +46,5 @@ public class Evenement {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-        this.statut = EvenementStatus.EN_COURS;
     }
 }
