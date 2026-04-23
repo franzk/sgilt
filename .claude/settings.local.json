@@ -6,7 +6,11 @@
       "Bash(./gradlew :sgilt-core:compileJava)",
       "Bash(pnpm add *)",
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d['dependencies'].get\\('keycloak-js',''\\)\\)\")",
-      "Bash(xargs grep *)"
+      "Bash(xargs grep *)",
+      "Bash(./gradlew test *)",
+      "Bash(./gradlew dependencies *)",
+      "Bash(xargs -I{} jar tf {})",
+      "Bash(jar tf *)"
     ]
   }
 }

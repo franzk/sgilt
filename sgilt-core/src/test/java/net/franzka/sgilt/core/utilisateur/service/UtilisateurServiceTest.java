@@ -24,6 +24,7 @@ class UtilisateurServiceTest {
     private static final String FIRST_NAME = RandomString.make(64);
     private static final String LAST_NAME  = RandomString.make(64);
     private static final String EMAIL      = RandomString.make(64) + "@example.com";
+    private static final String TELEPHONE  = RandomString.make(10);
 
     @Mock
     private UtilisateurRepository utilisateurRepository;
@@ -43,7 +44,7 @@ class UtilisateurServiceTest {
             when(utilisateurRepository.existsByEmail(EMAIL)).thenReturn(true);
 
             assertThatExceptionOfType(UtilisateurAlreadyExistException.class)
-                    .isThrownBy(() -> utilisateurService.createUtilisateur(FIRST_NAME, LAST_NAME, EMAIL));
+                    .isThrownBy(() -> utilisateurService.createUtilisateur(FIRST_NAME, LAST_NAME, EMAIL, TELEPHONE));
         }
 
         @Test
@@ -51,7 +52,7 @@ class UtilisateurServiceTest {
             when(utilisateurRepository.existsByEmail(EMAIL)).thenReturn(true);
 
             assertThatExceptionOfType(UtilisateurAlreadyExistException.class)
-                    .isThrownBy(() -> utilisateurService.createUtilisateur(FIRST_NAME, LAST_NAME, EMAIL));
+                    .isThrownBy(() -> utilisateurService.createUtilisateur(FIRST_NAME, LAST_NAME, EMAIL, TELEPHONE));
 
             verify(utilisateurRepository, never()).save(any());
         }
@@ -61,7 +62,7 @@ class UtilisateurServiceTest {
             when(utilisateurRepository.existsByEmail(EMAIL)).thenReturn(false);
             when(utilisateurRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
-            utilisateurService.createUtilisateur(FIRST_NAME, LAST_NAME, EMAIL);
+            utilisateurService.createUtilisateur(FIRST_NAME, LAST_NAME, EMAIL, TELEPHONE);
 
             ArgumentCaptor<Utilisateur> captor = ArgumentCaptor.forClass(Utilisateur.class);
             verify(utilisateurRepository).save(captor.capture());
@@ -70,6 +71,7 @@ class UtilisateurServiceTest {
             assertThat(saved.getFirstName()).isEqualTo(FIRST_NAME);
             assertThat(saved.getLastName()).isEqualTo(LAST_NAME);
             assertThat(saved.getEmail()).isEqualTo(EMAIL);
+            assertThat(saved.getTelephone()).isEqualTo(TELEPHONE);
         }
 
         @Test
@@ -78,7 +80,7 @@ class UtilisateurServiceTest {
             when(utilisateurRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
             LocalDateTime before = LocalDateTime.now();
-            utilisateurService.createUtilisateur(FIRST_NAME, LAST_NAME, EMAIL);
+            utilisateurService.createUtilisateur(FIRST_NAME, LAST_NAME, EMAIL, TELEPHONE);
             LocalDateTime after = LocalDateTime.now();
 
             ArgumentCaptor<Utilisateur> captor = ArgumentCaptor.forClass(Utilisateur.class);
@@ -93,7 +95,7 @@ class UtilisateurServiceTest {
             when(utilisateurRepository.existsByEmail(EMAIL)).thenReturn(false);
             when(utilisateurRepository.save(any())).thenReturn(persisted);
 
-            Utilisateur result = utilisateurService.createUtilisateur(FIRST_NAME, LAST_NAME, EMAIL);
+            Utilisateur result = utilisateurService.createUtilisateur(FIRST_NAME, LAST_NAME, EMAIL, TELEPHONE);
 
             assertThat(result).isSameAs(persisted);
         }

@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -39,6 +40,12 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<Object> handleMessagingException(MessagingException ex, WebRequest request) {
         log.error("handleException : {}", ex.getMessage());
+        return handleExceptionInternal(ex, "Send mail error : " + ex.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Object> handleMailException(MailException ex, WebRequest request) {
+        log.error("handleMailException : {}", ex.getMessage());
         return handleExceptionInternal(ex, "Send mail error : " + ex.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 }
