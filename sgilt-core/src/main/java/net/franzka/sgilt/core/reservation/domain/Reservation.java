@@ -3,19 +3,19 @@ package net.franzka.sgilt.core.reservation.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import net.franzka.sgilt.core.prestataire.domain.Prestataire;
+import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * Entité JPA représentant une réservation associée à un événement et un prestataire.
+ * Entité JPA représentant une réservation entre un utilisateur et un prestataire.
  */
 @Entity
 @Table(name = "reservations")
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,21 +23,41 @@ public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(updatable = false, nullable = false)
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "evenement_id")
+    @JoinColumn(name = "evenement_id", nullable = false)
     private Evenement evenement;
 
-    //TODO : relation ManyToOne avec prestataire
-    private UUID prestataireId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "prestataire_id", nullable = false)
+    private Prestataire prestataire;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "utilisateur_id", nullable = false)
+    private Utilisateur utilisateur;
+
+    @Column(nullable = false)
+    private LocalDate date;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(columnDefinition = "reservation_status")
     private ReservationStatus status;
 
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    private String prestataireMessage;
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
