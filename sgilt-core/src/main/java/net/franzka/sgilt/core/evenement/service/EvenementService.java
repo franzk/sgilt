@@ -4,10 +4,9 @@ import lombok.RequiredArgsConstructor;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.domain.EvenementStatus;
 import net.franzka.sgilt.core.evenement.repository.EvenementRepository;
+import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
 
 /**
  * Service métier pour l'entité {@link Evenement}.
@@ -22,16 +21,23 @@ public class EvenementService {
      * Crée et persiste un événement en statut ACTIVE pour l'utilisateur donné.
      *
      * @param utilisateur l'utilisateur propriétaire de l'événement
-     * @param eventType   le type d'événement utilisé comme nom (nullable — valeur par défaut si absent)
-     * @param date        la date de l'événement (nullable)
+     * @param formData    les données saisies dans le tunnel d'onboarding
+     *
      * @return l'événement sauvegardé
      */
-    public Evenement create(Utilisateur utilisateur, String eventType, LocalDate date) {
+    public Evenement createFromFormData(Utilisateur utilisateur, InitOnboardingRequest formData) {
         Evenement evenement = Evenement.builder()
                 .utilisateur(utilisateur)
-                .name(eventType != null ? eventType : "Mon événement")
-                .date(date)
-                .statut(EvenementStatus.ACTIVE)
+                .name(formData.eventType() != null ? formData.eventType() : "Mon événement")
+                .date(formData.date())
+                .status(EvenementStatus.ACTIVE)
+                .lieu(formData.lieu())
+                .ville(formData.ville())
+                .nbInvites(formData.nbInvites())
+                .eventType(formData.eventType())
+                .ambiance(formData.ambiance())
+                .momentCle(formData.momentCle())
+                .description(formData.description())
                 .build();
         return evenementRepository.save(evenement);
     }

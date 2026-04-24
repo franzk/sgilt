@@ -41,7 +41,7 @@ class VerifyServiceTest {
     private VerifyService verifyService;
 
     // -------------------------------------------------------------------------
-    // validateConfirmationToken
+    // validateVerificationToken
     // -------------------------------------------------------------------------
 
     @Nested

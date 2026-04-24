@@ -2,8 +2,6 @@ package net.franzka.sgilt.core.onboarding.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
-import net.franzka.sgilt.core.evenement.domain.Evenement;
-import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.jwt.TokenJwtService;
 import net.franzka.sgilt.core.keycloak.KeycloakAdminService;
 import net.franzka.sgilt.core.keycloak.KeycloakTokenResponse;
@@ -17,8 +15,6 @@ import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.mailer.OnboardingMailerService;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
-import net.franzka.sgilt.core.reservation.service.ReservationService;
-import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -48,8 +44,6 @@ class OnboardingServiceTest {
     private static final String    TELEPHONE      = "0612345678";
     private static final String    SP_TOKEN       = "sp.header.payload.signature";
 
-    @Mock private EvenementService evenementService;
-    @Mock private ReservationService reservationService;
     @Mock private PrestataireService prestataireService;
     @Mock private OnboardingSessionService onboardingSessionService;
     @Mock private TokenJwtService setPasswordTokenJwtService;
@@ -61,14 +55,14 @@ class OnboardingServiceTest {
     private OnboardingService onboardingService;
 
     // -------------------------------------------------------------------------
-    // createDemandeReservation
+    // initOnboardingSession
     // -------------------------------------------------------------------------
 
     @Nested
-    class CreateDemandeReservation {
+    class InitOnboardingSession {
 
         @Test
-        void givenExistingUser_whenCreateDemandeReservation_thenSendsSecurityAlertEmail() {
+        void givenExistingUser_whenInitOnboardingSession_thenSendsSecurityAlertEmail() {
             when(utilisateurService.existsByEmail(EMAIL)).thenReturn(true);
 
             onboardingService.initOnboardingSession(buildRequest());
@@ -77,7 +71,7 @@ class OnboardingServiceTest {
         }
 
         @Test
-        void givenExistingUser_whenCreateDemandeReservation_thenDoesNotInitiateOnboarding() {
+        void givenExistingUser_whenInitOnboardingSession_thenDoesNotInitiateOnboarding() {
             when(utilisateurService.existsByEmail(EMAIL)).thenReturn(true);
 
             onboardingService.initOnboardingSession(buildRequest());
@@ -86,7 +80,7 @@ class OnboardingServiceTest {
         }
 
         @Test
-        void givenExistingUser_whenCreateDemandeReservation_thenReturnsResponseWithEmail() {
+        void givenExistingUser_whenInitOnboardingSession_thenReturnsResponseWithEmail() {
             when(utilisateurService.existsByEmail(EMAIL)).thenReturn(true);
 
             InitOnboardingResponse response = onboardingService.initOnboardingSession(buildRequest());
@@ -95,7 +89,7 @@ class OnboardingServiceTest {
         }
 
         @Test
-        void givenNewUser_whenCreateDemandeReservation_thenCancelsExistingSessionsForEmail() {
+        void givenNewUser_whenInitOnboardingSession_thenCancelsExistingSessionsForEmail() {
             stubHappyPath();
 
             onboardingService.initOnboardingSession(buildRequest());
@@ -104,7 +98,7 @@ class OnboardingServiceTest {
         }
 
         @Test
-        void givenNewUser_whenCreateDemandeReservation_thenLoadsPrestataire() {
+        void givenNewUser_whenInitOnboardingSession_thenLoadsPrestataire() {
             stubHappyPath();
 
             onboardingService.initOnboardingSession(buildRequest());
@@ -113,7 +107,7 @@ class OnboardingServiceTest {
         }
 
         @Test
-        void givenNewUser_whenCreateDemandeReservation_thenInitiatesOnboardingWithEmailPrestataireAndRequest() {
+        void givenNewUser_whenInitOnboardingSession_thenInitiatesOnboardingWithEmailPrestataireAndRequest() {
             Prestataire prestataire = stubHappyPath();
 
             onboardingService.initOnboardingSession(buildRequest());
@@ -122,7 +116,7 @@ class OnboardingServiceTest {
         }
 
         @Test
-        void givenNewUser_whenCreateDemandeReservation_thenSendsConfirmationEmailWithHmacToken() {
+        void givenNewUser_whenInitOnboardingSession_thenSendsVerificationEmailWithHmacToken() {
             stubHappyPath();
 
             onboardingService.initOnboardingSession(buildRequest());
@@ -131,7 +125,7 @@ class OnboardingServiceTest {
         }
 
         @Test
-        void givenNewUser_whenCreateDemandeReservation_thenReturnsResponseWithEmail() {
+        void givenNewUser_whenInitOnboardingSession_thenReturnsResponseWithEmail() {
             stubHappyPath();
 
             InitOnboardingResponse response = onboardingService.initOnboardingSession(buildRequest());
@@ -202,30 +196,13 @@ class OnboardingServiceTest {
         }
 
         @Test
-        void givenValidToken_whenConfirmAccount_thenCreatesUtilisateur() {
-            stubValidToken(UUID.randomUUID());
+        void givenValidToken_whenConfirmAccount_thenCreatesEntities() {
+            UUID onboardingId = UUID.randomUUID();
+            InitOnboardingRequest formData = stubValidToken(onboardingId);
 
             onboardingService.confirmAccount(buildRequest());
 
-            verify(utilisateurService).createUtilisateur(FIRSTNAME, LASTNAME, EMAIL, TELEPHONE);
-        }
-
-        @Test
-        void givenValidToken_whenConfirmAccount_thenCreatesEvenement() {
-            Utilisateur utilisateur = stubValidToken(UUID.randomUUID());
-
-            onboardingService.confirmAccount(buildRequest());
-
-            verify(evenementService).create(utilisateur, EVENT_TYPE, DATE);
-        }
-
-        @Test
-        void givenValidToken_whenConfirmAccount_thenCreatesReservation() {
-            Utilisateur utilisateur = stubValidToken(UUID.randomUUID());
-
-            onboardingService.confirmAccount(buildRequest());
-
-            verify(reservationService).create(any(Evenement.class), any(Prestataire.class), eq(utilisateur), eq(DATE));
+            verify(onboardingSessionService).createEntities(eq(formData), any(Prestataire.class), eq(EMAIL));
         }
 
         @Test
@@ -247,7 +224,7 @@ class OnboardingServiceTest {
             assertThat(response.refreshToken()).isEqualTo("refresh-token");
         }
 
-        private Utilisateur stubValidToken(UUID onboardingId) {
+        private InitOnboardingRequest stubValidToken(UUID onboardingId) {
             Claims claims = mock(Claims.class);
             when(claims.get("onboardingId", String.class)).thenReturn(onboardingId.toString());
             when(claims.getSubject()).thenReturn(EMAIL);
@@ -259,23 +236,14 @@ class OnboardingServiceTest {
                     FIRSTNAME, LASTNAME, EMAIL, PRESTATAIRE_ID,
                     EVENT_TYPE, null, null, null, DATE,
                     null, null, null, TELEPHONE, null);
-            Onboarding onboarding = Onboarding.builder()
-                    .id(onboardingId)
-                    .email(EMAIL)
-                    .prestataire(prestataire)
-                    .build();
+            Onboarding onboarding = Onboarding.builder().id(onboardingId).email(EMAIL).build();
             when(onboardingSessionService.findById(onboardingId)).thenReturn(onboarding);
             when(onboardingSessionService.consume(onboarding))
                     .thenReturn(new OnboardingSessionService.OnboardingContent(formData, prestataire));
-
-            Utilisateur utilisateur = Utilisateur.builder().build();
-            when(utilisateurService.createUtilisateur(FIRSTNAME, LASTNAME, EMAIL, TELEPHONE))
-                    .thenReturn(utilisateur);
-            when(evenementService.create(eq(utilisateur), eq(EVENT_TYPE), eq(DATE)))
-                    .thenReturn(Evenement.builder().build());
             when(keycloakAdminService.getUserTokens(EMAIL, "p@ssw0rd!"))
                     .thenReturn(new KeycloakTokenResponse("access-token", "refresh-token"));
-            return utilisateur;
+
+            return formData;
         }
 
         private ConfirmAccountRequest buildRequest() {

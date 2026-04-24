@@ -4,6 +4,8 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
+import net.franzka.sgilt.core.evenement.domain.Evenement;
+import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.jwt.VerificationTokenHmacService;
 import net.franzka.sgilt.core.onboarding.domain.Onboarding;
 import net.franzka.sgilt.core.onboarding.domain.OnboardingState;
@@ -13,6 +15,9 @@ import net.franzka.sgilt.core.onboarding.exception.TokenAlreadyUsedException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.repository.OnboardingRepository;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
+import net.franzka.sgilt.core.reservation.service.ReservationService;
+import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
+import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,19 +35,26 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OnboardingSessionServiceTest {
 
-    private static final String PAYLOAD = "testpayload123456789";
-    private static final String TOKEN = PAYLOAD + "-" + "a".repeat(64);
-    private static final String EMAIL = "user@example.com";
-    private static final int EXPIRATION_HOURS = 24;
+    private static final String PAYLOAD          = "testpayload123456789";
+    private static final String TOKEN            = PAYLOAD + "-" + "a".repeat(64);
+    private static final String EMAIL            = "user@example.com";
+    private static final String FIRSTNAME        = "Jean";
+    private static final String LASTNAME         = "Dupont";
+    private static final String TELEPHONE        = "0612345678";
+    private static final int    EXPIRATION_HOURS = 24;
 
     @Mock private OnboardingRepository onboardingRepository;
     @Mock private VerificationTokenHmacService verificationTokenHmacService;
     @Mock private ConfirmationTokenProperties confirmationTokenProperties;
+    @Mock private UtilisateurService utilisateurService;
+    @Mock private EvenementService evenementService;
+    @Mock private ReservationService reservationService;
     @Mock private ObjectMapper objectMapper;
 
     @InjectMocks
@@ -109,6 +121,16 @@ class OnboardingSessionServiceTest {
             verify(onboardingRepository).save(captor.capture());
             assertThat(captor.getValue().getExpiresAt())
                     .isBetween(before.plusHours(EXPIRATION_HOURS), after.plusHours(EXPIRATION_HOURS));
+        }
+
+        @Test
+        void givenSerializationFailure_whenInitiate_thenThrowsRuntimeException() throws JacksonException {
+            when(verificationTokenHmacService.generateToken()).thenReturn(TOKEN);
+            when(confirmationTokenProperties.confirmationExpirationHours()).thenReturn(EXPIRATION_HOURS);
+            when(objectMapper.writeValueAsString(any())).thenThrow(mock(JacksonException.class));
+
+            assertThatExceptionOfType(RuntimeException.class)
+                    .isThrownBy(() -> onboardingSessionService.initiate(EMAIL, buildPrestataire(), buildRequest()));
         }
     }
 
@@ -313,6 +335,34 @@ class OnboardingSessionServiceTest {
     }
 
     // -------------------------------------------------------------------------
+    // findById
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class FindById {
+
+        @Test
+        void givenExistingId_whenFindById_thenReturnsOnboarding() {
+            UUID id = UUID.randomUUID();
+            Onboarding onboarding = Onboarding.builder().id(id).build();
+            when(onboardingRepository.findById(id)).thenReturn(Optional.of(onboarding));
+
+            Onboarding result = onboardingSessionService.findById(id);
+
+            assertThat(result).isSameAs(onboarding);
+        }
+
+        @Test
+        void givenUnknownId_whenFindById_thenThrowsEntityNotFoundException() {
+            UUID id = UUID.randomUUID();
+            when(onboardingRepository.findById(id)).thenReturn(Optional.empty());
+
+            assertThatExceptionOfType(EntityNotFoundException.class)
+                    .isThrownBy(() -> onboardingSessionService.findById(id));
+        }
+    }
+
+    // -------------------------------------------------------------------------
     // consume
     // -------------------------------------------------------------------------
 
@@ -349,6 +399,69 @@ class OnboardingSessionServiceTest {
             assertThat(result.formData()).isSameAs(formData);
             assertThat(result.prestataire()).isSameAs(prestataire);
         }
+
+        @Test
+        void givenDeserializationFailure_whenConsume_thenThrowsRuntimeException() throws JacksonException {
+            Onboarding onboarding = Onboarding.builder()
+                    .data("{}")
+                    .prestataire(buildPrestataire())
+                    .build();
+            when(objectMapper.readValue("{}", InitOnboardingRequest.class)).thenThrow(mock(JacksonException.class));
+
+            assertThatExceptionOfType(RuntimeException.class)
+                    .isThrownBy(() -> onboardingSessionService.consume(onboarding));
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // createEntities
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class CreateEntities {
+
+        @Test
+        void givenFormData_whenCreateEntities_thenCreatesUtilisateur() {
+            InitOnboardingRequest formData = buildRequest();
+            Prestataire prestataire = buildPrestataire();
+            when(utilisateurService.createUtilisateur(any(), any(), any(), any()))
+                    .thenReturn(Utilisateur.builder().build());
+            when(evenementService.createFromFormData(any(), any()))
+                    .thenReturn(Evenement.builder().build());
+
+            onboardingSessionService.createEntities(formData, prestataire, EMAIL);
+
+            verify(utilisateurService).createUtilisateur(FIRSTNAME, LASTNAME, EMAIL, TELEPHONE);
+        }
+
+        @Test
+        void givenFormData_whenCreateEntities_thenCreatesEvenementForUtilisateur() {
+            InitOnboardingRequest formData = buildRequest();
+            Prestataire prestataire = buildPrestataire();
+            Utilisateur utilisateur = Utilisateur.builder().build();
+            when(utilisateurService.createUtilisateur(any(), any(), any(), any())).thenReturn(utilisateur);
+            when(evenementService.createFromFormData(any(), any())).thenReturn(Evenement.builder().build());
+
+            onboardingSessionService.createEntities(formData, prestataire, EMAIL);
+
+            verify(evenementService).createFromFormData(utilisateur, formData);
+        }
+
+        @Test
+        void givenFormData_whenCreateEntities_thenCreatesReservation() {
+            InitOnboardingRequest formData = buildRequest();
+            Prestataire prestataire = buildPrestataire();
+            Utilisateur utilisateur = Utilisateur.builder().build();
+            Evenement evenement = Evenement.builder().build();
+            when(utilisateurService.createUtilisateur(any(), any(), any(), any())).thenReturn(utilisateur);
+            when(evenementService.createFromFormData(any(), any())).thenReturn(evenement);
+
+            onboardingSessionService.createEntities(formData, prestataire, EMAIL);
+
+            verify(reservationService).create(
+                    eq(evenement), eq(prestataire), eq(utilisateur),
+                    eq(formData.date()), eq(formData.prestataireMessage()));
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -361,8 +474,8 @@ class OnboardingSessionServiceTest {
 
     private InitOnboardingRequest buildRequest() {
         return new InitOnboardingRequest(
-                "Jean", "Dupont", EMAIL, UUID.randomUUID(),
+                FIRSTNAME, LASTNAME, EMAIL, UUID.randomUUID(),
                 "anniversaire", null, null, null, LocalDate.of(2025, 6, 15),
-                null, null, null, "0612345678", null);
+                null, null, null, TELEPHONE, null);
     }
 }

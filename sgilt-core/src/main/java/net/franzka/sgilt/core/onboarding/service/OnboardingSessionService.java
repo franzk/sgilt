@@ -1,11 +1,11 @@
 package net.franzka.sgilt.core.onboarding.service;
 
-import lombok.AllArgsConstructor;
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
+import net.franzka.sgilt.core.evenement.domain.Evenement;
+import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.jwt.VerificationTokenHmacService;
 import net.franzka.sgilt.core.onboarding.domain.Onboarding;
 import net.franzka.sgilt.core.onboarding.domain.OnboardingState;
@@ -14,7 +14,12 @@ import net.franzka.sgilt.core.onboarding.exception.TokenAlreadyUsedException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.repository.OnboardingRepository;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
+import net.franzka.sgilt.core.reservation.service.ReservationService;
+import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
+import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -31,6 +36,9 @@ public class OnboardingSessionService {
     private final OnboardingRepository onboardingRepository;
     private final VerificationTokenHmacService verificationTokenHmacService;
     private final ConfirmationTokenProperties confirmationTokenProperties;
+    private final UtilisateurService utilisateurService;
+    private final EvenementService evenementService;
+    private final ReservationService reservationService;
     private final ObjectMapper objectMapper;
 
     /**
@@ -168,5 +176,29 @@ public class OnboardingSessionService {
         } catch (JacksonException e) {
             throw new RuntimeException("Échec de la désérialisation des données du tunnel", e);
         }
+    }
+
+    /**
+    * Importe les données issues de la demande initiale dans la base de données.
+    * Les données initiales sont réparties dans
+    * - un nouvel utilisateur
+    * - un nouvel événement
+    * - une nouvelle réservation
+    *
+    * @param formData les données saisies dans le tunnel d'onboarding
+     * @param prestataire le prestataire ciblé par la demande
+     * @param email l'adresse email du demandeur, utilisée pour créer l'utilisateur
+    *
+     */
+    public void createEntities(InitOnboardingRequest formData, Prestataire prestataire, String email) {
+        // création de l'utilisateur
+        Utilisateur utilisateur = utilisateurService.createUtilisateur(
+                formData.firstName(), formData.lastName(), email, formData.telephone());
+
+        // création de l'événement
+        Evenement evenement = evenementService.createFromFormData(utilisateur, formData);
+
+        // création de la réservation
+        reservationService.create(evenement, prestataire, utilisateur, formData.date(), formData.prestataireMessage());
     }
 }

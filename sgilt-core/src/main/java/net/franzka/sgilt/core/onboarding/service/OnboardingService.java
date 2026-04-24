@@ -103,6 +103,7 @@ public class OnboardingService {
 
         Onboarding onboarding = onboardingSessionService.findById(onboardingId);
         OnboardingSessionService.OnboardingContent content = onboardingSessionService.consume(onboarding);
+
         InitOnboardingRequest formData = content.formData();
         Prestataire prestataire = content.prestataire();
 
@@ -110,10 +111,8 @@ public class OnboardingService {
         keycloakAdminService.createUser(email, formData.firstName(), formData.lastName(), request.password());
 
         // création de l'utilisateur, de la réservation et de l'événement
-        Utilisateur utilisateur = utilisateurService.createUtilisateur(
-                formData.firstName(), formData.lastName(), email, formData.telephone());
-        Evenement evenement = evenementService.create(utilisateur, formData.eventType(), formData.date());
-        reservationService.create(evenement, prestataire, utilisateur, formData.date());
+        onboardingSessionService.createEntities(formData, prestataire, email);
+
 
         log.info("confirmAccount — compte créé, envoi mail bienvenue à {}", email);
         onboardingMailerService.sendWelcomeEmail(email);

@@ -41,7 +41,18 @@ public class Evenement {
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(columnDefinition = "evenement_status", nullable = false)
-    private EvenementStatus statut;
+    private EvenementStatus status;
+
+    private String eventType;
+    private String ambiance;
+    private String momentCle;
+    private String description;
+
+    private String ville;
+    private String nbInvites;
+    private String lieu;
+
+    private String notePartagee;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
