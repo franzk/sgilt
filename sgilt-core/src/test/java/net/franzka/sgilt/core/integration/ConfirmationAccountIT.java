@@ -1,7 +1,7 @@
 package net.franzka.sgilt.core.integration;
 
 import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
-import net.franzka.sgilt.core.jwt.ConfirmationTokenHmacService;
+import net.franzka.sgilt.core.jwt.VerificationTokenHmacService;
 import net.franzka.sgilt.core.jwt.JwtService;
 import net.franzka.sgilt.core.jwt.TokenJwtService;
 import net.franzka.sgilt.core.keycloak.KeycloakTokenResponse;
@@ -30,12 +30,17 @@ import static org.mockito.Mockito.when;
 class ConfirmationAccountIT extends BaseIntegrationTest {
 
     @Autowired private OnboardingRepository onboardingRepository;
-    @Autowired private ConfirmationTokenHmacService confirmationTokenHmacService;
+    @Autowired private VerificationTokenHmacService verificationTokenHmacService;
     @Autowired private ReservationRepository reservationRepository;
     @Autowired private UtilisateurRepository utilisateurRepository;
     @Autowired private ObjectMapper objectMapper;
     @Autowired private JwtService jwtService;
     @Autowired private ConfirmationTokenProperties confirmationTokenProperties;
+
+    private static final String ONBOARDING_URL = "/api/v1/onboarding";
+    private static final String VERIFICATION_URL = "/api/v1/onboarding/verify";
+    private static final String CONFIRM_ACCOUNT_URL = "/api/v1/onboarding/confirm-account";
+
 
     ConfirmationAccountIT(WebApplicationContext wac) {
         super(wac);
@@ -48,7 +53,7 @@ class ConfirmationAccountIT extends BaseIntegrationTest {
     }
 
     private String getSetPasswordToken() throws UnsupportedEncodingException {
-        assertThat(mockMvc.post().uri("/api/v1/onboarding")
+        assertThat(mockMvc.post().uri(ONBOARDING_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
@@ -62,10 +67,10 @@ class ConfirmationAccountIT extends BaseIntegrationTest {
                 .hasStatus(202);
 
         String payload = onboardingRepository.findAll().getFirst().getHmacPayload();
-        String confirmationToken = confirmationTokenHmacService.buildToken(payload);
+        String verificationToken = verificationTokenHmacService.buildToken(payload);
 
-        var result = mockMvc.get().uri("/api/v1/confirmation")
-                .param("token", confirmationToken)
+        var result = mockMvc.get().uri(VERIFICATION_URL)
+                .param("token", verificationToken)
                 .exchange();
 
         assertThat(result).hasStatus(200);
@@ -78,7 +83,7 @@ class ConfirmationAccountIT extends BaseIntegrationTest {
     void givenValidToken_whenConfirmAccount_thenReturns200() throws UnsupportedEncodingException {
         String setPasswordToken = getSetPasswordToken();
 
-        assertThat(mockMvc.post().uri("/api/v1/onboarding/confirm-account")
+        assertThat(mockMvc.post().uri(CONFIRM_ACCOUNT_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
@@ -95,7 +100,7 @@ class ConfirmationAccountIT extends BaseIntegrationTest {
     void givenValidToken_whenConfirmAccount_thenReservationIsNew() throws UnsupportedEncodingException {
         String setPasswordToken = getSetPasswordToken();
 
-        assertThat(mockMvc.post().uri("/api/v1/onboarding/confirm-account")
+        assertThat(mockMvc.post().uri(CONFIRM_ACCOUNT_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
@@ -113,7 +118,7 @@ class ConfirmationAccountIT extends BaseIntegrationTest {
     void givenValidToken_whenConfirmAccount_thenOnboardingSessionDeleted() throws UnsupportedEncodingException {
         String setPasswordToken = getSetPasswordToken();
 
-        assertThat(mockMvc.post().uri("/api/v1/onboarding/confirm-account")
+        assertThat(mockMvc.post().uri(CONFIRM_ACCOUNT_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
@@ -130,7 +135,7 @@ class ConfirmationAccountIT extends BaseIntegrationTest {
     void givenValidToken_whenConfirmAccount_thenCreatesUtilisateurWithCorrectFields() throws UnsupportedEncodingException {
         String setPasswordToken = getSetPasswordToken();
 
-        assertThat(mockMvc.post().uri("/api/v1/onboarding/confirm-account")
+        assertThat(mockMvc.post().uri(CONFIRM_ACCOUNT_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
@@ -151,7 +156,7 @@ class ConfirmationAccountIT extends BaseIntegrationTest {
 
     @Test
     void givenInvalidToken_whenConfirmAccount_thenReturns400() {
-        assertThat(mockMvc.post().uri("/api/v1/onboarding/confirm-account")
+        assertThat(mockMvc.post().uri(CONFIRM_ACCOUNT_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
@@ -175,7 +180,7 @@ class ConfirmationAccountIT extends BaseIntegrationTest {
                 "franz@ka.net"
         );
 
-        assertThat(mockMvc.post().uri("/api/v1/onboarding/confirm-account")
+        assertThat(mockMvc.post().uri(CONFIRM_ACCOUNT_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
@@ -190,7 +195,7 @@ class ConfirmationAccountIT extends BaseIntegrationTest {
     void givenEmptyPassword_whenConfirmAccount_thenReturns400() throws UnsupportedEncodingException {
         String setPasswordToken = getSetPasswordToken();
 
-        assertThat(mockMvc.post().uri("/api/v1/onboarding/confirm-account")
+        assertThat(mockMvc.post().uri(CONFIRM_ACCOUNT_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {

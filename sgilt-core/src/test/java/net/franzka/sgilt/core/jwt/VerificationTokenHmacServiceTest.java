@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ConfirmationTokenHmacServiceTest {
+class VerificationTokenHmacServiceTest {
 
     private static final String SECRET  = "test-secret-for-hmac";
     private static final String PAYLOAD = "testPayload123";
@@ -25,7 +25,7 @@ class ConfirmationTokenHmacServiceTest {
     private ConfirmationTokenProperties confirmationTokenProperties;
 
     @InjectMocks
-    private ConfirmationTokenHmacService confirmationTokenHmacService;
+    private VerificationTokenHmacService verificationTokenHmacService;
 
     // -------------------------------------------------------------------------
     // generatePayload
@@ -36,19 +36,19 @@ class ConfirmationTokenHmacServiceTest {
 
         @Test
         void whenGeneratePayload_thenReturnsNonBlankString() {
-            assertThat(confirmationTokenHmacService.generatePayload()).isNotBlank();
+            assertThat(verificationTokenHmacService.generatePayload()).isNotBlank();
         }
 
         @Test
         void whenGeneratePayload_thenReturns22Chars() {
             // 16 octets en Base64 URL-safe sans padding = 22 caractères
-            assertThat(confirmationTokenHmacService.generatePayload()).hasSize(22);
+            assertThat(verificationTokenHmacService.generatePayload()).hasSize(22);
         }
 
         @Test
         void whenGeneratePayloadTwice_thenReturnsDifferentValues() {
-            String first = confirmationTokenHmacService.generatePayload();
-            String second = confirmationTokenHmacService.generatePayload();
+            String first = verificationTokenHmacService.generatePayload();
+            String second = verificationTokenHmacService.generatePayload();
             assertThat(first).isNotEqualTo(second);
         }
     }
@@ -64,7 +64,7 @@ class ConfirmationTokenHmacServiceTest {
         void givenPayload_whenBuildToken_thenTokenStartsWithPayload() {
             when(confirmationTokenProperties.confirmationSecret()).thenReturn(SECRET);
 
-            String token = confirmationTokenHmacService.buildToken(PAYLOAD);
+            String token = verificationTokenHmacService.buildToken(PAYLOAD);
 
             assertThat(token).startsWith(PAYLOAD + "-");
         }
@@ -74,7 +74,7 @@ class ConfirmationTokenHmacServiceTest {
             when(confirmationTokenProperties.confirmationSecret()).thenReturn(SECRET);
             String expectedSignature = new HmacUtils(HmacAlgorithms.HMAC_SHA_256, SECRET).hmacHex(PAYLOAD);
 
-            String token = confirmationTokenHmacService.buildToken(PAYLOAD);
+            String token = verificationTokenHmacService.buildToken(PAYLOAD);
 
             String actualSignature = token.substring(token.lastIndexOf("-") + 1);
             assertThat(actualSignature).isEqualTo(expectedSignature);
@@ -84,8 +84,8 @@ class ConfirmationTokenHmacServiceTest {
         void givenSamePayload_whenBuildTokenTwice_thenReturnsSameToken() {
             when(confirmationTokenProperties.confirmationSecret()).thenReturn(SECRET);
 
-            String token1 = confirmationTokenHmacService.buildToken(PAYLOAD);
-            String token2 = confirmationTokenHmacService.buildToken(PAYLOAD);
+            String token1 = verificationTokenHmacService.buildToken(PAYLOAD);
+            String token2 = verificationTokenHmacService.buildToken(PAYLOAD);
 
             assertThat(token1).isEqualTo(token2);
         }
@@ -102,15 +102,15 @@ class ConfirmationTokenHmacServiceTest {
         void whenGenerateToken_thenReturnedTokenContainsSeparator() {
             when(confirmationTokenProperties.confirmationSecret()).thenReturn(SECRET);
 
-            assertThat(confirmationTokenHmacService.generateToken()).contains("-");
+            assertThat(verificationTokenHmacService.generateToken()).contains("-");
         }
 
         @Test
         void whenGenerateTokenTwice_thenReturnsDifferentTokens() {
             when(confirmationTokenProperties.confirmationSecret()).thenReturn(SECRET);
 
-            String token1 = confirmationTokenHmacService.generateToken();
-            String token2 = confirmationTokenHmacService.generateToken();
+            String token1 = verificationTokenHmacService.generateToken();
+            String token2 = verificationTokenHmacService.generateToken();
 
             assertThat(token1).isNotEqualTo(token2);
         }
@@ -126,9 +126,9 @@ class ConfirmationTokenHmacServiceTest {
         @Test
         void givenValidToken_whenVerify_thenReturnsPayload() {
             when(confirmationTokenProperties.confirmationSecret()).thenReturn(SECRET);
-            String token = confirmationTokenHmacService.buildToken(PAYLOAD);
+            String token = verificationTokenHmacService.buildToken(PAYLOAD);
 
-            String result = confirmationTokenHmacService.verify(token);
+            String result = verificationTokenHmacService.verify(token);
 
             assertThat(result).isEqualTo(PAYLOAD);
         }
@@ -137,9 +137,9 @@ class ConfirmationTokenHmacServiceTest {
         void givenPayloadContainingHyphen_whenVerify_thenReturnsPayload() {
             when(confirmationTokenProperties.confirmationSecret()).thenReturn(SECRET);
             String payloadWithHyphen = "abc-def";
-            String token = confirmationTokenHmacService.buildToken(payloadWithHyphen);
+            String token = verificationTokenHmacService.buildToken(payloadWithHyphen);
 
-            String result = confirmationTokenHmacService.verify(token);
+            String result = verificationTokenHmacService.verify(token);
 
             assertThat(result).isEqualTo(payloadWithHyphen);
         }
@@ -147,7 +147,7 @@ class ConfirmationTokenHmacServiceTest {
         @Test
         void givenTokenWithoutSeparator_whenVerify_thenThrowsInvalidTokenException() {
             assertThatExceptionOfType(InvalidTokenException.class)
-                    .isThrownBy(() -> confirmationTokenHmacService.verify("noseparatortoken"));
+                    .isThrownBy(() -> verificationTokenHmacService.verify("noseparatortoken"));
         }
 
         @Test
@@ -156,7 +156,7 @@ class ConfirmationTokenHmacServiceTest {
             String tampered = PAYLOAD + "-" + "0".repeat(64);
 
             assertThatExceptionOfType(InvalidTokenException.class)
-                    .isThrownBy(() -> confirmationTokenHmacService.verify(tampered));
+                    .isThrownBy(() -> verificationTokenHmacService.verify(tampered));
         }
 
         @Test
@@ -166,15 +166,15 @@ class ConfirmationTokenHmacServiceTest {
             String token = PAYLOAD + "-" + signatureWithOtherSecret;
 
             assertThatExceptionOfType(InvalidTokenException.class)
-                    .isThrownBy(() -> confirmationTokenHmacService.verify(token));
+                    .isThrownBy(() -> verificationTokenHmacService.verify(token));
         }
 
         @Test
         void givenGeneratedToken_whenVerify_thenRoundTripExtractsConsistentPayload() {
             when(confirmationTokenProperties.confirmationSecret()).thenReturn(SECRET);
-            String token = confirmationTokenHmacService.generateToken();
+            String token = verificationTokenHmacService.generateToken();
 
-            String extractedPayload = confirmationTokenHmacService.verify(token);
+            String extractedPayload = verificationTokenHmacService.verify(token);
 
             assertThat(token).startsWith(extractedPayload + "-");
         }

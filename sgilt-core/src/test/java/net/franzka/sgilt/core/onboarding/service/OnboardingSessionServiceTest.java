@@ -4,10 +4,10 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
-import net.franzka.sgilt.core.jwt.ConfirmationTokenHmacService;
+import net.franzka.sgilt.core.jwt.VerificationTokenHmacService;
 import net.franzka.sgilt.core.onboarding.domain.Onboarding;
 import net.franzka.sgilt.core.onboarding.domain.OnboardingState;
-import net.franzka.sgilt.core.onboarding.dto.DemandeInitialeRequest;
+import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
 import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
 import net.franzka.sgilt.core.onboarding.exception.TokenAlreadyUsedException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
@@ -41,7 +41,7 @@ class OnboardingSessionServiceTest {
     private static final int EXPIRATION_HOURS = 24;
 
     @Mock private OnboardingRepository onboardingRepository;
-    @Mock private ConfirmationTokenHmacService confirmationTokenHmacService;
+    @Mock private VerificationTokenHmacService verificationTokenHmacService;
     @Mock private ConfirmationTokenProperties confirmationTokenProperties;
     @Mock private ObjectMapper objectMapper;
 
@@ -57,7 +57,7 @@ class OnboardingSessionServiceTest {
 
         @Test
         void givenValidRequest_whenInitiate_thenReturnsHmacToken() throws JacksonException {
-            when(confirmationTokenHmacService.generateToken()).thenReturn(TOKEN);
+            when(verificationTokenHmacService.generateToken()).thenReturn(TOKEN);
             when(confirmationTokenProperties.confirmationExpirationHours()).thenReturn(EXPIRATION_HOURS);
             when(objectMapper.writeValueAsString(any())).thenReturn("{}");
 
@@ -69,7 +69,7 @@ class OnboardingSessionServiceTest {
 
         @Test
         void givenValidRequest_whenInitiate_thenSavesOnboardingWithPayload() throws JacksonException {
-            when(confirmationTokenHmacService.generateToken()).thenReturn(TOKEN);
+            when(verificationTokenHmacService.generateToken()).thenReturn(TOKEN);
             when(confirmationTokenProperties.confirmationExpirationHours()).thenReturn(EXPIRATION_HOURS);
             when(objectMapper.writeValueAsString(any())).thenReturn("{}");
 
@@ -82,7 +82,7 @@ class OnboardingSessionServiceTest {
 
         @Test
         void givenValidRequest_whenInitiate_thenSavesOnboardingWithEmailAndPrestataire() throws JacksonException {
-            when(confirmationTokenHmacService.generateToken()).thenReturn(TOKEN);
+            when(verificationTokenHmacService.generateToken()).thenReturn(TOKEN);
             when(confirmationTokenProperties.confirmationExpirationHours()).thenReturn(EXPIRATION_HOURS);
             when(objectMapper.writeValueAsString(any())).thenReturn("{}");
             Prestataire prestataire = buildPrestataire();
@@ -97,7 +97,7 @@ class OnboardingSessionServiceTest {
 
         @Test
         void givenProperties_whenInitiate_thenSavesOnboardingWithCorrectExpiry() throws JacksonException {
-            when(confirmationTokenHmacService.generateToken()).thenReturn(TOKEN);
+            when(verificationTokenHmacService.generateToken()).thenReturn(TOKEN);
             when(confirmationTokenProperties.confirmationExpirationHours()).thenReturn(EXPIRATION_HOURS);
             when(objectMapper.writeValueAsString(any())).thenReturn("{}");
 
@@ -113,125 +113,89 @@ class OnboardingSessionServiceTest {
     }
 
     // -------------------------------------------------------------------------
-    // validate
+    // checkToken
     // -------------------------------------------------------------------------
 
     @Nested
-    class Validate {
+    class CheckToken {
 
         @Test
-        void givenInvalidHmac_whenValidate_thenThrowsInvalidTokenException() {
-            when(confirmationTokenHmacService.verify(TOKEN)).thenThrow(new InvalidTokenException());
+        void givenInvalidHmac_whenCheckToken_thenThrowsInvalidTokenException() {
+            when(verificationTokenHmacService.verify(TOKEN)).thenThrow(new InvalidTokenException());
 
             assertThatExceptionOfType(InvalidTokenException.class)
-                    .isThrownBy(() -> onboardingSessionService.validate(TOKEN));
+                    .isThrownBy(() -> onboardingSessionService.checkToken(TOKEN));
         }
 
         @Test
-        void givenUnknownPayload_whenValidate_thenThrowsEntityNotFoundException() {
-            when(confirmationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
+        void givenUnknownPayload_whenCheckToken_thenThrowsEntityNotFoundException() {
+            when(verificationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
             when(onboardingRepository.findByHmacPayload(PAYLOAD)).thenReturn(Optional.empty());
 
             assertThatExceptionOfType(EntityNotFoundException.class)
-                    .isThrownBy(() -> onboardingSessionService.validate(TOKEN));
+                    .isThrownBy(() -> onboardingSessionService.checkToken(TOKEN));
         }
 
         @Test
-        void givenUsedSession_whenValidate_thenThrowsTokenAlreadyUsedException() {
+        void givenUsedSession_whenCheckToken_thenThrowsTokenAlreadyUsedException() {
             Onboarding onboarding = buildOnboarding(OnboardingState.USED, LocalDateTime.now().plusHours(1));
-            when(confirmationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
+            when(verificationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
             when(onboardingRepository.findByHmacPayload(PAYLOAD)).thenReturn(Optional.of(onboarding));
 
             assertThatExceptionOfType(TokenAlreadyUsedException.class)
-                    .isThrownBy(() -> onboardingSessionService.validate(TOKEN));
+                    .isThrownBy(() -> onboardingSessionService.checkToken(TOKEN));
         }
 
         @Test
-        void givenCancelledSession_whenValidate_thenThrowsTokenAlreadyUsedException() {
+        void givenCancelledSession_whenCheckToken_thenThrowsTokenAlreadyUsedException() {
             Onboarding onboarding = buildOnboarding(OnboardingState.CANCELLED, LocalDateTime.now().plusHours(1));
-            when(confirmationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
+            when(verificationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
             when(onboardingRepository.findByHmacPayload(PAYLOAD)).thenReturn(Optional.of(onboarding));
 
             assertThatExceptionOfType(TokenAlreadyUsedException.class)
-                    .isThrownBy(() -> onboardingSessionService.validate(TOKEN));
+                    .isThrownBy(() -> onboardingSessionService.checkToken(TOKEN));
         }
 
         @Test
-        void givenExpiredOpenSession_whenValidate_thenThrowsTokenExpiredException() {
+        void givenExpiredOpenSession_whenCheckToken_thenThrowsTokenExpiredException() {
             Onboarding onboarding = buildOnboarding(OnboardingState.OPEN, LocalDateTime.now().minusSeconds(1));
-            when(confirmationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
+            when(verificationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
             when(onboardingRepository.findByHmacPayload(PAYLOAD)).thenReturn(Optional.of(onboarding));
 
             assertThatExceptionOfType(TokenExpiredException.class)
-                    .isThrownBy(() -> onboardingSessionService.validate(TOKEN));
+                    .isThrownBy(() -> onboardingSessionService.checkToken(TOKEN));
         }
 
         @Test
-        void givenOpenSession_whenValidate_thenReturnsOnboarding() {
+        void givenOpenSession_whenCheckToken_thenReturnsOnboarding() {
             Onboarding onboarding = buildOnboarding(OnboardingState.OPEN, LocalDateTime.now().plusHours(1));
-            when(confirmationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
+            when(verificationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
             when(onboardingRepository.findByHmacPayload(PAYLOAD)).thenReturn(Optional.of(onboarding));
 
-            Onboarding result = onboardingSessionService.validate(TOKEN);
+            Onboarding result = onboardingSessionService.checkToken(TOKEN);
 
             assertThat(result).isSameAs(onboarding);
         }
 
         @Test
-        void givenOpenSession_whenValidate_thenSetsStateToPendingConfirmation() {
-            Onboarding onboarding = buildOnboarding(OnboardingState.OPEN, LocalDateTime.now().plusHours(1));
-            when(confirmationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
-            when(onboardingRepository.findByHmacPayload(PAYLOAD)).thenReturn(Optional.of(onboarding));
-
-            onboardingSessionService.validate(TOKEN);
-
-            assertThat(onboarding.getState()).isEqualTo(OnboardingState.PENDING_CONFIRMATION);
-        }
-
-        @Test
-        void givenOpenSession_whenValidate_thenSetsConfirmationPeriodExpiresAt() {
-            Onboarding onboarding = buildOnboarding(OnboardingState.OPEN, LocalDateTime.now().plusHours(1));
-            when(confirmationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
-            when(onboardingRepository.findByHmacPayload(PAYLOAD)).thenReturn(Optional.of(onboarding));
-
-            LocalDateTime before = LocalDateTime.now();
-            onboardingSessionService.validate(TOKEN);
-            LocalDateTime after = LocalDateTime.now();
-
-            assertThat(onboarding.getConfirmationPeriodExpiresAt())
-                    .isBetween(before.plusMinutes(5), after.plusMinutes(5));
-        }
-
-        @Test
-        void givenOpenSession_whenValidate_thenSavesOnboarding() {
-            Onboarding onboarding = buildOnboarding(OnboardingState.OPEN, LocalDateTime.now().plusHours(1));
-            when(confirmationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
-            when(onboardingRepository.findByHmacPayload(PAYLOAD)).thenReturn(Optional.of(onboarding));
-
-            onboardingSessionService.validate(TOKEN);
-
-            verify(onboardingRepository).save(onboarding);
-        }
-
-        @Test
-        void givenPendingSessionWithinGracePeriod_whenValidate_thenReturnsOnboarding() {
+        void givenPendingSessionWithinGracePeriod_whenCheckToken_thenReturnsOnboarding() {
             Onboarding onboarding = buildPendingOnboarding(LocalDateTime.now().plusMinutes(4));
-            when(confirmationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
+            when(verificationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
             when(onboardingRepository.findByHmacPayload(PAYLOAD)).thenReturn(Optional.of(onboarding));
 
-            Onboarding result = onboardingSessionService.validate(TOKEN);
+            Onboarding result = onboardingSessionService.checkToken(TOKEN);
 
             assertThat(result).isSameAs(onboarding);
         }
 
         @Test
-        void givenPendingSessionAfterGracePeriod_whenValidate_thenThrowsTokenExpiredException() {
+        void givenPendingSessionAfterGracePeriod_whenCheckToken_thenThrowsTokenExpiredException() {
             Onboarding onboarding = buildPendingOnboarding(LocalDateTime.now().minusSeconds(1));
-            when(confirmationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
+            when(verificationTokenHmacService.verify(TOKEN)).thenReturn(PAYLOAD);
             when(onboardingRepository.findByHmacPayload(PAYLOAD)).thenReturn(Optional.of(onboarding));
 
             assertThatExceptionOfType(TokenExpiredException.class)
-                    .isThrownBy(() -> onboardingSessionService.validate(TOKEN));
+                    .isThrownBy(() -> onboardingSessionService.checkToken(TOKEN));
         }
 
         private Onboarding buildOnboarding(OnboardingState state, LocalDateTime expiresAt) {
@@ -247,6 +211,63 @@ class OnboardingSessionServiceTest {
                     .hmacPayload(PAYLOAD)
                     .state(OnboardingState.PENDING_CONFIRMATION)
                     .confirmationPeriodExpiresAt(confirmationPeriodExpiresAt)
+                    .build();
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // advanceToConfirmation
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class AdvanceToConfirmation {
+
+        @Test
+        void givenOpenSession_whenAdvanceToConfirmation_thenSetsStateToPendingConfirmation() {
+            Onboarding onboarding = buildOpenOnboarding();
+
+            onboardingSessionService.advanceToConfirmation(onboarding);
+
+            assertThat(onboarding.getState()).isEqualTo(OnboardingState.PENDING_CONFIRMATION);
+        }
+
+        @Test
+        void givenOpenSession_whenAdvanceToConfirmation_thenSetsConfirmationPeriodExpiresAt() {
+            Onboarding onboarding = buildOpenOnboarding();
+
+            LocalDateTime before = LocalDateTime.now();
+            onboardingSessionService.advanceToConfirmation(onboarding);
+            LocalDateTime after = LocalDateTime.now();
+
+            assertThat(onboarding.getConfirmationPeriodExpiresAt())
+                    .isBetween(before.plusMinutes(5), after.plusMinutes(5));
+        }
+
+        @Test
+        void givenOpenSession_whenAdvanceToConfirmation_thenSavesOnboarding() {
+            Onboarding onboarding = buildOpenOnboarding();
+
+            onboardingSessionService.advanceToConfirmation(onboarding);
+
+            verify(onboardingRepository).save(onboarding);
+        }
+
+        @Test
+        void givenPendingSession_whenAdvanceToConfirmation_thenDoesNotSave() {
+            Onboarding onboarding = Onboarding.builder()
+                    .state(OnboardingState.PENDING_CONFIRMATION)
+                    .confirmationPeriodExpiresAt(LocalDateTime.now().plusMinutes(4))
+                    .build();
+
+            onboardingSessionService.advanceToConfirmation(onboarding);
+
+            verify(onboardingRepository, never()).save(any());
+        }
+
+        private Onboarding buildOpenOnboarding() {
+            return Onboarding.builder()
+                    .state(OnboardingState.OPEN)
+                    .expiresAt(LocalDateTime.now().plusHours(1))
                     .build();
         }
     }
@@ -301,12 +322,12 @@ class OnboardingSessionServiceTest {
         @Test
         void givenOnboarding_whenConsume_thenDeletesOnboarding() throws JacksonException {
             Prestataire prestataire = buildPrestataire();
-            DemandeInitialeRequest formData = buildRequest();
+            InitOnboardingRequest formData = buildRequest();
             Onboarding onboarding = Onboarding.builder()
                     .data("{}")
                     .prestataire(prestataire)
                     .build();
-            when(objectMapper.readValue("{}", DemandeInitialeRequest.class)).thenReturn(formData);
+            when(objectMapper.readValue("{}", InitOnboardingRequest.class)).thenReturn(formData);
 
             onboardingSessionService.consume(onboarding);
 
@@ -316,12 +337,12 @@ class OnboardingSessionServiceTest {
         @Test
         void givenOnboarding_whenConsume_thenReturnsFormDataAndPrestataire() throws JacksonException {
             Prestataire prestataire = buildPrestataire();
-            DemandeInitialeRequest formData = buildRequest();
+            InitOnboardingRequest formData = buildRequest();
             Onboarding onboarding = Onboarding.builder()
                     .data("{}")
                     .prestataire(prestataire)
                     .build();
-            when(objectMapper.readValue("{}", DemandeInitialeRequest.class)).thenReturn(formData);
+            when(objectMapper.readValue("{}", InitOnboardingRequest.class)).thenReturn(formData);
 
             OnboardingSessionService.OnboardingContent result = onboardingSessionService.consume(onboarding);
 
@@ -338,8 +359,8 @@ class OnboardingSessionServiceTest {
         return Prestataire.builder().id(UUID.randomUUID()).build();
     }
 
-    private DemandeInitialeRequest buildRequest() {
-        return new DemandeInitialeRequest(
+    private InitOnboardingRequest buildRequest() {
+        return new InitOnboardingRequest(
                 "Jean", "Dupont", EMAIL, UUID.randomUUID(),
                 "anniversaire", null, null, null, LocalDate.of(2025, 6, 15),
                 null, null, null, "0612345678", null);

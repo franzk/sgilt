@@ -19,7 +19,7 @@ import java.util.Base64;
  * Le secret utilisé pour le calcul HMAC provient de {@link ConfirmationTokenProperties#confirmationSecret()}.
  */
 @Service
-public class ConfirmationTokenHmacService {
+public class VerificationTokenHmacService {
 
     private final ConfirmationTokenProperties confirmationTokenProperties;
     private final SecureRandom secureRandom = new SecureRandom();
@@ -29,7 +29,7 @@ public class ConfirmationTokenHmacService {
      *
      * @param confirmationTokenProperties les propriétés contenant le secret HMAC
      */
-    public ConfirmationTokenHmacService(ConfirmationTokenProperties confirmationTokenProperties) {
+    public VerificationTokenHmacService(ConfirmationTokenProperties confirmationTokenProperties) {
         this.confirmationTokenProperties = confirmationTokenProperties;
     }
 

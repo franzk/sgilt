@@ -1,5 +1,5 @@
 package net.franzka.sgilt.core.onboarding.dto;
 
-public record DemandeInitialeResponse(
+public record InitOnboardingResponse(
         String email
 ) {}

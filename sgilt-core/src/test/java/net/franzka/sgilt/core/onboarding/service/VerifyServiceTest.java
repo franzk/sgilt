@@ -26,7 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ConfirmationServiceTest {
+class VerifyServiceTest {
 
     private static final String TOKEN = "testpayload123456789-" + "a".repeat(64);
     private static final String EMAIL = "user@example.com";
@@ -38,7 +38,7 @@ class ConfirmationServiceTest {
     private TokenJwtService setPasswordTokenJwtService;
 
     @InjectMocks
-    private ConfirmationService confirmationService;
+    private VerifyService verifyService;
 
     // -------------------------------------------------------------------------
     // validateConfirmationToken
@@ -50,52 +50,54 @@ class ConfirmationServiceTest {
         @Test
         void givenValidToken_whenValidateConfirmationToken_thenReturnsOnboarding() {
             Onboarding expected = Onboarding.builder().email(EMAIL).build();
-            when(onboardingSessionService.validate(TOKEN)).thenReturn(expected);
+            when(onboardingSessionService.checkToken(TOKEN)).thenReturn(expected);
 
-            Onboarding result = confirmationService.validateConfirmationToken(TOKEN);
+            Onboarding result = verifyService.validateVerificationToken(TOKEN);
 
             assertThat(result).isSameAs(expected);
         }
 
         @Test
-        void givenToken_whenValidateConfirmationToken_thenDelegatesToOnboardingSessionService() {
-            when(onboardingSessionService.validate(TOKEN)).thenReturn(Onboarding.builder().build());
+        void givenToken_whenValidateConfirmationToken_thenChecksTokenAndAdvancesToConfirmation() {
+            Onboarding onboarding = Onboarding.builder().email(EMAIL).build();
+            when(onboardingSessionService.checkToken(TOKEN)).thenReturn(onboarding);
 
-            confirmationService.validateConfirmationToken(TOKEN);
+            verifyService.validateVerificationToken(TOKEN);
 
-            verify(onboardingSessionService).validate(TOKEN);
+            verify(onboardingSessionService).checkToken(TOKEN);
+            verify(onboardingSessionService).advanceToConfirmation(onboarding);
         }
 
         @Test
         void givenExpiredToken_whenValidateConfirmationToken_thenPropagatesTokenExpiredException() {
-            when(onboardingSessionService.validate(TOKEN)).thenThrow(new TokenExpiredException());
+            when(onboardingSessionService.checkToken(TOKEN)).thenThrow(new TokenExpiredException());
 
             assertThatExceptionOfType(TokenExpiredException.class)
-                    .isThrownBy(() -> confirmationService.validateConfirmationToken(TOKEN));
+                    .isThrownBy(() -> verifyService.validateVerificationToken(TOKEN));
         }
 
         @Test
         void givenInvalidToken_whenValidateConfirmationToken_thenPropagatesInvalidTokenException() {
-            when(onboardingSessionService.validate(TOKEN)).thenThrow(new InvalidTokenException());
+            when(onboardingSessionService.checkToken(TOKEN)).thenThrow(new InvalidTokenException());
 
             assertThatExceptionOfType(InvalidTokenException.class)
-                    .isThrownBy(() -> confirmationService.validateConfirmationToken(TOKEN));
+                    .isThrownBy(() -> verifyService.validateVerificationToken(TOKEN));
         }
 
         @Test
         void givenUnknownToken_whenValidateConfirmationToken_thenPropagatesEntityNotFoundException() {
-            when(onboardingSessionService.validate(TOKEN)).thenThrow(new EntityNotFoundException());
+            when(onboardingSessionService.checkToken(TOKEN)).thenThrow(new EntityNotFoundException());
 
             assertThatExceptionOfType(EntityNotFoundException.class)
-                    .isThrownBy(() -> confirmationService.validateConfirmationToken(TOKEN));
+                    .isThrownBy(() -> verifyService.validateVerificationToken(TOKEN));
         }
 
         @Test
         void givenAlreadyUsedToken_whenValidateConfirmationToken_thenPropagatesTokenAlreadyUsedException() {
-            when(onboardingSessionService.validate(TOKEN)).thenThrow(new TokenAlreadyUsedException());
+            when(onboardingSessionService.checkToken(TOKEN)).thenThrow(new TokenAlreadyUsedException());
 
             assertThatExceptionOfType(TokenAlreadyUsedException.class)
-                    .isThrownBy(() -> confirmationService.validateConfirmationToken(TOKEN));
+                    .isThrownBy(() -> verifyService.validateVerificationToken(TOKEN));
         }
     }
 
@@ -111,7 +113,7 @@ class ConfirmationServiceTest {
             Onboarding onboarding = buildOnboarding(UUID.randomUUID());
             when(setPasswordTokenJwtService.generateToken(any(), eq(EMAIL))).thenReturn("sp.jwt");
 
-            SetPasswordTokenDto result = confirmationService.generateSetPasswordResponse(onboarding);
+            SetPasswordTokenDto result = verifyService.generateSetPasswordResponse(onboarding);
 
             assertThat(result.email()).isEqualTo(EMAIL);
         }
@@ -121,7 +123,7 @@ class ConfirmationServiceTest {
             Onboarding onboarding = buildOnboarding(UUID.randomUUID());
             when(setPasswordTokenJwtService.generateToken(any(), eq(EMAIL))).thenReturn("sp.jwt");
 
-            SetPasswordTokenDto result = confirmationService.generateSetPasswordResponse(onboarding);
+            SetPasswordTokenDto result = verifyService.generateSetPasswordResponse(onboarding);
 
             assertThat(result.setPasswordToken()).isEqualTo("sp.jwt");
         }
@@ -132,7 +134,7 @@ class ConfirmationServiceTest {
             Onboarding onboarding = buildOnboarding(onboardingId);
             when(setPasswordTokenJwtService.generateToken(any(), eq(EMAIL))).thenReturn("sp.jwt");
 
-            confirmationService.generateSetPasswordResponse(onboarding);
+            verifyService.generateSetPasswordResponse(onboarding);
 
             @SuppressWarnings("unchecked")
             ArgumentCaptor<Map<String, Object>> claimsCaptor = ArgumentCaptor.forClass(Map.class);

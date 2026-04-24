@@ -10,8 +10,8 @@ import net.franzka.sgilt.core.keycloak.KeycloakTokenResponse;
 import net.franzka.sgilt.core.onboarding.domain.Onboarding;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountRequest;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountResponse;
-import net.franzka.sgilt.core.onboarding.dto.DemandeInitialeRequest;
-import net.franzka.sgilt.core.onboarding.dto.DemandeInitialeResponse;
+import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
+import net.franzka.sgilt.core.onboarding.dto.InitOnboardingResponse;
 import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.mailer.OnboardingMailerService;
@@ -71,7 +71,7 @@ class OnboardingServiceTest {
         void givenExistingUser_whenCreateDemandeReservation_thenSendsSecurityAlertEmail() {
             when(utilisateurService.existsByEmail(EMAIL)).thenReturn(true);
 
-            onboardingService.createDemandeReservation(buildRequest());
+            onboardingService.initOnboardingSession(buildRequest());
 
             verify(onboardingMailerService).sendSecurityAlertEmail(EMAIL, PRESTATAIRE_ID);
         }
@@ -80,7 +80,7 @@ class OnboardingServiceTest {
         void givenExistingUser_whenCreateDemandeReservation_thenDoesNotInitiateOnboarding() {
             when(utilisateurService.existsByEmail(EMAIL)).thenReturn(true);
 
-            onboardingService.createDemandeReservation(buildRequest());
+            onboardingService.initOnboardingSession(buildRequest());
 
             verify(onboardingSessionService, never()).initiate(any(), any(), any());
         }
@@ -89,7 +89,7 @@ class OnboardingServiceTest {
         void givenExistingUser_whenCreateDemandeReservation_thenReturnsResponseWithEmail() {
             when(utilisateurService.existsByEmail(EMAIL)).thenReturn(true);
 
-            DemandeInitialeResponse response = onboardingService.createDemandeReservation(buildRequest());
+            InitOnboardingResponse response = onboardingService.initOnboardingSession(buildRequest());
 
             assertThat(response.email()).isEqualTo(EMAIL);
         }
@@ -98,7 +98,7 @@ class OnboardingServiceTest {
         void givenNewUser_whenCreateDemandeReservation_thenCancelsExistingSessionsForEmail() {
             stubHappyPath();
 
-            onboardingService.createDemandeReservation(buildRequest());
+            onboardingService.initOnboardingSession(buildRequest());
 
             verify(onboardingSessionService).cancelExistingForEmail(EMAIL);
         }
@@ -107,7 +107,7 @@ class OnboardingServiceTest {
         void givenNewUser_whenCreateDemandeReservation_thenLoadsPrestataire() {
             stubHappyPath();
 
-            onboardingService.createDemandeReservation(buildRequest());
+            onboardingService.initOnboardingSession(buildRequest());
 
             verify(prestataireService).getById(PRESTATAIRE_ID);
         }
@@ -116,25 +116,25 @@ class OnboardingServiceTest {
         void givenNewUser_whenCreateDemandeReservation_thenInitiatesOnboardingWithEmailPrestataireAndRequest() {
             Prestataire prestataire = stubHappyPath();
 
-            onboardingService.createDemandeReservation(buildRequest());
+            onboardingService.initOnboardingSession(buildRequest());
 
-            verify(onboardingSessionService).initiate(eq(EMAIL), eq(prestataire), any(DemandeInitialeRequest.class));
+            verify(onboardingSessionService).initiate(eq(EMAIL), eq(prestataire), any(InitOnboardingRequest.class));
         }
 
         @Test
         void givenNewUser_whenCreateDemandeReservation_thenSendsConfirmationEmailWithHmacToken() {
             stubHappyPath();
 
-            onboardingService.createDemandeReservation(buildRequest());
+            onboardingService.initOnboardingSession(buildRequest());
 
-            verify(onboardingMailerService).sendConfirmationEmail(EMAIL, "hmac.token");
+            verify(onboardingMailerService).sendVerificationEmail(EMAIL, "hmac.token");
         }
 
         @Test
         void givenNewUser_whenCreateDemandeReservation_thenReturnsResponseWithEmail() {
             stubHappyPath();
 
-            DemandeInitialeResponse response = onboardingService.createDemandeReservation(buildRequest());
+            InitOnboardingResponse response = onboardingService.initOnboardingSession(buildRequest());
 
             assertThat(response.email()).isEqualTo(EMAIL);
         }
@@ -150,8 +150,8 @@ class OnboardingServiceTest {
             return prestataire;
         }
 
-        private DemandeInitialeRequest buildRequest() {
-            return new DemandeInitialeRequest(
+        private InitOnboardingRequest buildRequest() {
+            return new InitOnboardingRequest(
                     FIRSTNAME, LASTNAME, EMAIL, PRESTATAIRE_ID,
                     EVENT_TYPE, null, null, null, DATE,
                     null, null, null, TELEPHONE, null);
@@ -255,7 +255,7 @@ class OnboardingServiceTest {
             when(setPasswordTokenJwtService.extractClaims(SP_TOKEN)).thenReturn(claims);
 
             Prestataire prestataire = Prestataire.builder().id(PRESTATAIRE_ID).build();
-            DemandeInitialeRequest formData = new DemandeInitialeRequest(
+            InitOnboardingRequest formData = new InitOnboardingRequest(
                     FIRSTNAME, LASTNAME, EMAIL, PRESTATAIRE_ID,
                     EVENT_TYPE, null, null, null, DATE,
                     null, null, null, TELEPHONE, null);

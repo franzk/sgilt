@@ -12,7 +12,7 @@ import java.util.Map;
  * Service pour la confirmation de la demande initiale par email.
  */
 @Service
-public class ConfirmationService {
+public class VerifyService {
 
     private final OnboardingSessionService onboardingSessionService;
     private final TokenJwtService setPasswordTokenJwtService;
@@ -23,7 +23,7 @@ public class ConfirmationService {
      * @param onboardingSessionService   le service métier des sessions d'onboarding
      * @param setPasswordTokenJwtService le service JWT qualifié pour les tokens set-password
      */
-    public ConfirmationService(
+    public VerifyService(
             OnboardingSessionService onboardingSessionService,
             @Qualifier("setPasswordTokenJwtService") TokenJwtService setPasswordTokenJwtService) {
         this.onboardingSessionService = onboardingSessionService;
@@ -31,14 +31,15 @@ public class ConfirmationService {
     }
 
     /**
-     * Valide le token HMAC issu de l'URL de confirmation envoyée par mail
-     * et fait progresser l'état de la session d'onboarding.
+     * Vérifie le token HMAC reçu par email et fait progresser la session vers PENDING_CONFIRMATION.
      *
      * @param token le token {@code payload-signature} reçu par email
      * @return la session d'onboarding validée
      */
-    public Onboarding validateConfirmationToken(String token) {
-        return onboardingSessionService.validate(token);
+    public Onboarding validateVerificationToken(String token) {
+        Onboarding onboarding = onboardingSessionService.checkToken(token);
+        onboardingSessionService.advanceToConfirmation(onboarding);
+        return onboarding;
     }
 
     /**

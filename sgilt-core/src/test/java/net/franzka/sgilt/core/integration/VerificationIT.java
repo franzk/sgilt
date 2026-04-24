@@ -1,6 +1,6 @@
 package net.franzka.sgilt.core.integration;
 
-import net.franzka.sgilt.core.jwt.ConfirmationTokenHmacService;
+import net.franzka.sgilt.core.jwt.VerificationTokenHmacService;
 import net.franzka.sgilt.core.onboarding.domain.Onboarding;
 import net.franzka.sgilt.core.onboarding.domain.OnboardingState;
 import net.franzka.sgilt.core.onboarding.repository.OnboardingRepository;
@@ -13,15 +13,15 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ConfirmationIT extends BaseIntegrationTest {
+class VerificationIT extends BaseIntegrationTest {
 
     @Autowired private OnboardingRepository onboardingRepository;
-    @Autowired private ConfirmationTokenHmacService confirmationTokenHmacService;
+    @Autowired private VerificationTokenHmacService verificationTokenHmacService;
 
     private static final String ONBOARDING_URL = "/api/v1/onboarding";
-    private static final String CONFIRMATION_URL = "/api/v1/confirmation";
+    private static final String VERIFICATION_URL = "/api/v1/onboarding/verify";
 
-    ConfirmationIT(WebApplicationContext wac) {
+    VerificationIT(WebApplicationContext wac) {
         super(wac);
     }
 
@@ -39,14 +39,14 @@ class ConfirmationIT extends BaseIntegrationTest {
         ).hasStatus(202);
 
         String payload = onboardingRepository.findAll().getFirst().getHmacPayload();
-        return confirmationTokenHmacService.buildToken(payload);
+        return verificationTokenHmacService.buildToken(payload);
     }
 
     @Test
     void givenValidToken_whenVerify_thenReturns200WithEmailAndSetPasswordToken() {
         String token = submitDemandeAndGetToken();
 
-        var response = mockMvc.get().uri(CONFIRMATION_URL)
+        var response = mockMvc.get().uri(VERIFICATION_URL)
                 .param("token", token)
                 .exchange();
 
@@ -64,7 +64,7 @@ class ConfirmationIT extends BaseIntegrationTest {
     void givenValidToken_whenVerify_thenSessionMarkedAsPendingConfirmation() {
         String token = submitDemandeAndGetToken();
 
-        assertThat(mockMvc.get().uri(CONFIRMATION_URL)
+        assertThat(mockMvc.get().uri(VERIFICATION_URL)
                 .param("token", token))
                 .hasStatus(200);
 
@@ -74,7 +74,7 @@ class ConfirmationIT extends BaseIntegrationTest {
 
     @Test
     void givenInvalidToken_whenVerify_thenReturns400() {
-        assertThat(mockMvc.get().uri(CONFIRMATION_URL)
+        assertThat(mockMvc.get().uri(VERIFICATION_URL)
                 .param("token", "token-invalide"))
                 .hasStatus(400);
     }
@@ -87,7 +87,7 @@ class ConfirmationIT extends BaseIntegrationTest {
         session.setExpiresAt(LocalDateTime.now().minusHours(1));
         onboardingRepository.save(session);
 
-        assertThat(mockMvc.get().uri(CONFIRMATION_URL)
+        assertThat(mockMvc.get().uri(VERIFICATION_URL)
                 .param("token", token))
                 .hasStatus(410);
     }
@@ -96,7 +96,7 @@ class ConfirmationIT extends BaseIntegrationTest {
     void givenAlreadyUsedToken_whenVerify_thenReturns403() {
         String token = submitDemandeAndGetToken();
 
-        assertThat(mockMvc.get().uri(CONFIRMATION_URL)
+        assertThat(mockMvc.get().uri(VERIFICATION_URL)
                 .param("token", token))
                 .hasStatus(200);
 
@@ -105,7 +105,7 @@ class ConfirmationIT extends BaseIntegrationTest {
         session.setState(OnboardingState.USED);
         onboardingRepository.save(session);
 
-        assertThat(mockMvc.get().uri(CONFIRMATION_URL)
+        assertThat(mockMvc.get().uri(VERIFICATION_URL)
                 .param("token", token))
                 .hasStatus(403);
     }
@@ -114,11 +114,11 @@ class ConfirmationIT extends BaseIntegrationTest {
     void givenSessionInPendingConfirmation_whenVerifyWithinGracePeriod_thenReturns200() {
         String token = submitDemandeAndGetToken();
 
-        assertThat(mockMvc.get().uri(CONFIRMATION_URL)
+        assertThat(mockMvc.get().uri(VERIFICATION_URL)
                 .param("token", token))
                 .hasStatus(200);
 
-        assertThat(mockMvc.get().uri(CONFIRMATION_URL)
+        assertThat(mockMvc.get().uri(VERIFICATION_URL)
                 .param("token", token))
                 .hasStatus(200);
     }
@@ -127,7 +127,7 @@ class ConfirmationIT extends BaseIntegrationTest {
     void givenSessionInPendingConfirmation_whenVerifyAfterGracePeriod_thenReturns410() {
         String token = submitDemandeAndGetToken();
 
-        assertThat(mockMvc.get().uri(CONFIRMATION_URL)
+        assertThat(mockMvc.get().uri(VERIFICATION_URL)
                 .param("token", token))
                 .hasStatus(200);
 
@@ -135,7 +135,7 @@ class ConfirmationIT extends BaseIntegrationTest {
         session.setConfirmationPeriodExpiresAt(LocalDateTime.now().minusSeconds(1));
         onboardingRepository.save(session);
 
-        assertThat(mockMvc.get().uri(CONFIRMATION_URL)
+        assertThat(mockMvc.get().uri(VERIFICATION_URL)
                 .param("token", token))
                 .hasStatus(410);
     }
@@ -165,9 +165,9 @@ class ConfirmationIT extends BaseIntegrationTest {
                 .findByEmailAndState("franz@ka.net", OnboardingState.CANCELLED)
                 .getFirst();
 
-        String token = confirmationTokenHmacService.buildToken(cancelledSession.getHmacPayload());
+        String token = verificationTokenHmacService.buildToken(cancelledSession.getHmacPayload());
 
-        assertThat(mockMvc.get().uri(CONFIRMATION_URL)
+        assertThat(mockMvc.get().uri(VERIFICATION_URL)
                 .param("token", token))
                 .hasStatus(403);
     }
