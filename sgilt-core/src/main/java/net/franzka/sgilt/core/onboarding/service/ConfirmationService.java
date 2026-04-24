@@ -1,66 +1,55 @@
 package net.franzka.sgilt.core.onboarding.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import net.franzka.sgilt.core.jwt.TokenJwtService;
-import net.franzka.sgilt.core.onboarding.domain.ConfirmationToken;
+import net.franzka.sgilt.core.onboarding.domain.Onboarding;
 import net.franzka.sgilt.core.onboarding.dto.SetPasswordTokenDto;
-import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
-import net.franzka.sgilt.core.onboarding.exception.TokenAlreadyUsedException;
-import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
 /**
- * Service pour la confirmation de la demande initiale par email
+ * Service pour la confirmation de la demande initiale par email.
  */
 @Service
 public class ConfirmationService {
 
-    private final ConfirmationTokenService confirmationTokenService;
+    private final OnboardingSessionService onboardingSessionService;
     private final TokenJwtService setPasswordTokenJwtService;
 
     /**
      * Construit le service avec ses dépendances.
      *
-     * @param confirmationTokenService    le service métier des tokens de confirmation
-     * @param setPasswordTokenJwtService  le service JWT qualifié pour les tokens set-password
+     * @param onboardingSessionService   le service métier des sessions d'onboarding
+     * @param setPasswordTokenJwtService le service JWT qualifié pour les tokens set-password
      */
     public ConfirmationService(
-            ConfirmationTokenService confirmationTokenService,
+            OnboardingSessionService onboardingSessionService,
             @Qualifier("setPasswordTokenJwtService") TokenJwtService setPasswordTokenJwtService) {
-        this.confirmationTokenService = confirmationTokenService;
+        this.onboardingSessionService = onboardingSessionService;
         this.setPasswordTokenJwtService = setPasswordTokenJwtService;
     }
 
     /**
-     * Valide le token de confirmation HMAC issu de l'URL de validation envoyée par mail.
-     * Retourne l'entité correspondante trouvée en BDD.
+     * Valide le token HMAC issu de l'URL de confirmation envoyée par mail
+     * et fait progresser l'état de la session d'onboarding.
      *
-     * @param token le token de confirmation reçu par email, sous la forme {@code payload-signature}
-     * @return l'entité {@link ConfirmationToken} validée
-     * @throws TokenExpiredException     si le token est expiré
-     * @throws InvalidTokenException     si la signature HMAC est invalide
-     * @throws EntityNotFoundException   si aucun token ne correspond au payload
-     * @throws TokenAlreadyUsedException si le token a déjà été consommé
+     * @param token le token {@code payload-signature} reçu par email
+     * @return la session d'onboarding validée
      */
-    public ConfirmationToken validateConfirmationToken(String token) {
-        return confirmationTokenService.validate(token);
+    public Onboarding validateConfirmationToken(String token) {
+        return onboardingSessionService.validate(token);
     }
 
     /**
-     * Génère un JWT set-password à partir du token de confirmation consommé et construit la réponse.
+     * Génère un JWT set-password à partir de la session d'onboarding validée.
      *
-     * @param confirmationToken le token de confirmation validé et consommé
-     * @return la réponse contenant l'email et le JWT set-password
+     * @param onboarding la session d'onboarding validée
+     * @return l'email et le JWT set-password
      */
-    public SetPasswordTokenDto generateSetPasswordResponse(ConfirmationToken confirmationToken) {
-        String email = confirmationToken.getEmail();
-        Map<String, Object> claims = Map.of(
-                "reservationId", confirmationToken.getReservation().getId().toString()
-        );
-        String setPasswordToken = setPasswordTokenJwtService.generateToken(claims, email);
-        return new SetPasswordTokenDto(email, setPasswordToken);
+    public SetPasswordTokenDto generateSetPasswordResponse(Onboarding onboarding) {
+        Map<String, Object> claims = Map.of("onboardingId", onboarding.getId().toString());
+        String setPasswordToken = setPasswordTokenJwtService.generateToken(claims, onboarding.getEmail());
+        return new SetPasswordTokenDto(onboarding.getEmail(), setPasswordToken);
     }
 }

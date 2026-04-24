@@ -1,4 +1,1 @@
-DELETE FROM confirmation_tokens;
-DELETE FROM reservations;
-DELETE FROM evenements;
-DELETE FROM utilisateurs;
+TRUNCATE TABLE onboarding, reservations, evenements, prestataires, utilisateurs CASCADE;

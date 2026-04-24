@@ -2,6 +2,8 @@ package net.franzka.sgilt.core.utilisateur.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -35,8 +37,9 @@ public class Utilisateur {
 
     private String avatarUrl;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(columnDefinition = "utilisateur_status", nullable = false)
     private UtilisateurStatus status;
 
     @Column(nullable = false, updatable = false)

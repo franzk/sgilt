@@ -1,6 +1,6 @@
 package net.franzka.sgilt.core.onboarding.domain;
 
-public enum ConfirmationTokenState {
+public enum OnboardingState {
     OPEN,
     PENDING_CONFIRMATION,
     USED,

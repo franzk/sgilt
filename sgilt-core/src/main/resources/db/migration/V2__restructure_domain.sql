@@ -18,14 +18,12 @@ DROP TYPE reservation_status;
 
 -- ── 3. Nouveaux types enum ────────────────────────────────────────────────────
 CREATE TYPE evenement_status AS ENUM (
-    'DRAFT',
     'ACTIVE',
     'DONE',
     'CANCELED'
 );
 
 CREATE TYPE reservation_status AS ENUM (
-    'DRAFT',
     'NEW',
     'IN_DISCUSSION',
     'CONFIRMED',

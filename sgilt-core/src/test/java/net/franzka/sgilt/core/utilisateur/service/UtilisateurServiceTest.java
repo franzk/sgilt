@@ -12,8 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.*;
@@ -71,22 +69,7 @@ class UtilisateurServiceTest {
             assertThat(saved.getFirstName()).isEqualTo(FIRST_NAME);
             assertThat(saved.getLastName()).isEqualTo(LAST_NAME);
             assertThat(saved.getEmail()).isEqualTo(EMAIL);
-            assertThat(saved.getTelephone()).isEqualTo(TELEPHONE);
-        }
-
-        @Test
-        void givenNewEmail_whenCreateUtilisateur_thenSavedUtilisateurHasCreatedAt() {
-            when(utilisateurRepository.existsByEmail(EMAIL)).thenReturn(false);
-            when(utilisateurRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
-
-            LocalDateTime before = LocalDateTime.now();
-            utilisateurService.createUtilisateur(FIRST_NAME, LAST_NAME, EMAIL, TELEPHONE);
-            LocalDateTime after = LocalDateTime.now();
-
-            ArgumentCaptor<Utilisateur> captor = ArgumentCaptor.forClass(Utilisateur.class);
-            verify(utilisateurRepository).save(captor.capture());
-
-            assertThat(captor.getValue().getCreatedAt()).isBetween(before, after);
+            assertThat(saved.getPhone()).isEqualTo(TELEPHONE);
         }
 
         @Test

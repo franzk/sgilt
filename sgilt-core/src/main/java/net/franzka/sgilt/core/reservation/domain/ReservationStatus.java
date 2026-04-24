@@ -1,7 +1,6 @@
 package net.franzka.sgilt.core.reservation.domain;
 
 public enum ReservationStatus {
-    DRAFT,
     NEW,
     IN_DISCUSSION,
     CONFIRMED,

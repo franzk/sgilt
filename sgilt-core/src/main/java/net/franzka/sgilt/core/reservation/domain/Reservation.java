@@ -3,6 +3,8 @@ package net.franzka.sgilt.core.reservation.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 
@@ -41,8 +43,9 @@ public class Reservation {
     @Column(nullable = false)
     private LocalDate date;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(columnDefinition = "reservation_status", nullable = false)
     private ReservationStatus status;
 
     @Column(nullable = false, updatable = false)

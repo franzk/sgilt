@@ -3,6 +3,8 @@ package net.franzka.sgilt.core.evenement.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,8 +38,9 @@ public class Evenement {
 
     private String coverUrl;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(columnDefinition = "evenement_status", nullable = false)
     private EvenementStatus statut;
 
     @Column(nullable = false, updatable = false)

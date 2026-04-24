@@ -1,13 +1,8 @@
 package net.franzka.sgilt.core.integration;
 
-import net.franzka.sgilt.core.evenement.domain.Evenement;
-import net.franzka.sgilt.core.evenement.repository.EvenementRepository;
-import net.franzka.sgilt.core.onboarding.domain.ConfirmationToken;
-import net.franzka.sgilt.core.onboarding.domain.ConfirmationTokenState;
-import net.franzka.sgilt.core.onboarding.repository.ConfirmationTokenRepository;
-import net.franzka.sgilt.core.reservation.domain.Reservation;
-import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
-import net.franzka.sgilt.core.reservation.repository.ReservationRepository;
+import net.franzka.sgilt.core.onboarding.domain.Onboarding;
+import net.franzka.sgilt.core.onboarding.domain.OnboardingState;
+import net.franzka.sgilt.core.onboarding.repository.OnboardingRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,16 +16,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class OnboardingIT extends BaseIntegrationTest {
 
-    @Autowired private ConfirmationTokenRepository confirmationTokenRepository;
-    @Autowired private ReservationRepository reservationRepository;
-    @Autowired private EvenementRepository evenementRepository;
+    @Autowired private OnboardingRepository onboardingRepository;
 
     OnboardingIT(WebApplicationContext wac) {
         super(wac);
     }
 
     @Test
-    void givenValidRequest_whenSubmitDemande_thenReturns202AndCreatesToken() {
+    void givenValidRequest_whenSubmitDemande_thenReturns202AndCreatesOnboardingSession() {
         assertThat(mockMvc.post().uri("/api/v1/onboarding")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
@@ -46,23 +39,15 @@ class OnboardingIT extends BaseIntegrationTest {
                 .extractingPath("$.email")
                 .isEqualTo("franz@ka.net");
 
-        // assertions BDD
-        List<ConfirmationToken> tokens = confirmationTokenRepository.findAll();
-        assertThat(tokens).hasSize(1);
+        List<Onboarding> sessions = onboardingRepository.findAll();
+        assertThat(sessions).hasSize(1);
 
-        ConfirmationToken token = tokens.getFirst();
-        assertThat(token.getEmail()).isEqualTo("franz@ka.net");
-        assertThat(token.getState()).isEqualTo(ConfirmationTokenState.OPEN);
-        assertThat(token.getPayload()).isNotBlank();
-        assertThat(token.getExpiresAt()).isAfter(LocalDateTime.now());
-        assertThat(token.getReservation()).isNotNull();
-
-        Reservation reservation = reservationRepository.findById(token.getReservation().getId()).orElseThrow();
-        assertThat(reservation.getStatus()).isEqualTo(ReservationStatus.DRAFT);
-
-        Evenement evenement = evenementRepository.findById(reservation.getEvenement().getId()).orElseThrow();
-        assertThat(evenement.getEmail()).isEqualTo("franz@ka.net");
-
+        Onboarding session = sessions.getFirst();
+        assertThat(session.getEmail()).isEqualTo("franz@ka.net");
+        assertThat(session.getState()).isEqualTo(OnboardingState.OPEN);
+        assertThat(session.getHmacPayload()).isNotBlank();
+        assertThat(session.getExpiresAt()).isAfter(LocalDateTime.now());
+        assertThat(session.getPrestataire()).isNotNull();
     }
 
     @Test
@@ -110,7 +95,7 @@ class OnboardingIT extends BaseIntegrationTest {
     }
 
     @Test
-    void givenSameEmailTwice_whenSubmitDemande_thenPreviousTokenCancelledAndNewTokenCreated() {
+    void givenSameEmailTwice_whenSubmitDemande_thenPreviousSessionCancelledAndNewSessionCreated() {
         // première soumission
         assertThat(mockMvc.post().uri("/api/v1/onboarding")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -135,20 +120,18 @@ class OnboardingIT extends BaseIntegrationTest {
                 }
             """)).hasStatus(HttpStatus.ACCEPTED);
 
-        List<ConfirmationToken> tokens = confirmationTokenRepository.findAll();
-        assertThat(tokens)
+        List<Onboarding> sessions = onboardingRepository.findAll();
+        assertThat(sessions)
                 .hasSize(2)
-                .anyMatch(t -> t.getState() == ConfirmationTokenState.CANCELLED)
-                .anyMatch(t -> t.getState() == ConfirmationTokenState.OPEN)
-        ;
+                .anyMatch(s -> s.getState() == OnboardingState.CANCELLED)
+                .anyMatch(s -> s.getState() == OnboardingState.OPEN);
     }
 
     @Test
     void givenExistingClient_whenSubmitDemande_thenReturns202AndSendsSecurityAlert() {
         // TODO : nécessite la table utilisateurs
         // quand un email déjà connu est soumis :
-        // - pas de nouveau ConfirmationToken créé
+        // - pas de nouvelle session d'onboarding créée
         // - mail de sécurité envoyé
-        // - réservation DRAFT créée et rattachée au compte existant
     }
 }

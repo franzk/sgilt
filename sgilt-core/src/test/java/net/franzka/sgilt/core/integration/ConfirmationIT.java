@@ -1,9 +1,9 @@
 package net.franzka.sgilt.core.integration;
 
 import net.franzka.sgilt.core.jwt.ConfirmationTokenHmacService;
-import net.franzka.sgilt.core.onboarding.domain.ConfirmationToken;
-import net.franzka.sgilt.core.onboarding.domain.ConfirmationTokenState;
-import net.franzka.sgilt.core.onboarding.repository.ConfirmationTokenRepository;
+import net.franzka.sgilt.core.onboarding.domain.Onboarding;
+import net.franzka.sgilt.core.onboarding.domain.OnboardingState;
+import net.franzka.sgilt.core.onboarding.repository.OnboardingRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -15,12 +15,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ConfirmationIT extends BaseIntegrationTest {
 
-    @Autowired private ConfirmationTokenRepository confirmationTokenRepository;
+    @Autowired private OnboardingRepository onboardingRepository;
     @Autowired private ConfirmationTokenHmacService confirmationTokenHmacService;
 
     private static final String ONBOARDING_URL = "/api/v1/onboarding";
     private static final String CONFIRMATION_URL = "/api/v1/confirmation";
-
 
     ConfirmationIT(WebApplicationContext wac) {
         super(wac);
@@ -39,8 +38,7 @@ class ConfirmationIT extends BaseIntegrationTest {
                 """)
         ).hasStatus(202);
 
-        var confirmationTokens = confirmationTokenRepository.findAll();
-        String payload = confirmationTokens.getFirst().getPayload();
+        String payload = onboardingRepository.findAll().getFirst().getHmacPayload();
         return confirmationTokenHmacService.buildToken(payload);
     }
 
@@ -63,15 +61,15 @@ class ConfirmationIT extends BaseIntegrationTest {
     }
 
     @Test
-    void givenValidToken_whenVerify_thenTokenMarkedAsPendingConfirmation() {
+    void givenValidToken_whenVerify_thenSessionMarkedAsPendingConfirmation() {
         String token = submitDemandeAndGetToken();
 
         assertThat(mockMvc.get().uri(CONFIRMATION_URL)
                 .param("token", token))
                 .hasStatus(200);
 
-        ConfirmationToken confirmationToken = confirmationTokenRepository.findAll().getFirst();
-        assertThat(confirmationToken.getState()).isEqualTo(ConfirmationTokenState.PENDING_CONFIRMATION);
+        Onboarding session = onboardingRepository.findAll().getFirst();
+        assertThat(session.getState()).isEqualTo(OnboardingState.PENDING_CONFIRMATION);
     }
 
     @Test
@@ -85,9 +83,9 @@ class ConfirmationIT extends BaseIntegrationTest {
     void givenExpiredToken_whenVerify_thenReturns410() {
         String token = submitDemandeAndGetToken();
 
-        ConfirmationToken confirmationToken = confirmationTokenRepository.findAll().getFirst();
-        confirmationToken.setExpiresAt(LocalDateTime.now().minusHours(1));
-        confirmationTokenRepository.save(confirmationToken);
+        Onboarding session = onboardingRepository.findAll().getFirst();
+        session.setExpiresAt(LocalDateTime.now().minusHours(1));
+        onboardingRepository.save(session);
 
         assertThat(mockMvc.get().uri(CONFIRMATION_URL)
                 .param("token", token))
@@ -102,10 +100,10 @@ class ConfirmationIT extends BaseIntegrationTest {
                 .param("token", token))
                 .hasStatus(200);
 
-        ConfirmationToken confirmationToken = confirmationTokenRepository.findAll().getFirst();
-        assertThat(confirmationToken.getState()).isEqualTo(ConfirmationTokenState.PENDING_CONFIRMATION);
-        confirmationToken.setState(ConfirmationTokenState.USED);
-        confirmationTokenRepository.save(confirmationToken);
+        Onboarding session = onboardingRepository.findAll().getFirst();
+        assertThat(session.getState()).isEqualTo(OnboardingState.PENDING_CONFIRMATION);
+        session.setState(OnboardingState.USED);
+        onboardingRepository.save(session);
 
         assertThat(mockMvc.get().uri(CONFIRMATION_URL)
                 .param("token", token))
@@ -113,7 +111,7 @@ class ConfirmationIT extends BaseIntegrationTest {
     }
 
     @Test
-    void givenTokenInPendingConfirmation_whenVerifyWithinGracePeriod_thenReturns200() {
+    void givenSessionInPendingConfirmation_whenVerifyWithinGracePeriod_thenReturns200() {
         String token = submitDemandeAndGetToken();
 
         assertThat(mockMvc.get().uri(CONFIRMATION_URL)
@@ -126,16 +124,16 @@ class ConfirmationIT extends BaseIntegrationTest {
     }
 
     @Test
-    void givenTokenInPendingConfirmation_whenVerifyAfterGracePeriod_thenReturns410() {
+    void givenSessionInPendingConfirmation_whenVerifyAfterGracePeriod_thenReturns410() {
         String token = submitDemandeAndGetToken();
 
         assertThat(mockMvc.get().uri(CONFIRMATION_URL)
                 .param("token", token))
                 .hasStatus(200);
 
-        ConfirmationToken confirmationToken = confirmationTokenRepository.findAll().getFirst();
-        confirmationToken.setConfirmationPeriodExpiresAt(LocalDateTime.now().minusSeconds(1));
-        confirmationTokenRepository.save(confirmationToken);
+        Onboarding session = onboardingRepository.findAll().getFirst();
+        session.setConfirmationPeriodExpiresAt(LocalDateTime.now().minusSeconds(1));
+        onboardingRepository.save(session);
 
         assertThat(mockMvc.get().uri(CONFIRMATION_URL)
                 .param("token", token))
@@ -143,7 +141,7 @@ class ConfirmationIT extends BaseIntegrationTest {
     }
 
     @Test
-    void givenCancelledToken_whenVerify_thenReturns403() {
+    void givenCancelledSession_whenVerify_thenReturns403() {
         String body = """
                 {
                     "firstName": "Franz",
@@ -163,11 +161,11 @@ class ConfirmationIT extends BaseIntegrationTest {
                 .content(body))
                 .hasStatus(202);
 
-        ConfirmationToken cancelledToken = confirmationTokenRepository
-                .findByEmailAndState("franz@ka.net", ConfirmationTokenState.CANCELLED)
+        Onboarding cancelledSession = onboardingRepository
+                .findByEmailAndState("franz@ka.net", OnboardingState.CANCELLED)
                 .getFirst();
 
-        String token = confirmationTokenHmacService.buildToken(cancelledToken.getPayload());
+        String token = confirmationTokenHmacService.buildToken(cancelledSession.getHmacPayload());
 
         assertThat(mockMvc.get().uri(CONFIRMATION_URL)
                 .param("token", token))
