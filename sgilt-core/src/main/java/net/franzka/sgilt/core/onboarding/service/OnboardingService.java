@@ -61,6 +61,7 @@ public class OnboardingService {
         onboardingSessionService.cancelExistingForEmail(request.email());
 
         Prestataire prestataire = prestataireService.getById(request.prestataireId());
+
         OnboardingSessionService.InitiationResult result =
                 onboardingSessionService.initiate(request.email(), prestataire, request);
 
