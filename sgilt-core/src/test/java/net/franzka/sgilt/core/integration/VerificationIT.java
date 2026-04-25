@@ -18,7 +18,7 @@ class VerificationIT extends BaseIntegrationTest {
     @Autowired private OnboardingRepository onboardingRepository;
     @Autowired private VerificationTokenHmacService verificationTokenHmacService;
 
-    private static final String ONBOARDING_URL = "/api/v1/onboarding";
+    private static final String ONBOARDING_URL   = "/api/v1/onboarding";
     private static final String VERIFICATION_URL = "/api/v1/onboarding/verify";
 
     VerificationIT(WebApplicationContext wac) {
@@ -41,6 +41,10 @@ class VerificationIT extends BaseIntegrationTest {
         String payload = onboardingRepository.findAll().getFirst().getHmacPayload();
         return verificationTokenHmacService.buildToken(payload);
     }
+
+    // -------------------------------------------------------------------------
+    // parcours nominal
+    // -------------------------------------------------------------------------
 
     @Test
     void givenValidToken_whenVerify_thenReturns200WithEmailAndSetPasswordToken() {
@@ -72,43 +76,9 @@ class VerificationIT extends BaseIntegrationTest {
         assertThat(session.getState()).isEqualTo(OnboardingState.PENDING_CONFIRMATION);
     }
 
-    @Test
-    void givenInvalidToken_whenVerify_thenReturns400() {
-        assertThat(mockMvc.get().uri(VERIFICATION_URL)
-                .param("token", "token-invalide"))
-                .hasStatus(400);
-    }
-
-    @Test
-    void givenExpiredToken_whenVerify_thenReturns410() {
-        String token = submitDemandeAndGetToken();
-
-        Onboarding session = onboardingRepository.findAll().getFirst();
-        session.setExpiresAt(LocalDateTime.now().minusHours(1));
-        onboardingRepository.save(session);
-
-        assertThat(mockMvc.get().uri(VERIFICATION_URL)
-                .param("token", token))
-                .hasStatus(410);
-    }
-
-    @Test
-    void givenAlreadyUsedToken_whenVerify_thenReturns403() {
-        String token = submitDemandeAndGetToken();
-
-        assertThat(mockMvc.get().uri(VERIFICATION_URL)
-                .param("token", token))
-                .hasStatus(200);
-
-        Onboarding session = onboardingRepository.findAll().getFirst();
-        assertThat(session.getState()).isEqualTo(OnboardingState.PENDING_CONFIRMATION);
-        session.setState(OnboardingState.USED);
-        onboardingRepository.save(session);
-
-        assertThat(mockMvc.get().uri(VERIFICATION_URL)
-                .param("token", token))
-                .hasStatus(403);
-    }
+    // -------------------------------------------------------------------------
+    // parcours edge — idempotence dans la période de grâce
+    // -------------------------------------------------------------------------
 
     @Test
     void givenSessionInPendingConfirmation_whenVerifyWithinGracePeriod_thenReturns200() {
@@ -133,6 +103,23 @@ class VerificationIT extends BaseIntegrationTest {
 
         Onboarding session = onboardingRepository.findAll().getFirst();
         session.setConfirmationPeriodExpiresAt(LocalDateTime.now().minusSeconds(1));
+        onboardingRepository.save(session);
+
+        assertThat(mockMvc.get().uri(VERIFICATION_URL)
+                .param("token", token))
+                .hasStatus(410);
+    }
+
+    // -------------------------------------------------------------------------
+    // parcours edge — session expirée ou annulée
+    // -------------------------------------------------------------------------
+
+    @Test
+    void givenExpiredToken_whenVerify_thenReturns410() {
+        String token = submitDemandeAndGetToken();
+
+        Onboarding session = onboardingRepository.findAll().getFirst();
+        session.setExpiresAt(LocalDateTime.now().minusHours(1));
         onboardingRepository.save(session);
 
         assertThat(mockMvc.get().uri(VERIFICATION_URL)
@@ -170,5 +157,34 @@ class VerificationIT extends BaseIntegrationTest {
         assertThat(mockMvc.get().uri(VERIFICATION_URL)
                 .param("token", token))
                 .hasStatus(403);
+    }
+
+    @Test
+    void givenAlreadyUsedToken_whenVerify_thenReturns403() {
+        String token = submitDemandeAndGetToken();
+
+        assertThat(mockMvc.get().uri(VERIFICATION_URL)
+                .param("token", token))
+                .hasStatus(200);
+
+        Onboarding session = onboardingRepository.findAll().getFirst();
+        assertThat(session.getState()).isEqualTo(OnboardingState.PENDING_CONFIRMATION);
+        session.setState(OnboardingState.USED);
+        onboardingRepository.save(session);
+
+        assertThat(mockMvc.get().uri(VERIFICATION_URL)
+                .param("token", token))
+                .hasStatus(403);
+    }
+
+    // -------------------------------------------------------------------------
+    // parcours edge — token invalide
+    // -------------------------------------------------------------------------
+
+    @Test
+    void givenInvalidToken_whenVerify_thenReturns400() {
+        assertThat(mockMvc.get().uri(VERIFICATION_URL)
+                .param("token", "token-invalide"))
+                .hasStatus(400);
     }
 }

@@ -1,1 +1,1 @@
-TRUNCATE TABLE onboarding, reservations, evenements, prestataires, utilisateurs CASCADE;
+TRUNCATE TABLE reservation_feed, onboarding, reservations, evenements, prestataires, utilisateurs CASCADE;

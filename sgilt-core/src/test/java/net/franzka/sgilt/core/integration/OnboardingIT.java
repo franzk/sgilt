@@ -22,6 +22,10 @@ class OnboardingIT extends BaseIntegrationTest {
         super(wac);
     }
 
+    // -------------------------------------------------------------------------
+    // parcours nominal
+    // -------------------------------------------------------------------------
+
     @Test
     void givenValidRequest_whenSubmitDemande_thenReturns202AndCreatesOnboardingSession() {
         assertThat(mockMvc.post().uri("/api/v1/onboarding")
@@ -49,6 +53,69 @@ class OnboardingIT extends BaseIntegrationTest {
         assertThat(session.getExpiresAt()).isAfter(LocalDateTime.now());
         assertThat(session.getPrestataire()).isNotNull();
     }
+
+    // -------------------------------------------------------------------------
+    // parcours edge — client existant
+    // -------------------------------------------------------------------------
+
+    @Test
+    void givenExistingClient_whenSubmitDemande_thenReturns202AndNoSessionCreated() {
+        // test-prestataire@sgilt.test est un utilisateur existant (inséré par test-data.sql)
+        assertThat(mockMvc.post().uri("/api/v1/onboarding")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                {
+                    "firstName": "Test",
+                    "lastName": "Prestataire",
+                    "email": "test-prestataire@sgilt.test",
+                    "prestataireId": "37d43573-8cd0-4eef-a838-91d9bb4f2323"
+                }
+            """))
+                .hasStatus(HttpStatus.ACCEPTED);
+
+        assertThat(onboardingRepository.findAll()).isEmpty();
+    }
+
+    // -------------------------------------------------------------------------
+    // parcours edge — double soumission
+    // -------------------------------------------------------------------------
+
+    @Test
+    void givenSameEmailTwice_whenSubmitDemande_thenPreviousSessionCancelledAndNewSessionCreated() {
+        // première soumission
+        assertThat(mockMvc.post().uri("/api/v1/onboarding")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                {
+                    "firstName": "Franz",
+                    "lastName": "Ka",
+                    "email": "franz@ka.net",
+                    "prestataireId": "37d43573-8cd0-4eef-a838-91d9bb4f2323"
+                }
+            """)).hasStatus(HttpStatus.ACCEPTED);
+
+        // deuxième soumission
+        assertThat(mockMvc.post().uri("/api/v1/onboarding")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                {
+                    "firstName": "Franz",
+                    "lastName": "Ka",
+                    "email": "franz@ka.net",
+                    "prestataireId": "37d43573-8cd0-4eef-a838-91d9bb4f2323"
+                }
+            """)).hasStatus(HttpStatus.ACCEPTED);
+
+        List<Onboarding> sessions = onboardingRepository.findAll();
+        assertThat(sessions)
+                .hasSize(2)
+                .anyMatch(s -> s.getState() == OnboardingState.CANCELLED)
+                .anyMatch(s -> s.getState() == OnboardingState.OPEN);
+    }
+
+    // -------------------------------------------------------------------------
+    // parcours edge — requête invalide
+    // -------------------------------------------------------------------------
 
     @Test
     void givenInvalidEmail_whenSubmitDemande_thenReturns400() {
@@ -92,46 +159,5 @@ class OnboardingIT extends BaseIntegrationTest {
                 }
             """))
                 .hasStatus(HttpStatus.BAD_REQUEST);
-    }
-
-    @Test
-    void givenSameEmailTwice_whenSubmitDemande_thenPreviousSessionCancelledAndNewSessionCreated() {
-        // première soumission
-        assertThat(mockMvc.post().uri("/api/v1/onboarding")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                {
-                    "firstName": "Franz",
-                    "lastName": "Ka",
-                    "email": "franz@ka.net",
-                    "prestataireId": "37d43573-8cd0-4eef-a838-91d9bb4f2323"
-                }
-            """)).hasStatus(HttpStatus.ACCEPTED);
-
-        // deuxième soumission
-        assertThat(mockMvc.post().uri("/api/v1/onboarding")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                {
-                    "firstName": "Franz",
-                    "lastName": "Ka",
-                    "email": "franz@ka.net",
-                    "prestataireId": "37d43573-8cd0-4eef-a838-91d9bb4f2323"
-                }
-            """)).hasStatus(HttpStatus.ACCEPTED);
-
-        List<Onboarding> sessions = onboardingRepository.findAll();
-        assertThat(sessions)
-                .hasSize(2)
-                .anyMatch(s -> s.getState() == OnboardingState.CANCELLED)
-                .anyMatch(s -> s.getState() == OnboardingState.OPEN);
-    }
-
-    @Test
-    void givenExistingClient_whenSubmitDemande_thenReturns202AndSendsSecurityAlert() {
-        // TODO : nécessite la table utilisateurs
-        // quand un email déjà connu est soumis :
-        // - pas de nouvelle session d'onboarding créée
-        // - mail de sécurité envoyé
     }
 }
