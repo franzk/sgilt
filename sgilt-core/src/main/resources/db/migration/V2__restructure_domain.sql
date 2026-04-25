@@ -1,11 +1,10 @@
--- Restructuration du schéma pour aligner sur le modèle Java :
---   - evenement_status et reservation_status : valeurs renommées/enrichies
---   - calendrier_source, utilisateur_status : nouveaux types enum
+-- Squash de V2 à V5 :
+--   - evenement_status, reservation_status, calendrier_source, utilisateur_status, onboarding_state
 --   - utilisateurs : telephone → phone, + status, + deleted_at
---   - evenements : rebuild complet (nouveau modèle événement utilisateur)
---   - reservations : rebuild complet (utilisateur_id, date, updated_at ; prestataire_id FK)
---   - Nouvelles tables : sous_categories, prestataires, prestataires_sous_categories,
---                        reservation_feed, calendrier_prestataire
+--   - evenements : rebuild complet avec tous les champs optionnels
+--   - reservations, reservation_feed, calendrier_prestataire : rebuild complet
+--   - prestataires, sous_categories, prestataires_sous_categories
+--   - onboarding : remplace confirmation_tokens et tunnel_data
 
 -- ── 1. Drop des tables dans l'ordre des dépendances FK ───────────────────────
 DROP TABLE confirmation_tokens;
@@ -15,6 +14,7 @@ DROP TABLE evenements;
 -- ── 2. Drop des anciens types enum ───────────────────────────────────────────
 DROP TYPE evenement_status;
 DROP TYPE reservation_status;
+DROP TYPE confirmation_token_state;
 
 -- ── 3. Nouveaux types enum ────────────────────────────────────────────────────
 CREATE TYPE evenement_status AS ENUM (
@@ -45,6 +45,13 @@ CREATE TYPE utilisateur_status AS ENUM (
     'DRAFT',
     'ACTIVE',
     'ARCHIVED'
+);
+
+CREATE TYPE onboarding_state AS ENUM (
+    'OPEN',
+    'PENDING_CONFIRMATION',
+    'USED',
+    'CANCELLED'
 );
 
 -- ── 4. Modification de utilisateurs ──────────────────────────────────────────
@@ -91,18 +98,26 @@ CREATE TABLE prestataires_sous_categories (
     PRIMARY KEY (prestataire_id, sous_categorie_id)
 );
 
--- ── 8. evenements (nouveau modèle) ────────────────────────────────────────────
+-- ── 8. evenements ─────────────────────────────────────────────────────────────
 CREATE TABLE evenements (
     id              UUID             NOT NULL PRIMARY KEY,
     utilisateur_id  UUID             NOT NULL REFERENCES utilisateurs(id),
     name            VARCHAR(255)     NOT NULL,
     date            DATE             NOT NULL,
     cover_url       VARCHAR(255),
-    statut          evenement_status NOT NULL,
+    status          evenement_status NOT NULL,
+    event_type      VARCHAR(255),
+    ambiance        VARCHAR(255),
+    moment_cle      VARCHAR(255),
+    description     TEXT,
+    ville           VARCHAR(255),
+    nb_invites      VARCHAR(255),
+    lieu            VARCHAR(255),
+    note_partagee   VARCHAR(255),
     created_at      TIMESTAMP        NOT NULL
 );
 
--- ── 9. reservations (nouveau modèle) ─────────────────────────────────────────
+-- ── 9. reservations ───────────────────────────────────────────────────────────
 CREATE TABLE reservations (
     id              UUID               NOT NULL PRIMARY KEY,
     evenement_id    UUID               NOT NULL REFERENCES evenements(id),
@@ -114,7 +129,7 @@ CREATE TABLE reservations (
     updated_at      TIMESTAMP          NOT NULL
 );
 
--- ── 10. reservation_feed (single-table inheritance : NOTE, DOCUMENT) ──────────
+-- ── 10. reservation_feed ──────────────────────────────────────────────────────
 CREATE TABLE reservation_feed (
     id              UUID         NOT NULL PRIMARY KEY,
     type            VARCHAR(50)  NOT NULL,
@@ -144,22 +159,23 @@ CREATE TABLE calendrier_prestataire (
     UNIQUE (prestataire_id, date)
 );
 
--- ── 12. Index ─────────────────────────────────────────────────────────────────
+-- ── 12. onboarding ────────────────────────────────────────────────────────────
+CREATE TABLE onboarding (
+    id                              UUID             NOT NULL PRIMARY KEY,
+    hmac_payload                    VARCHAR(255)     NOT NULL UNIQUE,
+    email                           VARCHAR(255)     NOT NULL,
+    state                           onboarding_state NOT NULL DEFAULT 'OPEN',
+    expires_at                      TIMESTAMP        NOT NULL,
+    confirmation_period_expires_at  TIMESTAMP,
+    prestataire_id                  UUID             NOT NULL REFERENCES prestataires(id),
+    data                            JSONB            NOT NULL,
+    created_at                      TIMESTAMP        NOT NULL
+);
+
+-- ── 13. Index ─────────────────────────────────────────────────────────────────
 CREATE INDEX idx_utilisateurs_email ON utilisateurs(email);
 CREATE INDEX idx_reservations_evenement_id ON reservations(evenement_id);
 CREATE INDEX idx_reservations_prestataire_id ON reservations(prestataire_id);
 CREATE INDEX idx_reservation_feed_reservation_id ON reservation_feed(reservation_id);
 CREATE INDEX idx_prestataires_sous_categories_sous_categorie_id ON prestataires_sous_categories(sous_categorie_id);
 CREATE INDEX idx_calendrier_prestataire_prestataire_date ON calendrier_prestataire(prestataire_id, date);
-
--- ── 13. confirmation_tokens ───────────────────────────────────────────────────
-CREATE TABLE confirmation_tokens (
-    id                              UUID                     NOT NULL PRIMARY KEY,
-    payload                         VARCHAR(255)             NOT NULL UNIQUE,
-    email                           VARCHAR(255)             NOT NULL,
-    reservation_id                  UUID                     REFERENCES reservations(id),
-    state                           confirmation_token_state NOT NULL DEFAULT 'OPEN',
-    confirmation_period_expires_at  TIMESTAMP,
-    expires_at                      TIMESTAMP                NOT NULL,
-    created_at                      TIMESTAMP                NOT NULL
-);
