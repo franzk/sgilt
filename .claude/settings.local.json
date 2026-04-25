@@ -16,7 +16,8 @@
       "Bash(./gradlew integrationTest)",
       "Bash(./gradlew integrationTest --tests \"net.franzka.sgilt.core.integration.OnboardingIT.givenValidRequest_whenSubmitDemande_thenReturns202AndCreatesOnboardingSession\" --info)",
       "Bash(./gradlew integrationTest --tests \"net.franzka.sgilt.core.integration.ConfirmationAccountIT.givenValidToken_whenConfirmAccount_thenReturns200\" --info)",
-      "Bash(./gradlew integrationTest --tests \"net.franzka.sgilt.core.integration.ConfirmationAccountIT.givenValidToken_whenConfirmAccount_thenCreatesUtilisateurWithCorrectFields\" --info)"
+      "Bash(./gradlew integrationTest --tests \"net.franzka.sgilt.core.integration.ConfirmationAccountIT.givenValidToken_whenConfirmAccount_thenCreatesUtilisateurWithCorrectFields\" --info)",
+      "Bash(del *)"
     ]
   }
 }
