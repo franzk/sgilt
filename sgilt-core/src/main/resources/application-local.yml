@@ -1,0 +1,9 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+    import: optional:classpath:application-local-secrets.yml
+  flyway:
+    locations:
+      - classpath:db/migration
+      - classpath:db/seed
