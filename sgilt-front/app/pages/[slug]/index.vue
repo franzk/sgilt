@@ -29,8 +29,8 @@
 import PrestataireDetails from '~/components/prestataire/PrestataireDetails.vue'
 import DemandeBottomSheet from '~/components/demande/DemandeBottomSheet.vue'
 import FinalisationAddPrestataire from '~/components/prestataire/FinalisationAddPrestataire.vue'
-import { fetchPrestataireBySlug } from '~/api/prestataire'
-import type { PrestataireDetail } from '~/types/prestataire'
+import { fetchPrestataireBySlug } from '~/data/prestataire/service/prestataireService'
+import type { PrestataireDetail } from '~/data/prestataire/domain/prestataire'
 
 const router = useRouter()
 const route = useRoute()

@@ -5,7 +5,7 @@ import {
   AMBIANCE_OPTIONS,
   MOMENT_CLE_OPTIONS,
 } from '~/types/demande'
-import { submitOnboarding } from '~/api/onboarding'
+import { submitOnboarding } from '~/data/onboarding/api/onboardingApi'
 
 const DEMANDE_STORAGE_KEY = 'sgilt:demande'
 const storage = () => sessionStorage

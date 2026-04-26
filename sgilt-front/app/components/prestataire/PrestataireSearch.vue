@@ -47,7 +47,7 @@ import SgiltDateFilter from '~/components/composed/SgiltDateFilter.vue'
 import SgiltCategoryFilter from '~/components/composed/SgiltCategoryFilter.vue'
 import SgiltSubCategoryFilter from '~/components/composed/SgiltSubCategoryFilter.vue'
 import SgiltSearchResults from '~/components/composed/SgiltSearchResults.vue'
-import type { PrestataireCardDetail } from '~/types/prestataire'
+import type { PrestataireCardDetail } from '~/data/prestataire/domain/prestataire'
 
 const props = defineProps<{
   selectable?: boolean
