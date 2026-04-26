@@ -71,7 +71,7 @@ const {
   data,
   error: fetchError,
   status,
-} = useApiFetch<ConfirmationResponse>('/confirmation', {
+} = useApiFetch<ConfirmationResponse>('/onboarding/verify', {
   query: { token },
 })
 
