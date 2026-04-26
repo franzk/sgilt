@@ -17,6 +17,7 @@ interface ApiCard {
 
 interface ApiDetail extends ApiCard {
   baseline: string
+  youtubeId?: string
   subcatKeys: string[]
   photos: string[]
   badges: { icon: string; label: string; description: string; color: string }[]
@@ -62,6 +63,7 @@ function mapDetail(d: ApiDetail): PrestataireDetail {
     shortDescription: d.shortDescription,
     image: d.heroImage,
     heroImage: d.heroImage,
+    youtubeId: d.youtubeId,
     categoryKey: d.categoryKey,
     category: categoryName(d.categoryKey),
     subcats: d.subcatKeys,

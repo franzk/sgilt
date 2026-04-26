@@ -11,6 +11,7 @@ public record PrestataireDetailDto(
         String slug,
         String baseline,
         String heroImage,
+        String youtubeId,
         String shortDescription,
         String categoryKey,
         List<String> subcatKeys,

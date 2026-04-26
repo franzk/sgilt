@@ -49,6 +49,8 @@ public class Prestataire {
 
     private String heroImage;
 
+    private String youtubeId;
+
     private String avatar;
 
     private String shortDescription;
