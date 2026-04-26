@@ -47,6 +47,8 @@
 
 <script setup lang="ts">
 import { FetchError } from 'ofetch'
+import { confirmOnboardingAccount } from '~/data/onboarding/api/onboardingApi'
+import type { VerifyTokenResponseDto } from '~/data/onboarding/dto/OnboardingDto'
 
 definePageMeta({ layout: 'app' })
 
@@ -55,23 +57,13 @@ const router = useRouter()
 const { t } = useI18n()
 const { injectTokens } = useKeycloak()
 
-interface ConfirmationResponse {
-  email: string
-  setPasswordToken: string
-}
-
-interface ConfirmAccountResponse {
-  accessToken: string
-  refreshToken: string
-}
-
 const token = Array.isArray(route.query.token) ? route.query.token[0] : route.query.token
 
 const {
   data,
   error: fetchError,
   status,
-} = useApiFetch<ConfirmationResponse>('/onboarding/verify', {
+} = useApiFetch<VerifyTokenResponseDto>('/onboarding/verify', {
   query: { token },
 })
 
@@ -102,12 +94,9 @@ async function submit(): Promise<void> {
   submitError.value = null
 
   try {
-    const response = await apiFetch<ConfirmAccountResponse>('/onboarding/confirm-account', {
-      method: 'POST',
-      body: {
-        setPasswordToken: setPasswordToken.value,
-        password: password.value,
-      },
+    const response = await confirmOnboardingAccount({
+      setPasswordToken: setPasswordToken.value!,
+      password: password.value,
     })
     injectTokens(response.accessToken, response.refreshToken)
     await router.push('/app')
