@@ -35,5 +35,24 @@ you want to work on.
 ### Check it
 
 Once everything is running, you can:
-- access the frontend at http://localhost:5173
+- access the frontend at http://localhost:3000
 - access Keycloak at http://localhost:5080 (admin:admin)
+
+
+### SETUP sgilt-core — local secrets
+
+`sgilt-core` requires a secrets file that is not committed. Create it once:
+
+```bash
+cp sgilt-core/src/main/resources/application-local-secrets.yml.example \
+   sgilt-core/src/main/resources/application-local-secrets.yml
+```
+
+Then fill in the two values:
+
+| Property                             | Where to find it                                                       |
+|--------------------------------------|------------------------------------------------------------------------|
+| `sgilt.jwt.confirmation-secret`      | Any random string — generate with `openssl rand -base64 64`            |
+| `sgilt.keycloak.admin-client-secret` | Keycloak admin → Clients → `sgilt-admin` → Credentials → Client secret |
+
+The file is gitignored. Without it, the service starts but JWT signing and Keycloak admin calls will fail.

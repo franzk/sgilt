@@ -3,7 +3,7 @@ import type {
   PrestataireCardDetail,
   PrestataireDetail,
   PrestataireSearchResponse,
-} from '~/types/prestataire'
+} from '~/data/prestataire/domain/prestataire'
 import { MOCK_PROVIDERS } from '~/utils/mockData'
 
 export const SearchMockService = {

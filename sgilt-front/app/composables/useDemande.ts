@@ -5,6 +5,7 @@ import {
   AMBIANCE_OPTIONS,
   MOMENT_CLE_OPTIONS,
 } from '~/types/demande'
+import { submitOnboarding } from '~/data/onboarding/api/onboardingApi'
 
 const DEMANDE_STORAGE_KEY = 'sgilt:demande'
 const storage = () => sessionStorage
@@ -170,7 +171,7 @@ export function useDemande() {
         prestataireMessage: state.prestataireMessage || null,
       }
 
-      await apiFetch('/onboarding', { method: 'POST', body })
+      await submitOnboarding(body)
       // Clear storage so a refresh shows a fresh form, but keep in-memory
       // state so the confirmation screen can display the recap
       clearStorage()

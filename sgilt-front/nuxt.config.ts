@@ -4,6 +4,10 @@ export default defineNuxtConfig({
 
   devtools: { enabled: false },
 
+  imports: {
+    dirs: ['data/**'],
+  },
+
   runtimeConfig: {
     public: {
       apiUrl: '',

@@ -2,51 +2,51 @@
 
 // ______________ Catégories et sous-catégories ______________
 export type Category = {
-  id: string
+  key: string // identifiant partagé front/back/DB ('all', 'musique'…)
   name: string
   subcategories: SubCategory[]
 }
 
 export type SubCategory = {
-  id: string
+  key: string      // identifiant partagé front/back/DB ('dj', 'pop-rock'… — vide si pas en DB)
   name: string
-  categoryId: string
+  categoryKey: string
 }
 
 export const APP_CATEGORIES: Category[] = [
-  { id: '1', name: 'Tous', subcategories: [] },
+  { key: 'all', name: 'Tous', subcategories: [] },
   {
-    id: '2',
+    key: 'musique',
     name: 'Musique',
     subcategories: [
-      { id: '21', name: 'DJ', categoryId: '2' },
-      { id: '22', name: 'Pop/Rock', categoryId: '2' },
-      { id: '23', name: 'Jazz', categoryId: '2' },
+      { key: 'dj',       name: 'DJ',       categoryKey: 'musique' },
+      { key: 'pop-rock', name: 'Pop/Rock', categoryKey: 'musique' },
+      { key: 'jazz',     name: 'Jazz',     categoryKey: 'musique' },
     ],
   },
   {
-    id: '3',
+    key: 'restauration',
     name: 'Restauration',
     subcategories: [
-      { id: '31', name: 'Traiteur', categoryId: '3' },
-      { id: '32', name: 'Food Truck', categoryId: '3' },
+      { key: 'traiteur',   name: 'Traiteur',   categoryKey: 'restauration' },
+      { key: 'food-truck', name: 'Food Truck', categoryKey: 'restauration' },
     ],
   },
   {
-    id: '4',
+    key: 'photo',
     name: 'Photo',
     subcategories: [
-      { id: '41', name: 'Photographe', categoryId: '4' },
-      { id: '42', name: 'Vidéo', categoryId: '4' },
-      { id: '43', name: 'Photobooth', categoryId: '4' },
+      { key: 'photographe', name: 'Photographe', categoryKey: 'photo' },
+      { key: '',            name: 'Vidéo',       categoryKey: 'photo' },
+      { key: 'photobooth',  name: 'Photobooth',  categoryKey: 'photo' },
     ],
   },
   {
-    id: '5',
+    key: 'services',
     name: 'Services',
     subcategories: [
-      { id: '51', name: 'Décoration', categoryId: '5' },
-      { id: '52', name: 'Location de matériel', categoryId: '5' },
+      { key: '',              name: 'Décoration',           categoryKey: 'services' },
+      { key: 'location-lieu', name: 'Location de matériel', categoryKey: 'services' },
     ],
   },
 ]

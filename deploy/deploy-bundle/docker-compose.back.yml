@@ -30,6 +30,7 @@ services:
     container_name: sgilt-core-${ENV}
     pull_policy: always
     environment:
+      SPRING_PROFILES_ACTIVE: ${ENV}
       DB_URL: jdbc:postgresql://sgilt-core-db-${ENV}:5432/sgilt-core
       DB_USERNAME: sgilt-core
       DB_PASSWORD: ${CORE_DB_PASSWORD}
