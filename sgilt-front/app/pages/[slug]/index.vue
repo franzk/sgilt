@@ -29,7 +29,7 @@
 import PrestataireDetails from '~/components/prestataire/PrestataireDetails.vue'
 import DemandeBottomSheet from '~/components/demande/DemandeBottomSheet.vue'
 import FinalisationAddPrestataire from '~/components/prestataire/FinalisationAddPrestataire.vue'
-import { SearchMockService } from '~/services/search.mock'
+import { fetchPrestataireBySlug } from '~/api/prestataire'
 import type { PrestataireDetail } from '~/types/prestataire'
 
 const router = useRouter()
@@ -43,7 +43,7 @@ const { currentFlow } = useFlow()
 const disableDatePicker = computed(() => currentFlow.value === 'add-prestataire')
 
 onMounted(async () => {
-  prestataire.value = (await SearchMockService.getBySlug(slug)) ?? null
+  prestataire.value = await fetchPrestataireBySlug(slug)
   loading.value = false
 })
 

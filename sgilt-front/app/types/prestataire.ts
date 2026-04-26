@@ -23,7 +23,7 @@ export interface PrestataireCardDetail {
   shortDescription: string
   image: string
   slug: string
-  categoryId?: string
+  categoryKey?: string
   categoryName?: string
 }
 
@@ -32,7 +32,7 @@ export interface PrestataireCardDetail {
 export interface PrestataireDetail extends PrestataireCardDetail {
   // Identité
   baseline: string // 1 phrase d'accroche
-  categoryId: string
+  categoryKey: string
   category: string // "Musique", "Restauration"...
   subcats: string[] // IDs des sous-catégories
 
@@ -47,8 +47,8 @@ export interface PrestataireDetail extends PrestataireCardDetail {
   identity?: { quote: string; bio: string } // Touche identitaire (optionnel)
   budget?: string // Texte libre du prestataire (optionnel)
 
-  // Disponibilités
-  unavailableDates: string[] // ISO dates (ex: "2026-06-14")
+  // Disponibilités (non exposé par l'API pour l'instant)
+  unavailableDates?: string[] // ISO dates (ex: "2026-06-14")
 
   // Témoignages
   testimonials?: Testimonial[] // 0-2 max

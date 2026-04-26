@@ -1,10 +1,10 @@
 // app/composables/useSearchFetch.ts
 import { useThrottleFn } from '@vueuse/core'
-import { SearchMockService } from '~/services/search.mock'
+import { searchPrestataires } from '~/api/prestataire'
 import type { PrestataireCardDetail } from '~/types/prestataire'
 
 export function useSearchFetch() {
-  const { date, categoryId, currentSubcats } = useSearchUi()
+  const { date, categoryKey, currentSubcats } = useSearchUi()
 
   const loading = ref(false)
   const results = ref<PrestataireCardDetail[]>([])
@@ -15,14 +15,12 @@ export function useSearchFetch() {
   const fetchNow = async () => {
     loading.value = true
     error.value = null
-
     try {
-      const data = await SearchMockService.search({
+      const data = await searchPrestataires({
         date: date.value,
-        categoryId: categoryId.value,
-        subcats: currentSubcats.value,
+        categoryKey: categoryKey.value,
+        subcatKeys: currentSubcats.value,
       })
-
       results.value = data.results
       countsByCategory.value = data.countsByCategory
       subcatCounts.value = data.subcatCounts
@@ -36,15 +34,12 @@ export function useSearchFetch() {
 
   const fetchThrottled = useThrottleFn(fetchNow, 300)
 
-  // Watcher auto-pilote — deep: true retiré (primitives + nouvelle référence tableau)
-  watch([date, categoryId, currentSubcats], () => fetchThrottled(), {
-    immediate: true,
-  })
+  watch([date, categoryKey, currentSubcats], () => fetchThrottled(), { immediate: true })
 
   return {
     loading,
     results,
-    countsByCategory, // était déclaré mais non retourné
+    countsByCategory,
     subcatCounts,
     error,
     refresh: fetchNow,

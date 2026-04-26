@@ -34,6 +34,17 @@ public class Prestataire {
     @Column(nullable = false, unique = true)
     private String slug;
 
+    @Column(name = "category_key", nullable = false)
+    private String categoryKey;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
+            name = "prestataires_sous_categories",
+            joinColumns = @JoinColumn(name = "prestataire_id")
+    )
+    @Column(name = "subcat_key", nullable = false)
+    private List<String> subcatKeys;
+
     private String baseline;
 
     private String heroImage;
@@ -68,14 +79,6 @@ public class Prestataire {
 
     @Column(columnDefinition = "jsonb")
     private String faq;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "prestataires_sous_categories",
-            joinColumns = @JoinColumn(name = "prestataire_id"),
-            inverseJoinColumns = @JoinColumn(name = "sous_categorie_id")
-    )
-    private List<SousCategorie> sousCategories;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

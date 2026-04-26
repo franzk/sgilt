@@ -1,16 +1,13 @@
 -- V101 : Seed des prestataires de démonstration (15 prestataires)
 -- Exécuté uniquement sur les profils `local` et `staging` via spring.flyway.locations.
--- Requiert V3__seed_sous_categories.sql (db/migration).
+-- ATTENTION : si cette migration a déjà été appliquée, un reset de la base est nécessaire.
 --
 -- UUIDs de référence :
 --   utilisateurs  : cc000001...cc00000f
 --   prestataires  : dd000001...dd00000f
---   sous-catégories : ee000021, ee000022, ee000023, ee000031, ee000032,
---                     ee000041, ee000043, ee000052
 --
 -- Les champs JSONB utilisent le dollar-quoting ($$...$$).
--- Le champ `budget` est stocké en JSON string ("texte"), cohérent avec le
--- type `string` attendu par le front-end.
+-- Le champ `budget` est stocké en JSON string ("texte").
 
 -- ─── 1. Utilisateurs ──────────────────────────────────────────────────────────
 
@@ -35,7 +32,7 @@ INSERT INTO utilisateurs (id, first_name, last_name, email, status, created_at) 
 
 -- ── Musique ───────────────────────────────────────────────────────────────────
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd000001-0000-0000-0000-000000000000',
   'cc000001-0000-0000-0000-000000000000',
@@ -44,6 +41,7 @@ VALUES (
   'Votre soirée mérite une bande-son sur mesure.',
   '/images/prestataires/dj-animation.jpg',
   'Un DJ professionnel pour rythmer vos soirées.',
+  'musique',
   $$["https://picsum.photos/seed/dj1/800/600","https://picsum.photos/seed/dj2/800/600","https://picsum.photos/seed/dj3/800/600"]$$,
   $$[{"icon":"Clock","label":"48h","description":"Réponse sous 48h","color":"#FACC15"},{"icon":"Tune","label":"Adaptable","description":"Prestation adaptable","color":"#FACC15"},{"icon":"Handshake","label":"Accompagné","description":"Accompagnement personnalisé","color":"#FACC15"}]$$,
   $$["Animation DJ pour mariages et soirées privées","Sonorisation complète incluse (jusqu'à 200 personnes)","Éclairage d'ambiance","Formule duo avec animateur micro sur demande","Set DJ live ou playlist curatée selon vos préférences"]$$,
@@ -56,7 +54,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd000002-0000-0000-0000-000000000000',
   'cc000002-0000-0000-0000-000000000000',
@@ -65,6 +63,7 @@ VALUES (
   'Le jazz manouche qui fait danser les âmes.',
   '/images/prestataires/jazz-band.jpg',
   'Un groupe de jazz parfait pour animer vos soirées.',
+  'musique',
   $$["https://picsum.photos/seed/jazz1/800/600","https://picsum.photos/seed/jazz2/800/600","https://picsum.photos/seed/jazz3/800/600"]$$,
   $$[{"icon":"Inventory_2","label":"Équipé","description":"Autonome et équipé","color":"#FACC15"},{"icon":"Person_Check","label":"Interlocuteur Unique","description":"Interlocuteur unique","color":"#FACC15"},{"icon":"Tune","label":"Adaptable","description":"Prestation adaptable","color":"#FACC15"}]$$,
   $$["Quartet jazz manouche (guitare, contrebasse, violon, guitare rythmique)","Formule trio disponible pour les petits espaces","Répertoire : Reinhardt, Grappelli, standards jazz et bossa","Musique de fond pour cocktail ou dîner","Set dansant en soirée sur demande","Sonorisation légère incluse pour les formules sonorisées"]$$,
@@ -77,7 +76,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd000003-0000-0000-0000-000000000000',
   'cc000003-0000-0000-0000-000000000000',
@@ -86,6 +85,7 @@ VALUES (
   'Pop, rock, dancefloor — une énergie qui ne retombe pas.',
   '/images/prestataires/pop-rock-band.jpg',
   'Un groupe pop-rock énergique pour une ambiance inoubliable.',
+  'musique',
   $$["https://picsum.photos/seed/poprock1/800/600","https://picsum.photos/seed/poprock2/800/600","https://picsum.photos/seed/poprock3/800/600"]$$,
   $$[{"icon":"Clock","label":"48h","description":"Réponse sous 48h","color":"#FACC15"},{"icon":"Handshake","label":"Accompagné","description":"Accompagnement personnalisé","color":"#FACC15"},{"icon":"Eco","label":"Éco","description":"Éco-responsable","color":"#22C55E"}]$$,
   $$["Groupe de 4 musiciens (guitare, basse, batterie, clavier)","Deux chanteurs / chanteuses","Répertoire pop-rock français et international des années 80 à aujourd'hui","Formule concert (2 sets de 45min) ou animation continue","Karaoké animé en option"]$$,
@@ -98,7 +98,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd000004-0000-0000-0000-000000000000',
   'cc000004-0000-0000-0000-000000000000',
@@ -107,6 +107,7 @@ VALUES (
   'Du rock qui transpire, des riffs qui restent.',
   '/images/prestataires/rock-band.jpg',
   'Un groupe rock pour faire vibrer votre public.',
+  'musique',
   $$["https://picsum.photos/seed/rock1/800/600","https://picsum.photos/seed/rock2/800/600","https://picsum.photos/seed/rock3/800/600"]$$,
   $$[{"icon":"Person_Check","label":"Interlocuteur Unique","description":"Interlocuteur unique","color":"#FACC15"},{"icon":"Inventory_2","label":"Équipé","description":"Autonome et équipé","color":"#FACC15"}]$$,
   $$["Trio ou quartet rock (guitare, basse, batterie + chant)","Répertoire : classic rock, hard rock, grunge des années 70 à 2000","2 sets de 45 minutes ou set unique de 90 minutes","Sonorisation incluse"]$$,
@@ -121,7 +122,7 @@ VALUES (
 
 -- ── Restauration ──────────────────────────────────────────────────────────────
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd000005-0000-0000-0000-000000000000',
   'cc000005-0000-0000-0000-000000000000',
@@ -130,6 +131,7 @@ VALUES (
   'Une cuisine raffinée qui sublime chaque moment.',
   '/images/prestataires/traiteur-gourmet.jpg',
   'Un service traiteur haut de gamme pour vos événements.',
+  'restauration',
   $$["https://picsum.photos/seed/catering1/800/600","https://picsum.photos/seed/catering2/800/600","https://picsum.photos/seed/catering3/800/600"]$$,
   $$[{"icon":"Tune","label":"Adaptable","description":"Prestation adaptable","color":"#FACC15"},{"icon":"Handshake","label":"Accompagné","description":"Accompagnement personnalisé","color":"#FACC15"},{"icon":"Eco","label":"Éco","description":"Éco-responsable","color":"#22C55E"},{"icon":"Clock","label":"48h","description":"Réponse sous 48h","color":"#FACC15"}]$$,
   $$["Cocktail dînatoire ou repas assis (de 20 à 300 personnes)","Buffet froid ou chaud","Service à table avec personnel inclus","Vaisselle et nappage fournis sur demande","Formule fromages et desserts alsaciens disponible"]$$,
@@ -142,7 +144,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd000006-0000-0000-0000-000000000000',
   'cc000006-0000-0000-0000-000000000000',
@@ -151,6 +153,7 @@ VALUES (
   'Des burgers qui méritent le détour, livrés à votre événement.',
   '/images/prestataires/food-truck-burgers.jpg',
   'Des burgers gourmands pour régaler vos invités.',
+  'restauration',
   $$["https://picsum.photos/seed/burger1/800/600","https://picsum.photos/seed/burger2/800/600","https://picsum.photos/seed/burger3/800/600"]$$,
   $$[{"icon":"Clock","label":"48h","description":"Réponse sous 48h","color":"#FACC15"},{"icon":"Inventory_2","label":"Équipé","description":"Autonome et équipé","color":"#FACC15"}]$$,
   $$["Service au camion pour événements privés ou publics","Carte de 4 à 6 burgers selon formule","Options végétariennes et sans gluten disponibles","Frites fraîches maison","Boissons et desserts sur demande"]$$,
@@ -163,7 +166,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd000007-0000-0000-0000-000000000000',
   'cc000007-0000-0000-0000-000000000000',
@@ -172,6 +175,7 @@ VALUES (
   'Des cocktails qui racontent une histoire, à votre santé.',
   '/images/prestataires/bar-cocktails.jpg',
   'Un bar à cocktails pour une expérience unique.',
+  'restauration',
   $$["https://picsum.photos/seed/cocktail1/800/600","https://picsum.photos/seed/cocktail2/800/600","https://picsum.photos/seed/cocktail3/800/600"]$$,
   $$[{"icon":"Person_Check","label":"Interlocuteur Unique","description":"Interlocuteur unique","color":"#FACC15"},{"icon":"Tune","label":"Adaptable","description":"Prestation adaptable","color":"#FACC15"},{"icon":"Handshake","label":"Accompagné","description":"Accompagnement personnalisé","color":"#FACC15"}]$$,
   $$["Bar mobile pour événements privés et professionnels","Carte de cocktails classiques et signatures","Mocktails et boissons sans alcool","Animations bar : cours de cocktail, show flair sur demande","Glace, garnitures et matériel fournis"]$$,
@@ -184,7 +188,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd000008-0000-0000-0000-000000000000',
   'cc000008-0000-0000-0000-000000000000',
@@ -193,6 +197,7 @@ VALUES (
   'La générosité du buffet, la finesse de la cuisine française.',
   '/images/prestataires/cuisine-francaise.jpg',
   'Un buffet raffiné pour sublimer vos réceptions.',
+  'restauration',
   $$["https://picsum.photos/seed/french1/800/600","https://picsum.photos/seed/french2/800/600","https://picsum.photos/seed/french3/800/600"]$$,
   $$[{"icon":"Eco","label":"Éco","description":"Éco-responsable","color":"#22C55E"},{"icon":"Inventory_2","label":"Équipé","description":"Autonome et équipé","color":"#FACC15"},{"icon":"Clock","label":"48h","description":"Réponse sous 48h","color":"#FACC15"}]$$,
   $$["Buffet froid ou mixte (chaud/froid)","Entrées, plats, fromages, desserts — formule complète ou à la carte","Spécialités alsaciennes disponibles","Service avec ou sans personnel","Vaisselle et nappage fournis en option"]$$,
@@ -205,7 +210,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd000009-0000-0000-0000-000000000000',
   'cc000009-0000-0000-0000-000000000000',
@@ -214,6 +219,7 @@ VALUES (
   'Le four à bois se déplace, la vraie pizza aussi.',
   '/images/prestataires/pizza-truck.jpg',
   'Une délicieuse pizza cuite au feu de bois sur place.',
+  'restauration',
   $$["https://picsum.photos/seed/pizza1/800/600","https://picsum.photos/seed/pizza2/800/600","https://picsum.photos/seed/pizza3/800/600"]$$,
   $$[{"icon":"Tune","label":"Adaptable","description":"Prestation adaptable","color":"#FACC15"},{"icon":"Person_Check","label":"Interlocuteur Unique","description":"Interlocuteur unique","color":"#FACC15"}]$$,
   $$["Service pizza au feu de bois pour événements privés","Carte de 6 à 8 pizzas classiques et spéciales","Options végétariennes disponibles","Pizza blanche (sans tomate) disponible","Service continu ou par vagues selon format"]$$,
@@ -228,7 +234,7 @@ VALUES (
 
 -- ── Photo ─────────────────────────────────────────────────────────────────────
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd00000a-0000-0000-0000-000000000000',
   'cc00000a-0000-0000-0000-000000000000',
@@ -237,6 +243,7 @@ VALUES (
   'Des images qui gardent ce que la mémoire oublie.',
   '/images/prestataires/photographe-mariage.jpg',
   'Des souvenirs inoubliables pour votre grand jour.',
+  'photo',
   $$["https://picsum.photos/seed/wedding1/800/600","https://picsum.photos/seed/wedding2/800/600","https://picsum.photos/seed/wedding3/800/600"]$$,
   $$[{"icon":"Clock","label":"48h","description":"Réponse sous 48h","color":"#FACC15"},{"icon":"Handshake","label":"Accompagné","description":"Accompagnement personnalisé","color":"#FACC15"},{"icon":"Person_Check","label":"Interlocuteur Unique","description":"Interlocuteur unique","color":"#FACC15"},{"icon":"Tune","label":"Adaptable","description":"Prestation adaptable","color":"#FACC15"}]$$,
   $$["Reportage photo mariage (journée complète ou demi-journée)","Séance couple avant le mariage incluse dans la formule complète","Photos de famille et portraits","Reportage événementiel (anniversaire, baptême, séminaire)","Tirage et album photo disponibles en option"]$$,
@@ -249,7 +256,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd00000b-0000-0000-0000-000000000000',
   'cc00000b-0000-0000-0000-000000000000',
@@ -258,6 +265,7 @@ VALUES (
   'Des souvenirs instantanés, tirés sur place en 10 secondes.',
   '/images/prestataires/photobooth-vintage.jpg',
   'Un photobooth original pour des photos funs.',
+  'photo',
   $$["https://picsum.photos/seed/photobooth1/800/600","https://picsum.photos/seed/photobooth2/800/600","https://picsum.photos/seed/photobooth3/800/600"]$$,
   $$[{"icon":"Inventory_2","label":"Équipé","description":"Autonome et équipé","color":"#FACC15"},{"icon":"Clock","label":"48h","description":"Réponse sous 48h","color":"#FACC15"}]$$,
   $$["Borne photobooth vintage avec tirage instantané","Fond personnalisable (couleur, motif, décor)","Accessoires et props inclus","Galerie digitale partagée après événement","Personnalisation du cadre photo (nom, date, logo)"]$$,
@@ -270,7 +278,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd00000c-0000-0000-0000-000000000000',
   'cc00000c-0000-0000-0000-000000000000',
@@ -279,6 +287,7 @@ VALUES (
   'La qualité studio, dans votre salle de réception.',
   '/images/prestataires/studio-photo-mobile.jpg',
   'Un studio photo pour des portraits professionnels.',
+  'photo',
   $$["https://picsum.photos/seed/studio1/800/600","https://picsum.photos/seed/studio2/800/600","https://picsum.photos/seed/studio3/800/600"]$$,
   $$[{"icon":"Handshake","label":"Accompagné","description":"Accompagnement personnalisé","color":"#FACC15"},{"icon":"Tune","label":"Adaptable","description":"Prestation adaptable","color":"#FACC15"},{"icon":"Eco","label":"Éco","description":"Éco-responsable","color":"#22C55E"}]$$,
   $$["Studio photo mobile monté sur place","Portraits individuels ou en groupe","Fond blanc, noir ou coloré au choix","Retouche légère incluse","Idéal pour séminaires, galas, événements corporate"]$$,
@@ -293,7 +302,7 @@ VALUES (
 
 -- ── Services / Lieux ──────────────────────────────────────────────────────────
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd00000d-0000-0000-0000-000000000000',
   'cc00000d-0000-0000-0000-000000000000',
@@ -302,6 +311,7 @@ VALUES (
   'Un espace chaleureux au cœur du vignoble alsacien.',
   '/images/prestataires/salle-fetes.png',
   'Une salle spacieuse pour vos événements.',
+  'services',
   $$["https://picsum.photos/seed/venue1/800/600","https://picsum.photos/seed/venue2/800/600","https://picsum.photos/seed/venue3/800/600"]$$,
   $$[{"icon":"Person_Check","label":"Interlocuteur Unique","description":"Interlocuteur unique","color":"#FACC15"},{"icon":"Inventory_2","label":"Équipé","description":"Autonome et équipé","color":"#FACC15"},{"icon":"Handshake","label":"Accompagné","description":"Accompagnement personnalisé","color":"#FACC15"}]$$,
   $$["Location de salle pour mariages, anniversaires, séminaires","Capacité : 30 à 200 personnes selon configuration","Cuisine équipée disponible","Terrasse et jardin privatifs","Tables, chaises et nappage inclus","Hébergement possible sur place (chambres en option)"]$$,
@@ -314,7 +324,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd00000e-0000-0000-0000-000000000000',
   'cc00000e-0000-0000-0000-000000000000',
@@ -323,6 +333,7 @@ VALUES (
   'Votre grand jour dans un écrin de pierre et de vigne.',
   '/images/prestataires/chateau-mariage.jpg',
   'Un cadre enchanteur pour célébrer votre union.',
+  'services',
   $$["https://picsum.photos/seed/chateau1/800/600","https://picsum.photos/seed/chateau2/800/600","https://picsum.photos/seed/chateau3/800/600"]$$,
   $$[{"icon":"Clock","label":"48h","description":"Réponse sous 48h","color":"#FACC15"},{"icon":"Person_Check","label":"Interlocuteur Unique","description":"Interlocuteur unique","color":"#FACC15"},{"icon":"Tune","label":"Adaptable","description":"Prestation adaptable","color":"#FACC15"}]$$,
   $$["Location exclusive du château et du parc","Salle de réception (jusqu'à 250 personnes)","Cérémonie laïque dans le parc ou dans la chapelle","12 chambres pour hébergement des invités","Cuisine professionnelle disponible","Parking sécurisé pour 150 véhicules"]$$,
@@ -335,7 +346,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd00000f-0000-0000-0000-000000000000',
   'cc00000f-0000-0000-0000-000000000000',
@@ -344,6 +355,7 @@ VALUES (
   'Dormir sur place, réveillon ou lendemain de fête serein.',
   '/images/prestataires/hebergement-groupe.jpg',
   'Un hébergement confortable pour vos invités.',
+  'services',
   $$["https://picsum.photos/seed/hebergement1/800/600","https://picsum.photos/seed/hebergement2/800/600","https://picsum.photos/seed/hebergement3/800/600"]$$,
   $$[{"icon":"Handshake","label":"Accompagné","description":"Accompagnement personnalisé","color":"#FACC15"},{"icon":"Inventory_2","label":"Équipé","description":"Autonome et équipé","color":"#FACC15"},{"icon":"Person_Check","label":"Interlocuteur Unique","description":"Interlocuteur unique","color":"#FACC15"}]$$,
   $$["Location du gîte complet (16 personnes)","Location à la chambre possible hors saison","Draps et serviettes fournis","Petit-déjeuner en option","Idéal pour week-ends de fête, enterrements de vie, séjours groupes"]$$,
@@ -358,19 +370,19 @@ VALUES (
 
 -- ─── 3. Liens prestataires ↔ sous-catégories ─────────────────────────────────
 
-INSERT INTO prestataires_sous_categories (prestataire_id, sous_categorie_id) VALUES
-  ('dd000001-0000-0000-0000-000000000000', 'ee000021-0000-0000-0000-000000000000'), -- DJ Animation → DJ & Animation
-  ('dd000002-0000-0000-0000-000000000000', 'ee000023-0000-0000-0000-000000000000'), -- Gypsy Reed → Jazz & Musique Live
-  ('dd000003-0000-0000-0000-000000000000', 'ee000022-0000-0000-0000-000000000000'), -- Starlight Pulse → Groupe Pop-Rock / Rock
-  ('dd000004-0000-0000-0000-000000000000', 'ee000022-0000-0000-0000-000000000000'), -- The Jive Rebels → Groupe Pop-Rock / Rock
-  ('dd000005-0000-0000-0000-000000000000', 'ee000031-0000-0000-0000-000000000000'), -- Éclat Gourmet → Traiteur & Cocktail
-  ('dd000006-0000-0000-0000-000000000000', 'ee000032-0000-0000-0000-000000000000'), -- Food Truck Burgers → Food Truck
-  ('dd000007-0000-0000-0000-000000000000', 'ee000031-0000-0000-0000-000000000000'), -- Bar à Cocktails → Traiteur & Cocktail
-  ('dd000008-0000-0000-0000-000000000000', 'ee000031-0000-0000-0000-000000000000'), -- Buffet Cuisine Française → Traiteur & Cocktail
-  ('dd000009-0000-0000-0000-000000000000', 'ee000032-0000-0000-0000-000000000000'), -- Camion Pizza → Food Truck
-  ('dd00000a-0000-0000-0000-000000000000', 'ee000041-0000-0000-0000-000000000000'), -- Léo Clairmont → Photographe
-  ('dd00000b-0000-0000-0000-000000000000', 'ee000043-0000-0000-0000-000000000000'), -- Photobooth Vintage → Photobooth
-  ('dd00000c-0000-0000-0000-000000000000', 'ee000041-0000-0000-0000-000000000000'), -- Studio Photo Mobile → Photographe
-  ('dd00000d-0000-0000-0000-000000000000', 'ee000052-0000-0000-0000-000000000000'), -- Salle des Fêtes → Location de lieu
-  ('dd00000e-0000-0000-0000-000000000000', 'ee000052-0000-0000-0000-000000000000'), -- Château pour Mariage → Location de lieu
-  ('dd00000f-0000-0000-0000-000000000000', 'ee000052-0000-0000-0000-000000000000'); -- Gîte de la mangouste → Location de lieu
+INSERT INTO prestataires_sous_categories (prestataire_id, subcat_key) VALUES
+  ('dd000001-0000-0000-0000-000000000000', 'dj'),
+  ('dd000002-0000-0000-0000-000000000000', 'jazz'),
+  ('dd000003-0000-0000-0000-000000000000', 'pop-rock'),
+  ('dd000004-0000-0000-0000-000000000000', 'pop-rock'),
+  ('dd000005-0000-0000-0000-000000000000', 'traiteur'),
+  ('dd000006-0000-0000-0000-000000000000', 'food-truck'),
+  ('dd000007-0000-0000-0000-000000000000', 'traiteur'),
+  ('dd000008-0000-0000-0000-000000000000', 'traiteur'),
+  ('dd000009-0000-0000-0000-000000000000', 'food-truck'),
+  ('dd00000a-0000-0000-0000-000000000000', 'photographe'),
+  ('dd00000b-0000-0000-0000-000000000000', 'photobooth'),
+  ('dd00000c-0000-0000-0000-000000000000', 'photographe'),
+  ('dd00000d-0000-0000-0000-000000000000', 'location-lieu'),
+  ('dd00000e-0000-0000-0000-000000000000', 'location-lieu'),
+  ('dd00000f-0000-0000-0000-000000000000', 'location-lieu');

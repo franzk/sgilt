@@ -20,14 +20,15 @@ public class SecurityConfig {
     private String appUrl;
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http) {
         return http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/api/v1/onboarding/**").permitAll()
-                        .requestMatchers("/api/v1/confirmation").permitAll()
+                        .requestMatchers("/api/v1/verify").permitAll()
+                        .requestMatchers("/api/v1/prestataires/**").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().denyAll()
                 )
