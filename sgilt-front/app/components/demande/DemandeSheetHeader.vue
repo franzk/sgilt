@@ -20,7 +20,7 @@
       </button>
       <span v-else class="btn-placeholder" />
 
-      <DemandeStepper v-if="!submitted" :etape="etape" @go-to="$emit('go-to', $event)" />
+      <DemandeStepper v-if="!submitted" :etape="etape" :steps="steps" @go-to="$emit('go-to', $event)" />
     </div>
 
     <!-- Dialog de confirmation -->
@@ -50,6 +50,7 @@ import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 defineProps<{
   etape: number
   submitted: boolean
+  steps?: number
 }>()
 
 const emit = defineEmits<{

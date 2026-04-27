@@ -177,6 +177,28 @@
     "recap": {
       "title": "Votre événement"
     },
+    "recap-mobile": {
+      "header-title": "Ma demande",
+      "add": "Ajouter",
+      "edit": "Modifier",
+      "missing": "Requis",
+      "submit": "Envoyer ma demande",
+      "validate": "Valider",
+      "items": {
+        "event-type": "Type d'événement",
+        "ambiance": "Ambiance",
+        "moment-cle": "Moment clé",
+        "description": "Description",
+        "ville": "Ville",
+        "nb-invites": "Nombre d'invités",
+        "lieu": "Lieu",
+        "prenom": "Prénom",
+        "nom": "Nom",
+        "email": "Email",
+        "telephone": "Téléphone",
+        "message": "Message au prestataire"
+      }
+    },
     "cancel": {
       "label": "Annuler",
       "dialog-title": "Quitter le tunnel ?",
