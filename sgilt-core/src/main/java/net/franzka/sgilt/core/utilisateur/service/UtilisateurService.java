@@ -1,11 +1,10 @@
 package net.franzka.sgilt.core.utilisateur.service;
 
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
+import net.franzka.sgilt.core.utilisateur.domain.UtilisateurStatus;
 import net.franzka.sgilt.core.utilisateur.exception.UtilisateurAlreadyExistException;
 import net.franzka.sgilt.core.utilisateur.repository.UtilisateurRepository;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 /**
  * Service métier pour l'entité {@link Utilisateur}.
@@ -25,17 +24,17 @@ public class UtilisateurService {
     }
 
     /**
-     * Crée et persiste un nouvel utilisateur.
+     * Crée et persiste un nouvel utilisateur en statut ACTIVE.
      * Lève une exception si un utilisateur avec le même email existe déjà.
      *
      * @param firstName le prénom de l'utilisateur
      * @param lastName  le nom de l'utilisateur
      * @param email     l'adresse email de l'utilisateur
-     * @param telephone le numéro de téléphone de l'utilisateur (nullable)
+     * @param phone     le numéro de téléphone de l'utilisateur (nullable)
      * @return l'entité {@link Utilisateur} créée et persistée
      * @throws UtilisateurAlreadyExistException si un utilisateur avec cet email existe déjà
      */
-    public Utilisateur createUtilisateur(String firstName, String lastName, String email, String telephone) {
+    public Utilisateur createUtilisateur(String firstName, String lastName, String email, String phone) {
         if (utilisateurRepository.existsByEmail(email)) {
             throw new UtilisateurAlreadyExistException();
         }
@@ -44,8 +43,8 @@ public class UtilisateurService {
                 .firstName(firstName)
                 .lastName(lastName)
                 .email(email)
-                .telephone(telephone)
-                .createdAt(LocalDateTime.now())
+                .phone(phone)
+                .status(UtilisateurStatus.ACTIVE)
                 .build();
 
         return utilisateurRepository.save(utilisateur);

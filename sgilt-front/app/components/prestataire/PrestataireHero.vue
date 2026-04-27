@@ -1,7 +1,7 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import SgiltImage from '~/components/basics/media/SgiltImage.vue'
 import { ShareIcon, ArrowLeftIcon } from '@remixicons/vue/line'
-import type { PrestataireDetail } from '~/types/prestataire'
+import type { PrestataireDetail } from '~/data/prestataire/domain/prestataire'
 
 const router = useRouter()
 

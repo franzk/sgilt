@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="provider-page">
     <!-- ── Hero ─────────────────────────────────────────────────────────────── -->
     <PrestataireHero
@@ -129,7 +129,9 @@
 
     <!-- ── Sticky CTA (mobile) ───────────────────────────────────────────────── -->
     <div class="sticky-cta">
-      <SgiltButton :disabled="!dateModel" @click="onSelect">{{ $t('provider.details.send-request') }}</SgiltButton>
+      <SgiltButton :disabled="!dateModel" @click="onSelect">{{
+        $t('provider.details.send-request')
+      }}</SgiltButton>
     </div>
 
     <!-- ── Modale galerie ────────────────────────────────────────────────────── -->
@@ -197,7 +199,7 @@ import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
 import PrestataireHero from '~/components/prestataire/PrestataireHero.vue'
 import EngagementBadge from '~/components/prestataire/EngagementBadge.vue'
-import type { PrestataireDetail } from '~/types/prestataire'
+import type { PrestataireDetail } from '~/data/prestataire/domain/prestataire'
 
 const { t } = useI18n()
 

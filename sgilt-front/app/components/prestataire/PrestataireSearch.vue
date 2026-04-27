@@ -5,11 +5,11 @@
         <SgiltDateFilter v-model="dateModel" />
       </div>
 
-      <SgiltCategoryFilter v-model="categoryId" />
+      <SgiltCategoryFilter v-model="categoryKey" />
 
       <SgiltSubCategoryFilter
         v-if="!isAllCategories"
-        :category-id="categoryId"
+        :category-key="categoryKey"
         :active-subcats="currentSubcats"
         :counts="subcatCounts"
         @toggle="toggleSubcat"
@@ -47,7 +47,7 @@ import SgiltDateFilter from '~/components/composed/SgiltDateFilter.vue'
 import SgiltCategoryFilter from '~/components/composed/SgiltCategoryFilter.vue'
 import SgiltSubCategoryFilter from '~/components/composed/SgiltSubCategoryFilter.vue'
 import SgiltSearchResults from '~/components/composed/SgiltSearchResults.vue'
-import type { PrestataireCardDetail } from '~/types/prestataire'
+import type { PrestataireCardDetail } from '~/data/prestataire/domain/prestataire'
 
 const props = defineProps<{
   selectable?: boolean
@@ -57,13 +57,13 @@ const props = defineProps<{
 defineEmits<{ select: [provider: PrestataireCardDetail] }>()
 
 // ── Search state ──────────────────────────────────────────────────────────────
-const { dateModel, categoryId, showOnboarding, currentSubcats, toggleSubcat } =
+const { dateModel, categoryKey, showOnboarding, currentSubcats, toggleSubcat } =
   useSearchUi()
 const { results, loading, subcatCounts, error } = useSearchFetch()
 
-const isAllCategories = computed(() => categoryId.value === APP_CATEGORIES[0]?.id)
+const isAllCategories = computed(() => categoryKey.value === APP_CATEGORIES[0]?.key)
 
-watch(categoryId, () => {
+watch(categoryKey, () => {
   showOnboarding.value = false
 })
 

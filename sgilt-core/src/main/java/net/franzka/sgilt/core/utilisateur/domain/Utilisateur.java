@@ -2,6 +2,8 @@ package net.franzka.sgilt.core.utilisateur.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -11,8 +13,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "utilisateurs")
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,16 +21,34 @@ public class Utilisateur {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(updatable = false, nullable = false)
     private UUID id;
 
-    private String firstName;
+    @Column(nullable = false)
     private String lastName;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
+    private String firstName;
+
+    @Column(nullable = false, unique = true)
     private String email;
 
+    private String phone;
+
     private String avatarUrl;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(columnDefinition = "utilisateur_status", nullable = false)
+    private UtilisateurStatus status;
+
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    private String telephone;
+    private LocalDateTime deletedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }

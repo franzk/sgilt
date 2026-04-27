@@ -2,7 +2,7 @@
 import { APP_CATEGORIES } from '~/utils/constants'
 import SgiltCategoryIcon from '~/components/basics/icons/SgiltCategoryIcon.vue'
 
-const modelValue = defineModel<string>() // L'ID de la catégorie active
+const modelValue = defineModel<string>() // La clé de la catégorie active
 
 const emit = defineEmits(['update:modelValue'])
 </script>
@@ -11,13 +11,13 @@ const emit = defineEmits(['update:modelValue'])
   <nav class="category-filter">
     <button
       v-for="cat in APP_CATEGORIES"
-      :key="cat.id"
+      :key="cat.key"
       class="category-btn"
-      :class="{ active: cat.id === modelValue }"
-      @click="$emit('update:modelValue', cat.id)"
+      :class="{ active: cat.key === modelValue }"
+      @click="$emit('update:modelValue', cat.key)"
     >
       <div class="icon-circle">
-        <SgiltCategoryIcon :categoryId="cat.id" class="icon-svg" />
+        <SgiltCategoryIcon :categoryKey="cat.key" class="icon-svg" />
       </div>
       <span class="name">{{ cat.name }}</span>
     </button>

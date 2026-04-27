@@ -2,17 +2,16 @@
 import { APP_CATEGORIES } from '~/utils/constants'
 
 const props = defineProps<{
-  categoryId: string
+  categoryKey: string
   activeSubcats: string[]
   counts: Record<string, number>
 }>()
 
 const emit = defineEmits(['toggle'])
 
-// On récupère dynamiquement les sous-catégories de la catégorie parente choisie
 const subcategories = computed(() => {
-  const cat = APP_CATEGORIES.find((c) => c.id === props.categoryId)
-  return cat?.subcategories || []
+  const cat = APP_CATEGORIES.find((c) => c.key === props.categoryKey)
+  return cat?.subcategories.filter((s) => s.key) ?? []
 })
 </script>
 
@@ -22,14 +21,14 @@ const subcategories = computed(() => {
       <div class="sub-category-grid">
         <button
           v-for="sub in subcategories"
-          :key="sub.id"
+          :key="sub.key"
           type="button"
           class="sub-pill"
-          :class="{ active: activeSubcats.includes(sub.id) }"
-          @click="emit('toggle', sub.id)"
+          :class="{ active: activeSubcats.includes(sub.key) }"
+          @click="emit('toggle', sub.key)"
         >
           <span class="label">{{ sub.name }}</span>
-          <span v-if="counts[sub.id]" class="count"> ({{ counts[sub.id] }}) </span>
+          <span v-if="counts[sub.key]" class="count"> ({{ counts[sub.key] }}) </span>
         </button>
       </div>
     </div>

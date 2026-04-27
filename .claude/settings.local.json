@@ -10,7 +10,16 @@
       "Bash(./gradlew test *)",
       "Bash(./gradlew dependencies *)",
       "Bash(xargs -I{} jar tf {})",
-      "Bash(jar tf *)"
+      "Bash(jar tf *)",
+      "Bash(./gradlew compileJava compileTestJava)",
+      "Bash(./gradlew compileTestJava)",
+      "Bash(./gradlew integrationTest)",
+      "Bash(./gradlew integrationTest --tests \"net.franzka.sgilt.core.integration.OnboardingIT.givenValidRequest_whenSubmitDemande_thenReturns202AndCreatesOnboardingSession\" --info)",
+      "Bash(./gradlew integrationTest --tests \"net.franzka.sgilt.core.integration.ConfirmationAccountIT.givenValidToken_whenConfirmAccount_thenReturns200\" --info)",
+      "Bash(./gradlew integrationTest --tests \"net.franzka.sgilt.core.integration.ConfirmationAccountIT.givenValidToken_whenConfirmAccount_thenCreatesUtilisateurWithCorrectFields\" --info)",
+      "Bash(del *)",
+      "Read(//mnt/c/Users/koehl/Documents/projects/sgilt/sgilt/**)",
+      "Bash(sed -i \"s|from '~/types/prestataire'|from '~/data/prestataire/domain/prestataire'|g\" app/components/prestataire/PrestataireHero.vue app/components/prestataire/PrestataireDetails.vue app/components/composed/SgiltSearchResults.vue app/components/cards/PrestataireCard.vue)"
     ]
   }
 }

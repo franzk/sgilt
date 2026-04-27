@@ -29,8 +29,8 @@
 import PrestataireDetails from '~/components/prestataire/PrestataireDetails.vue'
 import DemandeBottomSheet from '~/components/demande/DemandeBottomSheet.vue'
 import FinalisationAddPrestataire from '~/components/prestataire/FinalisationAddPrestataire.vue'
-import { SearchMockService } from '~/services/search.mock'
-import type { PrestataireDetail } from '~/types/prestataire'
+import { fetchPrestataireBySlug } from '~/data/prestataire/service/prestataireService'
+import type { PrestataireDetail } from '~/data/prestataire/domain/prestataire'
 
 const router = useRouter()
 const route = useRoute()
@@ -43,7 +43,7 @@ const { currentFlow } = useFlow()
 const disableDatePicker = computed(() => currentFlow.value === 'add-prestataire')
 
 onMounted(async () => {
-  prestataire.value = (await SearchMockService.getBySlug(slug)) ?? null
+  prestataire.value = await fetchPrestataireBySlug(slug)
   loading.value = false
 })
 
@@ -58,7 +58,7 @@ function onSelect(p: PrestataireDetail) {
   }
 
   if (isDesktop.value) {
-    useDemande().setPrestataireId('')
+    useDemande().setPrestataireId(p.id)
     navigateTo(`/${p.slug}/demande`)
   } else {
     showDemande.value = true

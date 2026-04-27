@@ -40,10 +40,10 @@ public class OnboardingMailerService {
      * Envoie le mail de validation de compte à un utilisateur dont l'email est inconnu dans Keycloak.
      *
      * @param email             l'adresse email du destinataire
-     * @param confirmationToken le token de confirmation à inclure dans le lien
+     * @param verificationToken le token de confirmation à inclure dans le lien
      */
-    public void sendConfirmationEmail(String email, String confirmationToken) {
-        String confirmationUrl = frontendUrl + "/confirmation?token=" + confirmationToken;
+    public void sendVerificationEmail(String email, String verificationToken) {
+        String confirmationUrl = frontendUrl + "/onboarding/verify?token=" + verificationToken;
         String html = """
                 <p>Bonjour,</p>
                 <p>Merci pour votre demande. Cliquez sur le lien ci-dessous pour confirmer votre adresse email :</p>
@@ -51,7 +51,7 @@ public class OnboardingMailerService {
                 <p>Ce lien expire dans 24 heures.</p>
                 """.formatted(confirmationUrl);
 
-        log.info("sendConfirmationEmail → {}", email);
+        log.info("sendVerificationEmail → {}", email);
         mailerClient.sendMail(new MailRequest(mailerFrom, email, "Confirmez votre demande", html));
     }
 

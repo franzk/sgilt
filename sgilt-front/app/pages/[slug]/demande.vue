@@ -106,7 +106,7 @@ import DemandeEtape6 from '~/components/demande/DemandeEtape6.vue'
 import DemandeFinalisation from '~/components/demande/DemandeFinalisation.vue'
 import { useDemande } from '~/composables/useDemande'
 import { SearchMockService } from '~/services/search.mock'
-import type { PrestataireDetail } from '~/types/prestataire'
+import type { PrestataireDetail } from '~/data/prestataire/domain/prestataire'
 
 const { t } = useI18n()
 
