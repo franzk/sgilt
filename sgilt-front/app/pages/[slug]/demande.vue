@@ -1,17 +1,17 @@
 <template>
   <div v-if="prestataire" class="demande-layout">
-    <!-- Finalisation (both layouts) -->
-    <template v-if="submitted">
-      <DemandeFinalisation
-        class="finalisation"
-        :prestataire-name="prestataire.name"
-        @close="closeAndFinish"
-      />
-    </template>
 
-    <template v-else>
-      <!-- ── DESKTOP : accordion + right panel ──────────────────────────────── -->
-      <template v-if="!isMobile">
+    <!-- ── DESKTOP ──────────────────────────────────────────────────────────── -->
+    <template v-if="!isMobile">
+      <template v-if="submitted">
+        <DemandeFinalisation
+          class="finalisation"
+          :prestataire-name="prestataire.name"
+          @close="closeAndFinish"
+        />
+      </template>
+
+      <template v-else>
         <main class="demande-main">
           <div class="top">
             <button class="main-back" type="button" @click="navigateTo(`/${slug}`)">
@@ -76,15 +76,53 @@
           <DemandeRecap v-else />
         </aside>
       </template>
-
-      <!-- ── MOBILE : bottom sheet ───────────────────────────────────────────── -->
-      <DemandeBottomSheet
-        v-if="isMobile"
-        :is-open="mobileSheetOpen"
-        :prestataire-name="prestataire.name"
-        @close="navigateTo(`/${slug}`)"
-      />
     </template>
+
+    <!-- ── MOBILE : page dédiée ─────────────────────────────────────────────── -->
+    <div v-else class="mobile-tunnel">
+      <DemandeSheetHeader
+        :etape="etapeActuelle"
+        :submitted="submitted"
+        @back="back"
+        @close="closeMobile"
+        @go-to="goTo"
+      />
+
+      <div ref="bodyRef" class="mobile-body">
+        <div v-if="submitted">
+          <DemandeFinalisation :prestataire-name="prestataire.name" @close="closeMobile" />
+        </div>
+
+        <template v-else>
+          <Transition :name="direction === 'forward' ? 'slide-forward' : 'slide-back'" mode="out-in">
+            <div :key="etapeActuelle">
+              <DemandeEtape1 v-if="etapeActuelle === 1" />
+              <DemandeEtape2 v-else-if="etapeActuelle === 2" />
+              <DemandeEtape3 v-else-if="etapeActuelle === 3" />
+              <DemandeEtape4 v-else-if="etapeActuelle === 4" />
+              <DemandeEtape5 v-else-if="etapeActuelle === 5" />
+              <DemandeEtape6 v-else-if="etapeActuelle === 6" show-recap />
+            </div>
+          </Transition>
+
+          <DemandeRecap v-if="etapeActuelle >= 2 && etapeActuelle < 5" />
+        </template>
+      </div>
+
+      <div
+        v-if="!submitted"
+        class="mobile-footer"
+        :class="{ 'actions-etape4': etapeActuelle === 4, 'actions-etape5': etapeActuelle === 5 }"
+      >
+        <template v-if="etapeActuelle === 4">
+          <SgiltButton @click="next">{{ $t('tunnel.footer.continue') }}</SgiltButton>
+          <SgiltButton variant="tertiary" @click="next">{{ $t('tunnel.footer.skip') }}</SgiltButton>
+        </template>
+        <template v-if="etapeActuelle === 5">
+          <SgiltButton :disabled="!step5Valid" @click="next">{{ $t('tunnel.footer.continue') }}</SgiltButton>
+        </template>
+      </div>
+    </div>
   </div>
 
   <div v-else-if="!loading" class="not-found">
@@ -94,22 +132,24 @@
 </template>
 
 <script setup lang="ts">
-import DemandeBottomSheet from '~/components/demande/DemandeBottomSheet.vue'
 import DemandeRecap from '~/components/demande/DemandeRecap.vue'
 import DemandeCommentCaMarche from '~/components/demande/DemandeCommentCaMarche.vue'
 import DemandeEtape1 from '~/components/demande/DemandeEtape1.vue'
 import DemandeEtape2 from '~/components/demande/DemandeEtape2.vue'
 import DemandeEtape3 from '~/components/demande/DemandeEtape3.vue'
 import DemandeEtape4 from '~/components/demande/DemandeEtape4.vue'
+import DemandeEtape5 from '~/components/demande/DemandeEtape5.vue'
 import DemandeEtape5Desktop from '~/components/demande/DemandeEtape5Desktop.vue'
 import DemandeEtape6 from '~/components/demande/DemandeEtape6.vue'
 import DemandeFinalisation from '~/components/demande/DemandeFinalisation.vue'
+import DemandeSheetHeader from '~/components/demande/DemandeSheetHeader.vue'
+import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import { useDemande } from '~/composables/useDemande'
-import { SearchMockService } from '~/services/search.mock'
+import { fetchPrestataireBySlug } from '~/data/prestataire/service/prestataireService'
 import type { PrestataireDetail } from '~/data/prestataire/domain/prestataire'
 
 const { t } = useI18n()
-
+const router = useRouter()
 const route = useRoute()
 const slug = route.params.slug as string
 
@@ -119,7 +159,7 @@ const loading = ref(true)
 const { isMobile } = useDevice()
 
 onMounted(async () => {
-  prestataire.value = (await SearchMockService.getBySlug(slug)) ?? null
+  prestataire.value = await fetchPrestataireBySlug(slug)
   loading.value = false
 })
 
@@ -132,8 +172,11 @@ watchEffect(() => {
 
 const {
   etapeActuelle,
+  direction,
   submitted,
   state,
+  next,
+  back,
   goTo,
   eventTypeLabel,
   eventTypeEmoji,
@@ -144,8 +187,6 @@ const {
   reset,
 } = useDemande()
 
-// Si un type d'événement valide est déjà dans le state (choisi depuis l'accueil),
-// on démarre directement à l'étape 2
 onMounted(() => {
   if (etapeActuelle.value === 1 && state.eventType && state.eventType.toUpperCase() !== 'AUTRE') {
     goTo(2)
@@ -157,16 +198,16 @@ const closeAndFinish = () => {
   navigateTo(`/${slug}`)
 }
 
-// ── Mobile sheet ──────────────────────────────────────────────────────────────
-const mobileSheetOpen = ref(true)
+const closeMobile = () => {
+  if (submitted.value) reset()
+  router.back()
+}
 
-watch(isMobile, (mobile) => {
-  if (mobile) mobileSheetOpen.value = true
-})
+// ── Mobile ────────────────────────────────────────────────────────────────────
+const step5Valid = computed(() => !!state.date && !!state.ville.trim() && !!state.nbInvites.trim())
 
-watch(mobileSheetOpen, (open) => {
-  if (!open) navigateTo(`/${slug}`)
-})
+const bodyRef = ref<HTMLElement | null>(null)
+watch(etapeActuelle, () => nextTick(() => bodyRef.value?.scrollTo({ top: 0, behavior: 'smooth' })))
 
 // ── Desktop accordion ─────────────────────────────────────────────────────────
 const stepLabels = computed(() => [
@@ -389,6 +430,74 @@ function stepDoneSummary(n: number): string {
   :global(.recap) {
     margin-top: 0;
   }
+}
+
+// ─── Mobile page ──────────────────────────────────────────────────────────────
+.mobile-tunnel {
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - $app-header-height);
+
+  .mobile-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: $spacing-m;
+    overscroll-behavior: contain;
+    position: relative;
+  }
+
+  .mobile-footer {
+    flex-shrink: 0;
+    padding: $spacing-s $spacing-m $spacing-m;
+    background: #fff;
+    border-top: 1px solid $divider-color;
+
+    &.actions-etape5 {
+      :deep(button) {
+        width: 100%;
+      }
+    }
+
+    &.actions-etape4 {
+      display: flex;
+      flex-direction: row;
+      gap: $spacing-s;
+
+      :deep(button) {
+        flex: 1;
+      }
+    }
+  }
+}
+
+// ─── Slide transitions (mobile) ───────────────────────────────────────────────
+.slide-forward-enter-active,
+.slide-forward-leave-active,
+.slide-back-enter-active,
+.slide-back-leave-active {
+  transition:
+    transform 250ms ease,
+    opacity 250ms ease;
+}
+
+.slide-forward-enter-from {
+  transform: translateX(40px);
+  opacity: 0;
+}
+
+.slide-forward-leave-to {
+  transform: translateX(-40px);
+  opacity: 0;
+}
+
+.slide-back-enter-from {
+  transform: translateX(-40px);
+  opacity: 0;
+}
+
+.slide-back-leave-to {
+  transform: translateX(40px);
+  opacity: 0;
 }
 
 // ─── 404 ──────────────────────────────────────────────────────────────────────

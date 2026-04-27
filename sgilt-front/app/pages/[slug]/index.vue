@@ -12,12 +12,6 @@
     <NuxtLink to="/search">{{ $t('provider.back-to-search') }}</NuxtLink>
   </div>
 
-  <DemandeBottomSheet
-    :is-open="showDemande"
-    :prestataire-name="prestataire?.name ?? ''"
-    @close="showDemande = false"
-  />
-
   <FinalisationAddPrestataire
     v-if="prestataire"
     v-model:open="showFinalisation"
@@ -27,9 +21,9 @@
 
 <script setup lang="ts">
 import PrestataireDetails from '~/components/prestataire/PrestataireDetails.vue'
-import DemandeBottomSheet from '~/components/demande/DemandeBottomSheet.vue'
 import FinalisationAddPrestataire from '~/components/prestataire/FinalisationAddPrestataire.vue'
 import { fetchPrestataireBySlug } from '~/data/prestataire/service/prestataireService'
+import { toISODate } from '~/utils/dateUtils'
 import type { PrestataireDetail } from '~/data/prestataire/domain/prestataire'
 
 const router = useRouter()
@@ -47,9 +41,8 @@ onMounted(async () => {
   loading.value = false
 })
 
-const showDemande = ref(false)
 const showFinalisation = ref(false)
-const { isDesktop } = useDevice()
+const { dateModel } = useSearchUi()
 
 function onSelect(p: PrestataireDetail) {
   if (currentFlow.value === 'add-prestataire') {
@@ -57,12 +50,11 @@ function onSelect(p: PrestataireDetail) {
     return
   }
 
-  if (isDesktop.value) {
-    useDemande().setPrestataireId(p.id)
-    navigateTo(`/${p.slug}/demande`)
-  } else {
-    showDemande.value = true
-  }
+  useDemande().setPrestataireId(p.id)
+  navigateTo({
+    path: `/${p.slug}/demande`,
+    query: dateModel.value ? { date: toISODate(dateModel.value) } : undefined,
+  })
 }
 </script>
 
