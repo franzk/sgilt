@@ -1,6 +1,6 @@
--- V101 : Seed des prestataires de démonstration (15 prestataires)
+-- V101 : Seed des prestataires de démonstration (15 prestataires, squash de V101+V102)
 -- Exécuté uniquement sur les profils `local` et `staging` via spring.flyway.locations.
--- ATTENTION : si cette migration a déjà été appliquée, un reset de la base est nécessaire.
+-- ATTENTION : toute DB existante doit être réinitialisée avant d'appliquer ce script.
 --
 -- UUIDs de référence :
 --   utilisateurs  : cc000001...cc00000f
@@ -32,7 +32,7 @@ INSERT INTO utilisateurs (id, first_name, last_name, email, status, created_at) 
 
 -- ── Musique ───────────────────────────────────────────────────────────────────
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, youtube_id, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd000001-0000-0000-0000-000000000000',
   'cc000001-0000-0000-0000-000000000000',
@@ -40,6 +40,7 @@ VALUES (
   'dj-animation',
   'Votre soirée mérite une bande-son sur mesure.',
   '/images/prestataires/dj-animation.jpg',
+  'zznewKVtKtk',
   'Un DJ professionnel pour rythmer vos soirées.',
   'musique',
   $$["https://picsum.photos/seed/dj1/800/600","https://picsum.photos/seed/dj2/800/600","https://picsum.photos/seed/dj3/800/600"]$$,
@@ -54,7 +55,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, youtube_id, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd000002-0000-0000-0000-000000000000',
   'cc000002-0000-0000-0000-000000000000',
@@ -62,6 +63,7 @@ VALUES (
   'gypsy-reed-ensemble',
   'Le jazz manouche qui fait danser les âmes.',
   '/images/prestataires/jazz-band.jpg',
+  '_A6w3ECkN4k',
   'Un groupe de jazz parfait pour animer vos soirées.',
   'musique',
   $$["https://picsum.photos/seed/jazz1/800/600","https://picsum.photos/seed/jazz2/800/600","https://picsum.photos/seed/jazz3/800/600"]$$,
@@ -76,7 +78,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, youtube_id, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd000003-0000-0000-0000-000000000000',
   'cc000003-0000-0000-0000-000000000000',
@@ -84,6 +86,7 @@ VALUES (
   'starlight-pulse',
   'Pop, rock, dancefloor — une énergie qui ne retombe pas.',
   '/images/prestataires/pop-rock-band.jpg',
+  '4sErhkkcOUU',
   'Un groupe pop-rock énergique pour une ambiance inoubliable.',
   'musique',
   $$["https://picsum.photos/seed/poprock1/800/600","https://picsum.photos/seed/poprock2/800/600","https://picsum.photos/seed/poprock3/800/600"]$$,
@@ -98,7 +101,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, youtube_id, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd000004-0000-0000-0000-000000000000',
   'cc000004-0000-0000-0000-000000000000',
@@ -106,6 +109,7 @@ VALUES (
   'the-jive-rebels',
   'Du rock qui transpire, des riffs qui restent.',
   '/images/prestataires/rock-band.jpg',
+  'BOCaSJOARFM',
   'Un groupe rock pour faire vibrer votre public.',
   'musique',
   $$["https://picsum.photos/seed/rock1/800/600","https://picsum.photos/seed/rock2/800/600","https://picsum.photos/seed/rock3/800/600"]$$,
@@ -122,7 +126,7 @@ VALUES (
 
 -- ── Restauration ──────────────────────────────────────────────────────────────
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, youtube_id, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd000005-0000-0000-0000-000000000000',
   'cc000005-0000-0000-0000-000000000000',
@@ -130,6 +134,7 @@ VALUES (
   'eclat-gourmet',
   'Une cuisine raffinée qui sublime chaque moment.',
   '/images/prestataires/traiteur-gourmet.jpg',
+  '6D4_3NIpvkI',
   'Un service traiteur haut de gamme pour vos événements.',
   'restauration',
   $$["https://picsum.photos/seed/catering1/800/600","https://picsum.photos/seed/catering2/800/600","https://picsum.photos/seed/catering3/800/600"]$$,
@@ -144,7 +149,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, youtube_id, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd000006-0000-0000-0000-000000000000',
   'cc000006-0000-0000-0000-000000000000',
@@ -152,6 +157,7 @@ VALUES (
   'food-truck-burgers',
   'Des burgers qui méritent le détour, livrés à votre événement.',
   '/images/prestataires/food-truck-burgers.jpg',
+  'z2xjErKDd-o',
   'Des burgers gourmands pour régaler vos invités.',
   'restauration',
   $$["https://picsum.photos/seed/burger1/800/600","https://picsum.photos/seed/burger2/800/600","https://picsum.photos/seed/burger3/800/600"]$$,
@@ -166,7 +172,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, youtube_id, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd000007-0000-0000-0000-000000000000',
   'cc000007-0000-0000-0000-000000000000',
@@ -174,6 +180,7 @@ VALUES (
   'bar-a-cocktails',
   'Des cocktails qui racontent une histoire, à votre santé.',
   '/images/prestataires/bar-cocktails.jpg',
+  'EFuBvEt84OI',
   'Un bar à cocktails pour une expérience unique.',
   'restauration',
   $$["https://picsum.photos/seed/cocktail1/800/600","https://picsum.photos/seed/cocktail2/800/600","https://picsum.photos/seed/cocktail3/800/600"]$$,
@@ -188,7 +195,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, youtube_id, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd000008-0000-0000-0000-000000000000',
   'cc000008-0000-0000-0000-000000000000',
@@ -196,6 +203,7 @@ VALUES (
   'buffet-cuisine-francaise',
   'La générosité du buffet, la finesse de la cuisine française.',
   '/images/prestataires/cuisine-francaise.jpg',
+  '30dp3iP66Gs',
   'Un buffet raffiné pour sublimer vos réceptions.',
   'restauration',
   $$["https://picsum.photos/seed/french1/800/600","https://picsum.photos/seed/french2/800/600","https://picsum.photos/seed/french3/800/600"]$$,
@@ -210,7 +218,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, youtube_id, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd000009-0000-0000-0000-000000000000',
   'cc000009-0000-0000-0000-000000000000',
@@ -218,6 +226,7 @@ VALUES (
   'camion-pizza',
   'Le four à bois se déplace, la vraie pizza aussi.',
   '/images/prestataires/pizza-truck.jpg',
+  'HOZs4hWPiKk',
   'Une délicieuse pizza cuite au feu de bois sur place.',
   'restauration',
   $$["https://picsum.photos/seed/pizza1/800/600","https://picsum.photos/seed/pizza2/800/600","https://picsum.photos/seed/pizza3/800/600"]$$,
@@ -234,7 +243,7 @@ VALUES (
 
 -- ── Photo ─────────────────────────────────────────────────────────────────────
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, youtube_id, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd00000a-0000-0000-0000-000000000000',
   'cc00000a-0000-0000-0000-000000000000',
@@ -242,6 +251,7 @@ VALUES (
   'leo-clairmont-photographe',
   'Des images qui gardent ce que la mémoire oublie.',
   '/images/prestataires/photographe-mariage.jpg',
+  'wlPFNYKkGSA',
   'Des souvenirs inoubliables pour votre grand jour.',
   'photo',
   $$["https://picsum.photos/seed/wedding1/800/600","https://picsum.photos/seed/wedding2/800/600","https://picsum.photos/seed/wedding3/800/600"]$$,
@@ -256,7 +266,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, youtube_id, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd00000b-0000-0000-0000-000000000000',
   'cc00000b-0000-0000-0000-000000000000',
@@ -264,6 +274,7 @@ VALUES (
   'photobooth-vintage',
   'Des souvenirs instantanés, tirés sur place en 10 secondes.',
   '/images/prestataires/photobooth-vintage.jpg',
+  'ybJPbM_ExTk',
   'Un photobooth original pour des photos funs.',
   'photo',
   $$["https://picsum.photos/seed/photobooth1/800/600","https://picsum.photos/seed/photobooth2/800/600","https://picsum.photos/seed/photobooth3/800/600"]$$,
@@ -278,7 +289,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, youtube_id, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd00000c-0000-0000-0000-000000000000',
   'cc00000c-0000-0000-0000-000000000000',
@@ -286,6 +297,7 @@ VALUES (
   'studio-photo-mobile',
   'La qualité studio, dans votre salle de réception.',
   '/images/prestataires/studio-photo-mobile.jpg',
+  'VoHDwCCxWA4',
   'Un studio photo pour des portraits professionnels.',
   'photo',
   $$["https://picsum.photos/seed/studio1/800/600","https://picsum.photos/seed/studio2/800/600","https://picsum.photos/seed/studio3/800/600"]$$,
@@ -302,7 +314,7 @@ VALUES (
 
 -- ── Services / Lieux ──────────────────────────────────────────────────────────
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, youtube_id, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd00000d-0000-0000-0000-000000000000',
   'cc00000d-0000-0000-0000-000000000000',
@@ -310,6 +322,7 @@ VALUES (
   'salle-fetes-rathsamhausen',
   'Un espace chaleureux au cœur du vignoble alsacien.',
   '/images/prestataires/salle-fetes.png',
+  'SdAQjcIMjpo',
   'Une salle spacieuse pour vos événements.',
   'services',
   $$["https://picsum.photos/seed/venue1/800/600","https://picsum.photos/seed/venue2/800/600","https://picsum.photos/seed/venue3/800/600"]$$,
@@ -324,7 +337,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, youtube_id, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd00000e-0000-0000-0000-000000000000',
   'cc00000e-0000-0000-0000-000000000000',
@@ -332,6 +345,7 @@ VALUES (
   'chateau-mariage',
   'Votre grand jour dans un écrin de pierre et de vigne.',
   '/images/prestataires/chateau-mariage.jpg',
+  '615biPQMdJQ',
   'Un cadre enchanteur pour célébrer votre union.',
   'services',
   $$["https://picsum.photos/seed/chateau1/800/600","https://picsum.photos/seed/chateau2/800/600","https://picsum.photos/seed/chateau3/800/600"]$$,
@@ -346,7 +360,7 @@ VALUES (
   NOW()
 );
 
-INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
+INSERT INTO prestataires (id, utilisateur_id, name, slug, baseline, hero_image, youtube_id, short_description, category_key, photos, badges, offerings, identity, budget, testimonials, logistics, technical, faq, created_at)
 VALUES (
   'dd00000f-0000-0000-0000-000000000000',
   'cc00000f-0000-0000-0000-000000000000',
@@ -354,6 +368,7 @@ VALUES (
   'gite-de-la-mangouste',
   'Dormir sur place, réveillon ou lendemain de fête serein.',
   '/images/prestataires/hebergement-groupe.jpg',
+  '_2tBuidbF88',
   'Un hébergement confortable pour vos invités.',
   'services',
   $$["https://picsum.photos/seed/hebergement1/800/600","https://picsum.photos/seed/hebergement2/800/600","https://picsum.photos/seed/hebergement3/800/600"]$$,
