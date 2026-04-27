@@ -12,7 +12,7 @@
     </div>
 
     <div class="recap">
-      <DemandeRecap />
+      <DemandeRecap full-details />
     </div>
   </div>
 </template>

@@ -2,47 +2,60 @@
   <div v-if="hasContent" class="demande-recap">
     <p class="title">{{ $t('tunnel.recap.title') }}</p>
     <ul class="list">
-      <!-- Date -->
       <li v-if="state.date" class="item">
         <span class="emoji">📅</span>
         <span>{{ formatDate(state.date) }}</span>
       </li>
 
-      <!-- Type d'événement -->
       <li v-if="eventTypeLabel" class="item">
         <span class="emoji">{{ eventTypeEmoji }}</span>
         <span>{{ eventTypeLabel }}</span>
       </li>
 
-      <!-- Ambiance -->
       <li v-if="ambianceLabel" class="item">
         <span class="emoji">{{ ambianceEmoji }}</span>
         <span>{{ ambianceLabel }}</span>
       </li>
 
-      <!-- Moment clé -->
       <li v-if="momentCleLabel" class="item">
         <span class="emoji">{{ momentCleEmoji }}</span>
         <span>{{ momentCleLabel }}</span>
       </li>
 
-      <!-- Ville -->
       <li v-if="state.ville" class="item">
         <span class="emoji">📍</span>
         <span>{{ state.ville }}</span>
       </li>
 
-      <!-- Nombre d'invités -->
+      <li v-if="state.lieuDefini && state.lieu" class="item">
+        <span class="emoji">🏛️</span>
+        <span>{{ state.lieu }}</span>
+      </li>
+
       <li v-if="state.nbInvites" class="item">
         <span class="emoji">👥</span>
         <span>{{ state.nbInvites }}</span>
       </li>
+
+      <template v-if="fullDetails">
+        <li v-if="state.email" class="item">
+          <span class="emoji">📧</span>
+          <span>{{ state.email }}</span>
+        </li>
+
+        <li v-if="state.prestataireMessage" class="item item--message">
+          <span class="emoji">💬</span>
+          <span class="message">{{ state.prestataireMessage }}</span>
+        </li>
+      </template>
     </ul>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useDemande } from '~/composables/useDemande'
+
+defineProps<{ fullDetails?: boolean }>()
 
 const {
   state,
@@ -87,11 +100,15 @@ const hasContent = computed(
 
   .item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: $spacing-xs;
     font-size: 0.88rem;
     color: $text-primary;
     line-height: 1.4;
+
+    &--message {
+      align-items: flex-start;
+    }
   }
 
   .emoji {
@@ -99,6 +116,12 @@ const hasContent = computed(
     flex-shrink: 0;
     width: 1.4rem;
     text-align: center;
+    margin-top: 0.05rem;
+  }
+
+  .message {
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 }
 </style>

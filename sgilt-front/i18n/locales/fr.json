@@ -163,7 +163,10 @@
       "field-phone": "📱 Téléphone",
       "phone-placeholder": "06 12 34 56 78",
       "message-placeholder": "(optionnel) Votre message pour le prestataire",
-      "submit": "Envoyer la demande"
+      "submit": "Envoyer la demande",
+      "error-required": "Ce champ est obligatoire",
+      "error-email": "Adresse email invalide",
+      "error-phone": "Format invalide (ex : +33 6 12 34 56 78)"
     },
     "finalisation": {
       "title-sent": "Votre demande a bien été envoyée",
@@ -173,6 +176,13 @@
     },
     "recap": {
       "title": "Votre événement"
+    },
+    "cancel": {
+      "label": "Annuler",
+      "dialog-title": "Quitter le tunnel ?",
+      "dialog-body": "Votre progression sera perdue.",
+      "confirm": "Quitter",
+      "back": "Reprendre"
     },
     "booking-flow": {
       "step-1": {
