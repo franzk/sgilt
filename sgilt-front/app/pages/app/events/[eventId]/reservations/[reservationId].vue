@@ -55,25 +55,24 @@
   </div>
 
   <!-- ── Dialog confirmation annulation ─────────────────────────────────────── -->
-  <SgiltDialog v-model:open="confirmOpen" :title="t('reservation.cancel-dialog.title')" max-width="400px">
-    <div class="confirm-cancel">
-      <p class="confirm-cancel__body">{{ t('reservation.cancel-dialog.body') }}</p>
-      <div class="confirm-cancel__actions">
-        <SgiltButton variant="secondary" @click="confirmOpen = false">{{ t('reservation.cancel-dialog.keep') }}</SgiltButton>
-        <SgiltButton :loading="cancelling" class="destructive" @click="cancelReservation">
-          {{ t('reservation.cancel-dialog.confirm') }}
-        </SgiltButton>
-      </div>
-    </div>
-  </SgiltDialog>
+  <SgiltConfirmDialog
+    v-model:open="confirmOpen"
+    :title="t('reservation.cancel-dialog.title')"
+    :message="t('reservation.cancel-dialog.body')"
+    :confirm-label="t('reservation.cancel-dialog.confirm')"
+    :cancel-label="t('reservation.cancel-dialog.keep')"
+    :confirm-loading="cancelling"
+    destructive
+    max-width="400px"
+    @confirm="cancelReservation"
+  />
 </template>
 
 <script setup lang="ts">
 import { ReservationMockService } from '~/services/reservation.mock'
 import type { ReservationDetail, FeedItem } from '~/types/event'
 import ReservationFeed from '~/components/shared/ReservationFeed.vue'
-import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
-import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
+import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 import { getStatusOverlayStyle } from '~/constants/reservation-status'
 
 definePageMeta({ layout: 'app' })

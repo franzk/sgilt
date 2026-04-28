@@ -4,30 +4,22 @@
     <button class="close" type="button" :aria-label="$t('common.cancel')" @click="abortOpen = true">✕</button>
   </div>
 
-  <SgiltDialog v-model:open="abortOpen" :title="$t('common.context-banner.quit-title')" max-width="400px">
-    <div class="abort-form">
-      <p class="abort-text">
-        {{ $t('common.context-banner.quit-message') }}
-      </p>
-      <div class="abort-actions">
-        <SgiltButton variant="secondary" @click="abortOpen = false">{{ $t('common.context-banner.continue') }}</SgiltButton>
-        <SgiltButton @click="confirmAbort">{{ $t('common.context-banner.quit') }}</SgiltButton>
-      </div>
-    </div>
-  </SgiltDialog>
+  <SgiltConfirmDialog
+    v-model:open="abortOpen"
+    :title="$t('common.context-banner.quit-title')"
+    :message="$t('common.context-banner.quit-message')"
+    :confirm-label="$t('common.context-banner.quit')"
+    :cancel-label="$t('common.context-banner.continue')"
+    max-width="400px"
+    @confirm="abort"
+  />
 </template>
 
 <script setup lang="ts">
-import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
-import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
+import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 
 const { flowLabel, abort } = useFlow()
 const abortOpen = ref(false)
-
-function confirmAbort() {
-  abortOpen.value = false
-  abort()
-}
 </script>
 
 <style scoped lang="scss">
@@ -73,27 +65,6 @@ function confirmAbort() {
     &:hover {
       background: rgba(255, 255, 255, 0.2);
     }
-  }
-}
-
-.abort-form {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-l;
-  padding: $spacing-m $spacing-l $spacing-l;
-
-  .abort-text {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.9rem;
-    color: $text-secondary;
-    line-height: 1.5;
-    margin: 0;
-  }
-
-  .abort-actions {
-    display: flex;
-    gap: $spacing-s;
-    justify-content: flex-end;
   }
 }
 </style>
