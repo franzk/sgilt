@@ -24,35 +24,37 @@
         <div
           v-if="item.type === 'individual'"
           :ref="(el) => { if (el) itemEls[item.key] = el as HTMLElement }"
-          class="recap-card"
+          class="recap-card recap-card--individual"
           :class="{
             'required-missing': item.required && !item.value,
             highlighted: highlightedField === item.key,
           }"
         >
-          <div class="card-row">
-            <span class="card-icon">{{ item.emoji }}</span>
-            <span class="card-label" :class="{ 'card-label--error': item.required && !item.value }">
-              {{ item.label }}
+          <span class="card-icon">{{ item.emoji }}</span>
+          <div class="card-content">
+            <div class="card-title-row">
+              <span class="card-label" :class="{ 'card-label--error': item.required && !item.value }">
+                {{ item.label }}
+              </span>
+              <button class="card-btn" type="button" @click="openSheet(item.key)">
+                {{ item.value ? $t('tunnel.recap-mobile.edit') : $t('tunnel.recap-mobile.add') }}
+              </button>
+            </div>
+            <span
+              class="card-value"
+              :class="{
+                'card-value--add': !item.required && !item.value,
+                'card-value--error': item.required && !item.value,
+              }"
+            >
+              {{
+                item.value
+                  ?? (item.required
+                    ? $t('tunnel.recap-mobile.missing')
+                    : $t('tunnel.recap-mobile.add'))
+              }}
             </span>
-            <button class="card-btn" type="button" @click="openSheet(item.key)">
-              {{ item.value ? $t('tunnel.recap-mobile.edit') : $t('tunnel.recap-mobile.add') }}
-            </button>
           </div>
-          <span
-            class="card-value"
-            :class="{
-              'card-value--add': !item.required && !item.value,
-              'card-value--error': item.required && !item.value,
-            }"
-          >
-            {{
-              item.value
-                ?? (item.required
-                  ? $t('tunnel.recap-mobile.missing')
-                  : $t('tunnel.recap-mobile.add'))
-            }}
-          </span>
         </div>
 
         <!-- Card groupée -->
@@ -301,8 +303,11 @@ const {
   submitting,
   submitError,
   eventTypeLabel,
+  eventTypeEmoji,
   ambianceLabel,
+  ambianceEmoji,
   momentCleLabel,
+  momentCleEmoji,
 } = useDemande()
 
 // ── Validators ────────────────────────────────────────────────────────────────
@@ -357,7 +362,7 @@ const items = computed((): RecapItem[] => [
     type: 'individual',
     key: 'eventType',
     label: t('tunnel.recap-mobile.items.event-type'),
-    emoji: '🎉',
+    emoji: eventTypeEmoji.value || '🎉',
     required: true,
     editType: 'eventType',
     value: eventTypeLabel.value,
@@ -366,7 +371,7 @@ const items = computed((): RecapItem[] => [
     type: 'individual',
     key: 'ambiance',
     label: t('tunnel.recap-mobile.items.ambiance'),
-    emoji: '✨',
+    emoji: ambianceEmoji.value || '✨',
     required: true,
     editType: 'ambiance',
     value: ambianceLabel.value,
@@ -375,7 +380,7 @@ const items = computed((): RecapItem[] => [
     type: 'individual',
     key: 'momentCle',
     label: t('tunnel.recap-mobile.items.moment-cle'),
-    emoji: '⭐',
+    emoji: momentCleEmoji.value || '⭐',
     required: true,
     editType: 'momentCle',
     value: momentCleLabel.value,
@@ -709,20 +714,36 @@ const showCancelDialog = ref(false)
   color: $text-secondary;
 }
 
-// ─── Ligne supérieure (icône + label + bouton) ────────────────────────────────
-.card-row {
+// ─── Layout individuel : emoji à gauche, contenu à droite ────────────────────
+.recap-card--individual {
+  flex-direction: row;
+  align-items: center;
+  gap: $spacing-m;
+}
+
+.card-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  width: 2rem;
+  text-align: center;
+  align-self: center;
+}
+
+.card-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xxs;
+}
+
+.card-title-row {
   display: flex;
   align-items: center;
   gap: $spacing-s;
 }
 
-.card-icon {
-  font-size: 1rem;
-  flex-shrink: 0;
-  width: 1.4rem;
-  text-align: center;
-}
-
+// ─── Label ────────────────────────────────────────────────────────────────────
 .card-label {
   flex: 1;
   font-size: 0.75rem;
@@ -736,6 +757,7 @@ const showCancelDialog = ref(false)
   }
 }
 
+// ─── Bouton ───────────────────────────────────────────────────────────────────
 .card-btn {
   flex-shrink: 0;
   background: none;
@@ -754,11 +776,10 @@ const showCancelDialog = ref(false)
   }
 }
 
-// ─── Valeur (ligne sous le label) ─────────────────────────────────────────────
+// ─── Valeur ───────────────────────────────────────────────────────────────────
 .card-value {
   font-size: 0.92rem;
   color: $text-primary;
-  padding-left: calc(1.4rem + $spacing-s);
 
   &--add {
     color: $text-secondary;
@@ -770,6 +791,18 @@ const showCancelDialog = ref(false)
     font-weight: 500;
 
     &::before { content: '⚠ '; }
+  }
+}
+
+// ─── Icône (items groupés — reste dans card-row) ──────────────────────────────
+.card-row {
+  display: flex;
+  align-items: center;
+  gap: $spacing-s;
+
+  .card-icon {
+    font-size: 1rem;
+    width: 1.4rem;
   }
 }
 
