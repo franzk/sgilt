@@ -11,7 +11,7 @@
     <template v-else>
       <main class="demande-main">
         <div class="top">
-          <button class="main-back" type="button" @click="navigateTo(`/${slug}`)">
+          <button class="main-back" type="button" @click="router.back()">
             {{ $t('tunnel.desktop.back') }}
           </button>
         </div>
@@ -99,6 +99,7 @@ import { useDemande } from '~/composables/useDemande'
 
 const props = defineProps<{ slug: string; prestataireName: string; prestataireImage: string }>()
 
+const router = useRouter()
 const { t } = useI18n()
 
 const {
@@ -130,7 +131,7 @@ watch(etapeActuelle, (n) => {
 
 const closeAndFinish = () => {
   reset()
-  navigateTo(`/${props.slug}`)
+  router.back()
 }
 
 const stepLabels = computed(() => [

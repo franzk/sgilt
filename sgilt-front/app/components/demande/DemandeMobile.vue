@@ -71,7 +71,7 @@ watch(etapeActuelle, () => nextTick(() => bodyRef.value?.scrollTo({ top: 0, beha
 
 const closeMobile = () => {
   if (submitted.value) reset()
-  navigateTo(`/${props.slug}`)
+  router.back()
 }
 </script>
 
