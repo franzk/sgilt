@@ -28,6 +28,7 @@
           <div
             v-for="n in 6"
             :key="n"
+            :ref="(el) => { if (el) blockRefs[n - 1] = el as HTMLElement }"
             class="accordion-block"
             :class="{
               active: n === etapeActuelle,
@@ -113,6 +114,19 @@ const {
   momentCleLabel,
   momentCleEmoji,
 } = useDemande()
+
+const blockRefs = ref<HTMLElement[]>([])
+
+watch(etapeActuelle, (n) => {
+  setTimeout(() => {
+    const block = blockRefs.value[n - 1]
+    if (!block) return
+    const rect = block.getBoundingClientRect()
+    if (rect.bottom > window.innerHeight) {
+      block.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    }
+  }, 250)
+})
 
 const closeAndFinish = () => {
   reset()

@@ -146,10 +146,8 @@
       "city-placeholder": "Ex : Strasbourg, Colmar, Breuschwickersheim...",
       "field-guests": "👥 Nombre d'invités",
       "guests-placeholder": "Ex : Environ 40 personnes",
-      "field-venue": "📍 Le lieu est déjà défini\u00a0?",
-      "venue-yes": "Oui",
-      "venue-no": "Non",
-      "venue-undefined": "Lieu pas encore défini"
+      "field-venue": "🏛️ Lieu",
+      "error-ville": "La ville est obligatoire"
     },
     "etape6": {
       "question-contact": "Comment vous contacter ?",

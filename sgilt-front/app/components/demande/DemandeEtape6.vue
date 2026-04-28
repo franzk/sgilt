@@ -86,7 +86,7 @@
       </div>
 
       <div class="field-group submit">
-        <SgiltButton type="primary" :disabled="!formValid" :loading="submitting" @click="handleSubmit">
+        <SgiltButton type="primary" :loading="submitting" @click="handleSubmit">
           {{ $t('tunnel.etape6.submit') }}
         </SgiltButton>
         <p v-if="submitError" class="submit-error">{{ submitError }}</p>
