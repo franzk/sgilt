@@ -23,18 +23,27 @@
         <!-- Card individuelle -->
         <div
           v-if="item.type === 'individual'"
-          :ref="(el) => { if (el) itemEls[item.key] = el as HTMLElement }"
+          :ref="
+            (el) => {
+              if (el) itemEls[item.key] = el as HTMLElement
+            }
+          "
           class="recap-card recap-card--individual"
           :class="{
-            'required-missing': item.required && !item.value,
+            'is-incomplete': item.required && !item.value && !submitAttempted,
+            'has-error': item.required && !item.value && submitAttempted,
             highlighted: highlightedField === item.key,
           }"
         >
           <span class="card-icon">{{ item.emoji }}</span>
           <div class="card-content">
             <div class="card-title-row">
-              <span class="card-label" :class="{ 'card-label--error': item.required && !item.value }">
+              <span
+                class="card-label"
+                :class="{ 'card-label--error': item.required && !item.value && submitAttempted }"
+              >
                 {{ item.label }}
+                <span v-if="!item.required" class="optional-tag">(optionnel)</span>
               </span>
               <button class="card-btn" type="button" @click="openSheet(item.key)">
                 {{ item.value ? $t('tunnel.recap-mobile.edit') : $t('tunnel.recap-mobile.add') }}
@@ -43,15 +52,13 @@
             <span
               class="card-value"
               :class="{
-                'card-value--add': !item.required && !item.value,
-                'card-value--error': item.required && !item.value,
+                'card-value--empty': !item.value,
+                'card-value--error': item.required && !item.value && submitAttempted,
               }"
             >
               {{
-                item.value
-                  ?? (item.required
-                    ? $t('tunnel.recap-mobile.missing')
-                    : $t('tunnel.recap-mobile.add'))
+                item.value ??
+                (submitAttempted && item.required ? $t('tunnel.recap-mobile.missing') : 'Ajouter')
               }}
             </span>
           </div>
@@ -60,10 +67,15 @@
         <!-- Card groupée -->
         <div
           v-else
-          :ref="(el) => { if (el) itemEls[item.key] = el as HTMLElement }"
+          :ref="
+            (el) => {
+              if (el) itemEls[item.key] = el as HTMLElement
+            }
+          "
           class="recap-card"
           :class="{
-            'required-missing': item.subFields.some((s) => s.isMissing),
+            'is-incomplete': item.subFields.some((s) => s.isMissing) && !submitAttempted,
+            'has-error': item.subFields.some((s) => s.isMissing) && submitAttempted,
             highlighted: highlightedField === item.key,
           }"
         >
@@ -76,12 +88,16 @@
           </div>
           <div class="card-subfields">
             <div v-for="sub in item.subFields" :key="sub.key" class="subfield">
-              <span class="subfield-label" :class="{ 'subfield-label--error': sub.isMissing }">
+              <span
+                class="subfield-label"
+                :class="{ 'subfield-label--error': sub.isMissing && submitAttempted }"
+              >
                 {{ sub.label }}
-                <span v-if="sub.isMissing" class="required-warning">⚠</span>
+                <span v-if="!sub.required" class="optional-tag">(optionnel)</span>
+                <span v-else-if="sub.isMissing && submitAttempted" class="required-warning">*</span>
               </span>
               <span class="subfield-value" :class="{ 'subfield-value--empty': !sub.value }">
-                {{ sub.value ?? '—' }}
+                {{ sub.value ?? '' }}
               </span>
             </div>
           </div>
@@ -254,7 +270,9 @@
             @blur="validateCoordonneesField('telephone')"
             @focus="coordonneesErrors.telephone = null"
           />
-          <p v-if="coordonneesErrors.telephone" class="field-error">{{ coordonneesErrors.telephone }}</p>
+          <p v-if="coordonneesErrors.telephone" class="field-error">
+            {{ coordonneesErrors.telephone }}
+          </p>
         </div>
 
         <SgiltButton
@@ -317,7 +335,12 @@ function validatePhone(v: string): boolean {
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type IndividualFieldKey = 'eventType' | 'ambiance' | 'momentCle' | 'description' | 'prestataireMessage'
+type IndividualFieldKey =
+  | 'eventType'
+  | 'ambiance'
+  | 'momentCle'
+  | 'description'
+  | 'prestataireMessage'
 type GroupKey = 'detailsPratiques' | 'coordonnees'
 type EditType = 'eventType' | 'ambiance' | 'momentCle' | 'textarea'
 
@@ -353,43 +376,6 @@ type RecapItem = RecapIndividualItem | RecapGroupItem
 // ── Items ─────────────────────────────────────────────────────────────────────
 
 const items = computed((): RecapItem[] => [
-  {
-    type: 'individual',
-    key: 'eventType',
-    label: t('tunnel.recap-mobile.items.event-type'),
-    emoji: eventTypeEmoji.value || '🎉',
-    required: true,
-    editType: 'eventType',
-    value: eventTypeLabel.value,
-  },
-  {
-    type: 'individual',
-    key: 'ambiance',
-    label: t('tunnel.recap-mobile.items.ambiance'),
-    emoji: ambianceEmoji.value || '✨',
-    required: true,
-    editType: 'ambiance',
-    value: ambianceLabel.value,
-  },
-  {
-    type: 'individual',
-    key: 'momentCle',
-    label: t('tunnel.recap-mobile.items.moment-cle'),
-    emoji: momentCleEmoji.value || '⭐',
-    required: true,
-    editType: 'momentCle',
-    value: momentCleLabel.value,
-  },
-  {
-    type: 'individual',
-    key: 'description',
-    label: t('tunnel.recap-mobile.items.description'),
-    emoji: '📝',
-    required: false,
-    editType: 'textarea',
-    placeholder: t('tunnel.etape4.placeholder'),
-    value: state.description || null,
-  },
   {
     type: 'group',
     key: 'detailsPratiques',
@@ -465,6 +451,43 @@ const items = computed((): RecapItem[] => [
     placeholder: t('tunnel.etape6.message-placeholder'),
     value: state.prestataireMessage || null,
   },
+  {
+    type: 'individual',
+    key: 'eventType',
+    label: t('tunnel.recap-mobile.items.event-type'),
+    emoji: eventTypeEmoji.value || '🎉',
+    required: true,
+    editType: 'eventType',
+    value: eventTypeLabel.value,
+  },
+  {
+    type: 'individual',
+    key: 'ambiance',
+    label: t('tunnel.recap-mobile.items.ambiance'),
+    emoji: ambianceEmoji.value || '✨',
+    required: true,
+    editType: 'ambiance',
+    value: ambianceLabel.value,
+  },
+  {
+    type: 'individual',
+    key: 'momentCle',
+    label: t('tunnel.recap-mobile.items.moment-cle'),
+    emoji: momentCleEmoji.value || '⭐',
+    required: true,
+    editType: 'momentCle',
+    value: momentCleLabel.value,
+  },
+  {
+    type: 'individual',
+    key: 'description',
+    label: t('tunnel.recap-mobile.items.description'),
+    emoji: '📝',
+    required: false,
+    editType: 'textarea',
+    placeholder: t('tunnel.etape4.placeholder'),
+    value: state.description || null,
+  },
 ])
 
 // ── Sheet individuelle ────────────────────────────────────────────────────────
@@ -472,12 +495,15 @@ const items = computed((): RecapItem[] => [
 const activeField = ref<IndividualFieldKey | null>(null)
 const sheetOpen = computed({
   get: () => !!activeField.value,
-  set: (v) => { if (!v) activeField.value = null },
+  set: (v) => {
+    if (!v) activeField.value = null
+  },
 })
 
 const activeIndividualItem = computed(() =>
   activeField.value
-    ? (items.value.find((i) => i.key === activeField.value) as RecapIndividualItem | undefined) ?? null
+    ? ((items.value.find((i) => i.key === activeField.value) as RecapIndividualItem | undefined) ??
+      null)
     : null,
 )
 
@@ -488,15 +514,22 @@ function openSheet(key: IndividualFieldKey) {
 const individualFieldModel = computed<string>({
   get: () => {
     switch (activeField.value) {
-      case 'description': return state.description
-      case 'prestataireMessage': return state.prestataireMessage ?? ''
-      default: return ''
+      case 'description':
+        return state.description
+      case 'prestataireMessage':
+        return state.prestataireMessage ?? ''
+      default:
+        return ''
     }
   },
   set: (v) => {
     switch (activeField.value) {
-      case 'description': state.description = v; break
-      case 'prestataireMessage': state.prestataireMessage = v; break
+      case 'description':
+        state.description = v
+        break
+      case 'prestataireMessage':
+        state.prestataireMessage = v
+        break
     }
   },
 })
@@ -507,22 +540,32 @@ const activeGroupSheet = ref<GroupKey | null>(null)
 
 const detailsSheetOpen = computed({
   get: () => activeGroupSheet.value === 'detailsPratiques',
-  set: (v) => { activeGroupSheet.value = v ? 'detailsPratiques' : null },
+  set: (v) => {
+    activeGroupSheet.value = v ? 'detailsPratiques' : null
+  },
 })
 
 const coordonneesSheetOpen = computed({
   get: () => activeGroupSheet.value === 'coordonnees',
-  set: (v) => { activeGroupSheet.value = v ? 'coordonnees' : null },
+  set: (v) => {
+    activeGroupSheet.value = v ? 'coordonnees' : null
+  },
 })
 
 // Binding intermédiaire pour `lieu` afin de synchroniser lieuDefini
 const lieu = computed({
   get: () => state.lieu,
-  set: (v) => { state.lieu = v; state.lieuDefini = !!v },
+  set: (v) => {
+    state.lieu = v
+    state.lieuDefini = !!v
+  },
 })
 
 // Validation coordonnées
-const coordonneesErrors = reactive({ email: null as string | null, telephone: null as string | null })
+const coordonneesErrors = reactive({
+  email: null as string | null,
+  telephone: null as string | null,
+})
 
 function validateCoordonneesField(field: 'email' | 'telephone') {
   coordonneesErrors[field] = null
@@ -542,7 +585,15 @@ const coordonneesValidateDisabled = computed(
 
 // ── Submit ────────────────────────────────────────────────────────────────────
 
-type AnyFieldKey = IndividualFieldKey | 'ville' | 'lieu' | 'nbInvites' | 'prenom' | 'nom' | 'email' | 'telephone'
+type AnyFieldKey =
+  | IndividualFieldKey
+  | 'ville'
+  | 'lieu'
+  | 'nbInvites'
+  | 'prenom'
+  | 'nom'
+  | 'email'
+  | 'telephone'
 
 const FIELD_TO_ITEM: Record<string, string> = {
   ville: 'detailsPratiques',
@@ -555,27 +606,45 @@ const FIELD_TO_ITEM: Record<string, string> = {
 }
 
 const REQUIRED_FIELDS: AnyFieldKey[] = [
-  'eventType', 'ambiance', 'momentCle', 'ville', 'prenom', 'nom', 'email', 'telephone',
+  'eventType',
+  'ambiance',
+  'momentCle',
+  'ville',
+  'prenom',
+  'nom',
+  'email',
+  'telephone',
 ]
 
 function isFieldValid(key: AnyFieldKey): boolean {
   switch (key) {
-    case 'eventType': return !!state.eventType
-    case 'ambiance': return !!state.ambiance
-    case 'momentCle': return !!state.momentCle
-    case 'ville': return !!state.ville.trim()
-    case 'prenom': return !!state.prenom.trim()
-    case 'nom': return !!state.nom.trim()
-    case 'email': return !!state.email.trim() && validateEmail(state.email)
-    case 'telephone': return !!state.telephone.trim() && validatePhone(state.telephone)
-    default: return true
+    case 'eventType':
+      return !!state.eventType
+    case 'ambiance':
+      return !!state.ambiance
+    case 'momentCle':
+      return !!state.momentCle
+    case 'ville':
+      return !!state.ville.trim()
+    case 'prenom':
+      return !!state.prenom.trim()
+    case 'nom':
+      return !!state.nom.trim()
+    case 'email':
+      return !!state.email.trim() && validateEmail(state.email)
+    case 'telephone':
+      return !!state.telephone.trim() && validatePhone(state.telephone)
+    default:
+      return true
   }
 }
 
 const itemEls = ref<Record<string, HTMLElement>>({})
 const highlightedField = ref<string | null>(null)
+const submitAttempted = ref(false)
 
 function handleSubmit() {
+  submitAttempted.value = true
   const missing = REQUIRED_FIELDS.find((k) => !isFieldValid(k))
   if (missing) {
     const scrollTarget = FIELD_TO_ITEM[missing] ?? missing
@@ -631,7 +700,9 @@ const showCancelDialog = ref(false)
   cursor: pointer;
   transition: color 150ms ease;
 
-  &:hover { color: $text-primary; }
+  &:hover {
+    color: $text-primary;
+  }
 }
 
 // ─── Liste — fond gris ────────────────────────────────────────────────────────
@@ -647,9 +718,15 @@ const showCancelDialog = ref(false)
 }
 
 // ─── Card de base ─────────────────────────────────────────────────────────────
-@keyframes error-pulse {
-  0%, 100% { background-color: #fff; }
-  25%, 75% { background-color: rgba($state-error, 0.05); }
+@keyframes card-pulse {
+  0%,
+  100% {
+    background-color: #fff;
+  }
+  25%,
+  75% {
+    background-color: var(--pulse-bg);
+  }
 }
 
 .recap-card {
@@ -662,13 +739,19 @@ const showCancelDialog = ref(false)
   display: flex;
   flex-direction: column;
   gap: $spacing-s;
+  --pulse-bg: #{rgba($brand-accent, 0.1)};
 
-  &.required-missing {
+  &.is-incomplete {
+    border-left-color: $brand-accent;
+  }
+
+  &.has-error {
     border-left-color: $state-error;
+    --pulse-bg: #{rgba($state-error, 0.06)};
   }
 
   &.highlighted {
-    animation: error-pulse 2.5s ease;
+    animation: card-pulse 2.5s ease;
   }
 }
 
@@ -752,6 +835,16 @@ const showCancelDialog = ref(false)
   }
 }
 
+.optional-tag {
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  color: $text-secondary;
+  opacity: 0.7;
+  margin-left: 3px;
+}
+
 // ─── Bouton ───────────────────────────────────────────────────────────────────
 .card-btn {
   flex-shrink: 0;
@@ -763,7 +856,9 @@ const showCancelDialog = ref(false)
   font-family: inherit;
   color: $text-secondary;
   cursor: pointer;
-  transition: border-color 150ms ease, color 150ms ease;
+  transition:
+    border-color 150ms ease,
+    color 150ms ease;
 
   &:hover {
     border-color: $brand-accent;
@@ -776,7 +871,7 @@ const showCancelDialog = ref(false)
   font-size: 0.92rem;
   color: $text-primary;
 
-  &--add {
+  &--empty {
     color: $text-secondary;
     font-style: italic;
   }
@@ -784,8 +879,6 @@ const showCancelDialog = ref(false)
   &--error {
     color: $state-error;
     font-weight: 500;
-
-    &::before { content: '⚠ '; }
   }
 }
 
@@ -820,13 +913,18 @@ const showCancelDialog = ref(false)
 
 .subfield-label {
   color: $text-secondary;
-  min-width: 6rem;
   flex-shrink: 0;
 
   &--error {
     color: $state-error;
     font-weight: 600;
   }
+}
+
+.incomplete-hint {
+  color: $text-secondary;
+  font-style: italic;
+  font-size: 0.8rem;
 }
 
 .required-warning {
@@ -841,11 +939,20 @@ const showCancelDialog = ref(false)
   text-overflow: ellipsis;
   white-space: nowrap;
 
-  &--empty { color: $text-secondary; }
+  &--empty {
+    color: $text-secondary;
+  }
+
+  &--optional {
+    color: $text-secondary;
+    font-style: italic;
+  }
 }
 
 // ─── Footer sticky ────────────────────────────────────────────────────────────
 .recap-footer {
+  position: sticky;
+  bottom: 0;
   flex-shrink: 0;
   padding: $spacing-s $spacing-m $spacing-m;
   background: #fff;
@@ -867,7 +974,9 @@ const showCancelDialog = ref(false)
 }
 
 // ─── Sheet individuelle (options) ─────────────────────────────────────────────
-.sheet-option-body { padding: $spacing-m; }
+.sheet-option-body {
+  padding: $spacing-m;
+}
 
 .sheet-field-body {
   display: flex;
@@ -876,7 +985,9 @@ const showCancelDialog = ref(false)
   padding: $spacing-m;
 }
 
-.validate-btn { align-self: flex-end; }
+.validate-btn {
+  align-self: flex-end;
+}
 
 // ─── Contenu des sheets groupées ─────────────────────────────────────────────
 .group-sheet-body {
@@ -916,7 +1027,9 @@ const showCancelDialog = ref(false)
   transition: border-color 180ms ease;
   box-sizing: border-box;
 
-  &:focus { border-color: $brand-accent; }
+  &:focus {
+    border-color: $brand-accent;
+  }
 
   &::placeholder {
     color: $text-secondary;

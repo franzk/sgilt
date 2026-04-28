@@ -182,6 +182,7 @@
       "add": "Ajouter",
       "edit": "Modifier",
       "missing": "Requis",
+      "incomplete": "À compléter",
       "submit": "Envoyer ma demande",
       "validate": "Valider",
       "items": {
@@ -192,7 +193,7 @@
         "ville": "Ville",
         "nb-invites": "Nombre d'invités",
         "lieu": "Lieu",
-        "details-pratiques": "Détails pratiques",
+        "details-pratiques": "Votre événement",
         "coordonnees": "Vos coordonnées",
         "prenom": "Prénom",
         "nom": "Nom",
