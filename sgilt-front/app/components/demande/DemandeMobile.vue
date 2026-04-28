@@ -10,7 +10,7 @@
       <DemandeSheetHeader
         :etape="etapeActuelle"
         :submitted="false"
-        :steps="3"
+        :steps="4"
         @back="back"
         @close="closeMobile"
         @go-to="goTo"
@@ -22,8 +22,13 @@
             <DemandeEtape1 v-if="etapeActuelle === 1" />
             <DemandeEtape2 v-else-if="etapeActuelle === 2" />
             <DemandeEtape3 v-else-if="etapeActuelle === 3" />
+            <DemandeEtape4 v-else-if="etapeActuelle === 4" />
           </div>
         </Transition>
+      </div>
+
+      <div v-if="etapeActuelle === 4" class="mobile-footer">
+        <SgiltButton @click="next">{{ $t('tunnel.footer.continue') }}</SgiltButton>
       </div>
     </template>
 
@@ -42,6 +47,8 @@
 import DemandeEtape1 from '~/components/demande/DemandeEtape1.vue'
 import DemandeEtape2 from '~/components/demande/DemandeEtape2.vue'
 import DemandeEtape3 from '~/components/demande/DemandeEtape3.vue'
+import DemandeEtape4 from '~/components/demande/DemandeEtape4.vue'
+import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import DemandeFinalisation from '~/components/demande/DemandeFinalisation.vue'
 import DemandeSheetHeader from '~/components/demande/DemandeSheetHeader.vue'
 import DemandeMobileRecap from '~/components/demande/DemandeMobileRecap.vue'
@@ -51,19 +58,18 @@ const props = defineProps<{ prestataireName: string; prestataireImage: string; s
 
 const router = useRouter()
 
-const { etapeActuelle, direction, submitted, back, goTo, reset } = useDemande()
+const { etapeActuelle, direction, submitted, next, back, goTo, reset } = useDemande()
 
-const mobilePhase = ref<'stepper' | 'recap'>(etapeActuelle.value >= 4 ? 'recap' : 'stepper')
+const mobilePhase = ref<'stepper' | 'recap'>(etapeActuelle.value >= 5 ? 'recap' : 'stepper')
 
 watch(etapeActuelle, (n) => {
-  if (n >= 4) mobilePhase.value = 'recap'
+  if (n >= 5) mobilePhase.value = 'recap'
 })
 
 const bodyRef = ref<HTMLElement | null>(null)
 watch(etapeActuelle, () => nextTick(() => bodyRef.value?.scrollTo({ top: 0, behavior: 'smooth' })))
 
 const closeMobile = () => {
-  console.log('closeMobile', props)
   if (submitted.value) reset()
   navigateTo(`/${props.slug}`)
 }
@@ -88,6 +94,18 @@ const closeMobile = () => {
 
   &--full {
     position: static;
+  }
+}
+
+.mobile-footer {
+  flex-shrink: 0;
+  padding: $spacing-s $spacing-m $spacing-m;
+  background: #fff;
+  border-top: 1px solid $divider-color;
+
+  :deep(button) {
+    width: 100%;
+    justify-content: center;
   }
 }
 
