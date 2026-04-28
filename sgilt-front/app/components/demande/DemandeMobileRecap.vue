@@ -10,62 +10,75 @@
 
     <!-- ── Liste des items ────────────────────────────────────────────────────── -->
     <div class="recap-list">
+      <!-- Card prestataire + date -->
+      <div class="recap-card presta-card">
+        <img class="presta-img" :src="prestataireImage" :alt="prestataireName" />
+        <div class="presta-info">
+          <span class="presta-name">{{ prestataireName }}</span>
+          <span v-if="state.date" class="presta-date">{{ formatDate(state.date) }}</span>
+        </div>
+      </div>
+
       <template v-for="item in items" :key="item.key">
-        <!-- Item individuel -->
+        <!-- Card individuelle -->
         <div
           v-if="item.type === 'individual'"
           :ref="(el) => { if (el) itemEls[item.key] = el as HTMLElement }"
-          class="recap-item"
-          :class="{ highlighted: highlightedField === item.key }"
+          class="recap-card"
+          :class="{
+            'required-missing': item.required && !item.value,
+            highlighted: highlightedField === item.key,
+          }"
         >
-          <div class="item-left">
-            <span class="item-emoji">{{ item.emoji }}</span>
-            <div class="item-info">
-              <span class="item-label">{{ item.label }}</span>
-              <span
-                class="item-value"
-                :class="{
-                  'is-required-missing': item.required && !item.value,
-                  'is-add': !item.required && !item.value,
-                }"
-              >
-                {{
-                  item.value
-                    ?? (item.required
-                      ? $t('tunnel.recap-mobile.missing')
-                      : $t('tunnel.recap-mobile.add'))
-                }}
-              </span>
-            </div>
+          <div class="card-row">
+            <span class="card-icon">{{ item.emoji }}</span>
+            <span class="card-label" :class="{ 'card-label--error': item.required && !item.value }">
+              {{ item.label }}
+            </span>
+            <button class="card-btn" type="button" @click="openSheet(item.key)">
+              {{ item.value ? $t('tunnel.recap-mobile.edit') : $t('tunnel.recap-mobile.add') }}
+            </button>
           </div>
-          <button class="item-action-btn" type="button" @click="openSheet(item.key)">
-            {{ item.value ? $t('tunnel.recap-mobile.edit') : $t('tunnel.recap-mobile.add') }}
-          </button>
+          <span
+            class="card-value"
+            :class="{
+              'card-value--add': !item.required && !item.value,
+              'card-value--error': item.required && !item.value,
+            }"
+          >
+            {{
+              item.value
+                ?? (item.required
+                  ? $t('tunnel.recap-mobile.missing')
+                  : $t('tunnel.recap-mobile.add'))
+            }}
+          </span>
         </div>
 
-        <!-- Item groupé -->
+        <!-- Card groupée -->
         <div
           v-else
           :ref="(el) => { if (el) itemEls[item.key] = el as HTMLElement }"
-          class="recap-item recap-item--group"
-          :class="{ highlighted: highlightedField === item.key }"
+          class="recap-card"
+          :class="{
+            'required-missing': item.subFields.some((s) => s.isMissing),
+            highlighted: highlightedField === item.key,
+          }"
         >
-          <div class="group-header">
-            <div class="item-left">
-              <span class="item-emoji">{{ item.emoji }}</span>
-              <span class="group-label">{{ item.label }}</span>
-            </div>
-            <button class="item-action-btn" type="button" @click="activeGroupSheet = item.key">
+          <div class="card-row">
+            <span class="card-icon">{{ item.emoji }}</span>
+            <span class="card-label">{{ item.label }}</span>
+            <button class="card-btn" type="button" @click="activeGroupSheet = item.key">
               {{ $t('tunnel.recap-mobile.edit') }}
             </button>
           </div>
-          <div class="group-subfields">
+          <div class="card-subfields">
             <div v-for="sub in item.subFields" :key="sub.key" class="subfield">
-              <span class="subfield-label" :class="{ 'is-required-missing': sub.isMissing }">
+              <span class="subfield-label" :class="{ 'subfield-label--error': sub.isMissing }">
                 {{ sub.label }}
                 <span v-if="sub.isMissing" class="required-warning">⚠</span>
               </span>
-              <span class="subfield-value" :class="{ 'is-empty': !sub.value }">
+              <span class="subfield-value" :class="{ 'subfield-value--empty': !sub.value }">
                 {{ sub.value ?? '—' }}
               </span>
             </div>
@@ -277,6 +290,7 @@ import DemandeOptionSelect from '~/components/demande/DemandeOptionSelect.vue'
 import { useDemande } from '~/composables/useDemande'
 import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/demande'
 
+defineProps<{ prestataireName: string; prestataireImage: string }>()
 defineEmits<{ cancel: [] }>()
 
 const { t } = useI18n()
@@ -620,92 +634,109 @@ const showCancelDialog = ref(false)
   &:hover { color: $text-primary; }
 }
 
-// ─── Liste ────────────────────────────────────────────────────────────────────
+// ─── Liste — fond gris ────────────────────────────────────────────────────────
 .recap-list {
   flex: 1;
   overflow-y: auto;
   overscroll-behavior: contain;
-}
-
-@keyframes error-pulse {
-  0%, 100% { background-color: transparent; }
-  25%, 75% { background-color: rgba($state-error, 0.07); }
-}
-
-.recap-item {
+  background: #efefef;
   padding: $spacing-m;
-  border-bottom: 1px solid $divider-color;
-
-  &.highlighted { animation: error-pulse 2.5s ease; }
-
-  // ── Item individuel ──────────────────────────────────────────────────────────
-  &:not(.recap-item--group) {
-    display: flex;
-    align-items: center;
-    gap: $spacing-s;
-  }
-
-  // ── Item groupé ──────────────────────────────────────────────────────────────
-  &--group {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-s;
-  }
-}
-
-.item-left {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: $spacing-s;
-  flex: 1;
-  min-width: 0;
 }
 
-.item-emoji {
-  font-size: 1.1rem;
+// ─── Card de base ─────────────────────────────────────────────────────────────
+@keyframes error-pulse {
+  0%, 100% { background-color: #fff; }
+  25%, 75% { background-color: rgba($state-error, 0.05); }
+}
+
+.recap-card {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-left: 3px solid transparent;
+  border-radius: $radius-md;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  padding: $spacing-m;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-s;
+
+  &.required-missing {
+    border-left-color: $state-error;
+  }
+
+  &.highlighted {
+    animation: error-pulse 2.5s ease;
+  }
+}
+
+// ─── Card prestataire ─────────────────────────────────────────────────────────
+.presta-card {
+  flex-direction: row;
+  align-items: center;
+  gap: $spacing-m;
+  border-left-color: transparent;
+}
+
+.presta-img {
+  width: 3rem;
+  height: 3rem;
+  border-radius: $radius-md;
+  object-fit: cover;
   flex-shrink: 0;
-  width: 1.5rem;
-  text-align: center;
 }
 
-.item-info {
+.presta-info {
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
 }
 
-.item-label {
-  font-size: 0.78rem;
+.presta-name {
+  font-size: 0.95rem;
   font-weight: 600;
-  color: $text-secondary;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.item-value {
-  font-size: 0.92rem;
   color: $text-primary;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
 
-  &.is-add {
-    color: $text-secondary;
-    font-style: italic;
-    font-size: 0.88rem;
-  }
+.presta-date {
+  font-size: 0.82rem;
+  color: $text-secondary;
+}
 
-  &.is-required-missing {
+// ─── Ligne supérieure (icône + label + bouton) ────────────────────────────────
+.card-row {
+  display: flex;
+  align-items: center;
+  gap: $spacing-s;
+}
+
+.card-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  width: 1.4rem;
+  text-align: center;
+}
+
+.card-label {
+  flex: 1;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  &--error {
     color: $state-error;
-    font-weight: 500;
-    font-size: 0.88rem;
-
-    &::before { content: '⚠ '; }
   }
 }
 
-.item-action-btn {
+.card-btn {
   flex-shrink: 0;
   background: none;
   border: 1px solid $divider-color;
@@ -723,27 +754,33 @@ const showCancelDialog = ref(false)
   }
 }
 
-// ─── Groupe header + subfields ────────────────────────────────────────────────
-.group-header {
-  display: flex;
-  align-items: center;
-  gap: $spacing-s;
+// ─── Valeur (ligne sous le label) ─────────────────────────────────────────────
+.card-value {
+  font-size: 0.92rem;
+  color: $text-primary;
+  padding-left: calc(1.4rem + $spacing-s);
+
+  &--add {
+    color: $text-secondary;
+    font-style: italic;
+  }
+
+  &--error {
+    color: $state-error;
+    font-weight: 500;
+
+    &::before { content: '⚠ '; }
+  }
 }
 
-.group-label {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: $text-secondary;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  flex: 1;
-}
-
-.group-subfields {
+// ─── Sous-champs (items groupés) ──────────────────────────────────────────────
+.card-subfields {
   display: flex;
   flex-direction: column;
   gap: $spacing-xxs;
-  padding-left: calc(1.5rem + $spacing-s); // aligne sous l'emoji du group-header
+  padding-left: calc(1.4rem + $spacing-s);
+  border-top: 1px solid $divider-color;
+  padding-top: $spacing-xs;
 }
 
 .subfield {
@@ -758,9 +795,9 @@ const showCancelDialog = ref(false)
   min-width: 6rem;
   flex-shrink: 0;
 
-  &.is-required-missing {
+  &--error {
     color: $state-error;
-    font-weight: 500;
+    font-weight: 600;
   }
 }
 
@@ -776,7 +813,7 @@ const showCancelDialog = ref(false)
   text-overflow: ellipsis;
   white-space: nowrap;
 
-  &.is-empty { color: $text-secondary; }
+  &--empty { color: $text-secondary; }
 }
 
 // ─── Footer sticky ────────────────────────────────────────────────────────────

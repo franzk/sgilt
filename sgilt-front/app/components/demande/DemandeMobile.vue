@@ -28,7 +28,7 @@
     </template>
 
     <!-- Phase récap : liste éditable + bouton submit -->
-    <DemandeMobileRecap v-else :prestataire-name="prestataireName" @cancel="closeMobile" />
+    <DemandeMobileRecap v-else :prestataire-name="prestataireName" :prestataire-image="prestataireImage" @cancel="closeMobile" />
   </div>
 </template>
 
@@ -41,7 +41,7 @@ import DemandeSheetHeader from '~/components/demande/DemandeSheetHeader.vue'
 import DemandeMobileRecap from '~/components/demande/DemandeMobileRecap.vue'
 import { useDemande } from '~/composables/useDemande'
 
-defineProps<{ prestataireName: string }>()
+defineProps<{ prestataireName: string; prestataireImage: string }>()
 
 const router = useRouter()
 

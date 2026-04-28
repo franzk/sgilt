@@ -16,6 +16,14 @@
           </button>
         </div>
 
+        <div class="presta-header">
+          <img class="presta-img" :src="props.prestataireImage" :alt="props.prestataireName" />
+          <div class="presta-info">
+            <span class="presta-name">{{ props.prestataireName }}</span>
+            <span v-if="state.date" class="presta-date">{{ formatDate(state.date) }}</span>
+          </div>
+        </div>
+
         <div class="demande-accordion">
           <div
             v-for="n in 6"
@@ -88,7 +96,7 @@ import DemandeEtape6 from '~/components/demande/DemandeEtape6.vue'
 import DemandeFinalisation from '~/components/demande/DemandeFinalisation.vue'
 import { useDemande } from '~/composables/useDemande'
 
-const props = defineProps<{ slug: string; prestataireName: string }>()
+const props = defineProps<{ slug: string; prestataireName: string; prestataireImage: string }>()
 
 const { t } = useI18n()
 
@@ -188,6 +196,42 @@ function stepDoneSummary(n: number): string {
   &:hover {
     color: $text-primary;
   }
+}
+
+// ─── Header prestataire ───────────────────────────────────────────────────────
+.presta-header {
+  display: flex;
+  align-items: center;
+  gap: $spacing-m;
+  padding: $spacing-m $spacing-xxl;
+  border-bottom: 1px solid $divider-color;
+  max-width: 640px;
+}
+
+.presta-img {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: $radius-md;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.presta-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.presta-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.presta-date {
+  font-size: 0.85rem;
+  color: $text-secondary;
 }
 
 // ─── Accordion ────────────────────────────────────────────────────────────────
