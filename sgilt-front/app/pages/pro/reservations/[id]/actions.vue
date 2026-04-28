@@ -37,42 +37,24 @@
     </div>
 
     <!-- ── Modal confirmation annulation ───────────────────────────────────── -->
-    <SgiltDialog
-      v-if="cancelOpen"
+    <SgiltConfirmDialog
       v-model:open="cancelOpen"
       :title="$t('pro.actions.cancel-reservation.dialog-title')"
+      :message="$t('pro.actions.cancel-reservation.dialog-body')"
+      :confirm-label="$t('pro.actions.cancel-reservation.dialog-confirm')"
+      :cancel-label="$t('pro.actions.cancel-reservation.dialog-cancel')"
+      :confirm-loading="loading"
+      destructive
       max-width="480px"
-    >
-      <div class="confirm-form">
-        <p class="confirm-form__text">
-          {{ $t('pro.actions.cancel-reservation.dialog-body') }}
-        </p>
-        <div class="confirm-form__actions">
-          <button
-            class="confirm-form__btn confirm-form__btn--cancel"
-            type="button"
-            @click="cancelOpen = false"
-          >
-            {{ $t('pro.actions.cancel-reservation.dialog-cancel') }}
-          </button>
-          <button
-            class="confirm-form__btn confirm-form__btn--confirm"
-            type="button"
-            :disabled="loading"
-            @click="confirmCancel"
-          >
-            {{ $t('pro.actions.cancel-reservation.dialog-confirm') }}
-          </button>
-        </div>
-      </div>
-    </SgiltDialog>
+      @confirm="confirmCancel"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 definePageMeta({ layout: 'pro' })
 
-import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
+import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 import { ProMockService } from '~/services/pro.mock'
 
 const route = useRoute()

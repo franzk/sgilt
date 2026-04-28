@@ -151,33 +151,24 @@
     </div>
 
     <!-- ── Dialog confirmation suppression ───────────────────────────────────── -->
-    <SgiltDialog
+    <SgiltConfirmDialog
       v-model:open="deleteOpen"
       :title="$t('profile.page.delete-dialog.title')"
-      :description="$t('profile.page.delete-dialog.description')"
+      :message="$t('profile.page.delete-dialog.body')"
+      :confirm-label="$t('profile.page.delete-dialog.confirm')"
+      :cancel-label="$t('profile.page.delete-dialog.keep')"
+      :confirm-loading="deleting"
+      destructive
       max-width="400px"
-    >
-      <div class="delete-dialog">
-        <p class="delete-dialog-text">
-          {{ $t('profile.page.delete-dialog.body') }}
-        </p>
-        <div class="delete-dialog-actions">
-          <SgiltButton variant="secondary" @click="deleteOpen = false">
-            {{ $t('profile.page.delete-dialog.keep') }}
-          </SgiltButton>
-          <SgiltButton :loading="deleting" class="btn-destructive" @click="deleteAccount">
-            {{ $t('profile.page.delete-dialog.confirm') }}
-          </SgiltButton>
-        </div>
-      </div>
-    </SgiltDialog>
+      @confirm="deleteAccount"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { CameraIcon, EditIcon, ShieldIcon } from '@remixicons/vue/line'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
-import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
+import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 import UserAvatar from '~/components/basics/UserAvatar.vue'
 
 definePageMeta({ layout: 'account' })

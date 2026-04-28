@@ -70,7 +70,7 @@ const bodyRef = ref<HTMLElement | null>(null)
 watch(etapeActuelle, () => nextTick(() => bodyRef.value?.scrollTo({ top: 0, behavior: 'smooth' })))
 
 const closeMobile = () => {
-  if (submitted.value) reset()
+  reset()
   router.back()
 }
 </script>

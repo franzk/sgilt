@@ -20,32 +20,27 @@
       </button>
       <span v-else class="btn-placeholder" />
 
-      <DemandeStepper v-if="!submitted" :etape="etape" :steps="steps" @go-to="$emit('go-to', $event)" />
+      <DemandeStepper
+        v-if="!submitted"
+        :etape="etape"
+        :steps="steps"
+        @go-to="$emit('go-to', $event)"
+      />
     </div>
 
-    <!-- Dialog de confirmation -->
-    <SgiltDialog
+    <SgiltConfirmDialog
       v-model:open="showCancelDialog"
       :title="$t('tunnel.cancel.dialog-title')"
-    >
-      <div class="dialog-content">
-        <p class="dialog-body">{{ $t('tunnel.cancel.dialog-body') }}</p>
-        <div class="dialog-actions">
-          <SgiltButton variant="secondary" @click="showCancelDialog = false">
-            {{ $t('tunnel.cancel.back') }}
-          </SgiltButton>
-          <SgiltButton @click="confirmCancel">
-            {{ $t('tunnel.cancel.confirm') }}
-          </SgiltButton>
-        </div>
-      </div>
-    </SgiltDialog>
+      :message="$t('tunnel.cancel.dialog-body')"
+      :confirm-label="$t('tunnel.cancel.confirm')"
+      :cancel-label="$t('tunnel.cancel.back')"
+      @confirm="emit('close')"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
-import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
+import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 
 defineProps<{
   etape: number
@@ -60,11 +55,6 @@ const emit = defineEmits<{
 }>()
 
 const showCancelDialog = ref(false)
-
-function confirmCancel() {
-  showCancelDialog.value = false
-  emit('close')
-}
 </script>
 
 <style scoped lang="scss">
@@ -128,25 +118,5 @@ function confirmCancel() {
   width: 2.2rem;
   height: 2.2rem;
   flex-shrink: 0;
-}
-
-.dialog-content {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-l;
-  padding: $spacing-m $spacing-m $spacing-l;
-}
-
-.dialog-body {
-  font-size: 0.95rem;
-  color: $text-secondary;
-  margin: 0;
-  line-height: 1.5;
-}
-
-.dialog-actions {
-  display: flex;
-  gap: $spacing-s;
-  justify-content: flex-end;
 }
 </style>

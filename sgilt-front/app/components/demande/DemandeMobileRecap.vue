@@ -268,26 +268,21 @@
     </SgiltBottomSheet>
 
     <!-- ── Dialog annulation ──────────────────────────────────────────────────── -->
-    <SgiltDialog v-model:open="showCancelDialog" :title="$t('tunnel.cancel.dialog-title')">
-      <div class="dialog-content">
-        <p class="dialog-body">{{ $t('tunnel.cancel.dialog-body') }}</p>
-        <div class="dialog-actions">
-          <SgiltButton variant="secondary" @click="showCancelDialog = false">
-            {{ $t('tunnel.cancel.back') }}
-          </SgiltButton>
-          <SgiltButton @click="$emit('cancel')">
-            {{ $t('tunnel.cancel.confirm') }}
-          </SgiltButton>
-        </div>
-      </div>
-    </SgiltDialog>
+    <SgiltConfirmDialog
+      v-model:open="showCancelDialog"
+      :title="$t('tunnel.cancel.dialog-title')"
+      :message="$t('tunnel.cancel.dialog-body')"
+      :confirm-label="$t('tunnel.cancel.confirm')"
+      :cancel-label="$t('tunnel.cancel.back')"
+      @confirm="$emit('cancel')"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import SgiltBottomSheet from '~/components/basics/sheets/SgiltBottomSheet.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
-import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
+import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 import DemandeOptionSelect from '~/components/demande/DemandeOptionSelect.vue'
 import { useDemande } from '~/composables/useDemande'
 import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/demande'
