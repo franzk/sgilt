@@ -8,6 +8,7 @@
       :locale="fr"
       :formats="format"
       class="sgilt-date-picker"
+      :class="{ 'sgilt-date-picker--error': props.error }"
       :ui="uiConfig"
       :state="choiceState"
       :placeholder="placeholder"
@@ -73,6 +74,7 @@ const props = defineProps<{
   disabled?: boolean
   placeholder?: string
   inline?: boolean
+  error?: boolean
 }>()
 
 const getDayClass = (date: Date) => {
@@ -130,6 +132,11 @@ $menu-background:
   linear-gradient(180deg, #fffdf6 0%, #ffffff 60%);
 
 // ─── Composant ────────────────────────────────────────────────────────────────
+
+.sgilt-date-picker--error {
+  --dp-border-color: #{$state-error};
+  --dp-hover-color: #{rgba($state-error, 0.06)};
+}
 
 .sgilt-date-picker {
   width: 100%;

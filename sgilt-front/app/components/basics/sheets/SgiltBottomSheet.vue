@@ -6,7 +6,7 @@
 
     <DrawerPortal>
       <DrawerOverlay v-if="overlay" class="sgilt-sheet__overlay" />
-      <DrawerContent class="sgilt-sheet__content">
+      <DrawerContent class="sgilt-sheet__content" :class="{ 'sgilt-sheet__content--fullscreen': fullscreen }">
         <!-- Accessibilité -->
         <DrawerTitle class="sr-only">{{ title }}</DrawerTitle>
         <DrawerDescription v-if="description" class="sr-only">{{ description }}</DrawerDescription>
@@ -48,6 +48,7 @@ defineProps<{
   description?: string
   overlay?: boolean
   bottomOffset?: number
+  fullscreen?: boolean
 }>()
 </script>
 
@@ -89,6 +90,10 @@ defineProps<{
     linear-gradient(180deg, #fffdf6 0%, #ffffff 50%);
   border-top: 1px solid rgba(255, 255, 255, 0.8);
   box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.18);
+
+  &--fullscreen {
+    height: calc(100dvh - $app-header-height);
+  }
 }
 
 // ── Handle ─────────────────────────────────────────────────────────────────────

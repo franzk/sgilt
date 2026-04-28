@@ -1,13 +1,10 @@
 <template>
   <div class="etape">
     <h2 class="question">Votre événement en pratique</h2>
-    <DemandeEtape5Fields :state="state" />
-    <SgiltButton
-      class="button"
-      :disabled="!state.date || !state.ville || !state.nbInvites"
-      @click="next"
-      >{{ $t('tunnel.footer.continue') }}</SgiltButton
-    >
+    <DemandeEtape5Fields :state="state" :ville-error="villeError" />
+    <SgiltButton class="button" @click="handleContinue">
+      {{ $t('tunnel.footer.continue') }}
+    </SgiltButton>
   </div>
 </template>
 
@@ -16,7 +13,20 @@ import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import DemandeEtape5Fields from '~/components/demande/DemandeEtape5Fields.vue'
 import { useDemande } from '~/composables/useDemande'
 
+const { t } = useI18n()
 const { state, next } = useDemande()
+
+const villeError = ref<string | null>(null)
+
+watch(() => state.ville, () => { villeError.value = null })
+
+function handleContinue() {
+  if (!state.ville.trim()) {
+    villeError.value = t('tunnel.etape5.error-ville')
+    return
+  }
+  next()
+}
 </script>
 
 <style scoped lang="scss">

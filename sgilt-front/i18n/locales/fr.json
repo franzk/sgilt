@@ -81,6 +81,7 @@
       },
       "rates": "Tarifs",
       "send-request": "Envoyer une demande",
+      "date-required": "Veuillez sélectionner une date",
       "offerings-title": "Ce que nous proposons",
       "testimonials-title": "Ils en parlent",
       "infos-title": "Informations pratiques",
@@ -146,10 +147,8 @@
       "city-placeholder": "Ex : Strasbourg, Colmar, Breuschwickersheim...",
       "field-guests": "👥 Nombre d'invités",
       "guests-placeholder": "Ex : Environ 40 personnes",
-      "field-venue": "📍 Le lieu est déjà défini\u00a0?",
-      "venue-yes": "Oui",
-      "venue-no": "Non",
-      "venue-undefined": "Lieu pas encore défini"
+      "field-venue": "🏛️ Lieu",
+      "error-ville": "La ville est obligatoire"
     },
     "etape6": {
       "question-contact": "Comment vous contacter ?",
@@ -163,7 +162,10 @@
       "field-phone": "📱 Téléphone",
       "phone-placeholder": "06 12 34 56 78",
       "message-placeholder": "(optionnel) Votre message pour le prestataire",
-      "submit": "Envoyer la demande"
+      "submit": "Envoyer la demande",
+      "error-required": "Ce champ est obligatoire",
+      "error-email": "Adresse email invalide",
+      "error-phone": "Format invalide (ex : +33 6 12 34 56 78)"
     },
     "finalisation": {
       "title-sent": "Votre demande a bien été envoyée",
@@ -173,6 +175,37 @@
     },
     "recap": {
       "title": "Votre événement"
+    },
+    "recap-mobile": {
+      "header-title": "Ma demande",
+      "add": "Ajouter",
+      "edit": "Modifier",
+      "missing": "Requis",
+      "submit": "Envoyer ma demande",
+      "validate": "Valider",
+      "items": {
+        "event-type": "Type d'événement",
+        "ambiance": "Ambiance",
+        "moment-cle": "Moment clé",
+        "description": "Description",
+        "ville": "Ville",
+        "nb-invites": "Nombre d'invités",
+        "lieu": "Lieu",
+        "details-pratiques": "Détails pratiques",
+        "coordonnees": "Vos coordonnées",
+        "prenom": "Prénom",
+        "nom": "Nom",
+        "email": "Email",
+        "telephone": "Téléphone",
+        "message": "Message au prestataire"
+      }
+    },
+    "cancel": {
+      "label": "Annuler",
+      "dialog-title": "Quitter le tunnel ?",
+      "dialog-body": "Votre progression sera perdue.",
+      "confirm": "Quitter",
+      "back": "Reprendre"
     },
     "booking-flow": {
       "step-1": {

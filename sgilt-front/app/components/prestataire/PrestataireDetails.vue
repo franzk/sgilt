@@ -18,9 +18,11 @@
             :booked-dates="unavailableDatesAsDate"
             :disabled="disableDate"
             :placeholder="$t('provider.details.verify-date')"
+            :error="!!dateError"
           />
           <Transition name="fade">
-            <div v-if="dateModel" class="availability-badge" :class="availabilityClass">
+            <p v-if="dateError" class="date-error">{{ dateError }}</p>
+            <div v-else-if="dateModel" class="availability-badge" :class="availabilityClass">
               <span class="icon">{{ availabilityIcon }}</span>
               <span>{{ availabilityLabel }}</span>
             </div>
@@ -32,7 +34,7 @@
           <p class="text">{{ prestataire.budget }}</p>
         </div>
 
-        <SgiltButton class="sidebar-cta" :disabled="!dateModel" @click="onSelect">
+        <SgiltButton class="sidebar-cta" @click="onSelect">
           {{ $t('provider.details.send-request') }}
         </SgiltButton>
       </aside>
@@ -129,7 +131,7 @@
 
     <!-- ── Sticky CTA (mobile) ───────────────────────────────────────────────── -->
     <div class="sticky-cta">
-      <SgiltButton :disabled="!dateModel" @click="onSelect">{{
+      <SgiltButton @click="onSelect">{{
         $t('provider.details.send-request')
       }}</SgiltButton>
     </div>
@@ -204,6 +206,7 @@ import type { PrestataireDetail } from '~/data/prestataire/domain/prestataire'
 const { t } = useI18n()
 
 const props = defineProps<{
+
   prestataire: PrestataireDetail
   disableDate?: boolean
 }>()
@@ -214,6 +217,10 @@ const emit = defineEmits<{
 }>()
 
 function onSelect() {
+  if (!props.disableDate && !dateModel.value) {
+    dateError.value = t('provider.details.date-required')
+    return
+  }
   emit('select', props.prestataire)
 }
 
@@ -251,6 +258,9 @@ function nextPhoto() {
 
 // ── Disponibilités ────────────────────────────────────────────────────────────
 const { dateModel } = useSearchUi()
+
+const dateError = ref<string | null>(null)
+watch(dateModel, () => { dateError.value = null })
 
 const unavailableDatesAsDate = computed<Date[]>(() =>
   (props.prestataire.unavailableDates ?? []).map((d) => new Date(d)),
@@ -444,6 +454,12 @@ $section-gap: 2.5rem;
 }
 
 // ── Disponibilité ─────────────────────────────────────────────────────────────
+.date-error {
+  font-size: 0.82rem;
+  color: $state-error;
+  margin: 0;
+}
+
 .availability-badge {
   display: inline-flex;
   align-items: center;

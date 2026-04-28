@@ -4,15 +4,23 @@
 
     <div class="hero">
       <div class="icon">✉️</div>
-      <h2 class="title">{{ isNewEventFlow ? $t('tunnel.finalisation.title-sent') : $t('tunnel.finalisation.title-confirm') }}</h2>
+      <h2 class="title">
+        {{
+          isNewEventFlow
+            ? $t('tunnel.finalisation.title-sent')
+            : $t('tunnel.finalisation.title-confirm')
+        }}
+      </h2>
       <div v-if="!isNewEventFlow" class="cta">
         <p class="cta-text">{{ $t('tunnel.finalisation.cta-text', { name: prestataireName }) }}</p>
       </div>
-      <SgiltButton v-else @click="navigateTo('/app/events')">{{ $t('tunnel.finalisation.see-event') }}</SgiltButton>
+      <SgiltButton v-else @click="navigateTo('/app/events')">{{
+        $t('tunnel.finalisation.see-event')
+      }}</SgiltButton>
     </div>
 
     <div class="recap">
-      <DemandeRecap />
+      <DemandeRecap full-details />
     </div>
   </div>
 </template>
@@ -82,31 +90,27 @@ onMounted(() => {
   }
 
   .close {
-    display: none;
+    position: absolute;
+    top: $spacing-m;
+    right: $spacing-l;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: $text-secondary;
+    cursor: pointer;
+    border-radius: $radius-sm;
+    transition:
+      color 150ms ease,
+      background 150ms ease;
 
-    @media (min-width: $breakpoint-desktop) {
-      position: absolute;
-      top: $spacing-m;
-      right: $spacing-l;
-      width: 2rem;
-      height: 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: none;
-      border: none;
-      font-size: 1rem;
-      color: $text-secondary;
-      cursor: pointer;
-      border-radius: $radius-sm;
-      transition:
-        color 150ms ease,
-        background 150ms ease;
-
-      &:hover {
-        color: $text-primary;
-        background: $surface-soft;
-      }
+    &:hover {
+      color: $text-primary;
+      background: $surface-soft;
     }
   }
 

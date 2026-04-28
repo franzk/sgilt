@@ -5,9 +5,9 @@
     role="progressbar"
     :aria-valuenow="etape"
     aria-valuemin="1"
-    aria-valuemax="6"
+    :aria-valuemax="steps ?? 6"
   >
-    <div v-for="n in 6" :key="n" class="item">
+    <div v-for="n in (steps ?? 6)" :key="n" class="item">
       <div class="dot-col">
         <button
           class="dot"
@@ -44,6 +44,7 @@ defineProps<{
   etape: number
   vertical?: boolean
   labels?: string[]
+  steps?: number
 }>()
 defineEmits<{ (e: 'go-to', n: number): void }>()
 </script>
