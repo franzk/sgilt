@@ -28,7 +28,13 @@
     </template>
 
     <!-- Phase récap : liste éditable + bouton submit -->
-    <DemandeMobileRecap v-else :prestataire-name="prestataireName" :prestataire-image="prestataireImage" @cancel="closeMobile" />
+    <DemandeMobileRecap
+      v-else
+      :prestataire-name="props.prestataireName"
+      :prestataire-image="props.prestataireImage"
+      :slug="props.slug"
+      @cancel="closeMobile"
+    />
   </div>
 </template>
 
@@ -41,15 +47,13 @@ import DemandeSheetHeader from '~/components/demande/DemandeSheetHeader.vue'
 import DemandeMobileRecap from '~/components/demande/DemandeMobileRecap.vue'
 import { useDemande } from '~/composables/useDemande'
 
-defineProps<{ prestataireName: string; prestataireImage: string }>()
+const props = defineProps<{ prestataireName: string; prestataireImage: string; slug: string }>()
 
 const router = useRouter()
 
 const { etapeActuelle, direction, submitted, back, goTo, reset } = useDemande()
 
-const mobilePhase = ref<'stepper' | 'recap'>(
-  etapeActuelle.value >= 4 ? 'recap' : 'stepper',
-)
+const mobilePhase = ref<'stepper' | 'recap'>(etapeActuelle.value >= 4 ? 'recap' : 'stepper')
 
 watch(etapeActuelle, (n) => {
   if (n >= 4) mobilePhase.value = 'recap'
@@ -59,8 +63,9 @@ const bodyRef = ref<HTMLElement | null>(null)
 watch(etapeActuelle, () => nextTick(() => bodyRef.value?.scrollTo({ top: 0, behavior: 'smooth' })))
 
 const closeMobile = () => {
+  console.log('closeMobile', props)
   if (submitted.value) reset()
-  router.back()
+  navigateTo(`/${props.slug}`)
 }
 </script>
 

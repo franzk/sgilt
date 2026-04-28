@@ -1,7 +1,17 @@
 <template>
   <template v-if="prestataire">
-    <DemandeDesktop v-if="!isMobile" :slug="slug" :prestataire-name="prestataire.name" :prestataire-image="prestataire.image" />
-    <DemandeMobile v-else :prestataire-name="prestataire.name" :prestataire-image="prestataire.image" />
+    <DemandeDesktop
+      v-if="!isMobile"
+      :slug="slug"
+      :prestataire-name="prestataire.name"
+      :prestataire-image="prestataire.image"
+    />
+    <DemandeMobile
+      v-else
+      :prestataire-name="prestataire.name"
+      :prestataire-image="prestataire.image"
+      :slug="slug"
+    />
   </template>
 
   <div v-else-if="!loading" class="not-found">
