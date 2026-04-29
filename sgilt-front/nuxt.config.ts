@@ -123,7 +123,7 @@ export default defineNuxtConfig({
     domains: ['images.unsplash.com', 'picsum.photos'],
   },
 
-  css: ['@/assets/styles/base.scss'],
+  css: ['@/assets/styles/base.scss', '@vuepic/vue-datepicker/dist/main.css'],
 
   app: {
     head: {
