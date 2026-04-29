@@ -28,7 +28,11 @@
           <div
             v-for="n in 6"
             :key="n"
-            :ref="(el) => { if (el) blockRefs[n - 1] = el as HTMLElement }"
+            :ref="
+              (el) => {
+                if (el) blockRefs[n - 1] = el as HTMLElement
+              }
+            "
             class="accordion-block"
             :class="{
               active: n === etapeActuelle,
@@ -79,7 +83,12 @@
 
       <aside class="demande-panel">
         <DemandeCommentCaMarche v-if="etapeActuelle === 1" />
-        <DemandeRecap v-else />
+        <DemandeRecap
+          v-else
+          :prestataire-name="props.prestataireName"
+          :prestataire-image="props.prestataireImage"
+          :full-details="etapeActuelle >= 6"
+        />
       </aside>
     </template>
   </div>
@@ -175,7 +184,7 @@ function stepDoneSummary(n: number): string {
 .demande-desktop {
   min-height: calc(100dvh - $app-header-height);
   display: grid;
-  grid-template-columns: 1fr 280px;
+  grid-template-columns: 1fr 320px;
 
   .finalisation {
     grid-column: 1 / -1;
@@ -213,14 +222,18 @@ function stepDoneSummary(n: number): string {
   }
 }
 
-// ─── Header prestataire ───────────────────────────────────────────────────────
+// ─── Card prestataire ─────────────────────────────────────────────────────────
 .presta-header {
   display: flex;
   align-items: center;
   gap: $spacing-m;
-  padding: $spacing-m $spacing-xxl;
-  border-bottom: 1px solid $divider-color;
-  max-width: 640px;
+  margin: 0 $spacing-l $spacing-m;
+  padding: $spacing-m $spacing-l;
+  background: #fff;
+  border-radius: $radius-lg;
+  box-shadow:
+    0 2px 6px $shadow-s,
+    0 8px 24px $shadow-m;
 }
 
 .presta-img {
@@ -251,8 +264,7 @@ function stepDoneSummary(n: number): string {
 
 // ─── Accordion ────────────────────────────────────────────────────────────────
 .demande-accordion {
-  padding: 0 $spacing-xxl;
-  max-width: 640px;
+  padding: 0 $spacing-l;
   display: flex;
   flex-direction: column;
 }
@@ -377,15 +389,11 @@ function stepDoneSummary(n: number): string {
 
 // ─── Panneau droit ────────────────────────────────────────────────────────────
 .demande-panel {
-  padding: $spacing-xl $spacing-l;
+  padding: $spacing-l $spacing-m;
   border-left: 1px solid $divider-color;
   position: sticky;
   top: 0;
-  height: calc(100dvh - $app-header-height);
+  height: 100dvh;
   overflow-y: auto;
-
-  :global(.recap) {
-    margin-top: 0;
-  }
 }
 </style>

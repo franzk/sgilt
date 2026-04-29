@@ -40,6 +40,12 @@ function handleContinue() {
     line-height: 1.3;
   }
 
+  :deep(.fields) {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-m;
+  }
+
   .button {
     margin-top: $spacing-l;
   }
