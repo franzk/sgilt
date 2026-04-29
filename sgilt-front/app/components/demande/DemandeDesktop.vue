@@ -156,6 +156,12 @@ watch(etapeActuelle, (n) => {
   }, 250)
 })
 
+watch(submitted, (s) => {
+  if (s) {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+})
+
 const closeAndFinish = () => {
   reset()
   router.back()

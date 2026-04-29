@@ -1,5 +1,5 @@
 <template>
-  <div class="flow">
+  <SgiltContentCard class="flow">
     <p class="title">{{ $t('tunnel.comment-ca-marche.title') }}</p>
     <div class="steps">
       <div class="step">
@@ -15,15 +15,16 @@
         <span>{{ $t('tunnel.comment-ca-marche.step-3') }}</span>
       </div>
     </div>
-  </div>
+  </SgiltContentCard>
 </template>
+
+<script setup lang="ts">
+import SgiltContentCard from '~/components/basics/cards/SgiltContentCard.vue'
+</script>
 
 <style scoped lang="scss">
 .flow {
   padding: $spacing-m;
-  background: $surface-soft;
-  border: 1px solid $divider-color;
-  border-radius: $radius-md;
 
   .title {
     font-size: 0.7rem;
