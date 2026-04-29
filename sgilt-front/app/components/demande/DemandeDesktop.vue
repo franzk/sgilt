@@ -37,35 +37,40 @@
             class="accordion-block"
             :class="{
               active: n === etapeActuelle,
-              done: n < etapeActuelle,
-              locked: n > etapeActuelle,
+              done: n <= maxReached && n !== etapeActuelle,
+              locked: n > maxReached,
             }"
           >
             <button
               class="header"
               type="button"
-              :disabled="n > etapeActuelle"
-              @click="n < etapeActuelle ? goTo(n) : undefined"
+              :disabled="n > maxReached"
+              @click="n <= maxReached && n !== etapeActuelle ? goTo(n) : undefined"
             >
               <span
                 class="dot"
                 :class="{
                   active: n === etapeActuelle,
-                  done: n < etapeActuelle,
+                  done: n <= maxReached && n !== etapeActuelle,
                 }"
               >
-                <span v-if="n < etapeActuelle">✓</span>
+                <span v-if="n <= maxReached && n !== etapeActuelle">✓</span>
                 <span v-else>{{ n }}</span>
               </span>
 
               <span class="header-text">
                 <span class="label">{{ stepLabels[n - 1] }}</span>
-                <span v-if="n < etapeActuelle && stepDoneSummary(n)" class="summary">
+                <span
+                  v-if="n <= maxReached && n !== etapeActuelle && stepDoneSummary(n)"
+                  class="summary"
+                >
                   {{ stepDoneSummary(n) }}
                 </span>
               </span>
 
-              <span v-if="n < etapeActuelle" class="edit">{{ $t('tunnel.desktop.edit') }}</span>
+              <span v-if="n <= maxReached && n !== etapeActuelle" class="edit">{{
+                $t('tunnel.desktop.edit')
+              }}</span>
             </button>
 
             <Transition name="accordion-body">
@@ -139,6 +144,11 @@ const {
 const blockRefs = ref<HTMLElement[]>([])
 const showCancelDialog = ref(false)
 
+const maxReached = ref(etapeActuelle.value)
+watch(etapeActuelle, (n) => {
+  if (n > maxReached.value) maxReached.value = n
+})
+
 watch(etapeActuelle, (n) => {
   setTimeout(() => {
     const block = blockRefs.value[n - 1]
@@ -177,10 +187,7 @@ function stepDoneSummary(n: number): string {
         ? state.description.slice(0, 60) + (state.description.length > 60 ? '…' : '')
         : ''
     case 5: {
-      const parts = [
-        state.ville,
-        state.nbInvites ? t('tunnel.recap.guests', { n: state.nbInvites }) : '',
-      ].filter(Boolean)
+      const parts = [state.ville, state.lieu, state.nbInvites ?? ''].filter(Boolean)
       return parts.join(' · ')
     }
     default:
