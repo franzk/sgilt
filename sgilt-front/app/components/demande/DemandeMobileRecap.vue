@@ -711,7 +711,7 @@ const showCancelDialog = ref(false)
   overflow-y: auto;
   overscroll-behavior: contain;
   background: #efefef;
-  padding: $spacing-m;
+  padding: $spacing-m $spacing-m 5rem;
   display: flex;
   flex-direction: column;
   gap: $spacing-s;
@@ -951,11 +951,15 @@ const showCancelDialog = ref(false)
 
 // ─── Footer sticky ────────────────────────────────────────────────────────────
 .recap-footer {
-  position: sticky;
+  position: fixed;
   bottom: 0;
-  flex-shrink: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
   padding: $spacing-s $spacing-m $spacing-m;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-top: 1px solid $divider-color;
   display: flex;
   flex-direction: column;
