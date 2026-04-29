@@ -1,13 +1,13 @@
 <template>
-  <div v-if="prestataireName || hasContent" class="recap-card">
+  <div v-if="state.prestataireName || hasContent" class="recap-card">
     <!-- Cover -->
-    <div v-if="prestataireImage" class="cover-wrap">
-      <img class="cover" :src="prestataireImage" :alt="prestataireName ?? ''" />
+    <div v-if="state.prestataireImage" class="cover-wrap">
+      <img class="cover" :src="state.prestataireImage" :alt="state.prestataireName" />
     </div>
 
     <!-- Identité -->
     <div class="identity">
-      <span v-if="prestataireName" class="name">{{ prestataireName }}</span>
+      <span v-if="state.prestataireName" class="name">{{ state.prestataireName }}</span>
       <div v-if="parsedDate" class="date">
         <span class="day">{{ parsedDate.day }}</span>
         <div class="date-right">
@@ -32,7 +32,7 @@
     </template>
 
     <!-- Teaser encouragement -->
-    <div class="teaser">
+    <div v-if="!fullDetails" class="teaser">
       <p class="teaser-title">✨ Presque terminé !</p>
       <p class="teaser-body">
         Ajoutez quelques détails pour recevoir des propositions encore plus précises.
@@ -45,8 +45,6 @@
 import { useDemande } from '~/composables/useDemande'
 
 const props = defineProps<{
-  prestataireName?: string
-  prestataireImage?: string
   fullDetails?: boolean
 }>()
 

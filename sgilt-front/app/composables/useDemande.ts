@@ -48,6 +48,8 @@ function clearStorage() {
 function defaultDemandeState(): DemandeState {
   return {
     prestataireId: null,
+    prestataireName: '',
+    prestataireImage: '',
     eventType: null,
     eventTypeAutre: '',
     ambiance: null,
@@ -134,8 +136,10 @@ export function useDemande() {
     clearStorage()
   }
 
-  function setPrestataireId(id: string) {
+  function setPrestataire(id: string, name: string, image: string) {
     state.prestataireId = id
+    state.prestataireName = name
+    state.prestataireImage = image
   }
 
   async function submit() {
@@ -226,7 +230,7 @@ export function useDemande() {
     submitting,
     submitError,
     state,
-    setPrestataireId,
+    setPrestataire,
     next,
     back,
     goTo,

@@ -12,9 +12,9 @@
     <div class="recap-list">
       <!-- Card prestataire + date -->
       <div class="recap-card presta-card">
-        <img class="presta-img" :src="prestataireImage" :alt="prestataireName" />
+        <img class="presta-img" :src="state.prestataireImage" :alt="state.prestataireName" />
         <div class="presta-info">
-          <span class="presta-name">{{ prestataireName }}</span>
+          <span class="presta-name">{{ state.prestataireName }}</span>
           <span v-if="state.date" class="presta-date">{{ formatDate(state.date) }}</span>
         </div>
       </div>
@@ -305,7 +305,6 @@ import DemandeOptionSelect from '~/components/demande/DemandeOptionSelect.vue'
 import { useDemande } from '~/composables/useDemande'
 import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/demande'
 
-defineProps<{ prestataireName: string; prestataireImage: string }>()
 defineEmits<{ cancel: [] }>()
 
 const { t } = useI18n()

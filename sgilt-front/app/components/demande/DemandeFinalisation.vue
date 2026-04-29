@@ -47,6 +47,7 @@ onMounted(() => {
   position: relative;
   display: flex;
   flex-direction: column;
+  padding-bottom: $spacing-l;
 
   .hero {
     display: flex;

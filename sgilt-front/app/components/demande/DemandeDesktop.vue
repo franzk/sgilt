@@ -89,12 +89,7 @@
 
       <aside class="demande-panel">
         <DemandeCommentCaMarche v-if="etapeActuelle === 1" />
-        <DemandeRecap
-          v-else
-          :prestataire-name="props.prestataireName"
-          :prestataire-image="props.prestataireImage"
-          :full-details="etapeActuelle >= 6"
-        />
+        <DemandeRecap v-else :full-details="etapeActuelle >= 6" />
       </aside>
     </template>
 
