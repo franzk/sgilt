@@ -11,8 +11,9 @@
     <template v-else>
       <main class="demande-main">
         <div class="top">
-          <button class="main-back" type="button" @click="router.back()">
-            {{ $t('tunnel.desktop.back') }}
+          <button class="main-back" type="button" @click="showCancelDialog = true">
+            <span class="main-back-icon">✕</span>
+            {{ $t('tunnel.cancel.label') }}
           </button>
         </div>
 
@@ -91,12 +92,22 @@
         />
       </aside>
     </template>
+
+    <SgiltConfirmDialog
+      v-model:open="showCancelDialog"
+      :title="$t('tunnel.cancel.dialog-title')"
+      :message="$t('tunnel.cancel.dialog-body')"
+      :confirm-label="$t('tunnel.cancel.confirm')"
+      :cancel-label="$t('tunnel.cancel.back')"
+      @confirm="closeAndFinish"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import DemandeRecap from '~/components/demande/DemandeRecap.vue'
 import DemandeCommentCaMarche from '~/components/demande/DemandeCommentCaMarche.vue'
+import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 import DemandeEtape1 from '~/components/demande/DemandeEtape1.vue'
 import DemandeEtape2 from '~/components/demande/DemandeEtape2.vue'
 import DemandeEtape3 from '~/components/demande/DemandeEtape3.vue'
@@ -126,6 +137,7 @@ const {
 } = useDemande()
 
 const blockRefs = ref<HTMLElement[]>([])
+const showCancelDialog = ref(false)
 
 watch(etapeActuelle, (n) => {
   setTimeout(() => {
@@ -219,6 +231,12 @@ function stepDoneSummary(n: number): string {
 
   &:hover {
     color: $text-primary;
+  }
+
+  .main-back-icon {
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
   }
 }
 
