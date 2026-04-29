@@ -11,17 +11,17 @@
     <!-- ── Liste des items ────────────────────────────────────────────────────── -->
     <div class="recap-list">
       <!-- Card prestataire + date -->
-      <div class="recap-card presta-card">
+      <SgiltContentCard class="recap-card presta-card">
         <img class="presta-img" :src="state.prestataireImage" :alt="state.prestataireName" />
         <div class="presta-info">
           <span class="presta-name">{{ state.prestataireName }}</span>
           <span v-if="state.date" class="presta-date">{{ formatDate(state.date) }}</span>
         </div>
-      </div>
+      </SgiltContentCard>
 
       <template v-for="item in items" :key="item.key">
         <!-- Card individuelle -->
-        <div
+        <SgiltContentCard
           v-if="item.type === 'individual'"
           :ref="
             (el) => {
@@ -62,10 +62,10 @@
               }}
             </span>
           </div>
-        </div>
+        </SgiltContentCard>
 
         <!-- Card groupée -->
-        <div
+        <SgiltContentCard
           v-else
           :ref="
             (el) => {
@@ -101,7 +101,7 @@
               </span>
             </div>
           </div>
-        </div>
+        </SgiltContentCard>
       </template>
     </div>
 
@@ -301,6 +301,7 @@
 import SgiltBottomSheet from '~/components/basics/sheets/SgiltBottomSheet.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
+import SgiltContentCard from '~/components/basics/cards/SgiltContentCard.vue'
 import DemandeOptionSelect from '~/components/demande/DemandeOptionSelect.vue'
 import { useDemande } from '~/composables/useDemande'
 import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/demande'
@@ -730,11 +731,7 @@ const showCancelDialog = ref(false)
 }
 
 .recap-card {
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
   border-left: 3px solid transparent;
-  border-radius: $radius-md;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
   padding: $spacing-m;
   display: flex;
   flex-direction: column;

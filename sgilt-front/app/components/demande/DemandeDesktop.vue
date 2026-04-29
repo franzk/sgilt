@@ -17,13 +17,13 @@
           </button>
         </div>
 
-        <div class="presta-header">
+        <SgiltContentCard class="presta-header">
           <img class="presta-img" :src="props.prestataireImage" :alt="props.prestataireName" />
           <div class="presta-info">
             <span class="presta-name">{{ props.prestataireName }}</span>
             <span v-if="state.date" class="presta-date">{{ formatDate(state.date) }}</span>
           </div>
-        </div>
+        </SgiltContentCard>
 
         <div class="demande-accordion">
           <div
@@ -89,7 +89,7 @@
 
       <aside class="demande-panel">
         <DemandeCommentCaMarche v-if="etapeActuelle === 1" />
-        <DemandeRecap v-else :full-details="etapeActuelle >= 6" />
+        <DemandeRecap v-else :full-details="etapeActuelle >= 6" show-teaser />
       </aside>
     </template>
 
@@ -115,6 +115,7 @@ import DemandeEtape4 from '~/components/demande/DemandeEtape4.vue'
 import DemandeEtape5Desktop from '~/components/demande/DemandeEtape5Desktop.vue'
 import DemandeEtape6 from '~/components/demande/DemandeEtape6.vue'
 import DemandeFinalisation from '~/components/demande/DemandeFinalisation.vue'
+import SgiltContentCard from '~/components/basics/cards/SgiltContentCard.vue'
 import { useDemande } from '~/composables/useDemande'
 
 const props = defineProps<{ slug: string; prestataireName: string; prestataireImage: string }>()
@@ -249,11 +250,6 @@ function stepDoneSummary(n: number): string {
   gap: $spacing-m;
   margin: 0 $spacing-l $spacing-m;
   padding: $spacing-m $spacing-l;
-  background: #fff;
-  border-radius: $radius-lg;
-  box-shadow:
-    0 2px 6px $shadow-s,
-    0 8px 24px $shadow-m;
 }
 
 .presta-img {

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="state.prestataireName || hasContent" class="recap-card">
+  <div v-if="state.prestataireName || hasContent">
     <!-- Cover -->
     <div v-if="state.prestataireImage" class="cover-wrap">
       <img class="cover" :src="state.prestataireImage" :alt="state.prestataireName" />
@@ -32,7 +32,7 @@
     </template>
 
     <!-- Teaser encouragement -->
-    <div v-if="!fullDetails" class="teaser">
+    <div v-if="showTeaser" class="teaser">
       <p class="teaser-title">✨ Presque terminé !</p>
       <p class="teaser-body">
         Ajoutez quelques détails pour recevoir des propositions encore plus précises.
@@ -46,6 +46,7 @@ import { useDemande } from '~/composables/useDemande'
 
 const props = defineProps<{
   fullDetails?: boolean
+  showTeaser?: boolean
 }>()
 
 const {
@@ -103,18 +104,13 @@ const visibleItems = computed(() => {
 
 .recap-card {
   margin-top: 48px;
-  background: #fff;
-  border-radius: $radius-lg;
-  box-shadow:
-    0 2px 8px $shadow-s,
-    0 8px 28px $shadow-m;
   overflow: hidden;
 }
 
 // ─── Cover ────────────────────────────────────────────────────────────────────
 .cover-wrap {
   width: 100%;
-  height: 140px;
+  aspect-ratio: 2;
   overflow: hidden;
 }
 
