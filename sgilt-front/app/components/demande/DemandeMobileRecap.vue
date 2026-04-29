@@ -686,7 +686,8 @@ const showCancelDialog = ref(false)
 
 .recap-title {
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 500;
+  font-style: italic;
   color: $text-primary;
 }
 
