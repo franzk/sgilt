@@ -62,9 +62,7 @@ $hover-text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
   }
 
   &:focus-visible {
-    outline: none;
     border-color: $input-focus-border-color;
-
     box-shadow: $input-focus-box-shadow;
   }
 

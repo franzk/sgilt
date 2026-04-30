@@ -1,6 +1,6 @@
 <template>
   <ClientOnly>
-    <div class="sgilt-select">
+    <div class="sgilt-select" tabindex="-1">
       <SgiltSelectMobile
         v-if="isMobile"
         v-model="modelValue"
@@ -85,9 +85,7 @@ $left-icon-width: 2.5rem;
   box-shadow: $input-box-shadow;
 
   &:focus-visible {
-    outline: none;
     border-color: $input-focus-border-color;
-
     box-shadow: $input-focus-box-shadow;
   }
 }

@@ -65,7 +65,7 @@ const subcategories = computed(() => {
   white-space: nowrap;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  outline: none;
+  // outline: none;
 
   .label {
     font-size: 0.85rem;

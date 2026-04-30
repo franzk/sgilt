@@ -118,7 +118,7 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
   position: relative;
   width: 100%;
   min-height: calc(100dvh - $app-header-height);
-  overflow: hidden;
+  overflow: clip;
   background: $background;
   padding-top: $padding-top;
 
@@ -198,7 +198,7 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
       padding-bottom: 3%;
       justify-content: space-between;
       border-radius: 0 0 10px 10px;
-      overflow: hidden;
+      overflow: clip;
 
       // Glassmorphism
       background: linear-gradient(
