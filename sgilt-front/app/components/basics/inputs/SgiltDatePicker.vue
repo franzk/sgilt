@@ -14,6 +14,8 @@
       :placeholder="placeholder"
       :teleport="inline ? false : 'body'"
       :inline="inline"
+      @open="onOpen"
+      @closed="onClosed"
       @update-month-year="emit('update-month-year', $event)"
     >
       <template v-if="showExtraInfo" #action-extra>
@@ -57,7 +59,7 @@ import { VueDatePicker } from '@vuepic/vue-datepicker'
 import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
 import { fr } from 'date-fns/locale/fr'
-import { computed } from 'vue'
+import { computed, nextTick } from 'vue'
 import { dateArrayContains } from '@/utils/ArrayUtils'
 
 const date = defineModel<Date>()
@@ -93,6 +95,50 @@ const choiceState = computed(() => {
   if (date.value && dateArrayContains(props.bookedDates || [], date.value)) return false
   return undefined
 })
+
+// ── Focus trap pour navigation clavier ───────────────────────────────────────
+
+const FOCUSABLE = 'button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+
+let _menuEl: HTMLElement | null = null
+let _trapHandler: ((e: KeyboardEvent) => void) | null = null
+
+function onOpen() {
+  if (props.inline) return
+  nextTick(() => {
+    _menuEl = document.querySelector<HTMLElement>('.dp__menu')
+    if (!_menuEl) return
+
+    const first = _menuEl.querySelector<HTMLElement>(FOCUSABLE)
+    ;(first ?? _menuEl).focus()
+
+    _trapHandler = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return
+      const els = Array.from(_menuEl!.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+        (el) => el.offsetParent !== null,
+      )
+      if (!els.length) return
+      const first = els[0]!
+      const last = els[els.length - 1]!
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
+    _menuEl.addEventListener('keydown', _trapHandler)
+  })
+}
+
+function onClosed() {
+  if (_menuEl && _trapHandler) {
+    _menuEl.removeEventListener('keydown', _trapHandler)
+  }
+  _menuEl = null
+  _trapHandler = null
+}
 </script>
 
 <style lang="scss">
