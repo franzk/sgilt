@@ -33,13 +33,7 @@
     </template>
 
     <!-- Phase récap : liste éditable + bouton submit -->
-    <DemandeMobileRecap
-      v-else
-      :prestataire-name="props.prestataireName"
-      :prestataire-image="props.prestataireImage"
-      :slug="props.slug"
-      @cancel="closeMobile"
-    />
+    <DemandeMobileRecap v-else :slug="props.slug" @cancel="closeMobile" />
   </div>
 </template>
 
@@ -58,7 +52,7 @@ const props = defineProps<{ prestataireName: string; prestataireImage: string; s
 
 const router = useRouter()
 
-const { etapeActuelle, direction, submitted, next, back, goTo, reset } = useDemande()
+const { etapeActuelle, direction, submitted, state, next, back, goTo, reset } = useDemande()
 
 const mobilePhase = ref<'stepper' | 'recap'>(etapeActuelle.value >= 5 ? 'recap' : 'stepper')
 

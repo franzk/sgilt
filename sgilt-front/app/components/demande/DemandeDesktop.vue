@@ -11,56 +11,66 @@
     <template v-else>
       <main class="demande-main">
         <div class="top">
-          <button class="main-back" type="button" @click="router.back()">
-            {{ $t('tunnel.desktop.back') }}
+          <button class="main-back" type="button" @click="showCancelDialog = true">
+            <span class="main-back-icon">✕</span>
+            {{ $t('tunnel.cancel.label') }}
           </button>
         </div>
 
-        <div class="presta-header">
+        <SgiltContentCard class="presta-header">
           <img class="presta-img" :src="props.prestataireImage" :alt="props.prestataireName" />
           <div class="presta-info">
             <span class="presta-name">{{ props.prestataireName }}</span>
             <span v-if="state.date" class="presta-date">{{ formatDate(state.date) }}</span>
           </div>
-        </div>
+        </SgiltContentCard>
 
         <div class="demande-accordion">
           <div
             v-for="n in 6"
             :key="n"
-            :ref="(el) => { if (el) blockRefs[n - 1] = el as HTMLElement }"
+            :ref="
+              (el) => {
+                if (el) blockRefs[n - 1] = el as HTMLElement
+              }
+            "
             class="accordion-block"
             :class="{
               active: n === etapeActuelle,
-              done: n < etapeActuelle,
-              locked: n > etapeActuelle,
+              done: n <= maxReached && n !== etapeActuelle,
+              locked: n > maxReached,
             }"
           >
             <button
               class="header"
               type="button"
-              :disabled="n > etapeActuelle"
-              @click="n < etapeActuelle ? goTo(n) : undefined"
+              :disabled="n > maxReached"
+              @click="n <= maxReached && n !== etapeActuelle ? goTo(n) : undefined"
             >
               <span
                 class="dot"
                 :class="{
                   active: n === etapeActuelle,
-                  done: n < etapeActuelle,
+                  done: n <= maxReached && n !== etapeActuelle,
                 }"
               >
-                <span v-if="n < etapeActuelle">✓</span>
+                <span v-if="n <= maxReached && n !== etapeActuelle">✓</span>
                 <span v-else>{{ n }}</span>
               </span>
 
               <span class="header-text">
                 <span class="label">{{ stepLabels[n - 1] }}</span>
-                <span v-if="n < etapeActuelle && stepDoneSummary(n)" class="summary">
+                <span
+                  v-if="n <= maxReached && n !== etapeActuelle && stepDoneSummary(n)"
+                  class="summary"
+                >
                   {{ stepDoneSummary(n) }}
                 </span>
               </span>
 
-              <span v-if="n < etapeActuelle" class="edit">{{ $t('tunnel.desktop.edit') }}</span>
+              <span v-if="n <= maxReached && n !== etapeActuelle" class="edit">{{
+                $t('tunnel.desktop.edit')
+              }}</span>
             </button>
 
             <Transition name="accordion-body">
@@ -79,15 +89,25 @@
 
       <aside class="demande-panel">
         <DemandeCommentCaMarche v-if="etapeActuelle === 1" />
-        <DemandeRecap v-else />
+        <DemandeRecap v-else :full-details="etapeActuelle >= 6" show-teaser />
       </aside>
     </template>
+
+    <SgiltConfirmDialog
+      v-model:open="showCancelDialog"
+      :title="$t('tunnel.cancel.dialog-title')"
+      :message="$t('tunnel.cancel.dialog-body')"
+      :confirm-label="$t('tunnel.cancel.confirm')"
+      :cancel-label="$t('tunnel.cancel.back')"
+      @confirm="closeAndFinish"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import DemandeRecap from '~/components/demande/DemandeRecap.vue'
 import DemandeCommentCaMarche from '~/components/demande/DemandeCommentCaMarche.vue'
+import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 import DemandeEtape1 from '~/components/demande/DemandeEtape1.vue'
 import DemandeEtape2 from '~/components/demande/DemandeEtape2.vue'
 import DemandeEtape3 from '~/components/demande/DemandeEtape3.vue'
@@ -95,6 +115,7 @@ import DemandeEtape4 from '~/components/demande/DemandeEtape4.vue'
 import DemandeEtape5Desktop from '~/components/demande/DemandeEtape5Desktop.vue'
 import DemandeEtape6 from '~/components/demande/DemandeEtape6.vue'
 import DemandeFinalisation from '~/components/demande/DemandeFinalisation.vue'
+import SgiltContentCard from '~/components/basics/cards/SgiltContentCard.vue'
 import { useDemande } from '~/composables/useDemande'
 
 const props = defineProps<{ slug: string; prestataireName: string; prestataireImage: string }>()
@@ -117,6 +138,12 @@ const {
 } = useDemande()
 
 const blockRefs = ref<HTMLElement[]>([])
+const showCancelDialog = ref(false)
+
+const maxReached = ref(etapeActuelle.value)
+watch(etapeActuelle, (n) => {
+  if (n > maxReached.value) maxReached.value = n
+})
 
 watch(etapeActuelle, (n) => {
   setTimeout(() => {
@@ -127,6 +154,12 @@ watch(etapeActuelle, (n) => {
       block.scrollIntoView({ behavior: 'smooth', block: 'end' })
     }
   }, 250)
+})
+
+watch(submitted, (s) => {
+  if (s) {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 })
 
 const closeAndFinish = () => {
@@ -156,10 +189,7 @@ function stepDoneSummary(n: number): string {
         ? state.description.slice(0, 60) + (state.description.length > 60 ? '…' : '')
         : ''
     case 5: {
-      const parts = [
-        state.ville,
-        state.nbInvites ? t('tunnel.recap.guests', { n: state.nbInvites }) : '',
-      ].filter(Boolean)
+      const parts = [state.ville, state.lieu, state.nbInvites ?? ''].filter(Boolean)
       return parts.join(' · ')
     }
     default:
@@ -175,7 +205,7 @@ function stepDoneSummary(n: number): string {
 .demande-desktop {
   min-height: calc(100dvh - $app-header-height);
   display: grid;
-  grid-template-columns: 1fr 280px;
+  grid-template-columns: 1fr 320px;
 
   .finalisation {
     grid-column: 1 / -1;
@@ -211,16 +241,21 @@ function stepDoneSummary(n: number): string {
   &:hover {
     color: $text-primary;
   }
+
+  .main-back-icon {
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+  }
 }
 
-// ─── Header prestataire ───────────────────────────────────────────────────────
+// ─── Card prestataire ─────────────────────────────────────────────────────────
 .presta-header {
   display: flex;
   align-items: center;
   gap: $spacing-m;
-  padding: $spacing-m $spacing-xxl;
-  border-bottom: 1px solid $divider-color;
-  max-width: 640px;
+  margin: 0 $spacing-l $spacing-m;
+  padding: $spacing-m $spacing-l;
 }
 
 .presta-img {
@@ -251,8 +286,7 @@ function stepDoneSummary(n: number): string {
 
 // ─── Accordion ────────────────────────────────────────────────────────────────
 .demande-accordion {
-  padding: 0 $spacing-xxl;
-  max-width: 640px;
+  padding: 0 $spacing-l;
   display: flex;
   flex-direction: column;
 }
@@ -377,15 +411,11 @@ function stepDoneSummary(n: number): string {
 
 // ─── Panneau droit ────────────────────────────────────────────────────────────
 .demande-panel {
-  padding: $spacing-xl $spacing-l;
+  padding: $spacing-l $spacing-m;
   border-left: 1px solid $divider-color;
   position: sticky;
   top: 0;
-  height: calc(100dvh - $app-header-height);
+  height: 100dvh;
   overflow-y: auto;
-
-  :global(.recap) {
-    margin-top: 0;
-  }
 }
 </style>

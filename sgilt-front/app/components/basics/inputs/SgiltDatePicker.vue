@@ -98,8 +98,6 @@ const choiceState = computed(() => {
 <style lang="scss">
 @use '@/assets/styles/base' as *;
 
-@import '@vuepic/vue-datepicker/dist/main.css';
-
 // ─── Tokens ───────────────────────────────────────────────────────────────────
 
 // input

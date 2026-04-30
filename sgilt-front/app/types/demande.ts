@@ -25,6 +25,8 @@ export interface DemandeOption {
 
 export interface DemandeState {
   prestataireId: string | null
+  prestataireName: string
+  prestataireImage: string
   eventType: string | null
   eventTypeAutre: string
   ambiance: string | null

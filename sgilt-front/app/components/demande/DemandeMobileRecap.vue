@@ -1,27 +1,27 @@
 <template>
   <div class="mobile-recap">
-    <!-- ── Header ──────────────────────────────────────────────────────────────── -->
-    <div class="recap-header">
-      <span class="recap-title">{{ $t('tunnel.recap-mobile.header-title') }}</span>
-      <button class="cancel-btn" type="button" @click="showCancelDialog = true">
-        {{ $t('tunnel.cancel.label') }}
-      </button>
-    </div>
-
     <!-- ── Liste des items ────────────────────────────────────────────────────── -->
     <div class="recap-list">
+      <!-- ── Header ── -->
+      <div class="recap-header">
+        <span class="recap-title">{{ $t('tunnel.recap-mobile.header-title') }}</span>
+        <button class="cancel-btn" type="button" @click="showCancelDialog = true">
+          {{ $t('tunnel.cancel.label') }}
+        </button>
+      </div>
+
       <!-- Card prestataire + date -->
-      <div class="recap-card presta-card">
-        <img class="presta-img" :src="prestataireImage" :alt="prestataireName" />
+      <SgiltContentCard class="recap-card presta-card">
+        <img class="presta-img" :src="state.prestataireImage" :alt="state.prestataireName" />
         <div class="presta-info">
-          <span class="presta-name">{{ prestataireName }}</span>
+          <span class="presta-name">{{ state.prestataireName }}</span>
           <span v-if="state.date" class="presta-date">{{ formatDate(state.date) }}</span>
         </div>
-      </div>
+      </SgiltContentCard>
 
       <template v-for="item in items" :key="item.key">
         <!-- Card individuelle -->
-        <div
+        <SgiltContentCard
           v-if="item.type === 'individual'"
           :ref="
             (el) => {
@@ -43,7 +43,7 @@
                 :class="{ 'card-label--error': item.required && !item.value && submitAttempted }"
               >
                 {{ item.label }}
-                <span v-if="!item.required" class="optional-tag">(optionnel)</span>
+                <span v-if="!item.required && !item.value" class="optional-tag">(optionnel)</span>
               </span>
               <button class="card-btn" type="button" @click="openSheet(item.key)">
                 {{ item.value ? $t('tunnel.recap-mobile.edit') : $t('tunnel.recap-mobile.add') }}
@@ -62,10 +62,10 @@
               }}
             </span>
           </div>
-        </div>
+        </SgiltContentCard>
 
         <!-- Card groupée -->
-        <div
+        <SgiltContentCard
           v-else
           :ref="
             (el) => {
@@ -93,7 +93,7 @@
                 :class="{ 'subfield-label--error': sub.isMissing && submitAttempted }"
               >
                 {{ sub.label }}
-                <span v-if="!sub.required" class="optional-tag">(optionnel)</span>
+                <span v-if="!sub.required && !sub.value" class="optional-tag">(optionnel)</span>
                 <span v-else-if="sub.isMissing && submitAttempted" class="required-warning">*</span>
               </span>
               <span class="subfield-value" :class="{ 'subfield-value--empty': !sub.value }">
@@ -101,7 +101,7 @@
               </span>
             </div>
           </div>
-        </div>
+        </SgiltContentCard>
       </template>
     </div>
 
@@ -301,11 +301,11 @@
 import SgiltBottomSheet from '~/components/basics/sheets/SgiltBottomSheet.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
+import SgiltContentCard from '~/components/basics/cards/SgiltContentCard.vue'
 import DemandeOptionSelect from '~/components/demande/DemandeOptionSelect.vue'
 import { useDemande } from '~/composables/useDemande'
 import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/demande'
 
-defineProps<{ prestataireName: string; prestataireImage: string }>()
 defineEmits<{ cancel: [] }>()
 
 const { t } = useI18n()
@@ -679,14 +679,15 @@ const showCancelDialog = ref(false)
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: $spacing-s $spacing-m $spacing-xs;
+  padding: 0 $spacing-m $spacing-xs;
   flex-shrink: 0;
   border-bottom: 1px solid $divider-color;
 }
 
 .recap-title {
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 500;
+  font-style: italic;
   color: $text-primary;
 }
 
@@ -705,13 +706,19 @@ const showCancelDialog = ref(false)
   }
 }
 
-// ─── Liste — fond gris ────────────────────────────────────────────────────────
+// ─── Liste — fond dégradé sgilt ────────────────────────────────────────────────────────
 .recap-list {
   flex: 1;
   overflow-y: auto;
   overscroll-behavior: contain;
-  background: #efefef;
-  padding: $spacing-m;
+  background:
+    radial-gradient(
+      1100px 480px at 50% -5%,
+      rgba($brand-accent, 0.16) 0%,
+      rgba(255, 255, 255, 0) 55%
+    ),
+    linear-gradient(180deg, #fffdf6 0%, #ffffff 50%);
+  padding: $spacing-m $spacing-m 5rem;
   display: flex;
   flex-direction: column;
   gap: $spacing-s;
@@ -730,11 +737,7 @@ const showCancelDialog = ref(false)
 }
 
 .recap-card {
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
   border-left: 3px solid transparent;
-  border-radius: $radius-md;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
   padding: $spacing-m;
   display: flex;
   flex-direction: column;
@@ -951,11 +954,15 @@ const showCancelDialog = ref(false)
 
 // ─── Footer sticky ────────────────────────────────────────────────────────────
 .recap-footer {
-  position: sticky;
+  position: fixed;
   bottom: 0;
-  flex-shrink: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
   padding: $spacing-s $spacing-m $spacing-m;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-top: 1px solid $divider-color;
   display: flex;
   flex-direction: column;

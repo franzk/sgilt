@@ -8,7 +8,7 @@
 
     <!-- Coordonnées (masquées en flow new-event, récupérées depuis le profil) -->
     <template v-if="!isNewEventFlow">
-      <div class="fields">
+      <div class="fields fields--coordonnees">
         <div class="field-group">
           <label class="field-label">
             {{ $t('tunnel.etape6.field-prenom') }} <span class="required">*</span>
@@ -185,6 +185,12 @@ function handleSubmit() {
   display: flex;
   flex-direction: column;
   gap: $spacing-m;
+
+  &--coordonnees {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $spacing-m;
+  }
 }
 
 .submit-error {

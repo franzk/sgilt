@@ -75,7 +75,7 @@
     "not-found": "Ce prestataire est introuvable.",
     "back-to-search": "← Retour à la recherche",
     "details": {
-      "verify-date": "Vérifier une date",
+      "verify-date": "Choisir une date",
       "availability": {
         "available": "Disponible à cette date",
         "unavailable": "Non disponible à cette date"
@@ -171,14 +171,14 @@
     "finalisation": {
       "title-sent": "Votre demande a bien été envoyée",
       "title-confirm": "On y est presque\u00a0!",
-      "cta-text": "Vérifiez votre email et confirmez votre demande. Elle sera ensuite transmise à {name}.",
+      "cta-text": "Confirmez votre demande via le lien reçu par email. Elle sera ensuite transmise à {name}.",
       "see-event": "Voir mon événement →"
     },
     "recap": {
       "title": "Votre événement"
     },
     "recap-mobile": {
-      "header-title": "Ma demande",
+      "header-title": "Encore quelques détails ✨",
       "add": "Ajouter",
       "edit": "Modifier",
       "missing": "Requis",

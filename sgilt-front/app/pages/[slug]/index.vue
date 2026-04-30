@@ -50,7 +50,7 @@ function onSelect(p: PrestataireDetail) {
     return
   }
 
-  useDemande().setPrestataireId(p.id)
+  useDemande().setPrestataire(p.id, p.name, p.image)
   navigateTo({
     path: `/${p.slug}/demande`,
     query: dateModel.value ? { date: toISODate(dateModel.value) } : undefined,
