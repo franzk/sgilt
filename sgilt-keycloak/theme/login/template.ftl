@@ -6,14 +6,20 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <#if properties.meta?has_content>
         <#list properties.meta?split(' ') as meta>
             <meta name="${meta?split('==')[0]}" content="${meta?split('==')[1]}"/>
         </#list>
     </#if>
-    <title>KA</title>
-    <link rel="icon" href="${url.resourcesPath}/img/favicon.ico" />
+    <title>Sgilt</title>
+    <link rel="icon" href="${url.resourcesPath}/images/favicon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
     <#if properties.stylesCommon?has_content>
         <#list properties.stylesCommon?split(' ') as style>
             <link href="${url.resourcesCommonPath}/${style}" rel="stylesheet" />
@@ -52,9 +58,16 @@
 </head>
 
 <body class="${properties.kcBodyClass!}">
+
+<header class="app-header">
+    <a href="/" class="logo">
+        <img src="${url.resourcesPath}/images/sgilt-logo.svg" alt="Sgilt" />
+    </a>
+</header>
+
 <div class="${properties.kcLoginClass!} main-content">
     <div id="kc-form-image">
-        <img src="${url.resourcesPath}/images/ka-bg.png" />
+        <img src="${url.resourcesPath}/images/ka-bg.png" alt="" />
     </div>
     <div class="${properties.kcFormCardClass!}">
         <header class="${properties.kcFormHeaderClass!}">
