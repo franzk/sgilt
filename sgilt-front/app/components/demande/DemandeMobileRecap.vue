@@ -1,15 +1,15 @@
 <template>
   <div class="mobile-recap">
-    <!-- ── Header ──────────────────────────────────────────────────────────────── -->
-    <div class="recap-header">
-      <span class="recap-title">{{ $t('tunnel.recap-mobile.header-title') }}</span>
-      <button class="cancel-btn" type="button" @click="showCancelDialog = true">
-        {{ $t('tunnel.cancel.label') }}
-      </button>
-    </div>
-
     <!-- ── Liste des items ────────────────────────────────────────────────────── -->
     <div class="recap-list">
+      <!-- ── Header ── -->
+      <div class="recap-header">
+        <span class="recap-title">{{ $t('tunnel.recap-mobile.header-title') }}</span>
+        <button class="cancel-btn" type="button" @click="showCancelDialog = true">
+          {{ $t('tunnel.cancel.label') }}
+        </button>
+      </div>
+
       <!-- Card prestataire + date -->
       <SgiltContentCard class="recap-card presta-card">
         <img class="presta-img" :src="state.prestataireImage" :alt="state.prestataireName" />
@@ -43,7 +43,7 @@
                 :class="{ 'card-label--error': item.required && !item.value && submitAttempted }"
               >
                 {{ item.label }}
-                <span v-if="!item.required" class="optional-tag">(optionnel)</span>
+                <span v-if="!item.required && !item.value" class="optional-tag">(optionnel)</span>
               </span>
               <button class="card-btn" type="button" @click="openSheet(item.key)">
                 {{ item.value ? $t('tunnel.recap-mobile.edit') : $t('tunnel.recap-mobile.add') }}
@@ -93,7 +93,7 @@
                 :class="{ 'subfield-label--error': sub.isMissing && submitAttempted }"
               >
                 {{ sub.label }}
-                <span v-if="!sub.required" class="optional-tag">(optionnel)</span>
+                <span v-if="!sub.required && !sub.value" class="optional-tag">(optionnel)</span>
                 <span v-else-if="sub.isMissing && submitAttempted" class="required-warning">*</span>
               </span>
               <span class="subfield-value" :class="{ 'subfield-value--empty': !sub.value }">
@@ -679,7 +679,7 @@ const showCancelDialog = ref(false)
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: $spacing-s $spacing-m $spacing-xs;
+  padding: 0 $spacing-m $spacing-xs;
   flex-shrink: 0;
   border-bottom: 1px solid $divider-color;
 }
@@ -706,12 +706,18 @@ const showCancelDialog = ref(false)
   }
 }
 
-// ─── Liste — fond gris ────────────────────────────────────────────────────────
+// ─── Liste — fond dégradé sgilt ────────────────────────────────────────────────────────
 .recap-list {
   flex: 1;
   overflow-y: auto;
   overscroll-behavior: contain;
-  background: #efefef;
+  background:
+    radial-gradient(
+      1100px 480px at 50% -5%,
+      rgba($brand-accent, 0.16) 0%,
+      rgba(255, 255, 255, 0) 55%
+    ),
+    linear-gradient(180deg, #fffdf6 0%, #ffffff 50%);
   padding: $spacing-m $spacing-m 5rem;
   display: flex;
   flex-direction: column;
