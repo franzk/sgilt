@@ -7,7 +7,9 @@
 // ── Micro-animation clic ───────────────────────────────────────────────────────
 // Mixin à utiliser sur les <a> ou éléments non-button qui agissent comme CTA
 @mixin pressable {
-  transition: transform 120ms ease, box-shadow 120ms ease;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease;
 
   &:active:not(:disabled) {
     transform: translateY(1px);
@@ -68,3 +70,21 @@ a {
 $app-header-height: 3.3rem;
 
 $breakpoint-desktop: 850px;
+
+// ─── Focus ───────────────────────────────────────
+
+// ─── Tokens ───────────────────────────────────────────────
+$focus-color: $brand-accent;
+$focus-offset: 3px;
+$focus-width: 2px;
+
+// ─── Reset navigateur ─────────────────────────────────────
+*:focus {
+  outline: none;
+}
+
+// ─── Règle universelle ────────────────────────────────────
+*:focus-visible {
+  outline: $focus-width solid $focus-color;
+  outline-offset: $focus-offset;
+}

@@ -1,6 +1,6 @@
 <template>
   <header class="app-header" :class="{ 'no-shadow': hideShadow }">
-    <h1 class="logo">
+    <h1 class="logo" tabindex="0">
       <NuxtLink :to="showNotifications ? '/app/events' : '/'">
         <img src="/sgilt-logo.svg" alt="SGILT" />
       </NuxtLink>
@@ -150,5 +150,4 @@ const hideShadow = computed(
     background: $surface-soft;
   }
 }
-
 </style>
