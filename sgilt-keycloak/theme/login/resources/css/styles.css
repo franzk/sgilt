@@ -495,23 +495,32 @@ form input[type="submit"]:active {
   color: unset;
 }
 
-/* ── Mobile ────────────────────────────────────────────────── */
-@media (max-width: 700px) {
+/* ── Responsive ────────────────────────────────────────────── */
+
+/* Tablette : image réduite à 40%, formulaire centré */
+@media (max-width: 900px) {
+  #kc-form-image {
+    flex: 0 0 40%;
+  }
+
+  .login-pf .card-pf {
+    padding: 32px 36px;
+  }
+}
+
+/* Mobile : image masquée, formulaire sur fond blanc */
+@media (max-width: 640px) {
   #kc-form-image {
     display: none;
   }
 
   .login-pf .card-pf {
-    padding: 24px 20px;
-    justify-content: flex-start;
-    padding-top: 48px;
+    padding: 40px 24px 32px;
+    background: #fff;
   }
 
-  .login-pf.main-content,
-  .main-content {
-    overflow-y: auto;
-    height: auto;
-    min-height: calc(100vh - var(--header-height));
+  #kc-content {
+    max-width: 100%;
   }
 }
 
