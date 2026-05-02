@@ -27,7 +27,7 @@ services:
     depends_on:
       - sgilt-keycloak-db
     volumes:
-      - ../sgilt-keycloak/:/opt/keycloak/data/import
+      - ../sgilt-keycloak/realm:/opt/keycloak/data/import
       - ../sgilt-keycloak/theme:/opt/keycloak/themes/sgilt-theme
     networks:
       - sgilt-dev-net

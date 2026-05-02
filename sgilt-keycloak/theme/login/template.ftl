@@ -60,7 +60,7 @@
 <body class="${properties.kcBodyClass!}">
 
 <header class="app-header">
-    <a href="/" class="logo">
+    <a href="${(client.baseUrl)!"/"}" class="logo">
         <img src="${url.resourcesPath}/images/sgilt-logo.svg" alt="Sgilt" />
     </a>
 </header>

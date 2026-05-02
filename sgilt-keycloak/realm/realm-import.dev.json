@@ -731,18 +731,18 @@
       "clientId": "sgilt-admin",
       "name": "",
       "description": "",
-      "rootUrl": "https://app.change.me",
-      "adminUrl": "https://app.change.me",
+      "rootUrl": "http://localhost:3000",
+      "adminUrl": "http://localhost:3000",
       "baseUrl": "/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "https://app.change.me/*"
+        "http://localhost:3000/*"
       ],
       "webOrigins": [
-        "https://app.change.me"
+        "http://localhost:3000"
       ],
       "notBefore": 0,
       "bearerOnly": false,
@@ -789,18 +789,18 @@
       "clientId": "sgilt-front",
       "name": "",
       "description": "",
-      "rootUrl": "https://app.change.me",
-      "adminUrl": "https://app.change.me",
+      "rootUrl": "http://localhost:3000",
+      "adminUrl": "http://localhost:3000",
       "baseUrl": "/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "https://app.change.me/*"
+        "http://localhost:3000/*"
       ],
       "webOrigins": [
-        "https://app.change.me"
+        "http://localhost:3000"
       ],
       "notBefore": 0,
       "bearerOnly": false,
@@ -819,7 +819,7 @@
         "standard.token.exchange.enabled": "false",
         "login_theme": "sgilt-theme",
         "frontchannel.logout.session.required": "true",
-        "post.logout.redirect.uris": "https://app.change.me/*",
+        "post.logout.redirect.uris": "http://localhost:3000/*",
         "oauth2.device.authorization.grant.enabled": "false",
         "backchannel.logout.revoke.offline.tokens": "false",
         "use.refresh.tokens": "true",

@@ -68,6 +68,7 @@ import {
 import { onClickOutside } from '@vueuse/core'
 import UserAvatar from '~/components/basics/UserAvatar.vue'
 import { useCurrentUser } from '~/composables/useCurrentUser'
+import { useKeycloak } from '~/composables/useKeycloak'
 
 const props = defineProps<{ open: boolean; anchorEl?: HTMLElement | null }>()
 const emit = defineEmits<{ close: [] }>()
@@ -84,10 +85,9 @@ function close() {
   emit('close')
 }
 
-function logout() {
-  // TODO : appel Keycloak logout
+async function logout() {
   useFlow().reset()
-  navigateTo('/')
+  await useKeycloak().logout()
 }
 </script>
 

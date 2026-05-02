@@ -797,14 +797,10 @@
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "https://app.change.me/*",
-        "http://localhost:5173/*",
-        "http://localhost:3000/*"
+        "https://app.change.me/*"
       ],
       "webOrigins": [
-        "https://app.change.me",
-        "http://localhost:5173",
-        "http://localhost:3000"
+        "https://app.change.me"
       ],
       "notBefore": 0,
       "bearerOnly": false,
@@ -823,7 +819,7 @@
         "standard.token.exchange.enabled": "false",
         "login_theme": "sgilt-theme",
         "frontchannel.logout.session.required": "true",
-        "post.logout.redirect.uris": "https://app.change.me/*##http://localhost:5173/*##http://localhost:3000/*",
+        "post.logout.redirect.uris": "https://app.change.me/*",
         "oauth2.device.authorization.grant.enabled": "false",
         "backchannel.logout.revoke.offline.tokens": "false",
         "use.refresh.tokens": "true",
