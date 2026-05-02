@@ -118,6 +118,18 @@ a:hover {
   flex: 0 0 50%;
   display: flex;
   overflow: hidden;
+  position: relative;
+}
+
+#kc-form-image::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 15px;
+  background: linear-gradient(to right, transparent 60%, #fdfaf5 95%);
+  pointer-events: none;
 }
 
 #kc-form-image img {
@@ -134,7 +146,7 @@ a:hover {
   justify-content: center;
   padding: 40px 48px;
   overflow-y: auto;
-  background: #fff;
+  background: #fdfaf5;
   margin: 0;
   height: auto;
   align-content: unset;

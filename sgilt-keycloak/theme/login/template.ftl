@@ -67,7 +67,7 @@
 
 <div class="${properties.kcLoginClass!} main-content">
     <div id="kc-form-image">
-        <img src="${url.resourcesPath}/images/ka-bg.png" alt="" />
+        <img src="${url.resourcesPath}/images/sgilt-login.png" alt="" />
     </div>
     <div class="${properties.kcFormCardClass!}">
         <header class="${properties.kcFormHeaderClass!}">
