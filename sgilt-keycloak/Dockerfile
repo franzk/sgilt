@@ -8,7 +8,7 @@ ENV KC_METRICS_ENABLED=true
 ENV KC_LOG_LEVEL=info
 
 # Copy custom theme
-COPY ./theme /opt/keycloak/themes/ka-theme
+COPY ./theme /opt/keycloak/themes/sgilt-theme
 
 # Copy realm import file
 COPY realm/realm-import.json /opt/keycloak/data/import/
