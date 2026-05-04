@@ -2,9 +2,14 @@
   <div class="events-page">
     <!-- ── En-tête ──────────────────────────────────────────────────────────── -->
     <div class="events-page__header">
-      <p class="events-page__greeting">
+      <p v-if="!currentUser.loading" class="events-page__greeting">
         {{ t(greetingKey, { name: currentUser.firstName }) }}
       </p>
+      <div
+        v-else
+        class="skeleton-text title shimmer-container events-page__greeting-skeleton"
+        aria-hidden="true"
+      />
       <div class="events-page__subheader">
         <p class="events-page__count">
           {{ t('events.count', events.length, { n: events.length }) }}
@@ -161,6 +166,11 @@ $desktop: $breakpoint-desktop;
   color: $brand-primary;
   margin: 0;
   line-height: 1.15;
+}
+
+.events-page__greeting-skeleton {
+  height: 2.3rem !important;
+  width: 15rem !important;
 }
 
 .events-page__subheader {

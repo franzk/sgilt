@@ -3,6 +3,7 @@ export interface CurrentUser {
   lastName?: string
   email: string
   photo: string | null
+  loading: boolean
 }
 
 interface UtilisateurProfileDto {
@@ -12,7 +13,13 @@ interface UtilisateurProfileDto {
   avatarUrl: string | null
 }
 
-const _user = reactive<CurrentUser>({ firstName: '', lastName: '', email: '', photo: null })
+const _user = reactive<CurrentUser>({
+  firstName: '',
+  lastName: '',
+  email: '',
+  photo: null,
+  loading: true,
+})
 let _watcherStarted = false
 
 export function useCurrentUser(): CurrentUser {
@@ -23,11 +30,13 @@ export function useCurrentUser(): CurrentUser {
     watch(
       isAuthenticated,
       async (auth) => {
+        _user.loading = true
         if (!auth) {
           _user.firstName = ''
           _user.lastName = ''
           _user.email = ''
           _user.photo = null
+          _user.loading = false
           return
         }
         try {
@@ -38,6 +47,8 @@ export function useCurrentUser(): CurrentUser {
           _user.photo = data.avatarUrl
         } catch {
           // garder les valeurs vides en cas d'erreur réseau
+        } finally {
+          _user.loading = false
         }
       },
       { immediate: true },
