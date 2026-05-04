@@ -6,23 +6,6 @@
       </NuxtLink>
     </h1>
 
-    <!-- ── DEV NAV — à supprimer avant mise en production ───────────────────── -->
-    <div class="dev-nav" aria-hidden="true">
-      <NuxtLink to="/" class="dev-nav__link" title="Public">
-        <EarthIcon />
-      </NuxtLink>
-      <NuxtLink to="/app/events" class="dev-nav__link" title="App client">
-        <UserIcon />
-      </NuxtLink>
-      <NuxtLink to="/pro/reservations" class="dev-nav__link" title="App pro">
-        <BriefcaseIcon />
-      </NuxtLink>
-      <NuxtLink to="/pro/calendrier" class="dev-nav__link" title="Calendrier">
-        <CalendarEventIcon />
-      </NuxtLink>
-    </div>
-    <!-- ── /DEV NAV ───────────────────────────────────────────────────────── -->
-
     <div v-if="showNotifications" class="quick-actions">
       <NotificationBell />
 
@@ -38,6 +21,16 @@
 
       <ProfileMenuPopin :open="profileOpen" :anchor-el="avatarRef" @close="profileOpen = false" />
     </div>
+
+    <button
+      v-else-if="!isAuthenticated"
+      class="action-button"
+      type="button"
+      aria-label="Se connecter"
+      @click="handleLogin"
+    >
+      <UserIcon />
+    </button>
   </header>
 </template>
 
@@ -45,13 +38,14 @@
 import NotificationBell from '~/components/notifications/NotificationBell.vue'
 import ProfileMenuPopin from '~/components/profile/ProfileMenuPopin.vue'
 import UserAvatar from '~/components/basics/UserAvatar.vue'
-// DEV — à supprimer avant prod
-import { EarthIcon, UserIcon, BriefcaseIcon, CalendarEventIcon } from '@remixicons/vue/line'
+import { UserIcon } from '@remixicons/vue/line'
 
-const props = defineProps<{ showNotifications?: boolean }>()
+defineProps<{ showNotifications?: boolean }>()
 
 const avatarRef = ref<HTMLElement | null>(null)
 const profileOpen = ref(false)
+
+const { isAuthenticated, login } = useKeycloak()
 
 const ROUTES_WITHOUT_SHADOW_MOBILE = ['/', '/search']
 const route = useRoute()
@@ -65,6 +59,10 @@ onMounted(() => {
 const hideShadow = computed(
   () => mounted.value && isMobile.value && ROUTES_WITHOUT_SHADOW_MOBILE.includes(route.path),
 )
+
+function handleLogin() {
+  login({ redirectUri: window.location.origin + '/app/events' })
+}
 </script>
 
 <style lang="scss" scoped>
@@ -99,36 +97,6 @@ const hideShadow = computed(
   }
 }
 
-/* DEV — à supprimer avant prod */
-.dev-nav {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  padding: 3px 6px;
-  border-radius: $radius-sm;
-  //background: rgba(#7c3aed, 0.08);
-  //border: 1px dashed rgba(#7c3aed, 0.35);
-
-  &__link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.75rem;
-    height: 1.75rem;
-    border-radius: $radius-sm;
-    color: $color-primary;
-    opacity: 0.7;
-    transition:
-      opacity 150ms ease,
-      background 150ms ease;
-
-    svg {
-      width: 1rem;
-      height: 1rem;
-    }
-  }
-}
-
 .quick-actions {
   display: flex;
   align-items: center;
@@ -141,10 +109,17 @@ const hideShadow = computed(
   justify-content: center;
   width: 2.25rem;
   height: 2.25rem;
-  border-radius: 50%;
   color: $text-primary;
+  background: none;
+  border: none;
+  cursor: pointer;
   text-decoration: none;
   transition: background 150ms ease;
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
 
   &:hover {
     background: $surface-soft;
