@@ -12,10 +12,11 @@ const props = defineProps<{ size: number }>()
 
 const currentUser = useCurrentUser()
 
-const initials = currentUser.fullName
-  .split(' ')
-  .map((n) => n.charAt(0).toUpperCase())
-  .join('')
+const initials = computed(
+  () =>
+    (currentUser.firstName ? currentUser.firstName.charAt(0).toUpperCase() : '') +
+    (currentUser.lastName ? currentUser.lastName.charAt(0).toUpperCase() : ''),
+)
 
 const cssVars = computed(() => ({
   '--ua-size': `${props.size}rem`,
@@ -45,9 +46,9 @@ const cssVars = computed(() => ({
   }
 
   .initials {
-    font-family: 'Inter', sans-serif;
-    font-size: var(--ua-font-size);
-    font-weight: 700;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 600;
     color: $brand-primary;
     line-height: 1;
     user-select: none;

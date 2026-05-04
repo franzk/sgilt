@@ -24,8 +24,13 @@ spring:
               predicates:
                 - Path=/api/v1/prestataires/**
 
+            - id: users-private
+              uri: ${BACK_URL:http://localhost:5027}
+              predicates:
+                - Path=/api/v1/users/**
+
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_ISSUER:http://host.docker.internal:5028/realms/sgilt}
+          issuer-uri: ${KEYCLOAK_ISSUER:http://localhost:5028/realms/sgilt}

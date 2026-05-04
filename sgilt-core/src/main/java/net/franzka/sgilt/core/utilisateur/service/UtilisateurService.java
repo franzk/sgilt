@@ -2,7 +2,9 @@ package net.franzka.sgilt.core.utilisateur.service;
 
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import net.franzka.sgilt.core.utilisateur.domain.UtilisateurStatus;
+import net.franzka.sgilt.core.utilisateur.dto.UtilisateurProfileDto;
 import net.franzka.sgilt.core.utilisateur.exception.UtilisateurAlreadyExistException;
+import net.franzka.sgilt.core.utilisateur.exception.UtilisateurNotFoundException;
 import net.franzka.sgilt.core.utilisateur.repository.UtilisateurRepository;
 import org.springframework.stereotype.Service;
 
@@ -58,5 +60,23 @@ public class UtilisateurService {
      */
     public boolean existsByEmail(String email) {
         return utilisateurRepository.existsByEmail(email);
+    }
+
+    /**
+     * Retourne le profil de l'utilisateur identifié par son email.
+     *
+     * @param email l'adresse email de l'utilisateur connecté
+     * @return le profil de l'utilisateur
+     * @throws UtilisateurNotFoundException si aucun utilisateur ne correspond à cet email
+     */
+    public UtilisateurProfileDto getProfile(String email) {
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(UtilisateurNotFoundException::new);
+        return new UtilisateurProfileDto(
+                utilisateur.getFirstName(),
+                utilisateur.getLastName(),
+                utilisateur.getEmail(),
+                utilisateur.getAvatarUrl()
+        );
     }
 }
