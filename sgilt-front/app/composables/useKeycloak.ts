@@ -1,4 +1,4 @@
-import Keycloak, { type KeycloakTokenParsed } from 'keycloak-js'
+import Keycloak, { type KeycloakLoginOptions, type KeycloakTokenParsed } from 'keycloak-js'
 
 // État partagé au niveau du module — singleton commun à tous les appels de useKeycloak()
 const _keycloak = ref<Keycloak | null>(null)
@@ -25,8 +25,8 @@ export function useKeycloak() {
     return _keycloak.value.hasRealmRole(role)
   }
 
-  async function login(): Promise<void> {
-    await _keycloak.value?.login()
+  async function login(options?: KeycloakLoginOptions): Promise<void> {
+    await _keycloak.value?.login(options)
   }
 
   async function logout(): Promise<void> {

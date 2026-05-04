@@ -1,297 +1,562 @@
-/* Base form styling */
-#kc-content {
-	max-width: 400px;
-	margin: 0 auto;
-	padding: 40px 20px;
-	background-color: transparent;
-	color: #fff;
+/* ── Fonts ─────────────────────────────────────────────────── */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/inter-400.woff2") format("woff2");
 }
 
-.card-pf {
-	background-color: transparent;
-	box-shadow: none;
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/inter-500.woff2") format("woff2");
 }
 
-form {
-	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-	display: flex;
-	flex-direction: column;
-	gap: 30px;
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/inter-600.woff2") format("woff2");
+}
+
+/* ── Design tokens ─────────────────────────────────────────── */
+:root {
+  --color-primary: #2f2a25;
+  --color-accent: #ffbf00;
+  --color-text-secondary: #6b635c;
+  --color-divider: #e5dfd8;
+  --color-surface-soft: #fbf8f4;
+  --color-error: #e5534b;
+  --color-warning: #d68c00;
+  --color-success: #2e9c5d;
+  --shadow-m: rgba(47, 42, 37, 0.12);
+  --input-border: rgba(47, 42, 37, 0.12);
+  --input-radius: 1.4rem;
+  --header-height: 3.3rem;
+}
+
+/* ── Reset ─────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+*:focus {
+  outline: none !important;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-accent) !important;
+  outline-offset: 3px !important;
+}
+
+/* Inputs : pas d'outline, feedback via border + shadow (voir fin de fichier) */
+form input[type="text"]:focus,
+form input[type="text"]:focus-visible,
+form input[type="password"]:focus,
+form input[type="password"]:focus-visible,
+form input[type="email"]:focus,
+form input[type="email"]:focus-visible,
+.pf-c-form-control:focus,
+.pf-c-form-control:focus-visible {
+  outline: none !important;
+}
+
+/* Liens — PatternFly les reset parfois, on force */
+a:focus-visible {
+  outline: 2px solid var(--color-accent) !important;
+  outline-offset: 3px !important;
+}
+
+/* ── Base ──────────────────────────────────────────────────── */
+body {
+  margin: 0;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-primary);
+  background: #fff;
+  height: 100vh;
+  overflow: hidden;
 }
 
 a {
-	color: #ccc;
-	text-decoration: none;
-	transition: color 0.3s ease;
+  color: var(--color-primary);
+  text-decoration: none;
 }
 
 a:hover {
-	color: #fff;
+  text-decoration: underline;
 }
 
-/* Label styling */
-form label {
-	font-weight: 300;
-	margin-bottom: 8px;
-	color: #ccc;
-	font-size: 14px;
-	letter-spacing: 0.5px;
+/* ── App Header ────────────────────────────────────────────── */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background: #fff;
+  box-shadow: 0 4px 6px var(--shadow-m);
 }
 
-#input-error,
-.pf-m-error {
-	color: #ff0000;
-	font-weight: 600;
+.app-header .logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
 }
 
-/* Text input styling */
+.app-header .logo img {
+  height: 2rem;
+  display: block;
+}
+
+/* ── Split Layout ──────────────────────────────────────────── */
+.login-pf-page {
+  padding: 0;
+}
+
+.login-pf.main-content,
+.main-content {
+  display: flex;
+  height: calc(100vh - var(--header-height));
+  margin-top: var(--header-height);
+  overflow: hidden;
+}
+
+/* Left panel — image */
+#kc-form-image {
+  flex: 0 0 50%;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+#kc-form-image::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 15px;
+  background: linear-gradient(to right, transparent 60%, #fdfaf5 95%);
+  pointer-events: none;
+}
+
+#kc-form-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Right panel — form */
+.login-pf .card-pf {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px 48px;
+  overflow-y: auto;
+  background: #fdfaf5;
+  margin: 0;
+  height: auto;
+  align-content: unset;
+}
+
+.card-pf {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* ── Form area ─────────────────────────────────────────────── */
+#kc-content {
+  max-width: 380px;
+  width: 100%;
+  margin: 0 auto;
+  background: transparent;
+  color: var(--color-primary);
+  padding: 0;
+}
+
+#kc-content-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Page title ────────────────────────────────────────────── */
+#kc-page-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin: 0 0 2rem 0;
+}
+
+/* ── Form ──────────────────────────────────────────────────── */
+form {
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Labels ────────────────────────────────────────────────── */
+form label,
+.pf-c-form__label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-bottom: 6px;
+}
+
+/* ── Text & password inputs ────────────────────────────────── */
 form input[type="text"],
-form input[type="password"] {
-	width: 100%;
-	padding: 12px 0;
-	border: none;
-	border-bottom: 1px solid #fff;
-	border-radius: 0;
-	font-size: 16px;
-	background-color: transparent;
-	color: #fff;
-	box-sizing: border-box;
-	transition: border-bottom-color 0.3s ease;
+form input[type="password"],
+form input[type="email"],
+.pf-c-form-control {
+  width: 100%;
+  padding: 11px 16px;
+  border: 1px solid var(--input-border);
+  border-radius: var(--input-radius);
+  font-size: 16px;
+  font-family: inherit;
+  background: #fff;
+  color: var(--color-primary);
+  box-shadow:
+    0 0.0625rem 0 rgba(0, 0, 0, 0.04),
+    0 0.5rem 1.25rem rgba(0, 0, 0, 0.05);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+  outline: none;
+  height: auto;
+  appearance: none;
 }
 
-form input[type="text"]:focus,
-form input[type="password"]:focus {
-	border-bottom-color: #fff;
-	outline: none;
+
+/* Error state */
+.pf-c-form-control[aria-invalid="true"],
+form input[aria-invalid="true"] {
+  border: 1px solid var(--color-error) !important;
+  box-shadow: 0 0 0 3px rgba(229, 83, 75, 0.15) !important;
+  border-radius: var(--input-radius) !important;
+  background: #fff !important;
 }
 
-/* Neutralize autofill styles */
-form input[type="text"]:-webkit-autofill,
-form input[type="password"]:-webkit-autofill,
-form input[type="text"]:-webkit-autofill:hover,
-form input[type="password"]:-webkit-autofill:hover,
-form input[type="text"]:-webkit-autofill:focus,
-form input[type="password"]:-webkit-autofill:focus,
-form input[type="text"]:-webkit-autofill:active,
-form input[type="password"]:-webkit-autofill:active {
-	-webkit-box-shadow: 0 0 0px 1000px #111 inset !important;
-	-webkit-text-fill-color: #fff !important;
-	background-color: transparent !important;
-	background-image: none !important;
-	border: none !important;
-	border-bottom: 1px solid #fff !important;
-	border-radius: 0 !important;
-	transition: background-color 5000s ease-in-out 0s !important;
+/* ── Password input + toggle group ─────────────────────────── */
+.pf-c-input-group {
+  position: relative;
+  background: transparent;
 }
 
-/* Submit button styling */
-form input[type="submit"] {
-	width: 100%;
-	padding: 12px;
-	background-color: transparent !important;
-	color: #fff;
-	border: 1px solid #fff;
-	border-radius: 0;
-	font-size: 16px;
-	font-weight: 300;
-	letter-spacing: 1px;
-	cursor: pointer;
-	transition: all 0.3s ease;
-	margin-top: 20px;
+.pf-c-input-group .pf-m-control::after {
+  border: none;
 }
 
-form input[type="submit"]:hover {
-	background-color: rgba(255, 255, 255, 0.1) !important;
-	border-color: #fff;
-	color: #fff;
+/* extra right padding so text doesn't overlap the toggle */
+.pf-c-input-group input[type="password"] {
+  padding-right: 3rem;
 }
 
-/* "Show password" button styling */
+/* ── Password toggle button ────────────────────────────────── */
 form button[type="button"] {
-	background: none !important;
-	border: none;
-	cursor: pointer;
-	position: absolute;
-	right: 0;
-	top: 50%;
-	transform: translateY(-50%);
-	font-size: 14px;
-	color: #ccc;
-	padding: 0.2rem 0.4rem;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  padding: 4px;
+  font-size: 14px;
+  line-height: 1;
+  transition: color 150ms ease;
 }
 
 form button[type="button"]:hover {
-	color: #fff;
+  color: var(--color-primary);
 }
 
-/* Icon styling */
 form i {
-	font-size: 18px;
+  font-size: 18px;
 }
 
-/* Form element alignment styling */
-.pf-c-input-group {
-	position: relative;
+/* ── Autofill — override browser default dark fill ─────────── */
+form input:-webkit-autofill,
+form input:-webkit-autofill:hover,
+form input:-webkit-autofill:focus,
+form input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+  -webkit-text-fill-color: #2f2a25 !important;
+  border: 1px solid var(--input-border) !important;
+  border-radius: var(--input-radius) !important;
+  transition: background-color 5000s ease-in-out 0s !important;
 }
 
-#kc-form-options,
+/* ── Submit button ─────────────────────────────────────────── */
+form input[type="submit"],
+.pf-c-button.pf-m-primary.pf-m-block {
+  width: 100%;
+  padding: 12px 20px;
+  background: var(--color-accent) !important;
+  color: #fff !important;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 0.0625rem 0 rgba(0, 0, 0, 0.04),
+    0 0.5rem 1.25rem rgba(0, 0, 0, 0.05);
+  border: none;
+  border-radius: var(--input-radius);
+  font-size: 16px;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    opacity 150ms ease,
+    transform 120ms ease,
+    box-shadow 120ms ease;
+  margin-top: 4px;
+  letter-spacing: 0;
+}
+
+form input[type="submit"]:hover {
+  background: #f0b300 !important;
+}
+
+form input[type="submit"]:active {
+  transform: translateY(1px);
+  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
+}
+
+/* ── Form options row (remember me / forgot password) ──────── */
+.pf-c-form-group.pf-m-action,
 #kc-form-buttons {
-	text-align: center;
+  text-align: center;
 }
 
-.back-to-login {
-	text-align: center;
-	margin-top: 20px;
-	font-size: 15px;
-}
-
-#kc-page-title {
-	color: white;
-	text-align: center;
-	font-weight: 300;
-	font-size: 24px;
-	letter-spacing: 1px;
-	margin-bottom: 40px;
-}
-
-#kc-info {
-	text-align: center;
-}
-
-/* Page background styling */
-body {
-	background-color: #111;
-	margin: 0;
-	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-	display: flex;
-	flex-direction: column;
-	height: 100vh;
-}
-
-.main-content {
-	flex: 1;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-
-/* main_content mobile */
-@media (max-width: 600px) {
-	.main-content {
-		display: block;
-	}
-}
-
-.app-header {
-	display: none;
-	justify-content: space-between;
-	align-items: center;
-	background-color: #1e1e2f;
-	padding: 1rem 2rem;
-	border-bottom: 1px solid #2a2a3b;
-	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-	color: #f1f1f1;
-	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.pf-c-input-group {
-	position: relative;
-	background: transparent;
-
-	.pf-m-control::after {
-		border: none;
-	}
+#kc-form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
 }
 
 .login-pf-page .login-pf-settings {
-	font-size: 15px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
 }
 
-.pf-c-form-control:not(textarea) {
-	height: initial;
+/* ── Remember Me checkbox ──────────────────────────────────── */
+.checkbox {
+  display: flex;
+  align-items: center;
 }
 
-.pf-c-form-control[aria-invalid="true"] {
-	border: none !important;
-	border-bottom: 1px solid red !important;
-	background: transparent !important;
-	border-radius: 0 !important;
+.checkbox label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-weight: 400;
+  margin-bottom: 0;
 }
 
-.login-pf-page .login-pf-signup {
-	margin: 0;
+.checkbox input[type="checkbox"] {
+  accent-color: var(--color-primary);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
 }
 
-.login-pf-page .card-pf * {
-	color: white !important;
+/* ── Forgot password link ──────────────────────────────────── */
+.pf-c-form-options-wrapper a,
+#kc-form-options a {
+  font-size: 14px;
+  color: var(--color-text-secondary);
 }
 
-.login-pf .card-pf {
-	flex: 1;
-	padding: 0;
-	margin: 0;
-	overflow-y: auto;
-    height: 100vh;
-	align-content: center;
+.pf-c-form-options-wrapper a:hover,
+#kc-form-options a:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
 }
 
-@media screen and (max-width: 600px) {
-	.login-pf .card-pf {
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		background: #0008;
-	}
+/* ── Error messages ────────────────────────────────────────── */
+#input-error,
+.pf-m-error,
+.pf-c-form__helper-text.pf-m-error {
+  color: var(--color-error);
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 6px;
+  display: block;
 }
 
-.login-pf-page {
-	padding: 0;
-}
-
-.login-pf #kc-form-image {
-	flex: 0 0 auto;
-	display: flex;
-}
-
-.login-pf #kc-form-image img {
-	height: 100vh;
-	object-fit: cover;
-}
-
-
-.login-pf,
-.login-pf body {
-	background: #111;
-	height: 100%;
-	margin: 0;
-}
-
+/* ── Alerts (info / success / warning / error) ─────────────── */
 .pf-c-alert {
-	display: flex;
-	align-items: center;
-	background-color: transparent;
-	border-left: 4px solid #ffaa00;
-	padding: 10px;
-	border-radius: 5px;
-	margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: var(--color-primary);
+  background: rgba(47, 42, 37, 0.05);
+  border-left: 4px solid var(--color-primary);
+}
+
+.alert-success.pf-c-alert {
+  background: rgba(46, 156, 93, 0.08);
+  border-left-color: var(--color-success);
+}
+
+.alert-warning.pf-c-alert {
+  background: rgba(255, 191, 0, 0.1);
+  border-left-color: var(--color-accent);
+}
+
+.alert-error.pf-c-alert,
+.alert-danger.pf-c-alert {
+  background: rgba(229, 83, 75, 0.08);
+  border-left-color: var(--color-error);
+}
+
+.alert-info.pf-c-alert {
+  background: rgba(47, 42, 37, 0.05);
+  border-left-color: var(--color-primary);
 }
 
 .pf-c-alert__icon {
-	margin-right: 10px;
-	font-size: 1.5rem;
-	color: #ffaa00;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.alert-success .pf-c-alert__icon {
+  color: var(--color-success);
+}
+.alert-warning .pf-c-alert__icon {
+  color: var(--color-accent);
+}
+.alert-error .pf-c-alert__icon,
+.alert-danger .pf-c-alert__icon {
+  color: var(--color-error);
+}
+.alert-info .pf-c-alert__icon {
+  color: var(--color-primary);
 }
 
 .kc-feedback-text {
-	font-weight: bold;
+  font-weight: 500;
 }
 
+/* ── Registration / info section ───────────────────────────── */
+#kc-info {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+#kc-registration-container {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.login-pf-page .login-pf-signup {
+  margin: 0;
+}
+
+/* ── "Back to login" link (reset password page) ────────────── */
+.back-to-login {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+/* ── Instruction text ──────────────────────────────────────── */
 .instruction {
-	color: #fff;
-	font-size: 1rem;
-	text-align: center;
-	margin-bottom: 15px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin-bottom: 16px;
 }
 
+/* ── Locale selector ───────────────────────────────────────── */
+#kc-locale {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
 
+/* ── PatternFly overrides ──────────────────────────────────── */
+.pf-c-form-control:not(textarea) {
+  height: auto;
+}
+
+/* remove dark override that was for old dark theme */
+.login-pf-page .card-pf * {
+  color: unset;
+}
+
+/* ── Responsive ────────────────────────────────────────────── */
+
+/* Tablette : image réduite à 40%, formulaire centré */
+@media (max-width: 900px) {
+  #kc-form-image {
+    flex: 0 0 40%;
+  }
+
+  .login-pf .card-pf {
+    padding: 32px 36px;
+  }
+}
+
+/* Mobile : image masquée, formulaire sur fond blanc */
+@media (max-width: 640px) {
+  #kc-form-image {
+    display: none;
+  }
+
+  .login-pf .card-pf {
+    padding: 40px 24px 32px;
+    background: #fff;
+  }
+
+  #kc-content {
+    max-width: 100%;
+  }
+}
+
+/* ── Input focus — spécificité haute, placé en dernier ─────── */
+/* Cible via l'ID pour écraser les resets PatternFly */
+#kc-content input:focus,
+#kc-content input:focus-visible,
+#kc-content .pf-c-form-control:focus,
+#kc-content .pf-c-form-control:focus-visible {
+  outline: none !important;
+  border: 1px solid rgba(255, 191, 0, 0.75) !important;
+  border-radius: var(--input-radius) !important;
+  box-shadow: 0 0 0 3px rgba(255, 191, 0, 0.25) !important;
+}
