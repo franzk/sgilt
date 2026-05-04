@@ -2,7 +2,9 @@
   <div class="events-page">
     <!-- ── En-tête ──────────────────────────────────────────────────────────── -->
     <div class="events-page__header">
-      <p class="events-page__greeting">{{ t('events.welcome', { name: 'Julie' }) }}</p>
+      <p class="events-page__greeting">
+        {{ t(greetingKey, { name: currentUser.firstName }) }}
+      </p>
       <div class="events-page__subheader">
         <p class="events-page__count">
           {{ t('events.count', events.length, { n: events.length }) }}
@@ -66,6 +68,11 @@ import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
 definePageMeta({ layout: 'app' })
 
 const { t } = useI18n()
+const currentUser = useCurrentUser()
+const greetingKey = computed<string>(() => {
+  const h = new Date().getHours()
+  return h >= 6 && h < 18 ? 'events.welcome' : 'events.welcome-night'
+})
 const { isDesktop } = useDevice()
 const cardRatio = computed(() => (isDesktop.value ? '16/9' : '3/2'))
 
