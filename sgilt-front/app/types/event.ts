@@ -1,3 +1,14 @@
+export interface EventSummary {
+  id: string
+  title: string
+  date?: Date
+  ville?: string
+  coverImage?: string | null
+  eventType?: string
+  confirmedCount: number
+  inDiscussionCount: number
+}
+
 export type ReservationStatus =
   | 'nouvelle'
   | 'en_discussion'

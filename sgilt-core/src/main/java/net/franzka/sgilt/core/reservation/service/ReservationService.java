@@ -6,12 +6,15 @@ import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.reservation.domain.Note;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
+import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
 import net.franzka.sgilt.core.reservation.repository.NoteRepository;
 import net.franzka.sgilt.core.reservation.repository.ReservationRepository;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Service métier pour l'entité {@link Reservation}.
@@ -22,6 +25,23 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final NoteRepository noteRepository;
+
+    /**
+     * Retourne le nombre de réservations confirmées et en discussion pour un événement.
+     *
+     * @param evenementId l'identifiant de l'événement
+     * @return les compteurs de réservations pertinents pour l'affichage
+     */
+    public ReservationCounts getCountsForEvenement(UUID evenementId) {
+        List<Reservation> reservations = reservationRepository.findByEvenementId(evenementId);
+        int confirmed = (int) reservations.stream()
+                .filter(r -> r.getStatus() == ReservationStatus.CONFIRMED)
+                .count();
+        int inDiscussion = (int) reservations.stream()
+                .filter(r -> r.getStatus() == ReservationStatus.IN_DISCUSSION)
+                .count();
+        return new ReservationCounts(confirmed, inDiscussion);
+    }
 
     /**
      * Crée et persiste une réservation en statut NEW,

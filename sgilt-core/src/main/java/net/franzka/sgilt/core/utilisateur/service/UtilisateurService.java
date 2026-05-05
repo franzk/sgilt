@@ -53,6 +53,19 @@ public class UtilisateurService {
     }
 
     /**
+     * Résout l'utilisateur correspondant à l'email de l'utilisateur authentifié.
+     * Utilisé par les services qui ont besoin de l'entité (ex. pour récupérer son id).
+     *
+     * @param email l'email extrait du JWT
+     * @return l'entité {@link Utilisateur}
+     * @throws UtilisateurNotFoundException si aucun utilisateur ne correspond
+     */
+    public Utilisateur getByEmail(String email) {
+        return utilisateurRepository.findByEmail(email)
+                .orElseThrow(UtilisateurNotFoundException::new);
+    }
+
+    /**
      * Vérifie si un utilisateur est déjà enregistré pour l'email donné.
      *
      * @param email l'adresse email à vérifier

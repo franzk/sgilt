@@ -66,8 +66,8 @@
 </template>
 
 <script setup lang="ts">
-import { EventMockService } from '~/services/event.mock'
-import type { EventDetail } from '~/types/event'
+import type { EventSummary } from '~/types/event'
+import { useEvenements } from '~/data/evenement/api/evenementApi'
 import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
 
 definePageMeta({ layout: 'app' })
@@ -82,13 +82,7 @@ const { isDesktop } = useDevice()
 const cardRatio = computed(() => (isDesktop.value ? '16/9' : '3/2'))
 
 // ── Data ──────────────────────────────────────────────────────────────────────
-const events = ref<EventDetail[]>([])
-const loading = ref(true)
-
-onMounted(async () => {
-  events.value = await EventMockService.getAll()
-  loading.value = false
-})
+const { events, loading } = useEvenements()
 
 // ── Cover images ──────────────────────────────────────────────────────────────
 const DEFAULT_COVERS: Record<string, string> = {
@@ -103,20 +97,15 @@ const DEFAULT_COVERS: Record<string, string> = {
   autre: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&auto=format&fit=crop',
 }
 
-function coverImage(event: EventDetail) {
+function coverImage(event: EventSummary) {
   return event.coverImage ?? DEFAULT_COVERS[event.eventType ?? ''] ?? DEFAULT_COVERS.autre
 }
 
 // ── Résumé réservations ───────────────────────────────────────────────────────
-function reservationSummary(event: EventDetail): string {
-  const r = event.reservations
-  const confirmed = r.filter((x) => x.status === 'confirmee').length
-  const inProgress = r.filter((x) => x.status === 'en_discussion').length
-
+function reservationSummary(event: EventSummary): string {
   const parts: string[] = []
-  if (confirmed) parts.push(`✓ ${t('events.confirmed', confirmed, { n: confirmed })}`)
-  if (inProgress) parts.push(t('events.in-progress', inProgress, { n: inProgress }))
-
+  if (event.confirmedCount) parts.push(`✓ ${t('events.confirmed', event.confirmedCount, { n: event.confirmedCount })}`)
+  if (event.inDiscussionCount) parts.push(t('events.in-progress', event.inDiscussionCount, { n: event.inDiscussionCount }))
   return parts.join(' · ') || '—'
 }
 </script>
