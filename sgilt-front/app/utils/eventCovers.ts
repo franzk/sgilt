@@ -1,4 +1,4 @@
-import type { EventDetail } from '~/types/event'
+import type { EventDetail } from '~/data/evenement/domain/evenement'
 
 export const DEFAULT_COVERS: Record<string, string> = {
   mariage:

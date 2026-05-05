@@ -1,56 +1,10 @@
+/**
+ * Couche service — orchestration des appels API prestataire
+ */
 import { searchPrestatairesApi, getPrestataireBySlugApi } from '../api/prestataireApi'
-import type { PrestataireCardDto, PrestataireDetailDto } from '../dto/PrestataireDto'
-import type {
-  PrestataireCardDetail,
-  PrestataireDetail,
-  PrestataireSearchResponse,
-} from '../domain/prestataire'
-
-// ── Mapping ───────────────────────────────────────────────────────────────────
-
-function categoryName(key: string): string {
-  return APP_CATEGORIES.find((c) => c.key === key)?.name ?? key
-}
-
-function mapCard(dto: PrestataireCardDto): PrestataireCardDetail {
-  return {
-    id: dto.id,
-    name: dto.name,
-    shortDescription: dto.shortDescription,
-    image: dto.heroImage,
-    slug: dto.slug,
-    categoryKey: dto.categoryKey,
-    categoryName: categoryName(dto.categoryKey),
-  }
-}
-
-function mapDetail(dto: PrestataireDetailDto): PrestataireDetail {
-  return {
-    id: dto.id,
-    name: dto.name,
-    slug: dto.slug,
-    baseline: dto.baseline,
-    shortDescription: dto.shortDescription,
-    image: dto.heroImage,
-    heroImage: dto.heroImage,
-    youtubeId: dto.youtubeId,
-    categoryKey: dto.categoryKey,
-    category: categoryName(dto.categoryKey),
-    subcats: dto.subcatKeys,
-    photos: dto.photos ?? [],
-    badges: dto.badges ?? [],
-    offerings: dto.offerings ?? [],
-    identity: dto.identity,
-    budget: dto.budget,
-    testimonials: dto.testimonials,
-    logistics: dto.logistics,
-    technical: dto.technical,
-    faq: dto.faq,
-    unavailableDates: [],
-  }
-}
-
-// ── Service ───────────────────────────────────────────────────────────────────
+import { mapPrestataireCard, mapPrestataireDetail } from '../mapper/prestataireMapper'
+import type { PrestataireSearchResponse } from '../domain/PrestataireSearchResponse'
+import type { PrestataireDetail } from '../domain/PrestataireDetail'
 
 export async function searchPrestataires(params: {
   date: string
@@ -70,7 +24,7 @@ export async function searchPrestataires(params: {
   const dto = await searchPrestatairesApi(query)
 
   return {
-    results: dto.results.map(mapCard),
+    results: dto.results.map(mapPrestataireCard),
     countsByCategory: dto.countsByCategory,
     subcatCounts: dto.subcatCounts,
   }
@@ -79,7 +33,7 @@ export async function searchPrestataires(params: {
 export async function fetchPrestataireBySlug(slug: string): Promise<PrestataireDetail | null> {
   try {
     const dto = await getPrestataireBySlugApi(slug)
-    return mapDetail(dto)
+    return mapPrestataireDetail(dto)
   } catch {
     return null
   }

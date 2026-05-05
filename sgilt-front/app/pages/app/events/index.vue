@@ -66,8 +66,8 @@
 </template>
 
 <script setup lang="ts">
-import type { EventSummary } from '~/types/event'
-import { useEvenements } from '~/data/evenement/api/evenementApi'
+import type { EventSummary } from '~/data/evenement/domain/evenement'
+import { useEvenements } from '~/data/evenement/useEvenements'
 import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
 
 definePageMeta({ layout: 'app' })
@@ -104,8 +104,10 @@ function coverImage(event: EventSummary) {
 // ── Résumé réservations ───────────────────────────────────────────────────────
 function reservationSummary(event: EventSummary): string {
   const parts: string[] = []
-  if (event.confirmedCount) parts.push(`✓ ${t('events.confirmed', event.confirmedCount, { n: event.confirmedCount })}`)
-  if (event.inDiscussionCount) parts.push(t('events.in-progress', event.inDiscussionCount, { n: event.inDiscussionCount }))
+  if (event.confirmedCount)
+    parts.push(`✓ ${t('events.confirmed', event.confirmedCount, { n: event.confirmedCount })}`)
+  if (event.inDiscussionCount)
+    parts.push(t('events.in-progress', event.inDiscussionCount, { n: event.inDiscussionCount }))
   return parts.join(' · ') || '—'
 }
 </script>

@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import type { JournalEntry } from '~/types/event'
+import type { JournalEntry } from '~/data/evenement/domain/evenement'
 
 defineProps<{ entries: JournalEntry[] }>()
 </script>

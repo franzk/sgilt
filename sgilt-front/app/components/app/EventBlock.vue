@@ -455,7 +455,8 @@ import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltBottomSheet from '~/components/basics/sheets/SgiltBottomSheet.vue'
 import EventJournal from '~/components/app/EventJournal.vue'
 import { EventMockService } from '~/services/event.mock'
-import type { EventDetail, ClientContactInfo } from '~/types/event'
+import type { EventDetail } from '~/data/evenement/domain/evenement'
+import type { ClientContactInfo } from '~/types/event'
 import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS } from '~/types/demande'
 import {
   ArrowDownSIcon,

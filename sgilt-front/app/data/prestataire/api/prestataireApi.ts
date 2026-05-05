@@ -1,3 +1,6 @@
+/**
+ * Couche API — appels HTTP bruts vers /prestataires, sans logique métier
+ */
 import { apiFetch } from '~/composables/useApi'
 import type { PrestataireDetailDto, PrestataireSearchResponseDto } from '../dto/PrestataireDto'
 

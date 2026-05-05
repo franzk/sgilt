@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { JournalEntry } from '~/types/event'
+import type { JournalEntry } from '~/data/evenement/domain/evenement'
 
 export const useEventJournalStore = defineStore('eventJournal', () => {
   const journal = ref<JournalEntry[]>([])

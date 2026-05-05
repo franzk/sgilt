@@ -24,21 +24,14 @@
 import DemandeDesktop from '~/components/demande/DemandeDesktop.vue'
 import DemandeMobile from '~/components/demande/DemandeMobile.vue'
 import { useDemande } from '~/composables/useDemande'
-import { fetchPrestataireBySlug } from '~/data/prestataire/service/prestataireService'
-import type { PrestataireDetail } from '~/data/prestataire/domain/prestataire'
+import { usePrestataire } from '~/data/prestataire/usePrestataire'
 
 const route = useRoute()
 const slug = route.params.slug as string
 
-const prestataire = ref<PrestataireDetail | null>(null)
-const loading = ref(true)
+const { prestataire, loading } = usePrestataire(slug)
 
 const { isMobile } = useDevice()
-
-onMounted(async () => {
-  prestataire.value = await fetchPrestataireBySlug(slug)
-  loading.value = false
-})
 
 watchEffect(() => {
   if (!prestataire.value) return
