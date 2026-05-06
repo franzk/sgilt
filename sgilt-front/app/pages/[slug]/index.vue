@@ -22,24 +22,18 @@
 <script setup lang="ts">
 import PrestataireDetails from '~/components/prestataire/PrestataireDetails.vue'
 import FinalisationAddPrestataire from '~/components/prestataire/FinalisationAddPrestataire.vue'
-import { fetchPrestataireBySlug } from '~/data/prestataire/service/prestataireService'
 import { toISODate } from '~/utils/dateUtils'
-import type { PrestataireDetail } from '~/data/prestataire/domain/prestataire'
+import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDetail'
+import { usePrestataire } from '~/data/prestataire/usePrestataire'
 
 const router = useRouter()
 const route = useRoute()
 const slug = route.params.slug as string
 
-const prestataire = ref<PrestataireDetail | null>(null)
-const loading = ref(true)
+const { prestataire, loading } = usePrestataire(slug)
 
 const { currentFlow } = useFlow()
 const disableDatePicker = computed(() => currentFlow.value === 'add-prestataire')
-
-onMounted(async () => {
-  prestataire.value = await fetchPrestataireBySlug(slug)
-  loading.value = false
-})
 
 const showFinalisation = ref(false)
 const { dateModel } = useSearchUi()

@@ -320,6 +320,7 @@
   },
   "events": {
     "welcome": "Bonjour {name} !",
+    "welcome-night": "Bonsoir {name} !",
     "count": "Vous préparez {n} événement. | Vous préparez {n} événements.",
     "create": "Créer un événement",
     "empty": "Aucun événement pour le moment.",

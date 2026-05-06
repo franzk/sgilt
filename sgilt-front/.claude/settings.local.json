@@ -20,7 +20,10 @@
       "Bash(pnpm remove:*)",
       "Bash(for component:*)",
       "Bash(do)",
-      "Bash(echo \"=== $component ===\")"
+      "Bash(echo \"=== $component ===\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front\\\\app\" -Recurse -Directory)",
+      "Bash(Select-Object FullName)",
+      "Bash(Sort-Object FullName)"
     ]
   }
 }

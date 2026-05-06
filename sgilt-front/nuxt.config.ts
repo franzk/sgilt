@@ -34,6 +34,9 @@ export default defineNuxtConfig({
    * ======================
    */
   routeRules: {
+    // Redirect racine app
+    '/app': { redirect: '/app/events' },
+
     // App = SPA, pas de SEO
     '/app/**': {
       ssr: false,

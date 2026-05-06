@@ -120,9 +120,5 @@ function handleLogin() {
     width: 1.25rem;
     height: 1.25rem;
   }
-
-  &:hover {
-    background: $surface-soft;
-  }
 }
 </style>

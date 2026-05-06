@@ -1,4 +1,4 @@
-import type { EventDetail, EventPatch } from '~/types/event'
+import type { EventDetail, EventPatch } from '~/data/evenement/domain/evenement'
 import { MOCK_EVENTS } from '~/services/mock'
 
 export const EventMockService = {

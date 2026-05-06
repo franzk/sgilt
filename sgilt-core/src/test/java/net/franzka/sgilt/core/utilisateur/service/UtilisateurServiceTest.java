@@ -12,6 +12,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import net.franzka.sgilt.core.utilisateur.dto.UtilisateurProfileDto;
+import net.franzka.sgilt.core.utilisateur.exception.UtilisateurNotFoundException;
+
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.*;
@@ -103,6 +108,64 @@ class UtilisateurServiceTest {
             when(utilisateurRepository.existsByEmail(EMAIL)).thenReturn(false);
 
             assertThat(utilisateurService.existsByEmail(EMAIL)).isFalse();
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // getByEmail
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetByEmail {
+
+        @Test
+        void givenExistingEmail_whenGetByEmail_thenReturnsUtilisateur() {
+            Utilisateur user = Utilisateur.builder().email(EMAIL).build();
+            when(utilisateurRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
+
+            assertThat(utilisateurService.getByEmail(EMAIL)).isSameAs(user);
+        }
+
+        @Test
+        void givenUnknownEmail_whenGetByEmail_thenThrowsUtilisateurNotFoundException() {
+            when(utilisateurRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
+
+            assertThatExceptionOfType(UtilisateurNotFoundException.class)
+                    .isThrownBy(() -> utilisateurService.getByEmail(EMAIL));
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // getProfile
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetProfile {
+
+        @Test
+        void givenExistingEmail_whenGetProfile_thenReturnsDtoWithCorrectFields() {
+            Utilisateur user = Utilisateur.builder()
+                    .firstName(FIRST_NAME)
+                    .lastName(LAST_NAME)
+                    .email(EMAIL)
+                    .avatarUrl(null)
+                    .build();
+            when(utilisateurRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
+
+            UtilisateurProfileDto result = utilisateurService.getProfile(EMAIL);
+
+            assertThat(result.firstName()).isEqualTo(FIRST_NAME);
+            assertThat(result.lastName()).isEqualTo(LAST_NAME);
+            assertThat(result.email()).isEqualTo(EMAIL);
+            assertThat(result.avatarUrl()).isNull();
+        }
+
+        @Test
+        void givenUnknownEmail_whenGetProfile_thenThrowsUtilisateurNotFoundException() {
+            when(utilisateurRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
+
+            assertThatExceptionOfType(UtilisateurNotFoundException.class)
+                    .isThrownBy(() -> utilisateurService.getProfile(EMAIL));
         }
     }
 }

@@ -1,6 +1,6 @@
+import type { EventDetail } from '~/data/evenement/domain/evenement'
 import type {
   NoteAuthor,
-  EventDetail,
   ReservationDetail,
   ReservationDocument,
   ReservationNote,

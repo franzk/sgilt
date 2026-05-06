@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import type { JournalEntry } from '~/types/event'
+import type { JournalEntry } from '~/data/evenement/domain/evenement'
 import JournalList from '~/components/app/JournalList.vue'
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 

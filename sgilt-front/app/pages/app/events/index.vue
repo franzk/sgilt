@@ -2,7 +2,14 @@
   <div class="events-page">
     <!-- ── En-tête ──────────────────────────────────────────────────────────── -->
     <div class="events-page__header">
-      <p class="events-page__greeting">{{ t('events.welcome', { name: 'Julie' }) }}</p>
+      <p v-if="!currentUser.loading" class="events-page__greeting">
+        {{ t(greetingKey, { name: currentUser.firstName }) }}
+      </p>
+      <div
+        v-else
+        class="skeleton-text title shimmer-container events-page__greeting-skeleton"
+        aria-hidden="true"
+      />
       <div class="events-page__subheader">
         <p class="events-page__count">
           {{ t('events.count', events.length, { n: events.length }) }}
@@ -59,24 +66,23 @@
 </template>
 
 <script setup lang="ts">
-import { EventMockService } from '~/services/event.mock'
-import type { EventDetail } from '~/types/event'
+import type { EventSummary } from '~/data/evenement/domain/evenement'
+import { useEvenements } from '~/data/evenement/useEvenements'
 import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
 
 definePageMeta({ layout: 'app' })
 
 const { t } = useI18n()
+const currentUser = useCurrentUser()
+const greetingKey = computed<string>(() => {
+  const h = new Date().getHours()
+  return h >= 6 && h < 18 ? 'events.welcome' : 'events.welcome-night'
+})
 const { isDesktop } = useDevice()
 const cardRatio = computed(() => (isDesktop.value ? '16/9' : '3/2'))
 
 // ── Data ──────────────────────────────────────────────────────────────────────
-const events = ref<EventDetail[]>([])
-const loading = ref(true)
-
-onMounted(async () => {
-  events.value = await EventMockService.getAll()
-  loading.value = false
-})
+const { events, loading } = useEvenements()
 
 // ── Cover images ──────────────────────────────────────────────────────────────
 const DEFAULT_COVERS: Record<string, string> = {
@@ -91,20 +97,17 @@ const DEFAULT_COVERS: Record<string, string> = {
   autre: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&auto=format&fit=crop',
 }
 
-function coverImage(event: EventDetail) {
+function coverImage(event: EventSummary) {
   return event.coverImage ?? DEFAULT_COVERS[event.eventType ?? ''] ?? DEFAULT_COVERS.autre
 }
 
 // ── Résumé réservations ───────────────────────────────────────────────────────
-function reservationSummary(event: EventDetail): string {
-  const r = event.reservations
-  const confirmed = r.filter((x) => x.status === 'confirmee').length
-  const inProgress = r.filter((x) => x.status === 'en_discussion').length
-
+function reservationSummary(event: EventSummary): string {
   const parts: string[] = []
-  if (confirmed) parts.push(`✓ ${t('events.confirmed', confirmed, { n: confirmed })}`)
-  if (inProgress) parts.push(t('events.in-progress', inProgress, { n: inProgress }))
-
+  if (event.confirmedCount)
+    parts.push(`✓ ${t('events.confirmed', event.confirmedCount, { n: event.confirmedCount })}`)
+  if (event.inDiscussionCount)
+    parts.push(t('events.in-progress', event.inDiscussionCount, { n: event.inDiscussionCount }))
   return parts.join(' · ') || '—'
 }
 </script>
@@ -154,6 +157,11 @@ $desktop: $breakpoint-desktop;
   color: $brand-primary;
   margin: 0;
   line-height: 1.15;
+}
+
+.events-page__greeting-skeleton {
+  height: 2.3rem !important;
+  width: 15rem !important;
 }
 
 .events-page__subheader {

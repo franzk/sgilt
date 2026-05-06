@@ -1,14 +1,59 @@
 export interface CurrentUser {
-  fullName: string
+  firstName?: string
+  lastName?: string
   email: string
   photo: string | null
+  loading: boolean
 }
 
+interface UtilisateurProfileDto {
+  firstName: string
+  lastName: string
+  email: string
+  avatarUrl: string | null
+}
+
+const _user = reactive<CurrentUser>({
+  firstName: '',
+  lastName: '',
+  email: '',
+  photo: null,
+  loading: true,
+})
+let _watcherStarted = false
+
 export function useCurrentUser(): CurrentUser {
-  // TODO: remplacer par les données Keycloak
-  return {
-    fullName: 'Julie Muller',
-    email: 'julie.muller@email.fr',
-    photo: null,
+  if (!_watcherStarted && import.meta.client) {
+    _watcherStarted = true
+    const { isAuthenticated } = useKeycloak()
+
+    watch(
+      isAuthenticated,
+      async (auth) => {
+        _user.loading = true
+        if (!auth) {
+          _user.firstName = ''
+          _user.lastName = ''
+          _user.email = ''
+          _user.photo = null
+          _user.loading = false
+          return
+        }
+        try {
+          const data = await apiFetch<UtilisateurProfileDto>('/users/me')
+          _user.firstName = data.firstName
+          _user.lastName = data.lastName
+          _user.email = data.email
+          _user.photo = data.avatarUrl
+        } catch {
+          // garder les valeurs vides en cas d'erreur réseau
+        } finally {
+          _user.loading = false
+        }
+      },
+      { immediate: true },
+    )
   }
+
+  return _user
 }

@@ -58,7 +58,7 @@
 <script setup lang="ts">
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
-import type { EventDetail, EventPatch } from '~/types/event'
+import type { EventDetail, EventPatch } from '~/data/evenement/domain/evenement'
 import { DEFAULT_COVERS, resolveEventCover } from '~/utils/eventCovers'
 import { ImageAddIcon } from '@remixicons/vue/line'
 

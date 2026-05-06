@@ -4,6 +4,7 @@ import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -19,4 +20,12 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, UUID> 
      * @return {@code true} si un utilisateur avec cet email existe, {@code false} sinon
      */
     boolean existsByEmail(String email);
+
+    /**
+     * Recherche un utilisateur par son adresse email.
+     *
+     * @param email l'adresse email à rechercher
+     * @return l'utilisateur correspondant, ou {@code empty} si introuvable
+     */
+    Optional<Utilisateur> findByEmail(String email);
 }
