@@ -8,6 +8,7 @@ import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,7 +25,7 @@ public class EvenementController implements EvenementApi {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<List<EvenementSummaryDto>> getMyEvents(Jwt jwt) {
+    public ResponseEntity<List<EvenementSummaryDto>> getMyEvents(@AuthenticationPrincipal Jwt jwt) {
         String email = jwt.getClaimAsString("email");
 
         log.info("GET /events — email={}", email);

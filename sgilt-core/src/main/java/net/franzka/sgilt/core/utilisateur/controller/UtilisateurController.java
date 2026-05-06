@@ -6,6 +6,7 @@ import net.franzka.sgilt.core.utilisateur.api.UtilisateurApi;
 import net.franzka.sgilt.core.utilisateur.dto.UtilisateurProfileDto;
 import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +20,7 @@ public class UtilisateurController implements UtilisateurApi {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<UtilisateurProfileDto> getMe(Jwt jwt) {
+    public ResponseEntity<UtilisateurProfileDto> getMe(@AuthenticationPrincipal Jwt jwt) {
         String email = jwt.getClaimAsString("email");
         log.info("GET /users/me — email={}", email);
         return ResponseEntity.ok(utilisateurService.getProfile(email));
