@@ -18,8 +18,10 @@ import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -98,7 +100,7 @@ public class EvenementService {
     public Evenement createFromFormData(Utilisateur utilisateur, InitOnboardingRequest formData) {
         Evenement evenement = Evenement.builder()
                 .utilisateur(utilisateur)
-                .name(formData.eventType() != null ? formData.eventType() : "Mon événement")
+                .name(defaultName(formData.date()))
                 .date(formData.date())
                 .status(EvenementStatus.ACTIVE)
                 .lieu(formData.lieu())
@@ -167,12 +169,17 @@ public class EvenementService {
         return "nouvelle";
     }
 
-    /**
-     * Calcule le seuil d'imminence de l'arrivée de l'événement pour l'EventBoard.
-     *
-     * @param eventDate date de l'événement
-     * @return le seuil calculé : serein, past, imminent, proche, ou defaut
-     */
+    private String defaultName(LocalDate date) {
+        if (date == null) return "Mon événement";
+        String month = date.format(DateTimeFormatter.ofPattern("MMMM", Locale.FRENCH));
+        return "Mon événement du " + date.getDayOfMonth() + " " + capitalize(month);
+    }
+
+    private String capitalize(String s) {
+        if (s == null || s.isEmpty()) return s;
+        return s.substring(0, 1).toUpperCase() + s.substring(1);
+    }
+
     private String computeCountdown(LocalDate eventDate) {
         if (eventDate == null) return "serein";
         long days = ChronoUnit.DAYS.between(LocalDate.now(), eventDate);
