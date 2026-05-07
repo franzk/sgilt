@@ -1,13 +1,7 @@
 /**
- * DTO — contrat de réponse de l'API GET /events
+ * Re-exports publics du module evenement/dto
  */
-export interface EvenementSummaryDto {
-  id: string
-  name: string
-  date?: string
-  ville?: string
-  coverUrl?: string | null
-  eventType?: string
-  confirmedCount: number
-  inDiscussionCount: number
-}
+export type { EvenementSummaryDto } from './EvenementSummaryDto'
+export type { EventDetailDto } from './EventDetailDto'
+export type { EventCountsDto } from './EventCountsDto'
+export type { EventReservationSummaryDto } from './EventReservationSummaryDto'
