@@ -46,6 +46,7 @@ jobs:
           S_KC_BOOTSTRAP_ADMIN_USERNAME: ${{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME }}
           S_KC_BOOTSTRAP_ADMIN_PASSWORD: ${{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD }}
           S_CORE_DB_PASSWORD:            ${{ secrets.CORE_DB_PASSWORD }}
+          S_MAGIC_LINK_SECRET:           ${{ secrets.MAGIC_LINK_SECRET }}
           S_SMTP_HOST:                   ${{ secrets.SMTP_HOST }}
           S_SMTP_PORT:                   ${{ secrets.SMTP_PORT }}
           S_SMTP_USERNAME:               ${{ secrets.SMTP_USERNAME }}
@@ -73,6 +74,7 @@ jobs:
           [[ -z "$S_KC_BOOTSTRAP_ADMIN_USERNAME" ]] && missing+=("secret: KC_BOOTSTRAP_ADMIN_USERNAME")
           [[ -z "$S_KC_BOOTSTRAP_ADMIN_PASSWORD" ]] && missing+=("secret: KC_BOOTSTRAP_ADMIN_PASSWORD")
           [[ -z "$S_CORE_DB_PASSWORD" ]]            && missing+=("secret: CORE_DB_PASSWORD")
+          [[ -z "$S_MAGIC_LINK_SECRET" ]]           && missing+=("secret: MAGIC_LINK_SECRET")
           [[ -z "$S_SMTP_HOST" ]]                   && missing+=("secret: SMTP_HOST")
           [[ -z "$S_SMTP_PORT" ]]                   && missing+=("secret: SMTP_PORT")
           [[ -z "$S_SMTP_USERNAME" ]]               && missing+=("secret: SMTP_USERNAME")
@@ -263,6 +265,7 @@ jobs:
           KC_DB_PASSWORD=${{ secrets.KC_DB_PASSWORD }}
           KC_BOOTSTRAP_ADMIN_USERNAME=${{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME }}
           KC_BOOTSTRAP_ADMIN_PASSWORD=${{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD }}
+          MAGIC_LINK_SECRET=${{ secrets.MAGIC_LINK_SECRET }}
 
           # Core DB
           CORE_DB_PASSWORD=${{ secrets.CORE_DB_PASSWORD }}

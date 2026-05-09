@@ -154,6 +154,7 @@ In Settings → Secrets and variables → Actions → Repository secrets:
 | `KC_BOOTSTRAP_ADMIN_USERNAME` | Keycloak admin username                                                             |
 | `KC_BOOTSTRAP_ADMIN_PASSWORD` | Keycloak admin password (choose a strong password)                                  |
 | `CORE_DB_PASSWORD`            | sgilt-core PostgreSQL password (choose a strong password)                           |
+| `MAGIC_LINK_SECRET`           | Secret HMAC-SHA256 partagé entre sgilt-core et le SPI KC magic-link (`openssl rand -hex 32`) |
 | `SMTP_HOST`                   | SMTP server hostname                                                                |
 | `SMTP_PORT`                   | SMTP port (usually `587`)                                                           |
 | `SMTP_USERNAME`               | SMTP username                                                                       |
