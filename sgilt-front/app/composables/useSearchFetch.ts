@@ -1,7 +1,7 @@
 // app/composables/useSearchFetch.ts
 import { useThrottleFn } from '@vueuse/core'
 import { searchPrestataires } from '~/data/prestataire/service/prestataireService'
-import type { PrestataireCardDetail } from '~/data/prestataire/domain/prestataire'
+import type { PrestataireCardDetail } from '~/data/prestataire/domain/PrestataireCardDetail'
 
 export function useSearchFetch() {
   const { date, categoryKey, currentSubcats } = useSearchUi()

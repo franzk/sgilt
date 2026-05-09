@@ -1,5 +1,5 @@
 // app/utils/mockData.ts
-import type { PrestataireDetail } from '~/data/prestataire/domain/prestataire'
+import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDetail'
 
 export const MOCK_PROVIDERS: PrestataireDetail[] = [
   // ─── MUSIQUE ──────────────────────────────────────────────────────────────

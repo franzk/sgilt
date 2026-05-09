@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import type { EventSummary } from '~/data/evenement/domain/evenement'
+import type { EventSummary } from '~/data/evenement/domain/EventSummary'
 import { useEvenements } from '~/data/evenement/useEvenements'
 import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
 

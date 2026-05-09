@@ -1,4 +1,4 @@
-import type { EventDetail } from '~/data/evenement/domain/evenement'
+import type { EventDetail } from '~/data/evenement/domain/EventDetail'
 import type {
   NoteAuthor,
   ReservationDetail,

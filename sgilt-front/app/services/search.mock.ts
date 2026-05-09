@@ -1,9 +1,7 @@
 // app/services/search.mock.ts
-import type {
-  PrestataireCardDetail,
-  PrestataireDetail,
-  PrestataireSearchResponse,
-} from '~/data/prestataire/domain/prestataire'
+import type { PrestataireCardDetail } from '~/data/prestataire/domain/PrestataireCardDetail'
+import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDetail'
+import type { PrestataireSearchResponse } from '~/data/prestataire/domain/PrestataireSearchResponse'
 import { MOCK_PROVIDERS } from '~/utils/mockData'
 
 export const SearchMockService = {

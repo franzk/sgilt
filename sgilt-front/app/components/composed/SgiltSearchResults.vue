@@ -1,5 +1,5 @@
 ﻿<script setup lang="ts">
-import type { PrestataireCardDetail } from '~/data/prestataire/domain/prestataire'
+import type { PrestataireCardDetail } from '~/data/prestataire/domain/PrestataireCardDetail'
 import PrestataireCard from '~/components/cards/PrestataireCard.vue'
 
 defineProps<{

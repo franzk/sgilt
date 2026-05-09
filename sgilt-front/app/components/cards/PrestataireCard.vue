@@ -1,5 +1,5 @@
 ﻿<script setup lang="ts">
-import type { PrestataireCardDetail } from '~/data/prestataire/domain/prestataire'
+import type { PrestataireCardDetail } from '~/data/prestataire/domain/PrestataireCardDetail'
 import SgiltImage from '~/components/basics/media/SgiltImage.vue'
 import { NuxtLink } from '#components'
 import SgiltCategoryIcon from '~/components/basics/icons/SgiltCategoryIcon.vue'
