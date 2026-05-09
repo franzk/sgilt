@@ -39,6 +39,7 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
       KC_HOSTNAME: ${AUTH_URL}
       KC_HOSTNAME_ADMIN: ${AUTH_URL}
+      MAGIC_LINK_SECRET: ${MAGIC_LINK_SECRET}
     depends_on:
       sgilt-keycloak-db:
         condition: service_healthy

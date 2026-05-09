@@ -41,6 +41,7 @@ services:
       PUBLIC_SITE_URL: ${PUBLIC_SITE_URL}
       KC_ADMIN_URL: ${KC_ADMIN_URL}
       KC_ADMIN_CLIENT_SECRET: ${KC_ADMIN_CLIENT_SECRET}
+      MAGIC_LINK_SECRET: ${MAGIC_LINK_SECRET}
     depends_on:
       sgilt-core-db:
         condition: service_healthy

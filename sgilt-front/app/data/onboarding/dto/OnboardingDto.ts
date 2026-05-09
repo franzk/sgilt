@@ -9,6 +9,5 @@ export interface ConfirmAccountRequestDto {
 }
 
 export interface ConfirmAccountResponseDto {
-  accessToken: string
-  refreshToken: string
+  loginUrl: string
 }

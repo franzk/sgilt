@@ -55,7 +55,6 @@ definePageMeta({ layout: 'app' })
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
-const { injectTokens } = useKeycloak()
 
 const token = Array.isArray(route.query.token) ? route.query.token[0] : route.query.token
 
@@ -98,8 +97,7 @@ async function submit(): Promise<void> {
       setPasswordToken: setPasswordToken.value!,
       password: password.value,
     })
-    injectTokens(response.accessToken, response.refreshToken)
-    await router.push('/app')
+    window.location.href = response.loginUrl
   } catch (e: unknown) {
     if (e instanceof FetchError) {
       if (e.statusCode === 400) {

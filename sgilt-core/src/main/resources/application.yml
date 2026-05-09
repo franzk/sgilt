@@ -40,6 +40,7 @@ sgilt:
     admin-client-id: sgilt-admin
     admin-client-secret: ${KC_ADMIN_CLIENT_SECRET}
     front-client-id: sgilt-front
+    magic-link-secret: ${MAGIC_LINK_SECRET:dev-magic-secret-change-in-prod}
 
 server:
   port: 5027
