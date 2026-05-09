@@ -2491,6 +2491,18 @@
           "userSetupAllowed": false
         }
       ]
+    },
+    {
+      "alias": "sgilt-browser",
+      "description": "Sgilt browser flow with magic link support",
+      "providerId": "basic-flow",
+      "topLevel": true,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {"authenticator": "auth-cookie", "authenticatorFlow": false, "requirement": "ALTERNATIVE", "priority": 10, "autheticatorFlow": false, "userSetupAllowed": false},
+        {"authenticator": "magic-link", "authenticatorFlow": false, "requirement": "ALTERNATIVE", "priority": 20, "autheticatorFlow": false, "userSetupAllowed": false},
+        {"authenticatorFlow": true, "requirement": "ALTERNATIVE", "priority": 30, "autheticatorFlow": true, "flowAlias": "forms", "userSetupAllowed": false}
+      ]
     }
   ],
   "authenticatorConfig": [
@@ -2608,18 +2620,6 @@
       "defaultAction": false,
       "priority": 1000,
       "config": {}
-    },
-    {
-      "alias": "sgilt-browser",
-      "description": "Sgilt browser flow with magic link support",
-      "providerId": "basic-flow",
-      "topLevel": true,
-      "builtIn": false,
-      "authenticationExecutions": [
-        {"authenticator": "auth-cookie", "authenticatorFlow": false, "requirement": "ALTERNATIVE", "priority": 10, "autheticatorFlow": false, "userSetupAllowed": false},
-        {"authenticator": "magic-link", "authenticatorFlow": false, "requirement": "ALTERNATIVE", "priority": 20, "autheticatorFlow": false, "userSetupAllowed": false},
-        {"authenticatorFlow": true, "requirement": "ALTERNATIVE", "priority": 30, "autheticatorFlow": true, "flowAlias": "forms", "userSetupAllowed": false}
-      ]
     }
   ],
   "browserFlow": "sgilt-browser",
