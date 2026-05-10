@@ -5,13 +5,13 @@ meta {
 }
 
 get {
-  url: http://localhost:5027/confirmation?token=GvfvS_Mg8Ly2so-GskPYdQ-ee94bf6a9584ecbae077d0e69f704dfd0707ae4d00c47b3f3778897b4ab2e9a9
+  url: {{apiUrl}}/api/v1/onboarding/verify
   body: none
-  auth: inherit
+  auth: none
 }
 
 params:query {
-  token: GvfvS_Mg8Ly2so-GskPYdQ-ee94bf6a9584ecbae077d0e69f704dfd0707ae4d00c47b3f3778897b4ab2e9a9
+  token: <TOKEN_FROM_EMAIL>
 }
 
 settings {
