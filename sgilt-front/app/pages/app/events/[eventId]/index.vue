@@ -40,7 +40,7 @@
       </p>
       <div v-else class="skeleton-text shimmer-container widget-countdown-skeleton" aria-hidden="true" />
 
-      <!-- Pills — attendent les counts -->
+      <!-- Pills + action — attendent les counts -->
       <div class="pills">
         <template v-if="!countsPending && counts">
           <span
@@ -60,6 +60,16 @@
         <template v-else>
           <div v-for="i in 2" :key="i" class="skeleton-pill skeleton-text shimmer-container" />
         </template>
+        <button class="add-prestataire-btn" type="button" @click="startAddPrestataireFlow">
+          {{ $t('events.add-provider') }}
+        </button>
+      </div>
+
+      <!-- Sticky CTA mobile -->
+      <div class="sticky-cta">
+        <SgiltButton @click="startAddPrestataireFlow">
+          {{ $t('events.add-provider') }}
+        </SgiltButton>
       </div>
     </div>
 
@@ -94,9 +104,6 @@
           </template>
         </div>
 
-        <button class="add-prestataire-btn" type="button" @click="startAddPrestataireFlow">
-          {{ $t('events.add-provider') }}
-        </button>
       </section>
     </div>
 
@@ -109,6 +116,7 @@
 import ReservationCard from '~/components/app/ReservationCard.vue'
 import EventBlock from '~/components/app/EventBlock.vue'
 import EventEditDialog from '~/components/app/EventEditDialog.vue'
+import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import { resolveEventCover } from '~/utils/eventCovers'
 import type { EventPatch } from '~/data/evenement/domain/EventPatch'
 import type { ReservationStatus, ClientContactInfo } from '~/types/event'
@@ -457,8 +465,8 @@ $desktop: $breakpoint-desktop;
 }
 
 .add-prestataire-btn {
-  align-self: center;
-  padding: 10px 24px;
+  margin-left: auto;
+  padding: 7px 16px;
   border: 1px dashed $brand-border;
   border-radius: $radius-md;
   background: transparent;
@@ -472,6 +480,29 @@ $desktop: $breakpoint-desktop;
   &:hover {
     border-color: $brand-primary;
     color: $brand-primary;
+  }
+
+  @media (max-width: calc($desktop - 1px)) {
+    display: none;
+  }
+}
+
+.sticky-cta {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  padding: $spacing-s $spacing-m calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $spacing-s);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: center;
+
+  @media (min-width: $desktop) {
+    display: none;
   }
 }
 </style>
