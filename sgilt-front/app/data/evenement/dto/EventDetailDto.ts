@@ -13,6 +13,7 @@ export interface EventDetailDto {
   coverUrl?: string | null
   sharedNote: string
   description?: string
+  momentCle?: string
   countdown: 'serein' | 'proche' | 'imminent' | 'past'
   clientInfo: {
     firstName: string
@@ -33,4 +34,5 @@ export interface EventPatchRequestDto {
   ville?: string
   nbInvites?: string
   description?: string
+  momentCle?: string
 }

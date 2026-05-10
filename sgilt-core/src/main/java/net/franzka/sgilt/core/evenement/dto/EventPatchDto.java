@@ -7,5 +7,6 @@ public record EventPatchDto(
         String ambiance,
         String ville,
         String nbInvites,
-        String description
+        String description,
+        String momentCle
 ) {}

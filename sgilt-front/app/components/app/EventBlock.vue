@@ -71,7 +71,9 @@
               class="copy-btn"
               type="button"
               :class="{ copied: phoneCopied }"
-              :aria-label="phoneCopied ? $t('event.block.copied-aria') : $t('event.block.copy-phone-aria')"
+              :aria-label="
+                phoneCopied ? $t('event.block.copied-aria') : $t('event.block.copy-phone-aria')
+              "
               @click="copyPhone"
             >
               <CheckIcon v-if="phoneCopied" class="copy-icon" />
@@ -84,7 +86,9 @@
               class="copy-btn"
               type="button"
               :class="{ copied: emailCopied }"
-              :aria-label="emailCopied ? $t('event.block.copied-aria') : $t('event.block.copy-email-aria')"
+              :aria-label="
+                emailCopied ? $t('event.block.copied-aria') : $t('event.block.copy-email-aria')
+              "
               @click="copyEmail"
             >
               <CheckIcon v-if="emailCopied" class="copy-icon" />
@@ -140,12 +144,14 @@
               <dt>{{ $t('event.block.party-ambiance-label') }}</dt>
               <dd>{{ ambianceEmoji }} {{ ambianceLabel }}</dd>
             </template>
+            <dt>{{ $t('event.block.party-moment-label') }}</dt>
+            <dd :class="{ empty: !event.momentCle }">
+              {{ momentCleLabel || $t('event.block.party-moment-empty') }}
+            </dd>
             <template v-if="event.description">
               <dt>{{ $t('event.block.party-edit-description') }}</dt>
               <dd>{{ event.description }}</dd>
             </template>
-            <dt>{{ $t('event.block.party-moment-label') }}</dt>
-            <dd class="empty">{{ $t('event.block.party-moment-empty') }}</dd>
           </dl>
           <p v-else class="field-value empty">{{ $t('event.block.party-empty') }}</p>
         </template>
@@ -173,16 +179,16 @@
             </div>
             <div class="edit-field">
               <label class="label">{{ $t('event.block.party-edit-city') }}</label>
-              <input v-model="draft.ville" class="input" type="text" :placeholder="$t('event.block.party-city-placeholder')" />
+              <input
+                v-model="draft.ville"
+                class="input"
+                type="text"
+                :placeholder="$t('event.block.party-city-placeholder')"
+              />
             </div>
             <div class="edit-field">
               <label class="label">{{ $t('event.block.party-edit-guests') }}</label>
-              <input
-                v-model="draft.nbInvites"
-                class="input"
-                type="text"
-                placeholder="ex. 80"
-              />
+              <input v-model="draft.nbInvites" class="input" type="text" placeholder="ex. 80" />
             </div>
             <div class="edit-field">
               <label class="label">{{ $t('event.block.party-edit-description') }}</label>
@@ -192,6 +198,15 @@
                 rows="3"
                 :placeholder="$t('event.block.party-description-placeholder')"
               />
+            </div>
+            <div class="edit-field">
+              <label class="label">{{ $t('event.block.party-moment-label') }}</label>
+              <select v-model="draft.momentCle" class="select">
+                <option value="">{{ $t('event.block.party-select-empty') }}</option>
+                <option v-for="o in MOMENT_CLE_OPTIONS" :key="o.value" :value="o.value">
+                  {{ o.emoji }} {{ o.label }}
+                </option>
+              </select>
             </div>
           </div>
         </template>
@@ -213,7 +228,9 @@
             >
               <EditIcon />
             </button>
-            <button v-else class="cancel-btn" type="button" @click="handleCancel">{{ $t('event.block.cancel') }}</button>
+            <button v-else class="cancel-btn" type="button" @click="handleCancel">
+              {{ $t('event.block.cancel') }}
+            </button>
           </template>
         </div>
         <div class="update-date-row">
@@ -235,7 +252,12 @@
   </section>
 
   <!-- ── Bottom sheet (mobile uniquement) ─────────────────────────────────────────── -->
-  <SgiltBottomSheet v-if="isSheetMode" v-model:open="sheetOpen" :title="event.title" :overlay="true">
+  <SgiltBottomSheet
+    v-if="isSheetMode"
+    v-model:open="sheetOpen"
+    :title="event.title"
+    :overlay="true"
+  >
     <div class="event-block eb-sheet">
       <div class="body">
         <!-- 1. LOGISTIQUE -->
@@ -287,7 +309,9 @@
                 class="copy-btn"
                 type="button"
                 :class="{ copied: phoneCopied }"
-                :aria-label="phoneCopied ? $t('event.block.copied-aria') : $t('event.block.copy-phone-aria')"
+                :aria-label="
+                  phoneCopied ? $t('event.block.copied-aria') : $t('event.block.copy-phone-aria')
+                "
                 @click="copyPhone"
               >
                 <CheckIcon v-if="phoneCopied" class="copy-icon" />
@@ -300,7 +324,9 @@
                 class="copy-btn"
                 type="button"
                 :class="{ copied: emailCopied }"
-                :aria-label="emailCopied ? $t('event.block.copied-aria') : $t('event.block.copy-email-aria')"
+                :aria-label="
+                  emailCopied ? $t('event.block.copied-aria') : $t('event.block.copy-email-aria')
+                "
                 @click="copyEmail"
               >
                 <CheckIcon v-if="emailCopied" class="copy-icon" />
@@ -385,7 +411,12 @@
               </div>
               <div class="edit-field">
                 <label class="label">{{ $t('event.block.party-edit-city') }}</label>
-                <input v-model="draft.ville" class="input" type="text" :placeholder="$t('event.block.party-city-placeholder')" />
+                <input
+                  v-model="draft.ville"
+                  class="input"
+                  type="text"
+                  :placeholder="$t('event.block.party-city-placeholder')"
+                />
               </div>
               <div class="edit-field">
                 <label class="label">{{ $t('event.block.party-edit-guests') }}</label>
@@ -417,11 +448,18 @@
               >
                 <EditIcon />
               </button>
-              <button v-else class="cancel-btn" type="button" @click="handleCancel">{{ $t('event.block.cancel') }}</button>
+              <button v-else class="cancel-btn" type="button" @click="handleCancel">
+                {{ $t('event.block.cancel') }}
+              </button>
             </template>
           </div>
           <div class="update-date-row">
-            <button v-if="lastUpdateDate" class="journal-btn" type="button" @click="journalOpen = true">
+            <button
+              v-if="lastUpdateDate"
+              class="journal-btn"
+              type="button"
+              @click="journalOpen = true"
+            >
               {{ lastUpdateDate }}
             </button>
             <p v-else class="field-value empty">{{ $t('event.block.no-update') }}</p>
@@ -454,7 +492,9 @@
             <SgiltButton variant="secondary" @click="showAbandonModal = false">
               {{ $t('event.block.abandon-continue') }}
             </SgiltButton>
-            <button class="destructive" type="button" @click="confirmAbandon">{{ $t('event.block.abandon-confirm') }}</button>
+            <button class="destructive" type="button" @click="confirmAbandon">
+              {{ $t('event.block.abandon-confirm') }}
+            </button>
           </div>
         </div>
       </div>
@@ -469,7 +509,7 @@ import EventJournal from '~/components/app/EventJournal.vue'
 import { patchEventApi } from '~/data/evenement/api/evenementApi'
 import type { EventDetail } from '~/data/evenement/domain/EventDetail'
 import type { ClientContactInfo } from '~/types/event'
-import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS } from '~/types/demande'
+import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/demande'
 import {
   ArrowDownSIcon,
   ArrowUpSIcon,
@@ -525,6 +565,9 @@ const ambianceOpt = computed(() => AMBIANCE_OPTIONS.find((o) => o.value === prop
 const ambianceLabel = computed(() => ambianceOpt.value?.label ?? null)
 const ambianceEmoji = computed(() => ambianceOpt.value?.emoji ?? '')
 
+const momentCleOpt = computed(() => MOMENT_CLE_OPTIONS.find((o) => o.value === props.event.momentCle))
+const momentCleLabel = computed(() => momentCleOpt.value ? `${momentCleOpt.value.emoji} ${momentCleOpt.value.label}` : null)
+
 // ── Copier (variant pro) ───────────────────────────────────────────────────────
 const phoneCopied = ref(false)
 const emailCopied = ref(false)
@@ -554,6 +597,7 @@ const draft = reactive({
   nbInvites: '',
   sharedNote: '',
   description: '',
+  momentCle: '',
   firstName: '',
   lastName: '',
   phone: '',
@@ -568,6 +612,7 @@ function enterEditMode() {
   draft.nbInvites = props.event.nbInvites ?? ''
   draft.sharedNote = props.event.sharedNote
   draft.description = props.event.description ?? ''
+  draft.momentCle = props.event.momentCle ?? ''
   draft.firstName = props.clientInfo.firstName
   draft.lastName = props.clientInfo.lastName ?? ''
   draft.phone = props.clientInfo.phone
@@ -590,6 +635,7 @@ const isDirty = computed(
     draft.nbInvites !== (props.event.nbInvites ?? '') ||
     draft.sharedNote !== props.event.sharedNote ||
     draft.description !== (props.event.description ?? '') ||
+    draft.momentCle !== (props.event.momentCle ?? '') ||
     draft.firstName !== props.clientInfo.firstName ||
     draft.lastName !== (props.clientInfo.lastName ?? '') ||
     draft.phone !== props.clientInfo.phone ||
@@ -613,29 +659,31 @@ async function save() {
   saving.value = true
   try {
     const updated = await patchEventApi(props.event.id, {
-      eventType:   draft.eventType   || undefined,
-      ambiance:    draft.ambiance    || undefined,
-      ville:       draft.ville       || undefined,
-      lieu:        draft.lieu        || undefined,
-      nbInvites:   draft.nbInvites   || undefined,
-      sharedNote:  draft.sharedNote,
+      eventType: draft.eventType || undefined,
+      ambiance: draft.ambiance || undefined,
+      ville: draft.ville || undefined,
+      lieu: draft.lieu || undefined,
+      nbInvites: draft.nbInvites || undefined,
+      sharedNote: draft.sharedNote,
       description: draft.description || undefined,
+      momentCle:   draft.momentCle   || undefined,
     })
     emit('updated', {
-      eventType:   updated.eventType,
-      ambiance:    updated.ambiance,
-      ville:       updated.ville,
-      lieu:        updated.lieu,
-      nbInvites:   updated.nbInvites,
-      sharedNote:  updated.sharedNote,
+      eventType: updated.eventType,
+      ambiance: updated.ambiance,
+      ville: updated.ville,
+      lieu: updated.lieu,
+      nbInvites: updated.nbInvites,
+      sharedNote: updated.sharedNote,
       description: updated.description,
+      momentCle:   updated.momentCle,
     })
 
     const clientPatch: Partial<ClientContactInfo> = {
       firstName: draft.firstName,
-      lastName:  draft.lastName || undefined,
-      phone:     draft.phone,
-      email:     draft.email,
+      lastName: draft.lastName || undefined,
+      phone: draft.phone,
+      email: draft.email,
     }
     emit('updatedClientInfo', clientPatch)
 
@@ -654,7 +702,6 @@ function autoResize() {
   el.style.height = 'auto'
   el.style.height = `${el.scrollHeight}px`
 }
-
 </script>
 
 <style scoped lang="scss">

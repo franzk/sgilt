@@ -135,6 +135,7 @@ public class EvenementService {
         if (patch.ville()       != null) event.setVille(blankToNull(patch.ville()));
         if (patch.nbInvites()   != null) event.setNbInvites(blankToNull(patch.nbInvites()));
         if (patch.description() != null) event.setDescription(blankToNull(patch.description()));
+        if (patch.momentCle()   != null) event.setMomentCle(blankToNull(patch.momentCle()));
 
         evenementRepository.save(event);
         return evenementMapper.toDetailDto(event, computeCountdown(event.getDate()));

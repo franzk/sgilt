@@ -17,6 +17,7 @@ export interface EventDetail {
   sharedNote: string
   sharedNoteUpdatedAt?: Date
   description?: string
+  momentCle?: string
   reservations: Reservation[]
   journal: JournalEntry[]
   mood: 'confirmee' | 'en_discussion' | 'nouvelle' | 'defaut'
