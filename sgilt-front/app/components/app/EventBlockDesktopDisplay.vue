@@ -135,16 +135,16 @@ const phoneCopied = ref(false)
 const emailCopied = ref(false)
 
 const eventTypeOpt = computed(() => EVENT_TYPE_OPTIONS.find((o) => o.value === props.event.eventType))
-const eventTypeLabel = computed(() => eventTypeOpt.value?.label ?? null)
+const eventTypeLabel = computed(() => eventTypeOpt.value?.label ?? props.event.eventType ?? null)
 const eventTypeEmoji = computed(() => eventTypeOpt.value?.emoji ?? '')
 
 const ambianceOpt = computed(() => AMBIANCE_OPTIONS.find((o) => o.value === props.event.ambiance))
-const ambianceLabel = computed(() => ambianceOpt.value?.label ?? null)
+const ambianceLabel = computed(() => ambianceOpt.value?.label ?? props.event.ambiance ?? null)
 const ambianceEmoji = computed(() => ambianceOpt.value?.emoji ?? '')
 
 const momentCleOpt = computed(() => MOMENT_CLE_OPTIONS.find((o) => o.value === props.event.momentCle))
 const momentCleLabel = computed(() =>
-  momentCleOpt.value ? `${momentCleOpt.value.emoji} ${momentCleOpt.value.label}` : null,
+  momentCleOpt.value ? `${momentCleOpt.value.emoji} ${momentCleOpt.value.label}` : (props.event.momentCle ?? null),
 )
 
 async function copyPhone() {

@@ -43,6 +43,7 @@
             <option value="">{{ $t('event.block.party-select-empty') }}</option>
             <option v-for="o in EVENT_TYPE_OPTIONS" :key="o.value" :value="o.value">{{ o.emoji }} {{ o.label }}</option>
           </select>
+          <input v-if="draft.eventType === 'autre'" v-model="draft.eventTypeCustom" class="input input-autre" type="text" placeholder="Précisez…" />
         </div>
         <div class="edit-field">
           <label class="label">{{ $t('event.block.party-edit-ambiance') }}</label>
@@ -50,6 +51,7 @@
             <option value="">{{ $t('event.block.party-select-empty') }}</option>
             <option v-for="o in AMBIANCE_OPTIONS" :key="o.value" :value="o.value">{{ o.emoji }} {{ o.label }}</option>
           </select>
+          <input v-if="draft.ambiance === 'autre'" v-model="draft.ambianceCustom" class="input input-autre" type="text" placeholder="Précisez…" />
         </div>
         <div class="edit-field">
           <label class="label">{{ $t('event.block.party-moment-label') }}</label>
@@ -57,6 +59,7 @@
             <option value="">{{ $t('event.block.party-select-empty') }}</option>
             <option v-for="o in MOMENT_CLE_OPTIONS" :key="o.value" :value="o.value">{{ o.emoji }} {{ o.label }}</option>
           </select>
+          <input v-if="draft.momentCle === 'autre'" v-model="draft.momentCleCustom" class="input input-autre" type="text" placeholder="Précisez…" />
         </div>
         <div class="edit-field">
           <label class="label">{{ $t('event.block.party-edit-description') }}</label>
@@ -133,20 +136,46 @@ const emit = defineEmits<{
 }>()
 
 const draft = reactive({
-  eventType: '', ambiance: '', ville: '', lieu: '', nbInvites: '',
-  sharedNote: '', description: '', momentCle: '',
+  eventType: '', eventTypeCustom: '',
+  ambiance: '', ambianceCustom: '',
+  momentCle: '', momentCleCustom: '',
+  ville: '', lieu: '', nbInvites: '',
+  sharedNote: '', description: '',
   firstName: '', lastName: '', phone: '', email: '',
 })
 
+function initField(value: string | undefined, options: { value: string }[]) {
+  const matched = options.some((o) => o.value === value)
+  return matched
+    ? { select: value ?? '', custom: '' }
+    : { select: value ? 'autre' : '', custom: value ?? '' }
+}
+
+const effectiveEventType = computed(() =>
+  draft.eventType === 'autre' ? (draft.eventTypeCustom.trim() || 'autre') : draft.eventType,
+)
+const effectiveAmbiance = computed(() =>
+  draft.ambiance === 'autre' ? (draft.ambianceCustom.trim() || 'autre') : draft.ambiance,
+)
+const effectiveMomentCle = computed(() =>
+  draft.momentCle === 'autre' ? (draft.momentCleCustom.trim() || 'autre') : draft.momentCle,
+)
+
 onMounted(() => {
-  draft.eventType = props.event.eventType ?? ''
-  draft.ambiance = props.event.ambiance ?? ''
+  const et = initField(props.event.eventType, EVENT_TYPE_OPTIONS)
+  draft.eventType = et.select ; draft.eventTypeCustom = et.custom
+
+  const amb = initField(props.event.ambiance, AMBIANCE_OPTIONS)
+  draft.ambiance = amb.select ; draft.ambianceCustom = amb.custom
+
+  const mc = initField(props.event.momentCle, MOMENT_CLE_OPTIONS)
+  draft.momentCle = mc.select ; draft.momentCleCustom = mc.custom
+
   draft.ville = props.event.ville ?? ''
   draft.lieu = props.event.lieu ?? ''
   draft.nbInvites = props.event.nbInvites ?? ''
   draft.sharedNote = props.event.sharedNote
   draft.description = props.event.description ?? ''
-  draft.momentCle = props.event.momentCle ?? ''
   draft.firstName = props.clientInfo.firstName
   draft.lastName = props.clientInfo.lastName ?? ''
   draft.phone = props.clientInfo.phone
@@ -156,14 +185,14 @@ onMounted(() => {
 
 const isDirty = computed(
   () =>
-    draft.eventType !== (props.event.eventType ?? '') ||
-    draft.ambiance !== (props.event.ambiance ?? '') ||
+    effectiveEventType.value !== (props.event.eventType ?? '') ||
+    effectiveAmbiance.value !== (props.event.ambiance ?? '') ||
+    effectiveMomentCle.value !== (props.event.momentCle ?? '') ||
     draft.ville !== (props.event.ville ?? '') ||
     draft.lieu !== (props.event.lieu ?? '') ||
     draft.nbInvites !== (props.event.nbInvites ?? '') ||
     draft.sharedNote !== props.event.sharedNote ||
     draft.description !== (props.event.description ?? '') ||
-    draft.momentCle !== (props.event.momentCle ?? '') ||
     draft.firstName !== props.clientInfo.firstName ||
     draft.lastName !== (props.clientInfo.lastName ?? '') ||
     draft.phone !== props.clientInfo.phone ||
@@ -173,14 +202,14 @@ const isDirty = computed(
 function save() {
   emit('save', {
     eventPatch: {
-      eventType: draft.eventType || undefined,
-      ambiance: draft.ambiance || undefined,
+      eventType: effectiveEventType.value || undefined,
+      ambiance: effectiveAmbiance.value || undefined,
+      momentCle: effectiveMomentCle.value || undefined,
       ville: draft.ville || undefined,
       lieu: draft.lieu || undefined,
       nbInvites: draft.nbInvites || undefined,
       sharedNote: draft.sharedNote,
       description: draft.description || undefined,
-      momentCle: draft.momentCle || undefined,
     },
     clientPatch: {
       firstName: draft.firstName,
