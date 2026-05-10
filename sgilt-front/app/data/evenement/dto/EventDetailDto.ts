@@ -12,6 +12,7 @@ export interface EventDetailDto {
   nbInvites?: string
   coverUrl?: string | null
   sharedNote: string
+  description?: string
   countdown: 'serein' | 'proche' | 'imminent' | 'past'
   clientInfo: {
     firstName: string
@@ -19,4 +20,17 @@ export interface EventDetailDto {
     phone?: string | null
     email: string
   }
+}
+
+/**
+ * DTO — corps de la requête PATCH /events/:id
+ */
+export interface EventPatchRequestDto {
+  lieu?: string
+  sharedNote?: string
+  eventType?: string
+  ambiance?: string
+  ville?: string
+  nbInvites?: string
+  description?: string
 }

@@ -366,7 +366,7 @@
       "edit-event-aria": "Modifier l'événement"
     },
     "block": {
-      "logistics-label": "Logistique",
+      "logistics-label": "Lieu",
       "logistics-empty": "Salle, adresse… non renseigné",
       "logistics-placeholder": "Salle, adresse…",
       "shared-note-label": "Note partagée",
@@ -383,6 +383,8 @@
       "party-edit-ambiance": "Ambiance",
       "party-edit-city": "Ville",
       "party-edit-guests": "Nombre d'invités",
+      "party-edit-description": "Description",
+      "party-description-placeholder": "Atmosphère, souhaits particuliers…",
       "party-select-empty": "— Non renseigné",
       "party-city-placeholder": "Ville",
       "update-label": "Mise à jour",

@@ -140,6 +140,10 @@
               <dt>{{ $t('event.block.party-ambiance-label') }}</dt>
               <dd>{{ ambianceEmoji }} {{ ambianceLabel }}</dd>
             </template>
+            <template v-if="event.description">
+              <dt>{{ $t('event.block.party-edit-description') }}</dt>
+              <dd>{{ event.description }}</dd>
+            </template>
             <dt>{{ $t('event.block.party-moment-label') }}</dt>
             <dd class="empty">{{ $t('event.block.party-moment-empty') }}</dd>
           </dl>
@@ -176,9 +180,17 @@
               <input
                 v-model="draft.nbInvites"
                 class="input"
-                type="number"
-                min="0"
-                placeholder="0"
+                type="text"
+                placeholder="ex. 80"
+              />
+            </div>
+            <div class="edit-field">
+              <label class="label">{{ $t('event.block.party-edit-description') }}</label>
+              <textarea
+                v-model="draft.description"
+                class="textarea"
+                rows="3"
+                :placeholder="$t('event.block.party-description-placeholder')"
               />
             </div>
           </div>
@@ -454,7 +466,7 @@
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltBottomSheet from '~/components/basics/sheets/SgiltBottomSheet.vue'
 import EventJournal from '~/components/app/EventJournal.vue'
-import { EventMockService } from '~/services/event.mock'
+import { patchEventApi } from '~/data/evenement/api/evenementApi'
 import type { EventDetail } from '~/data/evenement/domain/EventDetail'
 import type { ClientContactInfo } from '~/types/event'
 import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS } from '~/types/demande'
@@ -541,6 +553,7 @@ const draft = reactive({
   lieu: '',
   nbInvites: '',
   sharedNote: '',
+  description: '',
   firstName: '',
   lastName: '',
   phone: '',
@@ -554,6 +567,7 @@ function enterEditMode() {
   draft.lieu = props.event.lieu ?? ''
   draft.nbInvites = props.event.nbInvites ?? ''
   draft.sharedNote = props.event.sharedNote
+  draft.description = props.event.description ?? ''
   draft.firstName = props.clientInfo.firstName
   draft.lastName = props.clientInfo.lastName ?? ''
   draft.phone = props.clientInfo.phone
@@ -575,6 +589,7 @@ const isDirty = computed(
     draft.lieu !== (props.event.lieu ?? '') ||
     draft.nbInvites !== (props.event.nbInvites ?? '') ||
     draft.sharedNote !== props.event.sharedNote ||
+    draft.description !== (props.event.description ?? '') ||
     draft.firstName !== props.clientInfo.firstName ||
     draft.lastName !== (props.clientInfo.lastName ?? '') ||
     draft.phone !== props.clientInfo.phone ||
@@ -596,27 +611,38 @@ function confirmAbandon() {
 
 async function save() {
   saving.value = true
-  const eventPatch: Partial<EventDetail> = {
-    eventType: draft.eventType || undefined,
-    ambiance: draft.ambiance || undefined,
-    ville: draft.ville || undefined,
-    lieu: draft.lieu || undefined,
-    nbInvites: draft.nbInvites || undefined,
-    sharedNote: draft.sharedNote,
-  }
-  await EventMockService.patchEvent(props.event.id, eventPatch)
-  emit('updated', eventPatch)
+  try {
+    const updated = await patchEventApi(props.event.id, {
+      eventType:   draft.eventType   || undefined,
+      ambiance:    draft.ambiance    || undefined,
+      ville:       draft.ville       || undefined,
+      lieu:        draft.lieu        || undefined,
+      nbInvites:   draft.nbInvites   || undefined,
+      sharedNote:  draft.sharedNote,
+      description: draft.description || undefined,
+    })
+    emit('updated', {
+      eventType:   updated.eventType,
+      ambiance:    updated.ambiance,
+      ville:       updated.ville,
+      lieu:        updated.lieu,
+      nbInvites:   updated.nbInvites,
+      sharedNote:  updated.sharedNote,
+      description: updated.description,
+    })
 
-  const clientPatch: Partial<ClientContactInfo> = {
-    firstName: draft.firstName,
-    lastName: draft.lastName || undefined,
-    phone: draft.phone,
-    email: draft.email,
-  }
-  emit('updatedClientInfo', clientPatch)
+    const clientPatch: Partial<ClientContactInfo> = {
+      firstName: draft.firstName,
+      lastName:  draft.lastName || undefined,
+      phone:     draft.phone,
+      email:     draft.email,
+    }
+    emit('updatedClientInfo', clientPatch)
 
-  saving.value = false
-  editMode.value = false
+    editMode.value = false
+  } finally {
+    saving.value = false
+  }
 }
 
 // ── Auto-resize textarea ──────────────────────────────────────────────────────

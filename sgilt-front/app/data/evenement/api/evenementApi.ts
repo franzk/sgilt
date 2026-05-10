@@ -3,7 +3,7 @@
  */
 import { apiFetch } from '~/composables/useApi'
 import type { EvenementSummaryDto } from '../dto/EvenementSummaryDto'
-import type { EventDetailDto } from '../dto/EventDetailDto'
+import type { EventDetailDto, EventPatchRequestDto } from '../dto/EventDetailDto'
 import type { EventCountsDto } from '../dto/EventCountsDto'
 import type { EventReservationSummaryDto } from '../dto/EventReservationSummaryDto'
 
@@ -13,6 +13,10 @@ export async function getEvenementsApi(): Promise<EvenementSummaryDto[]> {
 
 export async function getEventDetail(eventId: string): Promise<EventDetailDto> {
   return apiFetch<EventDetailDto>(`/events/${eventId}`)
+}
+
+export async function patchEventApi(eventId: string, patch: EventPatchRequestDto): Promise<EventDetailDto> {
+  return apiFetch<EventDetailDto>(`/events/${eventId}`, { method: 'PATCH', body: patch })
 }
 
 export async function getEventCounts(eventId: string): Promise<EventCountsDto> {

@@ -14,6 +14,7 @@ public record EventDetailDto(
         String nbInvites,
         String coverUrl,
         String sharedNote,
+        String description,
         String countdown,
         ClientInfoDto clientInfo
 ) {}

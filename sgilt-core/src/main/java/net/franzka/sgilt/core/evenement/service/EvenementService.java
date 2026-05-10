@@ -5,6 +5,7 @@ import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.domain.EvenementStatus;
 import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
 import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
+import net.franzka.sgilt.core.evenement.dto.EventPatchDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotAllowedException;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotFoundException;
@@ -112,6 +113,35 @@ public class EvenementService {
                 .description(formData.description())
                 .build();
         return evenementRepository.save(evenement);
+    }
+
+    /**
+     * Met à jour les champs modifiables d'un événement.
+     *
+     * @param eventId       l'identifiant de l'événement
+     * @param utilisateurId l'identifiant de l'utilisateur connecté
+     * @param patch         les champs à mettre à jour (null = non modifié)
+     * @return les métadonnées mises à jour
+     * @throws EvenementNotFoundException   si l'événement n'existe pas
+     * @throws EvenementNotAllowedException si l'événement n'appartient pas à l'utilisateur connecté
+     */
+    public EventDetailDto patchEvent(UUID eventId, UUID utilisateurId, EventPatchDto patch) {
+        Evenement event = getEvent(eventId, utilisateurId);
+
+        if (patch.lieu()        != null) event.setLieu(blankToNull(patch.lieu()));
+        if (patch.sharedNote()  != null) event.setNotePartagee(patch.sharedNote());
+        if (patch.eventType()   != null) event.setEventType(blankToNull(patch.eventType()));
+        if (patch.ambiance()    != null) event.setAmbiance(blankToNull(patch.ambiance()));
+        if (patch.ville()       != null) event.setVille(blankToNull(patch.ville()));
+        if (patch.nbInvites()   != null) event.setNbInvites(blankToNull(patch.nbInvites()));
+        if (patch.description() != null) event.setDescription(blankToNull(patch.description()));
+
+        evenementRepository.save(event);
+        return evenementMapper.toDetailDto(event, computeCountdown(event.getDate()));
+    }
+
+    private static String blankToNull(String s) {
+        return (s == null || s.isBlank()) ? null : s;
     }
 
     /**

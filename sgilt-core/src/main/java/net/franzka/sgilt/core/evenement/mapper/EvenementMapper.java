@@ -26,6 +26,7 @@ public interface EvenementMapper {
 
     @Mapping(source = "evenement.name",        target = "title")
     @Mapping(source = "evenement.notePartagee", target = "sharedNote")
+    @Mapping(source = "evenement.description", target = "description")
     @Mapping(source = "evenement.utilisateur", target = "clientInfo")
     @Mapping(source = "countdown",             target = "countdown")
     EventDetailDto toDetailDto(Evenement evenement, String countdown);

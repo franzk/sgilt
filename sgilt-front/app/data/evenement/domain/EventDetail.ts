@@ -16,6 +16,7 @@ export interface EventDetail {
   coverImage?: string | null
   sharedNote: string
   sharedNoteUpdatedAt?: Date
+  description?: string
   reservations: Reservation[]
   journal: JournalEntry[]
   mood: 'confirmee' | 'en_discussion' | 'nouvelle' | 'defaut'

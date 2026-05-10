@@ -14,5 +14,6 @@ export type EventPatch = Partial<
     | 'lieu'
     | 'nbInvites'
     | 'sharedNote'
+    | 'description'
   >
 >
