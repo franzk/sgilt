@@ -130,7 +130,7 @@ const props = defineProps<{
 
 defineEmits<{ openEdit: []; openJournal: [] }>()
 
-const open = ref(false)
+const open = ref(true)
 const phoneCopied = ref(false)
 const emailCopied = ref(false)
 
