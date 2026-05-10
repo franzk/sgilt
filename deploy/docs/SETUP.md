@@ -189,10 +189,22 @@ In GitHub → Actions → **Build & Deploy** → Run workflow:
 > Init mode generates the Keycloak realm from the template and imports it on the first startup.
 
 The workflow will:
-1. Build all Docker images and push them to ghcr.io
+1. Build all Docker images and push them to ghcr.io (including the KC image with the magic-link SPI baked in)
 2. Generate the `.env` file from secrets and variables
 3. Copy all deployment files to the server
 4. Pull images and start all containers
+
+#### How init mode works
+
+The KC init sequence has three phases:
+
+**Phase 1** — KC starts with `--import-realm`. In KC 26 production mode, this imports the realm into PostgreSQL and then KC exits.
+
+**Phase 2** — The deploy script polls the KC PostgreSQL database directly (not the KC API) until the `sgilt` realm appears. Once confirmed, KC is restarted in normal server mode (without `--import-realm`) so it stays running. The script then waits for KC to be ready and retrieves the `sgilt-admin` client secret.
+
+**Phase 3** — All remaining services start.
+
+> **Note:** The `kc.sh import` command (nonserver profile) does **not** commit realm data to PostgreSQL in KC 26 — only `start --import-realm` (prod profile) does. This is why Phase 1 uses `start` and not `kc.sh import`.
 
 ---
 
@@ -230,5 +242,19 @@ docker exec nginx-front-staging ls /etc/ssl/sgilt/
 ```bash
 docker logs sgilt-front-staging --tail 20
 ```
+
+**KC init loop (Phase 2 never completes)** — KC may be crashing during realm import. Check KC logs:
+```bash
+docker logs sgilt-keycloak-staging --tail 50
+```
+Common causes: malformed realm JSON (wrong section for a flow, unknown field for the KC version). The realm is imported with `start --import-realm` in production mode. Only the `sgilt` realm template is imported; the master realm is always created fresh by KC.
+
+**Realm not imported after init** — Verify the realm is in the KC database:
+```bash
+docker exec sgilt-keycloak-db-staging \
+  psql -U sgilt-keycloak -d sgilt-keycloak \
+  -c "SELECT id, name FROM realm;"
+```
+Both `master` and `sgilt` should appear. If only `master` is present, the import failed silently. Re-run in `init` mode after fixing the realm template.
 
 **Cloudflare 526 error** — verify the Origin Rule has `/*` wildcard at the end of the match URL.
