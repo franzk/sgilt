@@ -1,9 +1,6 @@
 services:
   sgilt-keycloak:
-    # Import realm then start — in KC 26 production mode, --import-realm exits after import.
-    # We chain both commands so KC stays running after the import.
-    entrypoint: ["/bin/bash", "-c"]
-    command:
-      - |
-        /opt/keycloak/bin/kc.sh import --dir /opt/keycloak/data/import
-        /opt/keycloak/bin/kc.sh start --http-enabled=true --proxy-headers=xforwarded
+    # Import realm at startup — in KC 26 production mode, KC exits after the import.
+    # Phase 2 of the deploy script waits for the realm in the database, then
+    # restarts KC without this flag so it stays running.
+    command: ["start", "--http-enabled=true", "--proxy-headers=xforwarded", "--import-realm"]
