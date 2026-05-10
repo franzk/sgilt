@@ -25,7 +25,10 @@ export function mapEvenementSummary(dto: EvenementSummaryDto): EventSummary {
   }
 }
 
-export function mapEventDetail(dto: EventDetailDto): { event: EventDetail; clientInfo: ClientContactInfo } {
+export function mapEventDetail(dto: EventDetailDto): {
+  event: EventDetail
+  clientInfo: ClientContactInfo
+} {
   return {
     event: {
       id: dto.id,
@@ -33,6 +36,8 @@ export function mapEventDetail(dto: EventDetailDto): { event: EventDetail; clien
       date: dto.date ? new Date(dto.date) : undefined,
       eventType: dto.eventType,
       ambiance: dto.ambiance,
+      momentCle: dto.momentCle,
+      description: dto.description,
       ville: dto.ville,
       lieu: dto.lieu,
       nbInvites: dto.nbInvites,
