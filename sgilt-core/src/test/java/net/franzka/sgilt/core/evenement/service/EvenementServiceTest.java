@@ -196,8 +196,9 @@ class EvenementServiceTest {
         @Test
         void givenEventNotFound_whenPatchEvent_thenThrowsEvenementNotFoundException() {
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.empty());
+            EventPatchDto patch = emptyPatch();
 
-            assertThatThrownBy(() -> evenementService.patchEvent(EVENT_ID, USER_ID, emptyPatch()))
+            assertThatThrownBy(() -> evenementService.patchEvent(EVENT_ID, USER_ID, patch))
                     .isInstanceOf(EvenementNotFoundException.class);
         }
 
@@ -207,9 +208,10 @@ class EvenementServiceTest {
             when(otherOwner.getId()).thenReturn(UUID.randomUUID());
             Evenement event = Evenement.builder().id(EVENT_ID).utilisateur(otherOwner).date(LocalDate.now()).build();
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
+            EventPatchDto patch = emptyPatch();
 
             assertThrows(EvenementNotAllowedException.class,
-                    () -> evenementService.patchEvent(EVENT_ID, USER_ID, emptyPatch()));
+                    () -> evenementService.patchEvent(EVENT_ID, USER_ID, patch));
 
         }
 
