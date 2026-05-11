@@ -7,6 +7,7 @@ import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
 import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
 import net.franzka.sgilt.core.evenement.dto.EventPatchDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
+import net.franzka.sgilt.core.evenement.dto.ModificationChamp;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotAllowedException;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotFoundException;
 import net.franzka.sgilt.core.evenement.mapper.EvenementMapper;
@@ -21,9 +22,11 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -36,6 +39,7 @@ public class EvenementService {
     private final EvenementRepository evenementRepository;
     private final ReservationService reservationService;
     private final EvenementMapper evenementMapper;
+    private final JournalEvenementService journalEvenementService;
 
     /**
      * Retourne la liste des événements de l'utilisateur identifié par son id.
@@ -127,7 +131,33 @@ public class EvenementService {
      */
     public EventDetailDto patchEvent(UUID eventId, UUID utilisateurId, EventPatchDto patch) {
         Evenement event = getEvent(eventId, utilisateurId);
+        List<ModificationChamp> modifications = computeModifications(event, patch);
+        applyPatch(event, patch);
+        evenementRepository.save(event);
+        journalEvenementService.save(event, modifications);
+        return evenementMapper.toDetailDto(event, computeCountdown(event.getDate()));
+    }
 
+    private List<ModificationChamp> computeModifications(Evenement event, EventPatchDto patch) {
+        List<ModificationChamp> modifications = new ArrayList<>();
+        if (patch.lieu()        != null) addIfUpdated(modifications, "lieu",         event.getLieu(),        blankToNull(patch.lieu()));
+        if (patch.sharedNote()  != null) addIfUpdated(modifications, "notePartagee", event.getNotePartagee(), patch.sharedNote());
+        if (patch.eventType()   != null) addIfUpdated(modifications, "eventType",    event.getEventType(),   blankToNull(patch.eventType()));
+        if (patch.ambiance()    != null) addIfUpdated(modifications, "ambiance",     event.getAmbiance(),    blankToNull(patch.ambiance()));
+        if (patch.ville()       != null) addIfUpdated(modifications, "ville",        event.getVille(),       blankToNull(patch.ville()));
+        if (patch.nbInvites()   != null) addIfUpdated(modifications, "nbInvites",    event.getNbInvites(),   blankToNull(patch.nbInvites()));
+        if (patch.description() != null) addIfUpdated(modifications, "description",  event.getDescription(), blankToNull(patch.description()));
+        if (patch.momentCle()   != null) addIfUpdated(modifications, "momentCle",    event.getMomentCle(),   blankToNull(patch.momentCle()));
+        return modifications;
+    }
+
+    private void addIfUpdated(List<ModificationChamp> modifications, String champ, String avant, String apres) {
+        if (!Objects.equals(avant, apres)) {
+            modifications.add(new ModificationChamp(champ, avant, apres));
+        }
+    }
+
+    private void applyPatch(Evenement event, EventPatchDto patch) {
         if (patch.lieu()        != null) event.setLieu(blankToNull(patch.lieu()));
         if (patch.sharedNote()  != null) event.setNotePartagee(patch.sharedNote());
         if (patch.eventType()   != null) event.setEventType(blankToNull(patch.eventType()));
@@ -136,9 +166,6 @@ public class EvenementService {
         if (patch.nbInvites()   != null) event.setNbInvites(blankToNull(patch.nbInvites()));
         if (patch.description() != null) event.setDescription(blankToNull(patch.description()));
         if (patch.momentCle()   != null) event.setMomentCle(blankToNull(patch.momentCle()));
-
-        evenementRepository.save(event);
-        return evenementMapper.toDetailDto(event, computeCountdown(event.getDate()));
     }
 
     private static String blankToNull(String s) {

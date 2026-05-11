@@ -23,7 +23,10 @@
       "Bash(xargs ls *)",
       "Bash(awk '/\\\\\"requiredActions\\\\\":/,/^\\\\s*\\\\],/' \"sgilt-keycloak/realm-template.staging.json\")",
       "Bash(python3 -c ' *)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-core\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Sort-Object)"
     ]
   }
 }
