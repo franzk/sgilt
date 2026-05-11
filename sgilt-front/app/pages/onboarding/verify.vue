@@ -22,7 +22,17 @@
           type="password"
           required
           autocomplete="new-password"
+          @blur="passwordTouched = true"
         />
+        <ul v-if="passwordTouched" class="password-rules">
+          <li
+            v-for="rule in passwordRules"
+            :key="rule.key"
+            :class="['rule', { met: rule.met }]"
+          >
+            {{ $t(rule.key) }}
+          </li>
+        </ul>
       </div>
 
       <div class="field">
@@ -80,10 +90,27 @@ const pageError = computed<string | null>(() => {
 
 const password = ref('')
 const passwordConfirm = ref('')
+const passwordTouched = ref(false)
 const submitting = ref(false)
 const submitError = ref<string | null>(null)
 
+const passwordRules = computed(() => [
+  { key: 'confirmation.form.password-rules.length', met: password.value.length >= 8 },
+  { key: 'confirmation.form.password-rules.upper', met: /[A-Z]/.test(password.value) },
+  { key: 'confirmation.form.password-rules.lower', met: /[a-z]/.test(password.value) },
+  { key: 'confirmation.form.password-rules.digit', met: /[0-9]/.test(password.value) },
+  { key: 'confirmation.form.password-rules.special', met: /[^A-Za-z0-9]/.test(password.value) },
+  { key: 'confirmation.form.password-rules.not-email', met: !!password.value && password.value.toLowerCase() !== email.value?.toLowerCase() },
+])
+
+const passwordValid = computed(() => passwordRules.value.every(r => r.met))
+
 async function submit(): Promise<void> {
+  if (!passwordValid.value) {
+    passwordTouched.value = true
+    return
+  }
+
   if (password.value !== passwordConfirm.value) {
     submitError.value = t('confirmation.submit.error.password-mismatch')
     return
@@ -167,6 +194,24 @@ async function submit(): Promise<void> {
           background-color: $surface-soft;
           color: $text-secondary;
           cursor: not-allowed;
+        }
+      }
+
+      .password-rules {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-xxs;
+
+        .rule {
+          font-size: $font-size-sm;
+          color: $state-error;
+
+          &.met {
+            color: $state-success;
+          }
         }
       }
     }

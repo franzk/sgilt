@@ -748,7 +748,15 @@
       "email-label": "Adresse email",
       "password-label": "Mot de passe",
       "password-confirm-label": "Confirmer le mot de passe",
-      "submit": "Créer mon compte"
+      "submit": "Créer mon compte",
+      "password-rules": {
+        "length": "Au moins 8 caractères",
+        "upper": "Au moins 1 lettre majuscule (A–Z)",
+        "lower": "Au moins 1 lettre minuscule (a–z)",
+        "digit": "Au moins 1 chiffre (0–9)",
+        "special": "Au moins 1 caractère spécial",
+        "not-email": "Ne doit pas être votre adresse email"
+      }
     },
     "submit": {
       "error": {
