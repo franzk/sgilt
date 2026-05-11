@@ -4,10 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import net.franzka.sgilt.core.jwt.TokenJwtService;
 import net.franzka.sgilt.core.keycloak.KeycloakAdminService;
-import net.franzka.sgilt.core.keycloak.KeycloakTokenResponse;
 import net.franzka.sgilt.core.onboarding.domain.Onboarding;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountRequest;
-import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountResponse;
 import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
 import net.franzka.sgilt.core.onboarding.dto.InitOnboardingResponse;
 import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
@@ -214,16 +212,6 @@ class OnboardingServiceTest {
             verify(onboardingMailerService).sendWelcomeEmail(EMAIL);
         }
 
-        @Test
-        void givenValidToken_whenConfirmAccount_thenReturnsKeycloakTokens() {
-            stubValidToken(UUID.randomUUID());
-
-            ConfirmAccountResponse response = onboardingService.confirmAccount(buildRequest());
-
-            assertThat(response.accessToken()).isEqualTo("access-token");
-            assertThat(response.refreshToken()).isEqualTo("refresh-token");
-        }
-
         private InitOnboardingRequest stubValidToken(UUID onboardingId) {
             Claims claims = mock(Claims.class);
             when(claims.get("onboardingId", String.class)).thenReturn(onboardingId.toString());
@@ -240,8 +228,6 @@ class OnboardingServiceTest {
             when(onboardingSessionService.findById(onboardingId)).thenReturn(onboarding);
             when(onboardingSessionService.consume(onboarding))
                     .thenReturn(new OnboardingSessionService.OnboardingContent(formData, prestataire));
-            when(keycloakAdminService.getUserTokens(EMAIL, "p@ssw0rd!"))
-                    .thenReturn(new KeycloakTokenResponse("access-token", "refresh-token"));
 
             return formData;
         }
