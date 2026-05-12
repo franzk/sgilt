@@ -22,4 +22,5 @@ export interface EventDetail {
   journal: JournalEntry[]
   mood: 'confirmee' | 'en_discussion' | 'nouvelle' | 'defaut'
   countdown: 'imminent' | 'proche' | 'serein' | 'past'
+  lastUpdateDate?: Date | null
 }

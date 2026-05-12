@@ -4,13 +4,16 @@ import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
 import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
 import net.franzka.sgilt.core.evenement.dto.EventPatchDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
+import net.franzka.sgilt.core.evenement.dto.JournalEvenementDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,4 +35,10 @@ public interface EvenementApi {
 
     @GetMapping("/{eventId}/reservations")
     ResponseEntity<List<ReservationSummaryDto>> getEventReservations(@PathVariable UUID eventId);
+
+    @GetMapping("/{eventId}/journal")
+    ResponseEntity<Page<JournalEvenementDto>> getJournal(
+            @PathVariable UUID eventId,
+            @RequestParam(defaultValue = "0") int page
+    );
 }

@@ -7,9 +7,12 @@ import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
 import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
 import net.franzka.sgilt.core.evenement.dto.EventPatchDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
+import net.franzka.sgilt.core.evenement.dto.JournalEvenementDto;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
+import net.franzka.sgilt.core.evenement.service.JournalEvenementService;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import net.franzka.sgilt.core.security.CurrentUserService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,8 +25,9 @@ import java.util.UUID;
 @Slf4j
 public class EvenementController implements EvenementApi {
 
-    private final EvenementService evenementService;
-    private final CurrentUserService currentUserService;
+    private final EvenementService      evenementService;
+    private final JournalEvenementService journalEvenementService;
+    private final CurrentUserService    currentUserService;
 
     @Override
     @Transactional(readOnly = true)
@@ -63,5 +67,14 @@ public class EvenementController implements EvenementApi {
         UUID userId = currentUserService.getId();
         log.info("GET /events/{}/reservations", eventId);
         return ResponseEntity.ok(evenementService.getEventReservations(eventId, userId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<Page<JournalEvenementDto>> getJournal(UUID eventId, int page) {
+        UUID userId = currentUserService.getId();
+        log.info("GET /events/{}/journal", eventId);
+        evenementService.verifierAccesLectureJournal(eventId, userId);
+        return ResponseEntity.ok(journalEvenementService.getPage(eventId, page));
     }
 }

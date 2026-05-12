@@ -7,7 +7,7 @@
           <span class="journal-mod__champ">{{ mod.champ }}&nbsp;:</span>
           <template v-if="mod.avant !== null && mod.avant !== ''">
             <span class="journal-mod__avant">{{ mod.avant }}</span>
-            <span class="journal-mod__arrow" aria-hidden="true">→</span>
+            <span class="journal-mod__arrow" aria-hidden="true">=></span>
           </template>
           <span class="journal-mod__apres">{{ mod.apres }}</span>
         </li>
@@ -77,7 +77,6 @@ defineProps<{ entries: JournalEntry[] }>()
 
   &__avant {
     color: $text-secondary;
-    text-decoration: line-through;
     opacity: 0.6;
   }
 

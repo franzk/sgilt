@@ -6,6 +6,7 @@ import type { EvenementSummaryDto } from '../dto/EvenementSummaryDto'
 import type { EventDetailDto, EventPatchRequestDto } from '../dto/EventDetailDto'
 import type { EventCountsDto } from '../dto/EventCountsDto'
 import type { EventReservationSummaryDto } from '../dto/EventReservationSummaryDto'
+import type { JournalEvenementPageDto } from '../dto/JournalEvenementDto'
 
 export async function getEvenementsApi(): Promise<EvenementSummaryDto[]> {
   return apiFetch<EvenementSummaryDto[]>('/events')
@@ -25,4 +26,8 @@ export async function getEventCounts(eventId: string): Promise<EventCountsDto> {
 
 export async function getEventReservations(eventId: string): Promise<EventReservationSummaryDto[]> {
   return apiFetch<EventReservationSummaryDto[]>(`/events/${eventId}/reservations`)
+}
+
+export async function getEventJournal(eventId: string, page: number): Promise<JournalEvenementPageDto> {
+  return apiFetch<JournalEvenementPageDto>(`/events/${eventId}/journal`, { params: { page } })
 }

@@ -561,6 +561,8 @@
     }
   },
   "journal": {
+    "loading": "Chargement…",
+    "load-more": "Charger plus…",
     "title": "Historique"
   },
   "profile": {

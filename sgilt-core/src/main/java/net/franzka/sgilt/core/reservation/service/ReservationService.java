@@ -113,6 +113,17 @@ public class ReservationService {
     }
 
     /**
+     * Vérifie si l'utilisateur est un prestataire ayant au moins une réservation sur l'événement.
+     *
+     * @param evenementId   l'identifiant de l'événement
+     * @param utilisateurId l'identifiant de l'utilisateur lié au prestataire
+     * @return true si une réservation existe
+     */
+    public boolean prestataireAReservationSurEvenement(UUID evenementId, UUID utilisateurId) {
+        return reservationRepository.existsByEvenementIdAndPrestataireUtilisateurId(evenementId, utilisateurId);
+    }
+
+    /**
      * Retourne le nombre de réservations d'un statut donné dans une liste de réservations.
      *
      * @param reservations la liste de réservations

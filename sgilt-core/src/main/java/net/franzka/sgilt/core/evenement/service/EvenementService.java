@@ -20,6 +20,7 @@ import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -64,7 +65,8 @@ public class EvenementService {
      */
     public EventDetailDto getEventDetail(UUID eventId, UUID utilisateurId) {
         Evenement event = getEvent(eventId, utilisateurId);
-        return evenementMapper.toDetailDto(event, computeCountdown(event.getDate()));
+        LocalDateTime lastUpdateDate = journalEvenementService.derniereModification(eventId).orElse(null);
+        return evenementMapper.toDetailDto(event, computeCountdown(event.getDate()), lastUpdateDate);
     }
 
     /**
@@ -135,7 +137,8 @@ public class EvenementService {
         applyPatch(event, patch);
         evenementRepository.save(event);
         journalEvenementService.save(event, modifications);
-        return evenementMapper.toDetailDto(event, computeCountdown(event.getDate()));
+        LocalDateTime lastUpdateDate = journalEvenementService.derniereModification(eventId).orElse(null);
+        return evenementMapper.toDetailDto(event, computeCountdown(event.getDate()), lastUpdateDate);
     }
 
     private List<ModificationChamp> computeModifications(Evenement event, EventPatchDto patch) {
@@ -173,6 +176,23 @@ public class EvenementService {
     }
 
     /**
+     * Vérifie que l'utilisateur peut accéder au journal de l'événement.
+     * L'accès est accordé au propriétaire de l'événement ou à tout prestataire
+     * ayant au moins une réservation sur cet événement.
+     *
+     * @param eventId       l'identifiant de l'événement
+     * @param utilisateurId l'identifiant de l'utilisateur connecté
+     * @throws EvenementNotFoundException   si l'événement n'existe pas
+     * @throws EvenementNotAllowedException si l'utilisateur n'est ni propriétaire ni prestataire autorisé
+     */
+    public void verifierAccesLectureJournal(UUID eventId, UUID utilisateurId) {
+        Evenement event = chargerEvenement(eventId);
+        if (event.getUtilisateur().getId().equals(utilisateurId)) return;
+        if (reservationService.prestataireAReservationSurEvenement(eventId, utilisateurId)) return;
+        throw new EvenementNotAllowedException();
+    }
+
+    /**
      * Récupère un événement par son id et vérifie qu'il appartient à l'utilisateur donné.
      *
      * @param eventId id de l'événement
@@ -182,12 +202,16 @@ public class EvenementService {
      * @throws EvenementNotAllowedException si l'événement n'appartient pas à l'utilisateur
      */
     private Evenement getEvent(UUID eventId, UUID utilisateurId) {
-        Evenement event = evenementRepository.findById(eventId)
-                .orElseThrow(EvenementNotFoundException::new);
+        Evenement event = chargerEvenement(eventId);
         if (!event.getUtilisateur().getId().equals(utilisateurId)) {
             throw new EvenementNotAllowedException();
         }
         return event;
+    }
+
+    private Evenement chargerEvenement(UUID eventId) {
+        return evenementRepository.findById(eventId)
+                .orElseThrow(EvenementNotFoundException::new);
     }
 
     /**

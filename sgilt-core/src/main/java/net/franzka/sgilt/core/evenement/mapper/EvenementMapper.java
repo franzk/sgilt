@@ -9,6 +9,8 @@ import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.time.LocalDateTime;
+
 @Mapper(componentModel = "spring")
 public interface EvenementMapper {
 
@@ -24,11 +26,12 @@ public interface EvenementMapper {
 
     ClientInfoDto toClientInfo(Utilisateur utilisateur);
 
-    @Mapping(source = "evenement.name",        target = "title")
+    @Mapping(source = "evenement.name",         target = "title")
     @Mapping(source = "evenement.notePartagee", target = "sharedNote")
-    @Mapping(source = "evenement.description", target = "description")
-    @Mapping(source = "evenement.momentCle",   target = "momentCle")
-    @Mapping(source = "evenement.utilisateur", target = "clientInfo")
-    @Mapping(source = "countdown",             target = "countdown")
-    EventDetailDto toDetailDto(Evenement evenement, String countdown);
+    @Mapping(source = "evenement.description",  target = "description")
+    @Mapping(source = "evenement.momentCle",    target = "momentCle")
+    @Mapping(source = "evenement.utilisateur",  target = "clientInfo")
+    @Mapping(source = "countdown",              target = "countdown")
+    @Mapping(source = "lastUpdateDate",         target = "lastUpdateDate")
+    EventDetailDto toDetailDto(Evenement evenement, String countdown, LocalDateTime lastUpdateDate);
 }

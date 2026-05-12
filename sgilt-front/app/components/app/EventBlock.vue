@@ -65,7 +65,13 @@
   </template>
 
   <!-- ── Partagé ────────────────────────────────────────────────────────────────── -->
-  <EventJournal v-model:open="journalOpen" :journal="event.journal ?? []" />
+  <EventJournal
+    v-model:open="journalOpen"
+    :journal="journalEntries"
+    :has-more="journalHasMore"
+    :loading="journalLoading"
+    @load-more="loadJournalPage"
+  />
 
   <Teleport to="body">
     <Transition name="modal">
@@ -102,7 +108,9 @@ import EventBlockDesktopEdit from '~/components/app/EventBlockDesktopEdit.vue'
 import EventBlockMobileDisplay from '~/components/app/EventBlockMobileDisplay.vue'
 import EventBlockMobileEdit from '~/components/app/EventBlockMobileEdit.vue'
 import { patchEventApi } from '~/data/evenement/api/evenementApi'
+import { fetchEventJournal } from '~/data/evenement/service/evenementService'
 import type { EventDetail } from '~/data/evenement/domain/EventDetail'
+import type { JournalEntry } from '~/data/evenement/domain/JournalEntry'
 import type { ClientContactInfo } from '~/data/reservation/domain/ClientContactInfo'
 import type { EventPatchRequestDto } from '~/data/evenement/dto/EventDetailDto'
 import { CalendarEventIcon, MapPin2Icon, GroupIcon } from '@remixicons/vue/line'
@@ -128,14 +136,35 @@ const sheetOpen = ref(false)
 const journalOpen = ref(false)
 const showAbandonModal = ref(false)
 
-const lastUpdateDate = computed(() => {
-  const journal = props.event.journal
-  if (!journal?.length) return null
-  const last = journal[journal.length - 1]
-  return last?.date
-    ? `Dernière mise à jour : ${new Date(last.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`
-    : null
+const journalEntries = ref<JournalEntry[]>([])
+const journalPage = ref(0)
+const journalHasMore = ref(false)
+const journalLoading = ref(false)
+
+const lastUpdateDate = computed((): string | null => {
+  if (!props.event.lastUpdateDate) return null
+  return `Dernière mise à jour : ${props.event.lastUpdateDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`
 })
+
+watch(journalOpen, async (open) => {
+  if (!open) return
+  journalEntries.value = []
+  journalPage.value = 0
+  journalHasMore.value = false
+  await loadJournalPage()
+})
+
+async function loadJournalPage(): Promise<void> {
+  journalLoading.value = true
+  try {
+    const result = await fetchEventJournal(props.event.id, journalPage.value)
+    journalEntries.value = [...journalEntries.value, ...result.entries]
+    journalHasMore.value = !result.last
+    journalPage.value++
+  } finally {
+    journalLoading.value = false
+  }
+}
 
 function enterEditMode() {
   if (variant.value === 'pro') return
@@ -169,8 +198,12 @@ async function onSave(payload: { eventPatch: EventPatchRequestDto; clientPatch: 
       sharedNote: updated.sharedNote,
       description: updated.description,
       momentCle: updated.momentCle,
+      lastUpdateDate: updated.lastUpdateDate ? new Date(updated.lastUpdateDate) : null,
     })
     emit('updatedClientInfo', payload.clientPatch)
+    // Réinitialise le journal : il sera rechargé à la prochaine ouverture
+    journalEntries.value = []
+    journalPage.value = 0
     editMode.value = false
   } finally {
     saving.value = false

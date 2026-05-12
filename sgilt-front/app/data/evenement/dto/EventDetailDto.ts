@@ -15,6 +15,7 @@ export interface EventDetailDto {
   description?: string
   momentCle?: string
   countdown: 'serein' | 'proche' | 'imminent' | 'past'
+  lastUpdateDate?: string | null
   clientInfo: {
     firstName: string
     lastName: string

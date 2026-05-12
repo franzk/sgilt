@@ -18,4 +18,13 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
      * @return la liste des réservations
      */
     List<Reservation> findByEvenementId(UUID evenementId);
+
+    /**
+     * Vérifie qu'au moins une réservation lie le prestataire (identifié par son utilisateur) à l'événement.
+     *
+     * @param evenementId   l'identifiant de l'événement
+     * @param utilisateurId l'identifiant de l'utilisateur lié au prestataire
+     * @return true si une réservation existe
+     */
+    boolean existsByEvenementIdAndPrestataireUtilisateurId(UUID evenementId, UUID utilisateurId);
 }

@@ -4,7 +4,7 @@
 export interface JournalModification {
   champ: string
   avant: string | null
-  apres: string
+  apres: string | null
 }
 
 export interface JournalEntry {
