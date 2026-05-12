@@ -41,24 +41,21 @@
           <div class="edit-field">
             <label class="label">{{ $t('event.block.party-edit-event-type') }}</label>
             <select v-model="draft.eventType" class="select">
-              <option value="">{{ $t('event.block.party-select-empty') }}</option>
-              <option v-for="o in EVENT_TYPE_OPTIONS" :key="o.value" :value="o.value">{{ o.emoji }} {{ o.label }}</option>
+<option v-for="o in EVENT_TYPE_OPTIONS" :key="o.value" :value="o.value">{{ o.emoji }} {{ o.label }}</option>
             </select>
             <input v-if="draft.eventType === 'autre'" v-model="draft.eventTypeCustom" class="input input-autre" type="text" placeholder="Précisez…" />
           </div>
           <div class="edit-field">
             <label class="label">{{ $t('event.block.party-edit-ambiance') }}</label>
             <select v-model="draft.ambiance" class="select">
-              <option value="">{{ $t('event.block.party-select-empty') }}</option>
-              <option v-for="o in AMBIANCE_OPTIONS" :key="o.value" :value="o.value">{{ o.emoji }} {{ o.label }}</option>
+<option v-for="o in AMBIANCE_OPTIONS" :key="o.value" :value="o.value">{{ o.emoji }} {{ o.label }}</option>
             </select>
             <input v-if="draft.ambiance === 'autre'" v-model="draft.ambianceCustom" class="input input-autre" type="text" placeholder="Précisez…" />
           </div>
           <div class="edit-field">
             <label class="label">{{ $t('event.block.party-moment-label') }}</label>
             <select v-model="draft.momentCle" class="select">
-              <option value="">{{ $t('event.block.party-select-empty') }}</option>
-              <option v-for="o in MOMENT_CLE_OPTIONS" :key="o.value" :value="o.value">{{ o.emoji }} {{ o.label }}</option>
+<option v-for="o in MOMENT_CLE_OPTIONS" :key="o.value" :value="o.value">{{ o.emoji }} {{ o.label }}</option>
             </select>
             <input v-if="draft.momentCle === 'autre'" v-model="draft.momentCleCustom" class="input input-autre" type="text" placeholder="Précisez…" />
           </div>
