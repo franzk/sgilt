@@ -28,6 +28,7 @@ spring:
 sgilt:
   image:
     storage: ${IMAGE_STORAGE:local} # local | cloudflare
+    base-url: ${IMAGE_STORAGE_BASE_URL:http://localhost:5027}
     local:
       path: ${IMAGE_STORAGE_LOCAL_PATH:./local-images}
   jwt:

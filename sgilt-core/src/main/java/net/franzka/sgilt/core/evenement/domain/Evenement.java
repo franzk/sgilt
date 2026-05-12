@@ -36,7 +36,8 @@ public class Evenement {
     @Column(nullable = false)
     private LocalDate date;
 
-    private String coverUrl;
+    @Column(name = "image_id")
+    private String imageId;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)

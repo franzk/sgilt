@@ -3,11 +3,13 @@ package net.franzka.sgilt.core.evenement.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.evenement.api.EvenementApi;
+import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
 import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
 import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
 import net.franzka.sgilt.core.evenement.dto.EventPatchDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
 import net.franzka.sgilt.core.evenement.dto.JournalEvenementDto;
+import org.springframework.web.multipart.MultipartFile;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.evenement.service.JournalEvenementService;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
@@ -76,5 +78,13 @@ public class EvenementController implements EvenementApi {
         log.info("GET /events/{}/journal", eventId);
         evenementService.verifierAccesLectureJournal(eventId, userId);
         return ResponseEntity.ok(journalEvenementService.getPage(eventId, page));
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<CoverUrlDto> uploadCover(UUID eventId, MultipartFile file) {
+        UUID userId = currentUserService.getId();
+        log.info("PATCH /events/{}/cover", eventId);
+        return ResponseEntity.ok(evenementService.updateCover(eventId, userId, file));
     }
 }

@@ -23,6 +23,9 @@ public class LocalImageStorage implements ImageStorageService {
     @Value("${sgilt.image.local.path:./local-images}")
     private String storagePath;
 
+    @Value("${sgilt.image.base-url:http://localhost:5027}")
+    private String baseUrl;
+
     /**
      * Stocke le fichier dans le dossier local et retourne un imageId de la forme {@code uuid.ext}.
      *
@@ -49,6 +52,17 @@ public class LocalImageStorage implements ImageStorageService {
     @Override
     public void delete(String imageId) throws IOException {
         Files.deleteIfExists(Path.of(storagePath).resolve(imageId));
+    }
+
+    /**
+     * Retourne l'URL publique de l'image sous la forme {@code {baseUrl}/images/{imageId}}.
+     *
+     * @param imageId l'identifiant de l'image
+     * @return l'URL d'accès à l'image
+     */
+    @Override
+    public String toUrl(String imageId) {
+        return baseUrl + "/images/" + imageId;
     }
 
     private static String extractExtension(String filename) {

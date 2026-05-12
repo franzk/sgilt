@@ -27,4 +27,12 @@ public interface ImageStorageService {
      * @throws IOException en cas d'erreur de suppression
      */
     void delete(String imageId) throws IOException;
+
+    /**
+     * Construit l'URL publique permettant d'afficher l'image à partir de son imageId.
+     *
+     * @param imageId l'identifiant de l'image
+     * @return l'URL affichable par le front
+     */
+    String toUrl(String imageId);
 }

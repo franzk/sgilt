@@ -1,6 +1,7 @@
 package net.franzka.sgilt.core.evenement.service;
 
 import net.franzka.sgilt.core.evenement.domain.Evenement;
+import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
 import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
 import net.franzka.sgilt.core.evenement.dto.EventPatchDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
@@ -9,6 +10,8 @@ import net.franzka.sgilt.core.evenement.exception.EvenementNotAllowedException;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotFoundException;
 import net.franzka.sgilt.core.evenement.mapper.EvenementMapper;
 import net.franzka.sgilt.core.evenement.repository.EvenementRepository;
+import net.franzka.sgilt.core.image.ImageStorageException;
+import net.franzka.sgilt.core.image.ImageStorageService;
 import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
@@ -19,7 +22,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,7 +33,6 @@ import java.util.UUID;
 import java.util.function.UnaryOperator;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -42,6 +46,7 @@ class EvenementServiceTest {
     @Mock private ReservationService      reservationService;
     @Mock private EvenementMapper         evenementMapper;
     @Mock private JournalEvenementService journalEvenementService;
+    @Mock private ImageStorageService     imageStorageService;
 
     @InjectMocks
     private EvenementService evenementService;
@@ -59,7 +64,7 @@ class EvenementServiceTest {
     private void whenEventFound(Evenement event) {
         when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
         when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
-        when(evenementMapper.toDetailDto(any(), any(), any())).thenReturn(mock(EventDetailDto.class));
+        when(evenementMapper.toDetailDto(any(), any(), any(), any())).thenReturn(mock(EventDetailDto.class));
     }
 
     @SuppressWarnings("unchecked")
@@ -87,7 +92,7 @@ class EvenementServiceTest {
 
             when(evenementRepository.findByUtilisateurId(USER_ID)).thenReturn(List.of(event));
             when(reservationService.getCountsForEvenement(EVENT_ID)).thenReturn(counts);
-            when(evenementMapper.toSummaryDto(event, counts)).thenReturn(dto);
+            when(evenementMapper.toSummaryDto(eq(event), eq(counts), isNull())).thenReturn(dto);
 
             assertThat(evenementService.getUserEvents(USER_ID)).containsExactly(dto);
         }
@@ -112,8 +117,8 @@ class EvenementServiceTest {
             when(evenementRepository.findByUtilisateurId(USER_ID)).thenReturn(List.of(event1, event2));
             when(reservationService.getCountsForEvenement(EVENT_ID)).thenReturn(counts1);
             when(reservationService.getCountsForEvenement(eventId2)).thenReturn(counts2);
-            when(evenementMapper.toSummaryDto(event1, counts1)).thenReturn(dto1);
-            when(evenementMapper.toSummaryDto(event2, counts2)).thenReturn(dto2);
+            when(evenementMapper.toSummaryDto(eq(event1), eq(counts1), isNull())).thenReturn(dto1);
+            when(evenementMapper.toSummaryDto(eq(event2), eq(counts2), isNull())).thenReturn(dto2);
 
             assertThat(evenementService.getUserEvents(USER_ID)).containsExactly(dto1, dto2);
         }
@@ -129,11 +134,11 @@ class EvenementServiceTest {
             Evenement event = ownerEvent(b -> b);
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
             when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
-            when(evenementMapper.toDetailDto(any(), any(), any())).thenReturn(mock(EventDetailDto.class));
+            when(evenementMapper.toDetailDto(any(), any(), any(), any())).thenReturn(mock(EventDetailDto.class));
 
             evenementService.getEventDetail(EVENT_ID, USER_ID);
 
-            verify(evenementMapper).toDetailDto(eq(event), any(), isNull());
+            verify(evenementMapper).toDetailDto(eq(event), any(), isNull(), isNull());
         }
 
         @Test
@@ -142,11 +147,95 @@ class EvenementServiceTest {
             Evenement event = ownerEvent(b -> b);
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
             when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.of(lastUpdate));
-            when(evenementMapper.toDetailDto(any(), any(), any())).thenReturn(mock(EventDetailDto.class));
+            when(evenementMapper.toDetailDto(any(), any(), any(), any())).thenReturn(mock(EventDetailDto.class));
 
             evenementService.getEventDetail(EVENT_ID, USER_ID);
 
-            verify(evenementMapper).toDetailDto(eq(event), any(), eq(lastUpdate));
+            verify(evenementMapper).toDetailDto(eq(event), any(), eq(lastUpdate), isNull());
+        }
+
+        @Test
+        void givenEventWithCover_whenGetEventDetail_thenMapperCalledWithComputedUrl() {
+            String imageId = "uuid.jpg";
+            String expectedUrl = "http://localhost:5027/images/uuid.jpg";
+            Evenement event = ownerEvent(b -> b.imageId(imageId));
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
+            when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
+            when(imageStorageService.toUrl(imageId)).thenReturn(expectedUrl);
+            when(evenementMapper.toDetailDto(any(), any(), any(), any())).thenReturn(mock(EventDetailDto.class));
+
+            evenementService.getEventDetail(EVENT_ID, USER_ID);
+
+            verify(evenementMapper).toDetailDto(eq(event), any(), isNull(), eq(expectedUrl));
+        }
+    }
+
+    // ── UpdateCover ───────────────────────────────────────────────────────────────
+
+    @Nested
+    class UpdateCover {
+
+        private final MockMultipartFile file =
+                new MockMultipartFile("file", "photo.jpg", "image/jpeg", new byte[]{1, 2, 3});
+
+        @Test
+        void givenNoPreviousCover_whenUpdateCover_thenUploadsAndReturnsCoverUrl() throws IOException {
+            String imageId = "new-uuid.jpg";
+            String coverUrl = "http://localhost:5027/images/new-uuid.jpg";
+            Evenement event = ownerEvent(b -> b);
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
+            when(imageStorageService.upload(file)).thenReturn(imageId);
+            when(imageStorageService.toUrl(imageId)).thenReturn(coverUrl);
+
+            CoverUrlDto result = evenementService.updateCover(EVENT_ID, USER_ID, file);
+
+            assertThat(result.coverUrl()).isEqualTo(coverUrl);
+            verify(imageStorageService, never()).delete(any());
+            assertThat(event.getImageId()).isEqualTo(imageId);
+        }
+
+        @Test
+        void givenExistingCover_whenUpdateCover_thenDeletesOldAndUploadsNew() throws IOException {
+            String oldImageId = "old-uuid.jpg";
+            String newImageId = "new-uuid.jpg";
+            Evenement event = ownerEvent(b -> b.imageId(oldImageId));
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
+            when(imageStorageService.upload(file)).thenReturn(newImageId);
+            when(imageStorageService.toUrl(newImageId)).thenReturn("http://localhost:5027/images/" + newImageId);
+
+            evenementService.updateCover(EVENT_ID, USER_ID, file);
+
+            verify(imageStorageService).delete(oldImageId);
+            assertThat(event.getImageId()).isEqualTo(newImageId);
+        }
+
+        @Test
+        void givenStorageFailure_whenUpdateCover_thenThrowsImageStorageException() throws IOException {
+            Evenement event = ownerEvent(b -> b);
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
+            when(imageStorageService.upload(file)).thenThrow(new IOException("disk full"));
+
+            assertThatThrownBy(() -> evenementService.updateCover(EVENT_ID, USER_ID, file))
+                    .isInstanceOf(ImageStorageException.class);
+        }
+
+        @Test
+        void givenEventNotFound_whenUpdateCover_thenThrowsNotFoundException() {
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> evenementService.updateCover(EVENT_ID, USER_ID, file))
+                    .isInstanceOf(EvenementNotFoundException.class);
+        }
+
+        @Test
+        void givenWrongUser_whenUpdateCover_thenThrowsNotAllowedException() {
+            Utilisateur otherOwner = mock(Utilisateur.class);
+            when(otherOwner.getId()).thenReturn(UUID.randomUUID());
+            Evenement event = Evenement.builder().id(EVENT_ID).utilisateur(otherOwner).date(LocalDate.now()).build();
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
+
+            assertThatThrownBy(() -> evenementService.updateCover(EVENT_ID, USER_ID, file))
+                    .isInstanceOf(EvenementNotAllowedException.class);
         }
     }
 
@@ -302,9 +391,8 @@ class EvenementServiceTest {
         void givenEventNotFound_whenPatchEvent_thenThrowsEvenementNotFoundException() {
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.empty());
 
-            var patch = emptyPatch();
-            assertThrows(EvenementNotFoundException.class,
-                    () -> evenementService.patchEvent(EVENT_ID, USER_ID, patch));
+            assertThatThrownBy(() -> evenementService.patchEvent(EVENT_ID, USER_ID, emptyPatch()))
+                    .isInstanceOf(EvenementNotFoundException.class);
         }
 
         @Test
@@ -314,9 +402,8 @@ class EvenementServiceTest {
             Evenement event = Evenement.builder().id(EVENT_ID).utilisateur(otherOwner).date(LocalDate.now()).build();
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
 
-            var patch = emptyPatch();
-            assertThrows(EvenementNotAllowedException.class,
-                    () -> evenementService.patchEvent(EVENT_ID, USER_ID, patch));
+            assertThatThrownBy(() -> evenementService.patchEvent(EVENT_ID, USER_ID, emptyPatch()))
+                    .isInstanceOf(EvenementNotAllowedException.class);
         }
     }
 }

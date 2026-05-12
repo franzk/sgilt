@@ -14,15 +14,15 @@ import java.time.LocalDateTime;
 @Mapper(componentModel = "spring")
 public interface EvenementMapper {
 
-    @Mapping(source = "evenement.id",          target = "id")
-    @Mapping(source = "evenement.name",        target = "name")
-    @Mapping(source = "evenement.date",        target = "date")
-    @Mapping(source = "evenement.ville",       target = "ville")
-    @Mapping(source = "evenement.coverUrl",    target = "coverUrl")
-    @Mapping(source = "evenement.eventType",   target = "eventType")
-    @Mapping(source = "counts.confirmedCount", target = "confirmedCount")
-    @Mapping(source = "counts.inDiscussionCount", target = "inDiscussionCount")
-    EvenementSummaryDto toSummaryDto(Evenement evenement, ReservationCounts counts);
+    @Mapping(source = "evenement.id",               target = "id")
+    @Mapping(source = "evenement.name",             target = "name")
+    @Mapping(source = "evenement.date",             target = "date")
+    @Mapping(source = "evenement.ville",            target = "ville")
+    @Mapping(source = "evenement.eventType",        target = "eventType")
+    @Mapping(source = "counts.confirmedCount",      target = "confirmedCount")
+    @Mapping(source = "counts.inDiscussionCount",   target = "inDiscussionCount")
+    @Mapping(source = "coverUrl",                   target = "coverUrl")
+    EvenementSummaryDto toSummaryDto(Evenement evenement, ReservationCounts counts, String coverUrl);
 
     ClientInfoDto toClientInfo(Utilisateur utilisateur);
 
@@ -33,5 +33,6 @@ public interface EvenementMapper {
     @Mapping(source = "evenement.utilisateur",  target = "clientInfo")
     @Mapping(source = "countdown",              target = "countdown")
     @Mapping(source = "lastUpdateDate",         target = "lastUpdateDate")
-    EventDetailDto toDetailDto(Evenement evenement, String countdown, LocalDateTime lastUpdateDate);
+    @Mapping(source = "coverUrl",               target = "coverUrl")
+    EventDetailDto toDetailDto(Evenement evenement, String countdown, LocalDateTime lastUpdateDate, String coverUrl);
 }

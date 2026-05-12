@@ -3,6 +3,7 @@ package net.franzka.sgilt.core.evenement.service;
 import lombok.RequiredArgsConstructor;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.domain.EvenementStatus;
+import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
 import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
 import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
 import net.franzka.sgilt.core.evenement.dto.EventPatchDto;
@@ -12,13 +13,17 @@ import net.franzka.sgilt.core.evenement.exception.EvenementNotAllowedException;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotFoundException;
 import net.franzka.sgilt.core.evenement.mapper.EvenementMapper;
 import net.franzka.sgilt.core.evenement.repository.EvenementRepository;
+import net.franzka.sgilt.core.image.ImageStorageException;
+import net.franzka.sgilt.core.image.ImageStorageService;
 import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -41,6 +46,7 @@ public class EvenementService {
     private final ReservationService reservationService;
     private final EvenementMapper evenementMapper;
     private final JournalEvenementService journalEvenementService;
+    private final ImageStorageService imageStorageService;
 
     /**
      * Retourne la liste des événements de l'utilisateur identifié par son id.
@@ -50,7 +56,10 @@ public class EvenementService {
      */
     public List<EvenementSummaryDto> getUserEvents(UUID userId) {
         return evenementRepository.findByUtilisateurId(userId).stream()
-                .map(e -> evenementMapper.toSummaryDto(e, reservationService.getCountsForEvenement(e.getId())))
+                .map(e -> {
+                    String coverUrl = e.getImageId() != null ? imageStorageService.toUrl(e.getImageId()) : null;
+                    return evenementMapper.toSummaryDto(e, reservationService.getCountsForEvenement(e.getId()), coverUrl);
+                })
                 .toList();
     }
 
@@ -66,7 +75,8 @@ public class EvenementService {
     public EventDetailDto getEventDetail(UUID eventId, UUID utilisateurId) {
         Evenement event = getEvent(eventId, utilisateurId);
         LocalDateTime lastUpdateDate = journalEvenementService.derniereModification(eventId).orElse(null);
-        return evenementMapper.toDetailDto(event, computeCountdown(event.getDate()), lastUpdateDate);
+        String coverUrl = event.getImageId() != null ? imageStorageService.toUrl(event.getImageId()) : null;
+        return evenementMapper.toDetailDto(event, computeCountdown(event.getDate()), lastUpdateDate, coverUrl);
     }
 
     /**
@@ -138,7 +148,8 @@ public class EvenementService {
         evenementRepository.save(event);
         journalEvenementService.save(event, modifications);
         LocalDateTime lastUpdateDate = journalEvenementService.derniereModification(eventId).orElse(null);
-        return evenementMapper.toDetailDto(event, computeCountdown(event.getDate()), lastUpdateDate);
+        String coverUrl = event.getImageId() != null ? imageStorageService.toUrl(event.getImageId()) : null;
+        return evenementMapper.toDetailDto(event, computeCountdown(event.getDate()), lastUpdateDate, coverUrl);
     }
 
     private List<ModificationChamp> computeModifications(Evenement event, EventPatchDto patch) {
@@ -173,6 +184,32 @@ public class EvenementService {
 
     private static String blankToNull(String s) {
         return (s == null || s.isBlank()) ? null : s;
+    }
+
+    /**
+     * Met à jour la couverture de l'événement. Supprime l'ancienne image si elle existait.
+     *
+     * @param eventId       l'identifiant de l'événement
+     * @param utilisateurId l'identifiant de l'utilisateur connecté
+     * @param file          le nouveau fichier image
+     * @return l'URL de la nouvelle image
+     * @throws EvenementNotFoundException   si l'événement n'existe pas
+     * @throws EvenementNotAllowedException si l'utilisateur n'est pas le propriétaire
+     * @throws ImageStorageException        en cas d'erreur de stockage
+     */
+    public CoverUrlDto updateCover(UUID eventId, UUID utilisateurId, MultipartFile file) {
+        Evenement event = getEvent(eventId, utilisateurId);
+        try {
+            if (event.getImageId() != null) {
+                imageStorageService.delete(event.getImageId());
+            }
+            String imageId = imageStorageService.upload(file);
+            event.setImageId(imageId);
+            evenementRepository.save(event);
+            return new CoverUrlDto(imageStorageService.toUrl(imageId));
+        } catch (IOException e) {
+            throw new ImageStorageException("Erreur de stockage de l'image pour l'événement " + eventId, e);
+        }
     }
 
     /**
