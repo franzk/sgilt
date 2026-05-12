@@ -20,7 +20,7 @@
         </button>
       </div>
       <button class="edit-img" type="button" @click="openEditDialog">
-        {{ $t('event.board.edit-image') }}
+        {{ $t('event.board.edit-title-image') }}
       </button>
     </div>
     <div v-else class="cover-banner-skeleton skeleton-text shimmer-container" />
@@ -35,10 +35,16 @@
 
       <!-- Countdown — attend les meta -->
       <p v-if="!metaPending && event" class="subtitle">
-        <template v-if="daysUntilEvent !== null && daysUntilEvent >= 0">J-{{ daysUntilEvent }} : </template>
+        <template v-if="daysUntilEvent !== null && daysUntilEvent >= 0"
+          >J-{{ daysUntilEvent }} :
+        </template>
         {{ $t('event.widget.countdown.' + event.countdown) }}
       </p>
-      <div v-else class="skeleton-text shimmer-container widget-countdown-skeleton" aria-hidden="true" />
+      <div
+        v-else
+        class="skeleton-text shimmer-container widget-countdown-skeleton"
+        aria-hidden="true"
+      />
 
       <!-- Pills + action — attendent les counts -->
       <div class="pills">
@@ -103,7 +109,6 @@
             <div v-for="i in 3" :key="i" class="skeleton-card skeleton-text shimmer-container" />
           </template>
         </div>
-
       </section>
     </div>
 
@@ -131,9 +136,9 @@ const route = useRoute()
 const eventId = route.params.eventId as string
 
 // ── 3 appels parallèles ───────────────────────────────────────────────────────
-const { event, clientInfo, pending: metaPending }              = useEventDetail(eventId)
-const { counts, pending: countsPending }                       = useEventCounts(eventId)
-const { reservations, pending: reservationsPending }           = useEventReservations(eventId)
+const { event, clientInfo, pending: metaPending } = useEventDetail(eventId)
+const { counts, pending: countsPending } = useEventCounts(eventId)
+const { reservations, pending: reservationsPending } = useEventReservations(eventId)
 
 // ── Cover image ────────────────────────────────────────────────────────────────
 const coverImage = computed(() => (event.value ? resolveEventCover(event.value) : ''))
@@ -178,7 +183,9 @@ function onClientInfoUpdated(_patch: Partial<ClientContactInfo>) {
 }
 
 const editDialogOpen = ref(false)
-function openEditDialog() { editDialogOpen.value = true }
+function openEditDialog() {
+  editDialogOpen.value = true
+}
 
 async function onEditSave(patch: EventPatch) {
   if (!event.value) return
@@ -188,12 +195,12 @@ async function onEditSave(patch: EventPatch) {
 
 // ── Pills statuts depuis les counts ───────────────────────────────────────────
 const STATUS_PILL_ICONS: Record<ReservationStatus, string> = {
-  nouvelle:     '!',
-  en_discussion:'↩',
-  confirmee:    '✓',
-  refusee:      '✕',
-  annulee:      '✕',
-  realisee:     '✓',
+  nouvelle: '!',
+  en_discussion: '↩',
+  confirmee: '✓',
+  refusee: '✕',
+  annulee: '✕',
+  realisee: '✓',
 }
 
 const statusPills = computed(() => {
@@ -201,12 +208,36 @@ const statusPills = computed(() => {
   const c = counts.value
   return (
     [
-      { status: 'nouvelle'      as ReservationStatus, icon: STATUS_PILL_ICONS.nouvelle,      count: c.nouvelleCount },
-      { status: 'en_discussion' as ReservationStatus, icon: STATUS_PILL_ICONS.en_discussion, count: c.inDiscussionCount },
-      { status: 'confirmee'     as ReservationStatus, icon: STATUS_PILL_ICONS.confirmee,     count: c.confirmedCount },
-      { status: 'refusee'       as ReservationStatus, icon: STATUS_PILL_ICONS.refusee,       count: c.refuseeCount },
-      { status: 'annulee'       as ReservationStatus, icon: STATUS_PILL_ICONS.annulee,       count: c.annuleeCount },
-      { status: 'realisee'      as ReservationStatus, icon: STATUS_PILL_ICONS.realisee,      count: c.realiseeCount },
+      {
+        status: 'nouvelle' as ReservationStatus,
+        icon: STATUS_PILL_ICONS.nouvelle,
+        count: c.nouvelleCount,
+      },
+      {
+        status: 'en_discussion' as ReservationStatus,
+        icon: STATUS_PILL_ICONS.en_discussion,
+        count: c.inDiscussionCount,
+      },
+      {
+        status: 'confirmee' as ReservationStatus,
+        icon: STATUS_PILL_ICONS.confirmee,
+        count: c.confirmedCount,
+      },
+      {
+        status: 'refusee' as ReservationStatus,
+        icon: STATUS_PILL_ICONS.refusee,
+        count: c.refuseeCount,
+      },
+      {
+        status: 'annulee' as ReservationStatus,
+        icon: STATUS_PILL_ICONS.annulee,
+        count: c.annuleeCount,
+      },
+      {
+        status: 'realisee' as ReservationStatus,
+        icon: STATUS_PILL_ICONS.realisee,
+        count: c.realiseeCount,
+      },
     ] as { status: ReservationStatus; icon: string; count: number }[]
   ).filter((p) => p.count > 0)
 })
@@ -475,7 +506,9 @@ $desktop: $breakpoint-desktop;
   font-weight: 500;
   color: $text-secondary;
   cursor: pointer;
-  transition: border-color 150ms ease, color 150ms ease;
+  transition:
+    border-color 150ms ease,
+    color 150ms ease;
 
   &:hover {
     border-color: $brand-primary;

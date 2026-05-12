@@ -362,7 +362,7 @@
       "mobile": {
         "reservations": "Aucune réservation confirmée pour le moment. | 1 réservation confirmée pour le moment. | {count} réservations confirmées pour le moment."
       },
-      "edit-image": "Modifier l'image",
+      "edit-title-image": "Modifier",
       "edit-event-aria": "Modifier l'événement"
     },
     "block": {
