@@ -21,16 +21,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,9 +46,35 @@ class EvenementServiceTest {
     @InjectMocks
     private EvenementService evenementService;
 
-    // -------------------------------------------------------------------------
-    // getUserEvents
-    // -------------------------------------------------------------------------
+    // ── Helpers partagés ────────────────────────────────────────────────────────
+
+    private Evenement ownerEvent(UnaryOperator<Evenement.EvenementBuilder> configure) {
+        Utilisateur owner = mock(Utilisateur.class);
+        when(owner.getId()).thenReturn(USER_ID);
+        return configure.apply(
+                Evenement.builder().id(EVENT_ID).utilisateur(owner).date(LocalDate.now())
+        ).build();
+    }
+
+    private void whenEventFound(Evenement event) {
+        when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
+        when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
+        when(evenementMapper.toDetailDto(any(), any(), any())).thenReturn(mock(EventDetailDto.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<ModificationChamp> captureModifications(Evenement event) {
+        ArgumentCaptor<List<ModificationChamp>> captor =
+                ArgumentCaptor.forClass((Class<List<ModificationChamp>>) (Class<?>) List.class);
+        verify(journalEvenementService).save(eq(event), captor.capture());
+        return captor.getValue();
+    }
+
+    private EventPatchDto emptyPatch() {
+        return new EventPatchDto(null, null, null, null, null, null, null, null);
+    }
+
+    // ── GetUserEvents ────────────────────────────────────────────────────────────
 
     @Nested
     class GetUserEvents {
@@ -94,9 +119,89 @@ class EvenementServiceTest {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // patchEvent
-    // -------------------------------------------------------------------------
+    // ── GetEventDetail ────────────────────────────────────────────────────────────
+
+    @Nested
+    class GetEventDetail {
+
+        @Test
+        void givenNoJournalEntry_whenGetEventDetail_thenMapperCalledWithNullLastUpdateDate() {
+            Evenement event = ownerEvent(b -> b);
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
+            when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
+            when(evenementMapper.toDetailDto(any(), any(), any())).thenReturn(mock(EventDetailDto.class));
+
+            evenementService.getEventDetail(EVENT_ID, USER_ID);
+
+            verify(evenementMapper).toDetailDto(eq(event), any(), isNull());
+        }
+
+        @Test
+        void givenJournalEntry_whenGetEventDetail_thenMapperCalledWithLastUpdateDate() {
+            LocalDateTime lastUpdate = LocalDateTime.of(2026, 5, 12, 10, 0);
+            Evenement event = ownerEvent(b -> b);
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
+            when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.of(lastUpdate));
+            when(evenementMapper.toDetailDto(any(), any(), any())).thenReturn(mock(EventDetailDto.class));
+
+            evenementService.getEventDetail(EVENT_ID, USER_ID);
+
+            verify(evenementMapper).toDetailDto(eq(event), any(), eq(lastUpdate));
+        }
+    }
+
+    // ── VerifierAccesLectureJournal ───────────────────────────────────────────
+
+    @Nested
+    class VerifierAccesLectureJournal {
+
+        @Test
+        void givenOwner_whenVerifierAcces_thenNoException() {
+            Evenement event = ownerEvent(b -> b);
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
+
+            assertThatNoException().isThrownBy(
+                    () -> evenementService.verifierAccesLectureJournal(EVENT_ID, USER_ID)
+            );
+        }
+
+        @Test
+        void givenPrestataireWithReservation_whenVerifierAcces_thenNoException() {
+            UUID prestataireUserId = UUID.randomUUID();
+            Utilisateur otherOwner = mock(Utilisateur.class);
+            when(otherOwner.getId()).thenReturn(UUID.randomUUID());
+            Evenement event = Evenement.builder().id(EVENT_ID).utilisateur(otherOwner).date(LocalDate.now()).build();
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
+            when(reservationService.prestataireAReservationSurEvenement(EVENT_ID, prestataireUserId)).thenReturn(true);
+
+            assertThatNoException().isThrownBy(
+                    () -> evenementService.verifierAccesLectureJournal(EVENT_ID, prestataireUserId)
+            );
+        }
+
+        @Test
+        void givenUnauthorizedUser_whenVerifierAcces_thenThrowsNotAllowedException() {
+            UUID randomUserId = UUID.randomUUID();
+            Utilisateur otherOwner = mock(Utilisateur.class);
+            when(otherOwner.getId()).thenReturn(UUID.randomUUID());
+            Evenement event = Evenement.builder().id(EVENT_ID).utilisateur(otherOwner).date(LocalDate.now()).build();
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
+            when(reservationService.prestataireAReservationSurEvenement(EVENT_ID, randomUserId)).thenReturn(false);
+
+            assertThatThrownBy(() -> evenementService.verifierAccesLectureJournal(EVENT_ID, randomUserId))
+                    .isInstanceOf(EvenementNotAllowedException.class);
+        }
+
+        @Test
+        void givenEventNotFound_whenVerifierAcces_thenThrowsNotFoundException() {
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> evenementService.verifierAccesLectureJournal(EVENT_ID, USER_ID))
+                    .isInstanceOf(EvenementNotFoundException.class);
+        }
+    }
+
+    // ── PatchEvent ────────────────────────────────────────────────────────────
 
     @Nested
     class PatchEvent {
@@ -196,10 +301,10 @@ class EvenementServiceTest {
         @Test
         void givenEventNotFound_whenPatchEvent_thenThrowsEvenementNotFoundException() {
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.empty());
-            EventPatchDto patch = emptyPatch();
 
-            assertThatThrownBy(() -> evenementService.patchEvent(EVENT_ID, USER_ID, patch))
-                    .isInstanceOf(EvenementNotFoundException.class);
+            var patch = emptyPatch();
+            assertThrows(EvenementNotFoundException.class,
+                    () -> evenementService.patchEvent(EVENT_ID, USER_ID, patch));
         }
 
         @Test
@@ -208,38 +313,10 @@ class EvenementServiceTest {
             when(otherOwner.getId()).thenReturn(UUID.randomUUID());
             Evenement event = Evenement.builder().id(EVENT_ID).utilisateur(otherOwner).date(LocalDate.now()).build();
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            EventPatchDto patch = emptyPatch();
 
+            var patch = emptyPatch();
             assertThrows(EvenementNotAllowedException.class,
                     () -> evenementService.patchEvent(EVENT_ID, USER_ID, patch));
-
-        }
-
-        // -- Helpers --
-
-        private Evenement ownerEvent(UnaryOperator<Evenement.EvenementBuilder> configure) {
-            Utilisateur owner = mock(Utilisateur.class);
-            when(owner.getId()).thenReturn(USER_ID);
-            return configure.apply(
-                    Evenement.builder().id(EVENT_ID).utilisateur(owner).date(LocalDate.now())
-            ).build();
-        }
-
-        private void whenEventFound(Evenement event) {
-            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            when(evenementMapper.toDetailDto(any(), any())).thenReturn(mock(EventDetailDto.class));
-        }
-
-        @SuppressWarnings("unchecked")
-        private List<ModificationChamp> captureModifications(Evenement event) {
-            ArgumentCaptor<List<ModificationChamp>> captor =
-                    ArgumentCaptor.forClass((Class<List<ModificationChamp>>) (Class<?>) List.class);
-            verify(journalEvenementService).save(eq(event), captor.capture());
-            return captor.getValue();
-        }
-
-        private EventPatchDto emptyPatch() {
-            return new EventPatchDto(null, null, null, null, null, null, null, null);
         }
     }
 }

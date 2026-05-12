@@ -90,6 +90,32 @@ class ReservationServiceTest {
         }
     }
 
+    // -------------------------------------------------------------------------
+    // prestataireAReservationSurEvenement
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class PrestataireAReservationSurEvenement {
+
+        private static final UUID PRESTATAIRE_USER_ID = UUID.randomUUID();
+
+        @Test
+        void givenReservationExists_whenPrestataireAReservationSurEvenement_thenReturnsTrue() {
+            when(reservationRepository.existsByEvenementIdAndPrestataireUtilisateurId(EVENT_ID, PRESTATAIRE_USER_ID))
+                    .thenReturn(true);
+
+            assertThat(reservationService.prestataireAReservationSurEvenement(EVENT_ID, PRESTATAIRE_USER_ID)).isTrue();
+        }
+
+        @Test
+        void givenNoReservation_whenPrestataireAReservationSurEvenement_thenReturnsFalse() {
+            when(reservationRepository.existsByEvenementIdAndPrestataireUtilisateurId(EVENT_ID, PRESTATAIRE_USER_ID))
+                    .thenReturn(false);
+
+            assertThat(reservationService.prestataireAReservationSurEvenement(EVENT_ID, PRESTATAIRE_USER_ID)).isFalse();
+        }
+    }
+
     private Reservation reservationWith(ReservationStatus status) {
         return Reservation.builder().id(UUID.randomUUID()).status(status).build();
     }
