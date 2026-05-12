@@ -26,6 +26,10 @@ spring:
           issuer-uri: ${KEYCLOAK_ISSUER:http://localhost:5028/realms/sgilt}
 
 sgilt:
+  image:
+    storage: ${IMAGE_STORAGE:local} # local | cloudflare
+    local:
+      path: ${IMAGE_STORAGE_LOCAL_PATH:./local-images}
   jwt:
     confirmation-secret: ${CONFIRMATION_TOKEN_SECRET}
     confirmation-expiration-hours: 24
