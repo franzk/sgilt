@@ -19,7 +19,7 @@
         role="dialog"
         aria-modal="true"
         :aria-label="title"
-        @click.self="open = false"
+        @mousedown.self="open = false"
       >
         <div class="panel" :style="props.maxWidth ? { maxWidth: props.maxWidth } : {}">
           <div class="header">

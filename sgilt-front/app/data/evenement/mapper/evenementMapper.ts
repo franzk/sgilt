@@ -17,7 +17,7 @@ import type { ReservationStatus } from '~/data/reservation/domain/ReservationSta
 export function mapEvenementSummary(dto: EvenementSummaryDto): EventSummary {
   return {
     id: dto.id,
-    title: dto.name,
+    title: dto.title,
     date: dto.date ? new Date(dto.date) : undefined,
     ville: dto.ville,
     coverImage: dto.coverUrl ?? null,

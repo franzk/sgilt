@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public record EvenementSummaryDto(
         UUID id,
-        String name,
+        String title,
         LocalDate date,
         String ville,
         String coverUrl,

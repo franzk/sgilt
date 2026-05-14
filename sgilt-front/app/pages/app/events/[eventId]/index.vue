@@ -312,8 +312,6 @@ $desktop: $breakpoint-desktop;
 
   .title-row {
     position: relative;
-    display: flex;
-    align-items: flex-end;
     gap: $spacing-xs;
   }
 

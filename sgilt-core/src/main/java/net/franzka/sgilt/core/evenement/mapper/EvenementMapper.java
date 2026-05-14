@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public interface EvenementMapper {
 
     @Mapping(source = "evenement.id",               target = "id")
-    @Mapping(source = "evenement.name",             target = "name")
+    @Mapping(source = "evenement.title",            target = "title")
     @Mapping(source = "evenement.date",             target = "date")
     @Mapping(source = "evenement.ville",            target = "ville")
     @Mapping(source = "evenement.eventType",        target = "eventType")
@@ -26,7 +26,6 @@ public interface EvenementMapper {
 
     ClientInfoDto toClientInfo(Utilisateur utilisateur);
 
-    @Mapping(source = "evenement.name",         target = "title")
     @Mapping(source = "evenement.notePartagee", target = "sharedNote")
     @Mapping(source = "evenement.description",  target = "description")
     @Mapping(source = "evenement.momentCle",    target = "momentCle")

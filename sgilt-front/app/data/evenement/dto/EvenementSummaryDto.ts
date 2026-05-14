@@ -3,7 +3,7 @@
  */
 export interface EvenementSummaryDto {
   id: string
-  name: string
+  title: string
   date?: string
   ville?: string
   coverUrl?: string | null

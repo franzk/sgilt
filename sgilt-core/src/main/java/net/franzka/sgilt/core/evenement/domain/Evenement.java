@@ -31,7 +31,7 @@ public class Evenement {
     private Utilisateur utilisateur;
 
     @Column(nullable = false)
-    private String name;
+    private String title;
 
     @Column(nullable = false)
     private LocalDate date;
