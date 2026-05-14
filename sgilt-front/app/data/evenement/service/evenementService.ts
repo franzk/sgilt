@@ -1,11 +1,12 @@
 /**
  * Couche service — orchestration des appels API evenement
  */
-import { getEvenementsApi, getEventDetail, getEventCounts, getEventReservations, getEventJournal, uploadEventCoverApi, selectEventCoverApi } from '../api/evenementApi'
+import { getEvenementsApi, getEventDetail, getEventCounts, getEventReservations, getEventJournal, patchEventApi, uploadEventCoverApi, selectEventCoverApi } from '../api/evenementApi'
 import { mapEvenementSummary, mapEventDetail, mapEventCounts, mapEventReservation, mapJournalEntry } from '../mapper/evenementMapper'
 import type { EventSummary } from '../domain/EventSummary'
 import type { EventDetail } from '../domain/EventDetail'
 import type { EventCounts } from '../domain/EventCounts'
+import type { EventPatch } from '../domain/EventPatch'
 import type { JournalEntry } from '../domain/JournalEntry'
 import type { ClientContactInfo } from '~/data/reservation/domain/ClientContactInfo'
 import type { Reservation } from '~/data/reservation/domain/Reservation'
@@ -33,6 +34,11 @@ export async function fetchEventReservations(id: string): Promise<Reservation[]>
 export async function fetchEventJournal(id: string, page: number): Promise<{ entries: JournalEntry[]; last: boolean }> {
   const dto = await getEventJournal(id, page)
   return { entries: dto.content.map(mapJournalEntry), last: dto.last }
+}
+
+export async function patchEvent(eventId: string, patch: EventPatch): Promise<EventDetail> {
+  const dto = await patchEventApi(eventId, patch)
+  return mapEventDetail(dto).event
 }
 
 export async function uploadEventCover(eventId: string, file: File): Promise<string> {

@@ -4,7 +4,12 @@
       <!-- Titre -->
       <div class="field">
         <label class="label">{{ $t('event.edit-dialog.field-title') }}</label>
-        <input v-model="draft.title" class="input" type="text" :placeholder="$t('event.edit-dialog.title-placeholder')" />
+        <input
+          v-model="draft.title"
+          class="input"
+          type="text"
+          :placeholder="$t('event.edit-dialog.title-placeholder')"
+        />
       </div>
 
       <!-- Couverture -->
@@ -51,7 +56,9 @@
 
       <!-- Actions -->
       <div class="actions">
-        <SgiltButton variant="secondary" @click="open = false">{{ $t('common.cancel') }}</SgiltButton>
+        <SgiltButton variant="secondary" @click="open = false">{{
+          $t('common.cancel')
+        }}</SgiltButton>
         <SgiltButton :loading="saving" @click="handleSave">
           {{ $t('common.save') }}
         </SgiltButton>
@@ -130,9 +137,7 @@ watch(open, (val) => {
   if (val) resetDraft()
 })
 
-const isCustomUpload = computed(
-  () => draft.activeBankKey === '' && draft.coverDisplayUrl !== '',
-)
+const isCustomUpload = computed(() => draft.activeBankKey === '' && draft.coverDisplayUrl !== '')
 
 // ── Cover — sélection banque ───────────────────────────────────────────────────
 
@@ -237,11 +242,14 @@ $desktop: $breakpoint-desktop;
 
     .cover-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: $spacing-xs;
       transition: opacity 150ms ease;
 
-      &.loading { opacity: 0.5; pointer-events: none; }
+      &.loading {
+        opacity: 0.5;
+        pointer-events: none;
+      }
 
       @media (min-width: $desktop) {
         grid-template-columns: repeat(5, 1fr);
@@ -259,8 +267,12 @@ $desktop: $breakpoint-desktop;
         transition: border-color 120ms ease;
         padding: 0;
 
-        &.selected { border-color: $brand-accent; }
-        &:disabled { cursor: default; }
+        &.selected {
+          border-color: $brand-accent;
+        }
+        &:disabled {
+          cursor: default;
+        }
 
         .cover-label {
           position: absolute;
@@ -316,7 +328,10 @@ $desktop: $breakpoint-desktop;
         color: $brand-primary;
       }
 
-      &:disabled { opacity: 0.5; cursor: default; }
+      &:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
 
       .caption {
         display: flex;

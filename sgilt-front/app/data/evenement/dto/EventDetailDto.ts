@@ -28,6 +28,7 @@ export interface EventDetailDto {
  * DTO — corps de la requête PATCH /events/:id
  */
 export interface EventPatchRequestDto {
+  title?: string
   lieu?: string
   sharedNote?: string
   eventType?: string

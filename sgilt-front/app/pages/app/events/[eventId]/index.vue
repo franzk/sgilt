@@ -136,6 +136,7 @@ import type { ReservationStatus, ClientContactInfo } from '~/types/event'
 import { CLIENT_STATUS_CONFIG, RESERVATION_STATUS_ORDER } from '~/constants/reservation-status'
 import { EditIcon } from '@remixicons/vue/line'
 import { useEventDetail, useEventCounts, useEventReservations } from '~/data/evenement/useEvenement'
+import { patchEvent } from '~/data/evenement/service/evenementService'
 
 definePageMeta({ layout: 'app' })
 
@@ -198,8 +199,7 @@ function openEditDialog() {
 
 async function onEditSave(patch: EventPatch) {
   if (!event.value) return
-  // TODO: appel PATCH /events/:id pour le titre
-  Object.assign(event.value, patch)
+  event.value = await patchEvent(eventId, patch)
 }
 
 function onCoverUpdated(coverUrl: string) {

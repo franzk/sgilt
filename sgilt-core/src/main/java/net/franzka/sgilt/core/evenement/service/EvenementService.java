@@ -157,6 +157,7 @@ public class EvenementService {
 
     private List<ModificationChamp> computeModifications(Evenement event, EventPatchDto patch) {
         List<ModificationChamp> modifications = new ArrayList<>();
+        if (patch.title()       != null) addIfUpdated(modifications, "titre",        event.getName(),       blankToNull(patch.title()));
         if (patch.lieu()        != null) addIfUpdated(modifications, "lieu",         event.getLieu(),        blankToNull(patch.lieu()));
         if (patch.sharedNote()  != null) addIfUpdated(modifications, "notePartagee", event.getNotePartagee(), patch.sharedNote());
         if (patch.eventType()   != null) addIfUpdated(modifications, "eventType",    event.getEventType(),   blankToNull(patch.eventType()));
@@ -175,6 +176,7 @@ public class EvenementService {
     }
 
     private void applyPatch(Evenement event, EventPatchDto patch) {
+        if (patch.title()       != null) event.setName(blankToNull(patch.title()));
         if (patch.lieu()        != null) event.setLieu(blankToNull(patch.lieu()));
         if (patch.sharedNote()  != null) event.setNotePartagee(patch.sharedNote());
         if (patch.eventType()   != null) event.setEventType(blankToNull(patch.eventType()));

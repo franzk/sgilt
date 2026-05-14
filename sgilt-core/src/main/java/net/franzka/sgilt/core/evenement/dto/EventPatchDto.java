@@ -1,6 +1,7 @@
 package net.franzka.sgilt.core.evenement.dto;
 
 public record EventPatchDto(
+        String title,
         String lieu,
         String sharedNote,
         String eventType,
