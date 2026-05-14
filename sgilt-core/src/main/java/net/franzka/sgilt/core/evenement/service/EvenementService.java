@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Set;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -41,6 +42,8 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class EvenementService {
+
+    private static final Set<String> PROTECTED_PREFIXES = Set.of("bank/");
 
     private final EvenementRepository evenementRepository;
     private final ReservationService reservationService;
@@ -199,10 +202,8 @@ public class EvenementService {
      */
     public CoverUrlDto updateCover(UUID eventId, UUID utilisateurId, MultipartFile file) {
         Evenement event = getEvent(eventId, utilisateurId);
+        supprimerAncienneImageSiDeletable(event.getImageId());
         try {
-            if (event.getImageId() != null) {
-                imageStorageService.delete(event.getImageId());
-            }
             String imageId = imageStorageService.upload(file);
             event.setImageId(imageId);
             evenementRepository.save(event);
@@ -210,6 +211,38 @@ public class EvenementService {
         } catch (IOException e) {
             throw new ImageStorageException("Erreur de stockage de l'image pour l'événement " + eventId, e);
         }
+    }
+
+    /**
+     * Sélectionne une image de la banque comme couverture de l'événement.
+     * Supprime l'ancienne image si elle est un upload (non protégée).
+     *
+     * @param eventId       l'identifiant de l'événement
+     * @param utilisateurId l'identifiant de l'utilisateur connecté
+     * @param imageId       l'imageId de l'image sélectionnée dans la banque
+     * @return l'URL de la nouvelle couverture
+     * @throws EvenementNotFoundException   si l'événement n'existe pas
+     * @throws EvenementNotAllowedException si l'utilisateur n'est pas le propriétaire
+     */
+    public CoverUrlDto selectCover(UUID eventId, UUID utilisateurId, String imageId) {
+        Evenement event = getEvent(eventId, utilisateurId);
+        supprimerAncienneImageSiDeletable(event.getImageId());
+        event.setImageId(imageId);
+        evenementRepository.save(event);
+        return new CoverUrlDto(imageStorageService.toUrl(imageId));
+    }
+
+    private void supprimerAncienneImageSiDeletable(String imageId) {
+        if (imageId == null || isProtectedImageId(imageId)) return;
+        try {
+            imageStorageService.delete(imageId);
+        } catch (IOException e) {
+            throw new ImageStorageException("Erreur de suppression de l'ancienne image", e);
+        }
+    }
+
+    private static boolean isProtectedImageId(String imageId) {
+        return PROTECTED_PREFIXES.stream().anyMatch(imageId::startsWith);
     }
 
     /**

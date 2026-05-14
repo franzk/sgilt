@@ -1,19 +1,29 @@
 import type { EventDetail } from '~/data/evenement/domain/EventDetail'
 
-export const DEFAULT_COVERS: Record<string, string> = {
-  mariage:
-    'https://images.unsplash.com/photo-1519741497674-611481863552?w=1400&auto=format&fit=crop',
-  anniversaire:
-    'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=1400&auto=format&fit=crop',
-  soiree_privee:
-    'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1400&auto=format&fit=crop',
-  fete_entreprise:
-    'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1400&auto=format&fit=crop',
-  autre: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1400&auto=format&fit=crop',
+/**
+ * ImageIds fixes de la banque d'images (servis par le back via /images/bank/*).
+ * Les fichiers correspondants sont dans sgilt-core/image-storage/bank/.
+ */
+export const BANK_IMAGE_IDS: Record<string, string> = {
+  mariage: 'bank/mariage',
+  anniversaire: 'bank/anniversaire',
+  soiree_privee: 'bank/soiree_privee',
+  fete_entreprise: 'bank/fete_entreprise',
+  autre: 'bank/autre',
 }
 
+/**
+ * Retourne l'URL de couverture à afficher pour un événement.
+ * Utilise la couverture personnalisée si elle existe, sinon la banque d'images selon le type.
+ *
+ * @param event   les champs coverImage et eventType de l'événement
+ * @param toUrl   fonction de construction d'URL depuis un imageId (issue de useImageUrl())
+ */
 export function resolveEventCover(
   event: Pick<EventDetail, 'coverImage' | 'eventType'>,
+  toUrl: (imageId: string) => string,
 ): string {
-  return event.coverImage ?? DEFAULT_COVERS[event.eventType ?? ''] ?? DEFAULT_COVERS.autre!
+  if (event.coverImage) return event.coverImage
+  const imageId = BANK_IMAGE_IDS[event.eventType ?? ''] ?? BANK_IMAGE_IDS.autre!
+  return toUrl(imageId)
 }

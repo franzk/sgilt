@@ -1,5 +1,6 @@
 package net.franzka.sgilt.core.evenement.api;
 
+import net.franzka.sgilt.core.evenement.dto.CoverSelectDto;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
 import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
 import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
@@ -50,5 +51,11 @@ public interface EvenementApi {
     ResponseEntity<CoverUrlDto> uploadCover(
             @PathVariable UUID eventId,
             @RequestPart("file") MultipartFile file
+    );
+
+    @PatchMapping("/{eventId}/cover/select")
+    ResponseEntity<CoverUrlDto> selectCover(
+            @PathVariable UUID eventId,
+            @RequestBody CoverSelectDto body
     );
 }

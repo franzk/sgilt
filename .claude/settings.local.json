@@ -26,7 +26,10 @@
       "Bash(node -e ' *)",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-core\" -Recurse -Directory)",
       "Bash(Select-Object -ExpandProperty FullName)",
-      "Bash(Sort-Object)"
+      "Bash(Sort-Object)",
+      "Bash(Remove-Item -Force \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-core\\\\src\\\\main\\\\java\\\\net\\\\franzka\\\\sgilt\\\\core\\\\image\\\\local\\\\LocalImageStorage.java\" -ErrorAction SilentlyContinue)",
+      "Bash(Remove-Item -Force \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-core\\\\src\\\\main\\\\java\\\\net\\\\franzka\\\\sgilt\\\\core\\\\image\\\\local\\\\LocalImageController.java\" -ErrorAction SilentlyContinue)",
+      "Bash(Remove-Item \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-core\\\\src\\\\main\\\\java\\\\net\\\\franzka\\\\sgilt\\\\core\\\\image\\\\local\" -ErrorAction SilentlyContinue)"
     ]
   }
 }

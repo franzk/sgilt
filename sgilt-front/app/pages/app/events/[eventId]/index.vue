@@ -113,7 +113,14 @@
     </div>
 
     <!-- ── Dialog modification titre + couverture ────────────────────────────── -->
-    <EventEditDialog v-if="event" v-model:open="editDialogOpen" :event="event" @save="onEditSave" />
+    <EventEditDialog
+      v-if="event"
+      v-model:open="editDialogOpen"
+      :event="event"
+      :event-id="eventId"
+      @save="onEditSave"
+      @cover-updated="onCoverUpdated"
+    />
   </div>
 </template>
 
@@ -124,6 +131,7 @@ import EventEditDialog from '~/components/app/EventEditDialog.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import { resolveEventCover } from '~/utils/eventCovers'
 import type { EventPatch } from '~/data/evenement/domain/EventPatch'
+import type { EventDetail } from '~/data/evenement/domain/EventDetail'
 import type { ReservationStatus, ClientContactInfo } from '~/types/event'
 import { CLIENT_STATUS_CONFIG, RESERVATION_STATUS_ORDER } from '~/constants/reservation-status'
 import { EditIcon } from '@remixicons/vue/line'
@@ -141,7 +149,8 @@ const { counts, pending: countsPending } = useEventCounts(eventId)
 const { reservations, pending: reservationsPending } = useEventReservations(eventId)
 
 // ── Cover image ────────────────────────────────────────────────────────────────
-const coverImage = computed(() => (event.value ? resolveEventCover(event.value) : ''))
+const { toUrl } = useImageUrl()
+const coverImage = computed(() => (event.value ? resolveEventCover(event.value, toUrl) : ''))
 
 // ── Parallax ───────────────────────────────────────────────────────────────────
 const bannerRef = ref<HTMLElement | null>(null)
@@ -189,8 +198,12 @@ function openEditDialog() {
 
 async function onEditSave(patch: EventPatch) {
   if (!event.value) return
-  // TODO: call PATCH /events/:id
+  // TODO: appel PATCH /events/:id pour le titre
   Object.assign(event.value, patch)
+}
+
+function onCoverUpdated(coverUrl: string) {
+  if (event.value) (event.value as EventDetail).coverImage = coverUrl
 }
 
 // ── Pills statuts depuis les counts ───────────────────────────────────────────

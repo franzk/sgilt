@@ -11,23 +11,27 @@
       <div class="field">
         <label class="label">{{ $t('event.edit-dialog.field-cover') }}</label>
 
-        <div class="cover-grid">
+        <div class="cover-grid" :class="{ loading: uploading }">
           <button
-            v-for="[key, url] in coverEntries"
+            v-for="{ key, imageId, url } in bankCovers"
             :key="key"
             class="cover-tile"
-            :class="{ selected: draft.coverImage === url }"
+            :class="{ selected: draft.activeBankKey === key }"
             type="button"
+            :disabled="uploading"
             :style="{ backgroundImage: `url(${url})` }"
-            @click="draft.coverImage = url"
+            @click="handleBankSelect(key, imageId)"
           >
             <span class="cover-label">{{ $t(`event.edit-dialog.cover-labels.${key}`) }}</span>
-            <span v-if="draft.coverImage === url" class="cover-check" aria-hidden="true">✓</span>
+            <span v-if="draft.activeBankKey === key" class="cover-check" aria-hidden="true">✓</span>
           </button>
         </div>
 
-        <button class="upload-btn" type="button" @click="uploadRef?.click()">
-          <span class="caption"><ImageAddIcon /> {{ $t('event.edit-dialog.upload-button') }}</span>
+        <button class="upload-btn" type="button" :disabled="uploading" @click="uploadRef?.click()">
+          <span class="caption">
+            <ImageAddIcon />
+            {{ uploading ? $t('common.saving') : $t('event.edit-dialog.upload-button') }}
+          </span>
         </button>
         <input
           ref="uploadRef"
@@ -37,10 +41,11 @@
           @change="handleUpload"
         />
 
+        <!-- Aperçu d'un upload personnalisé -->
         <div
-          v-if="!isPresetCover(draft.coverImage)"
+          v-if="isCustomUpload"
           class="custom-preview"
-          :style="{ backgroundImage: `url(${draft.coverImage})` }"
+          :style="{ backgroundImage: `url(${draft.coverDisplayUrl})` }"
         />
       </div>
 
@@ -60,62 +65,103 @@ import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import type { EventDetail } from '~/data/evenement/domain/EventDetail'
 import type { EventPatch } from '~/data/evenement/domain/EventPatch'
-import { DEFAULT_COVERS, resolveEventCover } from '~/utils/eventCovers'
+import { BANK_IMAGE_IDS, resolveEventCover } from '~/utils/eventCovers'
+import { uploadEventCover, selectEventCover } from '~/data/evenement/service/evenementService'
 import { ImageAddIcon } from '@remixicons/vue/line'
-
-// ── Constants ─────────────────────────────────────────────────────────────────
-
-const coverEntries = Object.entries(DEFAULT_COVERS) as [string, string][]
-const presetUrls = new Set(Object.values(DEFAULT_COVERS))
-
-function isPresetCover(url: string): boolean {
-  return presetUrls.has(url)
-}
 
 // ── Props / emits ─────────────────────────────────────────────────────────────
 
-interface EditDraft {
-  title: string
-  coverImage: string
-}
+const props = defineProps<{
+  event: EventDetail
+  eventId: string
+}>()
 
-const props = defineProps<{ event: EventDetail }>()
-const emit = defineEmits<{ save: [patch: EventPatch] }>()
+const emit = defineEmits<{
+  save: [patch: EventPatch]
+  coverUpdated: [coverUrl: string]
+}>()
 
 const open = defineModel<boolean>('open', { required: true })
 
+// ── Image URL ─────────────────────────────────────────────────────────────────
+
+const { toUrl } = useImageUrl()
+
+const bankCovers = computed(() =>
+  Object.entries(BANK_IMAGE_IDS).map(([key, imageId]) => ({ key, imageId, url: toUrl(imageId) })),
+)
+
 // ── Draft ─────────────────────────────────────────────────────────────────────
 
-const draft = reactive<EditDraft>({ title: '', coverImage: DEFAULT_COVERS.autre! })
+interface EditDraft {
+  title: string
+  coverDisplayUrl: string
+  activeBankKey: string   // clé de la tuile banque sélectionnée, '' = upload perso
+}
+
+const draft = reactive<EditDraft>({ title: '', coverDisplayUrl: '', activeBankKey: '' })
 
 watch(open, (val) => {
-  if (val) {
-    draft.title = props.event.title
-    draft.coverImage = resolveEventCover(props.event)
-  }
+  if (!val) return
+  draft.title = props.event.title
+  draft.coverDisplayUrl = resolveEventCover(props.event, toUrl)
+  // Détecter si la cover actuelle est une image de banque
+  const bankEntry = Object.entries(BANK_IMAGE_IDS).find(
+    ([, imageId]) => props.event.coverImage === toUrl(imageId),
+  )
+  draft.activeBankKey = bankEntry?.[0] ?? ''
 })
 
-// ── Upload ────────────────────────────────────────────────────────────────────
+// Aperçu personnalisé visible uniquement hors sélection banque
+const isCustomUpload = computed(
+  () => draft.activeBankKey === '' && draft.coverDisplayUrl !== '',
+)
+
+// ── Cover — sélection banque ───────────────────────────────────────────────────
+
+const uploading = ref(false)
+
+async function handleBankSelect(key: string, imageId: string): Promise<void> {
+  uploading.value = true
+  try {
+    const coverUrl = await selectEventCover(props.eventId, imageId)
+    draft.coverDisplayUrl = coverUrl
+    draft.activeBankKey = key
+    emit('coverUpdated', coverUrl)
+  } finally {
+    uploading.value = false
+  }
+}
+
+// ── Cover — upload ─────────────────────────────────────────────────────────────
 
 const uploadRef = ref<HTMLInputElement | null>(null)
 
-function handleUpload(e: Event) {
+async function handleUpload(e: Event): Promise<void> {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) return
-  draft.coverImage = URL.createObjectURL(file)
+  uploading.value = true
+  try {
+    const coverUrl = await uploadEventCover(props.eventId, file)
+    draft.coverDisplayUrl = coverUrl
+    draft.activeBankKey = ''
+    emit('coverUpdated', coverUrl)
+  } catch (err) {
+    console.error('[EventEditDialog] upload cover failed', err)
+  } finally {
+    uploading.value = false
+    // Reset l'input pour permettre de ré-uploader le même fichier
+    if (uploadRef.value) uploadRef.value.value = ''
+  }
 }
 
-// ── Save ──────────────────────────────────────────────────────────────────────
+// ── Save (titre uniquement) ───────────────────────────────────────────────────
 
 const saving = ref(false)
 
-async function handleSave() {
+async function handleSave(): Promise<void> {
   saving.value = true
-  const patch: EventPatch = {
-    title: draft.title,
-    coverImage: draft.coverImage,
-  }
-  emit('save', patch)
+  emit('save', { title: draft.title })
   open.value = false
   saving.value = false
 }
@@ -173,6 +219,9 @@ $desktop: $breakpoint-desktop;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: $spacing-xs;
+      transition: opacity 150ms ease;
+
+      &.loading { opacity: 0.5; pointer-events: none; }
 
       @media (min-width: $desktop) {
         grid-template-columns: repeat(5, 1fr);
@@ -190,9 +239,8 @@ $desktop: $breakpoint-desktop;
         transition: border-color 120ms ease;
         padding: 0;
 
-        &.selected {
-          border-color: $brand-accent;
-        }
+        &.selected { border-color: $brand-accent; }
+        &:disabled { cursor: default; }
 
         .cover-label {
           position: absolute;
@@ -243,10 +291,12 @@ $desktop: $breakpoint-desktop;
         border-color 150ms ease,
         color 150ms ease;
 
-      &:hover {
+      &:hover:not(:disabled) {
         border-color: $brand-primary;
         color: $brand-primary;
       }
+
+      &:disabled { opacity: 0.5; cursor: default; }
 
       .caption {
         display: flex;

@@ -25,12 +25,18 @@ spring:
         jwt:
           issuer-uri: ${KEYCLOAK_ISSUER:http://localhost:5028/realms/sgilt}
 
+  servlet:
+    multipart:
+      max-file-size: ${MAX_FILE_SIZE:10MB}
+      max-request-size: ${MAX_REQUEST_SIZE:10MB}
+
 sgilt:
-  image:
-    storage: ${IMAGE_STORAGE:local} # local | cloudflare
-    base-url: ${IMAGE_STORAGE_BASE_URL:http://localhost:5027}
-    local:
-      path: ${IMAGE_STORAGE_LOCAL_PATH:./local-images}
+  cf-images:
+    api-url: ${CF_IMAGES_API_URL:http://localhost:5029/images/v1}
+
+    api-token: ${CF_IMAGES_API_TOKEN:mock-token}
+    delivery-url: ${CF_IMAGES_DELIVERY_URL:http://localhost:5029}
+    variant: ${CF_IMAGES_VARIANT:public}
   jwt:
     confirmation-secret: ${CONFIRMATION_TOKEN_SECRET}
     confirmation-expiration-hours: 24

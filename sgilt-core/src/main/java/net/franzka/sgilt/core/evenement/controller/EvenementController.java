@@ -3,6 +3,7 @@ package net.franzka.sgilt.core.evenement.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.evenement.api.EvenementApi;
+import net.franzka.sgilt.core.evenement.dto.CoverSelectDto;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
 import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
 import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
@@ -86,5 +87,13 @@ public class EvenementController implements EvenementApi {
         UUID userId = currentUserService.getId();
         log.info("PATCH /events/{}/cover", eventId);
         return ResponseEntity.ok(evenementService.updateCover(eventId, userId, file));
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<CoverUrlDto> selectCover(UUID eventId, CoverSelectDto body) {
+        UUID userId = currentUserService.getId();
+        log.info("PATCH /events/{}/cover/select", eventId);
+        return ResponseEntity.ok(evenementService.selectCover(eventId, userId, body.imageId()));
     }
 }
