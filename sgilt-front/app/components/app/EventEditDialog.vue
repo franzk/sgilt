@@ -11,14 +11,14 @@
       <div class="field">
         <label class="label">{{ $t('event.edit-dialog.field-cover') }}</label>
 
-        <div class="cover-grid" :class="{ loading: uploading }">
+        <div class="cover-grid" :class="{ loading: saving }">
           <button
             v-for="{ key, imageId, url } in bankCovers"
             :key="key"
             class="cover-tile"
             :class="{ selected: draft.activeBankKey === key }"
             type="button"
-            :disabled="uploading"
+            :disabled="saving"
             :style="{ backgroundImage: `url(${url})` }"
             @click="handleBankSelect(key, imageId)"
           >
@@ -27,10 +27,10 @@
           </button>
         </div>
 
-        <button class="upload-btn" type="button" :disabled="uploading" @click="uploadRef?.click()">
+        <button class="upload-btn" type="button" :disabled="saving" @click="uploadRef?.click()">
           <span class="caption">
             <ImageAddIcon />
-            {{ uploading ? $t('common.saving') : $t('event.edit-dialog.upload-button') }}
+            {{ $t('event.edit-dialog.upload-button') }}
           </span>
         </button>
         <input
@@ -52,8 +52,8 @@
       <!-- Actions -->
       <div class="actions">
         <SgiltButton variant="secondary" @click="open = false">{{ $t('common.cancel') }}</SgiltButton>
-        <SgiltButton :disabled="saving" @click="handleSave">
-          {{ saving ? $t('common.saving') : $t('common.save') }}
+        <SgiltButton :loading="saving" @click="handleSave">
+          {{ $t('common.save') }}
         </SgiltButton>
       </div>
     </div>
@@ -96,74 +96,94 @@ const bankCovers = computed(() =>
 interface EditDraft {
   title: string
   coverDisplayUrl: string
-  activeBankKey: string   // clé de la tuile banque sélectionnée, '' = upload perso
+  activeBankKey: string
+  pendingFile: File | null
+  pendingBankImageId: string | null
 }
 
-const draft = reactive<EditDraft>({ title: '', coverDisplayUrl: '', activeBankKey: '' })
+const draft = reactive<EditDraft>({
+  title: '',
+  coverDisplayUrl: '',
+  activeBankKey: '',
+  pendingFile: null,
+  pendingBankImageId: null,
+})
 
-watch(open, (val) => {
-  if (!val) return
+let localPreviewUrl: string | null = null
+
+function resetDraft() {
+  if (localPreviewUrl) {
+    URL.revokeObjectURL(localPreviewUrl)
+    localPreviewUrl = null
+  }
   draft.title = props.event.title
   draft.coverDisplayUrl = resolveEventCover(props.event, toUrl)
-  // Détecter si la cover actuelle est une image de banque
+  draft.pendingFile = null
+  draft.pendingBankImageId = null
   const bankEntry = Object.entries(BANK_IMAGE_IDS).find(
     ([, imageId]) => props.event.coverImage === toUrl(imageId),
   )
   draft.activeBankKey = bankEntry?.[0] ?? ''
+}
+
+watch(open, (val) => {
+  if (val) resetDraft()
 })
 
-// Aperçu personnalisé visible uniquement hors sélection banque
 const isCustomUpload = computed(
   () => draft.activeBankKey === '' && draft.coverDisplayUrl !== '',
 )
 
 // ── Cover — sélection banque ───────────────────────────────────────────────────
 
-const uploading = ref(false)
-
-async function handleBankSelect(key: string, imageId: string): Promise<void> {
-  uploading.value = true
-  try {
-    const coverUrl = await selectEventCover(props.eventId, imageId)
-    draft.coverDisplayUrl = coverUrl
-    draft.activeBankKey = key
-    emit('coverUpdated', coverUrl)
-  } finally {
-    uploading.value = false
+function handleBankSelect(key: string, imageId: string): void {
+  if (localPreviewUrl) {
+    URL.revokeObjectURL(localPreviewUrl)
+    localPreviewUrl = null
   }
+  draft.activeBankKey = key
+  draft.coverDisplayUrl = toUrl(imageId)
+  draft.pendingFile = null
+  draft.pendingBankImageId = imageId
 }
 
 // ── Cover — upload ─────────────────────────────────────────────────────────────
 
 const uploadRef = ref<HTMLInputElement | null>(null)
 
-async function handleUpload(e: Event): Promise<void> {
+function handleUpload(e: Event): void {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) return
-  uploading.value = true
-  try {
-    const coverUrl = await uploadEventCover(props.eventId, file)
-    draft.coverDisplayUrl = coverUrl
-    draft.activeBankKey = ''
-    emit('coverUpdated', coverUrl)
-  } catch (err) {
-    console.error('[EventEditDialog] upload cover failed', err)
-  } finally {
-    uploading.value = false
-    // Reset l'input pour permettre de ré-uploader le même fichier
-    if (uploadRef.value) uploadRef.value.value = ''
-  }
+  if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl)
+  localPreviewUrl = URL.createObjectURL(file)
+  draft.coverDisplayUrl = localPreviewUrl
+  draft.activeBankKey = ''
+  draft.pendingFile = file
+  draft.pendingBankImageId = null
+  if (uploadRef.value) uploadRef.value.value = ''
 }
 
-// ── Save (titre uniquement) ───────────────────────────────────────────────────
+// ── Save ──────────────────────────────────────────────────────────────────────
 
 const saving = ref(false)
 
 async function handleSave(): Promise<void> {
   saving.value = true
-  emit('save', { title: draft.title })
-  open.value = false
-  saving.value = false
+  try {
+    if (draft.pendingFile) {
+      const coverUrl = await uploadEventCover(props.eventId, draft.pendingFile)
+      emit('coverUpdated', coverUrl)
+    } else if (draft.pendingBankImageId) {
+      const coverUrl = await selectEventCover(props.eventId, draft.pendingBankImageId)
+      emit('coverUpdated', coverUrl)
+    }
+    emit('save', { title: draft.title })
+    open.value = false
+  } catch (err) {
+    console.error('[EventEditDialog] save failed', err)
+  } finally {
+    saving.value = false
+  }
 }
 </script>
 
