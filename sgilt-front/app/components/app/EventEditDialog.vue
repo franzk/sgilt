@@ -46,10 +46,10 @@
           @change="handleUpload"
         />
 
-        <!-- Aperçu d'un upload personnalisé -->
+        <!-- Aperçu de la couverture sélectionnée -->
         <div
-          v-if="isCustomUpload"
-          class="custom-preview"
+          v-if="hasPreview"
+          class="cover-preview"
           :style="{ backgroundImage: `url(${draft.coverDisplayUrl})` }"
         />
       </div>
@@ -137,7 +137,7 @@ watch(open, (val) => {
   if (val) resetDraft()
 })
 
-const isCustomUpload = computed(() => draft.activeBankKey === '' && draft.coverDisplayUrl !== '')
+const hasPreview = computed(() => draft.coverDisplayUrl !== '')
 
 // ── Cover — sélection banque ───────────────────────────────────────────────────
 
@@ -345,7 +345,7 @@ $desktop: $breakpoint-desktop;
       }
     }
 
-    .custom-preview {
+    .cover-preview {
       width: 100%;
       aspect-ratio: 16/9;
       border-radius: $radius-sm;
