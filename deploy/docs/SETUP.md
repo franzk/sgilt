@@ -161,6 +161,8 @@ In Settings → Secrets and variables → Actions → Repository secrets:
 | `SMTP_PASSWORD`               | SMTP password                                                                       |
 | `SMTP_AUTH`                   | `true`                                                                              |
 | `SMTP_SSL`                    | `true`                                                                              |
+| `R2_ACCESS_KEY_ID`            | Cloudflare R2 API token access key ID                                               |
+| `R2_SECRET_ACCESS_KEY`        | Cloudflare R2 API token secret access key                                           |
 
 ### 4.4 Add Environment variables
 
@@ -176,6 +178,11 @@ In Settings → Secrets and variables → Actions → Repository secrets:
 | `NGINX_AUTH_PORT`    | `2053`                          | `2053`                      |
 | `NGINX_API_PORT`     | `2096`                          | `2096`                      |
 | `MAILER_FROM`        | `noreply@sgilt.fr`              | `noreply@sgilt.alsace`      |
+| `R2_ENDPOINT`        | R2 S3 endpoint (shared)         | (idem)                      |
+| `R2_BUCKET`          | e.g. `sgilt-media-staging`      | e.g. `sgilt-media`          |
+| `R2_DELIVERY_URL`    | Public delivery URL (shared)    | (idem)                      |
+
+> **R2:** Endpoint format: `https://<account-id>.r2.cloudflarestorage.com`. Credentials and bucket info are available in the Cloudflare R2 dashboard. `R2_DELIVERY_URL` is the `r2.dev` public URL or a custom domain configured on the bucket.
 
 ---
 
