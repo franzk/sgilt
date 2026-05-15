@@ -1,17 +1,15 @@
 {
-  "name": "sgilt-cf-images-mock",
+  "name": "sgilt-r2-mock",
   "version": "1.0.0",
-  "description": "Mock Cloudflare Images API — local development only",
+  "description": "Mock R2 (S3-compatible) — local development only",
   "main": "src/index.ts",
   "scripts": {
     "start": "tsx src/index.ts",
     "dev": "tsx watch src/index.ts"
   },
   "dependencies": {
-    "busboy": "^1.6.0",
     "express": "^4.22.2",
-    "tsx": "^4.22.0",
-    "uuid": "^11.1.1"
+    "tsx": "^4.22.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.25",

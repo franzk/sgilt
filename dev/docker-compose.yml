@@ -65,11 +65,11 @@ services:
     networks:
       - sgilt-dev-net
 
-  sgilt-cf-images-mock:
-    image: sgilt-cf-images-mock
-    container_name: sgilt-cf-images-mock
+  sgilt-r2-mock:
+    image: sgilt-r2-mock
+    container_name: sgilt-r2-mock
     build:
-      context: ../sgilt-cf-images-mock
+      context: ../sgilt-r2-mock
     ports:
       - "5029:5029"
     environment:
@@ -77,8 +77,8 @@ services:
       STORAGE_DIR: /app/storage
       DB_PATH: /app/data/mock.db
     volumes:
-      - ../sgilt-cf-images-mock/storage:/app/storage
-      - cf_images_mock_db:/app/data
+      - ../sgilt-r2-mock/storage:/app/storage
+      - r2_mock_db:/app/data
     networks:
       - sgilt-dev-net
 
@@ -90,4 +90,4 @@ volumes:
   core_pgdata:
   keycloak_pgdata:
   sgilt_pgdata:
-  cf_images_mock_db:
+  r2_mock_db:

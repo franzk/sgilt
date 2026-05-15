@@ -68,7 +68,7 @@
 <script setup lang="ts">
 import type { EventSummary } from '~/data/evenement/domain/EventSummary'
 import { useEvenements } from '~/data/evenement/useEvenements'
-import { BANK_IMAGE_IDS } from '~/utils/eventCovers'
+import { BANK_IMAGE_PATHS } from '~/utils/eventCovers'
 import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
 
 definePageMeta({ layout: 'app' })
@@ -90,8 +90,8 @@ const { toUrl } = useImageUrl()
 
 function coverImage(event: EventSummary): string {
   if (event.coverImage) return event.coverImage
-  const imageId = BANK_IMAGE_IDS[event.eventType ?? ''] ?? BANK_IMAGE_IDS.autre!
-  return toUrl(imageId)
+  const imagePath = BANK_IMAGE_PATHS[event.eventType ?? ''] ?? BANK_IMAGE_PATHS.autre!
+  return toUrl(imagePath)
 }
 
 // ── Résumé réservations ───────────────────────────────────────────────────────

@@ -46,7 +46,7 @@ export async function uploadEventCover(eventId: string, file: File): Promise<str
   return dto.coverUrl
 }
 
-export async function selectEventCover(eventId: string, imageId: string): Promise<string> {
-  const dto = await selectEventCoverApi(eventId, imageId)
+export async function selectEventCover(eventId: string, imagePath: string): Promise<string> {
+  const dto = await selectEventCoverApi(eventId, imagePath)
   return dto.coverUrl
 }

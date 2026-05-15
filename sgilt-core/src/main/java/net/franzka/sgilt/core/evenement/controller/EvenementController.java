@@ -94,6 +94,6 @@ public class EvenementController implements EvenementApi {
     public ResponseEntity<CoverUrlDto> selectCover(UUID eventId, CoverSelectDto body) {
         UUID userId = currentUserService.getId();
         log.info("PATCH /events/{}/cover/select", eventId);
-        return ResponseEntity.ok(evenementService.selectCover(eventId, userId, body.imageId()));
+        return ResponseEntity.ok(evenementService.selectCover(eventId, userId, body.imagePath()));
     }
 }

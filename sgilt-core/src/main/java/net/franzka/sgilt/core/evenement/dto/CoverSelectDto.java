@@ -1,3 +1,3 @@
 package net.franzka.sgilt.core.evenement.dto;
 
-public record CoverSelectDto(String imageId) {}
+public record CoverSelectDto(String imagePath) {}

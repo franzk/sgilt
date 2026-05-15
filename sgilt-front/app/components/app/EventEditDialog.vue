@@ -72,7 +72,7 @@ import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import type { EventDetail } from '~/data/evenement/domain/EventDetail'
 import type { EventPatch } from '~/data/evenement/domain/EventPatch'
-import { BANK_IMAGE_IDS, resolveEventCover } from '~/utils/eventCovers'
+import { BANK_IMAGE_PATHS, resolveEventCover } from '~/utils/eventCovers'
 import { uploadEventCover, selectEventCover } from '~/data/evenement/service/evenementService'
 import { ImageAddIcon } from '@remixicons/vue/line'
 
@@ -95,7 +95,7 @@ const open = defineModel<boolean>('open', { required: true })
 const { toUrl } = useImageUrl()
 
 const bankCovers = computed(() =>
-  Object.entries(BANK_IMAGE_IDS).map(([key, imageId]) => ({ key, imageId, url: toUrl(imageId) })),
+  Object.entries(BANK_IMAGE_PATHS).map(([key, imageId]) => ({ key, imageId, url: toUrl(imageId) })),
 )
 
 // ── Draft ─────────────────────────────────────────────────────────────────────
@@ -105,7 +105,7 @@ interface EditDraft {
   coverDisplayUrl: string
   activeBankKey: string
   pendingFile: File | null
-  pendingBankImageId: string | null
+  pendingBankImagePath: string | null
 }
 
 const draft = reactive<EditDraft>({
@@ -113,7 +113,7 @@ const draft = reactive<EditDraft>({
   coverDisplayUrl: '',
   activeBankKey: '',
   pendingFile: null,
-  pendingBankImageId: null,
+  pendingBankImagePath: null,
 })
 
 let localPreviewUrl: string | null = null
@@ -126,8 +126,8 @@ function resetDraft() {
   draft.title = props.event.title
   draft.coverDisplayUrl = resolveEventCover(props.event, toUrl)
   draft.pendingFile = null
-  draft.pendingBankImageId = null
-  const bankEntry = Object.entries(BANK_IMAGE_IDS).find(
+  draft.pendingBankImagePath = null
+  const bankEntry = Object.entries(BANK_IMAGE_PATHS).find(
     ([, imageId]) => props.event.coverImage === toUrl(imageId),
   )
   draft.activeBankKey = bankEntry?.[0] ?? ''
@@ -149,7 +149,7 @@ function handleBankSelect(key: string, imageId: string): void {
   draft.activeBankKey = key
   draft.coverDisplayUrl = toUrl(imageId)
   draft.pendingFile = null
-  draft.pendingBankImageId = imageId
+  draft.pendingBankImagePath = imageId
 }
 
 // ── Cover — upload ─────────────────────────────────────────────────────────────
@@ -164,7 +164,7 @@ function handleUpload(e: Event): void {
   draft.coverDisplayUrl = localPreviewUrl
   draft.activeBankKey = ''
   draft.pendingFile = file
-  draft.pendingBankImageId = null
+  draft.pendingBankImagePath = null
   if (uploadRef.value) uploadRef.value.value = ''
 }
 
@@ -178,8 +178,8 @@ async function handleSave(): Promise<void> {
     if (draft.pendingFile) {
       const coverUrl = await uploadEventCover(props.eventId, draft.pendingFile)
       emit('coverUpdated', coverUrl)
-    } else if (draft.pendingBankImageId) {
-      const coverUrl = await selectEventCover(props.eventId, draft.pendingBankImageId)
+    } else if (draft.pendingBankImagePath) {
+      const coverUrl = await selectEventCover(props.eventId, draft.pendingBankImagePath)
       emit('coverUpdated', coverUrl)
     }
     emit('save', { title: draft.title })

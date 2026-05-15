@@ -60,7 +60,7 @@ public class EvenementService {
     public List<EvenementSummaryDto> getUserEvents(UUID userId) {
         return evenementRepository.findByUtilisateurId(userId).stream()
                 .map(e -> {
-                    String coverUrl = e.getImageId() != null ? imageStorageService.toUrl(e.getImageId()) : null;
+                    String coverUrl = e.getImagePath() != null ? imageStorageService.toUrl(e.getImagePath()) : null;
                     return evenementMapper.toSummaryDto(e, reservationService.getCountsForEvenement(e.getId()), coverUrl);
                 })
                 .toList();
@@ -78,7 +78,7 @@ public class EvenementService {
     public EventDetailDto getEventDetail(UUID eventId, UUID utilisateurId) {
         Evenement event = getEvent(eventId, utilisateurId);
         LocalDateTime lastUpdateDate = journalEvenementService.derniereModification(eventId).orElse(null);
-        String coverUrl = event.getImageId() != null ? imageStorageService.toUrl(event.getImageId()) : null;
+        String coverUrl = event.getImagePath() != null ? imageStorageService.toUrl(event.getImagePath()) : null;
         return evenementMapper.toDetailDto(event, computeCountdown(event.getDate()), lastUpdateDate, coverUrl);
     }
 
@@ -151,7 +151,7 @@ public class EvenementService {
         evenementRepository.save(event);
         journalEvenementService.save(event, modifications);
         LocalDateTime lastUpdateDate = journalEvenementService.derniereModification(eventId).orElse(null);
-        String coverUrl = event.getImageId() != null ? imageStorageService.toUrl(event.getImageId()) : null;
+        String coverUrl = event.getImagePath() != null ? imageStorageService.toUrl(event.getImagePath()) : null;
         return evenementMapper.toDetailDto(event, computeCountdown(event.getDate()), lastUpdateDate, coverUrl);
     }
 
@@ -204,12 +204,12 @@ public class EvenementService {
      */
     public CoverUrlDto updateCover(UUID eventId, UUID utilisateurId, MultipartFile file) {
         Evenement event = getEvent(eventId, utilisateurId);
-        supprimerAncienneImageSiDeletable(event.getImageId());
+        supprimerAncienneImageSiDeletable(event.getImagePath());
         try {
-            String imageId = imageStorageService.upload(file);
-            event.setImageId(imageId);
+            String imagePath = imageStorageService.upload(file);
+            event.setImagePath(imagePath);
             evenementRepository.save(event);
-            return new CoverUrlDto(imageStorageService.toUrl(imageId));
+            return new CoverUrlDto(imageStorageService.toUrl(imagePath));
         } catch (IOException e) {
             throw new ImageStorageException("Erreur de stockage de l'image pour l'événement " + eventId, e);
         }
@@ -221,30 +221,30 @@ public class EvenementService {
      *
      * @param eventId       l'identifiant de l'événement
      * @param utilisateurId l'identifiant de l'utilisateur connecté
-     * @param imageId       l'imageId de l'image sélectionnée dans la banque
+     * @param imagePath     le chemin de l'image sélectionnée dans la banque
      * @return l'URL de la nouvelle couverture
      * @throws EvenementNotFoundException   si l'événement n'existe pas
      * @throws EvenementNotAllowedException si l'utilisateur n'est pas le propriétaire
      */
-    public CoverUrlDto selectCover(UUID eventId, UUID utilisateurId, String imageId) {
+    public CoverUrlDto selectCover(UUID eventId, UUID utilisateurId, String imagePath) {
         Evenement event = getEvent(eventId, utilisateurId);
-        supprimerAncienneImageSiDeletable(event.getImageId());
-        event.setImageId(imageId);
+        supprimerAncienneImageSiDeletable(event.getImagePath());
+        event.setImagePath(imagePath);
         evenementRepository.save(event);
-        return new CoverUrlDto(imageStorageService.toUrl(imageId));
+        return new CoverUrlDto(imageStorageService.toUrl(imagePath));
     }
 
-    private void supprimerAncienneImageSiDeletable(String imageId) {
-        if (imageId == null || isProtectedImageId(imageId)) return;
+    private void supprimerAncienneImageSiDeletable(String imagePath) {
+        if (imagePath == null || isProtectedImagePath(imagePath)) return;
         try {
-            imageStorageService.delete(imageId);
+            imageStorageService.delete(imagePath);
         } catch (IOException e) {
             throw new ImageStorageException("Erreur de suppression de l'ancienne image", e);
         }
     }
 
-    private static boolean isProtectedImageId(String imageId) {
-        return PROTECTED_PREFIXES.stream().anyMatch(imageId::startsWith);
+    private static boolean isProtectedImagePath(String imagePath) {
+        return PROTECTED_PREFIXES.stream().anyMatch(imagePath::startsWith);
     }
 
     /**

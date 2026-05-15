@@ -18,6 +18,7 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+    out-of-order: true
 
   security:
     oauth2:
@@ -31,12 +32,12 @@ spring:
       max-request-size: ${MAX_REQUEST_SIZE:10MB}
 
 sgilt:
-  cf-images:
-    api-url: ${CF_IMAGES_API_URL:http://localhost:5029/images/v1}
-
-    api-token: ${CF_IMAGES_API_TOKEN:mock-token}
-    delivery-url: ${CF_IMAGES_DELIVERY_URL:http://localhost:5029}
-    variant: ${CF_IMAGES_VARIANT:public}
+  r2:
+    endpoint: ${R2_ENDPOINT:http://localhost:5029}
+    access-key-id: ${R2_ACCESS_KEY_ID:mock-key}
+    secret-access-key: ${R2_SECRET_ACCESS_KEY:mock-secret}
+    bucket: ${R2_BUCKET:sgilt-media}
+    delivery-url: ${R2_DELIVERY_URL:http://localhost:5029}
   jwt:
     confirmation-secret: ${CONFIRMATION_TOKEN_SECRET}
     confirmation-expiration-hours: 24

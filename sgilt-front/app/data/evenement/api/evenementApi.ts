@@ -42,9 +42,9 @@ export async function uploadEventCoverApi(eventId: string, file: File): Promise<
   return apiFetch<CoverUrlResponseDto>(`/events/${eventId}/cover`, { method: 'PATCH', body })
 }
 
-export async function selectEventCoverApi(eventId: string, imageId: string): Promise<CoverUrlResponseDto> {
+export async function selectEventCoverApi(eventId: string, imagePath: string): Promise<CoverUrlResponseDto> {
   return apiFetch<CoverUrlResponseDto>(`/events/${eventId}/cover/select`, {
     method: 'PATCH',
-    body: { imageId },
+    body: { imagePath },
   })
 }

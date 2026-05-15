@@ -5,7 +5,7 @@ Services can be run independently, depending on what you are working on.
 
 ## Infrastructure services
 
-Keycloak, PostgreSQL, MailHog, SMTP bridge:
+Keycloak, PostgreSQL, MailHog, SMTP bridge, R2 mock:
 
 ### First time: build the Keycloak SPI
 

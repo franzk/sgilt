@@ -36,8 +36,8 @@ public class Evenement {
     @Column(nullable = false)
     private LocalDate date;
 
-    @Column(name = "image_id")
-    private String imageId;
+    @Column(name = "image_path")
+    private String imagePath;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
