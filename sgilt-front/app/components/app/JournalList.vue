@@ -4,10 +4,10 @@
       <time class="journal-entry__date">{{ formatDateTime(entry.date) }}</time>
       <ul class="journal-entry__mods">
         <li v-for="(mod, i) in entry.modifications" :key="i" class="journal-mod">
-          <span class="journal-mod__champ">{{ mod.champ }}&nbsp;:</span>
+          <span class="journal-mod__champ">{{ $t(`journal.champ.${mod.champ}`, mod.champ) }}&nbsp;:</span>
           <template v-if="mod.avant !== null && mod.avant !== ''">
             <span class="journal-mod__avant">{{ mod.avant }}</span>
-            <span class="journal-mod__arrow" aria-hidden="true">→</span>
+            <span class="journal-mod__arrow" aria-hidden="true">=></span>
           </template>
           <span class="journal-mod__apres">{{ mod.apres }}</span>
         </li>
@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import type { JournalEntry } from '~/data/evenement/domain/evenement'
+import type { JournalEntry } from '~/data/evenement/domain/JournalEntry'
 
 defineProps<{ entries: JournalEntry[] }>()
 </script>
@@ -77,7 +77,6 @@ defineProps<{ entries: JournalEntry[] }>()
 
   &__avant {
     color: $text-secondary;
-    text-decoration: line-through;
     opacity: 0.6;
   }
 

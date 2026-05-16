@@ -1,11 +1,17 @@
 package net.franzka.sgilt.core.keycloak;
 
 import net.franzka.sgilt.core.config.KeycloakProperties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -14,9 +20,14 @@ import java.util.List;
 @Service
 public class KeycloakAdminService {
 
+    private static final long MAGIC_TOKEN_TTL_SECONDS = 300L; // 5 minutes
+
     private final KeycloakTokenClient keycloakTokenClient;
     private final KeycloakAdminClient keycloakAdminClient;
     private final KeycloakProperties keycloakProperties;
+
+    @Value("${sgilt.frontend.url:http://localhost:3000}")
+    private String frontendUrl;
 
     /**
      * Construit le service avec ses dépendances.
@@ -36,9 +47,6 @@ public class KeycloakAdminService {
 
     /**
      * Crée un utilisateur dans Keycloak avec le mot de passe fourni.
-     * Obtient d'abord un token admin via le grant {@code client_credentials},
-     * puis appelle l'API Admin pour créer l'utilisateur avec {@code enabled: true}
-     * et {@code emailVerified: true}.
      *
      * @param email     l'adresse email (également utilisée comme username)
      * @param firstName le prénom de l'utilisateur
@@ -49,21 +57,11 @@ public class KeycloakAdminService {
     public void createUser(String email, String firstName, String lastName, String password) {
         try {
             KeycloakTokenResponse adminToken = fetchAdminToken();
-
-            KeycloakUserRequest userRequest = new KeycloakUserRequest(
-                    email,
-                    email,
-                    firstName,
-                    lastName,
-                    true,
-                    true,
-                    List.of(new KeycloakCredential("password", password, false))
-            );
-
             keycloakAdminClient.createUser(
                     keycloakProperties.realm(),
                     "Bearer " + adminToken.accessToken(),
-                    userRequest
+                    new KeycloakUserRequest(email, email, firstName, lastName, true, true,
+                            List.of(new KeycloakCredential("password", password, false)))
             );
         } catch (RestClientException e) {
             throw new KeycloakException("Erreur lors de la création de l'utilisateur dans Keycloak.", e);
@@ -71,24 +69,63 @@ public class KeycloakAdminService {
     }
 
     /**
-     * Récupère les tokens Keycloak d'un utilisateur via le grant {@code password}.
+     * Génère une URL de connexion KC contenant un token magique one-shot signé HMAC-SHA256.
+     * Le SPI KC {@code magic-link} valide ce token et crée une vraie session SSO sans
+     * que l'utilisateur ait à ressaisir son mot de passe.
      *
-     * @param email    l'adresse email de l'utilisateur
-     * @param password le mot de passe en clair
-     * @return les tokens Keycloak (access token et refresh token)
-     * @throws KeycloakException en cas d'erreur lors de l'appel Keycloak
+     * @param email l'email de l'utilisateur qui vient d'être créé
+     * @return l'URL d'autorisation KC à transmettre au front
+     * @throws KeycloakException si la génération du token échoue
      */
-    public KeycloakTokenResponse getUserTokens(String email, String password) {
+    public String getMagicLoginUrl(String email, String redirectPath) {
         try {
-            MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-            form.add("grant_type", "password");
-            form.add("client_id", keycloakProperties.frontClientId());
-            form.add("username", email);
-            form.add("password", password);
-            return keycloakTokenClient.fetchToken(keycloakProperties.realm(), form);
-        } catch (RestClientException e) {
-            throw new KeycloakException("Erreur lors de la récupération des tokens utilisateur dans Keycloak.", e);
+            String magicToken = buildMagicToken(email);
+            String encodedRedirectUri = URLEncoder.encode(frontendUrl + redirectPath, StandardCharsets.UTF_8);
+            String encodedToken      = URLEncoder.encode(magicToken, StandardCharsets.UTF_8);
+
+            return keycloakProperties.adminUrl()
+                    + "/realms/" + keycloakProperties.realm()
+                    + "/protocol/openid-connect/auth"
+                    + "?client_id=" + keycloakProperties.frontClientId()
+                    + "&redirect_uri=" + encodedRedirectUri
+                    + "&response_type=code"
+                    + "&scope=openid"
+                    + "&magic_token=" + encodedToken;
+        } catch (Exception e) {
+            throw new KeycloakException("Erreur lors de la génération du magic token.", e);
         }
+    }
+
+    /**
+     * Construit un JWT minimal signé HMAC-SHA256 compatible avec le SPI KC {@code magic-link}.
+     *
+     * @param email le sujet du token
+     * @return le JWT au format {@code header.payload.signature} (base64url, sans padding)
+     */
+    private String buildMagicToken(String email) throws Exception {
+        long now = System.currentTimeMillis() / 1000L;
+        long exp = now + MAGIC_TOKEN_TTL_SECONDS;
+
+        String header  = b64url("{\"alg\":\"HS256\",\"typ\":\"JWT\"}");
+        String payload = b64url("{\"sub\":\"" + email + "\",\"iat\":" + now + ",\"exp\":" + exp + "}");
+        String sig     = b64url(hmacSha256(header + "." + payload, keycloakProperties.magicLinkSecret()));
+
+        return header + "." + payload + "." + sig;
+    }
+
+    private String b64url(String value) {
+        return Base64.getUrlEncoder().withoutPadding()
+                .encodeToString(value.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private byte[] hmacSha256(String data, String key) throws Exception {
+        Mac mac = Mac.getInstance("HmacSHA256");
+        mac.init(new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+        return mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private String b64url(byte[] data) {
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(data);
     }
 
     /**

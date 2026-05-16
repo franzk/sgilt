@@ -154,12 +154,15 @@ In Settings → Secrets and variables → Actions → Repository secrets:
 | `KC_BOOTSTRAP_ADMIN_USERNAME` | Keycloak admin username                                                             |
 | `KC_BOOTSTRAP_ADMIN_PASSWORD` | Keycloak admin password (choose a strong password)                                  |
 | `CORE_DB_PASSWORD`            | sgilt-core PostgreSQL password (choose a strong password)                           |
+| `MAGIC_LINK_SECRET`           | Secret HMAC-SHA256 partagé entre sgilt-core et le SPI KC magic-link (`openssl rand -hex 32`) |
 | `SMTP_HOST`                   | SMTP server hostname                                                                |
 | `SMTP_PORT`                   | SMTP port (usually `587`)                                                           |
 | `SMTP_USERNAME`               | SMTP username                                                                       |
 | `SMTP_PASSWORD`               | SMTP password                                                                       |
 | `SMTP_AUTH`                   | `true`                                                                              |
 | `SMTP_SSL`                    | `true`                                                                              |
+| `R2_ACCESS_KEY_ID`            | Cloudflare R2 API token access key ID                                               |
+| `R2_SECRET_ACCESS_KEY`        | Cloudflare R2 API token secret access key                                           |
 
 ### 4.4 Add Environment variables
 
@@ -175,6 +178,12 @@ In Settings → Secrets and variables → Actions → Repository secrets:
 | `NGINX_AUTH_PORT`    | `2053`                          | `2053`                      |
 | `NGINX_API_PORT`     | `2096`                          | `2096`                      |
 | `MAILER_FROM`        | `noreply@sgilt.fr`              | `noreply@sgilt.alsace`      |
+| `R2_ENDPOINT`        | R2 S3 endpoint (shared)         | (idem)                      |
+| `R2_BUCKET`          | `sgilt-images-staging`          | `sgilt-images-prod`         |
+| `R2_DELIVERY_URL`    | `https://media-staging.sgilt.fr` | `https://media.sgilt.alsace` |
+
+> **R2:** See [CLOUDFLARE.md](CLOUDFLARE.md) for the full setup procedure (token creation, endpoint format, bucket names).
+> - R2_BUCKET is the name of the bucket.
 
 ---
 
@@ -188,10 +197,22 @@ In GitHub → Actions → **Build & Deploy** → Run workflow:
 > Init mode generates the Keycloak realm from the template and imports it on the first startup.
 
 The workflow will:
-1. Build all Docker images and push them to ghcr.io
+1. Build all Docker images and push them to ghcr.io (including the KC image with the magic-link SPI baked in)
 2. Generate the `.env` file from secrets and variables
 3. Copy all deployment files to the server
 4. Pull images and start all containers
+
+#### How init mode works
+
+The KC init sequence has three phases:
+
+**Phase 1** — KC starts with `--import-realm`. In KC 26 production mode, this imports the realm into PostgreSQL and then KC exits.
+
+**Phase 2** — The deploy script polls the KC PostgreSQL database directly (not the KC API) until the `sgilt` realm appears. Once confirmed, KC is restarted in normal server mode (without `--import-realm`) so it stays running. The script then waits for KC to be ready and retrieves the `sgilt-admin` client secret.
+
+**Phase 3** — All remaining services start.
+
+> **Note:** The `kc.sh import` command (nonserver profile) does **not** commit realm data to PostgreSQL in KC 26 — only `start --import-realm` (prod profile) does. This is why Phase 1 uses `start` and not `kc.sh import`.
 
 ---
 
@@ -229,5 +250,19 @@ docker exec nginx-front-staging ls /etc/ssl/sgilt/
 ```bash
 docker logs sgilt-front-staging --tail 20
 ```
+
+**KC init loop (Phase 2 never completes)** — KC may be crashing during realm import. Check KC logs:
+```bash
+docker logs sgilt-keycloak-staging --tail 50
+```
+Common causes: malformed realm JSON (wrong section for a flow, unknown field for the KC version). The realm is imported with `start --import-realm` in production mode. Only the `sgilt` realm template is imported; the master realm is always created fresh by KC.
+
+**Realm not imported after init** — Verify the realm is in the KC database:
+```bash
+docker exec sgilt-keycloak-db-staging \
+  psql -U sgilt-keycloak -d sgilt-keycloak \
+  -c "SELECT id, name FROM realm;"
+```
+Both `master` and `sgilt` should appear. If only `master` is present, the import failed silently. Re-run in `init` mode after fixing the realm template.
 
 **Cloudflare 526 error** — verify the Origin Rule has `/*` wildcard at the end of the match URL.

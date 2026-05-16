@@ -8,7 +8,6 @@ import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.jwt.TokenJwtService;
 import net.franzka.sgilt.core.keycloak.KeycloakAdminService;
-import net.franzka.sgilt.core.keycloak.KeycloakTokenResponse;
 import net.franzka.sgilt.core.onboarding.domain.Onboarding;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountRequest;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountResponse;
@@ -112,14 +111,13 @@ public class OnboardingService {
         keycloakAdminService.createUser(email, formData.firstName(), formData.lastName(), request.password());
 
         // création de l'utilisateur, de la réservation et de l'événement
-        onboardingSessionService.createEntities(formData, prestataire, email);
-
+        UUID eventId = onboardingSessionService.createEntities(formData, prestataire, email);
 
         log.info("confirmAccount — compte créé, envoi mail bienvenue à {}", email);
         onboardingMailerService.sendWelcomeEmail(email);
 
-        KeycloakTokenResponse tokens = keycloakAdminService.getUserTokens(email, request.password());
-        log.info("confirmAccount — tokens Keycloak récupérés pour {}", email);
-        return new ConfirmAccountResponse(tokens.accessToken(), tokens.refreshToken());
+        String loginUrl = keycloakAdminService.getMagicLoginUrl(email, "/app/events/" + eventId);
+        log.info("confirmAccount — session SSO créée pour {}", email);
+        return new ConfirmAccountResponse(loginUrl);
     }
 }

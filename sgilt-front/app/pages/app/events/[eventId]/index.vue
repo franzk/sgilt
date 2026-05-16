@@ -2,7 +2,7 @@
   <div class="event-board">
     <!-- ── Bandeau couverture ──────────────────────────────────────────────────── -->
     <div
-      v-if="event"
+      v-if="!metaPending && event"
       ref="bannerRef"
       class="cover-banner"
       :style="{ backgroundImage: `url(${coverImage})` }"
@@ -20,19 +20,35 @@
         </button>
       </div>
       <button class="edit-img" type="button" @click="openEditDialog">
-        {{ $t('event.board.edit-image') }}
+        {{ $t('event.board.edit-title-image') }}
       </button>
     </div>
+    <div v-else class="cover-banner-skeleton skeleton-text shimmer-container" />
 
-    <template v-if="event">
-      <!-- ── Widget ─────────────────────────────────────────────────────────────── -->
-      <div class="event-widget">
-        <p class="phrase">{{ $t(`event.widget.mood.${event.mood}`) }}</p>
-        <p class="subtitle">
-          <template v-if="daysUntilEvent !== null">J-{{ daysUntilEvent }} : </template
-          >{{ $t('event.widget.countdown.' + event.countdown) }}
-        </p>
-        <div class="pills">
+    <!-- ── Widget ─────────────────────────────────────────────────────────────── -->
+    <div class="event-widget">
+      <!-- Mood phrase — attend les counts -->
+      <p v-if="!countsPending && counts" class="phrase">
+        {{ $t(`event.widget.mood.${counts.mood}`) }}
+      </p>
+      <div v-else class="skeleton-text shimmer-container widget-mood-skeleton" aria-hidden="true" />
+
+      <!-- Countdown — attend les meta -->
+      <p v-if="!metaPending && event" class="subtitle">
+        <template v-if="daysUntilEvent !== null && daysUntilEvent >= 0"
+          >J-{{ daysUntilEvent }} :
+        </template>
+        {{ $t('event.widget.countdown.' + event.countdown) }}
+      </p>
+      <div
+        v-else
+        class="skeleton-text shimmer-container widget-countdown-skeleton"
+        aria-hidden="true"
+      />
+
+      <!-- Pills + action — attendent les counts -->
+      <div class="pills">
+        <template v-if="!countsPending && counts">
           <span
             v-for="pill in statusPills"
             :key="pill.status"
@@ -46,53 +62,65 @@
             <span class="count">{{ pill.count }}</span>
             <span class="label">{{ t(`client.reservation.statut.${pill.status}`) }}</span>
           </span>
-        </div>
+        </template>
+        <template v-else>
+          <div v-for="i in 2" :key="i" class="skeleton-pill skeleton-text shimmer-container" />
+        </template>
+        <button class="add-prestataire-btn" type="button" @click="startAddPrestataireFlow">
+          {{ $t('events.add-provider') }}
+        </button>
       </div>
 
-      <!-- ── Contenu ────────────────────────────────────────────────────────────── -->
-      <div class="board-content">
-        <!-- Bloc événement -->
-        <div class="event-block-wrap">
-          <EventBlock
-            variant="client"
-            :event="event"
-            :client-info="mockClientInfo"
-            @updated="onEventUpdated"
-            @updated-client-info="onClientInfoUpdated"
-          />
-        </div>
+      <!-- Sticky CTA mobile -->
+      <div class="sticky-cta">
+        <SgiltButton @click="startAddPrestataireFlow">
+          {{ $t('events.add-provider') }}
+        </SgiltButton>
+      </div>
+    </div>
 
-        <!-- Réservations -->
-        <section class="reservations">
-          <div class="grid">
+    <!-- ── Contenu ────────────────────────────────────────────────────────────── -->
+    <div class="board-content">
+      <!-- Bloc événement — attend les meta -->
+      <div class="event-block-wrap">
+        <EventBlock
+          v-if="!metaPending && event && clientInfo"
+          variant="client"
+          :event="event"
+          :client-info="clientInfo"
+          @updated="onEventUpdated"
+          @updated-client-info="onClientInfoUpdated"
+        />
+        <div v-else class="skeleton-card skeleton-text shimmer-container" />
+      </div>
+
+      <!-- Réservations — attendent les reservations -->
+      <section class="reservations">
+        <div class="grid">
+          <template v-if="!reservationsPending">
             <ReservationCard
               v-for="r in sortedReservations"
               :key="r.id"
               :reservation="r"
               @click="navigateTo(`/app/events/${eventId}/reservations/${r.id}`)"
             />
-          </div>
-
-          <button class="add-prestataire-btn" type="button" @click="startAddPrestataireFlow">
-            {{ $t('events.add-provider') }}
-          </button>
-        </section>
-      </div>
-    </template>
-
-    <!-- Skeleton -->
-    <div v-else-if="loading" class="board-skeleton">
-      <div class="skeleton-widget skeleton-text" />
-      <div class="skeleton-pills">
-        <div v-for="i in 3" :key="i" class="skeleton-pill skeleton-text" />
-      </div>
-      <div class="skeleton-card skeleton-text" />
-      <div class="skeleton-card skeleton-text" />
-      <div class="skeleton-card skeleton-text" />
+          </template>
+          <template v-else>
+            <div v-for="i in 3" :key="i" class="skeleton-card skeleton-text shimmer-container" />
+          </template>
+        </div>
+      </section>
     </div>
 
     <!-- ── Dialog modification titre + couverture ────────────────────────────── -->
-    <EventEditDialog v-if="event" v-model:open="editDialogOpen" :event="event" @save="onEditSave" />
+    <EventEditDialog
+      v-if="event"
+      v-model:open="editDialogOpen"
+      :event="event"
+      :event-id="eventId"
+      @save="onEditSave"
+      @cover-updated="onCoverUpdated"
+    />
   </div>
 </template>
 
@@ -100,22 +128,30 @@
 import ReservationCard from '~/components/app/ReservationCard.vue'
 import EventBlock from '~/components/app/EventBlock.vue'
 import EventEditDialog from '~/components/app/EventEditDialog.vue'
+import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import { resolveEventCover } from '~/utils/eventCovers'
-import { EventMockService } from '~/services/event.mock'
-import type { EventDetail, EventPatch } from '~/data/evenement/domain/evenement'
+import type { EventPatch } from '~/data/evenement/domain/EventPatch'
+import type { EventDetail } from '~/data/evenement/domain/EventDetail'
 import type { ReservationStatus, ClientContactInfo } from '~/types/event'
 import { CLIENT_STATUS_CONFIG, RESERVATION_STATUS_ORDER } from '~/constants/reservation-status'
 import { EditIcon } from '@remixicons/vue/line'
+import { useEventDetail, useEventCounts, useEventReservations } from '~/data/evenement/useEvenement'
+import { patchEvent } from '~/data/evenement/service/evenementService'
 
 definePageMeta({ layout: 'app' })
 
 const { t } = useI18n()
-
 const route = useRoute()
 const eventId = route.params.eventId as string
 
+// ── 3 appels parallèles ───────────────────────────────────────────────────────
+const { event, clientInfo, pending: metaPending } = useEventDetail(eventId)
+const { counts, pending: countsPending } = useEventCounts(eventId)
+const { reservations, pending: reservationsPending } = useEventReservations(eventId)
+
 // ── Cover image ────────────────────────────────────────────────────────────────
-const coverImage = computed(() => (event.value ? resolveEventCover(event.value) : ''))
+const { toUrl } = useImageUrl()
+const coverImage = computed(() => (event.value ? resolveEventCover(event.value, toUrl) : ''))
 
 // ── Parallax ───────────────────────────────────────────────────────────────────
 const bannerRef = ref<HTMLElement | null>(null)
@@ -147,44 +183,30 @@ const daysUntilEvent = computed(() => {
   return Math.ceil((eventDate.getTime() - today.getTime()) / 86_400_000)
 })
 
-// ── Data ──────────────────────────────────────────────────────────────────────
-const event = ref<EventDetail | null>(null)
-const loading = ref(true)
-
-onMounted(async () => {
-  event.value = await EventMockService.getById(eventId)
-  loading.value = false
-})
-
-const mockClientInfo: ClientContactInfo = {
-  firstName: 'Sophie',
-  lastName: 'Martin',
-  phone: '06 12 34 56 78',
-  email: 'sophie.martin@example.com',
-}
-
+// ── Édition ───────────────────────────────────────────────────────────────────
 function onEventUpdated(patch: EventPatch) {
   if (event.value) Object.assign(event.value, patch)
 }
 
 function onClientInfoUpdated(_patch: Partial<ClientContactInfo>) {
-  // TODO: persist client info via API
+  // TODO: persist via API
 }
 
-// ── Dialog modification ────────────────────────────────────────────────────────
 const editDialogOpen = ref(false)
-
 function openEditDialog() {
   editDialogOpen.value = true
 }
 
 async function onEditSave(patch: EventPatch) {
   if (!event.value) return
-  await EventMockService.patchEvent(event.value.id, patch)
-  Object.assign(event.value, patch)
+  event.value = await patchEvent(eventId, patch)
 }
 
-// ── Widget — pills statut ──────────────────────────────────────────────────────
+function onCoverUpdated(imagePath: string) {
+  if (event.value) (event.value as EventDetail).coverImage = imagePath
+}
+
+// ── Pills statuts depuis les counts ───────────────────────────────────────────
 const STATUS_PILL_ICONS: Record<ReservationStatus, string> = {
   nouvelle: '!',
   en_discussion: '↩',
@@ -195,26 +217,53 @@ const STATUS_PILL_ICONS: Record<ReservationStatus, string> = {
 }
 
 const statusPills = computed(() => {
-  if (!event.value) return []
-  return (Object.keys(STATUS_PILL_ICONS) as ReservationStatus[])
-    .map((status) => ({
-      status,
-      icon: STATUS_PILL_ICONS[status],
-      count: event.value!.reservations.filter((r) => r.status === status).length,
-    }))
-    .filter((pill) => pill.count > 0)
+  if (!counts.value) return []
+  const c = counts.value
+  return (
+    [
+      {
+        status: 'nouvelle' as ReservationStatus,
+        icon: STATUS_PILL_ICONS.nouvelle,
+        count: c.nouvelleCount,
+      },
+      {
+        status: 'en_discussion' as ReservationStatus,
+        icon: STATUS_PILL_ICONS.en_discussion,
+        count: c.inDiscussionCount,
+      },
+      {
+        status: 'confirmee' as ReservationStatus,
+        icon: STATUS_PILL_ICONS.confirmee,
+        count: c.confirmedCount,
+      },
+      {
+        status: 'refusee' as ReservationStatus,
+        icon: STATUS_PILL_ICONS.refusee,
+        count: c.refuseeCount,
+      },
+      {
+        status: 'annulee' as ReservationStatus,
+        icon: STATUS_PILL_ICONS.annulee,
+        count: c.annuleeCount,
+      },
+      {
+        status: 'realisee' as ReservationStatus,
+        icon: STATUS_PILL_ICONS.realisee,
+        count: c.realiseeCount,
+      },
+    ] as { status: ReservationStatus; icon: string; count: number }[]
+  ).filter((p) => p.count > 0)
 })
 
-// ── Réservations groupées ─────────────────────────────────────────────────────
+// ── Réservations triées ───────────────────────────────────────────────────────
 const sortedReservations = computed(() => {
-  if (!event.value) return []
-  return [...event.value.reservations].sort(
+  return [...reservations.value].sort(
     (a, b) =>
       RESERVATION_STATUS_ORDER.indexOf(a.status) - RESERVATION_STATUS_ORDER.indexOf(b.status),
   )
 })
 
-// ── Flow ajout prestataire ─────────────────────────────────────────────────
+// ── Flow ajout prestataire ────────────────────────────────────────────────────
 const { start } = useFlow()
 const startAddPrestataireFlow = () => {
   start('add-prestataire', `Ajouter à ${event.value?.title ?? "l'événement"}`, {
@@ -263,8 +312,6 @@ $desktop: $breakpoint-desktop;
 
   .title-row {
     position: relative;
-    display: flex;
-    align-items: flex-end;
     gap: $spacing-xs;
   }
 
@@ -334,200 +381,172 @@ $desktop: $breakpoint-desktop;
   }
 }
 
-// ── Widget ─────────────────────────────────────────────────────────────────────
-.event-widget {
-  background: #fdfaf0;
-  padding: $spacing-l $spacing-m $spacing-m;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-s;
+.cover-banner-skeleton {
+  height: 200px;
 
   @media (min-width: $desktop) {
-    padding: $spacing-xl 40px $spacing-l;
-  }
-
-  .phrase {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.75rem;
-    font-weight: 600;
-    color: $brand-primary;
-    margin: 0;
-    line-height: 1.15;
-
-    @media (min-width: $desktop) {
-      font-size: 2.2rem;
-    }
-  }
-
-  .subtitle {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.82rem;
-    color: $text-secondary;
-    margin: 0;
-    line-height: 1.5;
-  }
-
-  .pills {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: $spacing-xs;
-    overflow-x: auto;
-    scrollbar-width: none;
-    padding-bottom: 2px;
-    margin-top: 4px;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
-    @media (min-width: $desktop) {
-      flex-wrap: wrap;
-      overflow: visible;
-    }
+    height: 33vh;
   }
 }
 
-// ── Pills statut ───────────────────────────────────────────────────────────────
+// ── Widget ─────────────────────────────────────────────────────────────────────
+.event-widget {
+  padding: $spacing-m;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+
+  @media (min-width: $desktop) {
+    padding: $spacing-m max(40px, calc((100% - 1200px) / 2 + 40px));
+  }
+}
+
+.phrase {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: $brand-primary;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 0.82rem;
+  color: $text-secondary;
+  margin: 0;
+}
+
+.widget-mood-skeleton {
+  height: 1.2rem;
+  width: 12rem;
+  border-radius: 4px;
+}
+
+.widget-countdown-skeleton {
+  height: 0.9rem;
+  width: 10rem;
+  border-radius: 4px;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: $spacing-xs;
+}
+
 .status-pill {
-  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px 12px;
-  border-radius: 2rem;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.78rem;
-  font-weight: 600;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
   white-space: nowrap;
-
-  .icon {
-    font-size: 0.7rem;
-    line-height: 1;
-  }
 
   .count {
     font-weight: 700;
   }
-
-  .label {
-    font-weight: 500;
-  }
 }
 
-// ── Contenu ───────────────────────────────────────────────────────────────────
+.skeleton-pill {
+  height: 26px;
+  width: 80px;
+  border-radius: 999px;
+}
+
+// ── Contenu principal ─────────────────────────────────────────────────────────
 .board-content {
   display: flex;
   flex-direction: column;
-  gap: $spacing-l;
+  gap: $spacing-m;
   padding: $spacing-m;
 
   @media (min-width: $desktop) {
-    display: grid;
-    grid-template-columns: 380px 1fr;
-    gap: 28px;
-    align-items: start;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 32px;
     max-width: 1200px;
     margin: 0 auto;
     padding: 32px 40px;
   }
 }
 
-// ── Event block sticky (desktop) ──────────────────────────────────────────────
 .event-block-wrap {
   @media (min-width: $desktop) {
-    position: sticky;
-    top: 60px;
-    align-self: start;
+    width: 340px;
+    flex-shrink: 0;
   }
 }
 
-// ── Shadow event block ─────────────────────────────────────────────────────────
-:deep(.event-block) {
-  box-shadow: 0 4px 20px rgba(47, 42, 37, 0.12);
+.skeleton-card {
+  border-radius: $radius-lg;
+  height: 140px;
+  width: 100%;
 }
 
-// ── Grille réservations ───────────────────────────────────────────────────────
+// ── Réservations ──────────────────────────────────────────────────────────────
 .reservations {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-m;
+}
+
+.grid {
   display: flex;
   flex-direction: column;
   gap: $spacing-m;
 
   @media (min-width: $desktop) {
-    gap: $spacing-l;
-  }
-
-  .grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: $spacing-s;
-
-    @media (min-width: $desktop) {
-      grid-template-columns: repeat(3, 1fr);
-    }
+    gap: 16px;
   }
 }
 
-// ── Bouton ajout prestataire ──────────────────────────────────────────────────
 .add-prestataire-btn {
-  width: 100%;
-  padding: $spacing-s;
-  border: 1.5px dashed $color-primary;
+  margin-left: auto;
+  padding: 7px 16px;
+  border: 1px dashed $brand-border;
   border-radius: $radius-md;
   background: transparent;
   font-family: inherit;
   font-size: 0.875rem;
   font-weight: 500;
-  color: $text-primary;
+  color: $text-secondary;
   cursor: pointer;
   transition:
     border-color 150ms ease,
     color 150ms ease;
 
-  &:active {
-    border-color: $color-primary;
-    color: $color-primary;
+  &:hover {
+    border-color: $brand-primary;
+    color: $brand-primary;
   }
+
+  @media (max-width: calc($desktop - 1px)) {
+    display: none;
+  }
+}
+
+.sticky-cta {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  padding: $spacing-s $spacing-m calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $spacing-s);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: center;
 
   @media (min-width: $desktop) {
-    transition: background 150ms ease;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    &:active {
-      border-color: rgba(255, 255, 255, 0.6);
-      color: $color-white;
-    }
+    display: none;
   }
-}
-
-// ── Skeleton ──────────────────────────────────────────────────────────────────
-.board-skeleton {
-  padding: $spacing-m;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-m;
-}
-
-.skeleton-widget {
-  height: 100px;
-  border-radius: $radius-md;
-}
-
-.skeleton-pills {
-  display: flex;
-  gap: $spacing-xs;
-}
-
-.skeleton-pill {
-  height: 1.6rem;
-  width: 5rem;
-  border-radius: 2rem;
-}
-
-.skeleton-card {
-  height: 72px;
-  border-radius: 16px;
 }
 </style>

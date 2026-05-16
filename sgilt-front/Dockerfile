@@ -16,7 +16,7 @@ RUN corepack enable
 COPY package.json pnpm-lock.yaml ./
 
 # Install deps (prod+dev needed for build)
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
 ###############
 # 2) build

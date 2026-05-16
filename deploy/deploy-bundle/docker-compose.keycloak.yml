@@ -29,7 +29,7 @@ services:
     image: ghcr.io/franzk/sgilt/sgilt-keycloak:${SGILT_KEYCLOAK_VERSION}
     container_name: sgilt-keycloak-${ENV}
     pull_policy: always
-    command: ["start", "--optimized", "--http-enabled=true", "--proxy-headers=xforwarded"]
+    command: ["start", "--http-enabled=true", "--proxy-headers=xforwarded"]
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://sgilt-keycloak-db-${ENV}:5432/sgilt-keycloak
@@ -39,6 +39,7 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
       KC_HOSTNAME: ${AUTH_URL}
       KC_HOSTNAME_ADMIN: ${AUTH_URL}
+      MAGIC_LINK_SECRET: ${MAGIC_LINK_SECRET}
     depends_on:
       sgilt-keycloak-db:
         condition: service_healthy

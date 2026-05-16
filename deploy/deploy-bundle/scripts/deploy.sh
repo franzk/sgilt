@@ -75,14 +75,38 @@ if [[ "$MODE" == "init" ]]; then
     -f ./docker-compose.overlay-init.yml \
     up -d
 
-  # ── Phase 2 : wait for Keycloak, generate and configure secrets ───────────
+  # ── Phase 2 : wait for realm in DB, restart KC in server mode ────────────
   echo ""
+  echo "── Phase 2 : Waiting for sgilt realm to be committed to database..."
+  # In KC 26 production mode, start --import-realm imports the realm and exits.
+  # We poll the database directly instead of waiting for KC to stay running.
+  KC_DB_WAIT=0
+  until docker exec "sgilt-keycloak-db-${ENV}" \
+        psql -U sgilt-keycloak -d sgilt-keycloak -tAc \
+        "SELECT 1 FROM realm WHERE name='sgilt'" 2>/dev/null | grep -q "1"; do
+    KC_DB_WAIT=$(( KC_DB_WAIT + 1 ))
+    if (( KC_DB_WAIT > 60 )); then
+      echo "❌ Timeout: sgilt realm not found in database after 5 minutes"
+      exit 1
+    fi
+    sleep 5
+    echo "   Attempt ${KC_DB_WAIT}: checking database for sgilt realm..."
+  done
+  echo "   sgilt realm imported. Restarting Keycloak in server mode..."
+
+  # Restart KC without the import overlay so it stays running
+  docker compose -p "$PROJECT" \
+    -f ./docker-compose.base.yml \
+    -f ./docker-compose.keycloak.yml \
+    up -d
+
+  # Wait for KC to be ready and retrieve the admin client secret
   kc_curl() {
     docker run --rm --network "sgilt-network-${ENV}" curlimages/curl -s "$@"
   }
   KC_BASE="http://sgilt-keycloak-${ENV}:8080"
 
-  echo "── Phase 2 : Waiting for Keycloak realm import (including clients)..."
+  echo "── Phase 2 : Waiting for Keycloak to be ready (including clients)..."
   KC_TOKEN=""
   CLIENT_UUID=""
   KC_WAIT_ATTEMPTS=0

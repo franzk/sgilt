@@ -1,7 +1,2 @@
-/**
- * Re-exports publics du module evenement/domain
- */
-export type { EventSummary } from './EventSummary'
-export type { EventDetail } from './EventDetail'
-export type { EventPatch } from './EventPatch'
-export type { JournalEntry, JournalModification } from './JournalEntry'
+// Ce fichier est intentionnellement vide.
+// Importer directement depuis le fichier de l'entité (ex: ./EventDetail).

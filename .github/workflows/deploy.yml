@@ -46,12 +46,15 @@ jobs:
           S_KC_BOOTSTRAP_ADMIN_USERNAME: ${{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME }}
           S_KC_BOOTSTRAP_ADMIN_PASSWORD: ${{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD }}
           S_CORE_DB_PASSWORD:            ${{ secrets.CORE_DB_PASSWORD }}
+          S_MAGIC_LINK_SECRET:           ${{ secrets.MAGIC_LINK_SECRET }}
           S_SMTP_HOST:                   ${{ secrets.SMTP_HOST }}
           S_SMTP_PORT:                   ${{ secrets.SMTP_PORT }}
           S_SMTP_USERNAME:               ${{ secrets.SMTP_USERNAME }}
           S_SMTP_PASSWORD:               ${{ secrets.SMTP_PASSWORD }}
           S_SMTP_AUTH:                   ${{ secrets.SMTP_AUTH }}
           S_SMTP_SSL:                    ${{ secrets.SMTP_SSL }}
+          S_R2_ACCESS_KEY_ID:            ${{ secrets.R2_ACCESS_KEY_ID }}
+          S_R2_SECRET_ACCESS_KEY:        ${{ secrets.R2_SECRET_ACCESS_KEY }}
           V_APP_URL:                     ${{ vars.APP_URL }}
           V_APP_DOMAIN:                  ${{ vars.APP_DOMAIN }}
           V_AUTH_URL:                    ${{ vars.AUTH_URL }}
@@ -62,6 +65,9 @@ jobs:
           V_NGINX_AUTH_PORT:             ${{ vars.NGINX_AUTH_PORT }}
           V_NGINX_API_PORT:              ${{ vars.NGINX_API_PORT }}
           V_MAILER_FROM:                 ${{ vars.MAILER_FROM }}
+          V_R2_ENDPOINT:                 ${{ vars.R2_ENDPOINT }}
+          V_R2_BUCKET:                   ${{ vars.R2_BUCKET }}
+          V_R2_DELIVERY_URL:             ${{ vars.R2_DELIVERY_URL }}
         run: |
           missing=()
           [[ -z "$S_REGISTRY_TOKEN" ]]              && missing+=("secret: REGISTRY_TOKEN")
@@ -73,12 +79,15 @@ jobs:
           [[ -z "$S_KC_BOOTSTRAP_ADMIN_USERNAME" ]] && missing+=("secret: KC_BOOTSTRAP_ADMIN_USERNAME")
           [[ -z "$S_KC_BOOTSTRAP_ADMIN_PASSWORD" ]] && missing+=("secret: KC_BOOTSTRAP_ADMIN_PASSWORD")
           [[ -z "$S_CORE_DB_PASSWORD" ]]            && missing+=("secret: CORE_DB_PASSWORD")
+          [[ -z "$S_MAGIC_LINK_SECRET" ]]           && missing+=("secret: MAGIC_LINK_SECRET")
           [[ -z "$S_SMTP_HOST" ]]                   && missing+=("secret: SMTP_HOST")
           [[ -z "$S_SMTP_PORT" ]]                   && missing+=("secret: SMTP_PORT")
           [[ -z "$S_SMTP_USERNAME" ]]               && missing+=("secret: SMTP_USERNAME")
           [[ -z "$S_SMTP_PASSWORD" ]]               && missing+=("secret: SMTP_PASSWORD")
           [[ -z "$S_SMTP_AUTH" ]]                   && missing+=("secret: SMTP_AUTH")
           [[ -z "$S_SMTP_SSL" ]]                    && missing+=("secret: SMTP_SSL")
+          [[ -z "$S_R2_ACCESS_KEY_ID" ]]            && missing+=("secret: R2_ACCESS_KEY_ID")
+          [[ -z "$S_R2_SECRET_ACCESS_KEY" ]]        && missing+=("secret: R2_SECRET_ACCESS_KEY")
           [[ -z "$V_APP_URL" ]]                     && missing+=("var: APP_URL")
           [[ -z "$V_APP_DOMAIN" ]]                  && missing+=("var: APP_DOMAIN")
           [[ -z "$V_AUTH_URL" ]]                    && missing+=("var: AUTH_URL")
@@ -89,6 +98,9 @@ jobs:
           [[ -z "$V_NGINX_AUTH_PORT" ]]             && missing+=("var: NGINX_AUTH_PORT")
           [[ -z "$V_NGINX_API_PORT" ]]              && missing+=("var: NGINX_API_PORT")
           [[ -z "$V_MAILER_FROM" ]]                 && missing+=("var: MAILER_FROM")
+          [[ -z "$V_R2_ENDPOINT" ]]                 && missing+=("var: R2_ENDPOINT")
+          [[ -z "$V_R2_BUCKET" ]]                   && missing+=("var: R2_BUCKET")
+          [[ -z "$V_R2_DELIVERY_URL" ]]             && missing+=("var: R2_DELIVERY_URL")
 
           if [[ ${#missing[@]} -gt 0 ]]; then
             echo "❌ Missing secrets/variables:"
@@ -142,20 +154,15 @@ jobs:
       - name: Build and push sgilt-keycloak
         run: |
           IMAGE_TAG="${{ env.IMAGE_PREFIX }}/sgilt-keycloak:${{ inputs.environment }}-${{ env.SGILT_KEYCLOAK_VERSION }}"
-          if [ "${{ inputs.mode }}" = "init" ]; then
-            echo "🔄 Init mode: generating realm from template"
-            mkdir -p sgilt-keycloak/realm
-            APP_URL="${{ vars.APP_URL }}" \
-              bash deploy/deploy-bundle/scripts/render-realm.sh ${{ inputs.environment }}
+          mkdir -p sgilt-keycloak/realm
+          APP_URL="${{ vars.APP_URL }}" \
+            bash deploy/deploy-bundle/scripts/render-realm.sh ${{ inputs.environment }}
+          if [ "${{ inputs.mode }}" = "init" ] || ! docker manifest inspect $IMAGE_TAG > /dev/null 2>&1; then
             docker build -t $IMAGE_TAG sgilt-keycloak
             docker push $IMAGE_TAG
             echo "✅ Pushed $IMAGE_TAG"
-          elif docker manifest inspect $IMAGE_TAG > /dev/null 2>&1; then
-            echo "⏭️ $IMAGE_TAG already exists, skipping build"
           else
-            docker build -t $IMAGE_TAG sgilt-keycloak
-            docker push $IMAGE_TAG
-            echo "✅ Pushed $IMAGE_TAG"
+            echo "⏭️ $IMAGE_TAG already exists, skipping build"
           fi
 
       - name: Build and push sgilt-smtp-bridge
@@ -263,12 +270,20 @@ jobs:
           KC_DB_PASSWORD=${{ secrets.KC_DB_PASSWORD }}
           KC_BOOTSTRAP_ADMIN_USERNAME=${{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME }}
           KC_BOOTSTRAP_ADMIN_PASSWORD=${{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD }}
+          MAGIC_LINK_SECRET=${{ secrets.MAGIC_LINK_SECRET }}
 
           # Core DB
           CORE_DB_PASSWORD=${{ secrets.CORE_DB_PASSWORD }}
 
           # Core app
           MAILER_FROM=${{ vars.MAILER_FROM }}
+
+          # R2
+          R2_ENDPOINT=${{ vars.R2_ENDPOINT }}
+          R2_BUCKET=${{ vars.R2_BUCKET }}
+          R2_DELIVERY_URL=${{ vars.R2_DELIVERY_URL }}
+          R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }}
 
           # SMTP
           SMTP_HOST=${{ secrets.SMTP_HOST }}

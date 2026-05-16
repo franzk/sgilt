@@ -5,9 +5,9 @@ meta {
 }
 
 post {
-  url: http://localhost:5027/api/v1/onboarding
+  url: {{apiUrl}}/api/v1/onboarding
   body: json
-  auth: inherit
+  auth: none
 }
 
 body:json {
@@ -15,7 +15,17 @@ body:json {
     "firstName": "Franz",
     "lastName": "Ka",
     "email": "franz@ka.net",
-    "prestataireId": "37d43573-8cd0-4eef-a838-91d9bb4f2323"
+    "telephone": "+33 6 12 34 56 78",
+    "prestataireId": "{{prestataireId}}",
+    "eventType": "mariage",
+    "ambiance": "chic",
+    "momentCle": "danse",
+    "description": "Un mariage en plein air avec vue sur les Vosges.",
+    "date": "2026-09-15",
+    "ville": "Strasbourg",
+    "nbInvites": "80",
+    "lieu": null,
+    "prestataireMessage": "Bonjour, nous cherchons un DJ pour animer notre soirée."
   }
 }
 

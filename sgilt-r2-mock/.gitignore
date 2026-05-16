@@ -1,0 +1,4 @@
+node_modules/
+mock.db
+storage/*
+!storage/bank

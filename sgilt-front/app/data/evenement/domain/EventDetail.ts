@@ -16,8 +16,11 @@ export interface EventDetail {
   coverImage?: string | null
   sharedNote: string
   sharedNoteUpdatedAt?: Date
+  description?: string
+  momentCle?: string
   reservations: Reservation[]
   journal: JournalEntry[]
   mood: 'confirmee' | 'en_discussion' | 'nouvelle' | 'defaut'
-  countdown: 'imminent' | 'proche' | 'serein'
+  countdown: 'imminent' | 'proche' | 'serein' | 'past'
+  lastUpdateDate?: Date | null
 }

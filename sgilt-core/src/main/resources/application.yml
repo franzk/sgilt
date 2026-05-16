@@ -18,6 +18,7 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+    out-of-order: true
 
   security:
     oauth2:
@@ -25,7 +26,17 @@ spring:
         jwt:
           issuer-uri: ${KEYCLOAK_ISSUER:http://localhost:5028/realms/sgilt}
 
+  servlet:
+    multipart:
+      max-file-size: ${MAX_FILE_SIZE:10MB}
+      max-request-size: ${MAX_REQUEST_SIZE:10MB}
+
 sgilt:
+  r2:
+    endpoint: ${R2_ENDPOINT:http://localhost:5029}
+    access-key-id: ${R2_ACCESS_KEY_ID:mock-key}
+    secret-access-key: ${R2_SECRET_ACCESS_KEY:mock-secret}
+    bucket: ${R2_BUCKET:sgilt-media}
   jwt:
     confirmation-secret: ${CONFIRMATION_TOKEN_SECRET}
     confirmation-expiration-hours: 24
@@ -40,6 +51,7 @@ sgilt:
     admin-client-id: sgilt-admin
     admin-client-secret: ${KC_ADMIN_CLIENT_SECRET}
     front-client-id: sgilt-front
+    magic-link-secret: ${MAGIC_LINK_SECRET:dev-magic-secret-change-in-prod}
 
 server:
   port: 5027

@@ -201,7 +201,7 @@ import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
 import PrestataireHero from '~/components/prestataire/PrestataireHero.vue'
 import EngagementBadge from '~/components/prestataire/EngagementBadge.vue'
-import type { PrestataireDetail } from '~/data/prestataire/domain/prestataire'
+import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDetail'
 
 const { t } = useI18n()
 

@@ -11,5 +11,6 @@ public record KeycloakProperties(
         String realm,
         String adminClientId,
         String adminClientSecret,
-        String frontClientId
+        String frontClientId,
+        String magicLinkSecret
 ) {}

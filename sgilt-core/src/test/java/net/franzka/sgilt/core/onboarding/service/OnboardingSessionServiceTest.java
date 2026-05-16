@@ -427,7 +427,7 @@ class OnboardingSessionServiceTest {
             when(utilisateurService.createUtilisateur(any(), any(), any(), any()))
                     .thenReturn(Utilisateur.builder().build());
             when(evenementService.createFromFormData(any(), any()))
-                    .thenReturn(Evenement.builder().build());
+                    .thenReturn(Evenement.builder().id(UUID.randomUUID()).build());
 
             onboardingSessionService.createEntities(formData, prestataire, EMAIL);
 

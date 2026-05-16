@@ -1,10 +1,9 @@
 package net.franzka.sgilt.core.integration;
 
 import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
-import net.franzka.sgilt.core.jwt.VerificationTokenHmacService;
 import net.franzka.sgilt.core.jwt.JwtService;
 import net.franzka.sgilt.core.jwt.TokenJwtService;
-import net.franzka.sgilt.core.keycloak.KeycloakTokenResponse;
+import net.franzka.sgilt.core.jwt.VerificationTokenHmacService;
 import net.franzka.sgilt.core.onboarding.repository.OnboardingRepository;
 import net.franzka.sgilt.core.reservation.domain.Note;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
@@ -13,7 +12,6 @@ import net.franzka.sgilt.core.reservation.repository.NoteRepository;
 import net.franzka.sgilt.core.reservation.repository.ReservationRepository;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import net.franzka.sgilt.core.utilisateur.repository.UtilisateurRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -26,8 +24,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 class ConfirmationAccountIT extends BaseIntegrationTest {
 
@@ -47,12 +43,6 @@ class ConfirmationAccountIT extends BaseIntegrationTest {
 
     ConfirmationAccountIT(WebApplicationContext wac) {
         super(wac);
-    }
-
-    @BeforeEach
-    void stubKeycloak() {
-        when(keycloakAdminService.getUserTokens(any(), any()))
-                .thenReturn(new KeycloakTokenResponse("access-token", "refresh-token"));
     }
 
     // -------------------------------------------------------------------------
@@ -107,13 +97,13 @@ class ConfirmationAccountIT extends BaseIntegrationTest {
                 .content("""
                     {
                         "setPasswordToken": "%s",
-                        "password": "p@ssw0rd!"
+                        "password": "P@ssw0rd67!"
                     }
                 """.formatted(setPasswordToken)))
-                .hasStatus(200)
-                .bodyJson()
-                .extractingPath("$.accessToken").asString().isEqualTo("access-token");
+                .hasStatus(200);
     }
+
+    // TODO : écrire un test avec un mot de passe non conforme
 
     @Test
     void givenValidToken_whenConfirmAccount_thenReservationIsNew() throws UnsupportedEncodingException {

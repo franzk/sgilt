@@ -20,7 +20,16 @@
       "Bash(del *)",
       "Read(//mnt/c/Users/koehl/Documents/projects/sgilt/sgilt/**)",
       "Bash(sed -i \"s|from '~/types/prestataire'|from '~/data/prestataire/domain/prestataire'|g\" app/components/prestataire/PrestataireHero.vue app/components/prestataire/PrestataireDetails.vue app/components/composed/SgiltSearchResults.vue app/components/cards/PrestataireCard.vue)",
-      "Bash(xargs ls *)"
+      "Bash(xargs ls *)",
+      "Bash(awk '/\\\\\"requiredActions\\\\\":/,/^\\\\s*\\\\],/' \"sgilt-keycloak/realm-template.staging.json\")",
+      "Bash(python3 -c ' *)",
+      "Bash(node -e ' *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-core\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Sort-Object)",
+      "Bash(Remove-Item -Force \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-core\\\\src\\\\main\\\\java\\\\net\\\\franzka\\\\sgilt\\\\core\\\\image\\\\local\\\\LocalImageStorage.java\" -ErrorAction SilentlyContinue)",
+      "Bash(Remove-Item -Force \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-core\\\\src\\\\main\\\\java\\\\net\\\\franzka\\\\sgilt\\\\core\\\\image\\\\local\\\\LocalImageController.java\" -ErrorAction SilentlyContinue)",
+      "Bash(Remove-Item \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-core\\\\src\\\\main\\\\java\\\\net\\\\franzka\\\\sgilt\\\\core\\\\image\\\\local\" -ErrorAction SilentlyContinue)"
     ]
   }
 }

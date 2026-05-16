@@ -362,18 +362,18 @@
       "mobile": {
         "reservations": "Aucune réservation confirmée pour le moment. | 1 réservation confirmée pour le moment. | {count} réservations confirmées pour le moment."
       },
-      "edit-image": "Modifier l'image",
+      "edit-title-image": "Modifier",
       "edit-event-aria": "Modifier l'événement"
     },
     "block": {
-      "logistics-label": "Logistique",
+      "logistics-label": "Lieu",
       "logistics-empty": "Salle, adresse… non renseigné",
       "logistics-placeholder": "Salle, adresse…",
       "shared-note-label": "Note partagée",
       "shared-note-empty": "Aucune note pour le moment.",
       "shared-note-placeholder": "Informations utiles pour tous vos prestataires…",
       "coordinates-label": "Coordonnées",
-      "party-label": "La fête",
+      "party-label": "L'événement",
       "party-empty": "Non renseigné",
       "party-type-label": "Type",
       "party-ambiance-label": "Ambiance",
@@ -383,6 +383,8 @@
       "party-edit-ambiance": "Ambiance",
       "party-edit-city": "Ville",
       "party-edit-guests": "Nombre d'invités",
+      "party-edit-description": "Description",
+      "party-description-placeholder": "Atmosphère, souhaits particuliers…",
       "party-select-empty": "— Non renseigné",
       "party-city-placeholder": "Ville",
       "update-label": "Mise à jour",
@@ -559,7 +561,20 @@
     }
   },
   "journal": {
-    "title": "Historique"
+    "loading": "Chargement…",
+    "load-more": "Charger plus…",
+    "title": "Historique",
+    "champ": {
+      "titre": "Titre",
+      "lieu": "Lieu",
+      "notePartagee": "Note partagée",
+      "eventType": "Type d'événement",
+      "ambiance": "Ambiance",
+      "ville": "Ville",
+      "nbInvites": "Nombre d'invités",
+      "description": "Description",
+      "momentCle": "Moment clé"
+    }
   },
   "profile": {
     "page": {
@@ -746,7 +761,15 @@
       "email-label": "Adresse email",
       "password-label": "Mot de passe",
       "password-confirm-label": "Confirmer le mot de passe",
-      "submit": "Créer mon compte"
+      "submit": "Créer mon compte",
+      "password-rules": {
+        "length": "Au moins 8 caractères",
+        "upper": "Au moins 1 lettre majuscule (A–Z)",
+        "lower": "Au moins 1 lettre minuscule (a–z)",
+        "digit": "Au moins 1 chiffre (0–9)",
+        "special": "Au moins 1 caractère spécial",
+        "not-email": "Ne doit pas être votre adresse email"
+      }
     },
     "submit": {
       "error": {

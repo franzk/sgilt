@@ -1,19 +1,28 @@
-import type { EventDetail } from '~/data/evenement/domain/evenement'
+import type { EventDetail } from '~/data/evenement/domain/EventDetail'
 
-export const DEFAULT_COVERS: Record<string, string> = {
-  mariage:
-    'https://images.unsplash.com/photo-1519741497674-611481863552?w=1400&auto=format&fit=crop',
-  anniversaire:
-    'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=1400&auto=format&fit=crop',
-  soiree_privee:
-    'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1400&auto=format&fit=crop',
-  fete_entreprise:
-    'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1400&auto=format&fit=crop',
-  autre: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1400&auto=format&fit=crop',
+/**
+ * Chemins des images par défaut.
+  */
+export const BANK_IMAGE_PATHS: Record<string, string> = {
+  mariage: 'bank/mariage.jpg',
+  anniversaire: 'bank/anniversaire.jpg',
+  soiree_privee: 'bank/soiree_privee.jpg',
+  fete_entreprise: 'bank/fete_entreprise.jpg',
+  autre: 'bank/autre.jpg',
 }
 
+/**
+ * Retourne l'URL de couverture à afficher pour un événement.
+ * Utilise la couverture personnalisée si elle existe, sinon la banque d'images selon le type.
+ *
+ * @param event   les champs coverImage et eventType de l'événement
+ * @param toUrl   fonction de construction d'URL depuis un imagePath (issue de useImageUrl())
+ */
 export function resolveEventCover(
   event: Pick<EventDetail, 'coverImage' | 'eventType'>,
+  toUrl: (imagePath: string) => string,
 ): string {
-  return event.coverImage ?? DEFAULT_COVERS[event.eventType ?? ''] ?? DEFAULT_COVERS.autre!
+  if (event.coverImage) return toUrl(event.coverImage)
+  const imagePath = BANK_IMAGE_PATHS[event.eventType ?? ''] ?? BANK_IMAGE_PATHS.autre!
+  return toUrl(imagePath)
 }

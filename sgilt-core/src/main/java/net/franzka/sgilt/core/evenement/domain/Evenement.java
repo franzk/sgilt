@@ -31,12 +31,13 @@ public class Evenement {
     private Utilisateur utilisateur;
 
     @Column(nullable = false)
-    private String name;
+    private String title;
 
     @Column(nullable = false)
     private LocalDate date;
 
-    private String coverUrl;
+    @Column(name = "image_path")
+    private String imagePath;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
