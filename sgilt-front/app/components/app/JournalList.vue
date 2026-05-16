@@ -4,7 +4,7 @@
       <time class="journal-entry__date">{{ formatDateTime(entry.date) }}</time>
       <ul class="journal-entry__mods">
         <li v-for="(mod, i) in entry.modifications" :key="i" class="journal-mod">
-          <span class="journal-mod__champ">{{ mod.champ }}&nbsp;:</span>
+          <span class="journal-mod__champ">{{ $t(`journal.champ.${mod.champ}`, mod.champ) }}&nbsp;:</span>
           <template v-if="mod.avant !== null && mod.avant !== ''">
             <span class="journal-mod__avant">{{ mod.avant }}</span>
             <span class="journal-mod__arrow" aria-hidden="true">=></span>

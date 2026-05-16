@@ -563,7 +563,18 @@
   "journal": {
     "loading": "Chargement…",
     "load-more": "Charger plus…",
-    "title": "Historique"
+    "title": "Historique",
+    "champ": {
+      "titre": "Titre",
+      "lieu": "Lieu",
+      "notePartagee": "Note partagée",
+      "eventType": "Type d'événement",
+      "ambiance": "Ambiance",
+      "ville": "Ville",
+      "nbInvites": "Nombre d'invités",
+      "description": "Description",
+      "momentCle": "Moment clé"
+    }
   },
   "profile": {
     "page": {
