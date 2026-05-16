@@ -163,8 +163,6 @@ jobs:
             echo "✅ Pushed $IMAGE_TAG"
           else
             echo "⏭️ $IMAGE_TAG already exists, skipping build"
-            docker push $IMAGE_TAG
-            echo "✅ Pushed $IMAGE_TAG"
           fi
 
       - name: Build and push sgilt-smtp-bridge
