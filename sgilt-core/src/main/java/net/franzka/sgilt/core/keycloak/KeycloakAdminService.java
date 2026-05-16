@@ -77,10 +77,10 @@ public class KeycloakAdminService {
      * @return l'URL d'autorisation KC à transmettre au front
      * @throws KeycloakException si la génération du token échoue
      */
-    public String getMagicLoginUrl(String email) {
+    public String getMagicLoginUrl(String email, String redirectPath) {
         try {
             String magicToken = buildMagicToken(email);
-            String encodedRedirectUri = URLEncoder.encode(frontendUrl + "/app/events", StandardCharsets.UTF_8);
+            String encodedRedirectUri = URLEncoder.encode(frontendUrl + redirectPath, StandardCharsets.UTF_8);
             String encodedToken      = URLEncoder.encode(magicToken, StandardCharsets.UTF_8);
 
             return keycloakProperties.adminUrl()

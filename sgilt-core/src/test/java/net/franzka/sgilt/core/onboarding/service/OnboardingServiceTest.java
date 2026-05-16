@@ -228,6 +228,8 @@ class OnboardingServiceTest {
             when(onboardingSessionService.findById(onboardingId)).thenReturn(onboarding);
             when(onboardingSessionService.consume(onboarding))
                     .thenReturn(new OnboardingSessionService.OnboardingContent(formData, prestataire));
+            when(onboardingSessionService.createEntities(any(), any(), any()))
+                    .thenReturn(UUID.randomUUID());
 
             return formData;
         }

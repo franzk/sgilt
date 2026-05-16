@@ -111,12 +111,12 @@ public class OnboardingService {
         keycloakAdminService.createUser(email, formData.firstName(), formData.lastName(), request.password());
 
         // création de l'utilisateur, de la réservation et de l'événement
-        onboardingSessionService.createEntities(formData, prestataire, email);
+        UUID eventId = onboardingSessionService.createEntities(formData, prestataire, email);
 
         log.info("confirmAccount — compte créé, envoi mail bienvenue à {}", email);
         onboardingMailerService.sendWelcomeEmail(email);
 
-        String loginUrl = keycloakAdminService.getMagicLoginUrl(email);
+        String loginUrl = keycloakAdminService.getMagicLoginUrl(email, "/app/events/" + eventId);
         log.info("confirmAccount — session SSO créée pour {}", email);
         return new ConfirmAccountResponse(loginUrl);
     }

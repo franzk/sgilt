@@ -190,7 +190,7 @@ public class OnboardingSessionService {
      * @param email l'adresse email du demandeur, utilisée pour créer l'utilisateur
     *
      */
-    public void createEntities(InitOnboardingRequest formData, Prestataire prestataire, String email) {
+    public UUID createEntities(InitOnboardingRequest formData, Prestataire prestataire, String email) {
         // création de l'utilisateur
         Utilisateur utilisateur = utilisateurService.createUtilisateur(
                 formData.firstName(), formData.lastName(), email, formData.telephone());
@@ -200,5 +200,7 @@ public class OnboardingSessionService {
 
         // création de la réservation
         reservationService.create(evenement, prestataire, utilisateur, formData.date(), formData.prestataireMessage());
+
+        return evenement.getId();
     }
 }
