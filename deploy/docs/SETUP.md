@@ -182,7 +182,10 @@ In Settings → Secrets and variables → Actions → Repository secrets:
 | `R2_BUCKET`          | e.g. `sgilt-media-staging`      | e.g. `sgilt-media`          |
 | `R2_DELIVERY_URL`    | Public delivery URL (shared)    | (idem)                      |
 
-> **R2:** Endpoint format: `https://<account-id>.r2.cloudflarestorage.com`. Credentials and bucket info are available in the Cloudflare R2 dashboard. `R2_DELIVERY_URL` is the `r2.dev` public URL or a custom domain configured on the bucket.
+> **R2:** 
+> - R2_ENDPOINT format: `https://<account-id>.r2.cloudflarestorage.com`. Credentials and bucket info are available in the Cloudflare R2 dashboard. 
+> - R2_DELIVERY_URL: is the public URL or a custom domain configured on the bucket. e.g. `https://media.domaine.com`
+> - R2_BUCKET is the name of the bucket.
 
 ---
 
