@@ -154,18 +154,15 @@ jobs:
       - name: Build and push sgilt-keycloak
         run: |
           IMAGE_TAG="${{ env.IMAGE_PREFIX }}/sgilt-keycloak:${{ inputs.environment }}-${{ env.SGILT_KEYCLOAK_VERSION }}"
-          if [ "${{ inputs.mode }}" = "init" ]; then
-            echo "🔄 Init mode: generating realm from template"
-            mkdir -p sgilt-keycloak/realm
-            APP_URL="${{ vars.APP_URL }}" \
-              bash deploy/deploy-bundle/scripts/render-realm.sh ${{ inputs.environment }}
+          mkdir -p sgilt-keycloak/realm
+          APP_URL="${{ vars.APP_URL }}" \
+            bash deploy/deploy-bundle/scripts/render-realm.sh ${{ inputs.environment }}
+          if [ "${{ inputs.mode }}" = "init" ] || ! docker manifest inspect $IMAGE_TAG > /dev/null 2>&1; then
             docker build -t $IMAGE_TAG sgilt-keycloak
             docker push $IMAGE_TAG
             echo "✅ Pushed $IMAGE_TAG"
-          elif docker manifest inspect $IMAGE_TAG > /dev/null 2>&1; then
-            echo "⏭️ $IMAGE_TAG already exists, skipping build"
           else
-            docker build -t $IMAGE_TAG sgilt-keycloak
+            echo "⏭️ $IMAGE_TAG already exists, skipping build"
             docker push $IMAGE_TAG
             echo "✅ Pushed $IMAGE_TAG"
           fi
