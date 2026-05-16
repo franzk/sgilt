@@ -383,6 +383,8 @@ VALUES (
   NOW()
 );
 
+UPDATE prestataires SET avatar = hero_image WHERE avatar IS NULL;
+
 -- ─── 3. Liens prestataires ↔ sous-catégories ─────────────────────────────────
 
 INSERT INTO prestataires_sous_categories (prestataire_id, subcat_key) VALUES
