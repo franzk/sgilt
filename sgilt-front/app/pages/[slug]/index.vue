@@ -16,6 +16,7 @@
     v-if="prestataire"
     v-model:open="showFinalisation"
     :prestataire-name="prestataire.name"
+    :prestataire-id="prestataire.id"
   />
 </template>
 

@@ -3,6 +3,7 @@ package net.franzka.sgilt.core.evenement.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.evenement.api.EvenementApi;
+import net.franzka.sgilt.core.evenement.dto.AddReservationRequest;
 import net.franzka.sgilt.core.evenement.dto.CoverSelectDto;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
 import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
@@ -15,7 +16,9 @@ import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.evenement.service.JournalEvenementService;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import net.franzka.sgilt.core.security.CurrentUserService;
+import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
@@ -95,5 +98,14 @@ public class EvenementController implements EvenementApi {
         UUID userId = currentUserService.getId();
         log.info("PATCH /events/{}/cover/select", eventId);
         return ResponseEntity.ok(evenementService.selectCover(eventId, userId, body.imagePath()));
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<Void> addReservation(UUID eventId, AddReservationRequest body) {
+        Utilisateur utilisateur = currentUserService.get();
+        log.info("POST /events/{}/reservations", eventId);
+        evenementService.addReservation(eventId, utilisateur, body.prestataireId(), body.message());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

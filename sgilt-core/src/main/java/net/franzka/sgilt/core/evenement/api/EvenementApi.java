@@ -1,5 +1,6 @@
 package net.franzka.sgilt.core.evenement.api;
 
+import net.franzka.sgilt.core.evenement.dto.AddReservationRequest;
 import net.franzka.sgilt.core.evenement.dto.CoverSelectDto;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
 import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -57,5 +59,11 @@ public interface EvenementApi {
     ResponseEntity<CoverUrlDto> selectCover(
             @PathVariable UUID eventId,
             @RequestBody CoverSelectDto body
+    );
+
+    @PostMapping("/{eventId}/reservations")
+    ResponseEntity<Void> addReservation(
+            @PathVariable UUID eventId,
+            @RequestBody AddReservationRequest body
     );
 }

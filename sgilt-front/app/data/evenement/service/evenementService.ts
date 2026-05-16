@@ -1,7 +1,7 @@
 /**
  * Couche service — orchestration des appels API evenement
  */
-import { getEvenementsApi, getEventDetail, getEventCounts, getEventReservations, getEventJournal, patchEventApi, uploadEventCoverApi, selectEventCoverApi } from '../api/evenementApi'
+import { getEvenementsApi, getEventDetail, getEventCounts, getEventReservations, getEventJournal, patchEventApi, uploadEventCoverApi, selectEventCoverApi, addReservationApi } from '../api/evenementApi'
 import { mapEvenementSummary, mapEventDetail, mapEventCounts, mapEventReservation, mapJournalEntry } from '../mapper/evenementMapper'
 import type { EventSummary } from '../domain/EventSummary'
 import type { EventDetail } from '../domain/EventDetail'
@@ -49,4 +49,8 @@ export async function uploadEventCover(eventId: string, file: File): Promise<str
 export async function selectEventCover(eventId: string, imagePath: string): Promise<string> {
   const dto = await selectEventCoverApi(eventId, imagePath)
   return dto.imagePath
+}
+
+export async function addReservation(eventId: string, prestataireId: string, message: string | null): Promise<void> {
+  await addReservationApi(eventId, prestataireId, message)
 }
