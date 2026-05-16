@@ -179,12 +179,10 @@ In Settings → Secrets and variables → Actions → Repository secrets:
 | `NGINX_API_PORT`     | `2096`                          | `2096`                      |
 | `MAILER_FROM`        | `noreply@sgilt.fr`              | `noreply@sgilt.alsace`      |
 | `R2_ENDPOINT`        | R2 S3 endpoint (shared)         | (idem)                      |
-| `R2_BUCKET`          | e.g. `sgilt-media-staging`      | e.g. `sgilt-media`          |
-| `R2_DELIVERY_URL`    | Public delivery URL (shared)    | (idem)                      |
+| `R2_BUCKET`          | `sgilt-images-staging`          | `sgilt-images-prod`         |
+| `R2_DELIVERY_URL`    | `https://media-staging.sgilt.fr` | `https://media.sgilt.alsace` |
 
-> **R2:** 
-> - R2_ENDPOINT format: `https://<account-id>.r2.cloudflarestorage.com`. Credentials and bucket info are available in the Cloudflare R2 dashboard. 
-> - R2_DELIVERY_URL: is the public URL or a custom domain configured on the bucket. e.g. `https://media.domaine.com`
+> **R2:** See [CLOUDFLARE.md](CLOUDFLARE.md) for the full setup procedure (token creation, endpoint format, bucket names).
 > - R2_BUCKET is the name of the bucket.
 
 ---
