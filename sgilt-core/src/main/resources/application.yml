@@ -37,7 +37,6 @@ sgilt:
     access-key-id: ${R2_ACCESS_KEY_ID:mock-key}
     secret-access-key: ${R2_SECRET_ACCESS_KEY:mock-secret}
     bucket: ${R2_BUCKET:sgilt-media}
-    delivery-url: ${R2_DELIVERY_URL:http://localhost:5029}
   jwt:
     confirmation-secret: ${CONFIRMATION_TOKEN_SECRET}
     confirmation-expiration-hours: 24

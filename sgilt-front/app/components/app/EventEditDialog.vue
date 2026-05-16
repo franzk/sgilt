@@ -128,7 +128,7 @@ function resetDraft() {
   draft.pendingFile = null
   draft.pendingBankImagePath = null
   const bankEntry = Object.entries(BANK_IMAGE_PATHS).find(
-    ([, imageId]) => props.event.coverImage === toUrl(imageId),
+    ([, imagePath]) => props.event.coverImage === imagePath,
   )
   draft.activeBankKey = bankEntry?.[0] ?? ''
 }
@@ -176,11 +176,11 @@ async function handleSave(): Promise<void> {
   saving.value = true
   try {
     if (draft.pendingFile) {
-      const coverUrl = await uploadEventCover(props.eventId, draft.pendingFile)
-      emit('coverUpdated', coverUrl)
+      const imagePath = await uploadEventCover(props.eventId, draft.pendingFile)
+      emit('coverUpdated', imagePath)
     } else if (draft.pendingBankImagePath) {
-      const coverUrl = await selectEventCover(props.eventId, draft.pendingBankImagePath)
-      emit('coverUpdated', coverUrl)
+      const imagePath = await selectEventCover(props.eventId, draft.pendingBankImagePath)
+      emit('coverUpdated', imagePath)
     }
     emit('save', { title: draft.title })
     open.value = false

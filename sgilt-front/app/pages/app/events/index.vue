@@ -89,8 +89,7 @@ const { events, loading } = useEvenements()
 const { toUrl } = useImageUrl()
 
 function coverImage(event: EventSummary): string {
-  if (event.coverImage) return event.coverImage
-  const imagePath = BANK_IMAGE_PATHS[event.eventType ?? ''] ?? BANK_IMAGE_PATHS.autre!
+  const imagePath = event.coverImage ?? BANK_IMAGE_PATHS[event.eventType ?? ''] ?? BANK_IMAGE_PATHS.autre!
   return toUrl(imagePath)
 }
 

@@ -22,7 +22,7 @@ export function resolveEventCover(
   event: Pick<EventDetail, 'coverImage' | 'eventType'>,
   toUrl: (imagePath: string) => string,
 ): string {
-  if (event.coverImage) return event.coverImage
+  if (event.coverImage) return toUrl(event.coverImage)
   const imagePath = BANK_IMAGE_PATHS[event.eventType ?? ''] ?? BANK_IMAGE_PATHS.autre!
   return toUrl(imagePath)
 }

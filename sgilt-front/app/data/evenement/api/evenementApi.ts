@@ -9,7 +9,7 @@ import type { EventReservationSummaryDto } from '../dto/EventReservationSummaryD
 import type { JournalEvenementPageDto } from '../dto/JournalEvenementDto'
 
 export interface CoverUrlResponseDto {
-  coverUrl: string
+  imagePath: string
 }
 
 export async function getEvenementsApi(): Promise<EvenementSummaryDto[]> {

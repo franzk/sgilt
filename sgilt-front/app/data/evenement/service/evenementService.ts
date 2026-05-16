@@ -43,10 +43,10 @@ export async function patchEvent(eventId: string, patch: EventPatch): Promise<Ev
 
 export async function uploadEventCover(eventId: string, file: File): Promise<string> {
   const dto = await uploadEventCoverApi(eventId, file)
-  return dto.coverUrl
+  return dto.imagePath
 }
 
 export async function selectEventCover(eventId: string, imagePath: string): Promise<string> {
   const dto = await selectEventCoverApi(eventId, imagePath)
-  return dto.coverUrl
+  return dto.imagePath
 }

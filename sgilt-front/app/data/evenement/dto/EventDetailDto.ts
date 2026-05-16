@@ -10,7 +10,7 @@ export interface EventDetailDto {
   ville?: string
   lieu?: string
   nbInvites?: string
-  coverUrl?: string | null
+  imagePath?: string | null
   sharedNote: string
   description?: string
   momentCle?: string

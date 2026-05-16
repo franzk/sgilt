@@ -6,7 +6,7 @@ export interface EvenementSummaryDto {
   title: string
   date?: string
   ville?: string
-  coverUrl?: string | null
+  imagePath?: string | null
   eventType?: string
   confirmedCount: number
   inDiscussionCount: number

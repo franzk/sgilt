@@ -64,7 +64,7 @@ class EvenementServiceTest {
     private void whenEventFound(Evenement event) {
         when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
         when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
-        when(evenementMapper.toDetailDto(any(), any(), any(), any())).thenReturn(mock(EventDetailDto.class));
+        when(evenementMapper.toDetailDto(any(), any(), any())).thenReturn(mock(EventDetailDto.class));
     }
 
     @SuppressWarnings("unchecked")
@@ -76,7 +76,7 @@ class EvenementServiceTest {
     }
 
     private EventPatchDto emptyPatch() {
-        return new EventPatchDto(null, null, null, null, null, null, null, null);
+        return new EventPatchDto(null, null, null, null, null, null, null, null, null);
     }
 
     // ── GetUserEvents ────────────────────────────────────────────────────────────
@@ -86,13 +86,13 @@ class EvenementServiceTest {
 
         @Test
         void givenUserWithOneEvent_whenGetUserEvents_thenReturnsMappedDto() {
-            Evenement           event  = Evenement.builder().id(EVENT_ID).name("Mariage").date(LocalDate.now()).build();
+            Evenement           event  = Evenement.builder().id(EVENT_ID).title("Mariage").date(LocalDate.now()).build();
             ReservationCounts   counts = new ReservationCounts(1, 0, 0);
             EvenementSummaryDto dto    = new EvenementSummaryDto(EVENT_ID, "Mariage", LocalDate.now(), null, null, null, 1, 0);
 
             when(evenementRepository.findByUtilisateurId(USER_ID)).thenReturn(List.of(event));
             when(reservationService.getCountsForEvenement(EVENT_ID)).thenReturn(counts);
-            when(evenementMapper.toSummaryDto(eq(event), eq(counts), isNull())).thenReturn(dto);
+            when(evenementMapper.toSummaryDto(eq(event), eq(counts))).thenReturn(dto);
 
             assertThat(evenementService.getUserEvents(USER_ID)).containsExactly(dto);
         }
@@ -107,8 +107,8 @@ class EvenementServiceTest {
         @Test
         void givenUserWithTwoEvents_whenGetUserEvents_thenEachEventQueriesItsOwnCounts() {
             UUID eventId2 = UUID.randomUUID();
-            Evenement   event1  = Evenement.builder().id(EVENT_ID).name("E1").date(LocalDate.now()).build();
-            Evenement   event2  = Evenement.builder().id(eventId2).name("E2").date(LocalDate.now()).build();
+            Evenement   event1  = Evenement.builder().id(EVENT_ID).title("E1").date(LocalDate.now()).build();
+            Evenement   event2  = Evenement.builder().id(eventId2).title("E2").date(LocalDate.now()).build();
             ReservationCounts counts1 = new ReservationCounts(2, 0, 0);
             ReservationCounts counts2 = new ReservationCounts(0, 1, 0);
             EvenementSummaryDto dto1  = new EvenementSummaryDto(EVENT_ID, "E1", LocalDate.now(), null, null, null, 2, 0);
@@ -117,8 +117,8 @@ class EvenementServiceTest {
             when(evenementRepository.findByUtilisateurId(USER_ID)).thenReturn(List.of(event1, event2));
             when(reservationService.getCountsForEvenement(EVENT_ID)).thenReturn(counts1);
             when(reservationService.getCountsForEvenement(eventId2)).thenReturn(counts2);
-            when(evenementMapper.toSummaryDto(eq(event1), eq(counts1), isNull())).thenReturn(dto1);
-            when(evenementMapper.toSummaryDto(eq(event2), eq(counts2), isNull())).thenReturn(dto2);
+            when(evenementMapper.toSummaryDto(eq(event1), eq(counts1))).thenReturn(dto1);
+            when(evenementMapper.toSummaryDto(eq(event2), eq(counts2))).thenReturn(dto2);
 
             assertThat(evenementService.getUserEvents(USER_ID)).containsExactly(dto1, dto2);
         }
@@ -134,11 +134,11 @@ class EvenementServiceTest {
             Evenement event = ownerEvent(b -> b);
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
             when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
-            when(evenementMapper.toDetailDto(any(), any(), any(), any())).thenReturn(mock(EventDetailDto.class));
+            when(evenementMapper.toDetailDto(any(), any(), any())).thenReturn(mock(EventDetailDto.class));
 
             evenementService.getEventDetail(EVENT_ID, USER_ID);
 
-            verify(evenementMapper).toDetailDto(eq(event), any(), isNull(), isNull());
+            verify(evenementMapper).toDetailDto(eq(event), any(), isNull());
         }
 
         @Test
@@ -147,26 +147,11 @@ class EvenementServiceTest {
             Evenement event = ownerEvent(b -> b);
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
             when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.of(lastUpdate));
-            when(evenementMapper.toDetailDto(any(), any(), any(), any())).thenReturn(mock(EventDetailDto.class));
+            when(evenementMapper.toDetailDto(any(), any(), any())).thenReturn(mock(EventDetailDto.class));
 
             evenementService.getEventDetail(EVENT_ID, USER_ID);
 
-            verify(evenementMapper).toDetailDto(eq(event), any(), eq(lastUpdate), isNull());
-        }
-
-        @Test
-        void givenEventWithCover_whenGetEventDetail_thenMapperCalledWithComputedUrl() {
-            String imageId = "uuid.jpg";
-            String expectedUrl = "http://localhost:5027/images/uuid.jpg";
-            Evenement event = ownerEvent(b -> b.imageId(imageId));
-            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
-            when(imageStorageService.toUrl(imageId)).thenReturn(expectedUrl);
-            when(evenementMapper.toDetailDto(any(), any(), any(), any())).thenReturn(mock(EventDetailDto.class));
-
-            evenementService.getEventDetail(EVENT_ID, USER_ID);
-
-            verify(evenementMapper).toDetailDto(eq(event), any(), isNull(), eq(expectedUrl));
+            verify(evenementMapper).toDetailDto(eq(event), any(), eq(lastUpdate));
         }
     }
 
@@ -179,34 +164,31 @@ class EvenementServiceTest {
                 new MockMultipartFile("file", "photo.jpg", "image/jpeg", new byte[]{1, 2, 3});
 
         @Test
-        void givenNoPreviousCover_whenUpdateCover_thenUploadsAndReturnsCoverUrl() throws IOException {
-            String imageId = "new-uuid.jpg";
-            String coverUrl = "http://localhost:5027/images/new-uuid.jpg";
+        void givenNoPreviousCover_whenUpdateCover_thenUploadsAndReturnsImagePath() throws IOException {
+            String image = "new-uuid.jpg";
             Evenement event = ownerEvent(b -> b);
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            when(imageStorageService.upload(file)).thenReturn(imageId);
-            when(imageStorageService.toUrl(imageId)).thenReturn(coverUrl);
+            when(imageStorageService.upload(file)).thenReturn(image);
 
             CoverUrlDto result = evenementService.updateCover(EVENT_ID, USER_ID, file);
 
-            assertThat(result.coverUrl()).isEqualTo(coverUrl);
+            assertThat(result.imagePath()).isEqualTo(image);
             verify(imageStorageService, never()).delete(any());
-            assertThat(event.getImageId()).isEqualTo(imageId);
+            assertThat(event.getImagePath()).isEqualTo(image);
         }
 
         @Test
         void givenExistingCover_whenUpdateCover_thenDeletesOldAndUploadsNew() throws IOException {
-            String oldImageId = "old-uuid.jpg";
-            String newImageId = "new-uuid.jpg";
-            Evenement event = ownerEvent(b -> b.imageId(oldImageId));
+            String oldImage = "old-uuid.jpg";
+            String newImage = "new-uuid.jpg";
+            Evenement event = ownerEvent(b -> b.imagePath(oldImage));
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            when(imageStorageService.upload(file)).thenReturn(newImageId);
-            when(imageStorageService.toUrl(newImageId)).thenReturn("http://localhost:5027/images/" + newImageId);
+            when(imageStorageService.upload(file)).thenReturn(newImage);
 
             evenementService.updateCover(EVENT_ID, USER_ID, file);
 
-            verify(imageStorageService).delete(oldImageId);
-            assertThat(event.getImageId()).isEqualTo(newImageId);
+            verify(imageStorageService).delete(oldImage);
+            assertThat(event.getImagePath()).isEqualTo(newImage);
         }
 
         @Test
@@ -298,7 +280,7 @@ class EvenementServiceTest {
         @Test
         void givenFieldChanged_whenPatchEvent_thenModificationLogged() {
             Evenement event = ownerEvent(b -> b.lieu("Paris"));
-            EventPatchDto patch = new EventPatchDto("Lyon", null, null, null, null, null, null, null);
+            EventPatchDto patch = new EventPatchDto(null, "Lyon", null, null, null, null, null, null, null);
 
             whenEventFound(event);
 
@@ -311,7 +293,7 @@ class EvenementServiceTest {
         @Test
         void givenFieldUnchanged_whenPatchEvent_thenFieldNotLogged() {
             Evenement event = ownerEvent(b -> b.lieu("Paris"));
-            EventPatchDto patch = new EventPatchDto("Paris", null, null, null, null, null, null, null);
+            EventPatchDto patch = new EventPatchDto(null, "Paris", null, null, null, null, null, null, null);
 
             whenEventFound(event);
 
@@ -323,7 +305,7 @@ class EvenementServiceTest {
         @Test
         void givenNullPatchField_whenPatchEvent_thenFieldNotLogged() {
             Evenement event = ownerEvent(b -> b.lieu("Paris"));
-            EventPatchDto patch = new EventPatchDto(null, null, null, null, null, null, null, null);
+            EventPatchDto patch = new EventPatchDto(null, null, null, null, null, null, null, null, null);
 
             whenEventFound(event);
 
@@ -336,7 +318,7 @@ class EvenementServiceTest {
         void givenBlankLieu_whenPatchEvent_thenLoggedAsNull() {
             // blankToNull("") = null : un blank est loggué comme null
             Evenement event = ownerEvent(b -> b.lieu("Paris"));
-            EventPatchDto patch = new EventPatchDto("", null, null, null, null, null, null, null);
+            EventPatchDto patch = new EventPatchDto(null, "", null, null, null, null, null, null, null);
 
             whenEventFound(event);
 
@@ -349,7 +331,7 @@ class EvenementServiceTest {
         @Test
         void givenMultipleFieldsChanged_whenPatchEvent_thenAllLogged() {
             Evenement event = ownerEvent(b -> b.lieu("Paris").ville("Paris"));
-            EventPatchDto patch = new EventPatchDto("Lyon", null, null, null, "Bordeaux", null, null, null);
+            EventPatchDto patch = new EventPatchDto(null, "Lyon", null, null, null, "Bordeaux", null, null, null);
 
             whenEventFound(event);
 
@@ -365,7 +347,7 @@ class EvenementServiceTest {
         void givenSharedNoteChangedWithBlank_whenPatchEvent_thenLoggedAsBlankNotNull() {
             // sharedNote n'est pas soumis à blankToNull : "" reste "" dans le log
             Evenement event = ownerEvent(b -> b.notePartagee(null));
-            EventPatchDto patch = new EventPatchDto(null, "", null, null, null, null, null, null);
+            EventPatchDto patch = new EventPatchDto(null, null, "", null, null, null, null, null, null);
 
             whenEventFound(event);
 
@@ -378,7 +360,7 @@ class EvenementServiceTest {
         @Test
         void givenNothingChanged_whenPatchEvent_thenSaveCalledWithEmptyList() {
             Evenement event = ownerEvent(b -> b.lieu("Paris").ville("Lyon"));
-            EventPatchDto patch = new EventPatchDto("Paris", null, null, null, "Lyon", null, null, null);
+            EventPatchDto patch = new EventPatchDto(null, "Paris", null, null, null, "Lyon", null, null, null);
 
             whenEventFound(event);
 
@@ -391,7 +373,8 @@ class EvenementServiceTest {
         void givenEventNotFound_whenPatchEvent_thenThrowsEvenementNotFoundException() {
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.empty());
 
-            assertThatThrownBy(() -> evenementService.patchEvent(EVENT_ID, USER_ID, emptyPatch()))
+            var patch = emptyPatch();
+            assertThatThrownBy(() -> evenementService.patchEvent(EVENT_ID, USER_ID, patch))
                     .isInstanceOf(EvenementNotFoundException.class);
         }
 
@@ -402,7 +385,8 @@ class EvenementServiceTest {
             Evenement event = Evenement.builder().id(EVENT_ID).utilisateur(otherOwner).date(LocalDate.now()).build();
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
 
-            assertThatThrownBy(() -> evenementService.patchEvent(EVENT_ID, USER_ID, emptyPatch()))
+            var patch = emptyPatch();
+            assertThatThrownBy(() -> evenementService.patchEvent(EVENT_ID, USER_ID, patch))
                     .isInstanceOf(EvenementNotAllowedException.class);
         }
     }

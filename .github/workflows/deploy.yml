@@ -53,6 +53,8 @@ jobs:
           S_SMTP_PASSWORD:               ${{ secrets.SMTP_PASSWORD }}
           S_SMTP_AUTH:                   ${{ secrets.SMTP_AUTH }}
           S_SMTP_SSL:                    ${{ secrets.SMTP_SSL }}
+          S_R2_ACCESS_KEY_ID:            ${{ secrets.R2_ACCESS_KEY_ID }}
+          S_R2_SECRET_ACCESS_KEY:        ${{ secrets.R2_SECRET_ACCESS_KEY }}
           V_APP_URL:                     ${{ vars.APP_URL }}
           V_APP_DOMAIN:                  ${{ vars.APP_DOMAIN }}
           V_AUTH_URL:                    ${{ vars.AUTH_URL }}
@@ -63,6 +65,9 @@ jobs:
           V_NGINX_AUTH_PORT:             ${{ vars.NGINX_AUTH_PORT }}
           V_NGINX_API_PORT:              ${{ vars.NGINX_API_PORT }}
           V_MAILER_FROM:                 ${{ vars.MAILER_FROM }}
+          V_R2_ENDPOINT:                 ${{ vars.R2_ENDPOINT }}
+          V_R2_BUCKET:                   ${{ vars.R2_BUCKET }}
+          V_R2_DELIVERY_URL:             ${{ vars.R2_DELIVERY_URL }}
         run: |
           missing=()
           [[ -z "$S_REGISTRY_TOKEN" ]]              && missing+=("secret: REGISTRY_TOKEN")
@@ -81,6 +86,8 @@ jobs:
           [[ -z "$S_SMTP_PASSWORD" ]]               && missing+=("secret: SMTP_PASSWORD")
           [[ -z "$S_SMTP_AUTH" ]]                   && missing+=("secret: SMTP_AUTH")
           [[ -z "$S_SMTP_SSL" ]]                    && missing+=("secret: SMTP_SSL")
+          [[ -z "$S_R2_ACCESS_KEY_ID" ]]            && missing+=("secret: R2_ACCESS_KEY_ID")
+          [[ -z "$S_R2_SECRET_ACCESS_KEY" ]]        && missing+=("secret: R2_SECRET_ACCESS_KEY")
           [[ -z "$V_APP_URL" ]]                     && missing+=("var: APP_URL")
           [[ -z "$V_APP_DOMAIN" ]]                  && missing+=("var: APP_DOMAIN")
           [[ -z "$V_AUTH_URL" ]]                    && missing+=("var: AUTH_URL")
@@ -91,6 +98,9 @@ jobs:
           [[ -z "$V_NGINX_AUTH_PORT" ]]             && missing+=("var: NGINX_AUTH_PORT")
           [[ -z "$V_NGINX_API_PORT" ]]              && missing+=("var: NGINX_API_PORT")
           [[ -z "$V_MAILER_FROM" ]]                 && missing+=("var: MAILER_FROM")
+          [[ -z "$V_R2_ENDPOINT" ]]                 && missing+=("var: R2_ENDPOINT")
+          [[ -z "$V_R2_BUCKET" ]]                   && missing+=("var: R2_BUCKET")
+          [[ -z "$V_R2_DELIVERY_URL" ]]             && missing+=("var: R2_DELIVERY_URL")
 
           if [[ ${#missing[@]} -gt 0 ]]; then
             echo "❌ Missing secrets/variables:"
@@ -272,6 +282,13 @@ jobs:
 
           # Core app
           MAILER_FROM=${{ vars.MAILER_FROM }}
+
+          # R2
+          R2_ENDPOINT=${{ vars.R2_ENDPOINT }}
+          R2_BUCKET=${{ vars.R2_BUCKET }}
+          R2_DELIVERY_URL=${{ vars.R2_DELIVERY_URL }}
+          R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }}
 
           # SMTP
           SMTP_HOST=${{ secrets.SMTP_HOST }}

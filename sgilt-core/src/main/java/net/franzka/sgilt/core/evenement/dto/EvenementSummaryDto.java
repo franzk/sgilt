@@ -8,7 +8,7 @@ public record EvenementSummaryDto(
         String title,
         LocalDate date,
         String ville,
-        String coverUrl,
+        String imagePath,
         String eventType,
         int confirmedCount,
         int inDiscussionCount

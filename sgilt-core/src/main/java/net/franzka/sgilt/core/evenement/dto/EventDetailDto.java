@@ -13,7 +13,7 @@ public record EventDetailDto(
         String ville,
         String lieu,
         String nbInvites,
-        String coverUrl,
+        String imagePath,
         String sharedNote,
         String description,
         String momentCle,

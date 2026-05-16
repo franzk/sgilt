@@ -30,17 +30,14 @@ public class R2ImageStorage implements ImageStorageService {
 
     private final S3Client s3;
     private final String bucket;
-    private final String deliveryUrl;
 
     public R2ImageStorage(
             @Value("${sgilt.r2.endpoint}") String endpoint,
             @Value("${sgilt.r2.access-key-id}") String accessKeyId,
             @Value("${sgilt.r2.secret-access-key}") String secretAccessKey,
-            @Value("${sgilt.r2.bucket}") String bucket,
-            @Value("${sgilt.r2.delivery-url}") String deliveryUrl
+            @Value("${sgilt.r2.bucket}") String bucket
     ) {
-        this.bucket      = bucket;
-        this.deliveryUrl = deliveryUrl;
+        this.bucket = bucket;
         this.s3 = S3Client.builder()
                 .endpointOverride(URI.create(endpoint))
                 .credentialsProvider(StaticCredentialsProvider.create(
@@ -51,7 +48,7 @@ public class R2ImageStorage implements ImageStorageService {
                         .chunkedEncodingEnabled(false)
                         .build())
                 .build();
-        log.info("R2ImageStorage initialisé — endpoint={}, bucket={}, delivery-url={}", endpoint, bucket, deliveryUrl);
+        log.info("R2ImageStorage initialisé — endpoint={}, bucket={}", endpoint, bucket);
     }
 
     /**
@@ -101,15 +98,4 @@ public class R2ImageStorage implements ImageStorageService {
         }
     }
 
-    /**
-     * Construit l'URL publique d'une image depuis son chemin.
-     * Format : {@code {deliveryUrl}/{imagePath}}
-     *
-     * @param imagePath le chemin de l'image dans le bucket
-     * @return l'URL complète utilisable par le front
-     */
-    @Override
-    public String toUrl(String imagePath) {
-        return deliveryUrl + "/" + imagePath;
-    }
 }

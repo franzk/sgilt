@@ -202,8 +202,8 @@ async function onEditSave(patch: EventPatch) {
   event.value = await patchEvent(eventId, patch)
 }
 
-function onCoverUpdated(coverUrl: string) {
-  if (event.value) (event.value as EventDetail).coverImage = coverUrl
+function onCoverUpdated(imagePath: string) {
+  if (event.value) (event.value as EventDetail).coverImage = imagePath
 }
 
 // ── Pills statuts depuis les counts ───────────────────────────────────────────

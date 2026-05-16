@@ -19,10 +19,10 @@ public interface EvenementMapper {
     @Mapping(source = "evenement.date",             target = "date")
     @Mapping(source = "evenement.ville",            target = "ville")
     @Mapping(source = "evenement.eventType",        target = "eventType")
+    @Mapping(source = "evenement.imagePath",        target = "imagePath")
     @Mapping(source = "counts.confirmedCount",      target = "confirmedCount")
     @Mapping(source = "counts.inDiscussionCount",   target = "inDiscussionCount")
-    @Mapping(source = "coverUrl",                   target = "coverUrl")
-    EvenementSummaryDto toSummaryDto(Evenement evenement, ReservationCounts counts, String coverUrl);
+    EvenementSummaryDto toSummaryDto(Evenement evenement, ReservationCounts counts);
 
     ClientInfoDto toClientInfo(Utilisateur utilisateur);
 
@@ -30,8 +30,8 @@ public interface EvenementMapper {
     @Mapping(source = "evenement.description",  target = "description")
     @Mapping(source = "evenement.momentCle",    target = "momentCle")
     @Mapping(source = "evenement.utilisateur",  target = "clientInfo")
+    @Mapping(source = "evenement.imagePath",    target = "imagePath")
     @Mapping(source = "countdown",              target = "countdown")
     @Mapping(source = "lastUpdateDate",         target = "lastUpdateDate")
-    @Mapping(source = "coverUrl",               target = "coverUrl")
-    EventDetailDto toDetailDto(Evenement evenement, String countdown, LocalDateTime lastUpdateDate, String coverUrl);
+    EventDetailDto toDetailDto(Evenement evenement, String countdown, LocalDateTime lastUpdateDate);
 }

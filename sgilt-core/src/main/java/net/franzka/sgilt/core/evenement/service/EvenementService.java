@@ -59,10 +59,7 @@ public class EvenementService {
      */
     public List<EvenementSummaryDto> getUserEvents(UUID userId) {
         return evenementRepository.findByUtilisateurId(userId).stream()
-                .map(e -> {
-                    String coverUrl = e.getImagePath() != null ? imageStorageService.toUrl(e.getImagePath()) : null;
-                    return evenementMapper.toSummaryDto(e, reservationService.getCountsForEvenement(e.getId()), coverUrl);
-                })
+                .map(e -> evenementMapper.toSummaryDto(e, reservationService.getCountsForEvenement(e.getId())))
                 .toList();
     }
 
@@ -78,8 +75,7 @@ public class EvenementService {
     public EventDetailDto getEventDetail(UUID eventId, UUID utilisateurId) {
         Evenement event = getEvent(eventId, utilisateurId);
         LocalDateTime lastUpdateDate = journalEvenementService.derniereModification(eventId).orElse(null);
-        String coverUrl = event.getImagePath() != null ? imageStorageService.toUrl(event.getImagePath()) : null;
-        return evenementMapper.toDetailDto(event, computeCountdown(event.getDate()), lastUpdateDate, coverUrl);
+        return evenementMapper.toDetailDto(event, computeCountdown(event.getDate()), lastUpdateDate);
     }
 
     /**
@@ -151,8 +147,7 @@ public class EvenementService {
         evenementRepository.save(event);
         journalEvenementService.save(event, modifications);
         LocalDateTime lastUpdateDate = journalEvenementService.derniereModification(eventId).orElse(null);
-        String coverUrl = event.getImagePath() != null ? imageStorageService.toUrl(event.getImagePath()) : null;
-        return evenementMapper.toDetailDto(event, computeCountdown(event.getDate()), lastUpdateDate, coverUrl);
+        return evenementMapper.toDetailDto(event, computeCountdown(event.getDate()), lastUpdateDate);
     }
 
     private List<ModificationChamp> computeModifications(Evenement event, EventPatchDto patch) {
@@ -209,7 +204,7 @@ public class EvenementService {
             String imagePath = imageStorageService.upload(file);
             event.setImagePath(imagePath);
             evenementRepository.save(event);
-            return new CoverUrlDto(imageStorageService.toUrl(imagePath));
+            return new CoverUrlDto(imagePath);
         } catch (IOException e) {
             throw new ImageStorageException("Erreur de stockage de l'image pour l'événement " + eventId, e);
         }
@@ -231,7 +226,7 @@ public class EvenementService {
         supprimerAncienneImageSiDeletable(event.getImagePath());
         event.setImagePath(imagePath);
         evenementRepository.save(event);
-        return new CoverUrlDto(imageStorageService.toUrl(imagePath));
+        return new CoverUrlDto(imagePath);
     }
 
     private void supprimerAncienneImageSiDeletable(String imagePath) {
