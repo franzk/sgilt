@@ -18,6 +18,8 @@ import net.franzka.sgilt.core.image.ImageStorageService;
 import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
+import net.franzka.sgilt.core.prestataire.domain.Prestataire;
+import net.franzka.sgilt.core.prestataire.service.PrestataireService;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.stereotype.Service;
@@ -47,6 +49,7 @@ public class EvenementService {
 
     private final EvenementRepository evenementRepository;
     private final ReservationService reservationService;
+    private final PrestataireService prestataireService;
     private final EvenementMapper evenementMapper;
     private final JournalEvenementService journalEvenementService;
     private final ImageStorageService imageStorageService;
@@ -104,6 +107,22 @@ public class EvenementService {
     public List<ReservationSummaryDto> getEventReservations(UUID eventId, UUID utilisateurId) {
         getEvent(eventId, utilisateurId); // vérifie que l'événement appartient bien à l'utilisateur
         return reservationService.getReservationSummaries(eventId);
+    }
+
+    /**
+     * Ajoute une réservation à un événement existant.
+     *
+     * @param eventId       l'identifiant de l'événement
+     * @param utilisateur   l'utilisateur connecté (doit être le propriétaire)
+     * @param prestataireId l'identifiant du prestataire à contacter
+     * @param message       message optionnel à destination du prestataire
+     * @throws EvenementNotFoundException   si l'événement n'existe pas
+     * @throws EvenementNotAllowedException si l'utilisateur n'est pas le propriétaire
+     */
+    public void addReservation(UUID eventId, Utilisateur utilisateur, UUID prestataireId, String message) {
+        Evenement event = getEvent(eventId, utilisateur.getId());
+        Prestataire prestataire = prestataireService.getById(prestataireId);
+        reservationService.create(event, prestataire, utilisateur, event.getDate(), message);
     }
 
     /**

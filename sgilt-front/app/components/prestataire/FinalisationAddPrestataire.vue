@@ -39,8 +39,9 @@
 <script setup lang="ts">
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
+import { addReservation } from '~/data/evenement/service/evenementService'
 
-defineProps<{ prestataireName: string }>()
+const props = defineProps<{ prestataireName: string; prestataireId: string }>()
 
 const open = defineModel<boolean>('open', { required: true })
 
@@ -51,11 +52,13 @@ const sending = ref(false)
 
 async function submit() {
   sending.value = true
-  // TODO: appel API réel
-  await new Promise((r) => setTimeout(r, 600))
-  sending.value = false
-  open.value = false
-  onFlowSuccess()
+  try {
+    await addReservation(flowPayload.value.id, props.prestataireId, message.value || null)
+    open.value = false
+    onFlowSuccess()
+  } finally {
+    sending.value = false
+  }
 }
 
 </script>

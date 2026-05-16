@@ -48,3 +48,10 @@ export async function selectEventCoverApi(eventId: string, imagePath: string): P
     body: { imagePath },
   })
 }
+
+export async function addReservationApi(eventId: string, prestataireId: string, message: string | null): Promise<void> {
+  await apiFetch(`/events/${eventId}/reservations`, {
+    method: 'POST',
+    body: { prestataireId, message },
+  })
+}
