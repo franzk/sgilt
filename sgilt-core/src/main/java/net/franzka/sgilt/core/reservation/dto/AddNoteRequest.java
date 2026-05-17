@@ -5,5 +5,5 @@ import jakarta.validation.constraints.NotBlank;
 public record AddNoteRequest(
         @NotBlank String title,
         @NotBlank String content,
-        boolean personal
+        Boolean isPersonal
 ) {}

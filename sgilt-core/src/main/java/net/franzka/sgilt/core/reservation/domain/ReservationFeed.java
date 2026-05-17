@@ -52,6 +52,6 @@ public abstract class ReservationFeed {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-        this.isPersonal = false;
+        if (this.isPersonal == null) this.isPersonal = false;
     }
 }

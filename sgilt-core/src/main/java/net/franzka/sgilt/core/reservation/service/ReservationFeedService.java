@@ -1,11 +1,7 @@
 package net.franzka.sgilt.core.reservation.service;
 
 import lombok.RequiredArgsConstructor;
-import net.franzka.sgilt.core.reservation.domain.Document;
-import net.franzka.sgilt.core.reservation.domain.FeedCaller;
-import net.franzka.sgilt.core.reservation.domain.Note;
-import net.franzka.sgilt.core.reservation.domain.Reservation;
-import net.franzka.sgilt.core.reservation.domain.ReservationFeed;
+import net.franzka.sgilt.core.reservation.domain.*;
 import net.franzka.sgilt.core.reservation.dto.AddNoteRequest;
 import net.franzka.sgilt.core.reservation.dto.FeedItemDto;
 import net.franzka.sgilt.core.reservation.repository.NoteRepository;
@@ -67,7 +63,7 @@ public class ReservationFeedService {
                 .utilisateur(utilisateur)
                 .title(request.title())
                 .content(request.content())
-                .isPersonal(request.personal())
+                .isPersonal(Boolean.TRUE.equals(request.isPersonal()))
                 .build();
         note = noteRepository.save(note);
         return toFeedItem(note, false);

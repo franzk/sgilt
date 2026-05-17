@@ -112,6 +112,7 @@
     >
       <div class="note-form">
         <input
+          ref="noteTitreRef"
           v-model="newNoteTitre"
           class="titre-input"
           type="text"
@@ -130,7 +131,10 @@
             <input v-model="noteIsPersonal" type="checkbox" />
             <span>{{ $t('feed.add-note-dialog.private-toggle') }}</span>
           </label>
-          <SgiltButton :disabled="!newNote.trim() || !newNoteTitre.trim() || sending" @click="sendNote">
+          <SgiltButton
+            :disabled="!newNote.trim() || !newNoteTitre.trim() || sending"
+            @click="sendNote"
+          >
             {{ $t('feed.add-note-dialog.submit') }}
           </SgiltButton>
         </div>
@@ -192,9 +196,7 @@ const filteredItems = computed(() => {
   const filtered =
     activeFilter.value === 'all'
       ? props.items
-      : props.items.filter(
-          (i) => i.type === (activeFilter.value === 'notes' ? 'note' : 'document'),
-        )
+      : props.items.filter((i) => i.type === (activeFilter.value === 'notes' ? 'note' : 'document'))
   return [...filtered].sort((a, b) => itemDate(b) - itemDate(a))
 })
 
@@ -218,6 +220,7 @@ const newNote = ref('')
 const newNoteTitre = ref('')
 const noteIsPersonal = ref(false)
 const sending = ref(false)
+const noteTitreRef = ref<HTMLInputElement | null>(null)
 const noteTextareaRef = ref<HTMLTextAreaElement | null>(null)
 
 function openNoteModal() {
@@ -228,7 +231,7 @@ function openNoteModal() {
 }
 
 watch(noteModalOpen, (val) => {
-  if (val) nextTick(() => noteTextareaRef.value?.focus())
+  if (val) nextTick(() => noteTitreRef.value?.focus())
 })
 
 function autoResize(e: Event) {

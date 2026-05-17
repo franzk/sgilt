@@ -13,6 +13,6 @@ export async function addNoteApi(
 ): Promise<FeedItemDto> {
   return apiFetch<FeedItemDto>(`/reservations/${reservationId}/feed/notes`, {
     method: 'POST',
-    body: { title, content, personal: isPersonal },
+    body: { title, content, isPersonal },
   })
 }
