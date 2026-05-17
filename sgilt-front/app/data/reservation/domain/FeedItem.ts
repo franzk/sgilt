@@ -1,9 +1,21 @@
 /**
- * Domaine — éléments du fil de discussion d'une réservation (union Note | Document)
+ * Domaine — élément du fil de discussion d'une réservation (note ou document).
+ * Le champ type discrimine le variant, les champs optionnels varient selon le type.
  */
-import type { ReservationNote } from './ReservationNote'
-import type { ReservationDocument } from './ReservationDocument'
+import type { NoteAuthor } from './NoteAuthor'
 
-export type FeedNote = ReservationNote & { _kind: 'note' }
-export type FeedDocument = ReservationDocument & { _kind: 'document' }
-export type FeedItem = FeedNote | FeedDocument
+export interface FeedItem {
+  type: 'note' | 'document'
+  id: string
+  title: string
+  author: NoteAuthor
+  createdAt: Date
+  // note
+  content?: string | null
+  isPersonal?: boolean | null
+  isMessageInitial?: boolean | null
+  // document
+  name?: string | null
+  fileType?: string | null
+  url?: string | null
+}

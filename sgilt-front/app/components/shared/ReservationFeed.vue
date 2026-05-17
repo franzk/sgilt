@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="feed">
     <!-- ── Header ────────────────────────────────────────────────────────────── -->
     <div class="feed__header">
@@ -35,15 +35,22 @@
       </button>
     </div>
 
+    <!-- ── Skeleton ─────────────────────────────────────────────────────────── -->
+    <template v-if="loading">
+      <div class="feed__skeleton">
+        <div v-for="i in 3" :key="i" class="feed__skeleton-item skeleton-text" />
+      </div>
+    </template>
+
     <!-- ── Flux ─────────────────────────────────────────────────────────────── -->
-    <ul v-if="filteredItems.length > 0" class="feed__list">
+    <ul v-else-if="filteredItems.length > 0" class="feed__list">
       <li v-for="item in filteredItems" :key="item.id">
         <!-- Note -->
-        <template v-if="item._kind === 'note'">
+        <template v-if="item.type === 'note'">
           <!-- Message initial -->
           <div v-if="item.isMessageInitial" class="note-initial">
             <span class="label">{{ $t('feed.note-initial-label') }}</span>
-            <strong class="titre">{{ item.titre }}</strong>
+            <strong class="titre">{{ item.title }}</strong>
             <p class="content">{{ item.content }}</p>
             <span class="meta">
               {{ item.author.name }} · {{ formatDateShort(item.createdAt) }}
@@ -57,7 +64,7 @@
               <span class="author">{{ item.author.name }}</span>
               <span class="date">{{ formatDateShort(item.createdAt) }}</span>
             </div>
-            <strong class="titre">{{ item.titre }}</strong>
+            <strong class="titre">{{ item.title }}</strong>
             <p class="content">{{ item.content }}</p>
           </div>
 
@@ -73,7 +80,7 @@
           <div class="info">
             <span class="name">{{ item.name }}</span>
             <span class="meta">
-              {{ item.uploadedBy.name }} · {{ formatDateShort(item.uploadedAt) }}
+              {{ item.author.name }} · {{ formatDateShort(item.createdAt) }}
             </span>
           </div>
           <div class="actions">
@@ -92,7 +99,7 @@
       </li>
     </ul>
 
-    <p v-else class="feed__empty">{{ $t('feed.empty') }}</p>
+    <p v-else-if="!loading" class="feed__empty">{{ $t('feed.empty') }}</p>
 
     <input ref="fileInputRef" type="file" style="display: none" @change="handleUpload" />
 
@@ -133,7 +140,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FeedItem, FeedDocument } from '~/types/event'
+import type { FeedItem } from '~/types/event'
 import NoteCard from '~/components/app/NoteCard.vue'
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
@@ -142,11 +149,13 @@ const props = withDefaults(
   defineProps<{
     items: FeedItem[]
     currentUserRole: 'client' | 'prestataire'
+    loading?: boolean
     canAddNote?: boolean
     canUploadDocument?: boolean
     showPersonalToggle?: boolean
   }>(),
   {
+    loading: false,
     canAddNote: false,
     canUploadDocument: false,
     showPersonalToggle: false,
@@ -154,7 +163,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  'add-note': [titre: string, content: string, isPersonal: boolean]
+  'add-note': [title: string, content: string, isPersonal: boolean]
   'upload-document': [file: File]
   'delete-document': [id: string]
 }>()
@@ -170,13 +179,13 @@ const PILLS = computed<{ id: FilterId; label: string }[]>(() => [
 ])
 const activeFilter = ref<FilterId>('all')
 
-const hasNotes = computed(() => props.items.some((i) => i._kind === 'note'))
-const hasDocuments = computed(() => props.items.some((i) => i._kind === 'document'))
+const hasNotes = computed(() => props.items.some((i) => i.type === 'note'))
+const hasDocuments = computed(() => props.items.some((i) => i.type === 'document'))
 const showPills = computed(() => hasNotes.value && hasDocuments.value)
 
 // ── Flux filtré + trié ─────────────────────────────────────────────────────────
 function itemDate(item: FeedItem): number {
-  return new Date(item._kind === 'note' ? item.createdAt : item.uploadedAt).getTime()
+  return item.createdAt.getTime()
 }
 
 const filteredItems = computed(() => {
@@ -184,7 +193,7 @@ const filteredItems = computed(() => {
     activeFilter.value === 'all'
       ? props.items
       : props.items.filter(
-          (i) => i._kind === (activeFilter.value === 'notes' ? 'note' : 'document'),
+          (i) => i.type === (activeFilter.value === 'notes' ? 'note' : 'document'),
         )
   return [...filtered].sort((a, b) => itemDate(b) - itemDate(a))
 })
@@ -192,8 +201,8 @@ const filteredItems = computed(() => {
 // ── Documents ─────────────────────────────────────────────────────────────────
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
-function canDeleteDoc(item: FeedDocument): boolean {
-  return item.uploadedBy.role === props.currentUserRole
+function canDeleteDoc(item: FeedItem): boolean {
+  return item.author.role === props.currentUserRole
 }
 
 function handleUpload(e: Event) {
@@ -229,11 +238,11 @@ function autoResize(e: Event) {
 }
 
 async function sendNote() {
-  const titre = newNoteTitre.value.trim()
+  const title = newNoteTitre.value.trim()
   const content = newNote.value.trim()
-  if (!titre || !content || sending.value) return
+  if (!title || !content || sending.value) return
   sending.value = true
-  emit('add-note', titre, content, noteIsPersonal.value)
+  emit('add-note', title, content, noteIsPersonal.value)
   sending.value = false
   noteModalOpen.value = false
 }
@@ -248,6 +257,18 @@ $desktop: $breakpoint-desktop;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+
+  // ── Skeleton ───────────────────────────────────────────────────────────────
+  &__skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-s;
+  }
+
+  &__skeleton-item {
+    height: 80px;
+    border-radius: $radius-md;
+  }
 
   // ── Header ─────────────────────────────────────────────────────────────────
   &__header {

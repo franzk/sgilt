@@ -1,7 +1,7 @@
-import type { EventDetail } from '~/data/evenement/domain/EventDetail'
+﻿import type { EventDetail } from '~/data/evenement/domain/EventDetail'
 import type {
   NoteAuthor,
-  ReservationDetail,
+  ReservationMeta,
   ReservationDocument,
   ReservationNote,
   ProDemandeDetail,
@@ -97,7 +97,7 @@ export const STARLIGHT: NoteAuthor = {
 
 // ── Réservations (côté client) ────────────────────────────────────────────────
 
-export const MOCK_RESERVATIONS: ReservationDetail[] = [
+export const MOCK_RESERVATIONS: ReservationMeta[] = [
   // ── evt-001 : Mariage de Julie & Thomas ─────────────────────────────────────
   {
     id: 'res-001',
@@ -113,7 +113,7 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'note-m001',
         author: JULIE,
-        titre: 'Demande de réservation — Mariage 14 sept. 2026',
+        title: 'Demande de réservation — Mariage 14 sept. 2026',
         content:
           'Mariage 14 sept. 2026, Obernai. Cocktail jazz 17h–19h + soirée dansante électro 20h–00h. 120 invités. Budget : 1 500–2 000 € TTC.',
         createdAt: new Date('2026-02-01T09:30:00.000Z'),
@@ -122,7 +122,7 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'note-001',
         author: JULIE,
-        titre: "Informations d'accès",
+        title: "Informations d'accès",
         content:
           'Lieu : Domaine des Étoiles, 5 rue des Lilas, Obernai. Accès prestataires par le portail nord (code : 2714).',
         createdAt: new Date('2026-02-10T10:15:00.000Z'),
@@ -130,14 +130,14 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'note-002',
         author: JULIE,
-        titre: 'Planning installation et déroulé',
+        title: 'Planning installation et déroulé',
         content: 'Installation possible dès 14h. Cocktail 17h–19h, soirée dansante 20h–00h.',
         createdAt: new Date('2026-02-10T14:30:00.000Z'),
       },
       {
         id: 'note-003',
         author: DJ,
-        titre: 'Formule confirmée',
+        title: 'Formule confirmée',
         content:
           "Formule retenue : set DJ 5h avec sonorisation complète + éclairage d'ambiance. Tarif confirmé : 1 800 € TTC.",
         createdAt: new Date('2026-02-12T09:00:00.000Z'),
@@ -145,7 +145,7 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'note-004',
         author: DJ,
-        titre: 'Besoins techniques',
+        title: 'Besoins techniques',
         content:
           'Besoins techniques : 2 prises 220V (16A), surface min. 10 m², accès véhicule utilitaire pour déchargement.',
         createdAt: new Date('2026-02-12T11:45:00.000Z'),
@@ -153,14 +153,14 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'note-005',
         author: JULIE,
-        titre: 'Paiement — Acompte 30 %',
+        title: 'Paiement — Acompte 30 %',
         content: "Acompte de 30 % versé le 14/02/2026. Solde à régler 15 jours avant l'événement.",
         createdAt: new Date('2026-02-14T16:20:00.000Z'),
       },
       {
         id: 'note-priv-001',
         author: DJ,
-        titre: 'Exigences musicales du client',
+        title: 'Exigences musicales du client',
         content:
           'Client très exigeant sur le répertoire. Prévoir une sélection de musiques sans paroles pour le repas.',
         createdAt: new Date('2026-02-15T09:00:00.000Z'),
@@ -169,7 +169,7 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'note-priv-002',
         author: DJ,
-        titre: 'Matériel à vérifier',
+        title: 'Matériel à vérifier',
         content:
           'Penser à apporter le câble XLR de secours — la sono du Domaine des Étoiles est vieillissante.',
         createdAt: new Date('2026-02-20T18:30:00.000Z'),
@@ -179,35 +179,39 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
     documents: [
       {
         id: 'doc-001',
+        title: 'Contrat DJ Animation',
         name: 'Contrat_DJ_Animation_14sept2026.pdf',
         fileType: 'pdf',
         url: '#',
-        uploadedBy: JULIE,
-        uploadedAt: new Date('2026-02-10T10:30:00.000Z'),
+        author: JULIE,
+        createdAt: new Date('2026-02-10T10:30:00.000Z'),
       },
       {
         id: 'doc-002',
+        title: 'Rider technique et fiche besoins',
         name: 'Rider_technique_et_fiche_besoins.pdf',
         fileType: 'pdf',
         url: '#',
-        uploadedBy: DJ,
-        uploadedAt: new Date('2026-02-12T12:00:00.000Z'),
+        author: DJ,
+        createdAt: new Date('2026-02-12T12:00:00.000Z'),
       },
       {
         id: 'doc-003',
+        title: 'Photo salle cocktail Domaine Étoiles',
         name: 'Photo_salle_cocktail_Domaine_Etoiles.jpg',
         fileType: 'image',
         url: '#',
-        uploadedBy: DJ,
-        uploadedAt: new Date('2026-02-18T09:15:00.000Z'),
+        author: DJ,
+        createdAt: new Date('2026-02-18T09:15:00.000Z'),
       },
       {
         id: 'doc-004',
+        title: 'Facture acompte 30%',
         name: 'Facture_acompte_30pct_DJ_Animation.pdf',
         fileType: 'pdf',
         url: '#',
-        uploadedBy: JULIE,
-        uploadedAt: new Date('2026-02-28T17:00:00.000Z'),
+        author: JULIE,
+        createdAt: new Date('2026-02-28T17:00:00.000Z'),
       },
     ] satisfies ReservationDocument[],
   },
@@ -225,7 +229,7 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'note-006',
         author: JULIE,
-        titre: 'Demande de réservation — Reportage mariage',
+        title: 'Demande de réservation — Reportage mariage',
         content:
           "Mariage 14 sept. 2026, Strasbourg. Cérémonie 15h, vin d'honneur 17h, dîner 19h30.",
         createdAt: new Date('2026-01-20T10:00:00.000Z'),
@@ -234,7 +238,7 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'note-007',
         author: LEO,
-        titre: 'Formule et tarif indicatif',
+        title: 'Formule et tarif indicatif',
         content:
           'Formule : reportage complet cérémonie + réception (8h). Style photojournalisme naturel. Tarif indicatif : 1 950 € TTC — devis en attente de validation.',
         createdAt: new Date('2026-01-21T08:30:00.000Z'),
@@ -256,7 +260,7 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'note-008',
         author: JULIE,
-        titre: 'Demande de réservation — Traiteur 120 couverts',
+        title: 'Demande de réservation — Traiteur 120 couverts',
         content:
           '120 couverts. Menu gastronomique 4 services + option végétarienne (15 personnes). Allergies notifiées : fruits à coque (3), gluten (1).',
         createdAt: new Date('2026-02-01T14:00:00.000Z'),
@@ -320,7 +324,7 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'note-009',
         author: SOPHIE,
-        titre: 'Demande de réservation — Anniversaire 23 mai',
+        title: 'Demande de réservation — Anniversaire 23 mai',
         content:
           'Anniversaire 50 ans, 23 mai 2026, Lyon. 60 invités. Jazz manouche recherché, 19h–22h. Soirée surprise — Marc ne doit pas être informé.',
         createdAt: new Date('2026-02-20T09:00:00.000Z'),
@@ -329,7 +333,7 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'note-010',
         author: SOPHIE,
-        titre: 'Lieu et accès',
+        title: 'Lieu et accès',
         content:
           'Lieu : Villa Florentine, 25 montée Saint-Barthélemy, Lyon 5e. Entrée prestataires côté nord. Installation possible dès 16h.',
         createdAt: new Date('2026-03-01T10:30:00.000Z'),
@@ -337,7 +341,7 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'note-011',
         author: GYPSY,
-        titre: 'Formule confirmée',
+        title: 'Formule confirmée',
         content:
           'Formule retenue : trio jazz manouche 3h (19h–22h). Répertoire standards jazz, bossa nova et swing. Tarif confirmé : 1 200 € TTC.',
         createdAt: new Date('2026-03-03T09:15:00.000Z'),
@@ -345,7 +349,7 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'note-012',
         author: SOPHIE,
-        titre: 'Paiement — Acompte 30 %',
+        title: 'Paiement — Acompte 30 %',
         content:
           'Acompte de 30 % (360 €) réglé par virement le 05/03/2026. Référence virement : MARC50-GYPSY.',
         createdAt: new Date('2026-03-05T16:00:00.000Z'),
@@ -353,7 +357,7 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'note-013',
         author: GYPSY,
-        titre: 'Besoins techniques',
+        title: 'Besoins techniques',
         content:
           'Besoins techniques : 2 retours de scène 10", 1 prise secteur 220V (16A), surface min. 6 m². Acoustique naturelle — pas de sonorisation lourde.',
         createdAt: new Date('2026-03-07T11:00:00.000Z'),
@@ -375,7 +379,7 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'note-014',
         author: SOPHIE,
-        titre: 'Demande de réservation — Cocktail dînatoire 60 couverts',
+        title: 'Demande de réservation — Cocktail dînatoire 60 couverts',
         content:
           '60 couverts. Cocktail dînatoire : 8 pièces chaudes + 8 pièces froides par personne. 6 personnes végétariennes. Allergie déclarée : lactose (2 personnes).',
         createdAt: new Date('2026-02-28T14:00:00.000Z'),
@@ -384,7 +388,7 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'note-015',
         author: ECLAT,
-        titre: 'Formule et tarif',
+        title: 'Formule et tarif',
         content:
           'Formule cocktail dînatoire confirmée : 78 € HT / pers., soit 4 680 € HT pour 60 couverts. Acompte 40 % à la signature — devis envoyé par email.',
         createdAt: new Date('2026-03-02T08:45:00.000Z'),
@@ -392,7 +396,7 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'note-016',
         author: SOPHIE,
-        titre: 'Paiement — Acompte 40 %',
+        title: 'Paiement — Acompte 40 %',
         content:
           "Devis signé et retourné le 10/03/2026. Acompte de 1 872 € réglé par CB. Solde dû 10 jours avant l'événement.",
         createdAt: new Date('2026-03-10T17:30:00.000Z'),
@@ -414,7 +418,7 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'note-017',
         author: SOPHIE,
-        titre: 'Demande de réservation — Photobooth anniversaire',
+        title: 'Demande de réservation — Photobooth anniversaire',
         content:
           'Anniversaire 50 ans, 23 mai 2026, Lyon. Thème festif rétro années 80. 60 invités, 19h–23h.',
         createdAt: new Date('2026-03-12T11:00:00.000Z'),
@@ -423,7 +427,7 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'note-018',
         author: STUDIO,
-        titre: 'Formule et tarif indicatif',
+        title: 'Formule et tarif indicatif',
         content:
           'Photobooth autonome 4h : tirages instantanés illimités + clé USB photos numériques remise en fin de soirée. Tarif indicatif : 750 € TTC.',
         createdAt: new Date('2026-03-13T09:30:00.000Z'),
@@ -431,7 +435,7 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'note-019',
         author: SOPHIE,
-        titre: 'Option fond décor personnalisé',
+        title: 'Option fond décor personnalisé',
         content:
           'Option fond décor personnalisé "Marc 50 ans" demandée. En attente du devis définitif incluant cette option.',
         createdAt: new Date('2026-03-14T15:20:00.000Z'),
@@ -443,7 +447,7 @@ export const MOCK_RESERVATIONS: ReservationDetail[] = [
 
 // ── Réservations pro uniquement (pas de miroir côté client) ───────────────────
 
-const PRO_ONLY_RESERVATIONS: ReservationDetail[] = [
+const PRO_ONLY_RESERVATIONS: ReservationMeta[] = [
   {
     id: 'pro-002',
     prestataireId: '3',
@@ -458,7 +462,7 @@ const PRO_ONLY_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'pn-201',
         author: SOPHIE,
-        titre: 'Demande de réservation — Anniversaire surprise',
+        title: 'Demande de réservation — Anniversaire surprise',
         content:
           'Anniversaire surprise, 23 mai 2026, Lyon. 60 invités. Jazz manouche recherché, 19h–22h.',
         createdAt: new Date('2026-03-18T11:00:00.000Z'),
@@ -481,7 +485,7 @@ const PRO_ONLY_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'pn-301',
         author: MARC_D,
-        titre: 'Demande de réservation — Soirée entreprise',
+        title: 'Demande de réservation — Soirée entreprise',
         content:
           'Soirée entreprise, 12 avril 2026, Strasbourg. 80 personnes. Animation musicale sonorisée 3h. Budget : 1 200–1 800 €.',
         createdAt: new Date('2026-03-07T14:00:00.000Z'),
@@ -490,7 +494,7 @@ const PRO_ONLY_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'pn-302',
         author: DJ,
-        titre: 'Disponibilité et formule',
+        title: 'Disponibilité et formule',
         content:
           "Disponible le 12 avril. Formule Soirée Pro : sonorisation + 2 sets 1h30. Devis en cours d'envoi.",
         createdAt: new Date('2026-03-10T09:00:00.000Z'),
@@ -498,7 +502,7 @@ const PRO_ONLY_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'pn-priv-301',
         author: DJ,
-        titre: 'Négociation tarif',
+        title: 'Négociation tarif',
         content:
           'Négociation en cours sur le tarif. Client prêt à signer si on baisse de 150 €. À voir selon la marge.',
         createdAt: new Date('2026-03-15T10:00:00.000Z'),
@@ -521,7 +525,7 @@ const PRO_ONLY_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'pn-401',
         author: EMILIE_D,
-        titre: 'Demande de réservation — Mariage 6 juin',
+        title: 'Demande de réservation — Mariage 6 juin',
         content:
           'Mariage, 6 juin 2026, Colmar. 150 invités. Mix pop-rock et électro. Prestation 19h–2h. Délai de réponse souhaité : rapide.',
         createdAt: new Date('2026-03-17T16:45:00.000Z'),
@@ -544,7 +548,7 @@ const PRO_ONLY_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'pn-501',
         author: THOMAS_B,
-        titre: 'Demande de réservation — Cocktail lancement produit',
+        title: 'Demande de réservation — Cocktail lancement produit',
         content:
           'Cocktail lancement produit, 4 avril 2026, Mulhouse. 40 personnes. Ambiance lounge, fond musical 2h. Budget : 600–800 €.',
         createdAt: new Date('2026-03-01T10:00:00.000Z'),
@@ -553,7 +557,7 @@ const PRO_ONLY_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'pn-502',
         author: DJ,
-        titre: 'Formule confirmée',
+        title: 'Formule confirmée',
         content: 'Formule lounge 2h confirmée à 750 € TTC. Contrat signé, acompte reçu.',
         createdAt: new Date('2026-03-05T09:30:00.000Z'),
       },
@@ -574,7 +578,7 @@ const PRO_ONLY_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'pn-601',
         author: CLAIRE_R,
-        titre: 'Demande de réservation — Soirée privée',
+        title: 'Demande de réservation — Soirée privée',
         content: "Soirée privée, 15 mars 2026, Strasbourg. 30 personnes. Musique d'ambiance 3h.",
         createdAt: new Date('2026-02-20T14:00:00.000Z'),
         isMessageInitial: true,
@@ -582,7 +586,7 @@ const PRO_ONLY_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'pn-602',
         author: CLAIRE_R,
-        titre: 'Annulation',
+        title: 'Annulation',
         content: 'Événement annulé par le client le 08/03/2026.',
         createdAt: new Date('2026-03-08T11:00:00.000Z'),
       },
@@ -603,7 +607,7 @@ const PRO_ONLY_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'pn-701',
         author: AIDES,
-        titre: 'Demande de réservation — Gala humanitaire',
+        title: 'Demande de réservation — Gala humanitaire',
         content:
           'Gala humanitaire, 20 juin 2026, Nancy. 200 personnes. Fond musical classique (dîner) puis animation festive (soirée dansante). Prestation 4h.',
         createdAt: new Date('2026-01-15T10:00:00.000Z'),
@@ -626,7 +630,7 @@ const PRO_ONLY_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'pn-801',
         author: JULIE,
-        titre: 'Demande de réservation — Mariage Thomas & Clara',
+        title: 'Demande de réservation — Mariage Thomas & Clara',
         content:
           'Mariage de Thomas & Clara, 14 décembre 2025, Metz. Reportage complet cérémonie + soirée. Très belle collaboration.',
         createdAt: new Date('2025-11-10T10:00:00.000Z'),
@@ -635,7 +639,7 @@ const PRO_ONLY_RESERVATIONS: ReservationDetail[] = [
       {
         id: 'pn-802',
         author: LEO,
-        titre: 'Album livré — Solde réglé',
+        title: 'Album livré — Solde réglé',
         content:
           'Prestation effectuée. Album photo livré le 20/01/2026. Solde réglé. Merci pour la confiance.',
         createdAt: new Date('2026-01-20T09:00:00.000Z'),

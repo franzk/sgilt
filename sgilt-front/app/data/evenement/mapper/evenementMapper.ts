@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Mapper — conversions DTO → domaine pour le module evenement
  */
 import type { EvenementSummaryDto } from '../dto/EvenementSummaryDto'
@@ -11,7 +11,7 @@ import type { EventDetail } from '../domain/EventDetail'
 import type { EventCounts } from '../domain/EventCounts'
 import type { JournalEntry } from '../domain/JournalEntry'
 import type { ClientContactInfo } from '~/data/reservation/domain/ClientContactInfo'
-import type { Reservation } from '~/data/reservation/domain/Reservation'
+import type { ReservationSummary } from '~/data/reservation/domain/ReservationSummary'
 import type { ReservationStatus } from '~/data/reservation/domain/ReservationStatus'
 
 export function mapEvenementSummary(dto: EvenementSummaryDto): EventSummary {
@@ -81,7 +81,7 @@ export function mapJournalEntry(dto: JournalEvenementDto): JournalEntry {
   }
 }
 
-export function mapEventReservation(dto: EventReservationSummaryDto): Reservation {
+export function mapEventReservation(dto: EventReservationSummaryDto): ReservationSummary {
   return {
     id: dto.id,
     prestataireId: dto.prestataireId,

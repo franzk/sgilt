@@ -1,11 +1,11 @@
-/**
+﻿/**
  * Composable — expose les données d'un événement unique (détail, counts, réservations)
  */
 import { fetchEventDetail, fetchEventCounts, fetchEventReservations } from './service/evenementService'
 import type { EventDetail } from './domain/EventDetail'
 import type { EventCounts } from './domain/EventCounts'
 import type { ClientContactInfo } from '~/data/reservation/domain/ClientContactInfo'
-import type { Reservation } from '~/data/reservation/domain/Reservation'
+import type { ReservationSummary } from '~/data/reservation/domain/ReservationSummary'
 
 export function useEventDetail(id: string) {
   const event = ref<EventDetail | null>(null)
@@ -47,7 +47,7 @@ export function useEventCounts(id: string) {
 }
 
 export function useEventReservations(id: string) {
-  const reservations = ref<Reservation[]>([])
+  const reservations = ref<ReservationSummary[]>([])
   const pending = ref(true)
   const error = ref<unknown>(null)
 

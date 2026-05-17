@@ -1,9 +1,9 @@
 /**
- * Domaine — résumé d'une réservation (lié à un prestataire)
+ * Domaine — résumé d'une réservation pour l'affichage en liste
  */
 import type { ReservationStatus } from './ReservationStatus'
 
-export interface Reservation {
+export interface ReservationSummary {
   id: string
   prestataireId: string
   prestataireName: string

@@ -14,7 +14,6 @@ import net.franzka.sgilt.core.evenement.dto.JournalEvenementDto;
 import org.springframework.web.multipart.MultipartFile;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.evenement.service.JournalEvenementService;
-import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import net.franzka.sgilt.core.security.CurrentUserService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.data.domain.Page;
@@ -65,14 +64,6 @@ public class EvenementController implements EvenementApi {
         UUID userId = currentUserService.getId();
         log.info("GET /events/{}/counts", eventId);
         return ResponseEntity.ok(evenementService.getEventCounts(eventId, userId));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public ResponseEntity<List<ReservationSummaryDto>> getEventReservations(UUID eventId) {
-        UUID userId = currentUserService.getId();
-        log.info("GET /events/{}/reservations", eventId);
-        return ResponseEntity.ok(evenementService.getEventReservations(eventId, userId));
     }
 
     @Override

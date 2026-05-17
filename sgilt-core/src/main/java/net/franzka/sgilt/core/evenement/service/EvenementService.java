@@ -17,7 +17,6 @@ import net.franzka.sgilt.core.image.ImageStorageException;
 import net.franzka.sgilt.core.image.ImageStorageService;
 import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
-import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
@@ -96,17 +95,15 @@ public class EvenementService {
     }
 
     /**
-     * Retourne la liste des réservations d'un événement pour l'EventBoard.
+     * Vérifie que l'utilisateur est bien le propriétaire de l'événement.
      *
      * @param eventId       l'identifiant de l'événement
      * @param utilisateurId l'identifiant de l'utilisateur connecté
-     * @return la liste des résumés de réservations
      * @throws EvenementNotFoundException   si l'événement n'existe pas
      * @throws EvenementNotAllowedException si l'événement n'appartient pas à l'utilisateur connecté
      */
-    public List<ReservationSummaryDto> getEventReservations(UUID eventId, UUID utilisateurId) {
-        getEvent(eventId, utilisateurId); // vérifie que l'événement appartient bien à l'utilisateur
-        return reservationService.getReservationSummaries(eventId);
+    public void verifyEventOwnership(UUID eventId, UUID utilisateurId) {
+        getEvent(eventId, utilisateurId);
     }
 
     /**
