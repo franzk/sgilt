@@ -1,9 +1,11 @@
 package net.franzka.sgilt.core.reservation.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.storage.FileStorageException;
 import net.franzka.sgilt.core.storage.FileStorageService;
 import net.franzka.sgilt.core.storage.FileStreamResult;
+import net.franzka.sgilt.core.storage.FileTooLargeException;
 import net.franzka.sgilt.core.reservation.domain.*;
 import net.franzka.sgilt.core.reservation.dto.AddNoteRequest;
 import net.franzka.sgilt.core.reservation.dto.FeedItemDto;
@@ -24,6 +26,7 @@ import java.util.UUID;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReservationFeedService {
 
     private final ReservationService        reservationService;
@@ -69,6 +72,8 @@ public class ReservationFeedService {
         return toFeedItem(note, false, reservationId);
     }
 
+    private static final long MAX_FILE_SIZE = 10L * 1024 * 1024; // 10 MB
+
     /**
      * Uploade un document vers R2 et l'associe à la réservation.
      *
@@ -79,6 +84,10 @@ public class ReservationFeedService {
      * @return le document créé sous forme de {@link FeedItemDto}
      */
     public FeedItemDto addDocument(UUID reservationId, Utilisateur utilisateur, MultipartFile file, boolean isPersonal) {
+        log.info("POST /reservations/{}/feed/documents : {} / {}", reservationId, file.getSize(), MAX_FILE_SIZE);
+        if (file.getSize() > MAX_FILE_SIZE) {
+            throw new FileTooLargeException(MAX_FILE_SIZE);
+        }
         Reservation reservation = reservationService.getReservation(reservationId, utilisateur.getId());
         try {
             String filePath = fileStorageService.upload(file, "documents");

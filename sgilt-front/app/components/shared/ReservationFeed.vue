@@ -86,7 +86,14 @@
             </span>
           </div>
           <div class="actions">
-            <button class="btn" type="button" title="Télécharger" @click="$emit('download-document', item.url ?? '', item.name ?? '')">↓</button>
+            <button
+              class="btn"
+              type="button"
+              title="Télécharger"
+              @click="$emit('download-document', item.url ?? '', item.name ?? '')"
+            >
+              ↓
+            </button>
             <button
               v-if="canDeleteDoc(item)"
               class="btn delete"
@@ -215,7 +222,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
 
 function handleUpload(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0]
-  if (!file) return
+  if (!file || !file.size) return
   ;(e.target as HTMLInputElement).value = ''
   if (file.size > MAX_FILE_SIZE) {
     uploadError.value = t('feed.upload-error.too-large')
