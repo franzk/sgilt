@@ -35,6 +35,8 @@
       </button>
     </div>
 
+    <p v-if="uploadError" class="feed__upload-error">{{ uploadError }}</p>
+
     <!-- ── Skeleton ─────────────────────────────────────────────────────────── -->
     <template v-if="loading">
       <div class="feed__skeleton">
@@ -208,11 +210,19 @@ function canDeleteDoc(item: FeedItem): boolean {
   return item.author.role === props.currentUserRole
 }
 
+const uploadError = ref<string | null>(null)
+const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
+
 function handleUpload(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) return
-  emit('upload-document', file)
   ;(e.target as HTMLInputElement).value = ''
+  if (file.size > MAX_FILE_SIZE) {
+    uploadError.value = t('feed.upload-error.too-large')
+    return
+  }
+  uploadError.value = null
+  emit('upload-document', file)
 }
 
 // ── Modale note ────────────────────────────────────────────────────────────────
@@ -363,6 +373,13 @@ $desktop: $breakpoint-desktop;
     display: flex;
     flex-direction: column;
     gap: $spacing-s;
+  }
+
+  &__upload-error {
+    font-size: 0.8rem;
+    color: $state-error;
+    margin: 0;
+    padding: $spacing-xxs 0;
   }
 
   &__empty {
