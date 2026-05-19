@@ -15,6 +15,8 @@
         :can-upload-document="true"
         :show-personal-toggle="true"
         @add-note="onAddNote"
+        @upload-document="onUploadDocument"
+        @download-document="onDownloadDocument"
         @delete-document="onDeleteDocument"
       />
 
@@ -54,7 +56,7 @@ const eventId = route.params.eventId as string
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const { reservation, pending: metaPending, cancelling, canCancel, cancel } = useReservation(reservationId)
-const { feed, pending: feedPending, addNote, removeItem } = useReservationFeed(reservationId)
+const { feed, pending: feedPending, addNote, uploadDocument, download, removeItem } = useReservationFeed(reservationId)
 
 
 // ── Annulation ─────────────────────────────────────────────────────────────────
@@ -68,6 +70,14 @@ async function cancelReservation() {
 // ── Handlers ──────────────────────────────────────────────────────────────────
 async function onAddNote(title: string, content: string, isPersonal: boolean) {
   await addNote(title, content, isPersonal)
+}
+
+async function onUploadDocument(file: File) {
+  await uploadDocument(file, false)
+}
+
+async function onDownloadDocument(url: string, fileName: string) {
+  await download(url, fileName)
 }
 
 function onDeleteDocument(id: string) {

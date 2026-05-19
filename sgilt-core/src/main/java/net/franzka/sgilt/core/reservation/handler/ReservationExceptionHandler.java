@@ -1,6 +1,7 @@
 package net.franzka.sgilt.core.reservation.handler;
 
 import net.franzka.sgilt.core.reservation.exception.InvalidStateException;
+import net.franzka.sgilt.core.reservation.exception.ReservationFeedItemNotFoundException;
 import net.franzka.sgilt.core.reservation.exception.ReservationNotAllowedException;
 import net.franzka.sgilt.core.reservation.exception.ReservationNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,14 @@ public class ReservationExceptionHandler {
      */
     @ExceptionHandler(ReservationNotFoundException.class)
     public ResponseEntity<Void> handleNotFound(ReservationNotFoundException ex) {
+        return ResponseEntity.notFound().build();
+    }
+
+    /**
+     * Élément du feed introuvable → 404.
+     */
+    @ExceptionHandler(ReservationFeedItemNotFoundException.class)
+    public ResponseEntity<Void> handleFeedItemNotFound(ReservationFeedItemNotFoundException ex) {
         return ResponseEntity.notFound().build();
     }
 

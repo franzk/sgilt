@@ -4,10 +4,10 @@
 
 ### Buckets
 
-| Bucket                 | Environnement | Custom Domain            |
-|------------------------|---------------|--------------------------|
-| `sgilt-images-staging` | Staging       | `media-staging.sgilt.fr` |
-| `sgilt-images-prod`    | Production    | `media.sgilt.alsace`     |
+| Bucket                | Environnement | Custom Domain            |
+|-----------------------|---------------|--------------------------|
+| `sgilt-media-staging` | Staging       | `media-staging.sgilt.fr` |
+| `sgilt-media-prod`    | Production    | `media.sgilt.alsace`     |
 
 ### Créer un bucket
 
@@ -15,7 +15,7 @@ Dashboard → **R2** → **Create bucket** → choisir un nom → Region : `EU`.
 
 ### Connecter un custom domain
 
-Dashboard → **R2** → clic sur le bucket → **Settings** → **Custom Domains** → **Connect Domain** → entrer le sous-domaine. Cloudflare configure le DNS automatiquement puisque `sgilt.fr` est sur le même compte.
+Dashboard → **R2** → clic sur le bucket → **Settings** → **Custom Domains** → **Connect Domain** → entrer le sous-domaine. Cloudflare configure le DNS automatiquement puisque `sgilt.fr` / `sgilt.alsace` est sur le même compte.
 
 ### Créer un token API
 
@@ -32,7 +32,7 @@ Un token par environnement.
 | Variable               | Format                                                          | Note                                     |
 |------------------------|-----------------------------------------------------------------|------------------------------------------|
 | `R2_ENDPOINT`          | `https://<account-id>.eu.r2.cloudflarestorage.com`              | Le `.eu.` est obligatoire pour ce compte |
-| `R2_BUCKET`            | `sgilt-images-staging` / `sgilt-images-prod`                    | Différent par env                        |
+| `R2_BUCKET`            | `sgilt-media-staging` / `sgilt-media-prod`                    | Différent par env                        |
 | `R2_ACCESS_KEY_ID`     | Access Key ID du token                                          | Secret GitHub                            |
 | `R2_SECRET_ACCESS_KEY` | Secret Access Key du token                                      | Secret GitHub                            |
 | `R2_DELIVERY_URL`      | `https://media-staging.sgilt.fr` / `https://media.sgilt.alsace` | URL publique de serving                  |

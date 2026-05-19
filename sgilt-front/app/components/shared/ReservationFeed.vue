@@ -84,7 +84,7 @@
             </span>
           </div>
           <div class="actions">
-            <a :href="item.url" download class="btn" title="Télécharger">↓</a>
+            <button class="btn" type="button" title="Télécharger" @click="$emit('download-document', item.url ?? '', item.name ?? '')">↓</button>
             <button
               v-if="canDeleteDoc(item)"
               class="btn delete"
@@ -169,6 +169,7 @@ const props = withDefaults(
 const emit = defineEmits<{
   'add-note': [title: string, content: string, isPersonal: boolean]
   'upload-document': [file: File]
+  'download-document': [url: string, fileName: string]
   'delete-document': [id: string]
 }>()
 
