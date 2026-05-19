@@ -115,8 +115,11 @@ public class ReservationFeedService {
                 .filter(Document.class::isInstance)
                 .map(Document.class::cast)
                 .orElseThrow(ReservationFeedItemNotFoundException::new);
-        InputStream stream = fileStorageService.stream(doc.getFilePath());
-        return new FileStreamResult(stream, doc.getFileName(), doc.getMimeType());
+        String filePath = doc.getFilePath();
+        String fileName = doc.getFileName();
+        String mimeType = doc.getMimeType();
+        InputStream stream = fileStorageService.stream(filePath);
+        return new FileStreamResult(stream, fileName, mimeType);
     }
 
     private List<FeedItemDto> toFeedItems(List<? extends ReservationFeed> items, UUID reservationId) {
