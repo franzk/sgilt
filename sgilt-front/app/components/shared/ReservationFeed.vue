@@ -29,9 +29,11 @@
         v-if="canUploadDocument"
         class="feed__action-btn"
         type="button"
+        :disabled="uploadingDocument"
         @click="fileInputRef?.click()"
       >
-        {{ $t('feed.actions.add-document') }}
+        <span v-if="uploadingDocument" class="feed__upload-spinner" aria-hidden="true" />
+        {{ uploadingDocument ? $t('feed.actions.uploading') : $t('feed.actions.add-document') }}
       </button>
     </div>
 
@@ -165,12 +167,14 @@ const props = withDefaults(
     loading?: boolean
     canAddNote?: boolean
     canUploadDocument?: boolean
+    uploadingDocument?: boolean
     showPersonalToggle?: boolean
   }>(),
   {
     loading: false,
     canAddNote: false,
     canUploadDocument: false,
+    uploadingDocument: false,
     showPersonalToggle: false,
   },
 )
@@ -273,6 +277,10 @@ async function sendNote() {
 @use '@/assets/styles/base' as *;
 
 $desktop: $breakpoint-desktop;
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 
 .feed {
   display: flex;
@@ -380,6 +388,18 @@ $desktop: $breakpoint-desktop;
     display: flex;
     flex-direction: column;
     gap: $spacing-s;
+  }
+
+  &__upload-spinner {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 4px;
   }
 
   &__upload-error {

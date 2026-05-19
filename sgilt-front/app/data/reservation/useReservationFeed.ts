@@ -21,9 +21,16 @@ export function useReservationFeed(reservationId: string) {
     feed.value.unshift(item)
   }
 
+  const uploading = ref(false)
+
   async function uploadDocument(file: File, isPersonal: boolean) {
-    const item = await uploadDocumentService(reservationId, file, isPersonal)
-    feed.value.push(item)
+    uploading.value = true
+    try {
+      const item = await uploadDocumentService(reservationId, file, isPersonal)
+      feed.value.push(item)
+    } finally {
+      uploading.value = false
+    }
   }
 
   async function download(url: string, fileName: string) {
@@ -34,5 +41,5 @@ export function useReservationFeed(reservationId: string) {
     feed.value = feed.value.filter((item) => item.id !== id)
   }
 
-  return { feed, pending, error, addNote, uploadDocument, download, removeItem }
+  return { feed, pending, error, uploading, addNote, uploadDocument, download, removeItem }
 }

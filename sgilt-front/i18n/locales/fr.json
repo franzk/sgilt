@@ -713,7 +713,8 @@
     },
     "actions": {
       "add-note": "+ Note",
-      "add-document": "+ Document"
+      "add-document": "+ Document",
+      "uploading": "Upload…"
     },
     "empty": "Aucun élément pour le moment.",
     "note-initial-label": "Demande initiale",

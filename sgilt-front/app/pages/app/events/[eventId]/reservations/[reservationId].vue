@@ -13,6 +13,7 @@
         current-user-role="client"
         :can-add-note="true"
         :can-upload-document="true"
+        :uploading-document="uploading"
         :show-personal-toggle="true"
         @add-note="onAddNote"
         @upload-document="onUploadDocument"
@@ -56,7 +57,7 @@ const eventId = route.params.eventId as string
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const { reservation, pending: metaPending, cancelling, canCancel, cancel } = useReservation(reservationId)
-const { feed, pending: feedPending, addNote, uploadDocument, download, removeItem } = useReservationFeed(reservationId)
+const { feed, pending: feedPending, uploading, addNote, uploadDocument, download, removeItem } = useReservationFeed(reservationId)
 
 
 // ── Annulation ─────────────────────────────────────────────────────────────────
