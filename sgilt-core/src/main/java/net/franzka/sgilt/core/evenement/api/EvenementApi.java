@@ -1,6 +1,8 @@
 package net.franzka.sgilt.core.evenement.api;
 
 import net.franzka.sgilt.core.evenement.dto.AddReservationRequest;
+import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
+import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
 import net.franzka.sgilt.core.evenement.dto.CoverSelectDto;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
 import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
@@ -26,6 +28,9 @@ import java.util.UUID;
 
 @RequestMapping("api/v1/events")
 public interface EvenementApi {
+
+    @PostMapping
+    ResponseEntity<CreateEventResponse> createEvent(@RequestBody CreateEventRequest body);
 
     @GetMapping
     ResponseEntity<List<EvenementSummaryDto>> getMyEvents();

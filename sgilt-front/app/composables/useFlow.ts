@@ -87,7 +87,9 @@ export function useFlow() {
         navigateTo('/app/events')
       },
       success: () => {
-        // nettoyage post-succès si besoin
+        const eventId = flowPayload.value?.id
+        useSearchUi().dateModel.value = undefined
+        navigateTo(eventId ? `/app/events/${eventId}` : '/app/events')
       },
     },
 

@@ -1,11 +1,13 @@
 import {
   type DemandeRequest,
+  type OnboardingDemandeRequest,
   type DemandeState,
   EVENT_TYPE_OPTIONS,
   AMBIANCE_OPTIONS,
   MOMENT_CLE_OPTIONS,
 } from '~/types/demande'
 import { submitOnboarding } from '~/data/onboarding/api/onboardingApi'
+import { createEventApi } from '~/data/evenement/api/evenementApi'
 
 const DEMANDE_STORAGE_KEY = 'sgilt:demande'
 const storage = () => sessionStorage
@@ -158,11 +160,12 @@ export function useDemande() {
         ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
         : null
 
-      const body: DemandeRequest = {
-        firstName: state.prenom,
-        lastName: state.nom,
-        email: state.email,
-        telephone: state.telephone || null,
+      if (!state.prestataireId) {
+        submitError.value = 'Prestataire manquant'
+        return
+      }
+
+      const eventBody: DemandeRequest = {
         prestataireId: state.prestataireId,
         eventType: resolvedEventType,
         ambiance: resolvedAmbiance,
@@ -175,11 +178,23 @@ export function useDemande() {
         prestataireMessage: state.prestataireMessage || null,
       }
 
-      await submitOnboarding(body)
-      // Clear storage so a refresh shows a fresh form, but keep in-memory
-      // state so the confirmation screen can display the recap
-      clearStorage()
-      submitted.value = true
+      if (useFlow().currentFlow.value === 'new-event') {
+        const { eventId } = await createEventApi(eventBody)
+        clearStorage()
+        submitted.value = true
+        useFlow().flowPayload.value = { id: eventId }
+      } else {
+        const onboardingBody: OnboardingDemandeRequest = {
+          ...eventBody,
+          firstName: state.prenom,
+          lastName: state.nom,
+          email: state.email,
+          telephone: state.telephone || null,
+        }
+        await submitOnboarding(onboardingBody)
+        clearStorage()
+        submitted.value = true
+      }
     } catch (err) {
       console.error('submit error:', err)
       submitError.value = 'Une erreur est survenue. Veuillez réessayer.'

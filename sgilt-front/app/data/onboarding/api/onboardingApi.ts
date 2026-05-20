@@ -1,12 +1,12 @@
 import { apiFetch } from '~/composables/useApi'
-import type { DemandeRequest } from '~/types/demande'
+import type { OnboardingDemandeRequest } from '~/types/demande'
 import type {
   ConfirmAccountRequestDto,
   ConfirmAccountResponseDto,
   VerifyTokenResponseDto,
 } from '../dto/OnboardingDto'
 
-export async function submitOnboarding(body: DemandeRequest): Promise<void> {
+export async function submitOnboarding(body: OnboardingDemandeRequest): Promise<void> {
   await apiFetch('/onboarding', { method: 'POST', body })
 }
 

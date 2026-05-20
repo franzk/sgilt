@@ -2,6 +2,7 @@
  * Couche API — appels HTTP vers /events
  */
 import { apiFetch } from '~/composables/useApi'
+import type { DemandeRequest } from '~/types/demande'
 import type { EvenementSummaryDto } from '../dto/EvenementSummaryDto'
 import type { EventDetailDto, EventPatchRequestDto } from '../dto/EventDetailDto'
 import type { EventCountsDto } from '../dto/EventCountsDto'
@@ -42,6 +43,10 @@ export async function selectEventCoverApi(eventId: string, imagePath: string): P
     method: 'PATCH',
     body: { imagePath },
   })
+}
+
+export async function createEventApi(body: DemandeRequest): Promise<{ eventId: string }> {
+  return apiFetch<{ eventId: string }>('/events', { method: 'POST', body })
 }
 
 export async function addReservationApi(eventId: string, prestataireId: string, message: string | null): Promise<void> {
