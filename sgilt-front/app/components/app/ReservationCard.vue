@@ -22,9 +22,9 @@
 import BadgeableComponent from '~/components/basics/BadgeableComponent.vue'
 import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
 import StatusBadge from '~/components/basics/StatusBadge.vue'
-import type { Reservation } from '~/types/event'
+import type { ReservationSummary } from '~/types/event'
 
-defineProps<{ reservation: Reservation }>()
+defineProps<{ reservation: ReservationSummary }>()
 defineEmits<{ click: [] }>()
 
 const FALLBACK_PHOTO =

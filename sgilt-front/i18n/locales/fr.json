@@ -703,6 +703,9 @@
   "feed": {
     "title": "Notes & suivi",
     "subtitle": "Ajoutez des notes, documents ou informations utiles pour le suivi.",
+    "upload-error": {
+      "too-large": "Le fichier dépasse la taille maximale autorisée (10 Mo)."
+    },
     "pills": {
       "all": "Tout",
       "notes": "Notes",
@@ -710,7 +713,8 @@
     },
     "actions": {
       "add-note": "+ Note",
-      "add-document": "+ Document"
+      "add-document": "+ Document",
+      "uploading": "Upload…"
     },
     "empty": "Aucun élément pour le moment.",
     "note-initial-label": "Demande initiale",

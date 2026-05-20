@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="feed">
     <!-- ── Header ────────────────────────────────────────────────────────────── -->
     <div class="feed__header">
@@ -29,21 +29,32 @@
         v-if="canUploadDocument"
         class="feed__action-btn"
         type="button"
+        :disabled="uploadingDocument"
         @click="fileInputRef?.click()"
       >
-        {{ $t('feed.actions.add-document') }}
+        <span v-if="uploadingDocument" class="feed__upload-spinner" aria-hidden="true" />
+        {{ uploadingDocument ? $t('feed.actions.uploading') : $t('feed.actions.add-document') }}
       </button>
     </div>
 
+    <p v-if="uploadError" class="feed__upload-error">{{ uploadError }}</p>
+
+    <!-- ── Skeleton ─────────────────────────────────────────────────────────── -->
+    <template v-if="loading">
+      <div class="feed__skeleton">
+        <div v-for="i in 3" :key="i" class="feed__skeleton-item skeleton-text" />
+      </div>
+    </template>
+
     <!-- ── Flux ─────────────────────────────────────────────────────────────── -->
-    <ul v-if="filteredItems.length > 0" class="feed__list">
+    <ul v-else-if="filteredItems.length > 0" class="feed__list">
       <li v-for="item in filteredItems" :key="item.id">
         <!-- Note -->
-        <template v-if="item._kind === 'note'">
+        <template v-if="item.type === 'note'">
           <!-- Message initial -->
           <div v-if="item.isMessageInitial" class="note-initial">
             <span class="label">{{ $t('feed.note-initial-label') }}</span>
-            <strong class="titre">{{ item.titre }}</strong>
+            <strong class="titre">{{ item.title }}</strong>
             <p class="content">{{ item.content }}</p>
             <span class="meta">
               {{ item.author.name }} · {{ formatDateShort(item.createdAt) }}
@@ -57,7 +68,7 @@
               <span class="author">{{ item.author.name }}</span>
               <span class="date">{{ formatDateShort(item.createdAt) }}</span>
             </div>
-            <strong class="titre">{{ item.titre }}</strong>
+            <strong class="titre">{{ item.title }}</strong>
             <p class="content">{{ item.content }}</p>
           </div>
 
@@ -73,11 +84,18 @@
           <div class="info">
             <span class="name">{{ item.name }}</span>
             <span class="meta">
-              {{ item.uploadedBy.name }} · {{ formatDateShort(item.uploadedAt) }}
+              {{ item.author.name }} · {{ formatDateShort(item.createdAt) }}
             </span>
           </div>
           <div class="actions">
-            <a :href="item.url" download class="btn" title="Télécharger">↓</a>
+            <button
+              class="btn"
+              type="button"
+              title="Télécharger"
+              @click="$emit('download-document', item.url ?? '', item.name ?? '')"
+            >
+              ↓
+            </button>
             <button
               v-if="canDeleteDoc(item)"
               class="btn delete"
@@ -92,7 +110,7 @@
       </li>
     </ul>
 
-    <p v-else class="feed__empty">{{ $t('feed.empty') }}</p>
+    <p v-else-if="!loading" class="feed__empty">{{ $t('feed.empty') }}</p>
 
     <input ref="fileInputRef" type="file" style="display: none" @change="handleUpload" />
 
@@ -105,6 +123,7 @@
     >
       <div class="note-form">
         <input
+          ref="noteTitreRef"
           v-model="newNoteTitre"
           class="titre-input"
           type="text"
@@ -123,7 +142,10 @@
             <input v-model="noteIsPersonal" type="checkbox" />
             <span>{{ $t('feed.add-note-dialog.private-toggle') }}</span>
           </label>
-          <SgiltButton :disabled="!newNote.trim() || !newNoteTitre.trim() || sending" @click="sendNote">
+          <SgiltButton
+            :disabled="!newNote.trim() || !newNoteTitre.trim() || sending"
+            @click="sendNote"
+          >
             {{ $t('feed.add-note-dialog.submit') }}
           </SgiltButton>
         </div>
@@ -133,7 +155,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FeedItem, FeedDocument } from '~/types/event'
+import type { FeedItem } from '~/types/event'
 import NoteCard from '~/components/app/NoteCard.vue'
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
@@ -142,20 +164,25 @@ const props = withDefaults(
   defineProps<{
     items: FeedItem[]
     currentUserRole: 'client' | 'prestataire'
+    loading?: boolean
     canAddNote?: boolean
     canUploadDocument?: boolean
+    uploadingDocument?: boolean
     showPersonalToggle?: boolean
   }>(),
   {
+    loading: false,
     canAddNote: false,
     canUploadDocument: false,
+    uploadingDocument: false,
     showPersonalToggle: false,
   },
 )
 
 const emit = defineEmits<{
-  'add-note': [titre: string, content: string, isPersonal: boolean]
+  'add-note': [title: string, content: string, isPersonal: boolean]
   'upload-document': [file: File]
+  'download-document': [url: string, fileName: string]
   'delete-document': [id: string]
 }>()
 
@@ -170,37 +197,43 @@ const PILLS = computed<{ id: FilterId; label: string }[]>(() => [
 ])
 const activeFilter = ref<FilterId>('all')
 
-const hasNotes = computed(() => props.items.some((i) => i._kind === 'note'))
-const hasDocuments = computed(() => props.items.some((i) => i._kind === 'document'))
+const hasNotes = computed(() => props.items.some((i) => i.type === 'note'))
+const hasDocuments = computed(() => props.items.some((i) => i.type === 'document'))
 const showPills = computed(() => hasNotes.value && hasDocuments.value)
 
 // ── Flux filtré + trié ─────────────────────────────────────────────────────────
 function itemDate(item: FeedItem): number {
-  return new Date(item._kind === 'note' ? item.createdAt : item.uploadedAt).getTime()
+  return item.createdAt.getTime()
 }
 
 const filteredItems = computed(() => {
   const filtered =
     activeFilter.value === 'all'
       ? props.items
-      : props.items.filter(
-          (i) => i._kind === (activeFilter.value === 'notes' ? 'note' : 'document'),
-        )
+      : props.items.filter((i) => i.type === (activeFilter.value === 'notes' ? 'note' : 'document'))
   return [...filtered].sort((a, b) => itemDate(b) - itemDate(a))
 })
 
 // ── Documents ─────────────────────────────────────────────────────────────────
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
-function canDeleteDoc(item: FeedDocument): boolean {
-  return item.uploadedBy.role === props.currentUserRole
+function canDeleteDoc(item: FeedItem): boolean {
+  return item.author.role === props.currentUserRole
 }
+
+const uploadError = ref<string | null>(null)
+const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
 
 function handleUpload(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0]
-  if (!file) return
-  emit('upload-document', file)
+  if (!file || !file.size) return
   ;(e.target as HTMLInputElement).value = ''
+  if (file.size > MAX_FILE_SIZE) {
+    uploadError.value = t('feed.upload-error.too-large')
+    return
+  }
+  uploadError.value = null
+  emit('upload-document', file)
 }
 
 // ── Modale note ────────────────────────────────────────────────────────────────
@@ -209,6 +242,7 @@ const newNote = ref('')
 const newNoteTitre = ref('')
 const noteIsPersonal = ref(false)
 const sending = ref(false)
+const noteTitreRef = ref<HTMLInputElement | null>(null)
 const noteTextareaRef = ref<HTMLTextAreaElement | null>(null)
 
 function openNoteModal() {
@@ -219,7 +253,7 @@ function openNoteModal() {
 }
 
 watch(noteModalOpen, (val) => {
-  if (val) nextTick(() => noteTextareaRef.value?.focus())
+  if (val) nextTick(() => noteTitreRef.value?.focus())
 })
 
 function autoResize(e: Event) {
@@ -229,11 +263,11 @@ function autoResize(e: Event) {
 }
 
 async function sendNote() {
-  const titre = newNoteTitre.value.trim()
+  const title = newNoteTitre.value.trim()
   const content = newNote.value.trim()
-  if (!titre || !content || sending.value) return
+  if (!title || !content || sending.value) return
   sending.value = true
-  emit('add-note', titre, content, noteIsPersonal.value)
+  emit('add-note', title, content, noteIsPersonal.value)
   sending.value = false
   noteModalOpen.value = false
 }
@@ -244,10 +278,26 @@ async function sendNote() {
 
 $desktop: $breakpoint-desktop;
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 .feed {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+
+  // ── Skeleton ───────────────────────────────────────────────────────────────
+  &__skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-s;
+  }
+
+  &__skeleton-item {
+    height: 80px;
+    border-radius: $radius-md;
+  }
 
   // ── Header ─────────────────────────────────────────────────────────────────
   &__header {
@@ -338,6 +388,25 @@ $desktop: $breakpoint-desktop;
     display: flex;
     flex-direction: column;
     gap: $spacing-s;
+  }
+
+  &__upload-spinner {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 4px;
+  }
+
+  &__upload-error {
+    font-size: 0.8rem;
+    color: $state-error;
+    margin: 0;
+    padding: $spacing-xxs 0;
   }
 
   &__empty {

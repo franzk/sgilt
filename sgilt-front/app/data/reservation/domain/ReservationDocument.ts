@@ -1,13 +1,10 @@
 /**
  * Domaine — document joint à une réservation
  */
-import type { NoteAuthor } from './NoteAuthor'
+import type { ReservationFeed } from './ReservationFeed'
 
-export interface ReservationDocument {
-  id: string
+export interface ReservationDocument extends ReservationFeed {
   name: string
   fileType: 'pdf' | 'image' | 'other'
   url: string
-  uploadedBy: NoteAuthor
-  uploadedAt: Date
 }

@@ -1,11 +1,11 @@
 /**
- * Domaine — vue pro d'une réservation détaillée (étend ReservationDetail)
+ * Domaine — vue pro d'une réservation détaillée (étend ReservationMeta)
  */
-import type { ReservationDetail } from './ReservationDetail'
+import type { ReservationMeta } from './ReservationMeta'
 import type { EventDetail } from '~/data/evenement/domain/EventDetail'
 import type { ClientContactInfo } from './ClientContactInfo'
 
-export interface ProDemandeDetail extends ReservationDetail {
+export interface ProDemandeDetail extends ReservationMeta {
   event: EventDetail
   progressType: 'deadline' | 'duration' | 'temporal' | null
   progressValue: number | null

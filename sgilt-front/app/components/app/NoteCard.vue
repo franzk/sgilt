@@ -1,7 +1,7 @@
 <template>
   <div class="note-card" :class="note.author.role">
     <div class="body">
-      <strong class="titre">{{ note.titre }}</strong>
+      <strong class="titre">{{ note.title }}</strong>
       <p class="content">{{ note.content }}</p>
     </div>
     <div class="divider" />

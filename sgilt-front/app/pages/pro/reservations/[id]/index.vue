@@ -289,10 +289,10 @@ const isEditable = computed(() => {
 // ── Feed items ─────────────────────────────────────────────────────────────────
 const feedItems = computed<FeedItem[]>(() => {
   if (!demande.value) return []
-  const notes: FeedItem[] = demande.value.notes.map((n) => ({ ...n, _kind: 'note' as const }))
+  const notes: FeedItem[] = demande.value.notes.map((n) => ({ ...n, type: 'note' as const }))
   const docs: FeedItem[] = demande.value.documents.map((d) => ({
     ...d,
-    _kind: 'document' as const,
+    type: 'document' as const,
   }))
   return [...notes, ...docs]
 })
@@ -311,13 +311,13 @@ function onUploadDocument(file: File) {
     name: file.name,
     fileType,
     url: URL.createObjectURL(file),
-    uploadedBy: {
+    author: {
       id: 'presta-3',
       name: 'DJ Animation',
       role: 'prestataire',
       photo: '/images/prestataires/dj-animation.jpg',
     },
-    uploadedAt: new Date(),
+    createdAt: new Date(),
   }
   demande.value.documents.unshift(doc)
 }

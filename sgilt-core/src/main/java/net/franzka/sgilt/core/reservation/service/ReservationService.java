@@ -7,7 +7,11 @@ import net.franzka.sgilt.core.reservation.domain.Note;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
+import net.franzka.sgilt.core.reservation.dto.ReservationMetaDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
+import net.franzka.sgilt.core.reservation.exception.InvalidStateException;
+import net.franzka.sgilt.core.reservation.exception.ReservationNotAllowedException;
+import net.franzka.sgilt.core.reservation.exception.ReservationNotFoundException;
 import net.franzka.sgilt.core.reservation.mapper.ReservationMapper;
 import net.franzka.sgilt.core.reservation.repository.NoteRepository;
 import net.franzka.sgilt.core.reservation.repository.ReservationRepository;
@@ -104,7 +108,7 @@ public class ReservationService {
                 .reservation(reservation)
                 .utilisateur(utilisateur)
                 .title("Demande de réservation")
-                .hidden(false)
+                .isPersonal(false)
                 .content(initialMessage)
                 .build();
         noteRepository.save(note);
@@ -124,13 +128,77 @@ public class ReservationService {
     }
 
     /**
+     * Retourne les métadonnées d'une réservation.
+     *
+     * @param reservationId l'identifiant de la réservation
+     * @param utilisateurId l'identifiant de l'utilisateur connecté
+     * @return les métadonnées de la réservation
+     * @throws ReservationNotFoundException   si la réservation n'existe pas
+     * @throws ReservationNotAllowedException si l'utilisateur n'est pas le propriétaire
+     */
+    public ReservationMetaDto getMeta(UUID reservationId, UUID utilisateurId) {
+        Reservation reservation = getReservation(reservationId, utilisateurId);
+        Prestataire p = reservation.getPrestataire();
+        return new ReservationMetaDto(
+                reservation.getId(),
+                p.getId(),
+                p.getName(),
+                p.getAvatar() != null ? p.getAvatar() : p.getHeroImage(),
+                p.getCategoryKey(),
+                reservationMapper.mapStatus(reservation.getStatus()),
+                0
+        );
+    }
+
+    /**
+     * Annule une réservation. Transitions valides : NEW → CANCELED_BY_CLIENT_PRE_CONTACT,
+     * IN_DISCUSSION → CANCELED_BY_CLIENT_POST_CONTACT.
+     *
+     * @param reservationId l'identifiant de la réservation
+     * @param utilisateurId l'identifiant de l'utilisateur connecté
+     * @throws ReservationNotFoundException   si la réservation n'existe pas
+     * @throws ReservationNotAllowedException si l'utilisateur n'est pas le propriétaire
+     * @throws InvalidStateException          si le statut ne permet pas l'annulation
+     */
+    public void cancel(UUID reservationId, UUID utilisateurId) {
+        Reservation reservation = getReservation(reservationId, utilisateurId);
+        ReservationStatus next = switch (reservation.getStatus()) {
+            case NEW           -> ReservationStatus.CANCELED_BY_CLIENT_PRE_CONTACT;
+            case IN_DISCUSSION -> ReservationStatus.CANCELED_BY_CLIENT_POST_CONTACT;
+            default -> throw new InvalidStateException(
+                    "La réservation ne peut pas être annulée depuis le statut " + reservation.getStatus());
+        };
+        reservation.setStatus(next);
+        reservationRepository.save(reservation);
+    }
+
+    /**
+     * Retourne la réservation identifiée par son id après vérification de l'ownership.
+     * Utilisé en interne et par {@link ReservationFeedService}.
+     *
+     * @param reservationId l'identifiant de la réservation
+     * @param utilisateurId l'identifiant de l'utilisateur connecté
+     * @return la réservation
+     * @throws ReservationNotFoundException   si la réservation n'existe pas
+     * @throws ReservationNotAllowedException si l'utilisateur n'est pas le propriétaire
+     */
+    Reservation getReservation(UUID reservationId, UUID utilisateurId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(ReservationNotFoundException::new);
+        if (!reservation.getUtilisateur().getId().equals(utilisateurId)) {
+            throw new ReservationNotAllowedException();
+        }
+        return reservation;
+    }
+
+    /**
      * Retourne le nombre de réservations d'un statut donné dans une liste de réservations.
      *
      * @param reservations la liste de réservations
-     * @param status le status recherché
+     * @param status       le statut recherché
      * @return le compte
      */
     private int count(List<Reservation> reservations, ReservationStatus status) {
-        return (int)reservations.stream().filter(r -> status.equals(r.getStatus())).count();
+        return (int) reservations.stream().filter(r -> status.equals(r.getStatus())).count();
     }
 }

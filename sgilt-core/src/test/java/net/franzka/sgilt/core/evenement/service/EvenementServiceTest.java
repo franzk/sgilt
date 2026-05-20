@@ -10,8 +10,8 @@ import net.franzka.sgilt.core.evenement.exception.EvenementNotAllowedException;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotFoundException;
 import net.franzka.sgilt.core.evenement.mapper.EvenementMapper;
 import net.franzka.sgilt.core.evenement.repository.EvenementRepository;
-import net.franzka.sgilt.core.image.ImageStorageException;
-import net.franzka.sgilt.core.image.ImageStorageService;
+import net.franzka.sgilt.core.storage.FileStorageException;
+import net.franzka.sgilt.core.storage.FileStorageService;
 import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
@@ -46,7 +46,7 @@ class EvenementServiceTest {
     @Mock private ReservationService      reservationService;
     @Mock private EvenementMapper         evenementMapper;
     @Mock private JournalEvenementService journalEvenementService;
-    @Mock private ImageStorageService     imageStorageService;
+    @Mock private FileStorageService      fileStorageService;
 
     @InjectMocks
     private EvenementService evenementService;
@@ -168,12 +168,12 @@ class EvenementServiceTest {
             String image = "new-uuid.jpg";
             Evenement event = ownerEvent(b -> b);
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            when(imageStorageService.upload(file)).thenReturn(image);
+            when(fileStorageService.upload(eq(file), any())).thenReturn(image);
 
             CoverUrlDto result = evenementService.updateCover(EVENT_ID, USER_ID, file);
 
             assertThat(result.imagePath()).isEqualTo(image);
-            verify(imageStorageService, never()).delete(any());
+            verify(fileStorageService, never()).delete(any());
             assertThat(event.getImagePath()).isEqualTo(image);
         }
 
@@ -183,22 +183,22 @@ class EvenementServiceTest {
             String newImage = "new-uuid.jpg";
             Evenement event = ownerEvent(b -> b.imagePath(oldImage));
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            when(imageStorageService.upload(file)).thenReturn(newImage);
+            when(fileStorageService.upload(file, "uploads/")).thenReturn(newImage);
 
             evenementService.updateCover(EVENT_ID, USER_ID, file);
 
-            verify(imageStorageService).delete(oldImage);
+            verify(fileStorageService).delete(oldImage);
             assertThat(event.getImagePath()).isEqualTo(newImage);
         }
 
         @Test
-        void givenStorageFailure_whenUpdateCover_thenThrowsImageStorageException() throws IOException {
+        void givenStorageFailure_whenUpdateCover_thenThrowsFileStorageException() throws IOException {
             Evenement event = ownerEvent(b -> b);
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            when(imageStorageService.upload(file)).thenThrow(new IOException("disk full"));
+            when(fileStorageService.upload(eq(file), any())).thenThrow(new IOException("disk full"));
 
             assertThatThrownBy(() -> evenementService.updateCover(EVENT_ID, USER_ID, file))
-                    .isInstanceOf(ImageStorageException.class);
+                    .isInstanceOf(FileStorageException.class);
         }
 
         @Test

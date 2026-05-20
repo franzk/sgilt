@@ -8,7 +8,6 @@ import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
 import net.franzka.sgilt.core.evenement.dto.EventPatchDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
 import net.franzka.sgilt.core.evenement.dto.JournalEvenementDto;
-import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,9 +38,6 @@ public interface EvenementApi {
 
     @GetMapping("/{eventId}/counts")
     ResponseEntity<EventCountsDto> getEventCounts(@PathVariable UUID eventId);
-
-    @GetMapping("/{eventId}/reservations")
-    ResponseEntity<List<ReservationSummaryDto>> getEventReservations(@PathVariable UUID eventId);
 
     @GetMapping("/{eventId}/journal")
     ResponseEntity<Page<JournalEvenementDto>> getJournal(

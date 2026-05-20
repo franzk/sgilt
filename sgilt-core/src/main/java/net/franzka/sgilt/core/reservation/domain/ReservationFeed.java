@@ -42,7 +42,7 @@ public abstract class ReservationFeed {
     private String title;
 
     @Column(nullable = false)
-    private Boolean hidden;
+    private Boolean isPersonal;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -52,6 +52,6 @@ public abstract class ReservationFeed {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-        this.hidden = false;
+        if (this.isPersonal == null) this.isPersonal = false;
     }
 }

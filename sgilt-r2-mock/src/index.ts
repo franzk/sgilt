@@ -91,27 +91,43 @@ app.delete('/:bucket/*', (req: Request, res: Response) => {
 })
 
 /**
- * Livraison — sert un fichier depuis le storage par son chemin.
- * Simule le comportement du domaine de livraison R2 (ex. media-staging.sgilt.fr).
+ * GET — gère à la fois :
+ *   - l'API S3 path-style `GET /{bucket}/{key}` (appelée par sgilt-core)
+ *   - la livraison sans bucket `GET /{key}` (appelée par le front)
+ *
+ * Tente d'abord le chemin complet, puis strip le premier segment (bucket) si le fichier est introuvable.
  *
  * @route GET /*
  */
 app.get('*', (req: Request, res: Response) => {
-  const key = req.path.slice(1)
+  const fullPath = req.path.slice(1)
 
-  if (!key) {
+  if (!fullPath) {
     res.status(404).send('Not found')
     return
   }
 
-  const filepath = resolveStoragePath(key)
-
-  if (!filepath || !fs.existsSync(filepath)) {
-    res.status(404).send('Not found')
+  // Tentative 1 : chemin direct (livraison sans bucket)
+  let filepath = resolveStoragePath(fullPath)
+  if (filepath && fs.existsSync(filepath)) {
+    console.log(`GET (delivery) ${fullPath}`)
+    res.sendFile(filepath)
     return
   }
 
-  res.sendFile(filepath)
+  // Tentative 2 : strip du premier segment (bucket) — format S3 path-style
+  const withoutBucket = fullPath.replace(/^[^/]+\//, '')
+  if (withoutBucket !== fullPath) {
+    filepath = resolveStoragePath(withoutBucket)
+    if (filepath && fs.existsSync(filepath)) {
+      console.log(`GET (S3) ${withoutBucket}`)
+      res.sendFile(filepath)
+      return
+    }
+  }
+
+  console.log(`GET 404: ${fullPath}`)
+  res.status(404).send('Not found')
 })
 
 app.listen(PORT, () => {

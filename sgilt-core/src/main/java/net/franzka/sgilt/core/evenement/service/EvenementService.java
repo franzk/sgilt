@@ -13,11 +13,10 @@ import net.franzka.sgilt.core.evenement.exception.EvenementNotAllowedException;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotFoundException;
 import net.franzka.sgilt.core.evenement.mapper.EvenementMapper;
 import net.franzka.sgilt.core.evenement.repository.EvenementRepository;
-import net.franzka.sgilt.core.image.ImageStorageException;
-import net.franzka.sgilt.core.image.ImageStorageService;
+import net.franzka.sgilt.core.storage.FileStorageException;
+import net.franzka.sgilt.core.storage.FileStorageService;
 import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
-import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
@@ -52,7 +51,7 @@ public class EvenementService {
     private final PrestataireService prestataireService;
     private final EvenementMapper evenementMapper;
     private final JournalEvenementService journalEvenementService;
-    private final ImageStorageService imageStorageService;
+    private final FileStorageService fileStorageService;
 
     /**
      * Retourne la liste des événements de l'utilisateur identifié par son id.
@@ -96,17 +95,15 @@ public class EvenementService {
     }
 
     /**
-     * Retourne la liste des réservations d'un événement pour l'EventBoard.
+     * Vérifie que l'utilisateur est bien le propriétaire de l'événement.
      *
      * @param eventId       l'identifiant de l'événement
      * @param utilisateurId l'identifiant de l'utilisateur connecté
-     * @return la liste des résumés de réservations
      * @throws EvenementNotFoundException   si l'événement n'existe pas
      * @throws EvenementNotAllowedException si l'événement n'appartient pas à l'utilisateur connecté
      */
-    public List<ReservationSummaryDto> getEventReservations(UUID eventId, UUID utilisateurId) {
-        getEvent(eventId, utilisateurId); // vérifie que l'événement appartient bien à l'utilisateur
-        return reservationService.getReservationSummaries(eventId);
+    public void verifyEventOwnership(UUID eventId, UUID utilisateurId) {
+        getEvent(eventId, utilisateurId);
     }
 
     /**
@@ -214,18 +211,18 @@ public class EvenementService {
      * @return l'URL de la nouvelle image
      * @throws EvenementNotFoundException   si l'événement n'existe pas
      * @throws EvenementNotAllowedException si l'utilisateur n'est pas le propriétaire
-     * @throws ImageStorageException        en cas d'erreur de stockage
+     * @throws FileStorageException        en cas d'erreur de stockage
      */
     public CoverUrlDto updateCover(UUID eventId, UUID utilisateurId, MultipartFile file) {
         Evenement event = getEvent(eventId, utilisateurId);
         supprimerAncienneImageSiDeletable(event.getImagePath());
         try {
-            String imagePath = imageStorageService.upload(file);
+            String imagePath = fileStorageService.upload(file, "uploads");
             event.setImagePath(imagePath);
             evenementRepository.save(event);
             return new CoverUrlDto(imagePath);
         } catch (IOException e) {
-            throw new ImageStorageException("Erreur de stockage de l'image pour l'événement " + eventId, e);
+            throw new FileStorageException("Erreur de stockage de l'image pour l'événement " + eventId, e);
         }
     }
 
@@ -251,9 +248,9 @@ public class EvenementService {
     private void supprimerAncienneImageSiDeletable(String imagePath) {
         if (imagePath == null || isProtectedImagePath(imagePath)) return;
         try {
-            imageStorageService.delete(imagePath);
+            fileStorageService.delete(imagePath);
         } catch (IOException e) {
-            throw new ImageStorageException("Erreur de suppression de l'ancienne image", e);
+            throw new FileStorageException("Erreur de suppression de l'ancienne image", e);
         }
     }
 

@@ -37,22 +37,8 @@ export const ProMockService = {
   },
 
   async getAllDemandes(): Promise<ProDemandeSummary[]> {
-    await new Promise((r) => setTimeout(r, 250))
-    return PRO_DEMANDES.map((d) => ({
-      id: d.id,
-      titre: d.event.title,
-      date: d.event.date,
-      dateIso: d.event.date ? d.event.date.toISOString() : '',
-      dateReception: d.notes[0]?.createdAt ? formatDateFR(new Date(d.notes[0].createdAt)) : '',
-      statut: d.status,
-      ligneContextuelle: d.ligneContextuelle,
-      urgencyLevel: d.urgencyLevel,
-      coverImage: d.event.coverImage,
-      progressType: d.progressType,
-      progressValue: d.progressValue,
-      phraseInfoState: d.phraseInfoState,
-      unreadNotesCount: d.unreadNotesCount,
-    }))
+    // await new Promise((r) => setTimeout(r, 250))
+    return []
   },
 
   async getDemandeById(id: string): Promise<ProDemandeDetail | null> {
@@ -66,19 +52,7 @@ export const ProMockService = {
     if (demande) demande.status = status
   },
 
-  async addNote(id: string, content: string, isPersonal: boolean): Promise<ReservationNote> {
-    await new Promise((r) => setTimeout(r, 300))
-    const note: ReservationNote = {
-      id: `pn-${Date.now()}`,
-      author: DJ,
-      content,
-      createdAt: new Date(),
-      isPersonal,
-    }
-    const demande = PRO_DEMANDES.find((d) => d.id === id)
-    if (demande) demande.notes.push(note)
-    return note
-  },
+
 }
 
 // Re-export types for consumers

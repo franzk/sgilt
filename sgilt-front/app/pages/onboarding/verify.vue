@@ -25,11 +25,7 @@
           @blur="passwordTouched = true"
         />
         <ul v-if="passwordTouched" class="password-rules">
-          <li
-            v-for="rule in passwordRules"
-            :key="rule.key"
-            :class="['rule', { met: rule.met }]"
-          >
+          <li v-for="rule in passwordRules" :key="rule.key" :class="['rule', { met: rule.met }]">
             {{ $t(rule.key) }}
           </li>
         </ul>
@@ -100,10 +96,13 @@ const passwordRules = computed(() => [
   { key: 'confirmation.form.password-rules.lower', met: /[a-z]/.test(password.value) },
   { key: 'confirmation.form.password-rules.digit', met: /[0-9]/.test(password.value) },
   { key: 'confirmation.form.password-rules.special', met: /[^A-Za-z0-9]/.test(password.value) },
-  { key: 'confirmation.form.password-rules.not-email', met: !!password.value && password.value.toLowerCase() !== email.value?.toLowerCase() },
+  {
+    key: 'confirmation.form.password-rules.not-email',
+    met: !!password.value && password.value.toLowerCase() !== email.value?.toLowerCase(),
+  },
 ])
 
-const passwordValid = computed(() => passwordRules.value.every(r => r.met))
+const passwordValid = computed(() => passwordRules.value.every((r) => r.met))
 
 async function submit(): Promise<void> {
   if (!passwordValid.value) {
