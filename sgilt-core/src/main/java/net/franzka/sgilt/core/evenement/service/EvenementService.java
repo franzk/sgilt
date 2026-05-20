@@ -3,6 +3,8 @@ package net.franzka.sgilt.core.evenement.service;
 import lombok.RequiredArgsConstructor;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.domain.EvenementStatus;
+import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
+import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
 import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
 import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
@@ -92,6 +94,33 @@ public class EvenementService {
     public EventCountsDto getEventCounts(UUID eventId, UUID utilisateurId) {
         getEvent(eventId, utilisateurId); // vérifie que l'événement appartient bien à l'utilisateur
         return buildEventCounts(reservationService.getStatusCountsByEvenement(eventId));
+    }
+
+    /**
+     * Crée un nouvel événement et sa réservation initiale pour un utilisateur authentifié.
+     *
+     * @param utilisateur l'utilisateur connecté (propriétaire de l'événement)
+     * @param request     les données de l'événement et de la réservation
+     * @return l'identifiant du nouvel événement
+     */
+    public CreateEventResponse createEvent(Utilisateur utilisateur, CreateEventRequest request) {
+        Evenement evenement = Evenement.builder()
+                .utilisateur(utilisateur)
+                .title(defaultName(request.date()))
+                .date(request.date())
+                .status(EvenementStatus.ACTIVE)
+                .lieu(request.lieu())
+                .ville(request.ville())
+                .nbInvites(request.nbInvites())
+                .eventType(request.eventType())
+                .ambiance(request.ambiance())
+                .momentCle(request.momentCle())
+                .description(request.description())
+                .build();
+        evenement = evenementRepository.save(evenement);
+        Prestataire prestataire = prestataireService.getById(request.prestataireId());
+        reservationService.create(evenement, prestataire, utilisateur, request.date(), request.prestataireMessage());
+        return new CreateEventResponse(evenement.getId());
     }
 
     /**

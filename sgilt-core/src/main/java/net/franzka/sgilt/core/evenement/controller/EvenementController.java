@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.evenement.api.EvenementApi;
 import net.franzka.sgilt.core.evenement.dto.AddReservationRequest;
+import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
+import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
 import net.franzka.sgilt.core.evenement.dto.CoverSelectDto;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
 import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
@@ -33,6 +35,15 @@ public class EvenementController implements EvenementApi {
     private final EvenementService      evenementService;
     private final JournalEvenementService journalEvenementService;
     private final CurrentUserService    currentUserService;
+
+    @Override
+    @Transactional
+    public ResponseEntity<CreateEventResponse> createEvent(CreateEventRequest body) {
+        Utilisateur utilisateur = currentUserService.get();
+        log.info("POST /events");
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(evenementService.createEvent(utilisateur, body));
+    }
 
     @Override
     @Transactional(readOnly = true)

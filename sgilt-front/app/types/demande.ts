@@ -1,11 +1,7 @@
 // app/types/demande.ts
 
 export interface DemandeRequest {
-  firstName: string
-  lastName: string
-  email: string
-  telephone: string | null
-  prestataireId: string | null
+  prestataireId: string
   eventType: string | null
   ambiance: string | null
   momentCle: string | null
@@ -15,6 +11,13 @@ export interface DemandeRequest {
   nbInvites: string | null
   lieu: string | null
   prestataireMessage: string | null
+}
+
+export interface OnboardingDemandeRequest extends DemandeRequest {
+  firstName: string
+  lastName: string
+  email: string
+  telephone: string | null
 }
 
 export interface DemandeOption {
