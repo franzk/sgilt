@@ -309,6 +309,7 @@ import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/type
 defineEmits<{ cancel: [] }>()
 
 const { t } = useI18n()
+const isNewEventFlow = computed(() => useFlow().currentFlow.value === 'new-event')
 
 const {
   state,
@@ -376,6 +377,46 @@ type RecapItem = RecapIndividualItem | RecapGroupItem
 // ── Items ─────────────────────────────────────────────────────────────────────
 
 const items = computed((): RecapItem[] => [
+  ...(!isNewEventFlow.value
+    ? [
+        {
+          type: 'group' as const,
+          key: 'coordonnees' as const,
+          label: t('tunnel.recap-mobile.items.coordonnees'),
+          emoji: '👤',
+          subFields: [
+            {
+              key: 'prenom',
+              label: t('tunnel.recap-mobile.items.prenom'),
+              required: true,
+              value: state.prenom || null,
+              isMissing: !state.prenom.trim(),
+            },
+            {
+              key: 'nom',
+              label: t('tunnel.recap-mobile.items.nom'),
+              required: true,
+              value: state.nom || null,
+              isMissing: !state.nom.trim(),
+            },
+            {
+              key: 'email',
+              label: t('tunnel.recap-mobile.items.email'),
+              required: true,
+              value: state.email || null,
+              isMissing: !state.email.trim() || !validateEmail(state.email),
+            },
+            {
+              key: 'telephone',
+              label: t('tunnel.recap-mobile.items.telephone'),
+              required: true,
+              value: state.telephone || null,
+              isMissing: !state.telephone.trim() || !validatePhone(state.telephone),
+            },
+          ],
+        },
+      ]
+    : []),
   {
     type: 'group',
     key: 'detailsPratiques',
@@ -402,42 +443,6 @@ const items = computed((): RecapItem[] => [
         required: false,
         value: state.nbInvites || null,
         isMissing: false,
-      },
-    ],
-  },
-  {
-    type: 'group',
-    key: 'coordonnees',
-    label: t('tunnel.recap-mobile.items.coordonnees'),
-    emoji: '👤',
-    subFields: [
-      {
-        key: 'prenom',
-        label: t('tunnel.recap-mobile.items.prenom'),
-        required: true,
-        value: state.prenom || null,
-        isMissing: !state.prenom.trim(),
-      },
-      {
-        key: 'nom',
-        label: t('tunnel.recap-mobile.items.nom'),
-        required: true,
-        value: state.nom || null,
-        isMissing: !state.nom.trim(),
-      },
-      {
-        key: 'email',
-        label: t('tunnel.recap-mobile.items.email'),
-        required: true,
-        value: state.email || null,
-        isMissing: !state.email.trim() || !validateEmail(state.email),
-      },
-      {
-        key: 'telephone',
-        label: t('tunnel.recap-mobile.items.telephone'),
-        required: true,
-        value: state.telephone || null,
-        isMissing: !state.telephone.trim() || !validatePhone(state.telephone),
       },
     ],
   },
@@ -605,16 +610,13 @@ const FIELD_TO_ITEM: Record<string, string> = {
   telephone: 'coordonnees',
 }
 
-const REQUIRED_FIELDS: AnyFieldKey[] = [
+const REQUIRED_FIELDS = computed((): AnyFieldKey[] => [
   'eventType',
   'ambiance',
   'momentCle',
   'ville',
-  'prenom',
-  'nom',
-  'email',
-  'telephone',
-]
+  ...(!isNewEventFlow.value ? (['prenom', 'nom', 'email', 'telephone'] as AnyFieldKey[]) : []),
+])
 
 function isFieldValid(key: AnyFieldKey): boolean {
   switch (key) {
@@ -645,7 +647,7 @@ const submitAttempted = ref(false)
 
 function handleSubmit() {
   submitAttempted.value = true
-  const missing = REQUIRED_FIELDS.find((k) => !isFieldValid(k))
+  const missing = REQUIRED_FIELDS.value.find((k) => !isFieldValid(k))
   if (missing) {
     const scrollTarget = FIELD_TO_ITEM[missing] ?? missing
     highlightedField.value = scrollTarget
@@ -672,6 +674,7 @@ const showCancelDialog = ref(false)
   min-height: 0;
   display: flex;
   flex-direction: column;
+  padding-bottom: 70px; // pour éviter que le contenu soit caché derrière le footer fixe
 }
 
 // ─── Header ───────────────────────────────────────────────────────────────────

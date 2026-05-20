@@ -85,6 +85,7 @@ const closeMobile = () => {
   padding: $spacing-m;
   overscroll-behavior: contain;
   position: relative;
+  padding-bottom: 70px; // pour éviter que le contenu soit caché derrière le footer fixe
 
   &--full {
     position: static;
@@ -92,7 +93,7 @@ const closeMobile = () => {
 }
 
 .mobile-footer {
-  flex-shrink: 0;
+  flex: 1;
   padding: $spacing-s $spacing-m $spacing-m;
   background: #fff;
   border-top: 1px solid $divider-color;
