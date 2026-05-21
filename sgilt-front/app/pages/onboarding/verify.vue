@@ -10,107 +10,111 @@
 
     <template v-else>
       <div class="verify-content">
-      <!-- ── Hero ────────────────────────────────────────────────────────────── -->
-      <div class="hero">
-        <div class="hero__top">
-          <div class="hero__left">
-            <span class="badge">
-              <CheckboxCircleIcon class="badge__icon" />
-              Dernière étape
-            </span>
-            <h1 class="hero__title">Votre espace<br />est prêt 🔑</h1>
+        <!-- ── Hero ────────────────────────────────────────────────────────────── -->
+        <div class="hero">
+          <div class="hero__top">
+            <div class="hero__left">
+              <span class="badge">
+                <CheckboxCircleIcon class="badge__icon" />
+                Dernière étape
+              </span>
+              <h1 class="hero__title">Votre espace<br />est prêt 🔑</h1>
+            </div>
+
+            <div class="hero__illustration" aria-hidden="true">
+              <OnboardingSuccess />
+            </div>
           </div>
 
-          <div class="hero__illustration" aria-hidden="true">
-            <OnboardingSuccess />
-          </div>
+          <p class="hero__sub">
+            Créez votre mot de passe pour sécuriser votre espace Sgilt. Une fois validé, votre
+            demande sera envoyée au prestataire et vous pourrez la suivre depuis votre événement.
+          </p>
         </div>
 
-        <p class="hero__sub">
-          Créez votre mot de passe pour sécuriser votre espace Sgilt. Une fois validé, votre demande
-          sera envoyée au prestataire et vous pourrez la suivre depuis votre événement.
-        </p>
-      </div>
-
-      <!-- ── Card formulaire ─────────────────────────────────────────────────── -->
-      <div class="card-wrapper">
-        <form class="card" @submit.prevent="submit">
-          <div class="card__header">
-            <h2 class="card__title">Créez votre accès</h2>
-            <p class="card__subtitle">Cet espace vous appartient.</p>
-          </div>
-
-          <div class="email-row">
-            <UserIcon class="email-row__icon" />
-            <div class="email-row__text">
-              <span class="email-row__label">Connecté avec</span>
-              <span class="email-row__value">{{ email }}</span>
+        <!-- ── Card formulaire ─────────────────────────────────────────────────── -->
+        <div class="card-wrapper">
+          <form class="card" @submit.prevent="submit">
+            <div class="card__header">
+              <h2 class="card__title">Créez votre accès</h2>
+              <p class="card__subtitle">Cet espace vous appartient.</p>
             </div>
-          </div>
 
-          <div class="field">
-            <label class="label">{{ $t('confirmation.form.password-label') }}</label>
-            <div class="input-wrapper">
-              <input
-                v-model="password"
-                class="input"
-                :type="showPassword ? 'text' : 'password'"
-                required
-                autocomplete="new-password"
-                @blur="passwordTouched = true"
-              />
-              <button
-                type="button"
-                class="eye-btn"
-                :aria-label="showPassword ? 'Masquer' : 'Afficher'"
-                @click="showPassword = !showPassword"
-              >
-                <EyeOffIcon v-if="showPassword" />
-                <EyeIcon v-else />
-              </button>
+            <div class="email-row">
+              <UserIcon class="email-row__icon" />
+              <div class="email-row__text">
+                <span class="email-row__label">Connecté avec</span>
+                <span class="email-row__value">{{ email }}</span>
+              </div>
             </div>
-            <ul v-if="passwordTouched" class="password-rules">
-              <li v-for="rule in passwordRules.filter((r) => !r.met)" :key="rule.key" class="rule">
-                {{ $t(rule.key) }}
-              </li>
-            </ul>
-          </div>
 
-          <div class="field">
-            <label class="label">{{ $t('confirmation.form.password-confirm-label') }}</label>
-            <div class="input-wrapper">
-              <input
-                v-model="passwordConfirm"
-                class="input"
-                :type="showPasswordConfirm ? 'text' : 'password'"
-                required
-                autocomplete="new-password"
-              />
-              <button
-                type="button"
-                class="eye-btn"
-                :aria-label="showPasswordConfirm ? 'Masquer' : 'Afficher'"
-                @click="showPasswordConfirm = !showPasswordConfirm"
-              >
-                <EyeOffIcon v-if="showPasswordConfirm" />
-                <EyeIcon v-else />
-              </button>
+            <div class="field">
+              <label class="label">{{ $t('confirmation.form.password-label') }}</label>
+              <div class="input-wrapper">
+                <input
+                  v-model="password"
+                  class="input"
+                  :type="showPassword ? 'text' : 'password'"
+                  required
+                  autocomplete="new-password"
+                  @blur="passwordTouched = true"
+                />
+                <button
+                  type="button"
+                  class="eye-btn"
+                  :aria-label="showPassword ? 'Masquer' : 'Afficher'"
+                  @click="showPassword = !showPassword"
+                >
+                  <EyeOffIcon v-if="showPassword" />
+                  <EyeIcon v-else />
+                </button>
+              </div>
+              <ul v-if="passwordTouched" class="password-rules">
+                <li
+                  v-for="rule in passwordRules.filter((r) => !r.met)"
+                  :key="rule.key"
+                  class="rule"
+                >
+                  {{ $t(rule.key) }}
+                </li>
+              </ul>
             </div>
-          </div>
 
-          <p v-if="submitError" class="submit-error">{{ submitError }}</p>
+            <div class="field">
+              <label class="label">{{ $t('confirmation.form.password-confirm-label') }}</label>
+              <div class="input-wrapper">
+                <input
+                  v-model="passwordConfirm"
+                  class="input"
+                  :type="showPasswordConfirm ? 'text' : 'password'"
+                  required
+                  autocomplete="new-password"
+                />
+                <button
+                  type="button"
+                  class="eye-btn"
+                  :aria-label="showPasswordConfirm ? 'Masquer' : 'Afficher'"
+                  @click="showPasswordConfirm = !showPasswordConfirm"
+                >
+                  <EyeOffIcon v-if="showPasswordConfirm" />
+                  <EyeIcon v-else />
+                </button>
+              </div>
+            </div>
 
-          <button class="btn-submit" type="submit" :disabled="submitting">
-            ✨ {{ submitting ? $t('common.saving') : 'Ouvrir mon espace' }}
-          </button>
+            <p v-if="submitError" class="submit-error">{{ submitError }}</p>
 
-          <p class="hint">
-            Vous pourrez revenir à votre espace sans repasser par le lien reçu par email.
-          </p>
-        </form>
+            <button class="btn-submit" type="submit" :disabled="submitting">
+              ✨ {{ submitting ? $t('common.saving') : 'Ouvrir mon espace' }}
+            </button>
 
-        <p class="security-note">🔒 Vos données sont sécurisées et confidentielles.</p>
-      </div>
+            <p class="hint">
+              Vous pourrez revenir à votre espace sans repasser par le lien reçu par email.
+            </p>
+          </form>
+
+          <p class="security-note">🔒 Vos données sont sécurisées et confidentielles.</p>
+        </div>
       </div>
     </template>
   </div>
@@ -263,7 +267,7 @@ async function submit(): Promise<void> {
 .hero {
   display: flex;
   flex-direction: column;
-  padding: $spacing-l $spacing-m $spacing-m;
+  padding: $spacing-l $spacing-m calc(#{$spacing-xxl} + #{$spacing-l});
   gap: $spacing-s;
 
   @media (min-width: $breakpoint-desktop) {
@@ -317,13 +321,16 @@ async function submit(): Promise<void> {
   }
 
   &__illustration {
-    flex-shrink: 0;
-    width: 130px;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+
     margin-top: $spacing-xs;
 
     @media (min-width: $breakpoint-desktop) {
       width: 200px;
       margin-top: 0;
+      justify-content: unset;
     }
 
     img {
@@ -361,6 +368,10 @@ async function submit(): Promise<void> {
   padding: 0 $spacing-m $spacing-xl;
   gap: $spacing-m;
 
+  @media (max-width: #{$breakpoint-desktop - 1px}) {
+    margin-top: calc(-1 * #{$spacing-xxl});
+  }
+
   @media (min-width: $breakpoint-desktop) {
     flex: none;
     padding: 0;
@@ -375,6 +386,12 @@ async function submit(): Promise<void> {
   display: flex;
   flex-direction: column;
   gap: $spacing-m;
+
+  @media (max-width: #{$breakpoint-desktop - 1px}) {
+    border-radius: $radius-lg $radius-lg 0 0;
+    box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.08);
+    padding: $spacing-l $spacing-m $spacing-xxl;
+  }
 
   @media (min-width: $breakpoint-desktop) {
     padding: $spacing-xl $spacing-l;
