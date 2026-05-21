@@ -461,7 +461,7 @@ $desktop: $breakpoint-desktop;
   display: flex;
   flex-direction: column;
   gap: $spacing-m;
-  padding: $spacing-m;
+  padding: $spacing-m $spacing-m 80px $spacing-m;
 
   @media (min-width: $desktop) {
     flex-direction: row;
