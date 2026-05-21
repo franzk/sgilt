@@ -9,6 +9,11 @@
     </div>
 
     <form v-else class="form" @submit.prevent="submit">
+      <div class="intro">
+        <p class="intro-main">Votre demande est partie. Votre espace, lui, reste ouvert.</p>
+        <p class="intro-sub">Choisissez un mot de passe pour retrouver facilement votre événement, suivre vos demandes et garder les infos importantes au même endroit.</p>
+      </div>
+
       <div class="field">
         <label class="label">{{ $t('confirmation.form.email-label') }}</label>
         <input class="input" type="email" :value="email" disabled />
@@ -25,7 +30,7 @@
           @blur="passwordTouched = true"
         />
         <ul v-if="passwordTouched" class="password-rules">
-          <li v-for="rule in passwordRules" :key="rule.key" :class="['rule', { met: rule.met }]">
+          <li v-for="rule in passwordRules.filter(r => !r.met)" :key="rule.key" class="rule">
             {{ $t(rule.key) }}
           </li>
         </ul>
@@ -45,7 +50,7 @@
       <p v-if="submitError" class="submit-error">{{ submitError }}</p>
 
       <button class="btn" type="submit" :disabled="submitting">
-        {{ submitting ? $t('common.saving') : $t('confirmation.form.submit') }}
+        {{ submitting ? $t('common.saving') : 'Créer mon mot de passe' }}
       </button>
     </form>
   </div>
@@ -163,6 +168,29 @@ async function submit(): Promise<void> {
     width: 100%;
     max-width: 420px;
 
+    .intro {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-xs;
+      margin-bottom: $spacing-xs;
+
+      .intro-main {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: $brand-primary;
+        margin: 0;
+        line-height: 1.3;
+      }
+
+      .intro-sub {
+        font-size: $font-size-sm;
+        color: $text-secondary;
+        margin: 0;
+        line-height: 1.5;
+      }
+    }
+
     .field {
       display: flex;
       flex-direction: column;
@@ -207,10 +235,6 @@ async function submit(): Promise<void> {
         .rule {
           font-size: $font-size-sm;
           color: $state-error;
-
-          &.met {
-            color: $state-success;
-          }
         }
       }
     }

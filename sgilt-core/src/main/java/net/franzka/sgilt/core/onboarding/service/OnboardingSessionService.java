@@ -114,7 +114,7 @@ public class OnboardingSessionService {
             throw new TokenExpiredException();
         }
         if (OnboardingState.PENDING_CONFIRMATION.equals(state)
-                && onboarding.getConfirmationPeriodExpiresAt().isBefore(LocalDateTime.now())) {
+                && !onboarding.getExpiresAt().isAfter(LocalDateTime.now())) {
             throw new TokenExpiredException();
         }
 
@@ -122,15 +122,15 @@ public class OnboardingSessionService {
     }
 
     /**
-     * Fait progresser une session OPEN vers PENDING_CONFIRMATION avec une période de grâce de 5 minutes.
+     * Fait progresser une session OPEN vers PENDING_CONFIRMATION.
      * Sans effet si la session est déjà en PENDING_CONFIRMATION (idempotent).
+     * La session reste valide jusqu'à son expiration originale ({@code expiresAt}).
      *
      * @param onboarding la session à faire progresser.
      */
     public void advanceToConfirmation(Onboarding onboarding) {
         if (OnboardingState.OPEN.equals(onboarding.getState())) {
             onboarding.setState(OnboardingState.PENDING_CONFIRMATION);
-            onboarding.setConfirmationPeriodExpiresAt(LocalDateTime.now().plusMinutes(5));
             onboardingRepository.save(onboarding);
         }
     }
