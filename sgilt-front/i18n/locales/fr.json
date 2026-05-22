@@ -121,12 +121,12 @@
     },
     "comment-ca-marche": {
       "title": "Comment ça marche ?",
-      "step-1": "Décrivez votre événement en quelques clics",
-      "step-2": "On transmet votre demande",
-      "step-3": "Le prestataire vous répond"
+      "step-1": "Dites-nous ce que vous préparez",
+      "step-2": "Votre demande part au prestataire",
+      "step-3": "Vous échangez ensuite directement avec lui"
     },
     "etape1": {
-      "question": "Qu'est-ce que vous préparez\u00a0?"
+      "question": "Parlez-nous de votre événement"
     },
     "etape2": {
       "question": "Quelle ambiance souhaitez-vous créer\u00a0?"
@@ -204,9 +204,9 @@
     },
     "cancel": {
       "label": "Annuler",
-      "dialog-title": "Quitter le tunnel ?",
+      "dialog-title": "Abandonner cette demande ?",
       "dialog-body": "Votre progression sera perdue.",
-      "confirm": "Quitter",
+      "confirm": "Abandonner",
       "back": "Reprendre"
     },
     "booking-flow": {
