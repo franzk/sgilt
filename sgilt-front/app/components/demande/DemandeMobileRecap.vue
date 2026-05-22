@@ -204,12 +204,7 @@
     </SgiltBottomSheet>
 
     <!-- ── Sheet groupée : Vos coordonnées ───────────────────────────────────── -->
-    <SgiltBottomSheet
-      v-model:open="coordonneesSheetOpen"
-      :title="$t('tunnel.recap-mobile.items.coordonnees')"
-      overlay
-      fullscreen
-    >
+    <SgiltBottomSheet v-model:open="coordonneesSheetOpen" overlay>
       <div class="group-sheet-body">
         <div class="sheet-field-group">
           <label class="sheet-label">
@@ -217,11 +212,14 @@
             <span class="required-star">*</span>
           </label>
           <input
+            ref="coordPrenom"
             v-model="state.prenom"
             class="field-input"
             type="text"
             autocomplete="given-name"
+            enterkeyhint="next"
             :placeholder="$t('tunnel.etape6.prenom-placeholder')"
+            @keydown.enter.prevent="coordNom?.focus()"
           />
         </div>
 
@@ -231,11 +229,14 @@
             <span class="required-star">*</span>
           </label>
           <input
+            ref="coordNom"
             v-model="state.nom"
             class="field-input"
             type="text"
             autocomplete="family-name"
+            enterkeyhint="next"
             :placeholder="$t('tunnel.etape6.nom-placeholder')"
+            @keydown.enter.prevent="coordEmail?.focus()"
           />
         </div>
 
@@ -245,11 +246,14 @@
             <span class="required-star">*</span>
           </label>
           <input
+            ref="coordEmail"
             v-model="state.email"
             class="field-input"
             type="email"
             autocomplete="email"
+            enterkeyhint="next"
             placeholder="votre@email.fr"
+            @keydown.enter.prevent="coordTel?.focus()"
             @blur="validateCoordonneesField('email')"
             @focus="coordonneesErrors.email = null"
           />
@@ -262,10 +266,12 @@
             <span class="required-star">*</span>
           </label>
           <input
+            ref="coordTel"
             v-model="state.telephone"
             class="field-input"
             type="tel"
             autocomplete="tel"
+            enterkeyhint="done"
             :placeholder="$t('tunnel.etape6.phone-placeholder')"
             @blur="validateCoordonneesField('telephone')"
             @focus="coordonneesErrors.telephone = null"
@@ -644,6 +650,12 @@ function isFieldValid(key: AnyFieldKey): boolean {
 const itemEls = ref<Record<string, HTMLElement>>({})
 const highlightedField = ref<string | null>(null)
 const submitAttempted = ref(false)
+
+// Refs champs coordonnées pour navigation clavier
+const coordPrenom = ref<HTMLInputElement | null>(null)
+const coordNom = ref<HTMLInputElement | null>(null)
+const coordEmail = ref<HTMLInputElement | null>(null)
+const coordTel = ref<HTMLInputElement | null>(null)
 
 function handleSubmit() {
   submitAttempted.value = true
