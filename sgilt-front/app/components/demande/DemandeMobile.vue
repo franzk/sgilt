@@ -95,8 +95,10 @@ const closeMobile = () => {
 .mobile-footer {
   flex: 1;
   padding: $spacing-s $spacing-m $spacing-m;
+  padding-bottom: calc(#{$spacing-m} + var(--keyboard-offset, 0px));
   background: #fff;
   border-top: 1px solid $divider-color;
+  transition: padding-bottom 120ms ease;
 
   :deep(button) {
     width: 100%;
