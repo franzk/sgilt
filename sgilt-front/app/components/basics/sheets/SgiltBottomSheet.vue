@@ -44,12 +44,34 @@ import {
 const isOpen = defineModel<boolean>('open', { required: true })
 
 defineProps<{
-  title: string
+  title?: string
   description?: string
   overlay?: boolean
   bottomOffset?: number
   fullscreen?: boolean
 }>()
+
+// ── Back button — ferme le sheet au lieu de naviguer ──────────────────────────
+const HISTORY_KEY = 'sgiltSheet'
+
+function onPopState() {
+  if (isOpen.value) isOpen.value = false
+}
+
+watch(isOpen, (opened) => {
+  if (!import.meta.client) return
+  if (opened) {
+    history.pushState({ [HISTORY_KEY]: true }, '')
+    window.addEventListener('popstate', onPopState)
+  } else {
+    window.removeEventListener('popstate', onPopState)
+    if (history.state?.[HISTORY_KEY]) history.back()
+  }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('popstate', onPopState)
+})
 </script>
 
 <style scoped lang="scss">
