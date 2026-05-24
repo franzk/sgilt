@@ -150,6 +150,7 @@
       </div>
       <div v-else-if="activeField" class="sheet-field-body">
         <textarea
+          ref="textareaRef"
           v-model="individualFieldModel"
           class="field-input field-textarea"
           :placeholder="activeIndividualItem?.placeholder ?? ''"
@@ -458,9 +459,17 @@ const activeIndividualItem = computed(() =>
     : null,
 )
 
+const textareaRef = ref<HTMLTextAreaElement | null>(null)
+
 function openSheet(key: IndividualFieldKey) {
   activeField.value = key
 }
+
+watch(activeField, (field) => {
+  if (field === 'description' || field === 'prestataireMessage') {
+    nextTick(() => textareaRef.value?.focus())
+  }
+})
 
 const individualFieldModel = computed<string>({
   get: () => {
