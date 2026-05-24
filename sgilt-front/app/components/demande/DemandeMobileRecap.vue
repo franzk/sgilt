@@ -164,131 +164,27 @@
     <!-- ── Sheet groupée : Détails pratiques ────────────────────────────────── -->
     <SgiltBottomSheet
       v-model:open="detailsSheetOpen"
-      :title="$t('tunnel.recap-mobile.items.details-pratiques')"
+      :title="detailsPratiquesItem?.label ?? ''"
       overlay
-      fullscreen
     >
-      <div class="group-sheet-body">
-        <div class="sheet-field-group">
-          <label class="sheet-label">
-            {{ $t('tunnel.recap-mobile.items.ville') }}
-            <span class="required-star">*</span>
-          </label>
-          <input
-            v-model="state.ville"
-            class="field-input"
-            type="text"
-            :placeholder="$t('tunnel.etape5.city-placeholder')"
-          />
-        </div>
-
-        <div class="sheet-field-group">
-          <label class="sheet-label">{{ $t('tunnel.recap-mobile.items.lieu') }}</label>
-          <input v-model="lieu" class="field-input" type="text" />
-        </div>
-
-        <div class="sheet-field-group">
-          <label class="sheet-label">{{ $t('tunnel.recap-mobile.items.nb-invites') }}</label>
-          <input
-            v-model="state.nbInvites"
-            class="field-input"
-            type="text"
-            :placeholder="$t('tunnel.etape5.guests-placeholder')"
-          />
-        </div>
-
-        <SgiltButton class="validate-btn--full" @click="detailsSheetOpen = false">
-          {{ $t('tunnel.recap-mobile.validate') }}
-        </SgiltButton>
-      </div>
+      <SgiltDemandeFieldGroup
+        v-if="detailsPratiquesItem && detailsSheetOpen"
+        v-model="detailsPratiquesItem"
+        @complete="fermerBottomSheet('detailsPratiques')"
+      />
     </SgiltBottomSheet>
 
     <!-- ── Sheet groupée : Vos coordonnées ───────────────────────────────────── -->
-    <SgiltBottomSheet v-model:open="coordonneesSheetOpen" overlay>
-      <div class="group-sheet-body">
-        <div class="sheet-field-group">
-          <label class="sheet-label">
-            {{ $t('tunnel.recap-mobile.items.prenom') }}
-            <span class="required-star">*</span>
-          </label>
-          <input
-            ref="coordPrenom"
-            v-model="state.prenom"
-            class="field-input"
-            type="text"
-            autocomplete="given-name"
-            enterkeyhint="next"
-            :placeholder="$t('tunnel.etape6.prenom-placeholder')"
-            @keydown.enter.prevent="coordNom?.focus()"
-          />
-        </div>
-
-        <div class="sheet-field-group">
-          <label class="sheet-label">
-            {{ $t('tunnel.recap-mobile.items.nom') }}
-            <span class="required-star">*</span>
-          </label>
-          <input
-            ref="coordNom"
-            v-model="state.nom"
-            class="field-input"
-            type="text"
-            autocomplete="family-name"
-            enterkeyhint="next"
-            :placeholder="$t('tunnel.etape6.nom-placeholder')"
-            @keydown.enter.prevent="coordEmail?.focus()"
-          />
-        </div>
-
-        <div class="sheet-field-group">
-          <label class="sheet-label">
-            {{ $t('tunnel.recap-mobile.items.email') }}
-            <span class="required-star">*</span>
-          </label>
-          <input
-            ref="coordEmail"
-            v-model="state.email"
-            class="field-input"
-            type="email"
-            autocomplete="email"
-            enterkeyhint="next"
-            placeholder="votre@email.fr"
-            @keydown.enter.prevent="coordTel?.focus()"
-            @blur="validateCoordonneesField('email')"
-            @focus="coordonneesErrors.email = null"
-          />
-          <p v-if="coordonneesErrors.email" class="field-error">{{ coordonneesErrors.email }}</p>
-        </div>
-
-        <div class="sheet-field-group">
-          <label class="sheet-label">
-            {{ $t('tunnel.recap-mobile.items.telephone') }}
-            <span class="required-star">*</span>
-          </label>
-          <input
-            ref="coordTel"
-            v-model="state.telephone"
-            class="field-input"
-            type="tel"
-            autocomplete="tel"
-            enterkeyhint="done"
-            :placeholder="$t('tunnel.etape6.phone-placeholder')"
-            @blur="validateCoordonneesField('telephone')"
-            @focus="coordonneesErrors.telephone = null"
-          />
-          <p v-if="coordonneesErrors.telephone" class="field-error">
-            {{ coordonneesErrors.telephone }}
-          </p>
-        </div>
-
-        <SgiltButton
-          class="validate-btn--full"
-          :disabled="coordonneesValidateDisabled"
-          @click="coordonneesSheetOpen = false"
-        >
-          {{ $t('tunnel.recap-mobile.validate') }}
-        </SgiltButton>
-      </div>
+    <SgiltBottomSheet
+      v-model:open="coordonneesSheetOpen"
+      :title="coordonneesItem?.label ?? ''"
+      overlay
+    >
+      <SgiltDemandeFieldGroup
+        v-if="coordonneesItem && coordonneesSheetOpen"
+        v-model="coordonneesItem"
+        @complete="fermerBottomSheet('coordonnees')"
+      />
     </SgiltBottomSheet>
 
     <!-- ── Dialog annulation ──────────────────────────────────────────────────── -->
@@ -308,6 +204,7 @@ import SgiltBottomSheet from '~/components/basics/sheets/SgiltBottomSheet.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 import SgiltContentCard from '~/components/basics/cards/SgiltContentCard.vue'
+import SgiltDemandeFieldGroup from '~/components/basics/SgiltDemandeFieldGroup.vue'
 import DemandeOptionSelect from '~/components/demande/DemandeOptionSelect.vue'
 import { useDemande } from '~/composables/useDemande'
 import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/demande'
@@ -354,9 +251,13 @@ type EditType = 'eventType' | 'ambiance' | 'momentCle' | 'textarea'
 interface SubField {
   key: string
   label: string
+  placeholder?: string
   required: boolean
   value: string | null
   isMissing: boolean
+  type?: string
+  autocomplete?: string
+  enterkeyhint?: string
 }
 
 interface RecapIndividualItem {
@@ -394,30 +295,46 @@ const items = computed((): RecapItem[] => [
             {
               key: 'prenom',
               label: t('tunnel.recap-mobile.items.prenom'),
+              placeholder: t('tunnel.etape6.prenom-placeholder'),
               required: true,
               value: state.prenom || null,
               isMissing: !state.prenom.trim(),
+              type: 'text',
+              autocomplete: 'given-name',
+              enterkeyhint: 'next',
             },
             {
               key: 'nom',
               label: t('tunnel.recap-mobile.items.nom'),
+              placeholder: t('tunnel.etape6.nom-placeholder'),
               required: true,
               value: state.nom || null,
               isMissing: !state.nom.trim(),
+              type: 'text',
+              autocomplete: 'family-name',
+              enterkeyhint: 'next',
             },
             {
               key: 'email',
               label: t('tunnel.recap-mobile.items.email'),
+              placeholder: t('tunnel.etape6.email-placeholder'),
               required: true,
               value: state.email || null,
               isMissing: !state.email.trim() || !validateEmail(state.email),
+              type: 'email',
+              autocomplete: 'email',
+              enterkeyhint: 'next',
             },
             {
               key: 'telephone',
               label: t('tunnel.recap-mobile.items.telephone'),
+              placeholder: t('tunnel.etape6.phone-placeholder'),
               required: true,
               value: state.telephone || null,
               isMissing: !state.telephone.trim() || !validatePhone(state.telephone),
+              type: 'tel',
+              autocomplete: 'tel',
+              enterkeyhint: 'done',
             },
           ],
         },
@@ -432,9 +349,12 @@ const items = computed((): RecapItem[] => [
       {
         key: 'ville',
         label: t('tunnel.recap-mobile.items.ville'),
+        placeholder: t('tunnel.etape5.city-placeholder'),
         required: true,
         value: state.ville || null,
         isMissing: !state.ville.trim(),
+        type: 'text',
+        enterkeyhint: 'next',
       },
       {
         key: 'lieu',
@@ -442,13 +362,18 @@ const items = computed((): RecapItem[] => [
         required: false,
         value: state.lieuDefini && state.lieu ? state.lieu : null,
         isMissing: false,
+        type: 'text',
+        enterkeyhint: 'next',
       },
       {
         key: 'nbInvites',
         label: t('tunnel.recap-mobile.items.nb-invites'),
         required: false,
+        placeholder: t('tunnel.etape5.guests-placeholder'),
         value: state.nbInvites || null,
         isMissing: false,
+        type: 'text',
+        enterkeyhint: 'done',
       },
     ],
   },
@@ -563,36 +488,57 @@ const coordonneesSheetOpen = computed({
   },
 })
 
-// Binding intermédiaire pour `lieu` afin de synchroniser lieuDefini
-const lieu = computed({
-  get: () => state.lieu,
-  set: (v) => {
-    state.lieu = v
-    state.lieuDefini = !!v
+const coordonneesItem = computed<RecapGroupItem | undefined>({
+  get: () =>
+    items.value.find((i): i is RecapGroupItem => i.key === 'coordonnees' && i.type === 'group'),
+  set: (updated) => {
+    if (!updated) return
+    for (const sf of updated.subFields) {
+      switch (sf.key) {
+        case 'prenom':
+          state.prenom = sf.value ?? ''
+          break
+        case 'nom':
+          state.nom = sf.value ?? ''
+          break
+        case 'email':
+          state.email = sf.value ?? ''
+          break
+        case 'telephone':
+          state.telephone = sf.value ?? ''
+          break
+      }
+    }
   },
 })
 
-// Validation coordonnées
-const coordonneesErrors = reactive({
-  email: null as string | null,
-  telephone: null as string | null,
+const detailsPratiquesItem = computed<RecapGroupItem | undefined>({
+  get: () =>
+    items.value.find(
+      (i): i is RecapGroupItem => i.key === 'detailsPratiques' && i.type === 'group',
+    ),
+  set: (updated) => {
+    if (!updated) return
+    for (const sf of updated.subFields) {
+      switch (sf.key) {
+        case 'ville':
+          state.ville = sf.value ?? ''
+          break
+        case 'lieu':
+          state.lieu = sf.value ?? ''
+          state.lieuDefini = !!sf.value
+          break
+        case 'nbInvites':
+          state.nbInvites = sf.value ?? ''
+          break
+      }
+    }
+  },
 })
 
-function validateCoordonneesField(field: 'email' | 'telephone') {
-  coordonneesErrors[field] = null
-  if (field === 'email' && state.email && !validateEmail(state.email)) {
-    coordonneesErrors.email = t('tunnel.etape6.error-email')
-  }
-  if (field === 'telephone' && state.telephone && !validatePhone(state.telephone)) {
-    coordonneesErrors.telephone = t('tunnel.etape6.error-phone')
-  }
+function fermerBottomSheet(_key: GroupKey) {
+  activeGroupSheet.value = null
 }
-
-const coordonneesValidateDisabled = computed(
-  () =>
-    (!!state.email && !validateEmail(state.email)) ||
-    (!!state.telephone && !validatePhone(state.telephone)),
-)
 
 // ── Submit ────────────────────────────────────────────────────────────────────
 
@@ -650,12 +596,6 @@ function isFieldValid(key: AnyFieldKey): boolean {
 const itemEls = ref<Record<string, HTMLElement>>({})
 const highlightedField = ref<string | null>(null)
 const submitAttempted = ref(false)
-
-// Refs champs coordonnées pour navigation clavier
-const coordPrenom = ref<HTMLInputElement | null>(null)
-const coordNom = ref<HTMLInputElement | null>(null)
-const coordEmail = ref<HTMLInputElement | null>(null)
-const coordTel = ref<HTMLInputElement | null>(null)
 
 function handleSubmit() {
   submitAttempted.value = true
