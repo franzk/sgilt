@@ -153,6 +153,8 @@
           ref="textareaRef"
           v-model="individualFieldModel"
           class="field-input field-textarea"
+          name="message"
+          autocomplete="on"
           :placeholder="activeIndividualItem?.placeholder ?? ''"
           rows="5"
         />
@@ -254,6 +256,7 @@ type EditType = 'eventType' | 'ambiance' | 'momentCle' | 'textarea'
 interface SubField {
   key: string
   label: string
+  name?: string
   placeholder?: string
   required: boolean
   value: string | null
@@ -299,6 +302,7 @@ const items = computed((): RecapItem[] => [
             {
               key: 'prenom',
               label: t('tunnel.recap-mobile.items.prenom'),
+              name: 'given-name',
               placeholder: t('tunnel.etape6.prenom-placeholder'),
               required: true,
               value: state.prenom || null,
@@ -311,6 +315,7 @@ const items = computed((): RecapItem[] => [
             {
               key: 'nom',
               label: t('tunnel.recap-mobile.items.nom'),
+              name: 'family-name',
               placeholder: t('tunnel.etape6.nom-placeholder'),
               required: true,
               value: state.nom || null,
@@ -323,6 +328,7 @@ const items = computed((): RecapItem[] => [
             {
               key: 'email',
               label: t('tunnel.recap-mobile.items.email'),
+              name: 'email',
               placeholder: t('tunnel.etape6.email-placeholder'),
               required: true,
               value: state.email || null,
@@ -340,6 +346,7 @@ const items = computed((): RecapItem[] => [
             {
               key: 'telephone',
               label: t('tunnel.recap-mobile.items.telephone'),
+              name: 'tel',
               placeholder: t('tunnel.etape6.phone-placeholder'),
               required: true,
               value: state.telephone || null,
@@ -367,30 +374,36 @@ const items = computed((): RecapItem[] => [
       {
         key: 'ville',
         label: t('tunnel.recap-mobile.items.ville'),
+        name: 'city',
         placeholder: t('tunnel.etape5.city-placeholder'),
         required: true,
         value: state.ville || null,
         isMissing: !state.ville.trim(),
         type: 'text',
+        autocomplete: 'address-level2',
         enterkeyhint: 'next',
       },
       {
         key: 'lieu',
         label: t('tunnel.recap-mobile.items.lieu'),
+        name: 'venue',
         required: false,
         value: state.lieuDefini && state.lieu ? state.lieu : null,
         isMissing: false,
         type: 'text',
+        autocomplete: 'on',
         enterkeyhint: 'next',
       },
       {
         key: 'nbInvites',
         label: t('tunnel.recap-mobile.items.nb-invites'),
+        name: 'guest-count',
         required: false,
         placeholder: t('tunnel.etape5.guests-placeholder'),
         value: state.nbInvites || null,
         isMissing: false,
         type: 'text',
+        autocomplete: 'on',
         enterkeyhint: 'done',
       },
     ],

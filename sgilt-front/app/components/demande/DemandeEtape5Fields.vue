@@ -7,6 +7,8 @@
         class="field-input"
         :class="{ 'field-input--error': props.villeError }"
         type="text"
+        name="city"
+        autocomplete="address-level2"
         :placeholder="$t('tunnel.etape5.city-placeholder')"
         @focus="onFocus"
       />
@@ -15,7 +17,7 @@
 
     <div class="field-group">
       <label class="field-label">{{ $t('tunnel.etape5.field-venue') }}</label>
-      <input v-model="state.lieu" class="field-input" type="text" @focus="onFocus" />
+      <input v-model="state.lieu" class="field-input" type="text" name="venue" autocomplete="on" @focus="onFocus" />
     </div>
 
     <div class="field-group">
@@ -24,6 +26,8 @@
         v-model="state.nbInvites"
         class="field-input"
         type="text"
+        name="guest-count"
+        autocomplete="on"
         :placeholder="$t('tunnel.etape5.guests-placeholder')"
         @focus="onFocus"
       />
@@ -32,7 +36,6 @@
 </template>
 
 <script setup lang="ts">
-import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
 import type { DemandeState } from '~/types/demande'
 import { scrollInputIntoView } from '~/utils/scrollInputIntoView'
 

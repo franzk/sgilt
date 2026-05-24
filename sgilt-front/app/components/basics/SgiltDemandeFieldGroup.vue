@@ -7,6 +7,7 @@
       :model-value="subField.value ?? ''"
       :editing="editingIndex === index"
       :label="subField.label"
+      :name="subField.name"
       :placeholder="subField.placeholder"
       :type="subField.type"
       :autocomplete="subField.autocomplete"
@@ -29,6 +30,7 @@ import SgiltDemandeField from '~/components/basics/SgiltDemandeField.vue'
 interface SubField {
   key: string
   label: string
+  name?: string
   placeholder?: string
   value: string | null
   type?: string

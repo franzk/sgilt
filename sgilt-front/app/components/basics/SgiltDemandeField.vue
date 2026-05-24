@@ -24,6 +24,7 @@
           class="demande-field__input"
           :class="{ 'demande-field__input--error': error }"
           :type="type"
+          :name="name"
           :placeholder="placeholder"
           :autocomplete="autocomplete"
           :enterkeyhint="enterkeyhint"
@@ -45,6 +46,7 @@ const props = defineProps<{
   editing: boolean
   error?: string | null
   type?: string
+  name?: string
   placeholder?: string
   autocomplete?: string
   enterkeyhint?: string
