@@ -25,7 +25,8 @@
       "Bash(Select-Object FullName)",
       "Bash(Sort-Object FullName)",
       "Bash(Select-String -Path \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front\\\\app\\\\components\\\\demande\\\\DemandeMobileRecap.vue\" -Pattern \"coordPrenom|coordNom|coordEmail|coordTel|coordonneesErrors|validateCoordonneesField|coordonneesValidateDisabled|lieu\\\\b\")",
-      "Bash(Select-Object LineNumber, Line)"
+      "Bash(Select-Object LineNumber, Line)",
+      "Bash(Get-ChildItem *)"
     ]
   }
 }
