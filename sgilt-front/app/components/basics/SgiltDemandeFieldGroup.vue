@@ -2,6 +2,7 @@
   <div class="field-group">
     <SgiltDemandeField
       v-for="(subField, index) in modelValue.subFields"
+      :ref="(el) => setFieldRef(el, index)"
       :key="subField.key"
       :model-value="subField.value ?? ''"
       :editing="editingIndex === index"
@@ -10,6 +11,7 @@
       :type="subField.type"
       :autocomplete="subField.autocomplete"
       :enterkeyhint="subField.enterkeyhint"
+      :error="fieldErrors[index]"
       @update:model-value="onUpdateValue(index, $event)"
       @update:editing="
         (v) => {
@@ -32,6 +34,7 @@ interface SubField {
   type?: string
   autocomplete?: string
   enterkeyhint?: string
+  validate?: (value: string) => string | null
   [key: string]: unknown
 }
 
@@ -51,8 +54,15 @@ const emit = defineEmits<{
 }>()
 
 const editingIndex = ref(0)
+const fieldErrors = ref<Record<number, string | null>>({})
+const fieldRefs = ref<Array<{ focus: () => void } | null>>([])
+
+function setFieldRef(el: unknown, index: number) {
+  fieldRefs.value[index] = el as { focus: () => void } | null
+}
 
 function onUpdateValue(index: number, value: string) {
+  if (fieldErrors.value[index]) fieldErrors.value[index] = null
   emit('update:modelValue', {
     ...props.modelValue,
     subFields: props.modelValue.subFields.map((sf, i) => (i === index ? { ...sf, value } : sf)),
@@ -60,6 +70,14 @@ function onUpdateValue(index: number, value: string) {
 }
 
 function onValidate(index: number) {
+  const sf = props.modelValue.subFields[index]
+  const error = sf?.validate?.(sf.value ?? '') ?? null
+  if (error) {
+    fieldErrors.value[index] = error
+    fieldRefs.value[index]?.focus()
+    return
+  }
+  fieldErrors.value[index] = null
   if (index < props.modelValue.subFields.length - 1) {
     editingIndex.value = index + 1
   } else {

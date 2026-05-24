@@ -258,6 +258,7 @@ interface SubField {
   type?: string
   autocomplete?: string
   enterkeyhint?: string
+  validate?: (value: string) => string | null
 }
 
 interface RecapIndividualItem {
@@ -302,6 +303,7 @@ const items = computed((): RecapItem[] => [
               type: 'text',
               autocomplete: 'given-name',
               enterkeyhint: 'next',
+              validate: (v: string) => (!v.trim() ? t('tunnel.etape6.error-required') : null),
             },
             {
               key: 'nom',
@@ -313,6 +315,7 @@ const items = computed((): RecapItem[] => [
               type: 'text',
               autocomplete: 'family-name',
               enterkeyhint: 'next',
+              validate: (v: string) => (!v.trim() ? t('tunnel.etape6.error-required') : null),
             },
             {
               key: 'email',
@@ -324,6 +327,12 @@ const items = computed((): RecapItem[] => [
               type: 'email',
               autocomplete: 'email',
               enterkeyhint: 'next',
+              validate: (v: string) =>
+                !v.trim()
+                  ? t('tunnel.etape6.error-required')
+                  : !validateEmail(v)
+                    ? t('tunnel.etape6.error-email')
+                    : null,
             },
             {
               key: 'telephone',
@@ -335,6 +344,12 @@ const items = computed((): RecapItem[] => [
               type: 'tel',
               autocomplete: 'tel',
               enterkeyhint: 'done',
+              validate: (v: string) =>
+                !v.trim()
+                  ? t('tunnel.etape6.error-required')
+                  : !validatePhone(v)
+                    ? t('tunnel.etape6.error-phone')
+                    : null,
             },
           ],
         },

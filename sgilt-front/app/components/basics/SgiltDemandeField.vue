@@ -22,6 +22,7 @@
         <input
           ref="inputRef"
           class="demande-field__input"
+          :class="{ 'demande-field__input--error': error }"
           :type="type"
           :placeholder="placeholder"
           :autocomplete="autocomplete"
@@ -32,6 +33,7 @@
         />
         <button class="demande-field__ok" type="button" @click="$emit('validate')">OK</button>
       </p>
+      <p v-if="error" class="demande-field__error">{{ error }}</p>
     </div>
   </div>
 </template>
@@ -41,6 +43,7 @@ const props = defineProps<{
   label: string
   modelValue: string
   editing: boolean
+  error?: string | null
   type?: string
   placeholder?: string
   autocomplete?: string
@@ -155,10 +158,20 @@ defineExpose({ focus: () => inputRef.value?.focus() })
     outline: none;
     box-sizing: border-box;
 
+    &--error {
+      border-color: $state-error;
+    }
+
     &::placeholder {
       color: $text-secondary;
       opacity: 0.4;
     }
+  }
+
+  &__error {
+    font-size: 0.8rem;
+    color: $state-error;
+    margin: 0;
   }
 
   &__ok {
