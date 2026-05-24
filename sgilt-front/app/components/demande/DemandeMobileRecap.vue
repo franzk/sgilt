@@ -164,6 +164,7 @@
 
     <!-- ── Sheet groupée : Détails pratiques ────────────────────────────────── -->
     <SgiltBottomSheet
+      fullscreen
       v-model:open="detailsSheetOpen"
       :title="detailsPratiquesItem?.label ?? ''"
       overlay
@@ -177,6 +178,7 @@
 
     <!-- ── Sheet groupée : Vos coordonnées ───────────────────────────────────── -->
     <SgiltBottomSheet
+      fullscreen
       v-model:open="coordonneesSheetOpen"
       :title="coordonneesItem?.label ?? ''"
       overlay
