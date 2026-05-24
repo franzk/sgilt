@@ -33,10 +33,7 @@ const { prestataire, loading } = usePrestataire(slug)
 
 const { isMobile } = useDevice()
 
-watchEffect(() => {
-  if (!prestataire.value) return
-  useSeoMeta({ title: `Demande à ${prestataire.value.name} — Sgilt` })
-})
+useHead({ title: 'Votre demande' })
 
 const { etapeActuelle, state, goTo } = useDemande()
 

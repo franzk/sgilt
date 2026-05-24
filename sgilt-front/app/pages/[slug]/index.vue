@@ -33,6 +33,8 @@ const slug = route.params.slug as string
 
 const { prestataire, loading } = usePrestataire(slug)
 
+useHead(computed(() => ({ title: prestataire.value?.name ?? '' })))
+
 const { currentFlow } = useFlow()
 const disableDatePicker = computed(() => currentFlow.value === 'add-prestataire')
 

@@ -146,6 +146,9 @@ const eventId = route.params.eventId as string
 
 // ── 3 appels parallèles ───────────────────────────────────────────────────────
 const { event, clientInfo, pending: metaPending } = useEventDetail(eventId)
+
+useHead(computed(() => ({ title: event.value?.title ?? '' })))
+
 const { counts, pending: countsPending } = useEventCounts(eventId)
 const { reservations, pending: reservationsPending } = useEventReservations(eventId)
 

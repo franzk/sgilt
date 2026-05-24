@@ -73,6 +73,8 @@ import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
 
 definePageMeta({ layout: 'app' })
 
+useHead({ title: 'Mes événements' })
+
 const { t } = useI18n()
 const currentUser = useCurrentUser()
 const greetingKey = computed<string>(() => {

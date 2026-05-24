@@ -6,6 +6,7 @@
 
 <script setup lang="ts">
 useHead({
+  titleTemplate: '%s · Sgilt',
   meta: [
     { name: 'robots', content: 'noindex, nofollow' },
     { name: 'theme-color', content: '#ffffff' },

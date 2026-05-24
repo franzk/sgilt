@@ -47,6 +47,7 @@ import ReservationFeed from '~/components/shared/ReservationFeed.vue'
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 import { useReservation } from '~/data/reservation/useReservation'
 import { useReservationFeed } from '~/data/reservation/useReservationFeed'
+import { useEventDetail } from '~/data/evenement/useEvenement'
 
 definePageMeta({ layout: 'app' })
 
@@ -57,6 +58,13 @@ const eventId = route.params.eventId as string
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const { reservation, pending: metaPending, cancelling, canCancel, cancel } = useReservation(reservationId)
+const { event } = useEventDetail(eventId)
+
+useHead(computed(() => ({
+  title: reservation.value && event.value
+    ? `${reservation.value.prestataireName} / ${event.value.title}`
+    : '',
+})))
 const { feed, pending: feedPending, uploading, addNote, uploadDocument, download, removeItem } = useReservationFeed(reservationId)
 
 

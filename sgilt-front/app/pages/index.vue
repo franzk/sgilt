@@ -43,7 +43,7 @@ import IconConfetti from '~/components/icons/IconConfetti.vue'
 import { EVENT_TYPE_OPTIONS } from '~/types/demande'
 import { toISODate } from '~/utils/dateUtils'
 
-useHead({ title: 'Sgilt (Beta)' })
+useHead({ title: 'Sgilt', titleTemplate: '%s' })
 
 const { showOnboarding } = useSearchUi()
 const { state } = useDemande()
