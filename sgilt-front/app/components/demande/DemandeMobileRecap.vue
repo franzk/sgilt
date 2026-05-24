@@ -25,7 +25,7 @@
           v-if="item.type === 'individual'"
           :ref="
             (el) => {
-              if (el) itemEls[item.key] = el as HTMLElement
+              if (el) itemEls[item.key] = (el as { $el: HTMLElement }).$el
             }
           "
           class="recap-card recap-card--individual"
@@ -69,7 +69,7 @@
           v-else
           :ref="
             (el) => {
-              if (el) itemEls[item.key] = el as HTMLElement
+              if (el) itemEls[item.key] = (el as { $el: HTMLElement }).$el
             }
           "
           class="recap-card"
