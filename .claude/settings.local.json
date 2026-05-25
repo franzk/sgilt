@@ -31,7 +31,9 @@
       "Bash(Remove-Item -Force \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-core\\\\src\\\\main\\\\java\\\\net\\\\franzka\\\\sgilt\\\\core\\\\image\\\\local\\\\LocalImageController.java\" -ErrorAction SilentlyContinue)",
       "Bash(Remove-Item \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-core\\\\src\\\\main\\\\java\\\\net\\\\franzka\\\\sgilt\\\\core\\\\image\\\\local\" -ErrorAction SilentlyContinue)",
       "PowerShell(Set-Content *)",
-      "Bash(xxd \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-core\\\\src\\\\main\\\\java\\\\net\\\\franzka\\\\sgilt\\\\core\\\\reservation\\\\api\\\\ReservationApi.java\")"
+      "Bash(xxd \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-core\\\\src\\\\main\\\\java\\\\net\\\\franzka\\\\sgilt\\\\core\\\\reservation\\\\api\\\\ReservationApi.java\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front\" -Directory)",
+      "Bash(Select-Object Name)"
     ]
   }
 }

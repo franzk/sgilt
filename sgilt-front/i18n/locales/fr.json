@@ -783,6 +783,15 @@
       }
     }
   },
+  "home": {
+    "subtitle": "On garde le fil de vos préparatifs.",
+    "section-active": "Vos préparatifs en cours",
+    "all-confirmed": "Toutes vos réservations sont confirmées — bons préparatifs ! 🎉",
+    "empty-message": "Vous n'avez rien en cours. Une nouvelle idée à lancer ?",
+    "new-event-flow": "Nouvel événement",
+    "section-next": "Votre prochain événement",
+    "section-events": "Vos événements"
+  },
   "errors": {
     "404": {
       "title": "Oups !!",

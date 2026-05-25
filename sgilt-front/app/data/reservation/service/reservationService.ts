@@ -1,5 +1,7 @@
-import { getReservationMetaApi, cancelReservationApi } from '../api/reservationApi'
+import { getReservationMetaApi, cancelReservationApi, getActiveReservationsApi } from '../api/reservationApi'
+import type { ActiveReservations, ActiveReservationItem } from '../domain/ActiveReservation'
 import type { ReservationMeta } from '../domain/ReservationMeta'
+import type { ReservationStatus } from '../domain/ReservationStatus'
 
 export async function fetchReservationMeta(reservationId: string): Promise<ReservationMeta> {
   const dto = await getReservationMetaApi(reservationId)
@@ -16,4 +18,18 @@ export async function fetchReservationMeta(reservationId: string): Promise<Reser
 
 export async function cancelReservation(reservationId: string): Promise<void> {
   await cancelReservationApi(reservationId)
+}
+
+export async function fetchActiveReservations(): Promise<ActiveReservations> {
+  const dto = await getActiveReservationsApi()
+  const items: ActiveReservationItem[] = dto.items.map((item) => ({
+    reservationId: item.reservationId,
+    status: item.status as ReservationStatus,
+    evenementId: item.evenementId,
+    evenementTitle: item.evenementTitle,
+    prestataireSlug: item.prestataireSlug,
+    prestataireName: item.prestataireName,
+    prestataireAvatar: item.prestataireAvatar,
+  }))
+  return { items, hasConfirmed: dto.hasConfirmed }
 }

@@ -1,4 +1,5 @@
 import { apiFetch } from '~/composables/useApi'
+import type { ActiveReservationsDto } from '../dto/ActiveReservationsDto'
 import type { ReservationMetaDto } from '../dto/ReservationMetaDto'
 import type { EventReservationSummaryDto } from '~/data/evenement/dto/EventReservationSummaryDto'
 
@@ -12,4 +13,8 @@ export async function getReservationMetaApi(reservationId: string): Promise<Rese
 
 export async function cancelReservationApi(reservationId: string): Promise<void> {
   await apiFetch(`/reservations/${reservationId}/cancel`, { method: 'POST' })
+}
+
+export async function getActiveReservationsApi(): Promise<ActiveReservationsDto> {
+  return apiFetch<ActiveReservationsDto>('/reservations/active')
 }
