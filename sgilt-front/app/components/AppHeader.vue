@@ -7,7 +7,7 @@
     </h1>
 
     <div v-if="showNotifications" class="quick-actions">
-      <NotificationBell />
+      <NotificationBell v-if="false" />
 
       <button
         ref="avatarRef"

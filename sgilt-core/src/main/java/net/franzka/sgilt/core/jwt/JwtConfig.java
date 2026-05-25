@@ -17,10 +17,10 @@ public class JwtConfig {
 
     /**
      * Bean JWT pour les tokens de définition de mot de passe.
-     * Sel : {@code "set-password"} — expiration fixe de 5 minutes.
+     * Sel : {@code "set-password"} — expiration alignée sur la durée de la session d'onboarding (24h).
      *
      * @param jwtService le service JWT technique de bas niveau
-     * @param props      les propriétés de configuration (secret partagé)
+     * @param props      les propriétés de configuration (secret partagé, durée)
      * @return le {@link TokenJwtService} configuré pour les tokens set-password
      */
     @Bean
@@ -30,7 +30,7 @@ public class JwtConfig {
                 jwtService,
                 props.confirmationSecret(),
                 "set-password",
-                Duration.ofMinutes(5)
+                Duration.ofHours(props.confirmationExpirationHours())
         );
     }
 }

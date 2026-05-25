@@ -3,7 +3,7 @@
   <ClientOnly>
     <ContextBanner v-if="showContextBanner" />
   </ClientOnly>
-  <section class="default-content">
+  <section class="default-content" :class="{ 'has-banner': showContextBanner }">
     <slot />
   </section>
 </template>
@@ -24,5 +24,9 @@ const { isAuthenticated } = useKeycloak()
   flex: 1;
   display: flex;
   flex-direction: column;
+
+  &.has-banner {
+    padding-top: calc(#{$app-header-height} + 44px);
+  }
 }
 </style>

@@ -12,7 +12,7 @@
     <div class="page-layout">
       <!-- Sidebar : datepicker + tarifs + CTA -->
       <aside class="sidebar">
-        <div class="sidebar-block">
+        <div ref="datePickerBlockRef" class="sidebar-block">
           <SgiltDatePicker
             v-model="dateModel"
             :booked-dates="unavailableDatesAsDate"
@@ -131,9 +131,7 @@
 
     <!-- ── Sticky CTA (mobile) ───────────────────────────────────────────────── -->
     <div class="sticky-cta">
-      <SgiltButton @click="onSelect">{{
-        $t('provider.details.send-request')
-      }}</SgiltButton>
+      <SgiltButton @click="onSelect">{{ $t('provider.details.send-request') }}</SgiltButton>
     </div>
 
     <!-- ── Modale galerie ────────────────────────────────────────────────────── -->
@@ -206,7 +204,6 @@ import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDet
 const { t } = useI18n()
 
 const props = defineProps<{
-
   prestataire: PrestataireDetail
   disableDate?: boolean
 }>()
@@ -219,6 +216,14 @@ const emit = defineEmits<{
 function onSelect() {
   if (!props.disableDate && !dateModel.value) {
     dateError.value = t('provider.details.date-required')
+    // scroll vers le champ en erreur
+    const el = datePickerBlockRef.value
+    if (el) {
+      const { top, bottom } = el.getBoundingClientRect()
+      if (top < 0 || bottom > window.innerHeight) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+    }
     return
   }
   emit('select', props.prestataire)
@@ -260,7 +265,10 @@ function nextPhoto() {
 const { dateModel } = useSearchUi()
 
 const dateError = ref<string | null>(null)
-watch(dateModel, () => { dateError.value = null })
+const datePickerBlockRef = ref<HTMLElement | null>(null)
+watch(dateModel, () => {
+  dateError.value = null
+})
 
 const unavailableDatesAsDate = computed<Date[]>(() =>
   (props.prestataire.unavailableDates ?? []).map((d) => new Date(d)),
@@ -269,7 +277,7 @@ const unavailableDatesAsDate = computed<Date[]>(() =>
 const isUnavailable = computed(() => {
   if (!dateModel.value) return false
   const iso = dateModel.value.toISOString().slice(0, 10)
-  return props.prestataire.unavailableDates.includes(iso)
+  return props.prestataire.unavailableDates?.includes(iso)
 })
 
 const availabilityIcon = computed(() => (isUnavailable.value ? '✗' : '✓'))

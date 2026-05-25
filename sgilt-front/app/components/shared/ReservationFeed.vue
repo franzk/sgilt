@@ -672,6 +672,8 @@ $desktop: $breakpoint-desktop;
     display: flex;
     flex-direction: column;
     gap: $spacing-s;
+    padding-bottom: var(--keyboard-offset, 0px);
+    transition: padding-bottom 120ms ease;
   }
 
   .personal {

@@ -12,6 +12,7 @@
       :ui="uiConfig"
       :state="choiceState"
       :placeholder="placeholder"
+      :min-date="new Date()"
       :teleport="inline ? false : 'body'"
       :inline="inline"
       @open="onOpen"
@@ -27,7 +28,9 @@
           <span v-else-if="props.bookedDates?.length">{{ $t('common.date-picker.booked') }}</span>
 
           <span v-if="props.indisponibleDates?.length" class="dot indisponible" />
-          <span v-if="props.indisponibleDates?.length">{{ $t('common.date-picker.indisponible') }}</span>
+          <span v-if="props.indisponibleDates?.length">{{
+            $t('common.date-picker.indisponible')
+          }}</span>
         </p>
       </template>
     </VueDatePicker>

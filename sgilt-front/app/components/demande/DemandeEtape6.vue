@@ -18,8 +18,9 @@
             class="field-input"
             :class="{ 'field-input--error': errors.prenom }"
             type="text"
-            :placeholder="$t('tunnel.etape6.prenom-placeholder')"
+            name="given-name"
             autocomplete="given-name"
+            :placeholder="$t('tunnel.etape6.prenom-placeholder')"
             @blur="touched.prenom = true"
           />
           <p v-if="errors.prenom" class="field-error">{{ errors.prenom }}</p>
@@ -34,8 +35,9 @@
             class="field-input"
             :class="{ 'field-input--error': errors.nom }"
             type="text"
-            :placeholder="$t('tunnel.etape6.nom-placeholder')"
+            name="family-name"
             autocomplete="family-name"
+            :placeholder="$t('tunnel.etape6.nom-placeholder')"
             @blur="touched.nom = true"
           />
           <p v-if="errors.nom" class="field-error">{{ errors.nom }}</p>
@@ -50,8 +52,9 @@
             class="field-input"
             :class="{ 'field-input--error': errors.email }"
             type="email"
-            :placeholder="$t('tunnel.etape6.email-placeholder')"
+            name="email"
             autocomplete="email"
+            :placeholder="$t('tunnel.etape6.email-placeholder')"
             @blur="touched.email = true"
           />
           <p v-if="errors.email" class="field-error">{{ errors.email }}</p>
@@ -66,8 +69,9 @@
             class="field-input"
             :class="{ 'field-input--error': errors.telephone }"
             type="tel"
-            :placeholder="$t('tunnel.etape6.phone-placeholder')"
+            name="tel"
             autocomplete="tel"
+            :placeholder="$t('tunnel.etape6.phone-placeholder')"
             @blur="touched.telephone = true"
           />
           <p v-if="errors.telephone" class="field-error">{{ errors.telephone }}</p>
@@ -80,6 +84,8 @@
         <textarea
           v-model="state.prestataireMessage"
           class="description-textarea"
+          name="message"
+          autocomplete="on"
           :placeholder="$t('tunnel.etape6.message-placeholder')"
           rows="6"
         />

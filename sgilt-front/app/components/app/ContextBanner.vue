@@ -26,9 +26,11 @@ const abortOpen = ref(false)
 @use '@/assets/styles/base' as *;
 
 .banner {
-  position: sticky;
-  top: 3.3rem; // $app-header-height
-  z-index: 50;
+  position: fixed;
+  top: $app-header-height;
+  left: 0;
+  right: 0;
+  z-index: $z-header - 1;
   display: flex;
   align-items: center;
   justify-content: space-between;

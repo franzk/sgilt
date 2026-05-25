@@ -6,7 +6,7 @@
         <div class="header">
           <UserAvatar :size="2.25" />
           <div class="header-info">
-            <span class="header-name">{{ currentUser.fullName }}</span>
+            <span class="header-name">{{ currentUser.firstName }} {{ currentUser.lastName }}</span>
             <span class="header-email">{{ currentUser.email }}</span>
           </div>
         </div>
@@ -15,7 +15,8 @@
 
         <!-- ── Section 1 : compte ─────────────────────────────────────────────── -->
         <div class="group">
-          <NuxtLink to="/account/profile" class="item" role="menuitem" @click="close">
+          <!-- NuxtLink to="/account/profile" class="item" role="menuitem" @click="close" -->
+          <NuxtLink to="#" class="item" role="menuitem" @click="close">
             <UserIcon class="item-icon" />
             <span>{{ $t('profile.menu.my-info') }}</span>
           </NuxtLink>
@@ -59,12 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  UserIcon,
-  LogoutBoxRIcon,
-  QuestionIcon,
-  MailIcon,
-} from '@remixicons/vue/line'
+import { UserIcon, LogoutBoxRIcon, QuestionIcon, MailIcon } from '@remixicons/vue/line'
 import { onClickOutside } from '@vueuse/core'
 import UserAvatar from '~/components/basics/UserAvatar.vue'
 import { useCurrentUser } from '~/composables/useCurrentUser'

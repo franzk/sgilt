@@ -146,6 +146,9 @@ const eventId = route.params.eventId as string
 
 // ── 3 appels parallèles ───────────────────────────────────────────────────────
 const { event, clientInfo, pending: metaPending } = useEventDetail(eventId)
+
+useHead(computed(() => ({ title: event.value?.title ?? '' })))
+
 const { counts, pending: countsPending } = useEventCounts(eventId)
 const { reservations, pending: reservationsPending } = useEventReservations(eventId)
 
@@ -461,7 +464,7 @@ $desktop: $breakpoint-desktop;
   display: flex;
   flex-direction: column;
   gap: $spacing-m;
-  padding: $spacing-m;
+  padding: $spacing-m $spacing-m 80px $spacing-m;
 
   @media (min-width: $desktop) {
     flex-direction: row;
