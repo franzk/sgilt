@@ -786,6 +786,7 @@
   },
   "home": {
     "subtitle": "On garde le fil de vos préparatifs.",
+    "events-count": "Vous avez {n} événement en cours. | Vous avez {n} événements en cours.",
     "section-active": "Vos préparatifs en cours",
     "all-confirmed": "Toutes vos réservations sont confirmées — bons préparatifs ! 🎉",
     "empty-message": "Vous n'avez rien en cours. Une nouvelle idée à lancer ?",

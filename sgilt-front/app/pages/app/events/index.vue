@@ -84,6 +84,11 @@ const greetingKey = computed<string>(() => {
 const { isDesktop } = useDevice()
 const cardRatio = computed(() => (isDesktop.value ? '16/9' : '3/2'))
 
+// Sur desktop, /app intègre la liste — on redirige
+onMounted(() => {
+  if (isDesktop.value) navigateTo('/app', { replace: true })
+})
+
 // ── Data ──────────────────────────────────────────────────────────────────────
 const { events, loading } = useEvenements()
 
