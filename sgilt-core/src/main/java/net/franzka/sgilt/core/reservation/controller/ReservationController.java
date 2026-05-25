@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.reservation.api.ReservationApi;
+import net.franzka.sgilt.core.reservation.dto.ActiveReservationsDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationMetaDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
@@ -31,6 +32,14 @@ public class ReservationController implements ReservationApi {
         log.info("GET /reservations?eventId={}", eventId);
         evenementService.verifyEventOwnership(eventId, userId);
         return ResponseEntity.ok(reservationService.getReservationSummaries(eventId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<ActiveReservationsDto> getActive() {
+        UUID userId = currentUserService.getId();
+        log.info("GET /reservations/active");
+        return ResponseEntity.ok(reservationService.getActiveReservations(userId));
     }
 
     @Override

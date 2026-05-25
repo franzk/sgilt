@@ -1,6 +1,7 @@
 package net.franzka.sgilt.core.reservation.repository;
 
 import net.franzka.sgilt.core.reservation.domain.Reservation;
+import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -27,4 +28,22 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
      * @return true si une réservation existe
      */
     boolean existsByEvenementIdAndPrestataireUtilisateurId(UUID evenementId, UUID utilisateurId);
+
+    /**
+     * Retourne les réservations d'un utilisateur dont le statut fait partie de la liste fournie.
+     *
+     * @param utilisateurId l'identifiant de l'utilisateur
+     * @param statuses      les statuts à inclure
+     * @return la liste des réservations correspondantes
+     */
+    List<Reservation> findByUtilisateurIdAndStatusIn(UUID utilisateurId, List<ReservationStatus> statuses);
+
+    /**
+     * Vérifie si l'utilisateur possède au moins une réservation dans le statut donné.
+     *
+     * @param utilisateurId l'identifiant de l'utilisateur
+     * @param status        le statut recherché
+     * @return true si une réservation existe
+     */
+    boolean existsByUtilisateurIdAndStatus(UUID utilisateurId, ReservationStatus status);
 }
