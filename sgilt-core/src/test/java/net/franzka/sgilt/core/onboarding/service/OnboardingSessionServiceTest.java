@@ -228,11 +228,11 @@ class OnboardingSessionServiceTest {
                     .build();
         }
 
-        private Onboarding buildPendingOnboarding(LocalDateTime confirmationPeriodExpiresAt) {
+        private Onboarding buildPendingOnboarding(LocalDateTime expiresAt) {
             return Onboarding.builder()
                     .hmacPayload(PAYLOAD)
                     .state(OnboardingState.PENDING_CONFIRMATION)
-                    .confirmationPeriodExpiresAt(confirmationPeriodExpiresAt)
+                    .expiresAt(expiresAt)
                     .build();
         }
     }
@@ -253,17 +253,7 @@ class OnboardingSessionServiceTest {
             assertThat(onboarding.getState()).isEqualTo(OnboardingState.PENDING_CONFIRMATION);
         }
 
-        @Test
-        void givenOpenSession_whenAdvanceToConfirmation_thenSetsConfirmationPeriodExpiresAt() {
-            Onboarding onboarding = buildOpenOnboarding();
 
-            LocalDateTime before = LocalDateTime.now();
-            onboardingSessionService.advanceToConfirmation(onboarding);
-            LocalDateTime after = LocalDateTime.now();
-
-            assertThat(onboarding.getConfirmationPeriodExpiresAt())
-                    .isBetween(before.plusMinutes(5), after.plusMinutes(5));
-        }
 
         @Test
         void givenOpenSession_whenAdvanceToConfirmation_thenSavesOnboarding() {

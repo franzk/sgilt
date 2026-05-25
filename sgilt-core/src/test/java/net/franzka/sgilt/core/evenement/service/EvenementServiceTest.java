@@ -92,7 +92,7 @@ class EvenementServiceTest {
 
             when(evenementRepository.findByUtilisateurId(USER_ID)).thenReturn(List.of(event));
             when(reservationService.getCountsForEvenement(EVENT_ID)).thenReturn(counts);
-            when(evenementMapper.toSummaryDto(eq(event), eq(counts))).thenReturn(dto);
+            when(evenementMapper.toSummaryDto(event, counts)).thenReturn(dto);
 
             assertThat(evenementService.getUserEvents(USER_ID)).containsExactly(dto);
         }
@@ -117,8 +117,8 @@ class EvenementServiceTest {
             when(evenementRepository.findByUtilisateurId(USER_ID)).thenReturn(List.of(event1, event2));
             when(reservationService.getCountsForEvenement(EVENT_ID)).thenReturn(counts1);
             when(reservationService.getCountsForEvenement(eventId2)).thenReturn(counts2);
-            when(evenementMapper.toSummaryDto(eq(event1), eq(counts1))).thenReturn(dto1);
-            when(evenementMapper.toSummaryDto(eq(event2), eq(counts2))).thenReturn(dto2);
+            when(evenementMapper.toSummaryDto(event1, counts1)).thenReturn(dto1);
+            when(evenementMapper.toSummaryDto(event2, counts2)).thenReturn(dto2);
 
             assertThat(evenementService.getUserEvents(USER_ID)).containsExactly(dto1, dto2);
         }
@@ -183,7 +183,7 @@ class EvenementServiceTest {
             String newImage = "new-uuid.jpg";
             Evenement event = ownerEvent(b -> b.imagePath(oldImage));
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            when(fileStorageService.upload(file, "uploads/")).thenReturn(newImage);
+            when(fileStorageService.upload(file, "uploads")).thenReturn(newImage);
 
             evenementService.updateCover(EVENT_ID, USER_ID, file);
 
