@@ -727,6 +727,7 @@
     }
   },
   "nav": {
+    "home": "Accueil",
     "events": "Événements",
     "notifications": "Notifications",
     "profile": "Profil"

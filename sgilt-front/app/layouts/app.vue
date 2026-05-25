@@ -1,13 +1,14 @@
 <template>
-  <AppHeader show-notifications />
+  <AppHeader show-notifications logo-link="/app" />
   <main class="app-content">
     <slot />
   </main>
-  <!--AppFooter /-->
+  <BottomNav />
 </template>
 
 <script setup lang="ts">
 import AppHeader from '~/components/AppHeader.vue'
+import BottomNav from '~/components/app/BottomNav.vue'
 
 useVirtualKeyboard()
 </script>
