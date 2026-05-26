@@ -5,7 +5,6 @@
     :class="[`format-${format}`, { clickable }]"
     :type="tag === 'button' ? 'button' : undefined"
   >
-
     <!-- ── Big ───────────────────────────────────────────────────────────────── -->
     <template v-if="format === 'big'">
       <div class="media">
@@ -23,9 +22,7 @@
     <!-- ── Small ─────────────────────────────────────────────────────────────── -->
     <template v-else>
       <div class="avatar">
-        <slot name="avatar">
-          <img v-if="image" :src="image" alt="" />
-        </slot>
+        <slot name="avatar" />
       </div>
       <div class="content">
         <slot />
@@ -34,7 +31,6 @@
         <slot name="cta" />
       </div>
     </template>
-
   </component>
 </template>
 
@@ -146,12 +142,6 @@ withDefaults(
       display: flex;
       align-items: center;
       justify-content: center;
-
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
     }
 
     .content {

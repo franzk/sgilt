@@ -4,10 +4,13 @@
  */
 export function useImageUrl() {
   const config = useRuntimeConfig()
-  const imageBaseUrl = (config.public.imageBaseUrl as string) || 'http://localhost:5029'
+  const imageBaseUrl = config.public.imageBaseUrl || 'http://localhost:5029'
 
   function toUrl(imagePath: string): string {
-    return `${imageBaseUrl}/${imagePath}`
+    if (!imagePath.startsWith('/images/')) {
+      return `${imageBaseUrl}/${imagePath}`
+    }
+    return imagePath
   }
 
   return { toUrl }

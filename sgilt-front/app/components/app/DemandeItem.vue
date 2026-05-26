@@ -1,15 +1,19 @@
 <template>
   <SgiltCard format="small" tag="button" @click="$emit('click')">
     <template #avatar>
-      <img v-if="avatar" :src="avatarUrl" :alt="prestataireName" />
+      <img v-if="avatar" :src="avatarUrl" :alt="prestataireName" class="avatar-image" />
       <span v-else class="fallback">{{ initials }}</span>
     </template>
 
-    <p class="name">{{ prestataireName }}</p>
-    <p class="event">{{ evenementTitle }}</p>
+    <div class="middle">
+      <div class="names">
+        <p class="name">{{ prestataireName }}</p>
+        <p class="event">{{ evenementTitle }}</p>
+      </div>
+      <StatusBadge :status="status" context="client" />
+    </div>
 
     <template #cta>
-      <StatusBadge :status="status" context="client" />
       <span class="arrow" aria-hidden="true">›</span>
     </template>
   </SgiltCard>
@@ -44,25 +48,44 @@ const initials = computed(() => props.prestataireName.slice(0, 2).toUpperCase())
   color: $text-secondary;
 }
 
-.name {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: $text-primary;
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.event {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.75rem;
-  color: $text-secondary;
-  margin: 2px 0 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.middle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $spacing-xs $spacing-s;
+
+  .names {
+    flex: 1 1 auto;
+    min-width: 100px;
+    overflow: hidden;
+
+    .name {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: $text-primary;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .event {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      color: $text-secondary;
+      margin: 2px 0 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
 }
 
 .arrow {

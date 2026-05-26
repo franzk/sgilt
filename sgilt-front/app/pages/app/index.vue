@@ -37,19 +37,33 @@
         </div>
 
         <!-- Demandes en suspens -->
-        <div v-else-if="pendingItems.length > 0" class="home-page__items">
-          <DemandeItem
-            v-for="item in pendingItems"
-            :key="item.reservationId"
-            :prestataire-name="item.prestataireName"
-            :prestataire-avatar="item.prestataireAvatar"
-            :evenement-title="item.evenementTitle"
-            :status="item.status"
-            @click="
-              navigateTo(`/app/events/${item.evenementId}/reservations/${item.reservationId}`)
-            "
-          />
-        </div>
+        <template v-else-if="pendingItems.length > 0">
+          <div class="home-page__items" :class="{ expanded: pendingExpanded }">
+            <DemandeItem
+              v-for="item in pendingItems"
+              :key="item.reservationId"
+              :prestataire-name="item.prestataireName"
+              :prestataire-avatar="item.prestataireAvatar"
+              :evenement-title="item.evenementTitle"
+              :status="item.status"
+              @click="
+                navigateTo(`/app/events/${item.evenementId}/reservations/${item.reservationId}`)
+              "
+            />
+          </div>
+          <button
+            v-if="hiddenCount > 0"
+            class="home-page__show-more"
+            type="button"
+            @click="pendingExpanded = !pendingExpanded"
+          >
+            {{
+              pendingExpanded
+                ? t('home.reduce')
+                : t('home.show-more', hiddenCount, { n: hiddenCount })
+            }}
+          </button>
+        </template>
 
         <!-- Tout confirmé -->
         <p
@@ -79,6 +93,7 @@
       <section v-if="nextEvent" class="home-page__section">
         <h2 class="home-page__section-title">{{ $t('home.section-next') }}</h2>
         <EventItem
+          format="big"
           :title="nextEvent.title"
           :date="nextEvent.date"
           :ville="nextEvent.ville"
@@ -103,24 +118,18 @@
         <p v-if="events.length === 0" class="events-empty">
           {{ $t('events.empty') }}
         </p>
-        <SgiltCard
+        <EventItem
           v-for="event in events"
           :key="event.id"
-          :image="coverImage(event)"
-          ratio="3/2"
+          format="big"
+          :title="event.title"
+          :date="event.date"
+          :ville="event.ville"
+          :cover-image="event.coverImage"
+          :event-type="event.eventType"
+          :summary="reservationSummary(event)"
           @click="navigateTo(`/app/events/${event.id}`)"
-        >
-          <template #overlay>
-            <h2 class="event-card__title">{{ event.title }}</h2>
-            <p class="event-card__meta">
-              <span v-if="event.date">{{ formatDate(event.date) }}</span>
-              <span v-if="event.date && event.ville" aria-hidden="true"> · </span>
-              <span v-if="event.ville">{{ event.ville }}</span>
-            </p>
-            <p class="event-card__summary">{{ reservationSummary(event) }}</p>
-            <span class="event-card__cta" aria-hidden="true">{{ $t('events.see-event') }}</span>
-          </template>
-        </SgiltCard>
+        />
       </template>
 
       <!-- Skeleton -->
@@ -136,8 +145,6 @@
 <script setup lang="ts">
 import DemandeItem from '~/components/app/DemandeItem.vue'
 import EventItem from '~/components/app/EventItem.vue'
-import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
-import { BANK_IMAGE_PATHS } from '~/utils/eventCovers'
 import { useActiveReservations } from '~/data/reservation/useActiveReservations'
 import { useEvenements } from '~/data/evenement/useEvenements'
 import type { EventSummary } from '~/data/evenement/domain/EventSummary'
@@ -147,7 +154,6 @@ useHead({ title: 'Accueil' })
 
 const { t } = useI18n()
 const currentUser = useCurrentUser()
-const { toUrl } = useImageUrl()
 
 // ── Salutation ────────────────────────────────────────────────────────────────
 const greetingText = computed(() => {
@@ -166,6 +172,10 @@ const pendingItems = computed(
     ) ?? [],
 )
 
+const PENDING_LIMIT = 3
+const pendingExpanded = ref(false)
+const hiddenCount = computed(() => Math.max(0, pendingItems.value.length - PENDING_LIMIT))
+
 // ── Événements ────────────────────────────────────────────────────────────────
 const { events, loading } = useEvenements()
 
@@ -177,12 +187,6 @@ const nextEvent = computed(() => {
       .sort((a, b) => a.date!.getTime() - b.date!.getTime())[0] ?? null
   )
 })
-
-function coverImage(event: EventSummary): string {
-  const path =
-    event.coverImage ?? BANK_IMAGE_PATHS[event.eventType ?? ''] ?? BANK_IMAGE_PATHS.autre!
-  return toUrl(path)
-}
 
 function reservationSummary(event: EventSummary): string {
   const parts: string[] = []
@@ -351,6 +355,32 @@ $desktop: $breakpoint-desktop;
   gap: $spacing-s;
 }
 
+.home-page__items {
+  @media (max-width: calc(#{$desktop} - 1px)) {
+    &:not(.expanded) > *:nth-child(n + 4) {
+      display: none;
+    }
+  }
+}
+
+.home-page__show-more {
+  appearance: none;
+  border: none;
+  background: none;
+  font: inherit;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $brand-primary;
+  cursor: pointer;
+  align-self: flex-start;
+
+  @media (min-width: $desktop) {
+    display: none;
+  }
+}
+
 // ── Messages ──────────────────────────────────────────────────────────────────
 .home-page__message {
   font-family: 'Inter', sans-serif;
@@ -437,47 +467,6 @@ $desktop: $breakpoint-desktop;
   font-style: italic;
   text-align: center;
   padding: $spacing-xl 0;
-}
-
-.event-card__title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.375rem;
-  font-weight: 600;
-  color: #fff;
-  margin: 0;
-  line-height: 1.2;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-}
-
-.event-card__meta {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.82);
-  margin: 3px 0 0;
-}
-
-.event-card__summary {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.75);
-  margin: 5px 0 0;
-}
-
-.event-card__cta {
-  display: inline-block;
-  margin-top: $spacing-s;
-  padding: 6px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: $radius-xl;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(4px);
-  pointer-events: none;
-  align-self: flex-start;
 }
 
 .event-card-skeleton {

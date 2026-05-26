@@ -792,7 +792,9 @@
     "empty-message": "Vous n'avez rien en cours. Une nouvelle idée à lancer ?",
     "new-event-flow": "Nouvel événement",
     "section-next": "Votre prochain événement",
-    "section-events": "Vos événements"
+    "section-events": "Vos événements",
+    "show-more": "Voir {n} autre | Voir les {n} autres",
+    "reduce": "Réduire"
   },
   "errors": {
     "404": {
