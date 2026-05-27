@@ -84,7 +84,7 @@ export function useFlow() {
       },
       abort: () => {
         useSearchUi().dateModel.value = undefined
-        navigateTo('/app/events')
+        navigateTo('/app')
       },
       success: () => {
         const eventId = flowPayload.value?.id
@@ -152,5 +152,14 @@ export function useFlow() {
     () => currentFlow.value === 'add-prestataire' || currentFlow.value === 'new-event',
   )
 
-  return { currentFlow, flowPayload, flowLabel, showContextBanner, start, abort, onFlowSuccess, reset }
+  return {
+    currentFlow,
+    flowPayload,
+    flowLabel,
+    showContextBanner,
+    start,
+    abort,
+    onFlowSuccess,
+    reset,
+  }
 }

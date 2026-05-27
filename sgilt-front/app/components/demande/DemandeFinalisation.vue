@@ -14,7 +14,7 @@
       <div v-if="!isNewEventFlow" class="cta">
         <p class="cta-text">{{ $t('tunnel.finalisation.cta-text', { name: prestataireName }) }}</p>
       </div>
-      <SgiltButton v-else @click="navigateTo('/app/events')">{{
+      <SgiltButton v-else @click="navigateTo('/app')">{{
         $t('tunnel.finalisation.see-event')
       }}</SgiltButton>
     </div>
