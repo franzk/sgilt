@@ -1,6 +1,6 @@
 <template>
   <header class="event-header">
-    <NuxtLink to="/app/events" class="logo">
+    <NuxtLink to="/app" class="logo">
       <img src="/sgilt-logo.svg" alt="SGILT" />
     </NuxtLink>
 
@@ -93,6 +93,5 @@ $header-h: 52px;
     background: $brand-accent;
     border: 1.5px solid #fff;
   }
-
 }
 </style>

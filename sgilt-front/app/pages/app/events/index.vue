@@ -2,26 +2,16 @@
   <div class="events-page">
     <!-- ── En-tête ──────────────────────────────────────────────────────────── -->
     <div class="events-page__header">
-      <p v-if="!currentUser.loading" class="events-page__greeting">
-        {{ t(greetingKey, { name: currentUser.firstName }) }}
+      <p class="events-page__count">
+        {{ t('events.count', events.length, { n: events.length }) }}
       </p>
-      <div
-        v-else
-        class="skeleton-text title shimmer-container events-page__greeting-skeleton"
-        aria-hidden="true"
-      />
-      <div class="events-page__subheader">
-        <p class="events-page__count">
-          {{ t('events.count', events.length, { n: events.length }) }}
-        </p>
-        <button
-          class="events-page__create-btn"
-          type="button"
-          @click="useFlow().start('new-event', 'Nouvel événement')"
-        >
-          {{ t('events.create') }}
-        </button>
-      </div>
+      <button
+        class="events-page__create-btn"
+        type="button"
+        @click="useFlow().start('new-event', t('events.create'))"
+      >
+        {{ t('events.create') }}
+      </button>
     </div>
 
     <!-- ── Liste ────────────────────────────────────────────────────────────── -->
@@ -76,11 +66,6 @@ definePageMeta({ layout: 'app' })
 useHead({ title: 'Mes événements' })
 
 const { t } = useI18n()
-const currentUser = useCurrentUser()
-const greetingKey = computed<string>(() => {
-  const h = new Date().getHours()
-  return h >= 6 && h < 18 ? 'events.welcome' : 'events.welcome-night'
-})
 const { isDesktop } = useDevice()
 const cardRatio = computed(() => (isDesktop.value ? '16/9' : '3/2'))
 
@@ -96,7 +81,8 @@ const { events, loading } = useEvenements()
 const { toUrl } = useImageUrl()
 
 function coverImage(event: EventSummary): string {
-  const imagePath = event.coverImage ?? BANK_IMAGE_PATHS[event.eventType ?? ''] ?? BANK_IMAGE_PATHS.autre!
+  const imagePath =
+    event.coverImage ?? BANK_IMAGE_PATHS[event.eventType ?? ''] ?? BANK_IMAGE_PATHS.autre!
   return toUrl(imagePath)
 }
 
@@ -149,37 +135,15 @@ $desktop: $breakpoint-desktop;
   }
 }
 
-.events-page__greeting {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 2rem;
-  font-weight: 600;
-  color: $brand-primary;
-  margin: 0;
-  line-height: 1.15;
-}
-
-.events-page__greeting-skeleton {
-  height: 2.3rem !important;
-  width: 15rem !important;
-}
-
-.events-page__subheader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: $spacing-s;
-}
-
 .events-page__count {
   font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: $text-secondary;
   margin: 0;
-  flex: 1;
 }
 
 .events-page__create-btn {
-  flex-shrink: 0;
+  align-self: flex-end;
   padding: 7px 14px;
   border: 1px solid $brand-border;
   border-radius: $radius-md;

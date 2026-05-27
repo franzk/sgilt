@@ -11,6 +11,15 @@
         aria-hidden="true"
       />
       <p class="home-page__subtitle">{{ $t('home.subtitle') }}</p>
+      <p class="create-btn-mobile-wrapper">
+        <button
+          class="home-page__create-btn home-page__create-btn--mobile"
+          type="button"
+          @click="useFlow().start('new-event', $t('home.new-event-flow'))"
+        >
+          {{ $t('events.create') }}
+        </button>
+      </p>
       <!-- Desktop uniquement : compte + bouton créer -->
       <div class="home-page__header-actions">
         <p class="home-page__events-count">
@@ -300,6 +309,12 @@ $desktop: $breakpoint-desktop;
   }
 }
 
+.create-btn-mobile-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin: $spacing-s 0 0 0;
+}
+
 .home-page__header-actions {
   display: none;
 
@@ -344,6 +359,7 @@ $desktop: $breakpoint-desktop;
 // ── Liste événements desktop ──────────────────────────────────────────────────
 .home-page__events-list {
   display: none;
+  background-color: #f7f9fb;
 
   @media (min-width: $desktop) {
     display: flex;
@@ -455,6 +471,14 @@ $desktop: $breakpoint-desktop;
   transition:
     background 150ms ease,
     border-color 150ms ease;
+
+  &--mobile {
+    align-self: flex-end;
+
+    @media (min-width: $desktop) {
+      display: none;
+    }
+  }
 
   &:active {
     background: $surface-soft;

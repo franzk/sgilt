@@ -61,6 +61,7 @@ withDefaults(
     flex-direction: column;
     border-radius: $radius-xl;
     overflow: hidden;
+    background-color: transparent;
 
     &.clickable {
       cursor: pointer;

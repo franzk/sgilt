@@ -64,7 +64,7 @@ const hideShadow = computed(
 )
 
 function handleLogin() {
-  login({ redirectUri: window.location.origin + '/app/events' })
+  login({ redirectUri: window.location.origin + '/app' })
 }
 </script>
 
