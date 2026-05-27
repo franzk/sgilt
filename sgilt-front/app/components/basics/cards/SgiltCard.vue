@@ -59,14 +59,20 @@ withDefaults(
   &.format-big {
     display: flex;
     flex-direction: column;
-    border-radius: $radius-lg;
+    border-radius: $radius-xl;
     overflow: hidden;
 
     &.clickable {
       cursor: pointer;
 
-      .media img {
+      .media {
         transition: transform 300ms ease;
+        border-radius: $radius-xl;
+
+        img {
+          transition: transform 300ms ease;
+          border-radius: $radius-xl;
+        }
       }
 
       &:hover .media img {

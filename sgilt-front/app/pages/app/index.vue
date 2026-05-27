@@ -118,25 +118,44 @@
         <p v-if="events.length === 0" class="events-empty">
           {{ $t('events.empty') }}
         </p>
-        <EventItem
-          v-for="event in events"
-          :key="event.id"
-          format="big"
-          :title="event.title"
-          :date="event.date"
-          :ville="event.ville"
-          :cover-image="event.coverImage"
-          :event-type="event.eventType"
-          :summary="reservationSummary(event)"
-          @click="navigateTo(`/app/events/${event.id}`)"
-        />
+
+        <!-- Prochain événement — Big Card -->
+        <template v-if="nextEvent">
+          <h2 class="home-page__events-label">{{ $t('home.section-next') }}</h2>
+          <EventItem
+            format="big"
+            :title="nextEvent.title"
+            :date="nextEvent.date"
+            :ville="nextEvent.ville"
+            :cover-image="nextEvent.coverImage"
+            :event-type="nextEvent.eventType"
+            :summary="reservationSummary(nextEvent)"
+            @click="navigateTo(`/app/events/${nextEvent!.id}`)"
+          />
+        </template>
+
+        <!-- Autres événements — Little Cards -->
+        <template v-if="otherEvents.length > 0">
+          <h2 class="home-page__events-label">{{ $t('home.section-events') }}</h2>
+
+          <EventItem
+            v-for="event in otherEvents"
+            :key="event.id"
+            format="small"
+            :title="event.title"
+            :date="event.date"
+            :ville="event.ville"
+            :cover-image="event.coverImage"
+            :event-type="event.eventType"
+            @click="navigateTo(`/app/events/${event.id}`)"
+          />
+        </template>
       </template>
 
       <!-- Skeleton -->
       <template v-else>
-        <div v-for="i in 2" :key="i" class="event-card-skeleton">
-          <div class="event-card-skeleton__cover skeleton-text" />
-        </div>
+        <div class="event-card-skeleton shimmer-container" />
+        <div v-for="i in 2" :key="i" class="event-small-skeleton shimmer-container" />
       </template>
     </div>
   </div>
@@ -187,6 +206,16 @@ const nextEvent = computed(() => {
       .sort((a, b) => a.date!.getTime() - b.date!.getTime())[0] ?? null
   )
 })
+
+const otherEvents = computed(() =>
+  events.value
+    .filter((e) => e.id !== nextEvent.value?.id)
+    .sort((a, b) => {
+      if (!a.date) return 1
+      if (!b.date) return -1
+      return a.date.getTime() - b.date.getTime()
+    }),
+)
 
 function reservationSummary(event: EventSummary): string {
   const parts: string[] = []
@@ -317,16 +346,26 @@ $desktop: $breakpoint-desktop;
   display: none;
 
   @media (min-width: $desktop) {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-content: start;
+    display: flex;
+    flex-direction: column;
     gap: $spacing-m;
     grid-area: events;
     padding: $spacing-l;
+  }
+}
 
-    &:has(> :only-child) {
-      grid-template-columns: 1fr;
-    }
+.home-page__events-label {
+  display: none;
+
+  @media (min-width: $desktop) {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: $text-secondary;
+    margin: 0;
   }
 }
 
@@ -471,12 +510,11 @@ $desktop: $breakpoint-desktop;
 
 .event-card-skeleton {
   border-radius: $radius-lg;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(47, 42, 37, 0.06);
+  aspect-ratio: 16/9;
+}
 
-  &__cover {
-    width: 100%;
-    aspect-ratio: 3/2;
-  }
+.event-small-skeleton {
+  height: 64px;
+  border-radius: $radius-lg;
 }
 </style>
