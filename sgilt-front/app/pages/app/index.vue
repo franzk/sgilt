@@ -497,6 +497,11 @@ $desktop: $breakpoint-desktop;
   &:hover {
     box-shadow: 0 8px 32px rgba(47, 42, 37, 0.18);
   }
+
+  &.format-big {
+    width: 50%;
+    align-self: center;
+  }
 }
 
 .events-empty {
