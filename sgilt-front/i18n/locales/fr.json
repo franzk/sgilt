@@ -174,6 +174,11 @@
       "cta-text": "Confirmez votre demande via le lien reçu par email. Elle sera ensuite transmise à {name}.",
       "see-event": "Voir mon événement →"
     },
+    "no-flow": {
+      "title": "Vous souhaitez contacter ce prestataire ?",
+      "message": "Pour envoyer une demande, créez un nouvel événement ou ajoutez ce prestataire à un événement existant depuis votre espace client.",
+      "back-to-app": "Retour à l'espace client →"
+    },
     "recap": {
       "title": "Votre événement"
     },
