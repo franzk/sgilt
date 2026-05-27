@@ -1,5 +1,5 @@
 <template>
-  <AppHeader show-notifications logo-link="/app" />
+  <AppHeader show-notifications />
   <main class="app-content">
     <slot />
   </main>

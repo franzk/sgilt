@@ -1,7 +1,7 @@
 <template>
   <header class="app-header" :class="{ 'no-shadow': hideShadow }">
     <h1 class="logo" tabindex="0">
-      <NuxtLink :to="logoLink || '/'">
+      <NuxtLink :to="logoLink">
         <img src="/sgilt-logo.svg" alt="SGILT" />
       </NuxtLink>
     </h1>
@@ -42,13 +42,14 @@ import { UserIcon } from '@remixicons/vue/line'
 
 defineProps<{
   showNotifications?: boolean
-  logoLink?: string
 }>()
 
 const avatarRef = ref<HTMLElement | null>(null)
 const profileOpen = ref(false)
 
 const { isAuthenticated, login } = useKeycloak()
+
+const logoLink = computed(() => (isAuthenticated.value ? '/app' : '/'))
 
 const ROUTES_WITHOUT_SHADOW_MOBILE = ['/', '/search']
 const route = useRoute()
