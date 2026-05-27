@@ -42,6 +42,7 @@ import {
 } from 'vaul-vue'
 
 const isOpen = defineModel<boolean>('open', { required: true })
+const confirmed = defineModel<boolean>('confirmed', { default: false })
 
 defineProps<{
   title?: string
@@ -61,11 +62,12 @@ function onPopState() {
 watch(isOpen, (opened) => {
   if (!import.meta.client) return
   if (opened) {
+    confirmed.value = false
     history.pushState({ [HISTORY_KEY]: true }, '')
     window.addEventListener('popstate', onPopState)
   } else {
     window.removeEventListener('popstate', onPopState)
-    if (history.state?.[HISTORY_KEY]) history.back()
+    if (!confirmed.value && history.state?.[HISTORY_KEY]) history.back()
   }
 })
 

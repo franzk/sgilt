@@ -1,5 +1,5 @@
 <template>
-  <SgiltDialog v-model:open="open" :title="$t('tunnel.bottom-sheet.title')" max-width="520px">
+  <SgiltDialog v-model:open="open" v-model:confirmed="confirmed" :title="$t('tunnel.bottom-sheet.title')" max-width="520px">
     <div class="contact-form">
       <!-- Résumé événement (lecture seule) -->
       <div v-if="flowPayload" class="event-summary">
@@ -44,6 +44,7 @@ import { addReservation } from '~/data/evenement/service/evenementService'
 const props = defineProps<{ prestataireName: string; prestataireId: string }>()
 
 const open = defineModel<boolean>('open', { required: true })
+const confirmed = ref(false)
 
 const { flowPayload, onFlowSuccess } = useFlow()
 
@@ -54,6 +55,7 @@ async function submit() {
   sending.value = true
   try {
     await addReservation(flowPayload.value.id, props.prestataireId, message.value || null)
+    confirmed.value = true
     open.value = false
     onFlowSuccess()
   } finally {
