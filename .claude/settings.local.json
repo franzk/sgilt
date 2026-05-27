@@ -33,7 +33,9 @@
       "PowerShell(Set-Content *)",
       "Bash(xxd \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-core\\\\src\\\\main\\\\java\\\\net\\\\franzka\\\\sgilt\\\\core\\\\reservation\\\\api\\\\ReservationApi.java\")",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front\" -Directory)",
-      "Bash(Select-Object Name)"
+      "Bash(Select-Object Name)",
+      "Bash(python3 *)",
+      "Bash(node *)"
     ]
   }
 }

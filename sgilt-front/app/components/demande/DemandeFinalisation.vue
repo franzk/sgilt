@@ -4,17 +4,8 @@
 
     <div class="hero">
       <div class="icon">✉️</div>
-      <h2 class="title">
-        {{
-          isDirectFlow
-            ? $t('tunnel.finalisation.title-sent')
-            : $t('tunnel.finalisation.title-confirm')
-        }}
-      </h2>
-      <div v-if="!isDirectFlow" class="cta">
-        <p class="cta-text">{{ $t('tunnel.finalisation.cta-text', { name: prestataireName }) }}</p>
-      </div>
-      <SgiltButton v-else @click="navigateTo('/app')">{{
+      <h2 class="title">{{ $t('tunnel.finalisation.title-sent') }}</h2>
+      <SgiltButton @click="navigateTo('/app')">{{
         $t('tunnel.finalisation.see-event')
       }}</SgiltButton>
     </div>
@@ -31,14 +22,10 @@ import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 defineProps<{ prestataireName: string }>()
 defineEmits<{ close: [] }>()
 
-const { currentFlow, onFlowSuccess } = useFlow()
-// Capture the flow before onFlowSuccess clears it
-const isNewEventFlow = currentFlow.value === 'new-event'
-const isAddPrestataireFlow = currentFlow.value === 'add-prestataire'
-const isDirectFlow = isNewEventFlow || isAddPrestataireFlow
+const { onFlowSuccess } = useFlow()
 
 onMounted(() => {
-  if (isDirectFlow) onFlowSuccess()
+  onFlowSuccess()
 })
 </script>
 
