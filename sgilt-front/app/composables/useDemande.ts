@@ -52,6 +52,7 @@ function defaultDemandeState(): DemandeState {
     prestataireId: null,
     prestataireName: '',
     prestataireImage: '',
+    prestataireSlug: '',
     eventType: null,
     eventTypeAutre: '',
     ambiance: null,
@@ -98,15 +99,6 @@ if (import.meta.client) {
 // ── Composable ────────────────────────────────────────────────────────────────
 
 export function useDemande() {
-  // dateModel (URL) est la source de vérité pour la date — state.date suit
-  const { dateModel } = useSearchUi()
-  watch(
-    dateModel,
-    (d) => {
-      state.date = d
-    },
-    { immediate: true },
-  )
 
   function next() {
     if (etapeActuelle.value < 6) {
@@ -138,10 +130,12 @@ export function useDemande() {
     clearStorage()
   }
 
-  function setPrestataire(id: string, name: string, image: string) {
+  function initDemande(id: string, name: string, image: string, slug: string, date: Date | undefined) {
     state.prestataireId = id
     state.prestataireName = name
     state.prestataireImage = image
+    state.prestataireSlug = slug
+    state.date = date
   }
 
   async function submit() {
@@ -245,7 +239,7 @@ export function useDemande() {
     submitting,
     submitError,
     state,
-    setPrestataire,
+    initDemande,
     next,
     back,
     goTo,

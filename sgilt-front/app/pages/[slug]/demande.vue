@@ -50,13 +50,22 @@ const noFlowWarning = ref(false)
 onMounted(() => {
   if (currentFlow.value === null) {
     if (!isAuthenticated.value) {
-      navigateTo(`/${slug}`)
+      if (state.prestataireSlug !== slug || !state.date) {
+        // Si l'utilisateur n'est pas authentifié et qu'il n'y a pas de prestataire ou de date dans le store,
+        // on le redirige vers la page du prestataire pour qu'il puisse initier une demande
+        navigateTo(`/${slug}`)
+        return
+      }
     } else {
+      // Si l'utilisateur est authentifié mais qu'il n'y a pas de flow en cours, on affiche un message d'erreur
       noFlowWarning.value = true
+      return
     }
-    return
   }
+
   if (etapeActuelle.value === 1 && state.eventType && state.eventType.toUpperCase() !== 'AUTRE') {
+    // on saute l'étape de sélection du type d'événement si elle a déjà été saisie au début du parcours
+    // et qu'elle n'est pas "Autre"
     goTo(2)
   }
 })

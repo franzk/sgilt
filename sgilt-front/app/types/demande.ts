@@ -30,6 +30,7 @@ export interface DemandeState {
   prestataireId: string | null
   prestataireName: string
   prestataireImage: string
+  prestataireSlug: string
   eventType: string | null
   eventTypeAutre: string
   ambiance: string | null

@@ -23,7 +23,6 @@
 <script setup lang="ts">
 import PrestataireDetails from '~/components/prestataire/PrestataireDetails.vue'
 import FinalisationAddPrestataire from '~/components/prestataire/FinalisationAddPrestataire.vue'
-import { toISODate } from '~/utils/dateUtils'
 import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDetail'
 import { usePrestataire } from '~/data/prestataire/usePrestataire'
 
@@ -47,11 +46,9 @@ function onSelect(p: PrestataireDetail) {
     return
   }
 
-  useDemande().setPrestataire(p.id, p.name, p.image)
-  navigateTo({
-    path: `/${p.slug}/demande`,
-    query: dateModel.value ? { date: toISODate(dateModel.value) } : undefined,
-  })
+  useDemande().initDemande(p.id, p.name, p.image, p.slug, dateModel.value)
+
+  navigateTo(`/${p.slug}/demande`)
 }
 </script>
 
