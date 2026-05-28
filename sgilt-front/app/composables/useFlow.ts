@@ -57,14 +57,6 @@ const currentFlow = ref<Flow>(_stored?.current ?? null)
 const flowPayload = ref<any>(_stored?.payload ?? null)
 const flowLabel = ref<string | null>(_stored?.label ?? null)
 
-// Persistance réactive : toute modification de l'état est écrite en storage.
-if (import.meta.client) {
-  watch(
-    [currentFlow, flowPayload, flowLabel],
-    () => writeStorage(currentFlow.value, flowPayload.value, flowLabel.value),
-    { deep: true },
-  )
-}
 
 // ── Composable ────────────────────────────────────────────────────────────────
 
@@ -119,6 +111,7 @@ export function useFlow() {
     currentFlow.value = flow
     flowPayload.value = payload ?? null
     flowLabel.value = label
+    writeStorage(flow, payload ?? null, label)
     flows[flow].start()
   }
 

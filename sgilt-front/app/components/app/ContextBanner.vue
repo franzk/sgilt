@@ -18,8 +18,14 @@
 <script setup lang="ts">
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 
-const { flowLabel, abort } = useFlow()
+const { flowLabel, abort: abortFlow } = useFlow()
+const { reset: resetDemande } = useDemande()
 const abortOpen = ref(false)
+
+function abort() {
+  resetDemande()
+  abortFlow()
+}
 </script>
 
 <style scoped lang="scss">

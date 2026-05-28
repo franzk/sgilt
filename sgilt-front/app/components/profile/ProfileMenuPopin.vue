@@ -83,6 +83,7 @@ function close() {
 
 async function logout() {
   useFlow().reset()
+  useDemande().reset()
   await useKeycloak().logout()
 }
 </script>

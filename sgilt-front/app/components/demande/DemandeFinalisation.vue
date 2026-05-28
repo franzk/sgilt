@@ -5,9 +5,12 @@
     <div class="hero">
       <div class="icon">✉️</div>
       <h2 class="title">{{ $t('tunnel.finalisation.title-sent') }}</h2>
-      <SgiltButton @click="navigateTo('/app')">{{
+      <SgiltButton v-if="isAuthenticated" @click="handleSeeEvent">{{
         $t('tunnel.finalisation.see-event')
       }}</SgiltButton>
+      <div v-else class="cta">
+        <p class="cta-text">{{ $t('tunnel.finalisation.cta-text', { name: prestataireName }) }}</p>
+      </div>
     </div>
 
     <div class="recap">
@@ -22,11 +25,18 @@ import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 defineProps<{ prestataireName: string }>()
 defineEmits<{ close: [] }>()
 
-const { onFlowSuccess } = useFlow()
+const { currentFlow, onFlowSuccess } = useFlow()
+const { reset: resetDemande } = useDemande()
+const { isAuthenticated } = useKeycloak()
 
-onMounted(() => {
-  onFlowSuccess()
-})
+function handleSeeEvent() {
+  resetDemande()
+  if (currentFlow.value) {
+    onFlowSuccess()
+  } else {
+    navigateTo('/app')
+  }
+}
 </script>
 
 <style scoped lang="scss">
