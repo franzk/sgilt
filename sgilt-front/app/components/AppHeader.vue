@@ -1,7 +1,7 @@
 <template>
   <header class="app-header" :class="{ 'no-shadow': hideShadow }">
     <h1 class="logo" tabindex="0">
-      <NuxtLink :to="showNotifications ? '/app/events' : '/'">
+      <NuxtLink :to="logoLink">
         <img src="/sgilt-logo.svg" alt="SGILT" />
       </NuxtLink>
     </h1>
@@ -40,12 +40,16 @@ import ProfileMenuPopin from '~/components/profile/ProfileMenuPopin.vue'
 import UserAvatar from '~/components/basics/UserAvatar.vue'
 import { UserIcon } from '@remixicons/vue/line'
 
-defineProps<{ showNotifications?: boolean }>()
+defineProps<{
+  showNotifications?: boolean
+}>()
 
 const avatarRef = ref<HTMLElement | null>(null)
 const profileOpen = ref(false)
 
 const { isAuthenticated, login } = useKeycloak()
+
+const logoLink = computed(() => (isAuthenticated.value ? '/app' : '/'))
 
 const ROUTES_WITHOUT_SHADOW_MOBILE = ['/', '/search']
 const route = useRoute()
@@ -61,7 +65,7 @@ const hideShadow = computed(
 )
 
 function handleLogin() {
-  login({ redirectUri: window.location.origin + '/app/events' })
+  login({ redirectUri: window.location.origin + '/app' })
 }
 </script>
 

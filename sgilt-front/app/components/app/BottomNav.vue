@@ -1,34 +1,22 @@
 <template>
   <nav class="bottom-nav">
+    <NuxtLink to="/app" class="item" :class="{ active: isHomeActive }">
+      <Home2Icon class="icon" />
+      <span class="label">{{ $t('nav.home') }}</span>
+    </NuxtLink>
+
     <NuxtLink to="/app/events" class="item" :class="{ active: isEventsActive }">
       <CalendarEventIcon class="icon" />
       <span class="label">{{ $t('nav.events') }}</span>
-    </NuxtLink>
-
-    <NuxtLink
-      to="/account/notifications"
-      class="item"
-      :class="{ active: route.path.startsWith('/account/notifications') }"
-    >
-      <BellIcon class="icon" />
-      <span class="label">{{ $t('nav.notifications') }}</span>
-    </NuxtLink>
-
-    <NuxtLink
-      to="/app/profile"
-      class="item"
-      :class="{ active: route.path.startsWith('/app/profile') }"
-    >
-      <UserIcon class="icon" />
-      <span class="label">{{ $t('nav.profile') }}</span>
     </NuxtLink>
   </nav>
 </template>
 
 <script setup lang="ts">
-import { CalendarEventIcon, UserIcon, BellIcon } from '@remixicons/vue/line'
+import { CalendarEventIcon, Home2Icon } from '@remixicons/vue/line'
 
 const route = useRoute()
+const isHomeActive = computed(() => route.path === '/app')
 const isEventsActive = computed(() => route.path.startsWith('/app/events'))
 </script>
 
@@ -49,6 +37,10 @@ $nav-h: $bottom-nav-h;
   align-items: stretch;
   background: #fff;
   border-top: 1px solid $divider-color;
+
+  @media (min-width: $breakpoint-desktop) {
+    display: none;
+  }
 
   .item {
     flex: 1;

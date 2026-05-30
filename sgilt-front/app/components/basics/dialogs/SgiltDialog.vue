@@ -3,6 +3,7 @@
   <SgiltBottomSheet
     v-if="isMobile"
     v-model:open="open"
+    v-model:confirmed="confirmed"
     :title="title"
     :description="description"
     overlay
@@ -47,6 +48,7 @@ import SgiltBottomSheet from '~/components/basics/sheets/SgiltBottomSheet.vue'
 import { useDevice } from '~/composables/useDevice'
 
 const open = defineModel<boolean>('open', { required: true })
+const confirmed = defineModel<boolean>('confirmed', { default: false })
 
 const props = defineProps<{
   title: string

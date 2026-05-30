@@ -2,9 +2,11 @@ package net.franzka.sgilt.core.reservation.mapper;
 
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
+import net.franzka.sgilt.core.reservation.dto.ActiveReservationItemDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.ValueMapping;
 
 @Mapper(componentModel = "spring")
@@ -27,4 +29,18 @@ public interface ReservationMapper {
     @Mapping(source = "prestataire.categoryKey", target = "category")
     @Mapping(target = "unreadNotesCount",        constant = "0")
     ReservationSummaryDto toSummaryDto(Reservation reservation);
+
+    @Mapping(source = "id",                                        target = "reservationId")
+    @Mapping(source = "evenement.id",                              target = "evenementId")
+    @Mapping(source = "evenement.title",                           target = "evenementTitle")
+    @Mapping(source = "prestataire.slug",                          target = "prestataireSlug")
+    @Mapping(source = "prestataire.name",                          target = "prestataireName")
+    @Mapping(source = "prestataire",                               target = "prestataireAvatar", qualifiedByName = "resolveAvatar")
+    @Mapping(source = "status",                                    target = "status")
+    ActiveReservationItemDto toActiveItemDto(Reservation reservation);
+
+    @Named("resolveAvatar")
+    default String resolveAvatar(net.franzka.sgilt.core.prestataire.domain.Prestataire prestataire) {
+        return prestataire.getAvatar() != null ? prestataire.getAvatar() : prestataire.getHeroImage();
+    }
 }

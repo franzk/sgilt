@@ -4,19 +4,13 @@
 
     <div class="hero">
       <div class="icon">✉️</div>
-      <h2 class="title">
-        {{
-          isNewEventFlow
-            ? $t('tunnel.finalisation.title-sent')
-            : $t('tunnel.finalisation.title-confirm')
-        }}
-      </h2>
-      <div v-if="!isNewEventFlow" class="cta">
-        <p class="cta-text">{{ $t('tunnel.finalisation.cta-text', { name: prestataireName }) }}</p>
-      </div>
-      <SgiltButton v-else @click="navigateTo('/app/events')">{{
+      <h2 class="title">{{ $t('tunnel.finalisation.title-sent') }}</h2>
+      <SgiltButton v-if="isAuthenticated" @click="handleSeeEvent">{{
         $t('tunnel.finalisation.see-event')
       }}</SgiltButton>
+      <div v-else class="cta">
+        <p class="cta-text">{{ $t('tunnel.finalisation.cta-text', { name: prestataireName }) }}</p>
+      </div>
     </div>
 
     <div class="recap">
@@ -32,12 +26,17 @@ defineProps<{ prestataireName: string }>()
 defineEmits<{ close: [] }>()
 
 const { currentFlow, onFlowSuccess } = useFlow()
-// Capture the flow before onFlowSuccess clears it
-const isNewEventFlow = currentFlow.value === 'new-event'
+const { reset: resetDemande } = useDemande()
+const { isAuthenticated } = useKeycloak()
 
-onMounted(() => {
-  if (isNewEventFlow) onFlowSuccess()
-})
+function handleSeeEvent() {
+  resetDemande()
+  if (currentFlow.value) {
+    onFlowSuccess()
+  } else {
+    navigateTo('/app')
+  }
+}
 </script>
 
 <style scoped lang="scss">

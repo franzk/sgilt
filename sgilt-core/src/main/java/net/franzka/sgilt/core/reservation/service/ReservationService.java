@@ -6,6 +6,8 @@ import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.reservation.domain.Note;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
+import net.franzka.sgilt.core.reservation.dto.ActiveReservationItemDto;
+import net.franzka.sgilt.core.reservation.dto.ActiveReservationsDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
 import net.franzka.sgilt.core.reservation.dto.ReservationMetaDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
@@ -19,6 +21,7 @@ import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -34,6 +37,30 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final NoteRepository noteRepository;
     private final ReservationMapper reservationMapper;
+
+    /**
+     * Retourne les demandes actives (NEW et IN_DISCUSSION) de l'utilisateur, triées NEW en premier,
+     * ainsi qu'un indicateur de présence d'au moins une réservation CONFIRMED.
+     * Utilisé par la home de l'espace client.
+     *
+     * @param utilisateurId l'identifiant de l'utilisateur connecté
+     * @return le wrapper contenant les items et le flag hasConfirmed
+     */
+    public ActiveReservationsDto getActiveReservations(UUID utilisateurId) {
+        List<Reservation> pending = reservationRepository.findByUtilisateurIdAndStatusIn(
+                utilisateurId,
+                List.of(ReservationStatus.NEW, ReservationStatus.IN_DISCUSSION)
+        );
+        boolean hasConfirmed = reservationRepository.existsByUtilisateurIdAndStatus(
+                utilisateurId,
+                ReservationStatus.CONFIRMED
+        );
+        List<ActiveReservationItemDto> items = pending.stream()
+                .sorted(Comparator.comparing(r -> r.getStatus() == ReservationStatus.NEW ? 0 : 1))
+                .map(reservationMapper::toActiveItemDto)
+                .toList();
+        return new ActiveReservationsDto(items, hasConfirmed);
+    }
 
     /**
      * Retourne le nombre de réservations nouvelles, confirmées et en discussion pour un événement.
@@ -201,4 +228,5 @@ public class ReservationService {
     private int count(List<Reservation> reservations, ReservationStatus status) {
         return (int) reservations.stream().filter(r -> status.equals(r.getStatus())).count();
     }
+
 }

@@ -185,7 +185,7 @@ class ConfirmationAccountIT extends BaseIntegrationTest {
         Note note = noteRepository.findAll().getFirst();
         assertThat(note.getTitle()).isEqualTo("Demande de réservation");
         assertThat(note.getContent()).isEqualTo(message);
-        assertThat(note.getHidden()).isFalse();
+        assertThat(note.getIsPersonal()).isFalse();
     }
 
     @Test

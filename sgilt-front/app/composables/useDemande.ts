@@ -52,6 +52,7 @@ function defaultDemandeState(): DemandeState {
     prestataireId: null,
     prestataireName: '',
     prestataireImage: '',
+    prestataireSlug: '',
     eventType: null,
     eventTypeAutre: '',
     ambiance: null,
@@ -86,28 +87,38 @@ const state = reactive<DemandeState>({
   ...(_stored?.state ?? {}),
 })
 
-// Persist on every change (client only, runs for the lifetime of the app)
-if (import.meta.client) {
-  watch(
+// ── Persistance réactive ──────────────────────────────────────────────────────
+// Le watcher écrit dans le sessionStorage à chaque modification de l'état ou de
+// l'étape, pour que l'utilisateur retrouve sa progression en cas de refresh.
+//
+// On expose start/stop plutôt qu'un watcher nu parce que reset() doit muter
+// l'état ET vider le storage de façon atomique. Sans ça, le watcher (asynchrone
+// par défaut avec flush:'pre') se déclenche après clearStorage() et réécrit les
+// valeurs par défaut — la clé réapparaît aussitôt supprimée. En coupant le
+// watcher avant les mutations et en le relançant après, on garantit qu'aucune
+// écriture parasite ne vient contredire le clearStorage().
+
+// Référence vers la fonction d'arrêt retournée par watch() — null si le watcher
+// n'est pas encore démarré ou a été stoppé (ex. pendant un reset()).
+let _stopPersistWatcher: (() => void) | null = null
+
+// Démarre le watcher et stocke son handle d'arrêt.
+// Appelé au boot du module, puis après chaque reset().
+function _startPersistWatcher() {
+  _stopPersistWatcher = watch(
     [etapeActuelle, () => toRaw(state)],
     () => writeStorage(toRaw(state), etapeActuelle.value),
     { deep: true },
   )
 }
 
+if (import.meta.client) {
+  _startPersistWatcher()
+}
+
 // ── Composable ────────────────────────────────────────────────────────────────
 
 export function useDemande() {
-  // dateModel (URL) est la source de vérité pour la date — state.date suit
-  const { dateModel } = useSearchUi()
-  watch(
-    dateModel,
-    (d) => {
-      state.date = d
-    },
-    { immediate: true },
-  )
-
   function next() {
     if (etapeActuelle.value < 6) {
       direction.value = 'forward'
@@ -130,18 +141,28 @@ export function useDemande() {
   }
 
   function reset() {
+    _stopPersistWatcher?.()
     Object.assign(state, defaultDemandeState())
     etapeActuelle.value = 1
     direction.value = 'forward'
     submitted.value = false
     useSearchUi().dateModel.value = undefined
     clearStorage()
+    _startPersistWatcher()
   }
 
-  function setPrestataire(id: string, name: string, image: string) {
+  function initDemande(
+    id: string,
+    name: string,
+    image: string,
+    slug: string,
+    date: Date | undefined,
+  ) {
     state.prestataireId = id
     state.prestataireName = name
     state.prestataireImage = image
+    state.prestataireSlug = slug
+    state.date = date
   }
 
   async function submit() {
@@ -245,7 +266,7 @@ export function useDemande() {
     submitting,
     submitError,
     state,
-    setPrestataire,
+    initDemande,
     next,
     back,
     goTo,
