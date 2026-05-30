@@ -324,8 +324,6 @@
     }
   },
   "events": {
-    "welcome": "Bonjour {name} !",
-    "welcome-night": "Bonsoir {name} !",
     "count": "Vous préparez {n} événement. | Vous préparez {n} événements.",
     "create": "Créer un événement",
     "empty": "Aucun événement pour le moment.",
@@ -790,6 +788,8 @@
     }
   },
   "home": {
+    "welcome": "Bonjour {name} !",
+    "welcome-night": "Bonsoir {name} !",
     "subtitle": "On garde le fil de vos préparatifs.",
     "events-count": "Vous avez {n} événement en cours. | Vous avez {n} événements en cours.",
     "section-active": "Vos préparatifs en cours",

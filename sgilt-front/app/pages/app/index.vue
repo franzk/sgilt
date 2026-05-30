@@ -183,8 +183,8 @@ const currentUser = useCurrentUser()
 // ── Salutation ────────────────────────────────────────────────────────────────
 const greetingText = computed(() => {
   const h = new Date().getHours()
-  const salut = h >= 6 && h < 18 ? 'Bonjour' : 'Bonsoir'
-  return currentUser.firstName ? `${salut} ${currentUser.firstName}.` : `${salut}.`
+  const key = h >= 6 && h < 18 ? 'home.welcome' : 'home.welcome-night'
+  return t(key, { name: currentUser.firstName ?? '' })
 })
 
 // ── Demandes actives ──────────────────────────────────────────────────────────
