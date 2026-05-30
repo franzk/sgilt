@@ -16,9 +16,13 @@
             <div class="hero__left">
               <span class="badge">
                 <CheckboxCircleIcon class="badge__icon" />
-                Dernière étape
+                {{ $t('confirmation.badge') }}
               </span>
-              <h1 class="hero__title">Votre espace<br />est prêt 🔑</h1>
+              <h1 class="hero__title">
+                {{ $t('confirmation.hero-title-line1') }}<br />{{
+                  $t('confirmation.hero-title-line2')
+                }}
+              </h1>
             </div>
 
             <div class="hero__illustration" aria-hidden="true">
@@ -26,24 +30,23 @@
             </div>
           </div>
 
-          <p class="hero__sub">
-            Créez votre mot de passe pour sécuriser votre espace Sgilt. Une fois validé, votre
-            demande sera envoyée au prestataire et vous pourrez la suivre depuis votre événement.
-          </p>
+          <p class="hero__sub">{{ $t('confirmation.hero-sub') }}</p>
         </div>
 
         <!-- ── Card formulaire ─────────────────────────────────────────────────── -->
         <div class="card-wrapper">
           <form class="card" @submit.prevent="submit">
             <div class="card__header">
-              <h2 class="card__title">Créez votre accès</h2>
-              <p class="card__subtitle">Cet espace vous appartient.</p>
+              <h2 class="card__title">{{ $t('confirmation.form.card-title') }}</h2>
+              <p class="card__subtitle">{{ $t('confirmation.form.card-subtitle') }}</p>
             </div>
 
             <div class="email-row">
               <UserIcon class="email-row__icon" />
               <div class="email-row__text">
-                <span class="email-row__label">Connecté avec</span>
+                <span class="email-row__label">{{
+                  $t('confirmation.form.email-connected-label')
+                }}</span>
                 <span class="email-row__value">{{ email }}</span>
               </div>
             </div>
@@ -62,7 +65,11 @@
                 <button
                   type="button"
                   class="eye-btn"
-                  :aria-label="showPassword ? 'Masquer' : 'Afficher'"
+                  :aria-label="
+                    showPassword
+                      ? $t('confirmation.form.hide-password')
+                      : $t('confirmation.form.show-password')
+                  "
                   @click="showPassword = !showPassword"
                 >
                   <EyeOffIcon v-if="showPassword" />
@@ -105,15 +112,13 @@
             <p v-if="submitError" class="submit-error">{{ submitError }}</p>
 
             <button class="btn-submit" type="submit" :disabled="submitting">
-              ✨ {{ submitting ? $t('common.saving') : 'Ouvrir mon espace' }}
+              ✨ {{ submitting ? $t('common.saving') : $t('confirmation.form.cta') }}
             </button>
 
-            <p class="hint">
-              Vous pourrez revenir à votre espace sans repasser par le lien reçu par email.
-            </p>
+            <p class="hint">{{ $t('confirmation.form.hint') }}</p>
           </form>
 
-          <p class="security-note">🔒 Vos données sont sécurisées et confidentielles.</p>
+          <p class="security-note">🔒 {{ $t('confirmation.form.security-note') }}</p>
         </div>
       </div>
     </template>
@@ -127,10 +132,11 @@ import { confirmOnboardingAccount } from '~/data/onboarding/api/onboardingApi'
 import type { VerifyTokenResponseDto } from '~/data/onboarding/dto/OnboardingDto'
 import OnboardingSuccess from '~/assets/svg/OnboardingSuccess.vue'
 
-definePageMeta({ layout: 'app' })
-
 const route = useRoute()
 const { t } = useI18n()
+
+definePageMeta({ layout: 'app' })
+useHead(() => ({ title: t('confirmation.page-title') }))
 
 const token = Array.isArray(route.query.token) ? route.query.token[0] : route.query.token
 
