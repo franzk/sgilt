@@ -15,11 +15,11 @@
     <div class="cover-banner__bottom">
       <div class="cover-banner__info">
         <span class="cover-banner__category">
-          <span v-if="loading" class="skeleton skeleton--sm" />
+          <Sk v-if="loading" width="80px" height="10px" radius="4px" light />
           <template v-else>{{ reservation?.category }}</template>
         </span>
         <span class="cover-banner__name">
-          <span v-if="loading" class="skeleton skeleton--lg" />
+          <Sk v-if="loading" width="200px" height="28px" radius="4px" light />
           <template v-else>{{ reservation?.prestataireName }}</template>
         </span>
       </div>
@@ -30,7 +30,7 @@
       >
         {{ $t(`reservation.statut.${reservation.status}`) }}
       </span>
-      <span v-else-if="loading" class="skeleton skeleton--badge" />
+      <Sk v-else-if="loading" width="60px" height="20px" radius="2rem" light />
     </div>
   </div>
 </template>
@@ -38,6 +38,7 @@
 <script setup lang="ts">
 import { getStatusOverlayStyle } from '~/constants/reservation-status'
 import type { ReservationMeta } from '~/data/reservation/domain/ReservationMeta'
+import Sk from '~/components/basics/Sk.vue'
 
 defineProps<{
   reservation: ReservationMeta | null
@@ -161,19 +162,4 @@ $desktop: $breakpoint-desktop;
   &:active { color: #fff; }
 }
 
-.skeleton {
-  display: inline-block;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.25);
-  animation: shimmer 1.4s infinite;
-
-  &--sm  { width: 80px;  height: 10px; }
-  &--lg  { width: 200px; height: 28px; }
-  &--badge { width: 60px; height: 20px; border-radius: 2rem; }
-}
-
-@keyframes shimmer {
-  0%, 100% { opacity: 0.5; }
-  50%       { opacity: 1;   }
-}
 </style>

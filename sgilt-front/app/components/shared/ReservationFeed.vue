@@ -42,7 +42,7 @@
     <!-- ── Skeleton ─────────────────────────────────────────────────────────── -->
     <template v-if="loading">
       <div class="feed__skeleton">
-        <div v-for="i in 3" :key="i" class="feed__skeleton-item skeleton-text" />
+        <Sk v-for="i in 3" :key="i" height="80px" radius="10px" />
       </div>
     </template>
 
@@ -159,6 +159,7 @@ import type { FeedItem } from '~/types/event'
 import NoteCard from '~/components/app/NoteCard.vue'
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
+import Sk from '~/components/basics/Sk.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -292,11 +293,6 @@ $desktop: $breakpoint-desktop;
     display: flex;
     flex-direction: column;
     gap: $spacing-s;
-  }
-
-  &__skeleton-item {
-    height: 80px;
-    border-radius: $radius-md;
   }
 
   // ── Header ─────────────────────────────────────────────────────────────────

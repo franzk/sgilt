@@ -42,13 +42,10 @@
     <!-- Skeleton -->
     <div v-else class="events-list">
       <div v-for="i in 2" :key="i" class="event-card-skeleton">
-        <div class="event-card-skeleton__cover skeleton-text" />
+        <Sk class="event-card-skeleton__cover" />
         <div class="event-card-skeleton__footer">
-          <div class="skeleton-text" style="width: 60%; height: 1.2rem; border-radius: 4px" />
-          <div
-            class="skeleton-text"
-            style="width: 40%; height: 0.85rem; border-radius: 4px; margin-top: 6px"
-          />
+          <Sk width="60%" height="1.2rem" radius="4px" />
+          <Sk width="40%" height="0.85rem" radius="4px" style="margin-top: 6px" />
         </div>
       </div>
     </div>
@@ -60,6 +57,7 @@ import type { EventSummary } from '~/data/evenement/domain/EventSummary'
 import { useEvenements } from '~/data/evenement/useEvenements'
 import { BANK_IMAGE_PATHS } from '~/utils/eventCovers'
 import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
+import Sk from '~/components/basics/Sk.vue'
 
 definePageMeta({ layout: 'app' })
 

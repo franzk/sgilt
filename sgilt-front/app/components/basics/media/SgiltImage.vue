@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ImageIcon } from '@remixicons/vue/line'
+import Sk from '~/components/basics/Sk.vue'
 
 const props = defineProps<{
   src?: string
@@ -25,7 +26,7 @@ watch(
 
 <template>
   <div class="sgilt-image-container" :class="{ 'is-loading': !isLoaded && !hasError }">
-    <div v-if="!isLoaded && !hasError" class="image-skeleton shimmer-container"></div>
+    <Sk v-if="!isLoaded && !hasError" class="image-skeleton" />
 
     <div v-if="hasError" class="image-error">
       <ImageIcon />
@@ -58,6 +59,9 @@ watch(
     position: absolute;
     inset: 0;
     z-index: 1;
+    width: auto;
+    height: auto;
+    border-radius: 0;
   }
 
   img {

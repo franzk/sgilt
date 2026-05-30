@@ -22,8 +22,8 @@
     <!-- SSR fallback -->
     <template #fallback>
       <div class="select-skeleton">
-        <div class="skeleton-icon" />
-        <div class="skeleton-text" />
+        <Sk width="1.5rem" height="1.5rem" radius="6px" />
+        <Sk />
       </div>
     </template>
   </ClientOnly>
@@ -33,6 +33,7 @@
 import SgiltSelectDesktop from './SgiltSelectDesktop.vue'
 import SgiltSelectMobile from './SgiltSelectMobile.vue'
 import { useDevice } from '~/composables/useDevice'
+import Sk from '~/components/basics/Sk.vue'
 
 const modelValue = defineModel<string>()
 
@@ -60,6 +61,22 @@ $left-icon-width: 2.5rem;
 // style
 .sgilt-select {
   width: 100%;
+}
+
+.select-skeleton {
+  width: 100%;
+  height: 3.5rem;
+  border-radius: 0.875rem;
+  background: #f4f4f4;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1rem;
+  box-shadow:
+    0 0.0625rem 0 rgba(0, 0, 0, 0.04),
+    0 0.5rem 1.25rem rgba(0, 0, 0, 0.05);
+  overflow: hidden;
 }
 
 // Style du bouton qui ouvre le menu

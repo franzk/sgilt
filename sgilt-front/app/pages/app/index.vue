@@ -5,11 +5,7 @@
       <p v-if="!currentUser.loading" class="home-page__greeting">
         {{ greetingText }}
       </p>
-      <div
-        v-else
-        class="skeleton-text shimmer-container home-page__greeting-skeleton"
-        aria-hidden="true"
-      />
+      <Sk v-else class="home-page__greeting-skeleton" aria-hidden="true" />
       <p class="home-page__subtitle">{{ $t('home.subtitle') }}</p>
       <p class="create-btn-mobile-wrapper">
         <button
@@ -42,7 +38,7 @@
 
         <!-- Chargement -->
         <div v-if="loadingActive" class="home-page__skeletons">
-          <div v-for="i in 2" :key="i" class="demande-skeleton shimmer-container" />
+          <Sk v-for="i in 2" :key="i" class="demande-skeleton" />
         </div>
 
         <!-- Demandes en suspens -->
@@ -163,8 +159,8 @@
 
       <!-- Skeleton -->
       <template v-else>
-        <div class="event-card-skeleton shimmer-container" />
-        <div v-for="i in 2" :key="i" class="event-small-skeleton shimmer-container" />
+        <Sk class="event-card-skeleton" />
+        <Sk v-for="i in 2" :key="i" class="event-small-skeleton" />
       </template>
     </div>
   </div>
@@ -176,6 +172,7 @@ import EventItem from '~/components/app/EventItem.vue'
 import { useActiveReservations } from '~/data/reservation/useActiveReservations'
 import { useEvenements } from '~/data/evenement/useEvenements'
 import type { EventSummary } from '~/data/evenement/domain/EventSummary'
+import Sk from '~/components/basics/Sk.vue'
 
 definePageMeta({ layout: 'app' })
 useHead({ title: 'Accueil' })
@@ -296,6 +293,7 @@ $desktop: $breakpoint-desktop;
   height: 2.3rem;
   width: 15rem;
   border-radius: 4px;
+  margin-top: 4px;
 }
 
 .home-page__subtitle {
@@ -486,7 +484,7 @@ $desktop: $breakpoint-desktop;
   }
 }
 
-// ── Skeleton demandes ─────────────────────────────────────────────────────────
+// ── Skeleton ──────────────────────────────────────────────────────────────────
 .demande-skeleton {
   height: 72px;
   border-radius: $radius-lg;
@@ -546,4 +544,5 @@ $desktop: $breakpoint-desktop;
   height: 64px;
   border-radius: $radius-lg;
 }
+
 </style>

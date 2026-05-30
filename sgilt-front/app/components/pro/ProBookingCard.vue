@@ -2,25 +2,19 @@
   <!-- Skeleton -->
   <div v-if="skeleton" class="booking-card skeleton">
     <div class="left">
-      <div class="photo skeleton-text" />
-      <div
-        class="skeleton-text"
-        style="width: 80%; height: 0.85rem; border-radius: 4px; margin-top: 8px"
-      />
+      <Sk width="56px" height="56px" radius="50%" />
+      <Sk width="80%" height="0.85rem" radius="4px" style="margin-top: 8px" />
     </div>
     <div class="right">
       <div class="right-row">
-        <div class="skeleton-text" style="width: 90px; height: 0.8rem; border-radius: 3px" />
+        <Sk width="90px" height="0.8rem" radius="3px" />
       </div>
       <div class="right-row">
-        <div class="skeleton-text" style="width: 75%; height: 0.8rem; border-radius: 4px" />
+        <Sk width="75%" height="0.8rem" radius="4px" />
       </div>
       <div class="right-row last-row">
-        <div class="skeleton-text" style="width: 55%; height: 0.65rem; border-radius: 3px" />
-        <div
-          class="skeleton-text"
-          style="width: 70%; height: 0.85rem; border-radius: 4px; margin-top: 4px"
-        />
+        <Sk width="55%" height="0.65rem" radius="3px" />
+        <Sk width="70%" height="0.85rem" radius="4px" style="margin-top: 4px" />
       </div>
     </div>
   </div>
@@ -76,6 +70,7 @@
 
 <script setup lang="ts">
 import BadgeableComponent from '~/components/basics/BadgeableComponent.vue'
+import Sk from '~/components/basics/Sk.vue'
 import type { ProDemandeSummary } from '~/types/event'
 import { STATUTS_AVEC_ACTION } from '~/constants/reservation-status'
 import { CalendarEventIcon, CheckboxCircleIcon, PhoneIcon } from '@remixicons/vue/line'

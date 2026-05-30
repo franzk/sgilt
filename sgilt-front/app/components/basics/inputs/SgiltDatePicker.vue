@@ -38,20 +38,20 @@
     <template #fallback>
       <div v-if="inline" class="calendar-skeleton">
         <div class="calendar-skeleton__header">
-          <div class="skeleton-nav" />
-          <div class="skeleton-month" />
-          <div class="skeleton-nav" />
+          <Sk width="1.75rem" height="1.75rem" radius="0.4rem" />
+          <Sk width="8rem" height="1rem" radius="0.4rem" />
+          <Sk width="1.75rem" height="1.75rem" radius="0.4rem" />
         </div>
         <div class="calendar-skeleton__weekdays">
-          <div v-for="i in 7" :key="i" class="skeleton-weekday" />
+          <Sk v-for="i in 7" :key="i" height="0.75rem" radius="0.3rem" />
         </div>
         <div class="calendar-skeleton__grid">
-          <div v-for="i in 35" :key="i" class="skeleton-cell shimmer-container" />
+          <Sk v-for="i in 35" :key="i" radius="0.5rem" class="calendar-cell" />
         </div>
       </div>
       <div v-else class="select-skeleton">
-        <div class="skeleton-icon" />
-        <div class="skeleton-text" />
+        <Sk width="1.5rem" height="1.5rem" radius="6px" />
+        <Sk />
       </div>
     </template>
   </ClientOnly>
@@ -59,6 +59,7 @@
 
 <script setup lang="ts">
 import { VueDatePicker } from '@vuepic/vue-datepicker'
+import Sk from '~/components/basics/Sk.vue'
 import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
 import { fr } from 'date-fns/locale/fr'
@@ -332,7 +333,21 @@ $menu-background:
 
 // ─── Skeleton inline ──────────────────────────────────────────────────────────
 
-$skeleton-color: rgba(0, 0, 0, 0.07);
+.select-skeleton {
+  width: 100%;
+  height: 3.5rem;
+  border-radius: 0.875rem;
+  background: #f4f4f4;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1rem;
+  box-shadow:
+    0 0.0625rem 0 rgba(0, 0, 0, 0.04),
+    0 0.5rem 1.25rem rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
 
 .calendar-skeleton {
   display: flex;
@@ -361,29 +376,7 @@ $skeleton-color: rgba(0, 0, 0, 0.07);
   }
 }
 
-.skeleton-nav {
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 0.4rem;
-  background: $skeleton-color;
-}
-
-.skeleton-month {
-  height: 1rem;
-  width: 8rem;
-  border-radius: 0.4rem;
-  background: $skeleton-color;
-}
-
-.skeleton-weekday {
-  height: 0.75rem;
-  border-radius: 0.3rem;
-  background: $skeleton-color;
-}
-
-.skeleton-cell {
+.calendar-cell {
   aspect-ratio: 1;
-  border-radius: 0.5rem;
-  background: $skeleton-color;
 }
 </style>
