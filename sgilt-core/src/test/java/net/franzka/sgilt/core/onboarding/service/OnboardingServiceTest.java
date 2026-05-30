@@ -65,7 +65,7 @@ class OnboardingServiceTest {
 
             onboardingService.initOnboardingSession(buildRequest());
 
-            verify(onboardingMailerService).sendSecurityAlertEmail(EMAIL, PRESTATAIRE_ID);
+            verify(onboardingMailerService).sendSecurityAlertEmail(EMAIL);
         }
 
         @Test
