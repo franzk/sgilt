@@ -23,7 +23,7 @@
           <span v-if="!loading && !error">
             {{ $t('search.results-count', { count: results.length }) }}
           </span>
-          <span v-else-if="loading" class="skeleton-text" />
+          <Sk v-else-if="loading" width="20rem" height="1.2rem" radius="4px" />
         </div>
       </div>
     </section>
@@ -44,6 +44,7 @@
 
 <script setup lang="ts">
 import SgiltDateFilter from '~/components/composed/SgiltDateFilter.vue'
+import Sk from '~/components/basics/Sk.vue'
 import SgiltCategoryFilter from '~/components/composed/SgiltCategoryFilter.vue'
 import SgiltSubCategoryFilter from '~/components/composed/SgiltSubCategoryFilter.vue'
 import SgiltSearchResults from '~/components/composed/SgiltSearchResults.vue'
@@ -152,11 +153,6 @@ onMounted(() => {
   }
 }
 
-.skeleton-text {
-  display: inline-block;
-  min-width: 20rem;
-  height: 1.2rem;
-}
 
 .vibe-collapse-enter-active,
 .vibe-collapse-leave-active {

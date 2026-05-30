@@ -23,7 +23,7 @@
         {{ $t('event.board.edit-title-image') }}
       </button>
     </div>
-    <div v-else class="cover-banner-skeleton skeleton-text shimmer-container" />
+    <Sk v-else class="cover-banner-skeleton" light />
 
     <!-- ── Widget ─────────────────────────────────────────────────────────────── -->
     <div class="event-widget">
@@ -31,7 +31,7 @@
       <p v-if="!countsPending && counts" class="phrase">
         {{ $t(`event.widget.mood.${counts.mood}`) }}
       </p>
-      <div v-else class="skeleton-text shimmer-container widget-mood-skeleton" aria-hidden="true" />
+      <Sk v-else class="widget-mood-skeleton" aria-hidden="true" />
 
       <!-- Countdown — attend les meta -->
       <p v-if="!metaPending && event" class="subtitle">
@@ -40,11 +40,7 @@
         </template>
         {{ $t('event.widget.countdown.' + event.countdown) }}
       </p>
-      <div
-        v-else
-        class="skeleton-text shimmer-container widget-countdown-skeleton"
-        aria-hidden="true"
-      />
+      <Sk v-else class="widget-countdown-skeleton" aria-hidden="true" />
 
       <!-- Pills + action — attendent les counts -->
       <div class="pills">
@@ -64,7 +60,7 @@
           </span>
         </template>
         <template v-else>
-          <div v-for="i in 2" :key="i" class="skeleton-pill skeleton-text shimmer-container" />
+          <Sk v-for="i in 2" :key="i" class="skeleton-pill" />
         </template>
         <button class="add-prestataire-btn" type="button" @click="startAddPrestataireFlow">
           {{ $t('events.add-provider') }}
@@ -91,7 +87,7 @@
           @updated="onEventUpdated"
           @updated-client-info="onClientInfoUpdated"
         />
-        <div v-else class="skeleton-card skeleton-text shimmer-container" />
+        <Sk v-else class="skeleton-card" />
       </div>
 
       <!-- Réservations — attendent les reservations -->
@@ -106,7 +102,7 @@
             />
           </template>
           <template v-else>
-            <div v-for="i in 3" :key="i" class="skeleton-card skeleton-text shimmer-container" />
+            <Sk v-for="i in 3" :key="i" class="skeleton-card" />
           </template>
         </div>
       </section>
@@ -129,6 +125,7 @@ import ReservationCard from '~/components/app/ReservationCard.vue'
 import EventBlock from '~/components/app/EventBlock.vue'
 import EventEditDialog from '~/components/app/EventEditDialog.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
+import Sk from '~/components/basics/Sk.vue'
 import { resolveEventCover } from '~/utils/eventCovers'
 import type { EventPatch } from '~/data/evenement/domain/EventPatch'
 import type { EventDetail } from '~/data/evenement/domain/EventDetail'
@@ -423,12 +420,14 @@ $desktop: $breakpoint-desktop;
   height: 1.2rem;
   width: 12rem;
   border-radius: 4px;
+  align-self: flex-start;
 }
 
 .widget-countdown-skeleton {
   height: 0.9rem;
   width: 10rem;
   border-radius: 4px;
+  align-self: flex-start;
 }
 
 .pills {

@@ -1,7 +1,7 @@
 <template>
   <div class="pro-greeting">
     <p class="title">{{ $t('pro.board.greeting.title') }}</p>
-    <div v-if="loading" class="skeleton skeleton-text" />
+    <Sk v-if="loading" width="220px" height="0.8rem" radius="4px" style="margin-top: 6px" />
 
     <div v-if="!loading && hasCounts" class="counts">
       <button
@@ -25,6 +25,7 @@
 import type { ProBoardCounts } from '~/types/event'
 import type { ReservationStatut } from '~/constants/reservation-status'
 import { PhoneIcon, CheckboxCircleIcon, CalendarIcon } from '@remixicons/vue/line'
+import Sk from '~/components/basics/Sk.vue'
 
 const props = defineProps<{
   subtitle: string
@@ -104,13 +105,6 @@ const visibleCards = computed(() =>
     color: $text-secondary;
     margin: 0;
     margin-top: 4px;
-  }
-
-  .skeleton {
-    margin-top: 6px;
-    height: 0.8rem;
-    width: 220px;
-    border-radius: 4px;
   }
 
   // ── Cartes compteurs ────────────────────────────────────────────────────────

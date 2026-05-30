@@ -132,7 +132,7 @@
     </template>
 
     <!-- Skeleton cover -->
-    <div v-else-if="loading" class="cover-banner skeleton skeleton-text" />
+    <Sk v-else-if="loading" class="cover-banner-sk" />
 
     <!-- Skeleton layout -->
     <div v-if="loading" class="booking-layout">
@@ -140,14 +140,12 @@
       <div class="left">
         <div class="sk-brief">
           <div class="sk-row">
-            <div class="skeleton-text sk-pill" />
-            <div class="skeleton-text sk-pill" />
-            <div class="skeleton-text sk-pill" />
+            <Sk v-for="i in 3" :key="i" width="72px" height="24px" radius="2rem" />
           </div>
           <div class="sk-lines">
-            <div class="skeleton-text sk-line sk-line--80" />
-            <div class="skeleton-text sk-line sk-line--60" />
-            <div class="skeleton-text sk-line sk-line--70" />
+            <Sk width="80%" height="0.8rem" radius="4px" />
+            <Sk width="60%" height="0.8rem" radius="4px" />
+            <Sk width="70%" height="0.8rem" radius="4px" />
           </div>
         </div>
       </div>
@@ -155,11 +153,11 @@
       <!-- Colonne droite -->
       <div class="right">
         <div class="bento-card sk-bento">
-          <div class="skeleton-text sk-line sk-line--40" />
-          <div class="skeleton-text sk-btn" />
+          <Sk width="40%" height="0.8rem" radius="4px" />
+          <Sk height="40px" radius="10px" />
         </div>
         <div class="bento-card sk-bento">
-          <div v-for="i in 3" :key="i" class="skeleton-text sk-note" />
+          <Sk v-for="i in 3" :key="i" height="56px" radius="6px" />
         </div>
       </div>
     </div>
@@ -214,6 +212,7 @@ definePageMeta({ layout: 'pro' })
 
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import ReservationFeed from '~/components/shared/ReservationFeed.vue'
+import Sk from '~/components/basics/Sk.vue'
 import BookingStatusBanner from '~/components/pro/BookingStatusBanner.vue'
 import BookingContactActions from '~/components/pro/BookingContactActions.vue'
 import BookingStatusCta from '~/components/pro/BookingStatusCta.vue'
@@ -691,6 +690,15 @@ $bento-radius: $radius-sm;
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
 
+.cover-banner-sk {
+  height: 200px;
+
+  @media (min-width: $desktop) {
+    height: 280px;
+    max-height: 30vh;
+  }
+}
+
 .sk-brief {
   display: flex;
   flex-direction: column;
@@ -702,34 +710,10 @@ $bento-radius: $radius-sm;
   gap: $spacing-xs;
 }
 
-.sk-pill {
-  height: 24px;
-  width: 72px;
-  border-radius: 2rem;
-}
-
 .sk-lines {
   display: flex;
   flex-direction: column;
   gap: $spacing-xs;
-}
-
-.sk-line {
-  height: 0.8rem;
-  border-radius: 4px;
-
-  &--40 {
-    width: 40%;
-  }
-  &--60 {
-    width: 60%;
-  }
-  &--70 {
-    width: 70%;
-  }
-  &--80 {
-    width: 80%;
-  }
 }
 
 .sk-bento {
@@ -740,15 +724,5 @@ $bento-radius: $radius-sm;
   background: #fff;
   border-radius: $bento-radius;
   box-shadow: $bento-shadow;
-}
-
-.sk-btn {
-  height: 40px;
-  border-radius: $radius-md;
-}
-
-.sk-note {
-  height: 56px;
-  border-radius: $radius-sm;
 }
 </style>

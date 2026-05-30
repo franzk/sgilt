@@ -3,6 +3,7 @@ import type { PrestataireCardDetail } from '~/data/prestataire/domain/Prestatair
 import SgiltImage from '~/components/basics/media/SgiltImage.vue'
 import { NuxtLink } from '#components'
 import SgiltCategoryIcon from '~/components/basics/icons/SgiltCategoryIcon.vue'
+import Sk from '~/components/basics/Sk.vue'
 
 const props = defineProps<{
   provider?: PrestataireCardDetail
@@ -23,7 +24,7 @@ function handleClick() {
     :is="props.selectable || loading ? 'div' : NuxtLink"
     :to="!props.selectable && !loading ? `/${provider?.slug}` : undefined"
     class="provider-card"
-    :class="[{ 'is-loading shimmer-container': loading }, { selectable: props.selectable }]"
+    :class="[{ 'is-loading': loading }, { selectable: props.selectable }]"
     @click="handleClick"
   >
     <div class="image-wrapper">
@@ -37,23 +38,23 @@ function handleClick() {
       </template>
 
       <template v-else>
-        <div class="skeleton-image"></div>
-        <div class="skeleton-icon category-placeholder"></div>
+        <Sk class="image-skeleton" />
+        <Sk width="1.5rem" height="1.5rem" radius="6px" class="category-placeholder" />
       </template>
     </div>
 
     <div class="content">
       <div class="title-row">
         <h3 v-if="!loading" class="name">{{ provider?.name }}</h3>
-        <div v-else class="skeleton-text title"></div>
+        <Sk v-else width="75%" height="1.2rem" radius="6px" />
       </div>
 
       <div v-if="!loading" class="description">
         {{ provider?.shortDescription }}
       </div>
       <div v-else class="description-group">
-        <div class="skeleton-text"></div>
-        <div class="skeleton-text short"></div>
+        <Sk />
+        <Sk width="45%" />
       </div>
     </div>
   </component>
@@ -206,6 +207,14 @@ function handleClick() {
     cursor: default;
     border-color: transparent;
     box-shadow: none;
+
+    .image-skeleton {
+      position: absolute;
+      inset: 0;
+      width: auto;
+      height: auto;
+      border-radius: 0;
+    }
 
     .category-placeholder {
       position: absolute;
