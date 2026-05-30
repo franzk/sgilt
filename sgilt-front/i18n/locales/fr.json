@@ -759,6 +759,11 @@
     }
   },
   "confirmation": {
+    "page-title": "Votre espace est prêt",
+    "badge": "Dernière étape",
+    "hero-title-line1": "Votre espace",
+    "hero-title-line2": "est prêt 🔑",
+    "hero-sub": "Créez votre mot de passe pour sécuriser votre espace Sgilt. Une fois validé, votre demande sera envoyée au prestataire et vous pourrez la suivre depuis votre événement.",
     "error": {
       "invalid": "Ce lien est invalide.",
       "already-used": "Ce lien a déjà été utilisé. Si vous avez un compte, connectez-vous.",
@@ -766,9 +771,17 @@
       "server": "Une erreur est survenue. Veuillez réessayer."
     },
     "form": {
+      "card-title": "Créez votre accès",
+      "card-subtitle": "Cet espace vous appartient.",
+      "email-connected-label": "Connecté avec",
+      "show-password": "Afficher",
+      "hide-password": "Masquer",
       "email-label": "Adresse email",
       "password-label": "Mot de passe",
       "password-confirm-label": "Confirmer le mot de passe",
+      "cta": "Ouvrir mon espace",
+      "hint": "Vous pourrez revenir à votre espace sans repasser par le lien reçu par email.",
+      "security-note": "Vos données sont sécurisées et confidentielles.",
       "submit": "Créer mon compte",
       "password-rules": {
         "length": "Au moins 8 caractères",
