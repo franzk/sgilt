@@ -1,12 +1,10 @@
 package net.franzka.sgilt.core.onboarding.mailer;
 
 import lombok.extern.slf4j.Slf4j;
-import net.franzka.sgilt.core.mailer.MailerClient;
 import net.franzka.sgilt.core.mailer.MailRequest;
+import net.franzka.sgilt.core.mailer.MailerClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 /**
  * Service d'envoi d'emails liés au process d'onboarding.
@@ -37,7 +35,7 @@ public class OnboardingMailerService {
     }
 
     /**
-     * Envoie le mail de validation de compte à un utilisateur dont l'email est inconnu dans Keycloak.
+     * Envoie l'email de validation de compte à un utilisateur dont l'email est inconnu dans Keycloak.
      *
      * @param email             l'adresse email du destinataire
      * @param verificationToken le token de confirmation à inclure dans le lien
@@ -46,44 +44,60 @@ public class OnboardingMailerService {
         String confirmationUrl = frontendUrl + "/onboarding/verify?token=" + verificationToken;
         String html = """
                 <p>Bonjour,</p>
-                <p>Merci pour votre demande. Cliquez sur le lien ci-dessous pour confirmer votre adresse email :</p>
-                <p><a href="%s">Confirmer ma demande</a></p>
+                <p>Vous venez d’initier une demande de réservation sur Sgilt avec cette adresse email.</p>
+                <p>Pour confirmer votre adresse email et créer votre compte, cliquez sur le lien ci-dessous :</p>
+                <p><a href="%s">Confirmer mon adresse email</a></p>
                 <p>Ce lien expire dans 24 heures.</p>
+                <p>Si vous n’êtes pas à l’origine de cette action, vous pouvez simplement ignorer ce message.</p>
+                <p>À bientôt,</p>
+                <p>L’équipe Sgilt.</p>
                 """.formatted(confirmationUrl);
 
         log.info("sendVerificationEmail → {}", email);
-        mailerClient.sendMail(new MailRequest(mailerFrom, email, "Confirmez votre demande", html));
+        mailerClient.sendMail(new MailRequest(mailerFrom, email, "Sgilt - Confirmez votre demande", html));
     }
 
     /**
-     * Envoie un mail d'alerte de sécurité à un utilisateur dont l'email est déjà connu dans Keycloak.
+     * Envoie un email d'information à un utilisateur dont l'email est déjà connu dans Keycloak.
      *
      * @param email         l'adresse email du destinataire
-     * @param prestataireId l'identifiant du prestataire ciblé par la tentative
      */
-    public void sendSecurityAlertEmail(String email, UUID prestataireId) {
+    public void sendSecurityAlertEmail(String email) {
         String html = """
                 <p>Bonjour,</p>
-                <p>Une tentative de réservation a été effectuée avec votre adresse email pour le prestataire <strong>%s</strong>.</p>
-                <p>Si vous n'êtes pas à l'origine de cette action, ignorez ce message.</p>
-                """.formatted(prestataireId);
+                <p>Vous venez d'initier une demande de réservation avec votre adresse email.</p>
+                <p>Cette adresse est déjà liée à un compte Sgilt.</p>
+                <p>Pour des raisons de sécurité, la demande n’a pas été créée.</p>
+                <p></p>
+                <p>Pour créer une nouvelle demande ou suivre vos événements, connectez-vous à votre espace :</p>
+                <p><a href="%s">Accéder à Sgilt</a></p>
+                <p></p>
+                <p>Si vous n’êtes pas à l’origine de cette action, vous pouvez simplement ignorer ce message.</p>
+                <p></p>
+                <p>À bientôt,</p>
+                <p>L’équipe Sgilt.</p>
+                """.formatted(frontendUrl + "/app");
 
         log.info("sendSecurityAlertEmail → {}", email);
-        mailerClient.sendMail(new MailRequest(mailerFrom, email, "Activité suspecte sur votre compte", html));
+        mailerClient.sendMail(new MailRequest(mailerFrom, email, "Sgilt - Demande de réservation initiée avec votre adresse email", html));
     }
 
     /**
-     * Envoie le mail de bienvenue après la confirmation de compte réussie.
+     * Envoie l'email de bienvenue après la confirmation de compte réussie.
      *
      * @param email l'adresse email du nouveau compte créé
      */
     public void sendWelcomeEmail(String email) {
         String html = """
-                <p>Bonjour,</p>
-                <p>Votre compte Sgilt a été créé avec succès. Bienvenue !</p>
-                <p><a href="%s">Accéder à Sgilt</a></p>
-                """.formatted(frontendUrl);
-
+            <p>Bonjour,</p>
+            <p>Votre adresse email a bien été confirmée et votre compte Sgilt a été créé.</p>
+            <p>Votre demande de réservation est maintenant enregistrée.</p>
+            <p>Vous pouvez accéder à votre espace pour suivre vos événements et retrouver vos demandes en cours :</p>
+            <p><a href="%s">Accéder à Sgilt</a></p>
+            <p></p>
+            <p>À bientôt,</p>
+            <p>L’équipe Sgilt.</p>
+            """.formatted(frontendUrl + "/app");
         log.info("sendWelcomeEmail → {}", email);
         mailerClient.sendMail(new MailRequest(mailerFrom, email, "Bienvenue sur Sgilt", html));
     }

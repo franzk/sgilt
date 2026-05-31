@@ -52,7 +52,7 @@ public class OnboardingService {
 
         if (utilisateurService.existsByEmail(request.email())) {
             log.info("createDemandeReservation — email déjà connu, envoi alerte sécurité : {}", request.email());
-            onboardingMailerService.sendSecurityAlertEmail(request.email(), request.prestataireId());
+            onboardingMailerService.sendSecurityAlertEmail(request.email());
             return new InitOnboardingResponse(request.email());
         }
 
