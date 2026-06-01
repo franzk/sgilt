@@ -8,6 +8,7 @@ import net.franzka.sgilt.core.prestataire.dto.*;
 import net.franzka.sgilt.core.prestataire.exception.PrestataireNotFoundException;
 import net.franzka.sgilt.core.prestataire.mapper.PrestataireMapper;
 import net.franzka.sgilt.core.prestataire.repository.PrestataireRepository;
+import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -72,6 +73,22 @@ public class PrestataireService {
                 buildCategoryCounts(all),
                 buildSubcatCounts(all, activeCategoryKey)
         );
+    }
+
+    /**
+     * Lie un utilisateur à un prestataire lors du bootstrap du compte PRO.
+     * Sans effet si le prestataire est déjà lié à cet utilisateur.
+     *
+     * @param slug        le slug du prestataire fourni via l'attribut KC {@code bootstrap_prestataire_slug}
+     * @param utilisateur l'utilisateur authentifié à lier
+     * @throws PrestataireNotFoundException si aucun prestataire actif ne correspond au slug
+     */
+    public void linkBootstrapUtilisateur(String slug, Utilisateur utilisateur) {
+        Prestataire prestataire = prestataireRepository.findBySlugAndDeletedAtIsNull(slug)
+                .orElseThrow(() -> new PrestataireNotFoundException(slug));
+        if (utilisateur.getId().equals(prestataire.getUtilisateur().getId())) return;
+        prestataire.setUtilisateur(utilisateur);
+        prestataireRepository.save(prestataire);
     }
 
     // ── Résolution du filtre exclusif ─────────────────────────────────────────
