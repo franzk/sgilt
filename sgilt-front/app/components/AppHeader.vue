@@ -47,9 +47,12 @@ defineProps<{
 const avatarRef = ref<HTMLElement | null>(null)
 const profileOpen = ref(false)
 
-const { isAuthenticated, login } = useKeycloak()
+const { isAuthenticated, hasRole, login } = useKeycloak()
 
-const logoLink = computed(() => (isAuthenticated.value ? '/app' : '/'))
+const logoLink = computed(() => {
+  if (!mounted.value || !isAuthenticated.value) return '/'
+  return hasRole('PRO') ? '/pro' : '/app'
+})
 
 const ROUTES_WITHOUT_SHADOW_MOBILE = ['/', '/search']
 const route = useRoute()
@@ -65,7 +68,7 @@ const hideShadow = computed(
 )
 
 function handleLogin() {
-  login({ redirectUri: window.location.origin + '/app' })
+  login({ redirectUri: window.location.origin + '/auth/redirect' })
 }
 </script>
 
