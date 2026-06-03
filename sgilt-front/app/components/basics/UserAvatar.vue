@@ -20,7 +20,7 @@ const initials = computed(
 
 const cssVars = computed(() => ({
   '--ua-size': `${props.size}rem`,
-  '--ua-font-size': `${props.size * 0.36}rem`,
+  '--ua-font-size': `${props.size * 0.45}rem`,
 }))
 </script>
 
