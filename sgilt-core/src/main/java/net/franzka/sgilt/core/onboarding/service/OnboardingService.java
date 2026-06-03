@@ -108,7 +108,7 @@ public class OnboardingService {
         Prestataire prestataire = content.prestataire();
 
         log.info("confirmAccount — création compte Keycloak pour {}", email);
-        keycloakAdminService.createUser(email, formData.firstName(), formData.lastName(), request.password());
+        keycloakAdminService.createClientUser(email, formData.firstName(), formData.lastName(), request.password());
 
         // création de l'utilisateur, de la réservation et de l'événement
         UUID eventId = onboardingSessionService.createEntities(formData, prestataire, email);

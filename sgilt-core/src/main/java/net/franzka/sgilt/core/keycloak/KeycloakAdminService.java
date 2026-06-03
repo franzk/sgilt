@@ -46,25 +46,39 @@ public class KeycloakAdminService {
     }
 
     /**
-     * Crée un utilisateur dans Keycloak avec le mot de passe fourni.
+     * Crée un compte client dans Keycloak et lui assigne le rôle {@code USER}.
      *
      * @param email     l'adresse email (également utilisée comme username)
      * @param firstName le prénom de l'utilisateur
      * @param lastName  le nom de l'utilisateur
      * @param password  le mot de passe en clair
-     * @throws KeycloakException en cas d'erreur lors de l'appel Keycloak
+     * @throws KeycloakException en cas d'erreur lors des appels Keycloak
      */
-    public void createUser(String email, String firstName, String lastName, String password) {
+    public void createClientUser(String email, String firstName, String lastName, String password) {
         try {
             KeycloakTokenResponse adminToken = fetchAdminToken();
-            keycloakAdminClient.createUser(
-                    keycloakProperties.realm(),
-                    "Bearer " + adminToken.accessToken(),
+            String auth = "Bearer " + adminToken.accessToken();
+
+            var response = keycloakAdminClient.createUser(
+                    keycloakProperties.realm(), auth,
                     new KeycloakUserRequest(email, email, firstName, lastName, true, true,
                             List.of(new KeycloakCredential("password", password, false)))
             );
+
+            String location = response.getHeaders().getFirst("Location");
+            if (location == null) {
+                throw new KeycloakException("Header Location absent après création du user KC.");
+            }
+            String userId = location.substring(location.lastIndexOf('/') + 1);
+
+            KeycloakRoleRepresentation userRole = keycloakAdminClient.getRole(
+                    keycloakProperties.realm(), auth, "USER"
+            );
+            keycloakAdminClient.assignRoles(
+                    keycloakProperties.realm(), auth, userId, List.of(userRole)
+            );
         } catch (RestClientException e) {
-            throw new KeycloakException("Erreur lors de la création de l'utilisateur dans Keycloak.", e);
+            throw new KeycloakException("Erreur lors de la création du compte client dans Keycloak.", e);
         }
     }
 

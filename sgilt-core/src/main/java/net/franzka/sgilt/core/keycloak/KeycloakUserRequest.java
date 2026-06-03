@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * DTO représentant le corps de requête pour la création d'un utilisateur via l'API Admin Keycloak.
  */
-record KeycloakUserRequest(
+public record KeycloakUserRequest(
         String username,
         String email,
         String firstName,

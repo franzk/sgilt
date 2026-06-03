@@ -46,12 +46,22 @@ public class CurrentUserService {
      *                               ou si le claim {@code email} est absent
      */
     public String getEmail() {
-        Jwt jwt = extractJwt();
+        Jwt jwt = getJwt();
         String email = jwt.getClaimAsString("email");
         if (email == null || email.isBlank()) {
             throw new IllegalStateException("JWT missing required claim: 'email'");
         }
         return email;
+    }
+
+    /**
+     * Retourne le JWT de l'utilisateur connecté.
+     *
+     * @return le JWT
+     * @throws IllegalStateException si aucun JWT valide n'est trouvé dans le contexte de sécurité
+     */
+    public Jwt getJwt() {
+        return extractJwt();
     }
 
     private Jwt extractJwt() {

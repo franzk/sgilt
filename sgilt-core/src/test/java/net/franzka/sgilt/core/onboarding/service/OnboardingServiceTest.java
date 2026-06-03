@@ -190,7 +190,7 @@ class OnboardingServiceTest {
 
             onboardingService.confirmAccount(buildRequest());
 
-            verify(keycloakAdminService).createUser(EMAIL, FIRSTNAME, LASTNAME, "p@ssw0rd!");
+            verify(keycloakAdminService).createClientUser(EMAIL, FIRSTNAME, LASTNAME, "p@ssw0rd!");
         }
 
         @Test

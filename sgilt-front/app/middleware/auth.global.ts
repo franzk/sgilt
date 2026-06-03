@@ -18,21 +18,26 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const isAppRoute = to.path.startsWith('/app')
   const isProRoute = to.path.startsWith('/pro')
+  const isRedirectRoute = to.path === '/auth/redirect'
 
-  if (!isAppRoute && !isProRoute) return
+  if (!isAppRoute && !isProRoute && !isRedirectRoute) return
 
   if (!isAuthenticated.value) {
-    await login()
+    await login({ redirectUri: globalThis.location.origin + '/auth/redirect' })
     return
+  }
+
+  if (isRedirectRoute) {
+    return navigateTo(hasRole('PRO') ? '/pro' : '/app')
   }
 
   // Espace client (/app) : USER et ADMIN autorisés, PRO seul est refusé
   if (isAppRoute && hasRole('PRO') && !hasRole('USER') && !hasRole('ADMIN')) {
-    return navigateTo('/unauthorized')
+    return navigateTo('/pro')
   }
 
   // Espace pro (/pro) : PRO et ADMIN autorisés, USER seul est refusé
   if (isProRoute && !hasRole('PRO') && !hasRole('ADMIN')) {
-    return navigateTo('/unauthorized')
+    return navigateTo('/app')
   }
 })

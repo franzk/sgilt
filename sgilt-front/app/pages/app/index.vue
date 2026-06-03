@@ -544,5 +544,4 @@ $desktop: $breakpoint-desktop;
   height: 64px;
   border-radius: $radius-lg;
 }
-
 </style>

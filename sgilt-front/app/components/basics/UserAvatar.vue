@@ -20,7 +20,7 @@ const initials = computed(
 
 const cssVars = computed(() => ({
   '--ua-size': `${props.size}rem`,
-  '--ua-font-size': `${props.size * 0.36}rem`,
+  '--ua-font-size': `${props.size * 0.45}rem`,
 }))
 </script>
 
@@ -31,8 +31,16 @@ const cssVars = computed(() => ({
   width: var(--ua-size);
   height: var(--ua-size);
   border-radius: 50%;
-  background: $brand-accent;
-  box-shadow: 0 0 0 2px $brand-accent;
+
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      rgba(255, 255, 255, 0.34) 0%,
+      rgba(255, 255, 255, 0.12) 32%,
+      transparent 58%
+    ),
+    linear-gradient(145deg, #ffd24a 0%, #ffc71f 42%, #ffbf00 100%);
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -47,7 +55,7 @@ const cssVars = computed(() => ({
 
   .initials {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1rem;
+    font-size: var(--ua-font-size);
     font-weight: 600;
     color: $brand-primary;
     line-height: 1;

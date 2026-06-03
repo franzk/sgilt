@@ -6,6 +6,15 @@ package net.franzka.sgilt.core.keycloak;
 public class KeycloakException extends RuntimeException {
 
     /**
+     * Construit l'exception avec un message.
+     *
+     * @param message description de l'erreur
+     */
+    public KeycloakException(String message) {
+        super(message);
+    }
+
+    /**
      * Construit l'exception avec un message et la cause d'origine.
      *
      * @param message description de l'erreur

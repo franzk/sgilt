@@ -24,7 +24,7 @@ services:
       KC_DB_PASSWORD: keycloak
       MAGIC_LINK_SECRET: ${MAGIC_LINK_SECRET:-dev-magic-secret-change-in-prod}
     ports:
-      - "5028:8080"
+      - "127.0.0.1:5028:8080"
     depends_on:
       - sgilt-keycloak-db
     volumes:

@@ -35,7 +35,11 @@
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front\" -Directory)",
       "Bash(Select-Object Name)",
       "Bash(python3 *)",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\" -Directory)",
+      "Bash(dir C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front\\\\app\\\\pages\\\\pro *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\" -Recurse -Directory -Name)",
+      "Bash(Select-Object -First 30)"
     ]
   }
 }
