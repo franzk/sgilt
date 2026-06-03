@@ -1,5 +1,6 @@
 package net.franzka.sgilt.core.reservation.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.reservation.api.ReservationFeedApi;
@@ -39,6 +40,7 @@ public class ReservationFeedController implements ReservationFeedApi {
     }
 
     @Override
+    @Valid
     @Transactional
     public ResponseEntity<FeedItemDto> addNote(UUID reservationId, AddNoteRequest body) {
         Utilisateur utilisateur = currentUserService.get();
@@ -48,6 +50,7 @@ public class ReservationFeedController implements ReservationFeedApi {
     }
 
     @Override
+    @Valid
     @Transactional
     public ResponseEntity<FeedItemDto> addDocument(UUID reservationId, MultipartFile file, boolean isPersonal) {
         Utilisateur utilisateur = currentUserService.get();
