@@ -27,6 +27,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/pro/**").hasAnyAuthority("ROLE_PRO", "ROLE_ADMIN")
                 .requestMatchers("/api/v1/users/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 .requestMatchers("/api/v1/events/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                .requestMatchers("/api/v1/reservations/pro", "/api/v1/reservations/pro/**").hasAnyAuthority("ROLE_PRO", "ROLE_ADMIN")
+                .requestMatchers("/api/v1/reservations/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 .anyRequest().permitAll()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
