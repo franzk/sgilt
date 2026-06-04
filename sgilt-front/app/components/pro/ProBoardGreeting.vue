@@ -28,7 +28,6 @@ import { PhoneIcon, CheckboxCircleIcon, CalendarIcon } from '@remixicons/vue/lin
 import Sk from '~/components/basics/Sk.vue'
 
 const props = defineProps<{
-  subtitle: string
   loading?: boolean
   counts: ProBoardCounts
 }>()

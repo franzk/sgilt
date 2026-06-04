@@ -31,7 +31,7 @@
     <!-- Colonne gauche : photo circulaire + badge + titre -->
     <div class="left">
       <BadgeableComponent :count="demande.unreadNotesCount" :size="18">
-        <img class="photo" :src="demande.coverImage || FALLBACK_COVER" alt="" />
+        <img class="photo" :src="demande.image || FALLBACK_COVER" alt="" />
       </BadgeableComponent>
       <p class="title">{{ demande.titre }}</p>
     </div>
@@ -51,10 +51,6 @@
         </span>
       </div>
 
-      <div v-if="demande.phraseInfoState" class="right-row">
-        <span class="info-value" v-html="demande.phraseInfoState" />
-      </div>
-
       <div class="right-row last-row date-row">
         <span class="calendar-icon icon">
           <CalendarEventIcon />
@@ -71,20 +67,19 @@
 <script setup lang="ts">
 import BadgeableComponent from '~/components/basics/BadgeableComponent.vue'
 import Sk from '~/components/basics/Sk.vue'
-import type { ProDemandeSummary } from '~/types/event'
+import type { ProReservationSummary } from '~/types/event'
 import { STATUTS_AVEC_ACTION } from '~/constants/reservation-status'
 import { CalendarEventIcon, CheckboxCircleIcon, PhoneIcon } from '@remixicons/vue/line'
 
 const props = defineProps<{
-  demande?: ProDemandeSummary
+  demande?: ProReservationSummary
   skeleton?: boolean
   animationDelay?: number
 }>()
 
 const emit = defineEmits<{ click: [] }>()
 
-const FALLBACK_COVER =
-  'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&auto=format&fit=crop'
+const FALLBACK_COVER = '' //TODO
 
 const needsAction = computed(() =>
   props.demande ? STATUTS_AVEC_ACTION.includes(props.demande.statut) : false,
@@ -270,7 +265,6 @@ const needsAction = computed(() =>
     font-family: 'Inter', sans-serif;
     font-size: 0.6rem;
     font-weight: 600;
-    // letter-spacing: 0.07em;
     text-transform: uppercase;
     color: $text-secondary;
   }

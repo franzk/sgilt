@@ -220,7 +220,7 @@ import EventBlock from '~/components/app/EventBlock.vue'
 import BookingResumeContactLink from '~/components/pro/BookingResumeContactLink.vue'
 import BookingCriticalActions from '~/components/pro/BookingCriticalActions.vue'
 import { ProMockService } from '~/services/pro.mock'
-import type { ProDemandeDetail, ReservationDocument, FeedItem } from '~/types/event'
+import type { ProReservationDetail, ReservationDocument, FeedItem } from '~/types/event'
 import { getStatusOverlayStyle } from '~/constants/reservation-status'
 
 const { isMobile } = useDevice()
@@ -270,7 +270,7 @@ onUnmounted(() => {
 })
 
 // ── Data ──────────────────────────────────────────────────────────────────────
-const demande = ref<ProDemandeDetail | null>(null)
+const demande = ref<ProReservationDetail | null>(null)
 const loading = ref(true)
 
 onMounted(async () => {
