@@ -43,7 +43,6 @@ public interface ReservationMapper {
     @Mapping(source = "evenement.title",     target = "evenementTitre")
     @Mapping(source = "evenement.imagePath", target = "image")
     @Mapping(source = "date",                target = "datePrestation")
-    @Mapping(source = "createdAt",           target = "dateReception")
     @Mapping(source = "status",              target = "statut")
     @Mapping(target = "unreadNotesCount",    constant = "0")
     ProReservationSummaryDto toProReservationSummaryDto(Reservation reservation);
