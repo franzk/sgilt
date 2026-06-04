@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.reservation.api.ReservationApi;
 import net.franzka.sgilt.core.reservation.dto.ActiveReservationsDto;
+import net.franzka.sgilt.core.reservation.dto.ProBoardCountsDto;
+import net.franzka.sgilt.core.reservation.dto.ProReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationMetaDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
@@ -48,6 +50,22 @@ public class ReservationController implements ReservationApi {
         UUID userId = currentUserService.getId();
         log.info("GET /reservations/{}", reservationId);
         return ResponseEntity.ok(reservationService.getMeta(reservationId, userId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<List<ProReservationSummaryDto>> getProReservations() {
+        UUID userId = currentUserService.getId();
+        log.info("GET /reservations/pro");
+        return ResponseEntity.ok(reservationService.getProReservations(userId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<ProBoardCountsDto> getProBoardCounts() {
+        UUID userId = currentUserService.getId();
+        log.info("GET /reservations/pro/counts");
+        return ResponseEntity.ok(reservationService.getProBoardCounts(userId));
     }
 
     @Override

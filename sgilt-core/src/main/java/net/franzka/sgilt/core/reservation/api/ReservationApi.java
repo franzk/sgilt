@@ -1,6 +1,8 @@
 package net.franzka.sgilt.core.reservation.api;
 
 import net.franzka.sgilt.core.reservation.dto.ActiveReservationsDto;
+import net.franzka.sgilt.core.reservation.dto.ProBoardCountsDto;
+import net.franzka.sgilt.core.reservation.dto.ProReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationMetaDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,12 @@ public interface ReservationApi {
 
     @GetMapping("/active")
     ResponseEntity<ActiveReservationsDto> getActive();
+
+    @GetMapping("/pro")
+    ResponseEntity<List<ProReservationSummaryDto>> getProReservations();
+
+    @GetMapping("/pro/counts")
+    ResponseEntity<ProBoardCountsDto> getProBoardCounts();
 
     @GetMapping("/{reservationId}")
     ResponseEntity<ReservationMetaDto> getDetail(@PathVariable UUID reservationId);

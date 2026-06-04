@@ -3,6 +3,7 @@ package net.franzka.sgilt.core.reservation.mapper;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.dto.ActiveReservationItemDto;
+import net.franzka.sgilt.core.reservation.dto.ProReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -38,6 +39,14 @@ public interface ReservationMapper {
     @Mapping(source = "prestataire",                               target = "prestataireAvatar", qualifiedByName = "resolveAvatar")
     @Mapping(source = "status",                                    target = "status")
     ActiveReservationItemDto toActiveItemDto(Reservation reservation);
+
+    @Mapping(source = "evenement.title",     target = "evenementTitre")
+    @Mapping(source = "evenement.imagePath", target = "image")
+    @Mapping(source = "date",                target = "datePrestation")
+    @Mapping(source = "createdAt",           target = "dateReception")
+    @Mapping(source = "status",              target = "statut")
+    @Mapping(target = "unreadNotesCount",    constant = "0")
+    ProReservationSummaryDto toProReservationSummaryDto(Reservation reservation);
 
     @Named("resolveAvatar")
     default String resolveAvatar(net.franzka.sgilt.core.prestataire.domain.Prestataire prestataire) {

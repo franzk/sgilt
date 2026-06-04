@@ -8,6 +8,8 @@ import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.dto.ActiveReservationItemDto;
 import net.franzka.sgilt.core.reservation.dto.ActiveReservationsDto;
+import net.franzka.sgilt.core.reservation.dto.ProBoardCountsDto;
+import net.franzka.sgilt.core.reservation.dto.ProReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
 import net.franzka.sgilt.core.reservation.dto.ReservationMetaDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
@@ -26,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+
 
 /**
  * Service métier pour l'entité {@link Reservation}.
@@ -197,6 +201,35 @@ public class ReservationService {
         };
         reservation.setStatus(next);
         reservationRepository.save(reservation);
+    }
+
+    /**
+     * Retourne les réservations du prestataire, triées par statut métier.
+     *
+     * @param utilisateurId l'identifiant de l'utilisateur lié au prestataire
+     * @return la liste des résumés de réservations pro
+     */
+    public List<ProReservationSummaryDto> getProReservations(UUID utilisateurId) {
+        return reservationRepository.findByPrestataireUtilisateurIdOrderByStatus(utilisateurId).stream()
+                .map(reservationMapper::toProReservationSummaryDto)
+                .toList();
+    }
+
+    /**
+     * Retourne les compteurs du tableau de bord pro (statuts actifs uniquement).
+     *
+     * @param utilisateurId l'identifiant de l'utilisateur lié au prestataire
+     * @return les compteurs par statut actif
+     */
+    public ProBoardCountsDto getProBoardCounts(UUID utilisateurId) {
+        return new ProBoardCountsDto(
+                reservationRepository
+                        .countByStatusAndPrestataireUtilisateurId(ReservationStatus.NEW, utilisateurId),
+                reservationRepository
+                        .countByStatusAndPrestataireUtilisateurId(ReservationStatus.IN_DISCUSSION, utilisateurId),
+                reservationRepository
+                        .countByStatusAndPrestataireUtilisateurId(ReservationStatus.CONFIRMED, utilisateurId)
+        );
     }
 
     /**
