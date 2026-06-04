@@ -42,17 +42,13 @@ export default defineNuxtConfig({
     },
     '/app/**': {
       ssr: false,
-      headers: {
-        'X-Robots-Tag': 'noindex, nofollow',
-      },
+      headers: { 'X-Robots-Tag': 'noindex, nofollow' },
     },
 
     // Account = SPA, pas de SEO
     '/account/**': {
       ssr: false,
-      headers: {
-        'X-Robots-Tag': 'noindex, nofollow',
-      },
+      headers: { 'X-Robots-Tag': 'noindex, nofollow' },
     },
 
     // Recherche = utilitaire, pas indexée
