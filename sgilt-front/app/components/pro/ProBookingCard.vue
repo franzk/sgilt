@@ -31,7 +31,7 @@
     <!-- Colonne gauche : photo circulaire + badge + titre -->
     <div class="left">
       <BadgeableComponent :count="demande.unreadNotesCount" :size="18">
-        <img class="photo" :src="demande.image || FALLBACK_COVER" alt="" />
+        <img class="photo" :src="resolvedImage" alt="" />
       </BadgeableComponent>
       <p class="title">{{ demande.titre }}</p>
     </div>
@@ -79,7 +79,14 @@ const props = defineProps<{
 
 const emit = defineEmits<{ click: [] }>()
 
-const FALLBACK_COVER = '' //TODO
+const { toUrl } = useImageUrl()
+
+const FALLBACK_COVER =
+  'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&auto=format&fit=crop'
+
+const resolvedImage = computed(() =>
+  props.demande?.image ? toUrl(props.demande.image) : FALLBACK_COVER,
+)
 
 const needsAction = computed(() =>
   props.demande ? STATUTS_AVEC_ACTION.includes(props.demande.statut) : false,

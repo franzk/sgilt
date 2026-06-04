@@ -636,7 +636,8 @@
     },
     "board": {
       "greeting": {
-        "title": "Bonjour DJ Animation !",
+        "title": "Bonjour !",
+        "titleNamed": "Bonjour {name} !",
         "counts": {
           "nouvelle": "{count} demandes à contacter",
           "en-discussion": "{count} demandes à confirmer",
