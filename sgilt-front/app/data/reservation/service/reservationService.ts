@@ -27,6 +27,7 @@ export async function fetchProReservations(): Promise<ProReservationSummary[]> {
   return dtos.map((dto) => ({
     id: dto.id,
     titre: dto.evenementTitre,
+    eventType: dto.evenementType ?? undefined,
     date: new Date(dto.datePrestation),
     statut: dto.statut as ReservationStatus,
     image: dto.image ?? undefined,

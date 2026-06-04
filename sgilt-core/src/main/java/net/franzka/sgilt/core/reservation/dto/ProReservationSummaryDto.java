@@ -6,6 +6,7 @@ import java.util.UUID;
 public record ProReservationSummaryDto(
         UUID id,
         String evenementTitre,
+        String evenementType,
         String image,
         LocalDate datePrestation,
         String statut,

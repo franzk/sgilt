@@ -21,30 +21,30 @@
 
   <!-- Card -->
   <button
-    v-else-if="demande"
+    v-else-if="reservation"
     class="booking-card"
-    :class="demande.statut"
+    :class="reservation.statut"
     type="button"
     :style="{ animationDelay: `${animationDelay ?? 0}ms` }"
     @click="emit('click')"
   >
     <!-- Colonne gauche : photo circulaire + badge + titre -->
     <div class="left">
-      <BadgeableComponent :count="demande.unreadNotesCount" :size="18">
+      <BadgeableComponent :count="reservation.unreadNotesCount" :size="18">
         <img class="photo" :src="resolvedImage" alt="" />
       </BadgeableComponent>
-      <p class="title">{{ demande.titre }}</p>
+      <p class="title">{{ reservation.titre }}</p>
     </div>
 
     <!-- Colonne droite : infos -->
     <div class="right">
       <div v-if="needsAction" class="right-row">
-        <span class="action-required" :class="`${demande.statut}`">
-          <template v-if="demande.statut === 'nouvelle'">
+        <span class="action-required" :class="`${reservation.statut}`">
+          <template v-if="reservation.statut === 'nouvelle'">
             <PhoneIcon />
             {{ $t('pro.board.card.contact-client') }}</template
           >
-          <template v-else-if="demande.statut === 'en_discussion'">
+          <template v-else-if="reservation.statut === 'en_discussion'">
             <CheckboxCircleIcon />
             {{ $t('pro.board.card.validate-request') }}</template
           >
@@ -57,7 +57,7 @@
         </span>
         <div class="date-info">
           <span class="info-label">{{ $t('pro.board.card.event-date-label') }}</span>
-          <span class="info-value">{{ demande.date ? formatDate(demande.date) : '—' }}</span>
+          <span class="info-value">{{ reservation.date ? formatDate(reservation.date) : '—' }}</span>
         </div>
       </div>
     </div>
@@ -69,10 +69,11 @@ import BadgeableComponent from '~/components/basics/BadgeableComponent.vue'
 import Sk from '~/components/basics/Sk.vue'
 import type { ProReservationSummary } from '~/types/event'
 import { STATUTS_AVEC_ACTION } from '~/constants/reservation-status'
+import { resolveEventCover } from '~/utils/eventCovers'
 import { CalendarEventIcon, CheckboxCircleIcon, PhoneIcon } from '@remixicons/vue/line'
 
 const props = defineProps<{
-  demande?: ProReservationSummary
+  reservation?: ProReservationSummary
   skeleton?: boolean
   animationDelay?: number
 }>()
@@ -81,15 +82,16 @@ const emit = defineEmits<{ click: [] }>()
 
 const { toUrl } = useImageUrl()
 
-const FALLBACK_COVER =
-  'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&auto=format&fit=crop'
-
-const resolvedImage = computed(() =>
-  props.demande?.image ? toUrl(props.demande.image) : FALLBACK_COVER,
-)
+const resolvedImage = computed(() => {
+  if (!props.reservation) return ''
+  return resolveEventCover(
+    { coverImage: props.reservation.image ?? null, eventType: props.reservation.eventType },
+    toUrl,
+  )
+})
 
 const needsAction = computed(() =>
-  props.demande ? STATUTS_AVEC_ACTION.includes(props.demande.statut) : false,
+  props.reservation ? STATUTS_AVEC_ACTION.includes(props.reservation.statut) : false,
 )
 </script>
 

@@ -41,6 +41,7 @@ public interface ReservationMapper {
     ActiveReservationItemDto toActiveItemDto(Reservation reservation);
 
     @Mapping(source = "evenement.title",     target = "evenementTitre")
+    @Mapping(source = "evenement.eventType", target = "evenementType")
     @Mapping(source = "evenement.imagePath", target = "image")
     @Mapping(source = "date",                target = "datePrestation")
     @Mapping(source = "status",              target = "statut")

@@ -31,7 +31,7 @@
           v-for="(reservation, index) in filteredReservations"
           v-else
           :key="reservation.id"
-          :demande="reservation"
+          :reservation="reservation"
           :animation-delay="index * 60"
           @click="navigateTo(`/pro/reservations/${reservation.id}`)"
         />
