@@ -21,6 +21,7 @@ import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,6 +31,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@PreAuthorize("hasAuthority('ROLE_USER')")
 public class EvenementController implements EvenementApi {
 
     private final EvenementService      evenementService;

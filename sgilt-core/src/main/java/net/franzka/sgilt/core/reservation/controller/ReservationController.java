@@ -12,6 +12,7 @@ import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
 import net.franzka.sgilt.core.security.CurrentUserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,6 +29,7 @@ public class ReservationController implements ReservationApi {
     private final CurrentUserService currentUserService;
 
     @Override
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     @Transactional(readOnly = true)
     public ResponseEntity<List<ReservationSummaryDto>> getByEventId(UUID eventId) {
         UUID userId = currentUserService.getId();
@@ -37,6 +39,7 @@ public class ReservationController implements ReservationApi {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     @Transactional(readOnly = true)
     public ResponseEntity<ActiveReservationsDto> getActive() {
         UUID userId = currentUserService.getId();
@@ -45,6 +48,7 @@ public class ReservationController implements ReservationApi {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     @Transactional(readOnly = true)
     public ResponseEntity<ReservationMetaDto> getDetail(UUID reservationId) {
         UUID userId = currentUserService.getId();
@@ -53,6 +57,7 @@ public class ReservationController implements ReservationApi {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ROLE_PRO')")
     @Transactional(readOnly = true)
     public ResponseEntity<List<ProReservationSummaryDto>> getProReservations() {
         UUID userId = currentUserService.getId();
@@ -61,6 +66,7 @@ public class ReservationController implements ReservationApi {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ROLE_PRO')")
     @Transactional(readOnly = true)
     public ResponseEntity<ProBoardCountsDto> getProBoardCounts() {
         UUID userId = currentUserService.getId();
@@ -69,6 +75,7 @@ public class ReservationController implements ReservationApi {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     @Transactional
     public ResponseEntity<Void> cancel(UUID reservationId) {
         UUID userId = currentUserService.getId();

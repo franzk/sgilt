@@ -8,12 +8,14 @@ import net.franzka.sgilt.core.pro.service.ProProvisioningService;
 import net.franzka.sgilt.core.security.CurrentUserService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@PreAuthorize("hasAuthority('ROLE_PRO')")
 public class ProController implements ProApi {
 
     private final CurrentUserService currentUserService;
