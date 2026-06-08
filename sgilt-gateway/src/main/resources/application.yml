@@ -29,15 +29,15 @@ spring:
               predicates:
                 - Path=/api/v1/users/**
 
-            - id: events-private
+            - id: user-private
               uri: ${BACK_URL:http://localhost:5027}
               predicates:
-                - Path=/api/v1/events/**
+                - Path=/api/v1/user/**
 
-            - id: reservations-private
+            - id: reservations-feed
               uri: ${BACK_URL:http://localhost:5027}
               predicates:
-                - Path=/api/v1/reservations/**
+                - Path=/api/v1/reservations/*/feed/**
 
             - id: pro-private
               uri: ${BACK_URL:http://localhost:5027}
