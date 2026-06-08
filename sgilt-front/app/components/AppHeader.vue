@@ -127,11 +127,6 @@ function handleLogin() {
     height: 1.25rem;
   }
 
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.42),
-    inset 0 -1px 2px rgba(80, 52, 0, 0.14),
-    0 1px 4px rgba(28, 24, 18, 0.14);
-
   border: none;
   border-radius: 50%;
   overflow: hidden;

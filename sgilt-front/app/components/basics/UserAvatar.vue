@@ -32,14 +32,7 @@ const cssVars = computed(() => ({
   height: var(--ua-size);
   border-radius: 50%;
 
-  background:
-    radial-gradient(
-      circle at 35% 25%,
-      rgba(255, 255, 255, 0.34) 0%,
-      rgba(255, 255, 255, 0.12) 32%,
-      transparent 58%
-    ),
-    linear-gradient(145deg, #ffd24a 0%, #ffc71f 42%, #ffbf00 100%);
+  background: $brand-accent;
 
   display: flex;
   align-items: center;
