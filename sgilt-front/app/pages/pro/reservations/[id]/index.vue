@@ -50,7 +50,6 @@
             status="nouvelle"
             :loading="ctaLoading"
             @confirm="onMarkContacted"
-            @confirm="onMarkContacted"
             @refuse="openRefusalModal"
           />
 
