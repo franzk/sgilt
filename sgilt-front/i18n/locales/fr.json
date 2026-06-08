@@ -667,17 +667,9 @@
       "back": "‹ Retour",
       "refusal-modal": {
         "title": "Refuser la demande",
-        "lead": "Pourquoi refusez-vous cette demande ?",
-        "communicate": "Communiquer le motif au client",
-        "submit": "Confirmer le refus",
-        "reasons": {
-          "date": "📅 Date non disponible",
-          "zone": "📍 Zone géographique trop éloignée",
-          "jauge": "👥 Jauge d'invités incompatible",
-          "budget": "💰 Budget incompatible",
-          "type": "🎯 Type d'événement hors de mes prestations",
-          "autre": "••• Autre"
-        }
+        "lead": "Voulez-vous laisser un message au client ? (optionnel)",
+        "placeholder": "Votre message…",
+        "submit": "Confirmer le refus"
       }
     },
     "contact": {

@@ -2,14 +2,14 @@
   <button
     class="critical-actions-link"
     type="button"
-    @click="navigateTo(`/pro/reservations/${demandeId}/actions`)"
+    @click="navigateTo(`/pro/reservations/${reservationId}/actions`)"
   >
     {{ $t('pro.actions.page-title') }}
   </button>
 </template>
 
 <script setup lang="ts">
-defineProps<{ demandeId: string }>()
+defineProps<{ reservationId: string }>()
 </script>
 
 <style scoped lang="scss">

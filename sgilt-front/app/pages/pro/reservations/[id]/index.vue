@@ -2,56 +2,63 @@
   <div class="pro-detail">
     <!-- ── Bandeau couverture ─────────────────────────────────────────────────── -->
     <div
-      v-if="demande"
+      v-if="reservation"
       ref="bannerRef"
       class="cover-banner"
       :style="{ backgroundImage: `url(${coverImage})` }"
     >
       <div class="overlay" />
-      <button class="back-btn" type="button" @click="router.back()">{{ $t('pro.reservation-detail.back') }}</button>
+      <button class="back-btn" type="button" @click="router.back()">
+        {{ $t('pro.reservation-detail.back') }}
+      </button>
       <div class="bottom">
         <div class="info">
-          <span class="category">{{ demande.category }}</span>
-          <span class="name">{{ demande.event.title }}</span>
+          <span class="category">{{ reservation.category }}</span>
+          <span class="name">{{ reservation.event.title }}</span>
         </div>
-        <span class="badge" :style="getStatusOverlayStyle(demande.status)">
-          {{ t(`reservation.statut.${demande.status}`) }}
+        <span class="badge" :style="getStatusOverlayStyle(reservation.status)">
+          {{ t(`reservation.statut.${reservation.status}`) }}
         </span>
       </div>
     </div>
 
     <!-- ── Contenu ───────────────────────────────────────────────────────────── -->
-    <template v-if="demande">
+    <template v-if="reservation">
       <!-- Bannière statut — pleine largeur -->
       <BookingStatusBanner
-        v-if="demande.phraseInfoState"
+        v-if="reservation.phraseInfoState"
         class="booking-status-banner-full"
-        :phrase-info-state="demande.phraseInfoState"
-        :status="demande.status"
-        :show-action-recquise="['nouvelle', 'en_discussion'].includes(demande.status)"
+        :phrase-info-state="reservation.phraseInfoState"
+        :status="reservation.status"
+        :show-action-recquise="['nouvelle', 'en_discussion'].includes(reservation.status)"
       />
 
       <div class="booking-layout">
         <!-- Colonne gauche : bloc bento unique -->
         <div class="left">
-          <EventBlock variant="pro" :event="demande.event" :client-info="demande.clientInfo" />
+          <EventBlock
+            variant="pro"
+            :event="reservation.event"
+            :client-info="reservation.clientInfo"
+          />
           <hr v-if="!isMobile" class="left-divider" />
 
           <!-- nouvelle : CTA statut desktop uniquement -->
           <BookingStatusCta
-            v-if="demande.status === 'nouvelle' && !isMobile"
+            v-if="reservation.status === 'nouvelle' && !isMobile"
             layout="column"
             status="nouvelle"
             :loading="ctaLoading"
-            @confirm="recontacter"
+            @confirm="onMarkContacted"
+            @confirm="onMarkContacted"
             @refuse="openRefusalModal"
           />
 
           <BookingContactActions
-            v-if="demande.status !== 'nouvelle' && !isMobile"
+            v-if="reservation.status !== 'nouvelle' && !isMobile"
             variant="big"
             layout="column"
-            :client-info="demande.clientInfo"
+            :client-info="reservation.clientInfo"
             :mailto-href="mailtoHref"
           />
         </div>
@@ -59,14 +66,14 @@
         <!-- Colonne droite : chaque bloc dans sa propre bento card -->
         <div class="right">
           <!-- nouvelle ─────────────────────────────────────────── -->
-          <template v-if="demande.status === 'nouvelle'">
+          <template v-if="reservation.status === 'nouvelle'">
             <!-- Desktop : cartes contact dans leur bento -->
             <div v-if="!isMobile" class="bento-card">
               <BookingContactActions
                 variant="big"
                 layout="row"
                 :desktop-only="true"
-                :client-info="demande.clientInfo"
+                :client-info="reservation.clientInfo"
                 :mailto-href="mailtoHref"
               />
             </div>
@@ -76,20 +83,20 @@
               <BookingContactActions
                 variant="big"
                 layout="row"
-                :client-info="demande.clientInfo"
+                :client-info="reservation.clientInfo"
                 :mailto-href="mailtoHref"
               />
               <BookingStatusCta
                 status="nouvelle"
                 :loading="ctaLoading"
-                @confirm="recontacter"
+                @confirm="onMarkContacted"
                 @refuse="openRefusalModal"
               />
             </div>
           </template>
 
           <!-- en_discussion ────────────────────────────────────── -->
-          <template v-else-if="demande.status === 'en_discussion'">
+          <template v-else-if="reservation.status === 'en_discussion'">
             <div class="bento-card">
               <BookingStatusCta
                 layout="row"
@@ -104,7 +111,8 @@
           <!-- Flux notes + documents -->
           <div class="bento-card">
             <ReservationFeed
-              :items="feedItems"
+              :items="feed"
+              :loading="feedPending"
               current-user-role="prestataire"
               :can-add-note="isEditable"
               :can-upload-document="isEditable"
@@ -117,15 +125,15 @@
 
           <!-- refusee / annulee ────────────────────────────────── -->
           <div
-            v-if="demande.status === 'refusee' || demande.status === 'annulee'"
+            v-if="reservation.status === 'refusee' || reservation.status === 'annulee'"
             class="bento-card"
           >
             <BookingResumeContactLink :mailto-href="mailtoHref" />
           </div>
 
           <!-- confirmee ────────────────────────────────────────── -->
-          <div v-if="demande.status === 'confirmee'" class="bento-card">
-            <BookingCriticalActions :demande-id="demandeId" />
+          <div v-if="reservation.status === 'confirmee'" class="bento-card">
+            <BookingCriticalActions :reservationId="reservationId" />
           </div>
         </div>
       </div>
@@ -166,12 +174,12 @@
     <BookingContactActions
       v-if="
         isMobile &&
-        demande &&
-        (demande.status === 'en_discussion' || demande.status === 'confirmee')
+        reservation &&
+        (reservation.status === 'en_discussion' || reservation.status === 'confirmee')
       "
       variant="sticky"
       layout="row"
-      :client-info="demande.clientInfo"
+      :client-info="reservation.clientInfo"
       :mailto-href="mailtoHref"
     />
 
@@ -184,22 +192,13 @@
     >
       <div class="refusal-form">
         <p class="lead">{{ t('pro.reservation-detail.refusal-modal.lead') }}</p>
-        <div class="reasons">
-          <label v-for="r in REFUSAL_REASONS" :key="r.id" class="refusal-reason">
-            <input v-model="refusalReason" type="radio" :value="r.id" />
-            <span>{{ r.label }}</span>
-          </label>
-        </div>
-        <label class="communicate">
-          <input v-model="communicateReason" type="checkbox" />
-          <span>{{ t('pro.reservation-detail.refusal-modal.communicate') }}</span>
-        </label>
-        <button
-          class="submit"
-          type="button"
-          :disabled="!refusalReason || refusalLoading"
-          @click="submitRefusal"
-        >
+        <textarea
+          v-model="refusalMessage"
+          class="message-input"
+          :placeholder="t('pro.reservation-detail.refusal-modal.placeholder')"
+          rows="4"
+        />
+        <button class="submit" type="button" :disabled="refusalLoading" @click="submitRefusal">
           {{ t('pro.reservation-detail.refusal-modal.submit') }}
         </button>
       </div>
@@ -219,35 +218,34 @@ import BookingStatusCta from '~/components/pro/BookingStatusCta.vue'
 import EventBlock from '~/components/app/EventBlock.vue'
 import BookingResumeContactLink from '~/components/pro/BookingResumeContactLink.vue'
 import BookingCriticalActions from '~/components/pro/BookingCriticalActions.vue'
-import { ProMockService } from '~/services/pro.mock'
-import type { ProReservationDetail, ReservationDocument, FeedItem } from '~/types/event'
+import { resolveEventCover } from '~/utils/eventCovers'
+import { buildReservationMailto } from '~/utils/reservationMailto'
 import { getStatusOverlayStyle } from '~/constants/reservation-status'
 
 const { isMobile } = useDevice()
-
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
-const demandeId = String(route.params.id)
+const reservationId = String(route.params.id)
 
-// ── Cover images ───────────────────────────────────────────────────────────────
-const COVER_IMAGES: Record<string, string> = {
-  mariage:
-    'https://images.unsplash.com/photo-1519741497674-611481863552?w=1400&auto=format&fit=crop',
-  anniversaire:
-    'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=1400&auto=format&fit=crop',
-  soiree:
-    'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1400&auto=format&fit=crop',
-  entreprise:
-    'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1400&auto=format&fit=crop',
-  autre: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1400&auto=format&fit=crop',
-}
+// ── Data ──────────────────────────────────────────────────────────────────────
+const { reservation, loading, markContacted, confirm, refuse } =
+  useProReservationDetail(reservationId)
+const { feed, pending: feedPending, addNote, uploadDocument } = useReservationFeed(reservationId)
 
-const coverImage = computed(
-  () =>
-    demande.value?.event.coverImage ??
-    COVER_IMAGES[demande.value?.event.eventType ?? ''] ??
-    COVER_IMAGES.autre,
-)
+// ── Cover image ────────────────────────────────────────────────────────────────
+const { toUrl } = useImageUrl()
+
+const coverImage = computed(() => {
+  if (!reservation.value?.event) return ''
+  return resolveEventCover(
+    {
+      coverImage: reservation.value.event.coverImage ?? null,
+      eventType: reservation.value.event.eventType,
+    },
+    toUrl,
+  )
+})
 
 // ── Parallax ───────────────────────────────────────────────────────────────────
 const bannerRef = ref<HTMLElement | null>(null)
@@ -269,121 +267,72 @@ onUnmounted(() => {
   if (rafId !== null) cancelAnimationFrame(rafId)
 })
 
-// ── Data ──────────────────────────────────────────────────────────────────────
-const demande = ref<ProReservationDetail | null>(null)
-const loading = ref(true)
-
-onMounted(async () => {
-  demande.value = await ProMockService.getDemandeById(demandeId)
-  loading.value = false
-})
-
-const { t } = useI18n()
-
 const isEditable = computed(() => {
-  const s = demande.value?.status
+  const s = reservation.value?.status
   return s !== 'refusee' && s !== 'annulee' && s !== 'realisee'
 })
 
-// ── Feed items ─────────────────────────────────────────────────────────────────
-const feedItems = computed<FeedItem[]>(() => {
-  if (!demande.value) return []
-  const notes: FeedItem[] = demande.value.notes.map((n) => ({ ...n, type: 'note' as const }))
-  const docs: FeedItem[] = demande.value.documents.map((d) => ({
-    ...d,
-    type: 'document' as const,
-  }))
-  return [...notes, ...docs]
-})
-
-async function onAddNote(content: string, isPersonal: boolean) {
-  const note = await ProMockService.addNote(demandeId, content, isPersonal)
-  demande.value?.notes.push(note)
+// ── Feed handlers ──────────────────────────────────────────────────────────────
+async function onAddNote(title: string, content: string, isPersonal: boolean) {
+  await addNote(title, content, isPersonal)
 }
 
-function onUploadDocument(file: File) {
-  if (!demande.value) return
-  const fileType: ReservationDocument['fileType'] =
-    file.type === 'application/pdf' ? 'pdf' : file.type.startsWith('image/') ? 'image' : 'other'
-  const doc: ReservationDocument = {
-    id: `pd-${Date.now()}`,
-    name: file.name,
-    fileType,
-    url: URL.createObjectURL(file),
-    author: {
-      id: 'presta-3',
-      name: 'DJ Animation',
-      role: 'prestataire',
-      photo: '/images/prestataires/dj-animation.jpg',
-    },
-    createdAt: new Date(),
-  }
-  demande.value.documents.unshift(doc)
+async function onUploadDocument(file: File) {
+  await uploadDocument(file, false)
 }
 
-function onDeleteDocument(id: string) {
-  if (!demande.value) return
-  demande.value.documents = demande.value.documents.filter((d) => d.id !== id)
+function onDeleteDocument(_id: string) {
+  // TODO hors scope — sera implémenté dans une prochaine itération
 }
 
 // ── mailto ─────────────────────────────────────────────────────────────────────
-const mailtoHref = computed(() => {
-  if (!demande.value) return '#'
-  const { email, firstName } = demande.value.clientInfo
-  const subject = encodeURIComponent(`Votre demande — ${demande.value.event.title}`)
-  const body = encodeURIComponent(
-    `Bonjour ${firstName},\n\nJe reviens vers vous suite à votre demande pour ${demande.value.event.title}.\n\nCordialement,\nDJ Animation`,
-  )
-  return `mailto:${email}?subject=${subject}&body=${body}`
-})
+const mailtoHref = computed(() =>
+  reservation.value ? buildReservationMailto(reservation.value) : '#',
+)
 
 // ── CTA ───────────────────────────────────────────────────────────────────────
 const ctaLoading = ref(false)
 
-async function recontacter() {
-  if (!demande.value || ctaLoading.value) return
+async function onMarkContacted() {
+  if (!reservation.value || ctaLoading.value) return
   ctaLoading.value = true
-  await ProMockService.updateStatut(demandeId, 'en_discussion')
-  demande.value.status = 'en_discussion'
-  ctaLoading.value = false
+  try {
+    await markContacted()
+  } finally {
+    ctaLoading.value = false
+  }
 }
 
 async function confirmer() {
-  if (!demande.value || ctaLoading.value) return
+  if (!reservation.value || ctaLoading.value) return
   ctaLoading.value = true
-  await ProMockService.updateStatut(demandeId, 'confirmee')
-  demande.value.status = 'confirmee'
-  ctaLoading.value = false
+  try {
+    await confirm()
+  } finally {
+    ctaLoading.value = false
+  }
 }
 
 // ── Refus ─────────────────────────────────────────────────────────────────────
-const REFUSAL_REASONS = computed(() => [
-  { id: 'date', label: t('pro.reservation-detail.refusal-modal.reasons.date') },
-  { id: 'zone', label: t('pro.reservation-detail.refusal-modal.reasons.zone') },
-  { id: 'jauge', label: t('pro.reservation-detail.refusal-modal.reasons.jauge') },
-  { id: 'budget', label: t('pro.reservation-detail.refusal-modal.reasons.budget') },
-  { id: 'type', label: t('pro.reservation-detail.refusal-modal.reasons.type') },
-  { id: 'autre', label: t('pro.reservation-detail.refusal-modal.reasons.autre') },
-])
-
 const refusalModalOpen = ref(false)
-const refusalReason = ref('')
-const communicateReason = ref(true)
+const refusalMessage = ref('')
 const refusalLoading = ref(false)
 
 function openRefusalModal() {
-  refusalReason.value = ''
-  communicateReason.value = true
+  refusalMessage.value = ''
   refusalModalOpen.value = true
 }
 
 async function submitRefusal() {
-  if (!refusalReason.value || refusalLoading.value) return
+  if (refusalLoading.value) return
   refusalLoading.value = true
-  await ProMockService.updateStatut(demandeId, 'annulee')
-  if (demande.value) demande.value.status = 'annulee'
-  refusalLoading.value = false
-  refusalModalOpen.value = false
+  const msg = refusalMessage.value.trim()
+  try {
+    await refuse(msg, msg.length > 0)
+    refusalModalOpen.value = false
+  } finally {
+    refusalLoading.value = false
+  }
 }
 </script>
 
@@ -633,25 +582,26 @@ $bento-radius: $radius-sm;
     margin: 0;
   }
 
-  .reasons {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-xs;
-  }
-
-  .communicate {
-    display: flex;
-    align-items: center;
-    gap: $spacing-xs;
+  .message-input {
+    width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+    padding: $spacing-s $spacing-m;
+    border: 1px solid $divider-color;
+    border-radius: $radius-md;
     font-family: 'Inter', sans-serif;
-    font-size: 0.8rem;
-    color: $text-secondary;
-    cursor: pointer;
-    padding-top: $spacing-xs;
-    border-top: 1px solid $divider-color;
-    user-select: none;
-    input {
-      cursor: pointer;
+    font-size: 0.875rem;
+    color: $text-primary;
+    background: #fff;
+    transition: border-color 150ms ease;
+    outline: none;
+
+    &::placeholder {
+      color: $text-secondary;
+    }
+
+    &:focus {
+      border-color: rgba(47, 42, 37, 0.4);
     }
   }
 
@@ -671,20 +621,6 @@ $bento-radius: $radius-sm;
       opacity: 0.4;
       cursor: default;
     }
-  }
-}
-
-.refusal-reason {
-  display: flex;
-  align-items: center;
-  gap: $spacing-xs;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
-  color: $text-primary;
-  cursor: pointer;
-  user-select: none;
-  input {
-    cursor: pointer;
   }
 }
 

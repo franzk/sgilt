@@ -26,8 +26,8 @@ public interface ProReservationApi {
     @GetMapping("/{reservationId}")
     ResponseEntity<ProReservationDetailDto> getDetail(@PathVariable UUID reservationId);
 
-    @PostMapping("/{reservationId}/accept")
-    ResponseEntity<Void> accept(@PathVariable UUID reservationId);
+    @PostMapping("/{reservationId}/mark-contacted")
+    ResponseEntity<Void> markContacted(@PathVariable UUID reservationId);
 
     @PostMapping("/{reservationId}/confirm")
     ResponseEntity<Void> confirm(@PathVariable UUID reservationId);

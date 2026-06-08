@@ -259,14 +259,14 @@ public class ReservationService {
     }
 
     /**
-     * Passe la réservation de NEW à IN_DISCUSSION.
+     * Marque la réservation comme contactée — passe de NEW à IN_DISCUSSION.
      * L'ownership doit être vérifié par l'appelant avant d'invoquer cette méthode.
      *
      * @param reservationId l'identifiant de la réservation
      * @throws ReservationNotFoundException si la réservation n'existe pas
      * @throws InvalidStateException        si le statut courant n'est pas NEW
      */
-    public void accept(UUID reservationId) {
+    public void markContacted(UUID reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(ReservationNotFoundException::new);
         if (reservation.getStatus() != ReservationStatus.NEW) {

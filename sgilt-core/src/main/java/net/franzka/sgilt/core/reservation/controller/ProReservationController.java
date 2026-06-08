@@ -53,11 +53,11 @@ public class ProReservationController implements ProReservationApi {
 
     @Override
     @Transactional
-    public ResponseEntity<Void> accept(UUID reservationId) {
+    public ResponseEntity<Void> markContacted(UUID reservationId) {
         UUID userId = currentUserService.getId();
-        log.info("POST /pro/reservations/{}/accept", reservationId);
+        log.info("POST /pro/reservations/{}/mark-contacted", reservationId);
         reservationService.verifyProOwnershipByReservationId(reservationId, userId);
-        reservationService.accept(reservationId);
+        reservationService.markContacted(reservationId);
         return ResponseEntity.noContent().build();
     }
 
