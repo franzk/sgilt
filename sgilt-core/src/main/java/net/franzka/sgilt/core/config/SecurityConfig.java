@@ -22,15 +22,14 @@ import java.util.Map;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/v1/user/**").hasAuthority("ROLE_USER")
                 .requestMatchers("/api/v1/pro/**").hasAuthority("ROLE_PRO")
                 .requestMatchers("/api/v1/users/**").hasAuthority("ROLE_USER")
-                .requestMatchers("/api/v1/events/**").hasAuthority("ROLE_USER")
-                .requestMatchers("/api/v1/reservations/pro", "/api/v1/reservations/pro/**").hasAuthority("ROLE_PRO")
-                .requestMatchers("/api/v1/reservations/**").hasAuthority("ROLE_USER")
+                .requestMatchers("/api/v1/reservations/*/feed", "/api/v1/reservations/*/feed/**").hasAnyAuthority("ROLE_USER", "ROLE_PRO")
                 .anyRequest().permitAll()
             )
             .oauth2ResourceServer(oauth2 -> oauth2

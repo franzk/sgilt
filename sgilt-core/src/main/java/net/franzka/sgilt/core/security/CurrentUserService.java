@@ -64,6 +64,17 @@ public class CurrentUserService {
         return extractJwt();
     }
 
+    /**
+     * Indique si l'utilisateur connecté possède l'authority {@code ROLE_PRO}.
+     *
+     * @return true si le caller est un prestataire
+     */
+    public boolean isPro() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_PRO".equals(a.getAuthority()));
+    }
+
     private Jwt extractJwt() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth instanceof Authentication a) || !(a.getPrincipal() instanceof Jwt jwt)) {
