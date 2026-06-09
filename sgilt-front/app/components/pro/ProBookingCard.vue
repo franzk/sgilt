@@ -38,8 +38,8 @@
 
     <!-- Colonne droite : infos -->
     <div class="right">
-      <div v-if="needsAction" class="right-row">
-        <span class="action-required" :class="`${reservation.statut}`">
+      <div class="right-row">
+        <span v-if="needsAction" class="action-required" :class="`${reservation.statut}`">
           <template v-if="reservation.statut === 'nouvelle'">
             <PhoneIcon />
             {{ $t('pro.board.card.contact-client') }}</template
@@ -48,6 +48,9 @@
             <CheckboxCircleIcon />
             {{ $t('pro.board.card.validate-request') }}</template
           >
+        </span>
+        <span v-else class="status-tag" :class="`${reservation.statut}`">
+          {{ $t(`reservation.statut.${reservation.statut}`) }}
         </span>
       </div>
 
@@ -239,27 +242,30 @@ const needsAction = computed(() =>
     }
   }
 
-  // ── "Action requise" ────────────────────────────────────────────────────────
+  // ── Tags statut (action requise + état) ─────────────────────────────────────
 
-  .action-required {
-    display: flex;
+  .action-required,
+  .status-tag {
+    display: inline-flex;
     align-items: center;
     gap: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: $radius-xl;
+    letter-spacing: 0.01em;
+    width: fit-content;
 
     svg {
       width: 16px;
       height: 16px;
     }
+  }
 
-    font-family: 'Inter', sans-serif;
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    font-weight: 600;
+  .action-required {
     color: #fff;
-    padding: 4px 8px;
-    border-radius: $radius-xl;
-    letter-spacing: 0.01em;
-    width: fit-content;
 
     &.nouvelle {
       background: #d93025;
@@ -267,6 +273,31 @@ const needsAction = computed(() =>
 
     &.en_discussion {
       background: #e67e22;
+    }
+  }
+
+  .status-tag {
+    background: transparent;
+    border: 1.5px solid;
+
+    &.confirmee {
+      color: #2e7d32;
+      border-color: #2e7d32;
+    }
+
+    &.refusee {
+      color: #c0392b;
+      border-color: #c0392b;
+    }
+
+    &.annulee {
+      color: $text-secondary;
+      border-color: $text-secondary;
+    }
+
+    &.realisee {
+      color: #2980b9;
+      border-color: #2980b9;
     }
   }
 
