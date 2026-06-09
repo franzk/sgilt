@@ -163,11 +163,7 @@
 
     <!-- ── Contact sticky mobile uniquement (en_discussion + confirmee) ─────── -->
     <BookingContactActions
-      v-if="
-        isMobile &&
-        reservation &&
-        (reservation.status === 'en_discussion' || reservation.status === 'confirmee')
-      "
+      v-if="isMobile && reservation && reservation.status !== 'nouvelle'"
       variant="sticky"
       layout="row"
       :client-info="reservation.clientInfo"
@@ -207,7 +203,6 @@ import BookingStatusBanner from '~/components/pro/BookingStatusBanner.vue'
 import BookingContactActions from '~/components/pro/BookingContactActions.vue'
 import BookingStatusCta from '~/components/pro/BookingStatusCta.vue'
 import EventBlock from '~/components/app/EventBlock.vue'
-import BookingResumeContactLink from '~/components/pro/BookingResumeContactLink.vue'
 import BookingCriticalActions from '~/components/pro/BookingCriticalActions.vue'
 import { resolveEventCover } from '~/utils/eventCovers'
 import { buildReservationMailto } from '~/utils/reservationMailto'
@@ -524,8 +519,7 @@ $bento-radius: $radius-sm;
     display: flex;
     flex-direction: column;
     gap: $spacing-m;
-    padding: $spacing-m $spacing-m
-      calc(env(safe-area-inset-bottom, 0px) + $sticky-h + $spacing-m);
+    padding: $spacing-m $spacing-m calc(env(safe-area-inset-bottom, 0px) + $sticky-h + $spacing-m);
     min-width: 0;
 
     @media (min-width: $desktop) {
