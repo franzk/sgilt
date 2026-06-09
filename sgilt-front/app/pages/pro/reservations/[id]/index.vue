@@ -122,14 +122,6 @@
             />
           </div>
 
-          <!-- refusee / annulee ────────────────────────────────── -->
-          <div
-            v-if="reservation.status === 'refusee' || reservation.status === 'annulee'"
-            class="bento-card"
-          >
-            <BookingResumeContactLink :mailto-href="mailtoHref" />
-          </div>
-
           <!-- confirmee ────────────────────────────────────────── -->
           <div v-if="reservation.status === 'confirmee'" class="bento-card">
             <BookingCriticalActions :reservationId="reservationId" />
@@ -230,7 +222,13 @@ const reservationId = String(route.params.id)
 // ── Data ──────────────────────────────────────────────────────────────────────
 const { reservation, loading, markContacted, confirm, refuse } =
   useProReservationDetail(reservationId)
-const { feed, pending: feedPending, load: refreshFeed, addNote, uploadDocument } = useReservationFeed(reservationId)
+const {
+  feed,
+  pending: feedPending,
+  load: refreshFeed,
+  addNote,
+  uploadDocument,
+} = useReservationFeed(reservationId)
 
 // ── Cover image ────────────────────────────────────────────────────────────────
 const { toUrl } = useImageUrl()
@@ -329,7 +327,7 @@ async function submitRefusal() {
   refusalLoading.value = true
   const msg = refusalMessage.value.trim()
   try {
-    await refuse(msg, msg.length > 0)
+    await refuse(msg)
     refusalModalOpen.value = false
     await refreshFeed()
   } finally {
@@ -342,7 +340,7 @@ async function submitRefusal() {
 @use '@/assets/styles/base' as *;
 
 $desktop: $breakpoint-desktop;
-$sticky-h: 56px;
+$sticky-h: 200px;
 
 // ── Page wrapper ───────────────────────────────────────────────────────────────
 .pro-detail {
@@ -527,7 +525,7 @@ $bento-radius: $radius-sm;
     flex-direction: column;
     gap: $spacing-m;
     padding: $spacing-m $spacing-m
-      calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $sticky-h + $spacing-m);
+      calc(env(safe-area-inset-bottom, 0px) + $sticky-h + $spacing-m);
     min-width: 0;
 
     @media (min-width: $desktop) {
@@ -542,6 +540,19 @@ $bento-radius: $radius-sm;
   display: flex;
   flex-direction: column;
   gap: $spacing-s;
+
+  @media (max-width: #{$desktop - 1px}) {
+    position: fixed;
+    bottom: env(safe-area-inset-bottom, 0px);
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: $spacing-s $spacing-m;
+    background: rgba(245, 245, 243, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
 }
 
 // ── Bento card — colonne droite ────────────────────────────────────────────────
