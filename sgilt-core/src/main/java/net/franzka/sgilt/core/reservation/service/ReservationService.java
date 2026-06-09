@@ -323,6 +323,32 @@ public class ReservationService {
     }
 
     /**
+     * Annule une réservation confirmée par le prestataire — passe de CONFIRMED à CANCELED_POST_CONFIRMATION.
+     * L'ownership doit être vérifié par l'appelant avant d'invoquer cette méthode.
+     *
+     * @param reservationId l'identifiant de la réservation
+     * @throws ReservationNotFoundException si la réservation n'existe pas
+     * @throws InvalidStateException        si le statut courant n'est pas CONFIRMED
+     */
+    public void cancelByPro(UUID reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(ReservationNotFoundException::new);
+        if (reservation.getStatus() != ReservationStatus.CONFIRMED) {
+            throw new InvalidStateException(
+                    "La réservation ne peut pas être annulée par le prestataire depuis le statut " + reservation.getStatus());
+        }
+        reservation.setStatus(ReservationStatus.CANCELED_POST_CONFIRMATION);
+        reservationRepository.save(reservation);
+
+        noteRepository.save(Note.builder()
+                .reservation(reservation)
+                .prestataire(reservation.getPrestataire())
+                .generatedKey("feed.system.cancelled")
+                .isPersonal(false)
+                .build());
+    }
+
+    /**
      * Refuse la réservation (NEW → REFUSED_PRE_CONTACT, IN_DISCUSSION → REFUSED_POST_CONTACT).
      * une note visible par le client est créée avec la raison si le prestataire l'a renseignée
      * L'ownership doit être vérifié par l'appelant avant d'invoquer cette méthode.

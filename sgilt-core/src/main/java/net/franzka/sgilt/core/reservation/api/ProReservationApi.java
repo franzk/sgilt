@@ -34,4 +34,7 @@ public interface ProReservationApi {
 
     @PostMapping("/{reservationId}/refuse")
     ResponseEntity<Void> refuse(@PathVariable UUID reservationId, @RequestBody RefuseReservationRequest body);
+
+    @PostMapping("/{reservationId}/cancel")
+    ResponseEntity<Void> cancelByPro(@PathVariable UUID reservationId);
 }

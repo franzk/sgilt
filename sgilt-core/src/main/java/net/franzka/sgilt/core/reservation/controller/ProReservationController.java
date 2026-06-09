@@ -80,4 +80,14 @@ public class ProReservationController implements ProReservationApi {
         reservationService.refuse(reservationId, body);
         return ResponseEntity.noContent().build();
     }
+
+    @Override
+    @Transactional
+    public ResponseEntity<Void> cancelByPro(UUID reservationId) {
+        UUID userId = currentUserService.getId();
+        log.info("POST /pro/reservations/{}/cancel", reservationId);
+        reservationService.verifyProOwnershipByReservationId(reservationId, userId);
+        reservationService.cancelByPro(reservationId);
+        return ResponseEntity.noContent().build();
+    }
 }

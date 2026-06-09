@@ -3,6 +3,7 @@ import {
   markDemandeContacted,
   confirmReservation,
   refuseReservation,
+  cancelReservationByPro,
 } from './service/reservationService'
 import type { ProReservationDetail } from './domain/ProReservationDetail'
 
@@ -42,5 +43,10 @@ export function useProReservationDetail(reservationId: string) {
     if (reservation.value) reservation.value.status = 'refusee'
   }
 
-  return { reservation, loading, error, markContacted, confirm, refuse }
+  async function cancelByPro() {
+    await cancelReservationByPro(reservationId)
+    if (reservation.value) reservation.value.status = 'annulee'
+  }
+
+  return { reservation, loading, error, markContacted, confirm, refuse, cancelByPro }
 }

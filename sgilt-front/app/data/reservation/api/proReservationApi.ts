@@ -31,3 +31,7 @@ export async function refuseReservationApi(reservationId: string, reason: string
     body: { reason },
   })
 }
+
+export async function cancelReservationByProApi(reservationId: string): Promise<void> {
+  await apiFetch(`/pro/reservations/${reservationId}/cancel`, { method: 'POST' })
+}

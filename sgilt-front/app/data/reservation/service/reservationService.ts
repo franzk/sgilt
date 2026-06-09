@@ -10,6 +10,7 @@ import {
   markContactedApi,
   confirmReservationApi,
   refuseReservationApi,
+  cancelReservationByProApi,
 } from '../api/proReservationApi'
 import {
   mapReservationMeta,
@@ -55,6 +56,10 @@ export async function confirmReservation(reservationId: string): Promise<void> {
 
 export async function refuseReservation(reservationId: string, reason: string): Promise<void> {
   await refuseReservationApi(reservationId, reason)
+}
+
+export async function cancelReservationByPro(reservationId: string): Promise<void> {
+  await cancelReservationByProApi(reservationId)
 }
 
 export async function fetchActiveReservations(): Promise<ActiveReservations> {
