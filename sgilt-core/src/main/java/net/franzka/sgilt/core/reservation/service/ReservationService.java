@@ -195,7 +195,16 @@ public class ReservationService {
                     "La réservation ne peut pas être annulée depuis le statut " + reservation.getStatus());
         };
         reservation.setStatus(cancelled);
+        // save reservation
         reservationRepository.save(reservation);
+
+        // crée une note système pour alimenter le feed de la réservation, visible par tout le monde
+        noteRepository.save(Note.builder()
+                .reservation(reservation)
+                .utilisateur(reservation.getUtilisateur())
+                .generatedKey("feed.system.cancelled")
+                .isPersonal(false)
+                .build());
     }
 
     /**
@@ -273,7 +282,17 @@ public class ReservationService {
             throw new InvalidStateException("La réservation ne peut pas être acceptée depuis le statut " + reservation.getStatus());
         }
         reservation.setStatus(ReservationStatus.IN_DISCUSSION);
+
+        // save reservation
         reservationRepository.save(reservation);
+
+        // crée une note système pour alimenter le feed de la réservation, visible par tout le monde
+        noteRepository.save(Note.builder()
+                .reservation(reservation)
+                .prestataire(reservation.getPrestataire())
+                .generatedKey("feed.system.contacted")
+                .isPersonal(false)
+                .build());
     }
 
     /**
@@ -291,7 +310,17 @@ public class ReservationService {
             throw new InvalidStateException("La réservation ne peut pas être confirmée depuis le statut " + reservation.getStatus());
         }
         reservation.setStatus(ReservationStatus.CONFIRMED);
+
+        // save reservation
         reservationRepository.save(reservation);
+
+        // crée une note système pour alimenter le feed de la réservation, visible par tout le monde
+        noteRepository.save(Note.builder()
+                .reservation(reservation)
+                .prestataire(reservation.getPrestataire())
+                .generatedKey("feed.system.confirmed")
+                .isPersonal(false)
+                .build());
     }
 
     /**
@@ -316,15 +345,23 @@ public class ReservationService {
         reservation.setStatus(refused);
         reservationRepository.save(reservation);
 
-        if (request.communicate() && StringUtils.hasText(request.reason())) {
-            Note note = Note.builder()
+        // note générée pour statuer le refus
+        noteRepository.save(Note.builder()
+                .reservation(reservation)
+                .prestataire(reservation.getPrestataire())
+                .generatedKey("feed.system.refused")
+                .content(request.communicate() ? request.reason() : null)
+                .isPersonal(false)
+                .build());
+
+        // note supplémentaire générée s'il le prestataire a mis une raison qu'il ne souhaite pas communiquer au client
+        if (!request.communicate() && StringUtils.hasText(request.reason())) {
+            noteRepository.save(Note.builder()
                     .reservation(reservation)
                     .prestataire(reservation.getPrestataire())
-                    .title(String.format("%s a décliné la demande de réservation", reservation.getPrestataire().getName()))
                     .content(request.reason())
-                    .isPersonal(false)
-                    .build();
-            noteRepository.save(note);
+                    .isPersonal(true)
+                    .build());
         }
     }
 

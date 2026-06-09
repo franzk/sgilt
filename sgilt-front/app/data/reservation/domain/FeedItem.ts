@@ -10,12 +10,17 @@ export interface FeedItem {
   title: string
   author: NoteAuthor
   createdAt: Date
+
   // note
   content?: string | null
   isPersonal?: boolean | null
   isMessageInitial?: boolean | null
+
   // document
   name?: string | null
   fileType?: string | null
   url?: string | null
+
+  // note système
+  generatedKey?: string | null
 }

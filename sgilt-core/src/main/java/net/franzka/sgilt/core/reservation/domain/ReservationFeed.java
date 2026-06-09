@@ -38,7 +38,7 @@ public abstract class ReservationFeed {
     @JoinColumn(name = "prestataire_id")
     private Prestataire prestataire;
 
-    @Column(nullable = false)
+    @Column
     private String title;
 
     @Column(nullable = false)

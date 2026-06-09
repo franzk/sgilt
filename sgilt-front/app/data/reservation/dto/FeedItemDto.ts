@@ -17,4 +17,7 @@ export interface FeedItemDto {
   name?: string | null
   fileType?: string | null
   url?: string | null
+
+  // note système
+  generatedKey?: string | null
 }

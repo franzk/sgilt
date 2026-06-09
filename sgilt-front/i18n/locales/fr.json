@@ -697,6 +697,12 @@
     }
   },
   "feed": {
+    "system": {
+      "contacted": "Le premier contact est lancé !",
+      "confirmed": "C'est confirmé !",
+      "cancelled": "La réservation est annulée.",
+      "refused": "{name} a décliné la demande de réservation"
+    },
     "title": "Notes & suivi",
     "subtitle": "Ajoutez des notes, documents ou informations utiles pour le suivi.",
     "upload-error": {

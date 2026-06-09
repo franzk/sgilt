@@ -53,19 +53,29 @@ public class ReservationFeedMapper {
         String authorRole  = byClient ? "client" : "prestataire";
 
         return switch (item) {
-            case Note note -> new FeedItemDto(
-                    "note",
-                    note.getId(), authorId, authorName, authorPhoto, authorRole, note.getCreatedAt(),
-                    note.getTitle(), note.getContent(), note.getIsPersonal(), isMessageInitial,
-                    null, null, null
-            );
-            case Document doc -> new FeedItemDto(
-                    "document",
-                    doc.getId(), authorId, authorName, authorPhoto, authorRole, doc.getCreatedAt(),
-                    doc.getTitle(), null, doc.getIsPersonal(), isMessageInitial,
-                    doc.getFileName(), doc.getMimeType(),
-                    "/reservations/" + reservationId + "/feed/documents/" + doc.getId()
-            );
+            case Note note -> FeedItemDto.builder()
+                    .type("note")
+                    .id(note.getId())
+                    .authorId(authorId).authorName(authorName).authorPhoto(authorPhoto).authorRole(authorRole)
+                    .createdAt(note.getCreatedAt())
+                    .title(note.getTitle())
+                    .content(note.getContent())
+                    .isPersonal(note.getIsPersonal())
+                    .isMessageInitial(isMessageInitial)
+                    .generatedKey(note.getGeneratedKey())
+                    .build();
+            case Document doc -> FeedItemDto.builder()
+                    .type("document")
+                    .id(doc.getId())
+                    .authorId(authorId).authorName(authorName).authorPhoto(authorPhoto).authorRole(authorRole)
+                    .createdAt(doc.getCreatedAt())
+                    .title(doc.getTitle())
+                    .isPersonal(doc.getIsPersonal())
+                    .isMessageInitial(isMessageInitial)
+                    .name(doc.getFileName())
+                    .fileType(doc.getMimeType())
+                    .url("/reservations/" + reservationId + "/feed/documents/" + doc.getId())
+                    .build();
             default -> throw new IllegalArgumentException(
                     "Type de feed item inconnu : " + item.getClass().getSimpleName());
         };

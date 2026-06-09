@@ -21,6 +21,7 @@ function mapItem(dto: FeedItemDto): FeedItem {
     name: dto.name ?? null,
     fileType: dto.fileType ?? null,
     url: dto.url ?? null,
+    generatedKey: dto.generatedKey ?? null,
   }
 }
 
