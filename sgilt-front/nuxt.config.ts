@@ -45,8 +45,30 @@ export default defineNuxtConfig({
       headers: { 'X-Robots-Tag': 'noindex, nofollow' },
     },
 
+    // Pro = SPA, pas de SEO
+    '/pro': {
+      ssr: false,
+      headers: { 'X-Robots-Tag': 'noindex, nofollow' },
+    },
+    '/pro/**': {
+      ssr: false,
+      headers: { 'X-Robots-Tag': 'noindex, nofollow' },
+    },
+
     // Account = SPA, pas de SEO
     '/account/**': {
+      ssr: false,
+      headers: { 'X-Robots-Tag': 'noindex, nofollow' },
+    },
+
+    // Onboarding = SPA (nécessite KC côté client)
+    '/onboarding/**': {
+      ssr: false,
+      headers: { 'X-Robots-Tag': 'noindex, nofollow' },
+    },
+
+    // Auth = SPA (KC est client-only)
+    '/auth/**': {
       ssr: false,
       headers: { 'X-Robots-Tag': 'noindex, nofollow' },
     },
