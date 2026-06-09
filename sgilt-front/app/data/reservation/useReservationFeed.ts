@@ -47,5 +47,5 @@ export function useReservationFeed(reservationId: string) {
     feed.value = feed.value.filter((item) => item.id !== id)
   }
 
-  return { feed, pending, error, uploading, addNote, uploadDocument, download, removeItem }
+  return { feed, pending, error, uploading, load, addNote, uploadDocument, download, removeItem }
 }

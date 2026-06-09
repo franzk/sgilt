@@ -23,7 +23,6 @@ import net.franzka.sgilt.core.reservation.repository.NoteRepository;
 import net.franzka.sgilt.core.reservation.repository.ReservationRepository;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -325,7 +324,7 @@ public class ReservationService {
 
     /**
      * Refuse la réservation (NEW → REFUSED_PRE_CONTACT, IN_DISCUSSION → REFUSED_POST_CONTACT).
-     * Si {@code request.communicate()} est vrai, une note visible par le client est créée.
+     * une note visible par le client est créée avec la raison si le prestataire l'a renseignée
      * L'ownership doit être vérifié par l'appelant avant d'invoquer cette méthode.
      *
      * @param reservationId l'identifiant de la réservation
@@ -350,19 +349,9 @@ public class ReservationService {
                 .reservation(reservation)
                 .prestataire(reservation.getPrestataire())
                 .generatedKey("feed.system.refused")
-                .content(request.communicate() ? request.reason() : null)
+                .content(request.reason())
                 .isPersonal(false)
                 .build());
-
-        // note supplémentaire générée s'il le prestataire a mis une raison qu'il ne souhaite pas communiquer au client
-        if (!request.communicate() && StringUtils.hasText(request.reason())) {
-            noteRepository.save(Note.builder()
-                    .reservation(reservation)
-                    .prestataire(reservation.getPrestataire())
-                    .content(request.reason())
-                    .isPersonal(true)
-                    .build());
-        }
     }
 
     /**

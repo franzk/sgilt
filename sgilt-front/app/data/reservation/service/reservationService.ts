@@ -1,4 +1,8 @@
-import { getReservationMetaApi, cancelReservationApi, getActiveReservationsApi } from '../api/clientReservationApi'
+import {
+  getReservationMetaApi,
+  cancelReservationApi,
+  getActiveReservationsApi,
+} from '../api/clientReservationApi'
 import {
   getProReservationsApi,
   getProBoardCountsApi,
@@ -35,7 +39,9 @@ export async function fetchProBoardCounts(): Promise<ProBoardCounts> {
   return getProBoardCountsApi()
 }
 
-export async function fetchProReservationDetail(reservationId: string): Promise<ProReservationDetail> {
+export async function fetchProReservationDetail(
+  reservationId: string,
+): Promise<ProReservationDetail> {
   return mapProReservationDetail(reservationId, await getProReservationDetailApi(reservationId))
 }
 
@@ -47,8 +53,8 @@ export async function confirmReservation(reservationId: string): Promise<void> {
   await confirmReservationApi(reservationId)
 }
 
-export async function refuseReservation(reservationId: string, reason: string, communicate: boolean): Promise<void> {
-  await refuseReservationApi(reservationId, reason, communicate)
+export async function refuseReservation(reservationId: string, reason: string): Promise<void> {
+  await refuseReservationApi(reservationId, reason)
 }
 
 export async function fetchActiveReservations(): Promise<ActiveReservations> {

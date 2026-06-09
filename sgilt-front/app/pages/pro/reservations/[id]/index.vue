@@ -230,7 +230,7 @@ const reservationId = String(route.params.id)
 // ── Data ──────────────────────────────────────────────────────────────────────
 const { reservation, loading, markContacted, confirm, refuse } =
   useProReservationDetail(reservationId)
-const { feed, pending: feedPending, addNote, uploadDocument } = useReservationFeed(reservationId)
+const { feed, pending: feedPending, load: refreshFeed, addNote, uploadDocument } = useReservationFeed(reservationId)
 
 // ── Cover image ────────────────────────────────────────────────────────────────
 const { toUrl } = useImageUrl()
@@ -297,6 +297,7 @@ async function onMarkContacted() {
   ctaLoading.value = true
   try {
     await markContacted()
+    await refreshFeed()
   } finally {
     ctaLoading.value = false
   }
@@ -307,6 +308,7 @@ async function confirmer() {
   ctaLoading.value = true
   try {
     await confirm()
+    await refreshFeed()
   } finally {
     ctaLoading.value = false
   }
@@ -329,6 +331,7 @@ async function submitRefusal() {
   try {
     await refuse(msg, msg.length > 0)
     refusalModalOpen.value = false
+    await refreshFeed()
   } finally {
     refusalLoading.value = false
   }

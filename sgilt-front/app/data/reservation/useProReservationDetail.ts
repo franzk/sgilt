@@ -37,8 +37,8 @@ export function useProReservationDetail(reservationId: string) {
     if (reservation.value) reservation.value.status = 'confirmee'
   }
 
-  async function refuse(reason: string, communicate: boolean) {
-    await refuseReservation(reservationId, reason, communicate)
+  async function refuse(reason: string) {
+    await refuseReservation(reservationId, reason)
     if (reservation.value) reservation.value.status = 'refusee'
   }
 
