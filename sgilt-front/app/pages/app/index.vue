@@ -245,7 +245,7 @@ $desktop: $breakpoint-desktop;
   flex-direction: column;
   gap: $spacing-l;
   padding: 0 $spacing-m calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $spacing-m);
-  background-color: #f5f5f3;
+  background-color: $brand-background-alt;
 
   @media (min-width: $desktop) {
     display: grid;
@@ -357,7 +357,7 @@ $desktop: $breakpoint-desktop;
 // ── Liste événements desktop ──────────────────────────────────────────────────
 .home-page__events-list {
   display: none;
-  background-color: #f7f9fb;
+  background-color: $brand-background-alt;
 
   @media (min-width: $desktop) {
     display: flex;

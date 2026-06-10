@@ -14,7 +14,11 @@
     <div class="body">
       <!-- Sidebar desktop (masquée mobile) -->
       <aside class="sidebar">
-        <ProBoardGreeting :loading="loading" :counts="boardCounts" @filter="activeFilter = $event" />
+        <ProBoardGreeting
+          :loading="loading"
+          :counts="boardCounts"
+          @filter="activeFilter = $event"
+        />
       </aside>
 
       <!-- Liste des bookings -->
@@ -54,9 +58,7 @@ const activeFilter = ref<ReservationStatut | null>(null)
 
 // ── Filtrage ───────────────────────────────────────────────────────────────────
 const filteredReservations = computed(() =>
-  reservations.value.filter(
-    (r) => activeFilter.value === null || r.statut === activeFilter.value,
-  ),
+  reservations.value.filter((r) => activeFilter.value === null || r.statut === activeFilter.value),
 )
 </script>
 
@@ -68,7 +70,7 @@ $filter-h: 50px;
 
 .pro-board {
   min-height: 100%;
-  background-color: #e8e6e3;
+  background-color: $brand-background-alt;
   display: flex;
   flex-direction: column;
 
