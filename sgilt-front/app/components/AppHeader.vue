@@ -55,17 +55,33 @@ const logoLink = computed(() => {
 })
 
 const ROUTES_WITHOUT_SHADOW_MOBILE = ['/', '/search']
+const ROUTES_SHADOW_ON_SCROLL = ['/app', '/app/events', '/pro/reservations']
 const route = useRoute()
 const { isMobile } = useDevice()
 
 const mounted = ref(false)
+const scrolled = ref(false)
+
+function updateScrolled() {
+  scrolled.value = window.scrollY > 0
+}
+
 onMounted(() => {
   mounted.value = true
+  window.addEventListener('scroll', updateScrolled, { passive: true })
+  updateScrolled()
 })
 
-const hideShadow = computed(
-  () => mounted.value && isMobile.value && ROUTES_WITHOUT_SHADOW_MOBILE.includes(route.path),
-)
+onUnmounted(() => {
+  window.removeEventListener('scroll', updateScrolled)
+})
+
+const hideShadow = computed(() => {
+  if (!mounted.value) return false
+  if (isMobile.value && ROUTES_WITHOUT_SHADOW_MOBILE.includes(route.path)) return true
+  if (isMobile.value && ROUTES_SHADOW_ON_SCROLL.includes(route.path)) return !scrolled.value
+  return false
+})
 
 function handleLogin() {
   login({ redirectUri: window.location.origin + '/auth/redirect' })
