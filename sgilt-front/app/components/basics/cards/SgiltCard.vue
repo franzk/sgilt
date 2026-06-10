@@ -62,7 +62,7 @@ withDefaults(
     border-radius: $radius-xl;
     overflow: hidden;
     padding: 0;
-    box-shadow: 0 2px 12px rgba(47, 42, 37, 0.06);
+    box-shadow: 0 4px 6px rgba(47, 42, 37, 0.12);
 
     &.clickable {
       cursor: pointer;
@@ -127,7 +127,7 @@ withDefaults(
     background: $surface-white;
     border-radius: $radius-md;
     overflow: hidden;
-    box-shadow: 0 2px 12px rgba(47, 42, 37, 0.06);
+    box-shadow: 0 4px 6px rgba(47, 42, 37, 0.12);
     width: 100%;
     text-align: left;
 
