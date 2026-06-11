@@ -2,11 +2,13 @@ import { fetchFeed, addNote as addNoteService, uploadDocument as uploadDocumentS
 import type { FeedItem } from './domain/FeedItem'
 
 export function useReservationFeed(reservationId: string) {
+  const { isAuthenticated } = useKeycloak()
   const feed = ref<FeedItem[]>([])
   const pending = ref(true)
   const error = ref<unknown>(null)
 
-  onMounted(async () => {
+  async function load() {
+    pending.value = true
     try {
       feed.value = await fetchFeed(reservationId)
     } catch (e) {
@@ -14,7 +16,11 @@ export function useReservationFeed(reservationId: string) {
     } finally {
       pending.value = false
     }
-  })
+  }
+
+  watch(isAuthenticated, (authenticated) => {
+    if (authenticated) load()
+  }, { immediate: true })
 
   async function addNote(title: string, content: string, isPersonal: boolean) {
     const item = await addNoteService(reservationId, title, content, isPersonal)
@@ -41,5 +47,5 @@ export function useReservationFeed(reservationId: string) {
     feed.value = feed.value.filter((item) => item.id !== id)
   }
 
-  return { feed, pending, error, uploading, addNote, uploadDocument, download, removeItem }
+  return { feed, pending, error, uploading, load, addNote, uploadDocument, download, removeItem }
 }

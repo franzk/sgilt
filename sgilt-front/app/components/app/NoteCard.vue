@@ -1,8 +1,8 @@
 <template>
   <div class="note-card" :class="note.author.role">
     <div class="body">
-      <strong class="titre">{{ note.title }}</strong>
-      <p class="content">{{ note.content }}</p>
+      <strong class="titre">{{ note.generatedKey ? $t(note.generatedKey, { name: note.author.name }) : note.title }}</strong>
+      <p v-if="note.content" class="content">{{ note.content }}</p>
     </div>
     <div class="divider" />
     <div class="footer">
@@ -56,8 +56,6 @@ const relativeDate = computed(() => {
   gap: $spacing-s;
   border-radius: $radius-sm;
   box-shadow: 0 1px 4px rgba(47, 42, 37, 0.07);
-
-  box-shadow: 0 2px 8px rgba(47, 42, 37, 0.08);
 
   &.client {
     background: #ffffff;

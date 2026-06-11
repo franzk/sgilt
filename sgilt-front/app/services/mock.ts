@@ -4,7 +4,7 @@ import type {
   ReservationMeta,
   ReservationDocument,
   ReservationNote,
-  ProDemandeDetail,
+  ProReservationDetail,
 } from '~/types/event'
 
 // ── Auteurs réutilisables ──────────────────────────────────────────────────────
@@ -101,7 +101,7 @@ export const MOCK_RESERVATIONS: ReservationMeta[] = []
 
 // ── Demandes pro (réservation + événement associé) ────────────────────────────
 
-export const PRO_DEMANDES: ProDemandeDetail[] = [
+export const PRO_DEMANDES: ProReservationDetail[] = [
   // ── nouvelle — // urgencyLevel desc ──────────────────────────────────────────────
   /* {
     ...PRO_ONLY_RESERVATIONS[2],

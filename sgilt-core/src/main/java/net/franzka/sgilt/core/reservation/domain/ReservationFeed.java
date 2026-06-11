@@ -38,11 +38,11 @@ public abstract class ReservationFeed {
     @JoinColumn(name = "prestataire_id")
     private Prestataire prestataire;
 
-    @Column(nullable = false)
+    @Column
     private String title;
 
     @Column(nullable = false)
-    private Boolean isPersonal;
+    private Boolean isPersonal = true;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -52,6 +52,6 @@ public abstract class ReservationFeed {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-        if (this.isPersonal == null) this.isPersonal = false;
+        if (this.isPersonal == null) this.isPersonal = true;
     }
 }

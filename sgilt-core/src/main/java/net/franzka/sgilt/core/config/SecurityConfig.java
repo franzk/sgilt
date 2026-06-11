@@ -2,6 +2,7 @@ package net.franzka.sgilt.core.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -17,16 +18,18 @@ import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/pro/**").hasAnyAuthority("ROLE_PRO", "ROLE_ADMIN")
-                .requestMatchers("/api/v1/users/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                .requestMatchers("/api/v1/events/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                .requestMatchers("/api/v1/user/**").hasAuthority("ROLE_USER")
+                .requestMatchers("/api/v1/pro/**").hasAuthority("ROLE_PRO")
+                .requestMatchers("/api/v1/users/**").hasAuthority("ROLE_USER")
+                .requestMatchers("/api/v1/reservations/*/feed", "/api/v1/reservations/*/feed/**").hasAnyAuthority("ROLE_USER", "ROLE_PRO")
                 .anyRequest().permitAll()
             )
             .oauth2ResourceServer(oauth2 -> oauth2

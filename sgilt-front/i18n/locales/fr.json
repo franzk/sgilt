@@ -636,7 +636,8 @@
     },
     "board": {
       "greeting": {
-        "title": "Bonjour DJ Animation !",
+        "title": "Bonjour !",
+        "titleNamed": "Bonjour {name} !",
         "counts": {
           "nouvelle": "{count} demandes à contacter",
           "en-discussion": "{count} demandes à confirmer",
@@ -666,17 +667,9 @@
       "back": "‹ Retour",
       "refusal-modal": {
         "title": "Refuser la demande",
-        "lead": "Pourquoi refusez-vous cette demande ?",
-        "communicate": "Communiquer le motif au client",
-        "submit": "Confirmer le refus",
-        "reasons": {
-          "date": "📅 Date non disponible",
-          "zone": "📍 Zone géographique trop éloignée",
-          "jauge": "👥 Jauge d'invités incompatible",
-          "budget": "💰 Budget incompatible",
-          "type": "🎯 Type d'événement hors de mes prestations",
-          "autre": "••• Autre"
-        }
+        "lead": "Voulez-vous laisser un message au client ? (optionnel)",
+        "placeholder": "Votre message…",
+        "submit": "Confirmer le refus"
       }
     },
     "contact": {
@@ -704,6 +697,12 @@
     }
   },
   "feed": {
+    "system": {
+      "contacted": "Le premier contact est lancé !",
+      "confirmed": "C'est confirmé !",
+      "cancelled": "La réservation est annulée.",
+      "refused": "{name} a décliné la demande de réservation"
+    },
     "title": "Notes & suivi",
     "subtitle": "Ajoutez des notes, documents ou informations utiles pour le suivi.",
     "upload-error": {

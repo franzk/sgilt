@@ -2,7 +2,7 @@
   <div class="pro-board">
     <!-- ── Header mobile (masqué desktop) ───────────────────────────────────────── -->
     <div class="header-mobile">
-      <ProBoardGreeting :subtitle="contextLine" :loading="loading" :counts="boardCounts" @filter="activeFilter = $event" />
+      <ProBoardGreeting :loading="loading" :counts="boardCounts" @filter="activeFilter = $event" />
     </div>
 
     <!-- ── Filtres sticky ────────────────────────────────────────────────────────── -->
@@ -14,7 +14,11 @@
     <div class="body">
       <!-- Sidebar desktop (masquée mobile) -->
       <aside class="sidebar">
-        <ProBoardGreeting :subtitle="contextLine" :loading="loading" :counts="boardCounts" @filter="activeFilter = $event" />
+        <ProBoardGreeting
+          :loading="loading"
+          :counts="boardCounts"
+          @filter="activeFilter = $event"
+        />
       </aside>
 
       <!-- Liste des bookings -->
@@ -23,17 +27,17 @@
           <ProBookingCard v-for="i in 4" :key="i" skeleton />
         </template>
 
-        <p v-else-if="filteredDemandes.length === 0" class="empty">
+        <p v-else-if="filteredReservations.length === 0" class="empty">
           {{ $t('pro.reservations.empty') }}
         </p>
 
         <ProBookingCard
-          v-for="(demande, index) in filteredDemandes"
+          v-for="(reservation, index) in filteredReservations"
           v-else
-          :key="demande.id"
-          :demande="demande"
+          :key="reservation.id"
+          :reservation="reservation"
           :animation-delay="index * 60"
-          @click="navigateTo(`/pro/reservations/${demande.id}`)"
+          @click="navigateTo(`/pro/reservations/${reservation.id}`)"
         />
       </div>
     </div>
@@ -43,41 +47,18 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'pro' })
 
-import { ProMockService } from '~/services/pro.mock'
-import type { ProDemandeSummary, ProBoardCounts } from '~/types/event'
-import { RESERVATION_STATUS_ORDER } from '~/constants/reservation-status'
+import { useProReservations } from '~/data/reservation/useProReservations'
 import type { ReservationStatut } from '~/constants/reservation-status'
 import ProStatusPills from '~/components/pro/ProStatusPills.vue'
 
 // ── Données ────────────────────────────────────────────────────────────────────
-const loading = ref(true)
-const DEMANDES = ref<ProDemandeSummary[]>([])
-const boardCounts = ref<ProBoardCounts>({ countNouvelle: 0, countEnDiscussion: 0, countConfirmee: 0 })
-
-onMounted(async () => {
-  ;[DEMANDES.value, boardCounts.value] = await Promise.all([
-    ProMockService.getAllDemandes(),
-    ProMockService.getBoardCounts(),
-  ])
-  loading.value = false
-})
-
-// ── En-tête ────────────────────────────────────────────────────────────────────
-const contextLine = computed(() => ProMockService.getGreetingSubtitle(DEMANDES.value))
+const { reservations, boardCounts, loading } = useProReservations()
 
 const activeFilter = ref<ReservationStatut | null>(null)
 
-// ── Filtrage + tri ─────────────────────────────────────────────────────────────
-const filteredDemandes = computed(() =>
-  DEMANDES.value
-    .filter((d) => activeFilter.value === null || d.statut === activeFilter.value)
-    .sort((a, b) => {
-      const statusDiff =
-        RESERVATION_STATUS_ORDER.indexOf(a.statut as ReservationStatut) -
-        RESERVATION_STATUS_ORDER.indexOf(b.statut as ReservationStatut)
-      if (statusDiff !== 0) return statusDiff
-      return b.urgencyLevel - a.urgencyLevel
-    }),
+// ── Filtrage ───────────────────────────────────────────────────────────────────
+const filteredReservations = computed(() =>
+  reservations.value.filter((r) => activeFilter.value === null || r.statut === activeFilter.value),
 )
 </script>
 
@@ -89,7 +70,7 @@ $filter-h: 50px;
 
 .pro-board {
   min-height: 100%;
-  background-color: #e8e6e3;
+  background-color: $brand-background-alt;
   display: flex;
   flex-direction: column;
 

@@ -57,16 +57,32 @@ const reservationId = route.params.reservationId as string
 const eventId = route.params.eventId as string
 
 // ── Data ──────────────────────────────────────────────────────────────────────
-const { reservation, pending: metaPending, cancelling, canCancel, cancel } = useReservation(reservationId)
+const {
+  reservation,
+  pending: metaPending,
+  cancelling,
+  canCancel,
+  cancel,
+} = useReservation(reservationId)
 const { event } = useEventDetail(eventId)
 
-useHead(computed(() => ({
-  title: reservation.value && event.value
-    ? `${reservation.value.prestataireName} / ${event.value.title}`
-    : '',
-})))
-const { feed, pending: feedPending, uploading, addNote, uploadDocument, download, removeItem } = useReservationFeed(reservationId)
-
+useHead(
+  computed(() => ({
+    title:
+      reservation.value && event.value
+        ? `${reservation.value.prestataireName} / ${event.value.title}`
+        : '',
+  })),
+)
+const {
+  feed,
+  pending: feedPending,
+  uploading,
+  addNote,
+  uploadDocument,
+  download,
+  removeItem,
+} = useReservationFeed(reservationId)
 
 // ── Annulation ─────────────────────────────────────────────────────────────────
 const confirmOpen = ref(false)
@@ -101,7 +117,7 @@ $desktop: $breakpoint-desktop;
 
 .reservation-page {
   min-height: 100%;
-  background-color: #f5f5f3;
+  background-color: $brand-background-alt;
 }
 
 // ── Contenu ───────────────────────────────────────────────────────────────────
@@ -179,5 +195,4 @@ $desktop: $breakpoint-desktop;
     }
   }
 }
-
 </style>

@@ -46,4 +46,21 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
      * @return true si une réservation existe
      */
     boolean existsByUtilisateurIdAndStatus(UUID utilisateurId, ReservationStatus status);
+
+    /**
+     * Retourne toutes les réservations dont le prestataire est lié à l'utilisateur donné.
+     *
+     * @param utilisateurId l'identifiant de l'utilisateur lié au prestataire
+     * @return la liste des réservations
+     */
+    List<Reservation> findByPrestataireUtilisateurIdOrderByStatus(UUID utilisateurId);
+
+    /**
+     * Retourne le compte de réservations par statut pour un prestataire.
+     * @param status le statut des réservations à compter
+     * @param prestataireUtilisateurId l'identifiant de l'utilisateur lié au prestataire
+     * @return le compte de réservations correspondant
+     */
+    int countByStatusAndPrestataireUtilisateurId(ReservationStatus status, UUID prestataireUtilisateurId);
+
 }

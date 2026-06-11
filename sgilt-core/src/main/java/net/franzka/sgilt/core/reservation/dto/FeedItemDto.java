@@ -1,5 +1,7 @@
 package net.franzka.sgilt.core.reservation.dto;
 
+import lombok.Builder;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -8,6 +10,7 @@ import java.util.UUID;
  * Le champ {@code type} détermine le type de l'item ("note" | "document").
  * Les champs non applicables au type sont null.
  */
+@Builder
 public record FeedItemDto(
 
         // ── Commun ──────────────────────────────────────────────────────────────
@@ -28,5 +31,8 @@ public record FeedItemDto(
         // ── Document ─────────────────────────────────────────────────────────────
         String name,
         String fileType,
-        String url
+        String url,
+
+        // ── Note système ──────────────────────────────────────────────────────────
+        String generatedKey
 ) {}

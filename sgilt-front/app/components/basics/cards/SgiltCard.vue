@@ -62,7 +62,7 @@ withDefaults(
     border-radius: $radius-xl;
     overflow: hidden;
     padding: 0;
-    box-shadow: 0 2px 12px rgba(47, 42, 37, 0.06);
+    box-shadow: 0 4px 6px rgba(47, 42, 37, 0.12);
 
     &.clickable {
       cursor: pointer;
@@ -125,9 +125,9 @@ withDefaults(
     gap: $spacing-s;
     padding: $spacing-s $spacing-m;
     background: $surface-white;
-    border-radius: $radius-lg;
+    border-radius: $radius-md;
     overflow: hidden;
-    box-shadow: 0 2px 12px rgba(47, 42, 37, 0.06);
+    box-shadow: 0 4px 6px rgba(47, 42, 37, 0.12);
     width: 100%;
     text-align: left;
 
@@ -146,7 +146,7 @@ withDefaults(
       height: 48px;
       border-radius: 50%;
       overflow: hidden;
-      background: $surface-soft;
+      box-shadow: 0 4px 6px rgba(47, 42, 37, 0.12);
       display: flex;
       align-items: center;
       justify-content: center;

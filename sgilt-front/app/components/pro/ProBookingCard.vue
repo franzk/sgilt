@@ -21,38 +21,37 @@
 
   <!-- Card -->
   <button
-    v-else-if="demande"
+    v-else-if="reservation"
     class="booking-card"
-    :class="demande.statut"
+    :class="reservation.statut"
     type="button"
     :style="{ animationDelay: `${animationDelay ?? 0}ms` }"
     @click="emit('click')"
   >
     <!-- Colonne gauche : photo circulaire + badge + titre -->
     <div class="left">
-      <BadgeableComponent :count="demande.unreadNotesCount" :size="18">
-        <img class="photo" :src="demande.coverImage || FALLBACK_COVER" alt="" />
+      <BadgeableComponent :count="reservation.unreadNotesCount" :size="18">
+        <img class="photo" :src="resolvedImage" alt="" />
       </BadgeableComponent>
-      <p class="title">{{ demande.titre }}</p>
+      <p class="title">{{ reservation.titre }}</p>
     </div>
 
     <!-- Colonne droite : infos -->
     <div class="right">
-      <div v-if="needsAction" class="right-row">
-        <span class="action-required" :class="`${demande.statut}`">
-          <template v-if="demande.statut === 'nouvelle'">
+      <div class="right-row">
+        <span v-if="needsAction" class="action-required" :class="`${reservation.statut}`">
+          <template v-if="reservation.statut === 'nouvelle'">
             <PhoneIcon />
             {{ $t('pro.board.card.contact-client') }}</template
           >
-          <template v-else-if="demande.statut === 'en_discussion'">
+          <template v-else-if="reservation.statut === 'en_discussion'">
             <CheckboxCircleIcon />
             {{ $t('pro.board.card.validate-request') }}</template
           >
         </span>
-      </div>
-
-      <div v-if="demande.phraseInfoState" class="right-row">
-        <span class="info-value" v-html="demande.phraseInfoState" />
+        <span v-else class="status-tag" :class="`${reservation.statut}`">
+          {{ $t(`reservation.statut.${reservation.statut}`) }}
+        </span>
       </div>
 
       <div class="right-row last-row date-row">
@@ -61,7 +60,7 @@
         </span>
         <div class="date-info">
           <span class="info-label">{{ $t('pro.board.card.event-date-label') }}</span>
-          <span class="info-value">{{ demande.date ? formatDate(demande.date) : '—' }}</span>
+          <span class="info-value">{{ reservation.date ? formatDate(reservation.date) : '—' }}</span>
         </div>
       </div>
     </div>
@@ -71,23 +70,31 @@
 <script setup lang="ts">
 import BadgeableComponent from '~/components/basics/BadgeableComponent.vue'
 import Sk from '~/components/basics/Sk.vue'
-import type { ProDemandeSummary } from '~/types/event'
+import type { ProReservationSummary } from '~/types/event'
 import { STATUTS_AVEC_ACTION } from '~/constants/reservation-status'
+import { resolveEventCover } from '~/utils/eventCovers'
 import { CalendarEventIcon, CheckboxCircleIcon, PhoneIcon } from '@remixicons/vue/line'
 
 const props = defineProps<{
-  demande?: ProDemandeSummary
+  reservation?: ProReservationSummary
   skeleton?: boolean
   animationDelay?: number
 }>()
 
 const emit = defineEmits<{ click: [] }>()
 
-const FALLBACK_COVER =
-  'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&auto=format&fit=crop'
+const { toUrl } = useImageUrl()
+
+const resolvedImage = computed(() => {
+  if (!props.reservation) return ''
+  return resolveEventCover(
+    { coverImage: props.reservation.image ?? null, eventType: props.reservation.eventType },
+    toUrl,
+  )
+})
 
 const needsAction = computed(() =>
-  props.demande ? STATUTS_AVEC_ACTION.includes(props.demande.statut) : false,
+  props.reservation ? STATUTS_AVEC_ACTION.includes(props.reservation.statut) : false,
 )
 </script>
 
@@ -235,27 +242,30 @@ const needsAction = computed(() =>
     }
   }
 
-  // ── "Action requise" ────────────────────────────────────────────────────────
+  // ── Tags statut (action requise + état) ─────────────────────────────────────
 
-  .action-required {
-    display: flex;
+  .action-required,
+  .status-tag {
+    display: inline-flex;
     align-items: center;
     gap: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: $radius-xl;
+    letter-spacing: 0.01em;
+    width: fit-content;
 
     svg {
       width: 16px;
       height: 16px;
     }
+  }
 
-    font-family: 'Inter', sans-serif;
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    font-weight: 600;
+  .action-required {
     color: #fff;
-    padding: 4px 8px;
-    border-radius: $radius-xl;
-    letter-spacing: 0.01em;
-    width: fit-content;
 
     &.nouvelle {
       background: #d93025;
@@ -266,11 +276,35 @@ const needsAction = computed(() =>
     }
   }
 
+  .status-tag {
+    background: transparent;
+    border: 1.5px solid;
+
+    &.confirmee {
+      color: #2e7d32;
+      border-color: #2e7d32;
+    }
+
+    &.refusee {
+      color: #c0392b;
+      border-color: #c0392b;
+    }
+
+    &.annulee {
+      color: $text-secondary;
+      border-color: $text-secondary;
+    }
+
+    &.realisee {
+      color: #2980b9;
+      border-color: #2980b9;
+    }
+  }
+
   .info-label {
     font-family: 'Inter', sans-serif;
     font-size: 0.6rem;
     font-weight: 600;
-    // letter-spacing: 0.07em;
     text-transform: uppercase;
     color: $text-secondary;
   }

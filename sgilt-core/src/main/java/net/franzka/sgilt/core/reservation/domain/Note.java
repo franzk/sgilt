@@ -18,4 +18,7 @@ public class Note extends ReservationFeed {
 
     @Column(columnDefinition = "text")
     private String content;
+
+    @Column(name = "generated_key", length = 100)
+    private String generatedKey;
 }

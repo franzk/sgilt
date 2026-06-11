@@ -8,4 +8,5 @@ export interface ReservationFeed {
   title: string
   author: NoteAuthor
   createdAt: Date
+  generatedKey?: string | null
 }

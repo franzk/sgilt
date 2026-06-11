@@ -8,9 +8,13 @@ import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.dto.ActiveReservationItemDto;
 import net.franzka.sgilt.core.reservation.dto.ActiveReservationsDto;
+import net.franzka.sgilt.core.reservation.dto.ProBoardCountsDto;
+import net.franzka.sgilt.core.reservation.dto.ProReservationDetailDto;
+import net.franzka.sgilt.core.reservation.dto.ProReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
 import net.franzka.sgilt.core.reservation.dto.ReservationMetaDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
+import net.franzka.sgilt.core.reservation.dto.RefuseReservationRequest;
 import net.franzka.sgilt.core.reservation.exception.InvalidStateException;
 import net.franzka.sgilt.core.reservation.exception.ReservationNotAllowedException;
 import net.franzka.sgilt.core.reservation.exception.ReservationNotFoundException;
@@ -26,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+
 
 /**
  * Service métier pour l'entité {@link Reservation}.
@@ -156,66 +162,254 @@ public class ReservationService {
 
     /**
      * Retourne les métadonnées d'une réservation.
+     * L'ownership doit être vérifié par l'appelant avant d'invoquer cette méthode.
      *
      * @param reservationId l'identifiant de la réservation
-     * @param utilisateurId l'identifiant de l'utilisateur connecté
      * @return les métadonnées de la réservation
-     * @throws ReservationNotFoundException   si la réservation n'existe pas
-     * @throws ReservationNotAllowedException si l'utilisateur n'est pas le propriétaire
+     * @throws ReservationNotFoundException si la réservation n'existe pas
      */
-    public ReservationMetaDto getMeta(UUID reservationId, UUID utilisateurId) {
-        Reservation reservation = getReservation(reservationId, utilisateurId);
-        Prestataire p = reservation.getPrestataire();
-        return new ReservationMetaDto(
-                reservation.getId(),
-                p.getId(),
-                p.getName(),
-                p.getAvatar() != null ? p.getAvatar() : p.getHeroImage(),
-                p.getCategoryKey(),
-                reservationMapper.mapStatus(reservation.getStatus()),
-                0
-        );
+    public ReservationMetaDto getMeta(UUID reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(ReservationNotFoundException::new);
+        return reservationMapper.toReservationMetaDto(reservation);
     }
 
     /**
-     * Annule une réservation. Transitions valides : NEW → CANCELED_BY_CLIENT_PRE_CONTACT,
-     * IN_DISCUSSION → CANCELED_BY_CLIENT_POST_CONTACT.
+     * Annule une réservation. Transitions valides :
+     * - NEW → CANCELED_BY_CLIENT_PRE_CONTACT,
+     * - IN_DISCUSSION → CANCELED_BY_CLIENT_POST_CONTACT.
+     * L'ownership doit être vérifié par l'appelant avant d'invoquer cette méthode.
      *
      * @param reservationId l'identifiant de la réservation
-     * @param utilisateurId l'identifiant de l'utilisateur connecté
-     * @throws ReservationNotFoundException   si la réservation n'existe pas
-     * @throws ReservationNotAllowedException si l'utilisateur n'est pas le propriétaire
-     * @throws InvalidStateException          si le statut ne permet pas l'annulation
+     * @throws ReservationNotFoundException si la réservation n'existe pas
+     * @throws InvalidStateException        si le statut ne permet pas l'annulation
      */
-    public void cancel(UUID reservationId, UUID utilisateurId) {
-        Reservation reservation = getReservation(reservationId, utilisateurId);
-        ReservationStatus next = switch (reservation.getStatus()) {
+    public void cancel(UUID reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(ReservationNotFoundException::new);
+        ReservationStatus cancelled = switch (reservation.getStatus()) {
             case NEW           -> ReservationStatus.CANCELED_BY_CLIENT_PRE_CONTACT;
             case IN_DISCUSSION -> ReservationStatus.CANCELED_BY_CLIENT_POST_CONTACT;
             default -> throw new InvalidStateException(
                     "La réservation ne peut pas être annulée depuis le statut " + reservation.getStatus());
         };
-        reservation.setStatus(next);
+        reservation.setStatus(cancelled);
+        // save reservation
         reservationRepository.save(reservation);
+
+        // crée une note système pour alimenter le feed de la réservation, visible par tout le monde
+        noteRepository.save(Note.builder()
+                .reservation(reservation)
+                .utilisateur(reservation.getUtilisateur())
+                .generatedKey("feed.system.cancelled")
+                .isPersonal(false)
+                .build());
     }
 
     /**
-     * Retourne la réservation identifiée par son id après vérification de l'ownership.
-     * Utilisé en interne et par {@link ReservationFeedService}.
+     * Retourne les réservations du prestataire, triées par statut métier.
+     *
+     * @param utilisateurId l'identifiant de l'utilisateur lié au prestataire
+     * @return la liste des résumés de réservations pro
+     */
+    public List<ProReservationSummaryDto> getProReservations(UUID utilisateurId) {
+        return reservationRepository.findByPrestataireUtilisateurIdOrderByStatus(utilisateurId).stream()
+                .map(reservationMapper::toProReservationSummaryDto)
+                .toList();
+    }
+
+    /**
+     * Retourne les compteurs du tableau de bord pro (statuts actifs uniquement).
+     *
+     * @param utilisateurId l'identifiant de l'utilisateur lié au prestataire
+     * @return les compteurs par statut actif
+     */
+    public ProBoardCountsDto getProBoardCounts(UUID utilisateurId) {
+        return new ProBoardCountsDto(
+                reservationRepository
+                        .countByStatusAndPrestataireUtilisateurId(ReservationStatus.NEW, utilisateurId),
+                reservationRepository
+                        .countByStatusAndPrestataireUtilisateurId(ReservationStatus.IN_DISCUSSION, utilisateurId),
+                reservationRepository
+                        .countByStatusAndPrestataireUtilisateurId(ReservationStatus.CONFIRMED, utilisateurId)
+        );
+    }
+
+    /**
+     * Vérifie que l'utilisateur est le prestataire lié à la réservation.
+     * Appelée par le controller avant toute opération métier sur une réservation pro.
+     *
+     * @param reservationId l'identifiant de la réservation
+     * @param utilisateurId l'identifiant de l'utilisateur lié au prestataire
+     * @throws ReservationNotFoundException   si la réservation n'existe pas
+     * @throws ReservationNotAllowedException si le prestataire n'est pas lié à cette réservation
+     */
+    public void verifyProOwnershipByReservationId(UUID reservationId, UUID utilisateurId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(ReservationNotFoundException::new);
+        if (!reservation.getPrestataire().getUtilisateur().getId().equals(utilisateurId)) {
+            throw new ReservationNotAllowedException();
+        }
+    }
+
+    /**
+     * Retourne le détail d'une réservation pour le prestataire.
+     * L'ownership doit être vérifié par l'appelant avant d'invoquer cette méthode.
+     *
+     * @param reservationId l'identifiant de la réservation
+     * @return le détail de la réservation
+     * @throws ReservationNotFoundException si la réservation n'existe pas
+     */
+    public ProReservationDetailDto getProReservationDetail(UUID reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(ReservationNotFoundException::new);
+        return reservationMapper.toProReservationDetailDto(reservation);
+    }
+
+    /**
+     * Marque la réservation comme contactée — passe de NEW à IN_DISCUSSION.
+     * L'ownership doit être vérifié par l'appelant avant d'invoquer cette méthode.
+     *
+     * @param reservationId l'identifiant de la réservation
+     * @throws ReservationNotFoundException si la réservation n'existe pas
+     * @throws InvalidStateException        si le statut courant n'est pas NEW
+     */
+    public void markContacted(UUID reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(ReservationNotFoundException::new);
+        if (reservation.getStatus() != ReservationStatus.NEW) {
+            throw new InvalidStateException("La réservation ne peut pas être acceptée depuis le statut " + reservation.getStatus());
+        }
+        reservation.setStatus(ReservationStatus.IN_DISCUSSION);
+
+        // save reservation
+        reservationRepository.save(reservation);
+
+        // crée une note système pour alimenter le feed de la réservation, visible par tout le monde
+        noteRepository.save(Note.builder()
+                .reservation(reservation)
+                .prestataire(reservation.getPrestataire())
+                .generatedKey("feed.system.contacted")
+                .isPersonal(false)
+                .build());
+    }
+
+    /**
+     * Passe la réservation de IN_DISCUSSION à CONFIRMED.
+     * L'ownership doit être vérifié par l'appelant avant d'invoquer cette méthode.
+     *
+     * @param reservationId l'identifiant de la réservation
+     * @throws ReservationNotFoundException si la réservation n'existe pas
+     * @throws InvalidStateException        si le statut courant n'est pas IN_DISCUSSION
+     */
+    public void confirm(UUID reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(ReservationNotFoundException::new);
+        if (reservation.getStatus() != ReservationStatus.IN_DISCUSSION) {
+            throw new InvalidStateException("La réservation ne peut pas être confirmée depuis le statut " + reservation.getStatus());
+        }
+        reservation.setStatus(ReservationStatus.CONFIRMED);
+
+        // save reservation
+        reservationRepository.save(reservation);
+
+        // crée une note système pour alimenter le feed de la réservation, visible par tout le monde
+        noteRepository.save(Note.builder()
+                .reservation(reservation)
+                .prestataire(reservation.getPrestataire())
+                .generatedKey("feed.system.confirmed")
+                .isPersonal(false)
+                .build());
+    }
+
+    /**
+     * Annule une réservation confirmée par le prestataire — passe de CONFIRMED à CANCELED_POST_CONFIRMATION.
+     * L'ownership doit être vérifié par l'appelant avant d'invoquer cette méthode.
+     *
+     * @param reservationId l'identifiant de la réservation
+     * @throws ReservationNotFoundException si la réservation n'existe pas
+     * @throws InvalidStateException        si le statut courant n'est pas CONFIRMED
+     */
+    public void cancelByPro(UUID reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(ReservationNotFoundException::new);
+        if (reservation.getStatus() != ReservationStatus.CONFIRMED) {
+            throw new InvalidStateException(
+                    "La réservation ne peut pas être annulée par le prestataire depuis le statut " + reservation.getStatus());
+        }
+        reservation.setStatus(ReservationStatus.CANCELED_POST_CONFIRMATION);
+        reservationRepository.save(reservation);
+
+        noteRepository.save(Note.builder()
+                .reservation(reservation)
+                .prestataire(reservation.getPrestataire())
+                .generatedKey("feed.system.cancelled")
+                .isPersonal(false)
+                .build());
+    }
+
+    /**
+     * Refuse la réservation (NEW → REFUSED_PRE_CONTACT, IN_DISCUSSION → REFUSED_POST_CONTACT).
+     * une note visible par le client est créée avec la raison si le prestataire l'a renseignée
+     * L'ownership doit être vérifié par l'appelant avant d'invoquer cette méthode.
+     *
+     * @param reservationId l'identifiant de la réservation
+     * @param request       la raison et le choix de communication
+     * @throws ReservationNotFoundException si la réservation n'existe pas
+     * @throws InvalidStateException        si le statut ne permet pas le refus
+     */
+    public void refuse(UUID reservationId, RefuseReservationRequest request) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(ReservationNotFoundException::new);
+        ReservationStatus refused = switch (reservation.getStatus()) {
+            case NEW           -> ReservationStatus.REFUSED_PRE_CONTACT;
+            case IN_DISCUSSION -> ReservationStatus.REFUSED_POST_CONTACT;
+            default -> throw new InvalidStateException(
+                    "La réservation ne peut pas être refusée depuis le statut " + reservation.getStatus());
+        };
+        reservation.setStatus(refused);
+        reservationRepository.save(reservation);
+
+        // note générée pour statuer le refus
+        noteRepository.save(Note.builder()
+                .reservation(reservation)
+                .prestataire(reservation.getPrestataire())
+                .generatedKey("feed.system.refused")
+                .content(request.reason())
+                .isPersonal(false)
+                .build());
+    }
+
+    /**
+     * Vérifie que l'utilisateur est le propriétaire de l'événement parent de la réservation.
+     * Remonte la chaîne reservation → evenement → utilisateur pour s'assurer de l'ownership complet.
+     * Appelée par le controller avant toute opération métier sur une réservation cliente.
      *
      * @param reservationId l'identifiant de la réservation
      * @param utilisateurId l'identifiant de l'utilisateur connecté
-     * @return la réservation
      * @throws ReservationNotFoundException   si la réservation n'existe pas
-     * @throws ReservationNotAllowedException si l'utilisateur n'est pas le propriétaire
+     * @throws ReservationNotAllowedException si l'utilisateur n'est pas le propriétaire de l'événement parent
      */
-    Reservation getReservation(UUID reservationId, UUID utilisateurId) {
+    public void verifyOwnershipByReservationId(UUID reservationId, UUID utilisateurId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(ReservationNotFoundException::new);
-        if (!reservation.getUtilisateur().getId().equals(utilisateurId)) {
+        if (!reservation.getEvenement().getUtilisateur().getId().equals(utilisateurId)) {
             throw new ReservationNotAllowedException();
         }
-        return reservation;
+    }
+
+    /**
+     * Retourne la réservation sans vérification d'ownership.
+     * Réservé à un usage interne entre services du même package — l'appelant est responsable
+     * de s'assurer que l'ownership a déjà été vérifié au niveau du controller.
+     *
+     * @param reservationId l'identifiant de la réservation
+     * @return la réservation
+     * @throws ReservationNotFoundException si la réservation n'existe pas
+     */
+    Reservation getReservationById(UUID reservationId) {
+        return reservationRepository.findById(reservationId)
+                .orElseThrow(ReservationNotFoundException::new);
     }
 
     /**

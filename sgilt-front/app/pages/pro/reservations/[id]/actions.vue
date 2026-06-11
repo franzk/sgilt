@@ -55,28 +55,28 @@
 definePageMeta({ layout: 'pro' })
 
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
-import { ProMockService } from '~/services/pro.mock'
+import { useProReservationDetail } from '~/data/reservation/useProReservationDetail'
 
 const route = useRoute()
 const router = useRouter()
-const demandeId = String(route.params.id)
+const reservationId = String(route.params.id)
 
-const currentStatut = ref('nouvelle')
+const { reservation, cancelByPro } = useProReservationDetail(reservationId)
+
+const currentStatut = computed(() => reservation.value?.status ?? '')
 const loading = ref(false)
 const cancelOpen = ref(false)
-
-onMounted(async () => {
-  const demande = await ProMockService.getDemandeById(demandeId)
-  if (demande) currentStatut.value = demande.status
-})
 
 async function confirmCancel() {
   if (loading.value) return
   loading.value = true
-  await ProMockService.updateStatut(demandeId, 'annulee')
-  loading.value = false
-  cancelOpen.value = false
-  navigateTo('/pro/reservations')
+  try {
+    await cancelByPro()
+    navigateTo('/pro/reservations')
+  } finally {
+    loading.value = false
+    cancelOpen.value = false
+  }
 }
 </script>
 
