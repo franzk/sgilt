@@ -36,9 +36,9 @@
 
         <!-- ── Section 3 : légal ──────────────────────────────────────────────── -->
         <div class="group group--legal">
-          <a href="#" class="item" role="menuitem" @click.prevent="close">
+          <NuxtLink to="/m/cgu" class="item" role="menuitem" @click="close">
             <span>{{ $t('profile.menu.terms') }}</span>
-          </a>
+          </NuxtLink>
           <NuxtLink to="/m/confidentialite" class="item" role="menuitem" @click="close">
             <span>{{ $t('profile.menu.privacy') }}</span>
           </NuxtLink>
