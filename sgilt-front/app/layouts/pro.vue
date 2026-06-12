@@ -1,5 +1,5 @@
 <template>
-  <AppHeader :show-notifications="true" />
+  <AppHeader />
   <main class="pro-content">
     <slot />
   </main>
@@ -8,7 +8,6 @@
 
 <script setup lang="ts">
 import AppHeader from '~/components/AppHeader.vue'
-import ProFooter from '~/components/pro/ProFooter.vue'
 </script>
 
 <style lang="scss">

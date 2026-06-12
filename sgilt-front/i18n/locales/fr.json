@@ -604,10 +604,12 @@
     "menu": {
       "my-info": "Mes informations",
       "logout": "Déconnexion",
+      "login": "Connexion",
       "help-center": "Centre d'aide",
       "contact-sgilt": "Contacter Sgilt",
       "terms": "Conditions générales",
       "privacy": "Confidentialité",
+      "mentions-legales": "Mentions légales",
       "about": "À propos"
     }
   },
