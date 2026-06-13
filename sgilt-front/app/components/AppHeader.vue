@@ -6,48 +6,30 @@
       </NuxtLink>
     </h1>
 
-    <div v-if="showNotifications" class="quick-actions">
-      <NotificationBell v-if="false" />
-
+    <div class="quick-actions">
       <button
-        ref="avatarRef"
+        ref="accountMenuAnchorRef"
         class="action-button"
         type="button"
         aria-label="Menu compte"
-        @click="profileOpen = !profileOpen"
+        @click="accountMenuOpen = !accountMenuOpen"
       >
-        <UserAvatar :size="2.25" />
+        <UserIcon />
       </button>
 
-      <ProfileMenuPopin :open="profileOpen" :anchor-el="avatarRef" @close="profileOpen = false" />
+      <AccountMenuPopin :open="accountMenuOpen" :anchor-el="accountMenuAnchorRef" @close="accountMenuOpen = false" />
     </div>
-
-    <button
-      v-else-if="!isAuthenticated"
-      class="action-button"
-      type="button"
-      aria-label="Se connecter"
-      @click="handleLogin"
-    >
-      <UserIcon />
-    </button>
   </header>
 </template>
 
 <script setup lang="ts">
-import NotificationBell from '~/components/notifications/NotificationBell.vue'
-import ProfileMenuPopin from '~/components/profile/ProfileMenuPopin.vue'
-import UserAvatar from '~/components/basics/UserAvatar.vue'
+import AccountMenuPopin from '~/components/profile/AccountMenuPopin.vue'
 import { UserIcon } from '@remixicons/vue/line'
 
-defineProps<{
-  showNotifications?: boolean
-}>()
+const accountMenuAnchorRef = ref<HTMLElement | null>(null)
+const accountMenuOpen = ref(false)
 
-const avatarRef = ref<HTMLElement | null>(null)
-const profileOpen = ref(false)
-
-const { isAuthenticated, hasRole, login } = useKeycloak()
+const { isAuthenticated, hasRole } = useKeycloak()
 
 const logoLink = computed(() => {
   if (!mounted.value || !isAuthenticated.value) return '/'
@@ -82,10 +64,6 @@ const hideShadow = computed(() => {
   if (isMobile.value && ROUTES_SHADOW_ON_SCROLL.includes(route.path)) return !scrolled.value
   return false
 })
-
-function handleLogin() {
-  login({ redirectUri: window.location.origin + '/auth/redirect' })
-}
 </script>
 
 <style lang="scss" scoped>

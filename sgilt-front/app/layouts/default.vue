@@ -1,5 +1,5 @@
 <template>
-  <AppHeader :show-notifications="isAuthenticated" />
+  <AppHeader />
   <ClientOnly>
     <ContextBanner v-if="showContextBanner" />
   </ClientOnly>
@@ -13,7 +13,6 @@ import AppHeader from '~/components/AppHeader.vue'
 import ContextBanner from '~/components/app/ContextBanner.vue'
 
 const { showContextBanner } = useFlow()
-const { isAuthenticated } = useKeycloak()
 </script>
 
 <style lang="scss">

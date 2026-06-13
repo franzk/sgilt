@@ -195,6 +195,9 @@ public class OnboardingSessionService {
         Utilisateur utilisateur = utilisateurService.createUtilisateur(
                 formData.firstName(), formData.lastName(), email, formData.telephone());
 
+        // enregistrement de l'acceptation des CGU et de la politique de confidentialité
+        utilisateurService.acceptCgu(utilisateur);
+
         // création de l'événement
         Evenement evenement = evenementService.createFromFormData(utilisateur, formData);
 

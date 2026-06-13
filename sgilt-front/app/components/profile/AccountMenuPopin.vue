@@ -1,28 +1,20 @@
 <template>
   <Teleport to="body">
     <Transition name="popin">
-      <div v-if="open" ref="popinRef" class="profile-popin" role="menu" aria-label="Menu compte">
-        <!-- ── Header : avatar + nom + email ──────────────────────────────────── -->
-        <div class="header">
-          <UserAvatar :size="2.25" />
-          <div class="header-info">
-            <span class="header-name">{{ currentUser.firstName }} {{ currentUser.lastName }}</span>
-            <span class="header-email">{{ currentUser.email }}</span>
-          </div>
-        </div>
-
-        <div class="separator" />
-
+      <div v-if="open" ref="popinRef" class="account-popin" role="menu" aria-label="Menu">
         <!-- ── Section 1 : compte ─────────────────────────────────────────────── -->
         <div class="group">
-          <!-- NuxtLink to="/account/profile" class="item" role="menuitem" @click="close" -->
-          <NuxtLink to="#" class="item" role="menuitem" @click="close">
+          <NuxtLink v-if="isAuthenticated" to="#" class="item" role="menuitem" @click="close">
             <UserIcon class="item-icon" />
             <span>{{ $t('profile.menu.my-info') }}</span>
           </NuxtLink>
-          <button class="item item--danger" role="menuitem" type="button" @click="logout">
+          <button v-if="isAuthenticated" class="item item--danger" role="menuitem" type="button" @click="logout">
             <LogoutBoxRIcon class="item-icon" />
             <span>{{ $t('profile.menu.logout') }}</span>
+          </button>
+          <button v-else class="item" role="menuitem" type="button" @click="handleLogin">
+            <LoginBoxIcon class="item-icon" />
+            <span>{{ $t('profile.menu.login') }}</span>
           </button>
         </div>
 
@@ -44,12 +36,15 @@
 
         <!-- ── Section 3 : légal ──────────────────────────────────────────────── -->
         <div class="group group--legal">
-          <a href="#" class="item" role="menuitem" @click.prevent="close">
+          <NuxtLink to="/m/cgu" class="item" role="menuitem" @click="close">
             <span>{{ $t('profile.menu.terms') }}</span>
-          </a>
-          <a href="#" class="item" role="menuitem" @click.prevent="close">
+          </NuxtLink>
+          <NuxtLink to="/m/confidentialite" class="item" role="menuitem" @click="close">
             <span>{{ $t('profile.menu.privacy') }}</span>
-          </a>
+          </NuxtLink>
+          <NuxtLink to="/m/mentions-legales" class="item" role="menuitem" @click="close">
+            <span>{{ $t('profile.menu.mentions-legales') }}</span>
+          </NuxtLink>
           <a href="#" class="item" role="menuitem" @click.prevent="close">
             <span>{{ $t('profile.menu.about') }}</span>
           </a>
@@ -60,10 +55,8 @@
 </template>
 
 <script setup lang="ts">
-import { UserIcon, LogoutBoxRIcon, QuestionIcon, MailIcon } from '@remixicons/vue/line'
+import { UserIcon, LogoutBoxRIcon, LoginBoxIcon, QuestionIcon, MailIcon } from '@remixicons/vue/line'
 import { onClickOutside } from '@vueuse/core'
-import UserAvatar from '~/components/basics/UserAvatar.vue'
-import { useCurrentUser } from '~/composables/useCurrentUser'
 import { useKeycloak } from '~/composables/useKeycloak'
 
 const props = defineProps<{ open: boolean; anchorEl?: HTMLElement | null }>()
@@ -75,23 +68,29 @@ onClickOutside(popinRef, () => emit('close'), {
   ignore: [() => props.anchorEl ?? null],
 })
 
-const currentUser = useCurrentUser()
+const { isAuthenticated, login, logout: kcLogout } = useKeycloak()
 
 function close() {
   emit('close')
 }
 
+function handleLogin() {
+  close()
+  login({ redirectUri: window.location.origin + '/auth/redirect' })
+}
+
 async function logout() {
+  close()
   useFlow().reset()
   useDemande().reset()
-  await useKeycloak().logout()
+  await kcLogout()
 }
 </script>
 
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
-.profile-popin {
+.account-popin {
   position: fixed;
   top: calc($app-header-height + 6px);
   right: $spacing-m;
@@ -105,41 +104,6 @@ async function logout() {
   border: 1px solid $divider-color;
   overflow: hidden;
   padding: $spacing-xs 0;
-}
-
-// ── Header ─────────────────────────────────────────────────────────────────────
-
-.header {
-  display: flex;
-  align-items: center;
-  gap: $spacing-s;
-  padding: $spacing-s $spacing-m;
-}
-
-.header-info {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-}
-
-.header-name {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: $text-primary;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.header-email {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.7rem;
-  color: $text-secondary;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 // ── Séparateur ─────────────────────────────────────────────────────────────────

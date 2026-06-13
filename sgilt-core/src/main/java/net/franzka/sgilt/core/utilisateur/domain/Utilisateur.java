@@ -47,6 +47,17 @@ public class Utilisateur {
 
     private LocalDateTime deletedAt;
 
+    /**
+     * Date de version des CGU et de la politique de confidentialité acceptées (ex. "2026-06").
+     * Permet de retrouver le texte exact accepté via l'historique Git.
+     */
+    private String cguVersionAccepted;
+
+    /**
+     * Horodatage de l'acceptation des CGU et de la politique de confidentialité.
+     */
+    private LocalDateTime cguAcceptedAt;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
