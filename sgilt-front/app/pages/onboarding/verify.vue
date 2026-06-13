@@ -109,9 +109,23 @@
               </div>
             </div>
 
+            <label class="terms">
+              <input v-model="acceptedTerms" type="checkbox" class="terms__checkbox" />
+              <i18n-t keypath="confirmation.form.terms-label" tag="span" scope="global">
+                <template #cgu>
+                  <a href="/m/cgu" target="_blank" rel="noopener">{{ $t('confirmation.form.terms-cgu') }}</a>
+                </template>
+                <template #privacy>
+                  <a href="/m/confidentialite" target="_blank" rel="noopener">{{
+                    $t('confirmation.form.terms-privacy')
+                  }}</a>
+                </template>
+              </i18n-t>
+            </label>
+
             <p v-if="submitError" class="submit-error">{{ submitError }}</p>
 
-            <button class="btn-submit" type="submit" :disabled="submitting">
+            <button class="btn-submit" type="submit" :disabled="submitting || !acceptedTerms">
               ✨ {{ submitting ? $t('common.saving') : $t('confirmation.form.cta') }}
             </button>
 
@@ -165,6 +179,7 @@ const passwordConfirm = ref('')
 const passwordTouched = ref(false)
 const showPassword = ref(false)
 const showPasswordConfirm = ref(false)
+const acceptedTerms = ref(false)
 const submitting = ref(false)
 const submitError = ref<string | null>(null)
 
@@ -193,6 +208,10 @@ async function submit(): Promise<void> {
     return
   }
 
+  if (!acceptedTerms.value) {
+    return
+  }
+
   submitting.value = true
   submitError.value = null
 
@@ -200,6 +219,7 @@ async function submit(): Promise<void> {
     const response = await confirmOnboardingAccount({
       setPasswordToken: setPasswordToken.value!,
       password: password.value,
+      acceptedTerms: acceptedTerms.value,
     })
     window.location.href = response.loginUrl
   } catch (e: unknown) {
@@ -521,6 +541,37 @@ async function submit(): Promise<void> {
   &:focus {
     border-color: $input-focus-border-color;
     box-shadow: $input-focus-box-shadow;
+  }
+}
+
+// ── Acceptation CGU ───────────────────────────────────────────────────────────
+.terms {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-xs;
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  line-height: 1.5;
+  cursor: pointer;
+
+  &__checkbox {
+    margin-top: 3px;
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    cursor: pointer;
+    accent-color: $brand-primary;
+  }
+
+  a {
+    color: $text-primary;
+    text-decoration: underline;
+    text-decoration-color: $brand-accent;
+    text-underline-offset: 2px;
+
+    &:hover {
+      color: $brand-accent;
+    }
   }
 }
 

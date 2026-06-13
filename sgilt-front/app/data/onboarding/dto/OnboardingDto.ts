@@ -6,6 +6,7 @@ export interface VerifyTokenResponseDto {
 export interface ConfirmAccountRequestDto {
   setPasswordToken: string
   password: string
+  acceptedTerms: boolean
 }
 
 export interface ConfirmAccountResponseDto {

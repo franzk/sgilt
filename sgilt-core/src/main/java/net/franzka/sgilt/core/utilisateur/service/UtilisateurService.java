@@ -8,11 +8,20 @@ import net.franzka.sgilt.core.utilisateur.exception.UtilisateurNotFoundException
 import net.franzka.sgilt.core.utilisateur.repository.UtilisateurRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 /**
  * Service métier pour l'entité {@link Utilisateur}.
  */
 @Service
 public class UtilisateurService {
+
+    /**
+     * Date de version des CGU et de la politique de confidentialité en vigueur.
+     * Correspond à la date affichée en tête des documents {@code /m/cgu} et {@code /m/confidentialite}.
+     * Le texte exact accepté pour cette version est retrouvable dans l'historique Git.
+     */
+    private static final String CGU_VERSION = "2026-06";
 
     private final UtilisateurRepository utilisateurRepository;
 
@@ -50,6 +59,18 @@ public class UtilisateurService {
                 .build();
 
         return utilisateurRepository.save(utilisateur);
+    }
+
+    /**
+     * Enregistre l'acceptation des CGU et de la politique de confidentialité par l'utilisateur,
+     * pour la version actuellement en vigueur, avec l'horodatage du moment de l'acceptation.
+     *
+     * @param utilisateur l'utilisateur qui accepte les CGU et la politique de confidentialité
+     */
+    public void acceptCgu(Utilisateur utilisateur) {
+        utilisateur.setCguVersionAccepted(CGU_VERSION);
+        utilisateur.setCguAcceptedAt(LocalDateTime.now());
+        utilisateurRepository.save(utilisateur);
     }
 
     /**
