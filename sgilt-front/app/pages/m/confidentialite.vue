@@ -5,9 +5,9 @@
         <p class="eyebrow">Politique de confidentialité</p>
         <h1>Vos données, et ce qu'on en fait.</h1>
         <p class="lede">
-          Sgilt met en relation des organisateurs d'événements et des prestataires en Alsace. Pour que cette mise en
-          relation fonctionne, nous traitons certaines de vos données. Voici lesquelles, pourquoi, et les droits dont
-          vous disposez.
+          Sgilt met en relation des organisateurs d'événements et des prestataires en Alsace. Pour
+          que cette mise en relation fonctionne, nous traitons certaines de vos données. Voici
+          lesquelles, pourquoi, et les droits dont vous disposez.
         </p>
         <div class="meta">
           <span><strong>Responsable&nbsp;:</strong> ALGM (SAS)</span>
@@ -36,7 +36,8 @@
         <section id="responsable" class="block">
           <h2><span class="num">01</span> Responsable du traitement</h2>
           <p>
-            Le responsable du traitement de vos données est la société ALGM, qui édite et exploite le service Sgilt.
+            Le responsable du traitement de vos données est la société ALGM, qui édite et exploite
+            le service Sgilt.
           </p>
           <div class="id-card">
             <dl>
@@ -51,16 +52,16 @@
             </dl>
           </div>
           <p>
-            Pour toute question relative à vos données personnelles ou à l'exercice de vos droits, vous pouvez écrire
-            à l'adresse ci-dessus.
+            Pour toute question relative à vos données personnelles ou à l'exercice de vos droits,
+            vous pouvez écrire à l'adresse ci-dessus.
           </p>
         </section>
 
         <section id="donnees" class="block">
           <h2><span class="num">02</span> Données collectées</h2>
           <p>
-            Nous collectons uniquement les données nécessaires au fonctionnement du service. Elles varient selon que
-            vous êtes organisateur ou prestataire.
+            Nous collectons uniquement les données nécessaires au fonctionnement du service. Elles
+            varient selon que vous êtes organisateur ou prestataire.
           </p>
 
           <h3>Si vous êtes organisateur</h3>
@@ -68,7 +69,8 @@
             <li>Votre identité&nbsp;: nom, prénom</li>
             <li>Vos coordonnées&nbsp;: adresse email, numéro de téléphone</li>
             <li>
-              Les détails de votre événement&nbsp;: date, type, ambiance, moment clé, ville, nombre d'invités, lieu
+              Les détails de votre événement&nbsp;: date, type, ambiance, moment clé, ville, nombre
+              d'invités, lieu
             </li>
             <li>Le message éventuel que vous adressez au prestataire</li>
             <li>Les notes que vous rédigez, personnelles ou partagées</li>
@@ -85,9 +87,9 @@
 
           <h3>Données techniques</h3>
           <p>
-            Nos serveurs enregistrent automatiquement des journaux techniques (adresse IP, horodatage des requêtes),
-            à des fins de fonctionnement et de sécurité. Nous n'effectuons aucune mesure d'audience ni aucun
-            profilage.
+            Nos serveurs enregistrent automatiquement des journaux techniques (adresse IP,
+            horodatage des requêtes), à des fins de fonctionnement et de sécurité. Nous n'effectuons
+            aucune mesure d'audience ni aucun profilage.
           </p>
         </section>
 
@@ -127,10 +129,12 @@
           <div class="highlight">
             <p class="h-label">Le traitement central de Sgilt</p>
             <p>
-              <strong>La transmission de vos coordonnées au prestataire.</strong> Lorsque vous adressez une demande,
-              vos coordonnées ne sont transmises au prestataire qu'<strong>après votre validation</strong>&nbsp;: vous
-              recevez un email, et c'est en cliquant sur le lien de confirmation, puis en créant votre mot de passe,
-              que la transmission a lieu. Rien n'est envoyé avant ce geste. Cette transmission repose donc sur votre
+              <strong>La transmission de vos coordonnées au prestataire.</strong> Lorsque vous
+              adressez une demande, vos coordonnées ne sont transmises au prestataire qu'<strong
+                >après votre validation</strong
+              >&nbsp;: vous recevez un email, et c'est en cliquant sur le lien de confirmation, puis
+              en créant votre mot de passe, que la transmission a lieu. Rien n'est envoyé avant ce
+              geste. Cette transmission repose donc sur votre
               <strong>consentement explicite</strong>.
             </p>
           </div>
@@ -141,20 +145,26 @@
           <p>Vos données sont accessibles&nbsp;:</p>
           <ul>
             <li>
-              au <strong>prestataire</strong> auquel vous adressez une demande, pour vos coordonnées et les détails
-              de votre événement&nbsp;;
+              au <strong>prestataire</strong> auquel vous adressez une demande, pour vos coordonnées
+              et les détails de votre événement&nbsp;;
             </li>
             <li>
-              à nos <strong>sous-traitants techniques</strong>, dans la stricte mesure nécessaire à leur prestation
-              (voir section 5).
+              à nos <strong>sous-traitants techniques</strong>, dans la stricte mesure nécessaire à
+              leur prestation (voir section 5).
             </li>
           </ul>
-          <p>Nous ne vendons ni ne cédons vos données à des tiers à des fins commerciales ou publicitaires.</p>
+          <p>
+            Nous ne vendons ni ne cédons vos données à des tiers à des fins commerciales ou
+            publicitaires.
+          </p>
         </section>
 
         <section id="soustraitants" class="block">
           <h2><span class="num">05</span> Sous-traitants</h2>
-          <p>Nous faisons appel à des prestataires techniques pour héberger et faire fonctionner le service.</p>
+          <p>
+            Nous faisons appel à des prestataires techniques pour héberger et faire fonctionner le
+            service.
+          </p>
           <div class="table-scroll">
             <table>
               <thead>
@@ -184,35 +194,46 @@
           <h2><span class="num">06</span> Durée de conservation</h2>
           <ul>
             <li>
-              <strong>Votre compte et les données associées</strong> (événements, notes, documents) sont conservés
-              tant que votre compte est actif, pour vous donner accès à votre historique. Ils sont supprimés après
-              <strong>3 ans sans connexion</strong>.
+              <strong>Votre compte et les données associées</strong> (événements, notes, documents)
+              sont conservés tant que votre compte est actif, pour vous donner accès à votre
+              historique. Ils sont supprimés après <strong>3 ans sans connexion</strong>.
             </li>
-            <li><strong>Les journaux techniques</strong> sont conservés <strong>1 mois</strong>, par rotation automatique.</li>
+            <li>
+              <strong>Les journaux techniques</strong> sont conservés <strong>1 mois</strong>, par
+              rotation automatique.
+            </li>
           </ul>
-          <p>Vous pouvez à tout moment supprimer un événement, un document, ou l'intégralité de votre compte.</p>
           <p>
-            Sgilt agit comme canal de transmission et n'assure pas l'archivage à valeur probante ou comptable des
-            documents échangés. Il vous appartient de conserver de votre côté les pièces nécessaires à vos propres
-            obligations (par exemple, un prestataire conserve ses factures dans sa comptabilité).
+            Vous pouvez à tout moment supprimer un événement, un document, ou l'intégralité de votre
+            compte.
+          </p>
+          <p>
+            Sgilt agit comme canal de transmission et n'assure pas l'archivage à valeur probante ou
+            comptable des documents échangés. Il vous appartient de conserver de votre côté les
+            pièces nécessaires à vos propres obligations (par exemple, un prestataire conserve ses
+            factures dans sa comptabilité).
           </p>
         </section>
 
         <section id="cookies" class="block">
           <h2><span class="num">07</span> Cookies</h2>
           <p>
-            Sgilt utilise uniquement des <strong>cookies techniques essentiels</strong>, nécessaires à
-            l'authentification et au maintien de votre session. Ces cookies sont exemptés de consentement.
+            Sgilt utilise uniquement des <strong>cookies techniques essentiels</strong>, nécessaires
+            à l'authentification et au maintien de votre session. Ces cookies sont exemptés de
+            consentement.
           </p>
           <p>
-            Nous n'utilisons aucun cookie de mesure d'audience, de profilage ou de traçage publicitaire. Vous n'avez
-            donc pas de bandeau de consentement à gérer.
+            Nous n'utilisons aucun cookie de mesure d'audience, de profilage ou de traçage
+            publicitaire. Vous n'avez donc pas de bandeau de consentement à gérer.
           </p>
         </section>
 
         <section id="droits" class="block">
           <h2><span class="num">08</span> Vos droits</h2>
-          <p>Conformément au Règlement général sur la protection des données (RGPD), vous disposez des droits suivants&nbsp;:</p>
+          <p>
+            Conformément au Règlement général sur la protection des données (RGPD), vous disposez
+            des droits suivants&nbsp;:
+          </p>
           <div class="rights">
             <div><strong>Accès</strong> Savoir quelles données nous détenons sur vous.</div>
             <div><strong>Rectification</strong> Corriger une donnée inexacte.</div>
@@ -227,7 +248,9 @@
           </div>
           <p class="cnil">
             Vous pouvez également introduire une réclamation auprès de la CNIL&nbsp;:
-            <a class="inline" href="https://www.cnil.fr" target="_blank" rel="noopener">www.cnil.fr</a>.
+            <a class="inline" href="https://www.cnil.fr" target="_blank" rel="noopener"
+              >www.cnil.fr</a
+            >.
           </p>
         </section>
       </article>
@@ -247,6 +270,11 @@ useHead({ title: 'Politique de confidentialité' })
 
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
+
+.confidentialite {
+  padding: 0 $spacing-m;
+  overflow-x: hidden;
+}
 
 .wrap {
   max-width: $container-max-width;
@@ -375,6 +403,7 @@ useHead({ title: 'Politique de confidentialité' })
 
 article {
   max-width: 680px;
+  min-width: 0;
 }
 
 .block {

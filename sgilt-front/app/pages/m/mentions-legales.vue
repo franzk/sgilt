@@ -5,7 +5,8 @@
         <p class="eyebrow">Mentions légales</p>
         <h1>Qui édite Sgilt.</h1>
         <p class="lede">
-          Les informations légales relatives à l'éditeur du site, à son hébergement et au traitement de vos données.
+          Les informations légales relatives à l'éditeur du site, à son hébergement et au traitement
+          de vos données.
         </p>
       </div>
     </section>
@@ -78,8 +79,9 @@
           <h2><span class="num">04</span> Données personnelles</h2>
           <p>
             Le traitement de vos données personnelles est décrit en détail dans notre
-            <NuxtLink class="inline" to="/m/confidentialite">politique de confidentialité</NuxtLink>&nbsp;: données
-            collectées, finalités, durées de conservation et droits dont vous disposez.
+            <NuxtLink class="inline" to="/m/confidentialite">politique de confidentialité</NuxtLink
+            >&nbsp;: données collectées, finalités, durées de conservation et droits dont vous
+            disposez.
           </p>
           <p>
             Pour exercer vos droits ou pour toute question relative à vos données, écrivez à
@@ -103,6 +105,10 @@ useHead({ title: 'Mentions légales' })
 
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
+
+.mentions-legales {
+  padding: 0 $spacing-m;
+}
 
 .wrap {
   max-width: $container-max-width;

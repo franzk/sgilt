@@ -5,8 +5,9 @@
         <p class="eyebrow">Conditions générales d'utilisation</p>
         <h1>Les règles du jeu.</h1>
         <p class="lede">
-          Sgilt met en relation des organisateurs et des prestataires, et leur donne les outils pour collaborer.
-          Voici ce que chacun peut attendre du service — et ce qui relève de la responsabilité de chacun.
+          Sgilt met en relation des organisateurs et des prestataires, et leur donne les outils pour
+          collaborer. Voici ce que chacun peut attendre du service — et ce qui relève de la
+          responsabilité de chacun.
         </p>
         <div class="meta">
           <span><strong>Dernière mise à jour&nbsp;:</strong> juin 2026</span>
@@ -37,17 +38,18 @@
         <section id="objet" class="block">
           <h2><span class="num">01</span> Objet et rôle de Sgilt</h2>
           <p>
-            Sgilt est une plateforme de mise en relation entre organisateurs d'événements et prestataires en Alsace.
-            Le service fournit la mise en relation, l'accès aux coordonnées, et des outils de collaboration (notes,
-            documents).
+            Sgilt est une plateforme de mise en relation entre organisateurs d'événements et
+            prestataires en Alsace. Le service fournit la mise en relation, l'accès aux coordonnées,
+            et des outils de collaboration (notes, documents).
           </p>
           <div class="highlight">
             <p class="h-label">Le principe à retenir</p>
             <p>
-              <strong>Sgilt est un intermédiaire.</strong> Il met en relation et facilite la collaboration, mais
-              n'intervient pas dans la transaction entre les parties&nbsp;: ni dans les devis, ni dans les paiements,
-              ni dans la conclusion ou l'exécution de la prestation. Sgilt n'est pas partie au contrat conclu entre un
-              organisateur et un prestataire.
+              <strong>Sgilt est un intermédiaire.</strong> Il met en relation et facilite la
+              collaboration, mais n'intervient pas dans la transaction entre les parties&nbsp;: ni
+              dans les devis, ni dans les paiements, ni dans la conclusion ou l'exécution de la
+              prestation. Sgilt n'est pas partie au contrat conclu entre un organisateur et un
+              prestataire.
             </p>
           </div>
         </section>
@@ -56,13 +58,14 @@
           <h2><span class="num">02</span> Accès au service</h2>
           <ul>
             <li>
-              Le service est <strong>réservé aux personnes majeures</strong>. En créant un compte, l'utilisateur
-              déclare avoir au moins 18 ans.
+              Le service est <strong>réservé aux personnes majeures</strong>. En créant un compte,
+              l'utilisateur déclare avoir au moins 18 ans.
             </li>
             <li>L'accès nécessite la création d'un compte avec des informations exactes.</li>
             <li>
-              Le service est <strong>gratuit à ce jour</strong>. Sgilt se réserve le droit d'introduire des
-              fonctionnalités payantes à l'avenir, avec information préalable des utilisateurs.
+              Le service est <strong>gratuit à ce jour</strong>. Sgilt se réserve le droit
+              d'introduire des fonctionnalités payantes à l'avenir, avec information préalable des
+              utilisateurs.
             </li>
           </ul>
         </section>
@@ -74,50 +77,63 @@
             <li>fournir de fausses informations ou usurper l'identité d'un tiers&nbsp;;</li>
             <li>harceler, menacer ou importuner une autre partie&nbsp;;</li>
             <li>
-              détourner les coordonnées obtenues via Sgilt à des fins de démarchage massif ou de prospection non
-              sollicitée&nbsp;;
+              détourner les coordonnées obtenues via Sgilt à des fins de démarchage massif ou de
+              prospection non sollicitée&nbsp;;
             </li>
-            <li>nuire au fonctionnement de la plateforme ou la contourner de façon malveillante&nbsp;;</li>
-            <li>déposer des contenus illicites, trompeurs, ou dont il ne détient pas les droits&nbsp;;</li>
+            <li>
+              nuire au fonctionnement de la plateforme ou la contourner de façon malveillante&nbsp;;
+            </li>
+            <li>
+              déposer des contenus illicites, trompeurs, ou dont il ne détient pas les droits&nbsp;;
+            </li>
             <li>perturber le fonctionnement technique du service.</li>
           </ul>
         </section>
 
         <section id="prestataires" class="block">
-          <h2><span class="num">04</span> Dispositions spécifiques <span class="tag">Prestataires</span></h2>
+          <h2>
+            <span class="num">04</span> Dispositions spécifiques
+            <span class="tag">Prestataires</span>
+          </h2>
           <ul>
             <li>
-              Le prestataire est <strong>seul responsable du contenu de sa fiche</strong>&nbsp;: exactitude des
-              tarifs, descriptifs, disponibilités et informations publiées.
+              Le prestataire est <strong>seul responsable du contenu de sa fiche</strong>&nbsp;:
+              exactitude des tarifs, descriptifs, disponibilités et informations publiées.
             </li>
             <li>
               Sgilt peut accompagner le prestataire dans la rédaction de sa fiche, mais celui-ci
               <strong>valide et publie son contenu sous sa propre responsabilité</strong>.
             </li>
             <li>
-              Le prestataire <strong>garantit détenir les droits</strong> sur les contenus qu'il fournit (notamment
-              les photos) et garantit Sgilt contre tout recours de tiers à ce sujet.
+              Le prestataire <strong>garantit détenir les droits</strong> sur les contenus qu'il
+              fournit (notamment les photos) et garantit Sgilt contre tout recours de tiers à ce
+              sujet.
             </li>
             <li>
               Sgilt sélectionne les prestataires avec soin mais
-              <strong>ne garantit pas la bonne exécution de la prestation</strong>, qui relève de la seule
-              responsabilité du prestataire.
+              <strong>ne garantit pas la bonne exécution de la prestation</strong>, qui relève de la
+              seule responsabilité du prestataire.
             </li>
           </ul>
         </section>
 
         <section id="organisateurs" class="block">
-          <h2><span class="num">05</span> Dispositions spécifiques <span class="tag">Organisateurs</span></h2>
+          <h2>
+            <span class="num">05</span> Dispositions spécifiques
+            <span class="tag">Organisateurs</span>
+          </h2>
           <ul>
             <li>
-              En validant sa demande, l'organisateur consent à la transmission de ses coordonnées au prestataire
-              concerné (voir
-              <NuxtLink class="inline" to="/m/confidentialite">politique de confidentialité</NuxtLink>).
+              En validant sa demande, l'organisateur consent à la transmission de ses coordonnées au
+              prestataire concerné (voir
+              <NuxtLink class="inline" to="/m/confidentialite"
+                >politique de confidentialité</NuxtLink
+              >).
             </li>
             <li>L'organisateur est responsable de l'exactitude des informations qu'il fournit.</li>
             <li>
-              La relation contractuelle, le paiement et l'exécution de la prestation se nouent directement avec le
-              prestataire, hors de Sgilt.
+              La relation contractuelle, le paiement et l'exécution de la prestation se nouent
+              directement avec le prestataire, hors de Sgilt.
             </li>
           </ul>
         </section>
@@ -125,8 +141,8 @@
         <section id="responsabilite" class="block">
           <h2><span class="num">06</span> Responsabilité de Sgilt</h2>
           <p>
-            Sgilt fournit un service de mise en relation, sans garantie quant au résultat des échanges entre parties.
-            Sgilt n'est pas responsable&nbsp;:
+            Sgilt fournit un service de mise en relation, sans garantie quant au résultat des
+            échanges entre parties. Sgilt n'est pas responsable&nbsp;:
           </p>
           <ul>
             <li>de la qualité ou de la bonne exécution des prestations&nbsp;;</li>
@@ -135,14 +151,17 @@
             <li>des paiements échangés directement entre les parties, hors plateforme.</li>
           </ul>
           <p>
-            Sgilt agit comme canal de transmission et n'assure pas l'archivage à valeur probante ou comptable des
-            documents échangés.
+            Sgilt agit comme canal de transmission et n'assure pas l'archivage à valeur probante ou
+            comptable des documents échangés.
           </p>
         </section>
 
         <section id="litiges" class="block">
           <h2><span class="num">07</span> Litiges entre utilisateurs</h2>
-          <p>En cas de litige entre un organisateur et un prestataire, Sgilt n'intervient pas en tant que partie ou garant.</p>
+          <p>
+            En cas de litige entre un organisateur et un prestataire, Sgilt n'intervient pas en tant
+            que partie ou garant.
+          </p>
           <p>
             Sgilt <strong>peut</strong>, à sa discrétion, proposer une médiation amiable,
             <strong>sans y être tenu et sans garantie de résolution</strong>.
@@ -152,23 +171,28 @@
         <section id="moderation" class="block">
           <h2><span class="num">08</span> Modération et accès</h2>
           <p>
-            Sgilt se réserve le droit de refuser, suspendre ou retirer l'accès à tout utilisateur ou tout contenu, à
-            sa seule discrétion, dans le respect de la loi. Sgilt n'est pas tenu de motiver sa décision.
+            Sgilt se réserve le droit de refuser, suspendre ou retirer l'accès à tout utilisateur ou
+            tout contenu, à sa seule discrétion, dans le respect de la loi. Sgilt n'est pas tenu de
+            motiver sa décision.
           </p>
         </section>
 
         <section id="comptes" class="block">
           <h2><span class="num">09</span> Comptes et suppression</h2>
           <ul>
-            <li>L'utilisateur peut supprimer son compte <strong>librement à tout moment</strong>.</li>
+            <li>
+              L'utilisateur peut supprimer son compte <strong>librement à tout moment</strong>.
+            </li>
             <li>Sgilt peut supprimer un compte en application de l'article 8.</li>
             <li>
               Les durées de conservation des données figurent dans la
-              <NuxtLink class="inline" to="/m/confidentialite">politique de confidentialité</NuxtLink>.
+              <NuxtLink class="inline" to="/m/confidentialite"
+                >politique de confidentialité</NuxtLink
+              >.
             </li>
             <li>
-              Si la suppression d'un compte gêne une collaboration en cours, Sgilt pourra proposer une médiation
-              informelle, sans obligation.
+              Si la suppression d'un compte gêne une collaboration en cours, Sgilt pourra proposer
+              une médiation informelle, sans obligation.
             </li>
           </ul>
         </section>
@@ -176,28 +200,32 @@
         <section id="pi" class="block">
           <h2><span class="num">10</span> Propriété intellectuelle</h2>
           <p>
-            Le service Sgilt, son interface et les éléments qui le composent sont protégés. Toute reproduction ou
-            exploitation non autorisée du service est interdite. Les contenus fournis par les prestataires restent
-            leur propriété et leur responsabilité.
+            Le service Sgilt, son interface et les éléments qui le composent sont protégés. Toute
+            reproduction ou exploitation non autorisée du service est interdite. Les contenus
+            fournis par les prestataires restent leur propriété et leur responsabilité.
           </p>
         </section>
 
         <section id="modification" class="block">
           <h2><span class="num">11</span> Modification des CGU</h2>
           <p>
-            Sgilt se réserve le droit de modifier les présentes conditions. Les utilisateurs sont informés des
-            modifications, et la date de dernière mise à jour figure en tête du document. La poursuite de
-            l'utilisation du service après modification vaut acceptation.
+            Sgilt se réserve le droit de modifier les présentes conditions. Les utilisateurs sont
+            informés des modifications, et la date de dernière mise à jour figure en tête du
+            document. La poursuite de l'utilisation du service après modification vaut acceptation.
           </p>
         </section>
 
         <section id="droit" class="block">
           <h2><span class="num">12</span> Droit applicable et juridiction</h2>
           <p>
-            Les présentes CGU sont régies par le droit français. En cas de litige, et à défaut de résolution amiable,
-            compétence est attribuée aux tribunaux du ressort du siège de l'éditeur (Colmar).
+            Les présentes CGU sont régies par le droit français. En cas de litige, et à défaut de
+            résolution amiable, compétence est attribuée aux tribunaux du ressort du siège de
+            l'éditeur (Colmar).
           </p>
-          <p>Conformément à la loi, un utilisateur consommateur conserve le droit de saisir le tribunal de son lieu de domicile.</p>
+          <p>
+            Conformément à la loi, un utilisateur consommateur conserve le droit de saisir le
+            tribunal de son lieu de domicile.
+          </p>
         </section>
       </article>
     </div>
@@ -216,6 +244,10 @@ useHead({ title: "Conditions générales d'utilisation" })
 
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
+
+.cgu {
+  padding: 0 $spacing-m;
+}
 
 .wrap {
   max-width: $container-max-width;
