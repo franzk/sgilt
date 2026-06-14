@@ -67,6 +67,7 @@ jobs:
           V_MAILER_FROM:                 ${{ vars.MAILER_FROM }}
           V_R2_ENDPOINT:                 ${{ vars.R2_ENDPOINT }}
           V_R2_BUCKET:                   ${{ vars.R2_BUCKET }}
+          V_R2_DOCUMENTS_BUCKET:         ${{ vars.R2_DOCUMENTS_BUCKET }}
           V_R2_DELIVERY_URL:             ${{ vars.R2_DELIVERY_URL }}
         run: |
           missing=()
@@ -100,6 +101,7 @@ jobs:
           [[ -z "$V_MAILER_FROM" ]]                 && missing+=("var: MAILER_FROM")
           [[ -z "$V_R2_ENDPOINT" ]]                 && missing+=("var: R2_ENDPOINT")
           [[ -z "$V_R2_BUCKET" ]]                   && missing+=("var: R2_BUCKET")
+          [[ -z "$V_R2_DOCUMENTS_BUCKET" ]]         && missing+=("var: R2_DOCUMENTS_BUCKET")
           [[ -z "$V_R2_DELIVERY_URL" ]]             && missing+=("var: R2_DELIVERY_URL")
 
           if [[ ${#missing[@]} -gt 0 ]]; then
@@ -281,6 +283,7 @@ jobs:
           # R2
           R2_ENDPOINT=${{ vars.R2_ENDPOINT }}
           R2_BUCKET=${{ vars.R2_BUCKET }}
+          R2_DOCUMENTS_BUCKET=${{ vars.R2_DOCUMENTS_BUCKET }}
           R2_DELIVERY_URL=${{ vars.R2_DELIVERY_URL }}
           R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }}

@@ -184,7 +184,7 @@ In Settings → Secrets and variables → Actions → Repository secrets:
 | `R2_DELIVERY_URL`    | `https://media-staging.sgilt.fr` | `https://media.sgilt.alsace` |
 
 > **R2:** See [CLOUDFLARE.md](CLOUDFLARE.md) for the full setup procedure (token creation, endpoint format, bucket names).
-> - R2_BUCKET is the name of the bucket.
+> - R2_BUCKET and R2_DOCUMENTS_BUCKET are the names of the buckets.
 
 ---
 
