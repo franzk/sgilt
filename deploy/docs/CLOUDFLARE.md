@@ -4,10 +4,14 @@
 
 ### Buckets
 
-| Bucket                | Environnement | Custom Domain            |
-|-----------------------|---------------|--------------------------|
-| `sgilt-media-staging` | Staging       | `media-staging.sgilt.fr` |
-| `sgilt-media-prod`    | Production    | `media.sgilt.alsace`     |
+| Bucket                    | Environnement | Custom Domain            |
+|---------------------------|---------------|--------------------------|
+| `sgilt-media-staging`     | Staging       | `media-staging.sgilt.fr` |
+| `sgilt-media-prod`        | Production    | `media.sgilt.alsace`     |
+| `sgilt-documents-staging` | Staging       | _aucun_                  |
+| `sgilt-documents-prod`    | Production    | _aucun_                  |
+
+Le bucket documents est **privé** et n'a volontairement aucun custom domain : c'est ce qui le rend non accessible publiquement, pas un oubli. L'accès se fait uniquement via le SDK S3 du back (`streamDocument`), qui vérifie l'appartenance de l'utilisateur avant de servir le fichier.
 
 ### Créer un bucket
 
@@ -22,20 +26,21 @@ Dashboard → **R2** → clic sur le bucket → **Settings** → **Custom Domain
 Dashboard → **R2** → **Manage R2 API Tokens** (lien en haut à droite) → **Create API Token** :
 
 - Permissions : **Object Read & Write**
-- Scope : **All buckets** ⚠️ le scope "Specific bucket" génère un 403 malgré les apparences
+- Scope : **All buckets** (le scope "Specific bucket" est supporté par Cloudflare — un éventuel 403 vient probablement d'une erreur de configuration du token plutôt que du scope lui-même. Le cloisonnement par bucket pourrait être mis en place comme durcissement futur, non appliqué pour l'instant.)
 - Valider → noter immédiatement **Access Key ID** et **Secret Access Key** (affichés une seule fois)
 
 Un token par environnement.
 
 ### Variables
 
-| Variable               | Format                                                          | Note                                     |
-|------------------------|-----------------------------------------------------------------|------------------------------------------|
-| `R2_ENDPOINT`          | `https://<account-id>.eu.r2.cloudflarestorage.com`              | Le `.eu.` est obligatoire pour ce compte |
-| `R2_BUCKET`            | `sgilt-media-staging` / `sgilt-media-prod`                    | Différent par env                        |
-| `R2_ACCESS_KEY_ID`     | Access Key ID du token                                          | Secret GitHub                            |
-| `R2_SECRET_ACCESS_KEY` | Secret Access Key du token                                      | Secret GitHub                            |
-| `R2_DELIVERY_URL`      | `https://media-staging.sgilt.fr` / `https://media.sgilt.alsace` | URL publique de serving                  |
+| Variable                | Format                                                          | Note                                     |
+|--------------------------|-----------------------------------------------------------------|------------------------------------------|
+| `R2_ENDPOINT`           | `https://<account-id>.eu.r2.cloudflarestorage.com`              | Le `.eu.` est obligatoire pour ce compte |
+| `R2_BUCKET`             | `sgilt-media-staging` / `sgilt-media-prod`                    | Bucket médias (public), différent par env |
+| `R2_DOCUMENTS_BUCKET`   | `sgilt-documents-staging` / `sgilt-documents-prod`            | Bucket documents (privé), différent par env |
+| `R2_ACCESS_KEY_ID`      | Access Key ID du token                                          | Secret GitHub                            |
+| `R2_SECRET_ACCESS_KEY`  | Secret Access Key du token                                      | Secret GitHub                            |
+| `R2_DELIVERY_URL`       | `https://media-staging.sgilt.fr` / `https://media.sgilt.alsace` | URL publique de serving (médias uniquement) |
 
 L'Account ID est visible dans l'URL du dashboard : `https://dash.cloudflare.com/<account-id>/...`
 

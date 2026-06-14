@@ -1,4 +1,4 @@
-import { fetchFeed, addNote as addNoteService, uploadDocument as uploadDocumentService, downloadDocument } from './service/reservationFeedService'
+import { fetchFeed, addNote as addNoteService, uploadDocument as uploadDocumentService, downloadDocument, deleteDocument as deleteDocumentService } from './service/reservationFeedService'
 import type { FeedItem } from './domain/FeedItem'
 
 export function useReservationFeed(reservationId: string) {
@@ -43,9 +43,10 @@ export function useReservationFeed(reservationId: string) {
     await downloadDocument(url, fileName)
   }
 
-  function removeItem(id: string) {
+  async function deleteDocument(id: string) {
+    await deleteDocumentService(reservationId, id)
     feed.value = feed.value.filter((item) => item.id !== id)
   }
 
-  return { feed, pending, error, uploading, load, addNote, uploadDocument, download, removeItem }
+  return { feed, pending, error, uploading, load, addNote, uploadDocument, download, deleteDocument }
 }

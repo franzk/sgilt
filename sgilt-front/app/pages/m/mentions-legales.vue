@@ -41,7 +41,7 @@
               <dt>RCS</dt>
               <dd>Colmar — n° de gestion 2023B00502</dd>
               <dt>N° TVA intracom.</dt>
-              <dd class="pending">à compléter</dd>
+              <dd>FR03 953 057 395</dd>
               <dt>Directeur de la publication</dt>
               <dd>Arnaud Mathis (Président)</dd>
             </dl>

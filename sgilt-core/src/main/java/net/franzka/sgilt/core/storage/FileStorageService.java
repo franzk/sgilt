@@ -29,11 +29,29 @@ public interface FileStorageService {
     void delete(String filePath) throws IOException;
 
     /**
-     * Retourne un flux de lecture vers le fichier identifié par son chemin.
+     * Stocke un document dans le bucket privé des documents et retourne son chemin.
      *
-     * @param filePath le chemin du fichier dans le bucket
+     * @param file   le fichier à stocker
+     * @param prefix le préfixe du chemin (ex. "reservation-feed")
+     * @return le chemin du fichier dans le bucket des documents
+     * @throws IOException en cas d'erreur d'écriture
+     */
+    String uploadDocument(MultipartFile file, String prefix) throws IOException;
+
+    /**
+     * Retourne un flux de lecture vers un document du bucket privé des documents.
+     *
+     * @param filePath le chemin du fichier dans le bucket des documents
      * @return un InputStream vers le contenu du fichier
      * @throws IOException en cas d'erreur de lecture
      */
-    InputStream stream(String filePath) throws IOException;
+    InputStream streamDocument(String filePath) throws IOException;
+
+    /**
+     * Supprime un document du bucket privé des documents.
+     *
+     * @param filePath le chemin du fichier à supprimer
+     * @throws IOException en cas d'erreur de suppression
+     */
+    void deleteDocument(String filePath) throws IOException;
 }

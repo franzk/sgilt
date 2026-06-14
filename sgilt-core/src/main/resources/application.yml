@@ -37,6 +37,7 @@ sgilt:
     access-key-id: ${R2_ACCESS_KEY_ID:mock-key}
     secret-access-key: ${R2_SECRET_ACCESS_KEY:mock-secret}
     bucket: ${R2_BUCKET:sgilt-media}
+    documents-bucket: ${R2_DOCUMENTS_BUCKET:sgilt-documents}
   jwt:
     confirmation-secret: ${CONFIRMATION_TOKEN_SECRET}
     confirmation-expiration-hours: 24

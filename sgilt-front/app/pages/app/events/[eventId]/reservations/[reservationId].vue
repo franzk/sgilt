@@ -81,7 +81,7 @@ const {
   addNote,
   uploadDocument,
   download,
-  removeItem,
+  deleteDocument,
 } = useReservationFeed(reservationId)
 
 // ── Annulation ─────────────────────────────────────────────────────────────────
@@ -105,8 +105,8 @@ async function onDownloadDocument(url: string, fileName: string) {
   await download(url, fileName)
 }
 
-function onDeleteDocument(id: string) {
-  removeItem(id)
+async function onDeleteDocument(id: string) {
+  await deleteDocument(id)
 }
 </script>
 

@@ -19,6 +19,12 @@ export async function uploadDocumentApi(
   })
 }
 
+export async function deleteDocumentApi(reservationId: string, documentId: string): Promise<void> {
+  return apiFetch<void>(`/reservations/${reservationId}/feed/documents/${documentId}`, {
+    method: 'DELETE',
+  })
+}
+
 export async function addNoteApi(
   reservationId: string,
   title: string,
