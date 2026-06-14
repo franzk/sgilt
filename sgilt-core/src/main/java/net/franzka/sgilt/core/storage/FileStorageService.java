@@ -46,4 +46,12 @@ public interface FileStorageService {
      * @throws IOException en cas d'erreur de lecture
      */
     InputStream streamDocument(String filePath) throws IOException;
+
+    /**
+     * Supprime un document du bucket privé des documents.
+     *
+     * @param filePath le chemin du fichier à supprimer
+     * @throws IOException en cas d'erreur de suppression
+     */
+    void deleteDocument(String filePath) throws IOException;
 }

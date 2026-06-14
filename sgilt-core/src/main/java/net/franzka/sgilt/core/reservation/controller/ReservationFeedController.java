@@ -86,6 +86,16 @@ public class ReservationFeedController implements ReservationFeedApi {
                 .body(new InputStreamResource(result.inputStream()));
     }
 
+    @Override
+    @Transactional
+    public ResponseEntity<Void> deleteDocument(UUID reservationId, UUID documentId) {
+        UUID userId = currentUserService.getId();
+        log.info("DELETE /reservations/{}/feed/documents/{}", reservationId, documentId);
+        verifyOwnership(reservationId, userId, caller());
+        reservationFeedService.deleteDocument(reservationId, documentId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
     private FeedCaller caller() {
         return currentUserService.isPro() ? FeedCaller.PRESTATAIRE : FeedCaller.CLIENT;
     }

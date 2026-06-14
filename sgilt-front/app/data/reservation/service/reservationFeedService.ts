@@ -1,5 +1,5 @@
 import { apiFetch } from '~/composables/useApi'
-import { getFeedApi, addNoteApi, uploadDocumentApi } from '../api/reservationFeedApi'
+import { getFeedApi, addNoteApi, uploadDocumentApi, deleteDocumentApi } from '../api/reservationFeedApi'
 import type { FeedItem } from '../domain/FeedItem'
 import type { FeedItemDto } from '../dto/FeedItemDto'
 
@@ -37,6 +37,10 @@ export async function uploadDocument(
 ): Promise<FeedItem> {
   const dto = await uploadDocumentApi(reservationId, file, isPersonal)
   return mapItem(dto)
+}
+
+export async function deleteDocument(reservationId: string, documentId: string): Promise<void> {
+  await deleteDocumentApi(reservationId, documentId)
 }
 
 export async function downloadDocument(url: string, fileName: string): Promise<void> {

@@ -110,9 +110,24 @@ public class R2FileStorage implements FileStorageService {
      */
     @Override
     public void delete(String filePath) throws IOException {
+        delete(bucket, filePath);
+    }
+
+    /**
+     * Supprime un document du bucket privé des documents par son chemin.
+     *
+     * @param filePath le chemin du fichier à supprimer
+     * @throws IOException en cas d'erreur de communication avec R2
+     */
+    @Override
+    public void deleteDocument(String filePath) throws IOException {
+        delete(documentsBucket, filePath);
+    }
+
+    private void delete(String targetBucket, String filePath) throws IOException {
         try {
             s3.deleteObject(DeleteObjectRequest.builder()
-                    .bucket(bucket)
+                    .bucket(targetBucket)
                     .key(filePath)
                     .build());
         } catch (S3Exception e) {

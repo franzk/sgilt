@@ -223,6 +223,7 @@ const {
   load: refreshFeed,
   addNote,
   uploadDocument,
+  deleteDocument,
 } = useReservationFeed(reservationId)
 
 // ── Cover image ────────────────────────────────────────────────────────────────
@@ -273,8 +274,8 @@ async function onUploadDocument(file: File) {
   await uploadDocument(file, false)
 }
 
-function onDeleteDocument(_id: string) {
-  // TODO hors scope — sera implémenté dans une prochaine itération
+async function onDeleteDocument(id: string) {
+  await deleteDocument(id)
 }
 
 // ── mailto ─────────────────────────────────────────────────────────────────────
