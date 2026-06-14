@@ -67,7 +67,7 @@ public class ReservationFeedService {
     public FeedItemDto addNote(UUID reservationId, FeedCaller caller,
                                @Nullable Utilisateur utilisateur, AddNoteRequest request) {
         Reservation reservation = reservationService.getReservationById(reservationId);
-        Note.NoteBuilder builder = Note.builder()
+        var builder = Note.builder()
                 .reservation(reservation)
                 .title(request.title())
                 .content(request.content())
@@ -103,7 +103,7 @@ public class ReservationFeedService {
                 log.warn("Upload document sans filename pour la réservation {} — filename absent du Content-Disposition", reservationId);
                 originalName = "document";
             }
-            Document.DocumentBuilder builder = Document.builder()
+            var builder = Document.builder()
                     .reservation(reservation)
                     .title(originalName)
                     .fileName(originalName)
