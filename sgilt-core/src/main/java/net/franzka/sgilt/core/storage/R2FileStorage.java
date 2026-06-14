@@ -7,14 +7,12 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
@@ -34,14 +32,17 @@ public class R2FileStorage implements FileStorageService {
 
     private final S3Client s3;
     private final String bucket;
+    private final String documentsBucket;
 
     public R2FileStorage(
             @Value("${sgilt.r2.endpoint}") String endpoint,
             @Value("${sgilt.r2.access-key-id}") String accessKeyId,
             @Value("${sgilt.r2.secret-access-key}") String secretAccessKey,
-            @Value("${sgilt.r2.bucket}") String bucket
+            @Value("${sgilt.r2.bucket}") String bucket,
+            @Value("${sgilt.r2.documents-bucket}") String documentsBucket
     ) {
         this.bucket = bucket;
+        this.documentsBucket = documentsBucket;
         this.s3 = S3Client.builder()
                 .endpointOverride(URI.create(endpoint))
                 .credentialsProvider(StaticCredentialsProvider.create(
@@ -52,31 +53,48 @@ public class R2FileStorage implements FileStorageService {
                         .chunkedEncodingEnabled(false)
                         .build())
                 .build();
-        log.info("R2FileStorage initialisé — endpoint={}, bucket={}", endpoint, bucket);
+        log.info("R2FileStorage initialisé — endpoint={}, bucket={}, documentsBucket={}", endpoint, bucket, documentsBucket);
     }
 
     /**
      * Upload un fichier vers R2 sous le préfixe indiqué et retourne son chemin.
      *
      * @param file   le fichier à uploader
-     * @param prefix le préfixe du chemin (ex. "uploads", "documents")
+     * @param prefix le préfixe du chemin (ex. "uploads")
      * @return le chemin du fichier (ex. {@code uploads/uuid.jpg})
      * @throws IOException en cas d'erreur de communication avec R2
      */
     @Override
     public String upload(MultipartFile file, String prefix) throws IOException {
+        return upload(bucket, file, prefix);
+    }
+
+    /**
+     * Upload un document vers le bucket privé des documents, sous le préfixe indiqué.
+     *
+     * @param file   le fichier à uploader
+     * @param prefix le préfixe du chemin (ex. "reservation-feed")
+     * @return le chemin du fichier (ex. {@code reservation-feed/uuid.pdf})
+     * @throws IOException en cas d'erreur de communication avec R2
+     */
+    @Override
+    public String uploadDocument(MultipartFile file, String prefix) throws IOException {
+        return upload(documentsBucket, file, prefix);
+    }
+
+    private String upload(String targetBucket, MultipartFile file, String prefix) throws IOException {
         String ext = StringUtils.getFilenameExtension(file.getOriginalFilename());
         String filePath = prefix + "/" + UUID.randomUUID() + (ext != null ? "." + ext : "");
         try {
             s3.putObject(
                     PutObjectRequest.builder()
-                            .bucket(bucket)
+                            .bucket(targetBucket)
                             .key(filePath)
                             .contentType(file.getContentType())
                             .contentLength(file.getSize())
                             .build(),
                     RequestBody.fromBytes(file.getBytes()));
-            log.info("Upload R2 réussi — path={}", filePath);
+            log.info("Upload R2 réussi — bucket={}, path={}", targetBucket, filePath);
             return filePath;
         } catch (S3Exception e) {
             log.error("Erreur upload R2", e);
@@ -103,21 +121,24 @@ public class R2FileStorage implements FileStorageService {
     }
 
     /**
-     * Retourne un flux de lecture vers le fichier identifié par son chemin.
+     * Retourne un flux de lecture vers un document du bucket privé des documents.
      *
-     * @param filePath le chemin du fichier dans le bucket
+     * @param filePath le chemin du fichier dans le bucket des documents
      * @return un InputStream vers le contenu du fichier
      * @throws IOException en cas d'erreur de communication avec R2
      */
     @Override
-    public InputStream stream(String filePath) throws IOException {
+    public InputStream streamDocument(String filePath) throws IOException {
+        return stream(documentsBucket, filePath);
+    }
+
+    private InputStream stream(String targetBucket, String filePath) throws IOException {
         try {
-            ResponseInputStream<GetObjectResponse> response = s3.getObject(
+            return s3.getObject(
                     GetObjectRequest.builder()
-                            .bucket(bucket)
+                            .bucket(targetBucket)
                             .key(filePath)
                             .build());
-            return response;
         } catch (S3Exception e) {
             throw new IOException("Erreur de communication avec R2 lors du streaming", e);
         }

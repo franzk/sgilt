@@ -180,6 +180,7 @@ In Settings → Secrets and variables → Actions → Repository secrets:
 | `MAILER_FROM`        | `noreply@sgilt.fr`              | `noreply@sgilt.alsace`      |
 | `R2_ENDPOINT`        | R2 S3 endpoint (shared)         | (idem)                      |
 | `R2_BUCKET`          | `sgilt-media-staging`          | `sgilt-media-prod`         |
+| `R2_DOCUMENTS_BUCKET`| `sgilt-documents-staging`      | `sgilt-documents-prod`     |
 | `R2_DELIVERY_URL`    | `https://media-staging.sgilt.fr` | `https://media.sgilt.alsace` |
 
 > **R2:** See [CLOUDFLARE.md](CLOUDFLARE.md) for the full setup procedure (token creation, endpoint format, bucket names).

@@ -95,7 +95,7 @@ public class ReservationFeedService {
         if (file.getSize() > MAX_FILE_SIZE) throw new FileTooLargeException(MAX_FILE_SIZE);
         Reservation reservation = reservationService.getReservationById(reservationId);
         try {
-            String filePath = fileStorageService.upload(file, "documents");
+            String filePath = fileStorageService.uploadDocument(file, "reservation-feed");
             String originalName = file.getOriginalFilename();
             if (originalName == null) {
                 log.warn("Upload document sans filename pour la réservation {} — filename absent du Content-Disposition", reservationId);
@@ -133,7 +133,7 @@ public class ReservationFeedService {
                 .filter(Document.class::isInstance)
                 .map(Document.class::cast)
                 .orElseThrow(ReservationFeedItemNotFoundException::new);
-        InputStream stream = fileStorageService.stream(doc.getFilePath());
+        InputStream stream = fileStorageService.streamDocument(doc.getFilePath());
         return new FileStreamResult(stream, doc.getFileName(), doc.getMimeType());
     }
 
