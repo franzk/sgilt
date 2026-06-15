@@ -52,33 +52,14 @@ class MailControllerIT {
     class PostMail {
 
         @Test
-        void givenValidHtmlRequest_whenPostMail_thenReturns200() throws Exception {
+        void givenValidRequest_whenPostMail_thenReturns200() throws Exception {
             mockMvc.perform(post("/api/v1/mail")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("""
                                     {
-                                      "from": "sender@example.com",
                                       "to": "recipient@example.com",
-                                      "subject": "Test",
-                                      "html": "<p>Hello</p>"
-                                    }
-                                    """))
-                    .andExpect(status().isOk())
-                    .andExpect(content().string("Mail sent"));
-
-            verify(mailSender, times(1)).send(any(MimeMessage.class));
-        }
-
-        @Test
-        void givenValidTextRequest_whenPostMail_thenReturns200() throws Exception {
-            mockMvc.perform(post("/api/v1/mail")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content("""
-                                    {
-                                      "from": "sender@example.com",
-                                      "to": "recipient@example.com",
-                                      "subject": "Test",
-                                      "text": "Hello en texte"
+                                      "mailType": "WELCOME_EMAIL",
+                                      "context": { "appUrl": "https://app.sgilt.fr/app" }
                                     }
                                     """))
                     .andExpect(status().isOk())
@@ -90,13 +71,13 @@ class MailControllerIT {
         @ParameterizedTest
         @ValueSource(strings = {
                 """
-                { "to": "recipient@example.com", "subject": "Test", "text": "Hello" }
+                { "mailType": "WELCOME_EMAIL", "context": { "appUrl": "https://app.sgilt.fr/app" } }
                 """,
                 """
-                { "from": "sender@example.com", "subject": "Test", "text": "Hello" }
+                { "to": "  ", "mailType": "WELCOME_EMAIL", "context": { "appUrl": "https://app.sgilt.fr/app" } }
                 """,
                 """
-                { "from": "sender@example.com", "to": "recipient@example.com", "text": "Hello" }
+                { "to": "recipient@example.com", "context": { "appUrl": "https://app.sgilt.fr/app" } }
                 """
         })
         void givenMissingMandatoryField_whenPostMail_thenReturns400(String body) throws Exception {
@@ -109,18 +90,19 @@ class MailControllerIT {
         }
 
         @Test
-        void givenBlankFrom_whenPostMail_thenReturns400() throws Exception {
+        void givenMissingTemplateVariable_whenPostMail_thenReturns400() throws Exception {
             mockMvc.perform(post("/api/v1/mail")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("""
                                     {
-                                      "from": "  ",
                                       "to": "recipient@example.com",
-                                      "subject": "Test",
-                                      "text": "Hello"
+                                      "mailType": "WELCOME_EMAIL",
+                                      "context": {}
                                     }
                                     """))
                     .andExpect(status().isBadRequest());
+
+            verify(mailSender, never()).send(any(MimeMessage.class));
         }
 
         @Test
@@ -132,10 +114,9 @@ class MailControllerIT {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("""
                                     {
-                                      "from": "sender@example.com",
                                       "to": "recipient@example.com",
-                                      "subject": "Test",
-                                      "text": "Hello"
+                                      "mailType": "WELCOME_EMAIL",
+                                      "context": { "appUrl": "https://app.sgilt.fr/app" }
                                     }
                                     """))
                     .andExpect(status().isInternalServerError());

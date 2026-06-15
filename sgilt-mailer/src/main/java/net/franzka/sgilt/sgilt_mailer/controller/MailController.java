@@ -25,7 +25,7 @@ MailController {
 
     @PostMapping
     public ResponseEntity<String> sendMail(@RequestBody @Valid MailRequest mailRequest) throws MessagingException, UnsupportedEncodingException {
-        log.info("sendMail request : from {} to {} with subject {}", mailRequest.getFrom(), mailRequest.getTo(), mailRequest.getSubject());
+        log.info("sendMail request : to {} with mailType {}", mailRequest.getTo(), mailRequest.getMailType());
         mailService.sendMail(mailRequest);
         return ResponseEntity.ok("Mail sent");
     }

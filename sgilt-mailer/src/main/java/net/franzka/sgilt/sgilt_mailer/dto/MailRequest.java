@@ -1,19 +1,21 @@
 package net.franzka.sgilt.sgilt_mailer.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import net.franzka.sgilt.sgilt_mailer.template.MailType;
+
+import java.util.Map;
 
 @Data
 public class MailRequest {
-    @NotBlank(message = "From address is mandatory")
-    private String from;
-
     @NotBlank(message = "To address is mandatory")
     private String to;
 
-    @NotBlank(message = "Subject is mandatory")
-    private String subject;
+    @NotNull(message = "Mail type is mandatory")
+    private MailType mailType;
 
-    private String text;
-    private String html;
+    private Map<String, Object> context;
+
+    private String locale;
 }
