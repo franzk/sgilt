@@ -1,0 +1,6 @@
+{
+  "subjectTemplate": "Bienvenue sur Sgilt",
+  "htmlTemplate": "<p>Bonjour,</p>\n<p>Votre adresse email a bien été confirmée et votre compte Sgilt a été créé.</p>\n<p>Votre demande de réservation est maintenant enregistrée.</p>\n<p>Vous pouvez accéder à votre espace pour suivre vos événements et retrouver vos demandes en cours :</p>\n<p><a href=\"{appUrl}\">Accéder à Sgilt</a></p>\n<p></p>\n<p>À bientôt,</p>\n<p>L’équipe Sgilt.</p>\n",
+  "requiredVariables": ["appUrl"],
+  "htmlSafeVariables": []
+}

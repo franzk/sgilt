@@ -1,83 +1,51 @@
 package net.franzka.sgilt.sgilt_mailer.template;
 
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Map;
-import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Registre des gabarits de mail, indexés par {@link MailType}.
- * Chaque gabarit est isolé et porte ses propres variables attendues,
- * de façon à pouvoir migrer plus tard vers un moteur de template
- * sans changer le contrat d'appel.
+ * Chaque gabarit est défini dans son propre fichier JSON
+ * ({@code resources/mailtemplates/<MailType>.json}), de façon à pouvoir
+ * migrer plus tard vers un moteur de template sans changer le contrat d'appel.
  */
 @Component
 public class MailTemplateRegistry {
 
-    private static final Map<MailType, MailTemplate> TEMPLATES = Map.of(
-            MailType.VERIFICATION_EMAIL, new MailTemplate(
-                    "Sgilt - Confirmez votre demande",
-                    """
-                    <p>Bonjour,</p>
-                    <p>Vous venez d’initier une demande de réservation sur Sgilt avec cette adresse email.</p>
-                    <p>Pour confirmer votre adresse email et créer votre compte, cliquez sur le lien ci-dessous :</p>
-                    <p><a href="{confirmationUrl}">Confirmer mon adresse email</a></p>
-                    <p>Ce lien expire dans 24 heures.</p>
-                    <p>Si vous n’êtes pas à l’origine de cette action, vous pouvez simplement ignorer ce message.</p>
-                    <p>À bientôt,</p>
-                    <p>L’équipe Sgilt.</p>
-                    """,
-                    Set.of("confirmationUrl"),
-                    Set.of()
-            ),
-            MailType.SECURITY_ALERT_EMAIL, new MailTemplate(
-                    "Sgilt - Demande de réservation initiée avec votre adresse email",
-                    """
-                    <p>Bonjour,</p>
-                    <p>Vous venez d'initier une demande de réservation avec votre adresse email.</p>
-                    <p>Cette adresse est déjà liée à un compte Sgilt.</p>
-                    <p>Pour des raisons de sécurité, la demande n’a pas été créée.</p>
-                    <p></p>
-                    <p>Pour créer une nouvelle demande ou suivre vos événements, connectez-vous à votre espace :</p>
-                    <p><a href="{appUrl}">Accéder à Sgilt</a></p>
-                    <p></p>
-                    <p>Si vous n’êtes pas à l’origine de cette action, vous pouvez simplement ignorer ce message.</p>
-                    <p></p>
-                    <p>À bientôt,</p>
-                    <p>L’équipe Sgilt.</p>
-                    """,
-                    Set.of("appUrl"),
-                    Set.of()
-            ),
-            MailType.WELCOME_EMAIL, new MailTemplate(
-                    "Bienvenue sur Sgilt",
-                    """
-                    <p>Bonjour,</p>
-                    <p>Votre adresse email a bien été confirmée et votre compte Sgilt a été créé.</p>
-                    <p>Votre demande de réservation est maintenant enregistrée.</p>
-                    <p>Vous pouvez accéder à votre espace pour suivre vos événements et retrouver vos demandes en cours :</p>
-                    <p><a href="{appUrl}">Accéder à Sgilt</a></p>
-                    <p></p>
-                    <p>À bientôt,</p>
-                    <p>L’équipe Sgilt.</p>
-                    """,
-                    Set.of("appUrl"),
-                    Set.of()
-            )
-    );
+    private static final String TEMPLATES_PATH = "mailtemplates/";
+
+    private final Map<MailType, MailTemplate> templates;
+
+    public MailTemplateRegistry(ObjectMapper objectMapper) {
+        this.templates = Arrays.stream(MailType.values())
+                .collect(Collectors.toMap(Function.identity(), mailType -> loadTemplate(objectMapper, mailType)));
+    }
+
+    // charge le gabarit JSON associé au type de mail depuis le classpath
+    private MailTemplate loadTemplate(ObjectMapper objectMapper, MailType mailType) {
+        String resourcePath = TEMPLATES_PATH + mailType.name() + ".json";
+        try (InputStream input = new ClassPathResource(resourcePath).getInputStream()) {
+            return objectMapper.readValue(input, MailTemplate.class);
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to load mail template " + resourcePath, e);
+        }
+    }
 
     /**
      * Retourne le gabarit associé au type de mail donné.
      *
      * @param mailType le type de mail
      * @return le gabarit correspondant
-     * @throws IllegalArgumentException si aucun gabarit n'est enregistré pour ce type
      */
     public MailTemplate getTemplate(MailType mailType) {
-        MailTemplate template = TEMPLATES.get(mailType);
-        if (template == null) {
-            throw new IllegalArgumentException("No mail template registered for mail type " + mailType);
-        }
-        return template;
+        return templates.get(mailType);
     }
 }

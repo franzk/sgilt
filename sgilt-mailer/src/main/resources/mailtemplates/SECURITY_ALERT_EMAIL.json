@@ -1,0 +1,6 @@
+{
+  "subjectTemplate": "Sgilt - Demande de réservation initiée avec votre adresse email",
+  "htmlTemplate": "<p>Bonjour,</p>\n<p>Vous venez d'initier une demande de réservation avec votre adresse email.</p>\n<p>Cette adresse est déjà liée à un compte Sgilt.</p>\n<p>Pour des raisons de sécurité, la demande n’a pas été créée.</p>\n<p></p>\n<p>Pour créer une nouvelle demande ou suivre vos événements, connectez-vous à votre espace :</p>\n<p><a href=\"{appUrl}\">Accéder à Sgilt</a></p>\n<p></p>\n<p>Si vous n’êtes pas à l’origine de cette action, vous pouvez simplement ignorer ce message.</p>\n<p></p>\n<p>À bientôt,</p>\n<p>L’équipe Sgilt.</p>\n",
+  "requiredVariables": ["appUrl"],
+  "htmlSafeVariables": []
+}

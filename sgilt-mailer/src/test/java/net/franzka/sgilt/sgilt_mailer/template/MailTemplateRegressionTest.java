@@ -1,6 +1,7 @@
 package net.franzka.sgilt.sgilt_mailer.template;
 
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.Map;
 
@@ -14,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class MailTemplateRegressionTest {
 
-    private final MailTemplateRegistry registry = new MailTemplateRegistry();
+    private final MailTemplateRegistry registry = new MailTemplateRegistry(new ObjectMapper());
     private final MailTemplateRenderer renderer = new MailTemplateRenderer();
 
     // Référence : HTML produit par OnboardingMailerService.sendVerificationEmail avant migration.

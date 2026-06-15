@@ -1,0 +1,6 @@
+{
+  "subjectTemplate": "Sgilt - Confirmez votre demande",
+  "htmlTemplate": "<p>Bonjour,</p>\n<p>Vous venez d’initier une demande de réservation sur Sgilt avec cette adresse email.</p>\n<p>Pour confirmer votre adresse email et créer votre compte, cliquez sur le lien ci-dessous :</p>\n<p><a href=\"{confirmationUrl}\">Confirmer mon adresse email</a></p>\n<p>Ce lien expire dans 24 heures.</p>\n<p>Si vous n’êtes pas à l’origine de cette action, vous pouvez simplement ignorer ce message.</p>\n<p>À bientôt,</p>\n<p>L’équipe Sgilt.</p>\n",
+  "requiredVariables": ["confirmationUrl"],
+  "htmlSafeVariables": []
+}

@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
@@ -36,7 +37,7 @@ class MailServiceTest {
 
     @BeforeEach
     void setUp() {
-        mailService = new MailService(mailSender, new MailTemplateRegistry(), new MailTemplateRenderer());
+        mailService = new MailService(mailSender, new MailTemplateRegistry(new ObjectMapper()), new MailTemplateRenderer());
         ReflectionTestUtils.setField(mailService, "defaultFromAddress", "noreply@sgilt.fr");
     }
 
