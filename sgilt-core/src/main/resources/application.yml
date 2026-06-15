@@ -43,7 +43,6 @@ sgilt:
     confirmation-expiration-hours: 24
   mailer:
     url: ${MAILER_URL:http://localhost:5030}
-    from: ${MAILER_FROM:contact@sgilt.alsace}
   frontend:
     url: ${PUBLIC_SITE_URL:http://localhost:3000}
   keycloak:

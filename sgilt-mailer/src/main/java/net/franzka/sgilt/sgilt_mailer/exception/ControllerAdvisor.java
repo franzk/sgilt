@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import net.franzka.sgilt.sgilt_mailer.template.MissingTemplateVariableException;
 import org.springframework.mail.MailException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -47,5 +48,11 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleMailException(MailException ex, WebRequest request) {
         log.error("handleMailException : {}", ex.getMessage());
         return handleExceptionInternal(ex, "Send mail error : " + ex.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Object> handleMissingTemplateVariableException(MissingTemplateVariableException ex, WebRequest request) {
+        log.error("handleMissingTemplateVariableException : {}", ex.getMessage());
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 }
