@@ -94,6 +94,16 @@
       "available": "🟢 Disponible",
       "option": "🟠 Sous option",
       "booked": "🔴 Réservé"
+    },
+    "editable": {
+      "identity-quote": {
+        "ghost": "« La musique unit les âmes — je mets mon art au service des vôtres. »",
+        "prompt": "Votre phrase signature — celle qui dit en une ligne pourquoi vos clients vous choisissent"
+      },
+      "identity-bio": {
+        "ghost": "Depuis dix ans, je crée des ambiances sur mesure pour des mariages, anniversaires et soirées d'entreprise en Alsace. Chaque événement est une partition unique.",
+        "prompt": "Racontez votre parcours, votre approche, ce qui rend votre façon de travailler unique"
+      }
     }
   },
   "tunnel": {

@@ -13,8 +13,8 @@
     <!-- TOUCHE IDENTITAIRE -->
     <section v-if="prestataire.identity" class="section identity-spotlight">
       <div class="content">
-        <blockquote class="quote">{{ prestataire.identity.quote }}</blockquote>
-        <p class="bio">{{ prestataire.identity.bio }}</p>
+        <EditableText v-model="localQuote" field="identity-quote" :editable="true" class="quote" />
+        <EditableText v-model="localBio" field="identity-bio" :editable="true" class="bio" />
       </div>
     </section>
 
@@ -88,13 +88,15 @@
 
 <script setup lang="ts">
 import EngagementBadge from '~/components/prestataire/EngagementBadge.vue'
+import EditableText from '~/components/prestataire/EditableText.vue'
 import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDetail'
 
 const props = defineProps<{
   prestataire: PrestataireDetail
 }>()
 
-provide('displayMode', 'public' as const)
+const localQuote = ref(props.prestataire.identity?.quote ?? '')
+const localBio = ref(props.prestataire.identity?.bio ?? '')
 
 const hasInfosPratiques = computed(
   () =>
