@@ -1,28 +1,28 @@
 <template>
   <div class="prestataire-content">
     <!-- CE QUE NOUS PROPOSONS -->
-    <section v-if="prestataire.offerings.length > 0" class="section">
+    <section v-if="prestataire?.offerings.length > 0" class="section">
       <h2 class="title">{{ $t('provider.details.offerings-title') }}</h2>
       <ul class="offerings">
-        <li v-for="item in prestataire.offerings" :key="item" class="offering-item">
+        <li v-for="item in prestataire?.offerings" :key="item" class="offering-item">
           {{ item }}
         </li>
       </ul>
     </section>
 
     <!-- TOUCHE IDENTITAIRE -->
-    <section v-if="prestataire.identity" class="section identity-spotlight">
+    <section v-if="prestataire?.identity" class="section identity-spotlight">
       <div class="content">
-        <EditableText v-model="localQuote" field="identity-quote" :editable="true" class="quote" />
-        <EditableText v-model="localBio" field="identity-bio" :editable="true" class="bio" />
+        <EditableText v-model="prestataire!.identity!.quote" field="identity.quote" :editable="true" class="quote" />
+        <EditableText v-model="prestataire!.identity!.bio" field="identity.bio" :editable="true" class="bio" />
       </div>
     </section>
 
     <!-- BADGES -->
-    <section v-if="prestataire.badges.length > 0" class="section badges-section">
+    <section v-if="prestataire?.badges.length > 0" class="section badges-section">
       <div class="badges">
         <EngagementBadge
-          v-for="badge in prestataire.badges"
+          v-for="badge in prestataire?.badges"
           :key="badge.label"
           :badge="badge"
         />
@@ -30,19 +30,19 @@
     </section>
 
     <!-- BUDGET (mobile uniquement) -->
-    <section v-if="prestataire.budget" class="section budget-section mobile-only">
+    <section v-if="prestataire?.budget" class="section budget-section mobile-only">
       <h2 class="title">{{ $t('provider.details.rates') }}</h2>
-      <p class="budget-text">{{ prestataire.budget }}</p>
+      <p class="budget-text">{{ prestataire?.budget }}</p>
     </section>
 
     <!-- TÉMOIGNAGES -->
     <section
-      v-if="prestataire.testimonials && prestataire.testimonials.length > 0"
+      v-if="prestataire?.testimonials && prestataire.testimonials.length > 0"
       class="section"
     >
       <h2 class="title">{{ $t('provider.details.testimonials-title') }}</h2>
       <div class="testimonials">
-        <blockquote v-for="t in prestataire.testimonials" :key="t.author" class="testimonial">
+        <blockquote v-for="t in prestataire?.testimonials" :key="t.author" class="testimonial">
           <p class="text">« {{ t.text }} »</p>
           <footer class="footer">
             <span class="author">{{ t.author }}</span>
@@ -56,27 +56,27 @@
     <section v-if="hasInfosPratiques" class="section infos-section">
       <h2 class="title">{{ $t('provider.details.infos-title') }}</h2>
       <div
-        v-if="prestataire.logistics && prestataire.logistics.length > 0"
+        v-if="prestataire?.logistics && prestataire.logistics.length > 0"
         class="infos-block"
       >
         <h3 class="title">{{ $t('provider.details.logistics-title') }}</h3>
         <ul class="infos-list">
-          <li v-for="item in prestataire.logistics" :key="item">{{ item }}</li>
+          <li v-for="item in prestataire?.logistics" :key="item">{{ item }}</li>
         </ul>
       </div>
       <div
-        v-if="prestataire.technical && prestataire.technical.length > 0"
+        v-if="prestataire?.technical && prestataire.technical.length > 0"
         class="infos-block"
       >
         <h3 class="title">{{ $t('provider.details.technical-title') }}</h3>
         <ul class="infos-list">
-          <li v-for="item in prestataire.technical" :key="item">{{ item }}</li>
+          <li v-for="item in prestataire?.technical" :key="item">{{ item }}</li>
         </ul>
       </div>
-      <div v-if="prestataire.faq && prestataire.faq.length > 0" class="infos-block">
+      <div v-if="prestataire?.faq && prestataire.faq.length > 0" class="infos-block">
         <h3 class="title">{{ $t('provider.details.faq-title') }}</h3>
         <div class="faq">
-          <div v-for="item in prestataire.faq" :key="item.question" class="faq-item">
+          <div v-for="item in prestataire?.faq" :key="item.question" class="faq-item">
             <p class="question">{{ item.question }}</p>
             <p class="answer">{{ item.answer }}</p>
           </div>
@@ -89,20 +89,14 @@
 <script setup lang="ts">
 import EngagementBadge from '~/components/prestataire/EngagementBadge.vue'
 import EditableText from '~/components/prestataire/EditableText.vue'
-import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDetail'
 
-const props = defineProps<{
-  prestataire: PrestataireDetail
-}>()
-
-const localQuote = ref(props.prestataire.identity?.quote ?? '')
-const localBio = ref(props.prestataire.identity?.bio ?? '')
+const { prestataire } = usePrestataire()
 
 const hasInfosPratiques = computed(
   () =>
-    (props.prestataire.logistics?.length ?? 0) > 0 ||
-    (props.prestataire.technical?.length ?? 0) > 0 ||
-    (props.prestataire.faq?.length ?? 0) > 0,
+    (prestataire.value?.logistics?.length ?? 0) > 0 ||
+    (prestataire.value?.technical?.length ?? 0) > 0 ||
+    (prestataire.value?.faq?.length ?? 0) > 0,
 )
 </script>
 

@@ -22,7 +22,7 @@
 
       <!-- Contenu principal -->
       <div class="main">
-        <PrestataireContent :prestataire="prestataire" />
+        <PrestataireContent />
       </div>
     </div>
 
