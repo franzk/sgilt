@@ -1,5 +1,5 @@
 <template>
-  <div class="editable-text" :class="{ 'is-edit': isEdit }" @click="startEdit">
+  <component :is="as ?? 'div'" class="editable-text" :class="{ 'is-edit': isEdit }" @click="startEdit">
     <p v-if="focused" class="prompt">{{ promptText }}</p>
     <textarea
       v-if="focused"
@@ -28,11 +28,13 @@
         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
       </svg>
     </button>
-  </div>
+  </component>
 </template>
 
 <script setup lang="ts">
 const props = defineProps<{
+  /** Balise sémantique de rendu (ex. 'blockquote', 'p'). Défaut : 'div' */
+  as?: string
   /** Identifiant du champ, résout les clés i18n `provider.editable.{field}.ghost/prompt` */
   field: string
   /** Active le mode édition (crayon, clic, prompt au focus). Défaut : false */
@@ -88,9 +90,8 @@ function onBlur() {
 @use '@/assets/styles/base' as *;
 
 .editable-text {
-  position: relative;
-
   &.is-edit {
+    position: relative;
     cursor: text;
 
     &:hover .pencil {

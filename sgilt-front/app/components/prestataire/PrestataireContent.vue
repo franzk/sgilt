@@ -13,8 +13,8 @@
     <!-- TOUCHE IDENTITAIRE -->
     <section v-if="prestataire?.identity" class="section identity-spotlight">
       <div class="content">
-        <EditableText v-model="prestataire!.identity!.quote" field="identity.quote" :editable="true" class="quote" />
-        <EditableText v-model="prestataire!.identity!.bio" field="identity.bio" :editable="true" class="bio" />
+        <EditableText as="blockquote" v-model="prestataire!.identity!.quote" field="identity.quote" :editable="true" class="quote" />
+        <EditableText as="p" v-model="prestataire!.identity!.bio" field="identity.bio" :editable="true" class="bio" />
       </div>
     </section>
 
