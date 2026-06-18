@@ -1,5 +1,6 @@
 ﻿<script setup lang="ts">
 import SgiltImage from '~/components/basics/media/SgiltImage.vue'
+import EditableText from '~/components/prestataire/EditableText.vue'
 import { ShareIcon, ArrowLeftIcon } from '@remixicons/vue/line'
 import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDetail'
 import type { DisplayMode } from '~/types/prestataire'
@@ -10,6 +11,9 @@ const props = defineProps<{
   prestataire: PrestataireDetail
   displayMode: DisplayMode
 }>()
+
+const { prestataire } = usePrestataire()
+const isEdit = computed(() => props.displayMode === 'edit')
 
 const emit = defineEmits<{
   openVideo: []
@@ -111,7 +115,7 @@ async function share() {
       <div class="content">
         <p class="category">{{ prestataire.category }}</p>
         <h1 class="name">{{ prestataire.name }}</h1>
-        <p class="baseline">{{ prestataire.baseline }}</p>
+        <EditableText as="p" v-model="prestataire!.baseline" field="baseline" :editable="isEdit" class="baseline" />
       </div>
 
       <div v-if="heroItems.length > 1" class="dots" aria-hidden="true">
@@ -133,7 +137,7 @@ async function share() {
         <div class="content">
           <p class="category">{{ prestataire.category }}</p>
           <h1 class="name">{{ prestataire.name }}</h1>
-          <p class="baseline">{{ prestataire.baseline }}</p>
+          <EditableText as="p" v-model="prestataire!.baseline" field="baseline" :editable="isEdit" class="baseline" />
         </div>
       </div>
 

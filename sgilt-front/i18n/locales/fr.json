@@ -96,6 +96,10 @@
       "booked": "🔴 Réservé"
     },
     "editable": {
+      "baseline": {
+        "ghost": "Votre accroche en une phrase — ce qui donne envie de vous choisir",
+        "prompt": "L'accroche qui apparaît sous votre nom sur la fiche"
+      },
       "identity": {
         "quote": {
           "ghost": "« La musique unit les âmes — je mets mon art au service des vôtres. »",
