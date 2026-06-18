@@ -3,10 +3,18 @@
     <!-- ── Hero ─────────────────────────────────────────────────────────────── -->
     <PrestataireHero
       :prestataire="prestataire"
+      :display-mode="displayMode"
       @open-video="openVideo"
       @open-photo="openGallery"
       @back="$emit('back')"
     />
+
+    <!-- ── Toggle mode édition (temporaire) ──────────────────────────────────── -->
+    <div class="edit-toggle">
+      <button class="edit-toggle-btn" @click="toggleDisplayMode">
+        {{ displayMode === 'edit' ? 'Mode affichage' : 'Mode édition' }}
+      </button>
+    </div>
 
     <!-- ── Layout principal ─────────────────────────────────────────────────── -->
     <div class="page-layout">
@@ -22,7 +30,7 @@
 
       <!-- Contenu principal -->
       <div class="main">
-        <PrestataireContent />
+        <PrestataireContent :display-mode="displayMode" />
       </div>
     </div>
 
@@ -96,8 +104,16 @@ import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import PrestataireHero from '~/components/prestataire/PrestataireHero.vue'
 import PrestataireContent from '~/components/prestataire/PrestataireContent.vue'
 import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDetail'
+import type { DisplayMode } from '~/types/prestataire'
 
 const { t } = useI18n()
+
+// ── Mode affichage / édition ──────────────────────────────────────────────────
+const displayMode = ref<DisplayMode>('display')
+
+function toggleDisplayMode() {
+  displayMode.value = displayMode.value === 'display' ? 'edit' : 'display'
+}
 
 const props = defineProps<{
   prestataire: PrestataireDetail
@@ -180,6 +196,30 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
+
+// ── Toggle édition (temporaire) ───────────────────────────────────────────────
+.edit-toggle {
+  display: flex;
+  justify-content: flex-end;
+  padding: $spacing-s $spacing-m;
+}
+
+.edit-toggle-btn {
+  padding: 0.35rem 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid $color-primary;
+  border-radius: $radius-md;
+  background: transparent;
+  color: $color-primary;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+
+  &:hover {
+    background: $color-primary;
+    color: #fff;
+  }
+}
 
 // ── Back button ───────────────────────────────────────────────────────────────
 .back-btn {

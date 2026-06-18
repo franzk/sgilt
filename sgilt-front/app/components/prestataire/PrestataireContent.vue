@@ -13,8 +13,8 @@
     <!-- TOUCHE IDENTITAIRE -->
     <section v-if="prestataire?.identity" class="section identity-spotlight">
       <div class="content">
-        <EditableText as="blockquote" v-model="prestataire!.identity!.quote" field="identity.quote" :editable="true" class="quote" />
-        <EditableText as="p" v-model="prestataire!.identity!.bio" field="identity.bio" :editable="true" class="bio" />
+        <EditableText as="blockquote" v-model="prestataire!.identity!.quote" field="identity.quote" :editable="isEdit" class="quote" />
+        <EditableText as="p" v-model="prestataire!.identity!.bio" field="identity.bio" :editable="isEdit" class="bio" />
       </div>
     </section>
 
@@ -89,8 +89,15 @@
 <script setup lang="ts">
 import EngagementBadge from '~/components/prestataire/EngagementBadge.vue'
 import EditableText from '~/components/prestataire/EditableText.vue'
+import type { DisplayMode } from '~/types/prestataire'
+
+const props = defineProps<{
+  displayMode: DisplayMode
+}>()
 
 const { prestataire } = usePrestataire()
+
+const isEdit = computed(() => props.displayMode === 'edit')
 
 const hasInfosPratiques = computed(
   () =>

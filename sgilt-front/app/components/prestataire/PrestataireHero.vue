@@ -2,11 +2,13 @@
 import SgiltImage from '~/components/basics/media/SgiltImage.vue'
 import { ShareIcon, ArrowLeftIcon } from '@remixicons/vue/line'
 import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDetail'
+import type { DisplayMode } from '~/types/prestataire'
 
 const router = useRouter()
 
 const props = defineProps<{
   prestataire: PrestataireDetail
+  displayMode: DisplayMode
 }>()
 
 const emit = defineEmits<{
