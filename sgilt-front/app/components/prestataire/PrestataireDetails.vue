@@ -22,6 +22,7 @@
       <aside ref="datepickerAreaRef" class="sidebar">
         <PrestataireSidebar
           :prestataire="prestataire"
+          :display-mode="displayMode"
           :disable-date="disableDate"
           :date-error="dateError"
           @select-intent="onSelect"

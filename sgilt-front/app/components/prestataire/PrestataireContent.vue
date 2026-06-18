@@ -32,7 +32,7 @@
     <!-- BUDGET (mobile uniquement) -->
     <section v-if="prestataire?.budget" class="section budget-section mobile-only">
       <h2 class="title">{{ $t('provider.details.rates') }}</h2>
-      <p class="budget-text">{{ prestataire?.budget }}</p>
+      <EditableText as="p" v-model="prestataire!.budget" field="budget" :editable="isEdit" class="budget-text" />
     </section>
 
     <!-- TÉMOIGNAGES -->

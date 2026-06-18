@@ -11,7 +11,7 @@ export interface PrestataireDetailDto extends PrestataireCardDto {
   badges: { icon: string; label: string; description: string; color: string }[]
   offerings: string[]
   identity?: { quote: string; bio: string }
-  budget?: string
+  budget: string | null
   testimonials?: { author: string; text: string; eventType?: string }[]
   logistics?: string[]
   technical?: string[]

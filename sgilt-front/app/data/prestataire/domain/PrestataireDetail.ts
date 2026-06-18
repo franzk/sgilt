@@ -17,7 +17,7 @@ export interface PrestataireDetail extends PrestataireCardDetail {
   badges: EngagementBadge[]
   offerings: string[]
   identity?: { quote: string; bio: string }
-  budget?: string
+  budget: string | null
   unavailableDates?: string[]
   testimonials?: Testimonial[]
   logistics?: string[]

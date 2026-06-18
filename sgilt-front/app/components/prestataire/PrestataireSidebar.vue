@@ -19,7 +19,7 @@
 
     <div v-if="prestataire.budget" class="sidebar-block sidebar-budget">
       <h3 class="title">{{ $t('provider.details.rates') }}</h3>
-      <p class="text">{{ prestataire.budget }}</p>
+      <EditableText as="p" v-model="prestataire!.budget" field="budget" :editable="isEdit" class="text" />
     </div>
 
     <SgiltButton class="sidebar-cta" @click="emit('select-intent')">
@@ -31,15 +31,21 @@
 <script setup lang="ts">
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
+import EditableText from '~/components/prestataire/EditableText.vue'
 import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDetail'
+import type { DisplayMode } from '~/types/prestataire'
 
 const { t } = useI18n()
 
 const props = defineProps<{
   prestataire: PrestataireDetail
+  displayMode: DisplayMode
   disableDate?: boolean
   dateError: string | null
 }>()
+
+const { prestataire } = usePrestataire()
+const isEdit = computed(() => props.displayMode === 'edit')
 
 const emit = defineEmits<{
   'select-intent': []

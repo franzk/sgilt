@@ -100,6 +100,10 @@
         "ghost": "Votre accroche en une phrase — ce qui donne envie de vous choisir",
         "prompt": "L'accroche qui apparaît sous votre nom sur la fiche"
       },
+      "budget": {
+        "ghost": "Ex. : À partir de 800 € — devis sur mesure selon durée et formule",
+        "prompt": "Donnez une idée de vos tarifs pour aider les couples à se projeter"
+      },
       "identity": {
         "quote": {
           "ghost": "« La musique unit les âmes — je mets mon art au service des vôtres. »",
