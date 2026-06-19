@@ -32,7 +32,7 @@
           @click="onItemClick($event, index)"
         >
           <EditableText
-            :ref="(el) => setItemRef(index, el)"
+            :ref="setItemRef(index)"
             :field="`${field}.item`"
             :editable="isListEditing"
             :model-value="modelValue[index] ?? ''"
@@ -44,7 +44,9 @@
             class="remove-btn"
             aria-label="Supprimer"
             @click.stop="removeItem(index)"
-          >×</button>
+          >
+            ×
+          </button>
         </li>
       </ul>
 
@@ -89,12 +91,16 @@ const modelValue = defineModel<string[]>({ required: true })
 
 const isEdit = computed(() => props.displayMode === 'edit')
 
-const { t, tm } = useI18n()
+const { t, tm, rt } = useI18n()
+
+// ghost items
+type RtArg = Parameters<typeof rt>[0]
 const ghostItems = computed<string[]>(() => {
   const raw: unknown = tm(`provider.editable.${props.field}.ghost-items`)
-  if (!Array.isArray(raw)) return []
-  return raw.filter((item): item is string => typeof item === 'string')
+  return Array.isArray(raw) ? (raw as RtArg[]).map((item) => rt(item)) : []
 })
+
+
 const listPrompt = computed(() => t(`provider.editable.${props.field}.prompt`))
 
 const isListEditing = ref(false)
@@ -121,9 +127,10 @@ type EditableTextRef = { startEdit: () => void }
 const itemRefs = ref<(EditableTextRef | null)[]>([])
 const focusedInputIndex = ref<number | null>(null)
 
-function setItemRef(index: number, el: ComponentPublicInstance | Element | null) {
-  // defineExpose({ startEdit }) on EditableText guarantees this shape
-  itemRefs.value[index] = el as EditableTextRef | null
+function setItemRef(index: number) {
+  return (el: ComponentPublicInstance | Element | null) => {
+    itemRefs.value[index] = el as EditableTextRef | null
+  }
 }
 
 watch(focusedInputIndex, (idx) => {
@@ -307,7 +314,9 @@ $color-success: #2e7d32;
   line-height: 1;
   padding: 0.15rem 0.25rem;
   align-self: flex-start;
-  transition: opacity 120ms ease, color 120ms ease;
+  transition:
+    opacity 120ms ease,
+    color 120ms ease;
 
   &:hover {
     opacity: 1;
@@ -337,7 +346,9 @@ $color-success: #2e7d32;
   font-size: 0.82rem;
   color: $text-secondary;
   cursor: pointer;
-  transition: border-color 120ms ease, color 120ms ease;
+  transition:
+    border-color 120ms ease,
+    color 120ms ease;
 
   &:hover {
     border-color: $text-secondary;
