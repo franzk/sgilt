@@ -135,11 +135,9 @@ function setItemRef(index: number) {
 
 watch(focusedInputIndex, (idx) => {
   if (idx === null) return
-  nextTick(() => {
-    itemRefs.value[idx]?.startEdit()
-    focusedInputIndex.value = null
-  })
-})
+  itemRefs.value[idx]?.startEdit()
+  focusedInputIndex.value = null
+}, { flush: 'post' })
 
 // ── Actions ───────────────────────────────────────────────────────────────────
 function enterListEdit() {
@@ -156,9 +154,10 @@ function onItemClick(event: MouseEvent, index: number) {
 }
 
 function addItem() {
+  const newIndex = modelValue.value.length
   itemIds.value = [...itemIds.value, crypto.randomUUID()]
   modelValue.value = [...modelValue.value, '']
-  focusedInputIndex.value = modelValue.value.length - 1
+  focusedInputIndex.value = newIndex
 }
 
 function removeItem(index: number) {
