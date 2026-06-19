@@ -54,13 +54,13 @@ const emit = defineEmits<{
 const { dateModel } = useSearchUi()
 
 const unavailableDatesAsDate = computed<Date[]>(() =>
-  (props.prestataire.unavailableDates ?? []).map((d) => new Date(d)),
+  props.prestataire.unavailableDates.map((d) => new Date(d)),
 )
 
 const isUnavailable = computed(() => {
   if (!dateModel.value) return false
   const iso = dateModel.value.toISOString().slice(0, 10)
-  return props.prestataire.unavailableDates?.includes(iso)
+  return props.prestataire.unavailableDates.includes(iso)
 })
 
 const availabilityIcon = computed(() => (isUnavailable.value ? '✗' : '✓'))

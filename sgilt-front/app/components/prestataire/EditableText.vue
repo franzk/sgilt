@@ -84,6 +84,8 @@ function onBlur() {
     modelValue.value = localValue.value
   }
 }
+
+defineExpose({ startEdit })
 </script>
 
 <style scoped lang="scss">

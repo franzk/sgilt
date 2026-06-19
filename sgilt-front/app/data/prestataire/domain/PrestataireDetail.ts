@@ -12,15 +12,15 @@ export interface PrestataireDetail extends PrestataireCardDetail {
   category: string
   subcats: string[]
   heroImage: string
-  youtubeId?: string
+  youtubeId: string | null
   photos: string[]
   badges: EngagementBadge[]
   offerings: string[]
-  identity?: { quote: string; bio: string }
+  identity: { quote: string | null; bio: string | null }
   budget: string | null
-  unavailableDates?: string[]
-  testimonials?: Testimonial[]
-  logistics?: string[]
-  technical?: string[]
-  faq?: FaqItem[]
+  unavailableDates: string[]
+  testimonials: Testimonial[]
+  logistics: string[]
+  technical: string[]
+  faq: FaqItem[]
 }

@@ -1,20 +1,21 @@
 <template>
   <div class="prestataire-content">
     <!-- CE QUE NOUS PROPOSONS -->
-    <section v-if="prestataire?.offerings.length > 0" class="section">
+    <section v-if="isEdit || !!prestataire?.offerings.length" class="section">
       <h2 class="title">{{ $t('provider.details.offerings-title') }}</h2>
-      <ul class="offerings">
-        <li v-for="item in prestataire?.offerings" :key="item" class="offering-item">
-          {{ item }}
-        </li>
-      </ul>
+      <EditableList
+        v-model="prestataire!.offerings"
+        marker="check"
+        field="offerings"
+        :display-mode="props.displayMode"
+      />
     </section>
 
     <!-- TOUCHE IDENTITAIRE -->
-    <section v-if="prestataire?.identity" class="section identity-spotlight">
+    <section v-if="isEdit || prestataire?.identity.quote || prestataire?.identity.bio" class="section identity-spotlight">
       <div class="content">
-        <EditableText as="blockquote" v-model="prestataire!.identity!.quote" field="identity.quote" :editable="isEdit" class="quote" />
-        <EditableText as="p" v-model="prestataire!.identity!.bio" field="identity.bio" :editable="isEdit" class="bio" />
+        <EditableText as="blockquote" v-model="prestataire!.identity.quote" field="identity.quote" :editable="isEdit" class="quote" />
+        <EditableText as="p" v-model="prestataire!.identity.bio" field="identity.bio" :editable="isEdit" class="bio" />
       </div>
     </section>
 
@@ -36,10 +37,7 @@
     </section>
 
     <!-- TÉMOIGNAGES -->
-    <section
-      v-if="prestataire?.testimonials && prestataire.testimonials.length > 0"
-      class="section"
-    >
+    <section v-if="!!prestataire?.testimonials.length" class="section">
       <h2 class="title">{{ $t('provider.details.testimonials-title') }}</h2>
       <div class="testimonials">
         <blockquote v-for="t in prestataire?.testimonials" :key="t.author" class="testimonial">
@@ -53,27 +51,33 @@
     </section>
 
     <!-- INFORMATIONS PRATIQUES -->
-    <section v-if="hasInfosPratiques" class="section infos-section">
+    <section v-if="isEdit || hasInfosPratiques" class="section infos-section">
       <h2 class="title">{{ $t('provider.details.infos-title') }}</h2>
       <div
-        v-if="prestataire?.logistics && prestataire.logistics.length > 0"
+        v-if="isEdit || !!prestataire?.logistics.length"
         class="infos-block"
       >
         <h3 class="title">{{ $t('provider.details.logistics-title') }}</h3>
-        <ul class="infos-list">
-          <li v-for="item in prestataire?.logistics" :key="item">{{ item }}</li>
-        </ul>
+        <EditableList
+          v-model="prestataire!.logistics"
+          marker="dash"
+          field="logistics"
+          :display-mode="props.displayMode"
+        />
       </div>
       <div
-        v-if="prestataire?.technical && prestataire.technical.length > 0"
+        v-if="isEdit || !!prestataire?.technical.length"
         class="infos-block"
       >
         <h3 class="title">{{ $t('provider.details.technical-title') }}</h3>
-        <ul class="infos-list">
-          <li v-for="item in prestataire?.technical" :key="item">{{ item }}</li>
-        </ul>
+        <EditableList
+          v-model="prestataire!.technical"
+          marker="dash"
+          field="technical"
+          :display-mode="props.displayMode"
+        />
       </div>
-      <div v-if="prestataire?.faq && prestataire.faq.length > 0" class="infos-block">
+      <div v-if="!!prestataire?.faq.length" class="infos-block">
         <h3 class="title">{{ $t('provider.details.faq-title') }}</h3>
         <div class="faq">
           <div v-for="item in prestataire?.faq" :key="item.question" class="faq-item">
@@ -89,6 +93,7 @@
 <script setup lang="ts">
 import EngagementBadge from '~/components/prestataire/EngagementBadge.vue'
 import EditableText from '~/components/prestataire/EditableText.vue'
+import EditableList from '~/components/prestataire/EditableList.vue'
 import type { DisplayMode } from '~/types/prestataire'
 
 const props = defineProps<{
@@ -101,9 +106,9 @@ const isEdit = computed(() => props.displayMode === 'edit')
 
 const hasInfosPratiques = computed(
   () =>
-    (prestataire.value?.logistics?.length ?? 0) > 0 ||
-    (prestataire.value?.technical?.length ?? 0) > 0 ||
-    (prestataire.value?.faq?.length ?? 0) > 0,
+    !!prestataire.value?.logistics.length ||
+    !!prestataire.value?.technical.length ||
+    !!prestataire.value?.faq.length,
 )
 </script>
 
@@ -162,39 +167,6 @@ $section-gap: 2.5rem;
 
   > * {
     width: 6rem;
-  }
-}
-
-.offerings {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-$color-success: #2e7d32;
-
-.offering-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  font-size: 0.95rem;
-  line-height: 1.35;
-  color: $text-secondary;
-
-  &::before {
-    content: '';
-    flex-shrink: 0;
-    width: 16px;
-    height: 16px;
-    margin-top: 0.2rem;
-    background-color: $color-success;
-    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
-    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
-    mask-repeat: no-repeat;
-    mask-size: contain;
   }
 }
 
@@ -294,30 +266,6 @@ $color-success: #2e7d32;
     color: $text-secondary;
     opacity: 0.6;
     margin: 0;
-  }
-}
-
-.infos-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-
-  li {
-    font-size: 0.9rem;
-    line-height: 1.5;
-    color: $text-secondary;
-    padding-left: 1rem;
-    position: relative;
-
-    &::before {
-      content: '–';
-      position: absolute;
-      left: 0;
-      opacity: 0.4;
-    }
   }
 }
 
