@@ -8,7 +8,19 @@
         marker="check"
         field="offerings"
         :display-mode="props.displayMode"
-      />
+        :new-item="newString"
+        :is-empty="isStringEmpty"
+      >
+        <template #item="{ item, isEditing, update, registerRef }">
+          <EditableText
+            :ref="registerRef"
+            :model-value="item"
+            :editable="isEditing"
+            field="offerings.item"
+            @update:model-value="update($event ?? '')"
+          />
+        </template>
+      </EditableList>
     </section>
 
     <!-- TOUCHE IDENTITAIRE -->
@@ -37,54 +49,92 @@
     </section>
 
     <!-- TÉMOIGNAGES -->
-    <section v-if="!!prestataire?.testimonials.length" class="section">
+    <section v-if="isEdit || !!prestataire?.testimonials.length" class="section">
       <h2 class="title">{{ $t('provider.details.testimonials-title') }}</h2>
-      <div class="testimonials">
-        <blockquote v-for="t in prestataire?.testimonials" :key="t.author" class="testimonial">
-          <p class="text">« {{ t.text }} »</p>
-          <footer class="footer">
-            <span class="author">{{ t.author }}</span>
-            <span v-if="t.eventType" class="event">{{ t.eventType }}</span>
-          </footer>
-        </blockquote>
-      </div>
+      <EditableList
+        v-model="prestataire!.testimonials"
+        field="testimonials"
+        :display-mode="props.displayMode"
+        :new-item="newTestimony"
+        :is-empty="isTestimonyEmpty"
+      >
+        <template #item="{ item, isEditing, update, registerRef }">
+          <EditableTestimony
+            :ref="registerRef"
+            :model-value="item"
+            :editable="isEditing"
+            @update:model-value="update($event)"
+          />
+        </template>
+      </EditableList>
     </section>
 
     <!-- INFORMATIONS PRATIQUES -->
     <section v-if="isEdit || hasInfosPratiques" class="section infos-section">
       <h2 class="title">{{ $t('provider.details.infos-title') }}</h2>
-      <div
-        v-if="isEdit || !!prestataire?.logistics.length"
-        class="infos-block"
-      >
+
+      <div v-if="isEdit || !!prestataire?.logistics.length" class="infos-block">
         <h3 class="title">{{ $t('provider.details.logistics-title') }}</h3>
         <EditableList
           v-model="prestataire!.logistics"
           marker="dash"
           field="logistics"
           :display-mode="props.displayMode"
-        />
+          :new-item="newString"
+          :is-empty="isStringEmpty"
+        >
+          <template #item="{ item, isEditing, update, registerRef }">
+            <EditableText
+              :ref="registerRef"
+              :model-value="item"
+              :editable="isEditing"
+              field="logistics.item"
+              @update:model-value="update($event ?? '')"
+            />
+          </template>
+        </EditableList>
       </div>
-      <div
-        v-if="isEdit || !!prestataire?.technical.length"
-        class="infos-block"
-      >
+
+      <div v-if="isEdit || !!prestataire?.technical.length" class="infos-block">
         <h3 class="title">{{ $t('provider.details.technical-title') }}</h3>
         <EditableList
           v-model="prestataire!.technical"
           marker="dash"
           field="technical"
           :display-mode="props.displayMode"
-        />
+          :new-item="newString"
+          :is-empty="isStringEmpty"
+        >
+          <template #item="{ item, isEditing, update, registerRef }">
+            <EditableText
+              :ref="registerRef"
+              :model-value="item"
+              :editable="isEditing"
+              field="technical.item"
+              @update:model-value="update($event ?? '')"
+            />
+          </template>
+        </EditableList>
       </div>
-      <div v-if="!!prestataire?.faq.length" class="infos-block">
+
+      <div v-if="isEdit || !!prestataire?.faq.length" class="infos-block">
         <h3 class="title">{{ $t('provider.details.faq-title') }}</h3>
-        <div class="faq">
-          <div v-for="item in prestataire?.faq" :key="item.question" class="faq-item">
-            <p class="question">{{ item.question }}</p>
-            <p class="answer">{{ item.answer }}</p>
-          </div>
-        </div>
+        <EditableList
+          v-model="prestataire!.faq"
+          field="faq"
+          :display-mode="props.displayMode"
+          :new-item="newFaqItem"
+          :is-empty="isFaqEmpty"
+        >
+          <template #item="{ item, isEditing, update, registerRef }">
+            <EditableFaq
+              :ref="registerRef"
+              :model-value="item"
+              :editable="isEditing"
+              @update:model-value="update($event)"
+            />
+          </template>
+        </EditableList>
       </div>
     </section>
   </div>
@@ -92,8 +142,10 @@
 
 <script setup lang="ts">
 import EngagementBadge from '~/components/prestataire/EngagementBadge.vue'
-import EditableText from '~/components/prestataire/EditableText.vue'
+import EditableText, { newItem as newString, isEmpty as isStringEmpty } from '~/components/prestataire/EditableText.vue'
 import EditableList from '~/components/prestataire/EditableList.vue'
+import EditableFaq, { newItem as newFaqItem, isEmpty as isFaqEmpty } from '~/components/prestataire/EditableFaq.vue'
+import EditableTestimony, { newItem as newTestimony, isEmpty as isTestimonyEmpty } from '~/components/prestataire/EditableTestimony.vue'
 import type { DisplayMode } from '~/types/prestataire'
 
 const props = defineProps<{
@@ -204,51 +256,6 @@ $section-gap: 2.5rem;
   margin: 0;
 }
 
-.testimonials {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.testimonial {
-  margin: 0;
-  padding: $spacing-m;
-  background: #fafafa;
-  border-radius: $radius-md;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-
-  .text {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.05rem;
-    font-style: italic;
-    line-height: 1.6;
-    color: $color-primary;
-    margin: 0 0 0.75rem;
-  }
-
-  .footer {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .author {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: $text-secondary;
-  }
-
-  .event {
-    font-size: 0.8rem;
-    color: $text-secondary;
-    opacity: 0.6;
-
-    &::before {
-      content: '· ';
-    }
-  }
-}
-
 .infos-section {
   gap: 1.5rem;
 }
@@ -265,28 +272,6 @@ $section-gap: 2.5rem;
     text-transform: uppercase;
     color: $text-secondary;
     opacity: 0.6;
-    margin: 0;
-  }
-}
-
-.faq {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.faq-item {
-  .question {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: $color-primary;
-    margin: 0 0 0.3rem;
-  }
-
-  .answer {
-    font-size: 0.9rem;
-    line-height: 1.6;
-    color: $text-secondary;
     margin: 0;
   }
 }

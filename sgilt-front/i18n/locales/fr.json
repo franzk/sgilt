@@ -149,6 +149,42 @@
           "ghost": "Ex. : Puissance requise, surface nécessaire…",
           "prompt": ""
         }
+      },
+      "faq": {
+        "ghost-items": [
+          "Est-ce que vous vous déplacez en dehors de votre région ?",
+          "Combien de temps à l'avance faut-il vous contacter ?",
+          "Proposez-vous des formules tout compris ?"
+        ],
+        "prompt": "Ajoutez les questions que vos clients vous posent souvent…",
+        "question": {
+          "ghost": "",
+          "prompt": "Ex. : Est-ce que vous vous déplacez…"
+        },
+        "answer": {
+          "ghost": "",
+          "prompt": "Votre réponse détaillée…"
+        }
+      },
+      "testimonials": {
+        "ghost-items": [
+          "« Un groupe exceptionnel — la piste de danse n'a pas désempli de toute la soirée »",
+          "« Professionnel, ponctuel, à l'écoute — exactement ce qu'il nous fallait »",
+          "« Nos invités en parlent encore »"
+        ],
+        "prompt": "Ajoutez des témoignages de vos clients…",
+        "text": {
+          "ghost": "",
+          "prompt": "Le témoignage de votre client…"
+        },
+        "author": {
+          "ghost": "",
+          "prompt": "Prénom Nom"
+        },
+        "eventType": {
+          "ghost": "",
+          "prompt": "Ex. : Mariage, anniversaire…"
+        }
       }
     }
   },

@@ -31,6 +31,11 @@
   </component>
 </template>
 
+<script lang="ts">
+export const newItem = (): string => ''
+export const isEmpty = (s: string | null): boolean => !s?.trim()
+</script>
+
 <script setup lang="ts">
 const props = defineProps<{
   /** Balise sémantique de rendu (ex. 'blockquote', 'p'). Défaut : 'div' */
