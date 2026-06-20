@@ -915,5 +915,13 @@
       "title": "Oups !!",
       "message": "La page que vous recherchez n'existe pas."
     }
+  },
+  "engagement": {
+    "REPONSE_48H": { "label": "48h", "description": "Réponse sous 48h" },
+    "ADAPTABLE": { "label": "Adaptable", "description": "Prestation adaptable" },
+    "ACCOMPAGNEMENT": { "label": "Accompagné", "description": "Accompagnement personnalisé" },
+    "EQUIPE": { "label": "Équipé", "description": "Autonome et équipé" },
+    "INTERLOCUTEUR_UNIQUE": { "label": "Interlocuteur Unique", "description": "Interlocuteur unique" },
+    "ECORESPONSABLE": { "label": "Éco", "description": "Éco-responsable" }
   }
 }

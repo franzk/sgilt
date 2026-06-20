@@ -21,16 +21,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     ],
     youtubeId: 'zznewKVtKtk',
     shortDescription: 'Un DJ professionnel pour rythmer vos soirées.',
-    badges: [
-      { icon: 'Clock', label: '48h', description: 'Réponse sous 48h', color: '#FACC15' },
-      { icon: 'Tune', label: 'Adaptable', description: 'Prestation adaptable', color: '#FACC15' },
-      {
-        icon: 'Handshake',
-        label: 'Accompagné',
-        description: 'Accompagnement personnalisé',
-        color: '#FACC15',
-      },
-    ],
+    badges: ['REPONSE_48H', 'ADAPTABLE', 'ACCOMPAGNEMENT'],
     offerings: [
       'Animation DJ pour mariages et soirées privées',
       "Sonorisation complète incluse (jusqu'à 200 personnes)",
@@ -113,16 +104,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     ],
     shortDescription: 'Un groupe de jazz parfait pour animer vos soirées.',
     youtubeId: '_A6w3ECkN4k',
-    badges: [
-      { icon: 'Inventory_2', label: 'Équipé', description: 'Autonome et équipé', color: '#FACC15' },
-      {
-        icon: 'Person_Check',
-        label: 'Interlocuteur Unique',
-        description: 'Interlocuteur unique',
-        color: '#FACC15',
-      },
-      { icon: 'Tune', label: 'Adaptable', description: 'Prestation adaptable', color: '#FACC15' },
-    ],
+    badges: ['EQUIPE', 'INTERLOCUTEUR_UNIQUE', 'ADAPTABLE'],
     offerings: [
       'Quartet jazz manouche (guitare, contrebasse, violon, guitare rythmique)',
       'Formule trio disponible pour les petits espaces',
@@ -197,16 +179,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     ],
     shortDescription: 'Un groupe pop-rock énergique pour une ambiance inoubliable.',
     youtubeId: '4sErhkkcOUU',
-    badges: [
-      { icon: 'Clock', label: '48h', description: 'Réponse sous 48h', color: '#FACC15' },
-      {
-        icon: 'Handshake',
-        label: 'Accompagné',
-        description: 'Accompagnement personnalisé',
-        color: '#FACC15',
-      },
-      { icon: 'Eco', label: 'Éco', description: 'Éco-responsable', color: '#22C55E' },
-    ],
+    badges: ['REPONSE_48H', 'ACCOMPAGNEMENT', 'ECORESPONSABLE'],
     offerings: [
       'Groupe de 4 musiciens (guitare, basse, batterie, clavier)',
       'Deux chanteurs / chanteuses',
@@ -283,15 +256,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     ],
     shortDescription: 'Un groupe rock pour faire vibrer votre public.',
     youtubeId: 'BOCaSJOARFM',
-    badges: [
-      {
-        icon: 'Person_Check',
-        label: 'Interlocuteur Unique',
-        description: 'Interlocuteur unique',
-        color: '#FACC15',
-      },
-      { icon: 'Inventory_2', label: 'Équipé', description: 'Autonome et équipé', color: '#FACC15' },
-    ],
+    badges: ['INTERLOCUTEUR_UNIQUE', 'EQUIPE'],
     offerings: [
       'Trio ou quartet rock (guitare, basse, batterie + chant)',
       'Répertoire : classic rock, hard rock, grunge des années 70 à 2000',
@@ -350,17 +315,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     ],
     shortDescription: 'Un service traiteur haut de gamme pour vos événements.',
     youtubeId: '6D4_3NIpvkI',
-    badges: [
-      { icon: 'Tune', label: 'Adaptable', description: 'Prestation adaptable', color: '#FACC15' },
-      {
-        icon: 'Handshake',
-        label: 'Accompagné',
-        description: 'Accompagnement personnalisé',
-        color: '#FACC15',
-      },
-      { icon: 'Eco', label: 'Éco', description: 'Éco-responsable', color: '#22C55E' },
-      { icon: 'Clock', label: '48h', description: 'Réponse sous 48h', color: '#FACC15' },
-    ],
+    badges: ['ADAPTABLE', 'ACCOMPAGNEMENT', 'ECORESPONSABLE', 'REPONSE_48H'],
     offerings: [
       'Cocktail dînatoire ou repas assis (de 20 à 300 personnes)',
       'Buffet froid ou chaud',
@@ -438,10 +393,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     ],
     shortDescription: 'Des burgers gourmands pour régaler vos invités.',
     youtubeId: 'z2xjErKDd-o',
-    badges: [
-      { icon: 'Clock', label: '48h', description: 'Réponse sous 48h', color: '#FACC15' },
-      { icon: 'Inventory_2', label: 'Équipé', description: 'Autonome et équipé', color: '#FACC15' },
-    ],
+    badges: ['REPONSE_48H', 'EQUIPE'],
     offerings: [
       'Service au camion pour événements privés ou publics',
       'Carte de 4 à 6 burgers selon formule',
@@ -496,21 +448,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     ],
     shortDescription: 'Un bar à cocktails pour une expérience unique.',
     youtubeId: 'EFuBvEt84OI',
-    badges: [
-      {
-        icon: 'Person_Check',
-        label: 'Interlocuteur Unique',
-        description: 'Interlocuteur unique',
-        color: '#FACC15',
-      },
-      { icon: 'Tune', label: 'Adaptable', description: 'Prestation adaptable', color: '#FACC15' },
-      {
-        icon: 'Handshake',
-        label: 'Accompagné',
-        description: 'Accompagnement personnalisé',
-        color: '#FACC15',
-      },
-    ],
+    badges: ['INTERLOCUTEUR_UNIQUE', 'ADAPTABLE', 'ACCOMPAGNEMENT'],
     offerings: [
       'Bar mobile pour événements privés et professionnels',
       'Carte de cocktails classiques et signatures',
@@ -569,11 +507,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     ],
     shortDescription: 'Un buffet raffiné pour sublimer vos réceptions.',
     youtubeId: '30dp3iP66Gs',
-    badges: [
-      { icon: 'Eco', label: 'Éco', description: 'Éco-responsable', color: '#22C55E' },
-      { icon: 'Inventory_2', label: 'Équipé', description: 'Autonome et équipé', color: '#FACC15' },
-      { icon: 'Clock', label: '48h', description: 'Réponse sous 48h', color: '#FACC15' },
-    ],
+    badges: ['ECORESPONSABLE', 'EQUIPE', 'REPONSE_48H'],
     offerings: [
       'Buffet froid ou mixte (chaud/froid)',
       'Entrées, plats, fromages, desserts — formule complète ou à la carte',
@@ -626,15 +560,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     ],
     shortDescription: 'Une délicieuse pizza cuite au feu de bois sur place.',
     youtubeId: 'HOZs4hWPiKk',
-    badges: [
-      { icon: 'Tune', label: 'Adaptable', description: 'Prestation adaptable', color: '#FACC15' },
-      {
-        icon: 'Person_Check',
-        label: 'Interlocuteur Unique',
-        description: 'Interlocuteur unique',
-        color: '#FACC15',
-      },
-    ],
+    badges: ['ADAPTABLE', 'INTERLOCUTEUR_UNIQUE'],
     offerings: [
       'Service pizza au feu de bois pour événements privés',
       'Carte de 6 à 8 pizzas classiques et spéciales',
@@ -694,22 +620,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     ],
     shortDescription: 'Des souvenirs inoubliables pour votre grand jour.',
     youtubeId: 'wlPFNYKkGSA',
-    badges: [
-      { icon: 'Clock', label: '48h', description: 'Réponse sous 48h', color: '#FACC15' },
-      {
-        icon: 'Handshake',
-        label: 'Accompagné',
-        description: 'Accompagnement personnalisé',
-        color: '#FACC15',
-      },
-      {
-        icon: 'Person_Check',
-        label: 'Interlocuteur Unique',
-        description: 'Interlocuteur unique',
-        color: '#FACC15',
-      },
-      { icon: 'Tune', label: 'Adaptable', description: 'Prestation adaptable', color: '#FACC15' },
-    ],
+    badges: ['REPONSE_48H', 'ACCOMPAGNEMENT', 'INTERLOCUTEUR_UNIQUE', 'ADAPTABLE'],
     offerings: [
       'Reportage photo mariage (journée complète ou demi-journée)',
       'Séance couple avant le mariage incluse dans la formule complète',
@@ -785,10 +696,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     ],
     shortDescription: 'Un photobooth original pour des photos funs.',
     youtubeId: 'ybJPbM_ExTk',
-    badges: [
-      { icon: 'Inventory_2', label: 'Équipé', description: 'Autonome et équipé', color: '#FACC15' },
-      { icon: 'Clock', label: '48h', description: 'Réponse sous 48h', color: '#FACC15' },
-    ],
+    badges: ['EQUIPE', 'REPONSE_48H'],
     offerings: [
       'Borne photobooth vintage avec tirage instantané',
       'Fond personnalisable (couleur, motif, décor)',
@@ -846,16 +754,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     ],
     shortDescription: 'Un studio photo pour des portraits professionnels.',
     youtubeId: 'VoHDwCCxWA4',
-    badges: [
-      {
-        icon: 'Handshake',
-        label: 'Accompagné',
-        description: 'Accompagnement personnalisé',
-        color: '#FACC15',
-      },
-      { icon: 'Tune', label: 'Adaptable', description: 'Prestation adaptable', color: '#FACC15' },
-      { icon: 'Eco', label: 'Éco', description: 'Éco-responsable', color: '#22C55E' },
-    ],
+    badges: ['ACCOMPAGNEMENT', 'ADAPTABLE', 'ECORESPONSABLE'],
     offerings: [
       'Studio photo mobile monté sur place',
       'Portraits individuels ou en groupe',
@@ -915,21 +814,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     ],
     shortDescription: 'Une salle spacieuse pour vos événements.',
     youtubeId: 'SdAQjcIMjpo',
-    badges: [
-      {
-        icon: 'Person_Check',
-        label: 'Interlocuteur Unique',
-        description: 'Interlocuteur unique',
-        color: '#FACC15',
-      },
-      { icon: 'Inventory_2', label: 'Équipé', description: 'Autonome et équipé', color: '#FACC15' },
-      {
-        icon: 'Handshake',
-        label: 'Accompagné',
-        description: 'Accompagnement personnalisé',
-        color: '#FACC15',
-      },
-    ],
+    badges: ['INTERLOCUTEUR_UNIQUE', 'EQUIPE', 'ACCOMPAGNEMENT'],
     offerings: [
       'Location de salle pour mariages, anniversaires, séminaires',
       'Capacité : 30 à 200 personnes selon configuration',
@@ -1006,16 +891,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     ],
     shortDescription: 'Un cadre enchanteur pour célébrer votre union.',
     youtubeId: '615biPQMdJQ',
-    badges: [
-      { icon: 'Clock', label: '48h', description: 'Réponse sous 48h', color: '#FACC15' },
-      {
-        icon: 'Person_Check',
-        label: 'Interlocuteur Unique',
-        description: 'Interlocuteur unique',
-        color: '#FACC15',
-      },
-      { icon: 'Tune', label: 'Adaptable', description: 'Prestation adaptable', color: '#FACC15' },
-    ],
+    badges: ['REPONSE_48H', 'INTERLOCUTEUR_UNIQUE', 'ADAPTABLE'],
     offerings: [
       'Location exclusive du château et du parc',
       "Salle de réception (jusqu'à 250 personnes)",
@@ -1105,21 +981,7 @@ export const MOCK_PROVIDERS: PrestataireDetail[] = [
     ],
     shortDescription: 'Un hébergement confortable pour vos invités.',
     youtubeId: '_2tBuidbF88',
-    badges: [
-      {
-        icon: 'Handshake',
-        label: 'Accompagné',
-        description: 'Accompagnement personnalisé',
-        color: '#FACC15',
-      },
-      { icon: 'Inventory_2', label: 'Équipé', description: 'Autonome et équipé', color: '#FACC15' },
-      {
-        icon: 'Person_Check',
-        label: 'Interlocuteur Unique',
-        description: 'Interlocuteur unique',
-        color: '#FACC15',
-      },
-    ],
+    badges: ['ACCOMPAGNEMENT', 'EQUIPE', 'INTERLOCUTEUR_UNIQUE'],
     offerings: [
       'Location du gîte complet (16 personnes)',
       'Location à la chambre possible hors saison',

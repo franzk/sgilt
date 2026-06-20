@@ -66,27 +66,20 @@ export const eventTypes: EventType[] = [
 ]
 
 // ______________ Badges d'engagement ______________
-export type EngagementBadge = {
-  icon: string
-  label: string
-  color: string
-  description?: string
+export type EngagementKey =
+  | 'REPONSE_48H'
+  | 'ADAPTABLE'
+  | 'ACCOMPAGNEMENT'
+  | 'EQUIPE'
+  | 'INTERLOCUTEUR_UNIQUE'
+  | 'ECORESPONSABLE'
+
+export const ENGAGEMENT_ICON_MAP: Record<EngagementKey, string> = {
+  REPONSE_48H: 'Clock',
+  ADAPTABLE: 'Tune',
+  ACCOMPAGNEMENT: 'Handshake',
+  EQUIPE: 'Inventory_2',
+  INTERLOCUTEUR_UNIQUE: 'Person_Check',
+  ECORESPONSABLE: 'Eco',
 }
-export const engagementBadges: EngagementBadge[] = [
-  { icon: 'Clock', label: '48h', description: 'Réponse sous 48h', color: '#FACC15' },
-  { icon: 'Tune', label: 'Adaptable', description: 'Prestation adaptable', color: '#FACC15' },
-  {
-    icon: 'Handshake',
-    label: 'Accompagné',
-    description: 'Accompagnement personnalisé',
-    color: '#FACC15',
-  },
-  { icon: 'Inventory_2', label: 'Équipé', description: 'Autonome et équipé', color: '#FACC15' },
-  {
-    icon: 'Person_Check',
-    label: 'Interlocuteur Unique',
-    description: 'Interlocuteur unique',
-    color: '#FACC15',
-  },
-  { icon: 'Eco', label: 'Éco', description: 'Éco-responsable', color: '#22C55E' },
-]
+

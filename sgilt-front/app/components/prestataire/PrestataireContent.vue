@@ -35,9 +35,9 @@
     <section v-if="prestataire?.badges.length > 0" class="section badges-section">
       <div class="badges">
         <EngagementBadge
-          v-for="badge in prestataire?.badges"
-          :key="badge.label"
-          :badge="badge"
+          v-for="key in prestataire?.badges"
+          :key="key"
+          :engagement-key="key"
         />
       </div>
     </section>
