@@ -47,7 +47,8 @@
       "Bash(rm -f VerificationEmailTemplate.java SecurityAlertEmailTemplate.java WelcomeEmailTemplate.java)",
       "Read(//c/c/Users/koehl/Documents/projects/sgilt/sgilt/sgilt-mailer/src/main/java/net/franzka/sgilt/sgilt_mailer/**)",
       "Bash(npx vue-tsc *)",
-      "Bash(Remove-Item *)"
+      "Bash(Remove-Item *)",
+      "Bash(./mvnw compile *)"
     ]
   }
 }

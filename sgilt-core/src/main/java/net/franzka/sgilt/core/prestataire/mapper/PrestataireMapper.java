@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
+import net.franzka.sgilt.core.prestataire.domain.Engagement;
 import net.franzka.sgilt.core.prestataire.dto.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -39,7 +40,7 @@ public abstract class PrestataireMapper {
      * @return le DTO complet
      */
     @Mapping(target = "photos",       source = "photos",       qualifiedByName = "parseStringList")
-    @Mapping(target = "badges",       source = "badges",       qualifiedByName = "parseBadgeList")
+    @Mapping(target = "badges",       source = "badges",       qualifiedByName = "parseEngagementList")
     @Mapping(target = "offerings",    source = "offerings",    qualifiedByName = "parseStringList")
     @Mapping(target = "identity",     source = "identity",     qualifiedByName = "parseIdentity")
     @Mapping(target = "budget",       source = "budget",       qualifiedByName = "parseJsonString")
@@ -56,8 +57,8 @@ public abstract class PrestataireMapper {
         return parseJson(json, new TypeReference<>() {});
     }
 
-    @Named("parseBadgeList")
-    protected List<BadgeDto> parseBadgeList(String json) {
+    @Named("parseEngagementList")
+    protected List<Engagement> parseEngagementList(String json) {
         return parseJson(json, new TypeReference<>() {});
     }
 
