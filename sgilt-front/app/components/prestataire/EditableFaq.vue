@@ -15,8 +15,10 @@
         :editable="true"
         class="question"
         @update:model-value="setQuestion"
+        @enter="answerRef?.startEdit()"
       />
       <EditableText
+        ref="answerRef"
         as="p"
         :model-value="answerModel"
         field="faq.answer"
@@ -54,6 +56,7 @@ function setAnswer(val: string | null) {
 }
 
 const questionRef = ref<{ startEdit: () => void } | null>(null)
+const answerRef = ref<{ startEdit: () => void } | null>(null)
 
 function startEdit() {
   questionRef.value?.startEdit()

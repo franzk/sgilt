@@ -8,6 +8,7 @@
       class="input"
       rows="1"
       @input="onInput"
+      @keydown.enter.prevent="handleEnter"
       @blur="onBlur"
     />
     <span v-else :class="{ ghost: !modelValue }">{{ modelValue || ghostText }}</span>
@@ -37,6 +38,8 @@ export const isEmpty = (s: string | null): boolean => !s?.trim()
 </script>
 
 <script setup lang="ts">
+const emit = defineEmits<{ enter: [] }>()
+
 const props = defineProps<{
   /** Balise sémantique de rendu (ex. 'blockquote', 'p'). Défaut : 'div' */
   as?: string
@@ -83,6 +86,11 @@ function onInput(e: Event) {
   autoResize(el)
 }
 
+function handleEnter() {
+  textareaRef.value?.blur()
+  emit('enter')
+}
+
 function onBlur() {
   focused.value = false
   if (localValue.value !== (modelValue.value ?? '')) {
@@ -100,6 +108,8 @@ defineExpose({ startEdit })
   &.is-edit {
     position: relative;
     cursor: text;
+    min-height: 1.5em;
+    min-width: 80px;
 
     &:hover .pencil {
       opacity: 1;

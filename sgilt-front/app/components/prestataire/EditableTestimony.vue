@@ -18,16 +18,20 @@
         :editable="true"
         class="text"
         @update:model-value="setText"
+        @enter="authorRef?.startEdit()"
       />
       <div class="footer">
         <EditableText
+          ref="authorRef"
           :model-value="authorModel"
           field="testimonials.author"
           :editable="true"
           class="author"
           @update:model-value="setAuthor"
+          @enter="eventTypeRef?.startEdit()"
         />
         <EditableText
+          ref="eventTypeRef"
           :model-value="eventTypeModel"
           field="testimonials.eventType"
           :editable="true"
@@ -69,6 +73,8 @@ function setEventType(val: string | null) {
 }
 
 const textRef = ref<{ startEdit: () => void } | null>(null)
+const authorRef = ref<{ startEdit: () => void } | null>(null)
+const eventTypeRef = ref<{ startEdit: () => void } | null>(null)
 
 function startEdit() {
   textRef.value?.startEdit()
