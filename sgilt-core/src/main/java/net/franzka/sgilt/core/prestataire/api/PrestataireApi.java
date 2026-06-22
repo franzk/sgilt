@@ -21,4 +21,7 @@ public interface PrestataireApi {
 
     @GetMapping("/{slug}")
     ResponseEntity<PrestataireDetailDto> getBySlug(@PathVariable String slug);
+
+    @GetMapping("/engagements")
+    ResponseEntity<List<String>> getEngagementKeys();
 }

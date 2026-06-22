@@ -4,12 +4,14 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.prestataire.api.PrestataireApi;
+import net.franzka.sgilt.core.prestataire.domain.Engagement;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireDetailDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireSearchResponseDto;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -48,5 +50,21 @@ public class PrestataireController implements PrestataireApi {
     public ResponseEntity<PrestataireDetailDto> getBySlug(String slug) {
         log.info("GET /prestataires/{}", slug);
         return ResponseEntity.ok(prestataireService.getBySlug(slug));
+    }
+
+    /**
+     * Retourne les clés de l'enum {@code Engagement}.
+     * Réservé à l'édition de fiche — non exposé sur le chemin public/display.
+     *
+     * @return liste ordonnée des noms d'enum
+     */
+    @Override
+    public ResponseEntity<List<String>> getEngagementKeys() {
+        log.info("GET /prestataires/engagements");
+        return ResponseEntity.ok(
+                Arrays.stream(Engagement.values())
+                        .map(Enum::name)
+                        .toList()
+        );
     }
 }
