@@ -32,14 +32,8 @@
     </section>
 
     <!-- BADGES -->
-    <section v-if="prestataire?.badges.length > 0" class="section badges-section">
-      <div class="badges">
-        <EngagementBadge
-          v-for="key in prestataire?.badges"
-          :key="key"
-          :engagement-key="key"
-        />
-      </div>
+    <section v-if="isEdit || !!prestataire?.badges.length" class="section badges-section">
+      <EditableEngagements v-model="prestataire!.badges" :display-mode="props.displayMode" />
     </section>
 
     <!-- BUDGET (mobile uniquement) -->
@@ -141,7 +135,7 @@
 </template>
 
 <script setup lang="ts">
-import EngagementBadge from '~/components/prestataire/EngagementBadge.vue'
+import EditableEngagements from '~/components/prestataire/EditableEngagements.vue'
 import EditableText, { newItem as newString, isEmpty as isStringEmpty } from '~/components/prestataire/EditableText.vue'
 import EditableList from '~/components/prestataire/EditableList.vue'
 import EditableFaq, { newItem as newFaqItem, isEmpty as isFaqEmpty } from '~/components/prestataire/EditableFaq.vue'

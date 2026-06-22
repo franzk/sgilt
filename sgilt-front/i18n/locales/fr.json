@@ -166,6 +166,10 @@
           "prompt": "Votre réponse détaillée…"
         }
       },
+      "badges": {
+        "ghost-keys": ["REPONSE_48H", "ACCOMPAGNEMENT", "INTERLOCUTEUR_UNIQUE"],
+        "prompt": "Choisissez jusqu'à 3 engagements qui vous représentent"
+      },
       "testimonials": {
         "ghost-items": [
           "« Un groupe exceptionnel — la piste de danse n'a pas désempli de toute la soirée »",
