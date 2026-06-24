@@ -48,7 +48,8 @@
       "Read(//c/c/Users/koehl/Documents/projects/sgilt/sgilt/sgilt-mailer/src/main/java/net/franzka/sgilt/sgilt_mailer/**)",
       "Bash(npx vue-tsc *)",
       "Bash(Remove-Item *)",
-      "Bash(./mvnw compile *)"
+      "Bash(./mvnw compile *)",
+      "Bash(grep -E \"\\\\.\\(ts|js|vue\\)$\")"
     ]
   }
 }

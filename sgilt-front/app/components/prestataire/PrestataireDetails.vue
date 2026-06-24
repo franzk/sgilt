@@ -155,10 +155,11 @@ function onSelect() {
 const showGallery = ref(false)
 const galleryIndex = ref(0)
 
-const galleryPhotos = computed<string[]>(() => [
-  props.prestataire.heroImage,
-  ...props.prestataire.photos,
-])
+const { toUrl } = useImageUrl()
+
+const galleryPhotos = computed<string[]>(() =>
+  [props.prestataire.heroImage, ...props.prestataire.photos].map(toUrl),
+)
 
 function openGallery(index: number) {
   galleryIndex.value = index
