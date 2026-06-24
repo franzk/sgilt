@@ -9,13 +9,6 @@
       @back="$emit('back')"
     />
 
-    <!-- ── Toggle mode édition (temporaire) ──────────────────────────────────── -->
-    <div class="edit-toggle">
-      <button class="edit-toggle-btn" @click="toggleDisplayMode">
-        {{ displayMode === 'edit' ? 'Mode affichage' : 'Mode édition' }}
-      </button>
-    </div>
-
     <!-- ── Layout principal ─────────────────────────────────────────────────── -->
     <div class="page-layout">
       <!-- Sidebar : datepicker + tarifs + CTA -->
@@ -37,7 +30,8 @@
 
     <!-- ── Sticky CTA (mobile) ───────────────────────────────────────────────── -->
     <div class="sticky-cta">
-      <SgiltButton @click="onSelect">{{ $t('provider.details.send-request') }}</SgiltButton>
+      <SgiltButton v-if="displayMode === 'display'" @click="onSelect">{{ $t('provider.details.send-request') }}</SgiltButton>
+      <EditActionsBar v-else />
     </div>
 
     <!-- ── Modale galerie ────────────────────────────────────────────────────── -->
@@ -104,22 +98,19 @@
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import PrestataireHero from '~/components/prestataire/PrestataireHero.vue'
 import PrestataireContent from '~/components/prestataire/PrestataireContent.vue'
+import EditActionsBar from '~/components/prestataire/EditActionsBar.vue'
 import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDetail'
 import type { DisplayMode } from '~/types/prestataire'
 
 const { t } = useI18n()
 
-// ── Mode affichage / édition ──────────────────────────────────────────────────
-const displayMode = ref<DisplayMode>('display')
-
-function toggleDisplayMode() {
-  displayMode.value = displayMode.value === 'display' ? 'edit' : 'display'
-}
-
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   prestataire: PrestataireDetail
   disableDate?: boolean
-}>()
+  displayMode?: DisplayMode
+}>(), {
+  displayMode: 'display',
+})
 
 const emit = defineEmits<{
   back: []
@@ -198,30 +189,6 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
-
-// ── Toggle édition (temporaire) ───────────────────────────────────────────────
-.edit-toggle {
-  display: flex;
-  justify-content: flex-end;
-  padding: $spacing-s $spacing-m;
-}
-
-.edit-toggle-btn {
-  padding: 0.35rem 0.9rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  border: 1px solid $color-primary;
-  border-radius: $radius-md;
-  background: transparent;
-  color: $color-primary;
-  cursor: pointer;
-  transition: background 150ms ease, color 150ms ease;
-
-  &:hover {
-    background: $color-primary;
-    color: #fff;
-  }
-}
 
 // ── Back button ───────────────────────────────────────────────────────────────
 .back-btn {

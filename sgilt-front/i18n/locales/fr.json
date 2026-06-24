@@ -90,6 +90,11 @@
       "technical-title": "Technique",
       "faq-title": "Questions fréquentes"
     },
+    "edit": {
+      "save": "Enregistrer mes modifications",
+      "saved": "✅ Enregistré",
+      "submit": "Soumettre ma fiche à Sgilt"
+    },
     "availability": {
       "available": "🟢 Disponible",
       "option": "🟠 Sous option",

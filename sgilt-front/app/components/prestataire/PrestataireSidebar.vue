@@ -1,6 +1,6 @@
 <template>
   <div class="sidebar-body">
-    <div class="sidebar-block">
+    <div v-if="!isEdit" class="sidebar-block">
       <SgiltDatePicker
         v-model="dateModel"
         :booked-dates="unavailableDatesAsDate"
@@ -22,9 +22,10 @@
       <EditableText as="p" v-model="prestataire!.budget" field="budget" :editable="isEdit" class="text" />
     </div>
 
-    <SgiltButton class="sidebar-cta" @click="emit('select-intent')">
+    <SgiltButton v-if="!isEdit" class="sidebar-cta" @click="emit('select-intent')">
       {{ $t('provider.details.send-request') }}
     </SgiltButton>
+    <EditActionsBar v-else class="sidebar-edit-actions" />
   </div>
 </template>
 
@@ -32,6 +33,7 @@
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
 import EditableText from '~/components/prestataire/EditableText.vue'
+import EditActionsBar from '~/components/prestataire/EditActionsBar.vue'
 import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDetail'
 import type { DisplayMode } from '~/types/prestataire'
 
@@ -117,11 +119,17 @@ const availabilityClass = computed(() => (isUnavailable.value ? 'unavailable' : 
   }
 }
 
-.sidebar-cta {
+.sidebar-cta,
+.sidebar-edit-actions {
   display: none;
 
   @media (min-width: $breakpoint-desktop) {
     display: flex;
+  }
+}
+
+.sidebar-cta {
+  @media (min-width: $breakpoint-desktop) {
     align-self: center;
   }
 }

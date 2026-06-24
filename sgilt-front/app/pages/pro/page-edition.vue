@@ -2,7 +2,7 @@
   <PrestataireDetails
     v-if="prestataire"
     :prestataire="prestataire"
-    :disable-date="true"
+    display-mode="edit"
     @select="() => {}"
     @back="router.back()"
   />
