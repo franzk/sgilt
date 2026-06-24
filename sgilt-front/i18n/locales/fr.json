@@ -699,6 +699,7 @@
     },
     "menu": {
       "my-info": "Mes informations",
+      "edit-my-page": "Modifier ma page prestataire",
       "logout": "Déconnexion",
       "login": "Connexion",
       "help-center": "Centre d'aide",

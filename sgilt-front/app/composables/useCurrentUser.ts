@@ -3,6 +3,7 @@ export interface CurrentUser {
   lastName?: string
   email: string
   photo: string | null
+  slug: string | null
   loading: boolean
 }
 
@@ -18,6 +19,7 @@ const _user = reactive<CurrentUser>({
   lastName: '',
   email: '',
   photo: null,
+  slug: null,
   loading: true,
 })
 let _watcherStarted = false
@@ -27,6 +29,7 @@ interface ProMeDto {
   email: string
   firstName: string
   lastName: string
+  slug: string | null
 }
 
 export function useCurrentUser(): CurrentUser {
@@ -53,6 +56,7 @@ export function useCurrentUser(): CurrentUser {
             _user.lastName = data.lastName
             _user.email = data.email
             _user.photo = null
+            _user.slug = data.slug
           } else {
             const data = await apiFetch<UtilisateurProfileDto>('/users/me')
             _user.firstName = data.firstName

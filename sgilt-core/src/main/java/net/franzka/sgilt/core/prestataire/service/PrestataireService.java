@@ -76,6 +76,18 @@ public class PrestataireService {
     }
 
     /**
+     * Retourne le slug du prestataire lié à un utilisateur PRO.
+     *
+     * @param utilisateur l'utilisateur propriétaire du compte pro
+     * @return le slug, ou {@code null} si aucun prestataire n'est encore lié
+     */
+    public String getSlugByUtilisateur(Utilisateur utilisateur) {
+        return prestataireRepository.findByUtilisateurAndDeletedAtIsNull(utilisateur)
+                .map(Prestataire::getSlug)
+                .orElse(null);
+    }
+
+    /**
      * Lie un utilisateur à un prestataire lors du bootstrap du compte PRO.
      * Sans effet si le prestataire est déjà lié à cet utilisateur.
      *

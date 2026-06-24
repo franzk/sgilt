@@ -1,6 +1,7 @@
 package net.franzka.sgilt.core.prestataire.repository;
 
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
+import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -45,4 +46,12 @@ public interface PrestataireRepository extends JpaRepository<Prestataire, UUID> 
      * @return prestataires correspondants
      */
     List<Prestataire> findBySubcatKeysInAndDeletedAtIsNull(Collection<String> subcatKeys);
+
+    /**
+     * Recherche le prestataire actif lié à un utilisateur donné.
+     *
+     * @param utilisateur l'utilisateur propriétaire du compte pro
+     * @return le prestataire correspondant, ou vide si aucun n'est lié
+     */
+    Optional<Prestataire> findByUtilisateurAndDeletedAtIsNull(Utilisateur utilisateur);
 }
