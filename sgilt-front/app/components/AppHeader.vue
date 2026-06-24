@@ -14,7 +14,8 @@
         aria-label="Menu compte"
         @click="accountMenuOpen = !accountMenuOpen"
       >
-        <UserIcon />
+        <UserAvatar v-if="mounted && isAuthenticated" :size="2.25" />
+        <UserIcon v-else />
       </button>
 
       <AccountMenuPopin :open="accountMenuOpen" :anchor-el="accountMenuAnchorRef" @close="accountMenuOpen = false" />
@@ -24,6 +25,7 @@
 
 <script setup lang="ts">
 import AccountMenuPopin from '~/components/profile/AccountMenuPopin.vue'
+import UserAvatar from '~/components/basics/UserAvatar.vue'
 import { UserIcon } from '@remixicons/vue/line'
 
 const accountMenuAnchorRef = ref<HTMLElement | null>(null)

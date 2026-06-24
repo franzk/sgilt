@@ -12,10 +12,11 @@ const error = ref<unknown>(null)
 
 export function usePrestataire(slug?: string) {
   if (slug !== undefined) {
+    prestataire.value = null
+    loading.value = true
+    error.value = null
+
     onMounted(async () => {
-      prestataire.value = null
-      loading.value = true
-      error.value = null
       try {
         prestataire.value = await fetchPrestataireBySlug(slug)
       } catch (e) {
