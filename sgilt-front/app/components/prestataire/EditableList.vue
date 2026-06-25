@@ -33,14 +33,16 @@
           :class="{ 'is-editing': isListEditing }"
           @click="onItemClick($event, index)"
         >
-          <slot
-            name="item"
-            :item="modelValue[index]"
-            :index="index"
-            :is-editing="isListEditing"
-            :update="getUpdateFn(index)"
-            :register-ref="setItemRef(index)"
-          />
+          <div class="item-content">
+            <slot
+              name="item"
+              :item="modelValue[index]"
+              :index="index"
+              :is-editing="isListEditing"
+              :update="getUpdateFn(index)"
+              :register-ref="setItemRef(index)"
+            />
+          </div>
           <button
             v-if="isListEditing"
             type="button"
@@ -275,6 +277,11 @@ $color-success: #2e7d32;
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
+
+  .item-content {
+    flex: 1;
+    min-width: 0;
+  }
 }
 
 // ── Ghost list ────────────────────────────────────────────────────────────────
