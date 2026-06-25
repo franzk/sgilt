@@ -1,8 +1,9 @@
 <template>
   <div class="edit-actions">
-    <SgiltButton class="btn-full" @click="onSave">
+    <SgiltButton class="btn-full" :loading="saving" @click="onSave">
       {{ saved ? $t('provider.edit.saved') : $t('provider.edit.save') }}
     </SgiltButton>
+    <p v-if="saveError" class="error">{{ $t('provider.edit.save-error') }}</p>
     <SgiltButton variant="secondary" class="btn-full" @click="onSubmit">
       {{ $t('provider.edit.submit') }}
     </SgiltButton>
@@ -12,18 +13,20 @@
 <script setup lang="ts">
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 
-const saved = ref(false)
+const { save, saving, saved, saveError } = usePrestataire()
 
-function onSave() {
-  saved.value = true
+async function onSave() {
+  await save()
 }
 
 function onSubmit() {
-  // stub — branché au point 4
+  // stub — branché au brief 4b
 }
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/base' as *;
+
 .edit-actions {
   display: flex;
   flex-direction: column;
@@ -33,5 +36,11 @@ function onSubmit() {
 
 .btn-full {
   width: 100%;
+}
+
+.error {
+  font-size: 0.8rem;
+  color: $state-error;
+  margin: 0;
 }
 </style>

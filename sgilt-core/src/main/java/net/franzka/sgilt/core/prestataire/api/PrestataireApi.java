@@ -2,13 +2,12 @@ package net.franzka.sgilt.core.prestataire.api;
 
 import net.franzka.sgilt.core.prestataire.dto.PrestataireDetailDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireSearchResponseDto;
+import net.franzka.sgilt.core.prestataire.dto.PrestataireUpdateDto;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RequestMapping("api/v1/prestataires")
 public interface PrestataireApi {
@@ -24,4 +23,7 @@ public interface PrestataireApi {
 
     @GetMapping("/engagements")
     ResponseEntity<List<String>> getEngagementKeys();
+
+    @PatchMapping("/{id}")
+    ResponseEntity<Void> update(@PathVariable UUID id, @RequestBody PrestataireUpdateDto dto);
 }

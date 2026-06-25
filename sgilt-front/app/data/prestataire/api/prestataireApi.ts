@@ -4,6 +4,7 @@
 import { apiFetch } from '~/composables/useApi'
 import type { PrestataireDetailDto } from '../dto/PrestataireDetailDto'
 import type { PrestataireSearchResponseDto } from '../dto/PrestataireSearchResponseDto'
+import type { PrestataireUpdatePayload } from '../dto/PrestataireUpdatePayload'
 
 export async function searchPrestatairesApi(params: {
   categoryKey?: string
@@ -18,4 +19,8 @@ export async function getPrestataireBySlugApi(slug: string): Promise<Prestataire
 
 export async function getEngagementKeysApi(): Promise<string[]> {
   return apiFetch<string[]>('/prestataires/engagements')
+}
+
+export async function patchPrestataireApi(id: string, payload: PrestataireUpdatePayload): Promise<void> {
+  return apiFetch<void>(`/prestataires/${id}`, { method: 'PATCH', body: payload })
 }

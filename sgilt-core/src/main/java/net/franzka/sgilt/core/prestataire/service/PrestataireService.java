@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.dto.*;
+import net.franzka.sgilt.core.prestataire.exception.PrestataireForbiddenException;
 import net.franzka.sgilt.core.prestataire.exception.PrestataireNotFoundException;
 import net.franzka.sgilt.core.prestataire.mapper.PrestataireMapper;
 import net.franzka.sgilt.core.prestataire.repository.PrestataireRepository;
@@ -73,6 +74,28 @@ public class PrestataireService {
                 buildCategoryCounts(all),
                 buildSubcatCounts(all, activeCategoryKey)
         );
+    }
+
+    /**
+     * Applique les modifications sur la fiche d'un prestataire.
+     * Seuls les champs non-null du DTO sont écrits (nullValuePropertyMappingStrategy = IGNORE).
+     *
+     * @param id          identifiant du prestataire à modifier
+     * @param dto         les champs à mettre à jour
+     * @param utilisateur l'utilisateur connecté — utilisé pour vérifier la propriété de la fiche
+     * @throws PrestataireNotFoundException si aucune fiche active ne correspond à cet id
+     * @throws PrestataireForbiddenException si la fiche n'appartient pas à l'utilisateur
+     */
+    public void update(UUID id, PrestataireUpdateDto dto, Utilisateur utilisateur) {
+        Prestataire prestataire = getById(id);
+        if (prestataire.getDeletedAt() != null) {
+            throw new PrestataireNotFoundException(id.toString());
+        }
+        if (!prestataire.getUtilisateur().getId().equals(utilisateur.getId())) {
+            throw new PrestataireForbiddenException(id.toString());
+        }
+        prestataireMapper.updatePrestataire(prestataire, dto);
+        prestataireRepository.save(prestataire);
     }
 
     /**

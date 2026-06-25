@@ -3,13 +3,10 @@ package net.franzka.sgilt.core.prestataire.mapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.domain.Engagement;
+import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.dto.*;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingConstants;
-import org.mapstruct.Named;
+import org.mapstruct.*;
 
 import java.util.List;
 
@@ -49,6 +46,34 @@ public abstract class PrestataireMapper {
     @Mapping(target = "technical",    source = "technical",    qualifiedByName = "parseStringList")
     @Mapping(target = "faq",          source = "faq",          qualifiedByName = "parseFaqList")
     public abstract PrestataireDetailDto toDetailDto(Prestataire prestataire);
+
+    /**
+     * Applique les champs non-null du DTO sur l'entité chargée.
+     * Les champs null sont ignorés (nullValuePropertyMappingStrategy = IGNORE).
+     * Les champs système ne sont jamais écrasés.
+     *
+     * @param prestataire l'entité cible (modifiée en place)
+     * @param dto         les modifications à appliquer
+     */
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id",          ignore = true)
+    @Mapping(target = "slug",        ignore = true)
+    @Mapping(target = "utilisateur", ignore = true)
+    @Mapping(target = "categoryKey", ignore = true)
+    @Mapping(target = "subcatKeys",  ignore = true)
+    @Mapping(target = "avatar",      ignore = true)
+    @Mapping(target = "createdAt",   ignore = true)
+    @Mapping(target = "deletedAt",   ignore = true)
+    @Mapping(target = "photos",       source = "photos",       qualifiedByName = "serializeStringList")
+    @Mapping(target = "badges",       source = "badges",       qualifiedByName = "serializeEngagementList")
+    @Mapping(target = "offerings",    source = "offerings",    qualifiedByName = "serializeStringList")
+    @Mapping(target = "identity",     source = "identity",     qualifiedByName = "serializeToJson")
+    @Mapping(target = "budget",       source = "budget",       qualifiedByName = "serializeToJson")
+    @Mapping(target = "testimonials", source = "testimonials", qualifiedByName = "serializeToJson")
+    @Mapping(target = "logistics",    source = "logistics",    qualifiedByName = "serializeStringList")
+    @Mapping(target = "technical",    source = "technical",    qualifiedByName = "serializeStringList")
+    @Mapping(target = "faq",          source = "faq",          qualifiedByName = "serializeToJson")
+    public abstract void updatePrestataire(@MappingTarget Prestataire prestataire, PrestataireUpdateDto dto);
 
     // ── Convertisseurs JSONB ──────────────────────────────────────────────────
 
@@ -98,6 +123,33 @@ public abstract class PrestataireMapper {
             return objectMapper.readValue(json, typeRef);
         } catch (Exception e) {
             log.warn("Échec de désérialisation JSONB: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    // ── Sérialiseurs JSONB (pour updatePrestataire) ───────────────────────────
+
+    @Named("serializeStringList")
+    protected String serializeStringList(List<String> list) {
+        return serializeJson(list);
+    }
+
+    @Named("serializeEngagementList")
+    protected String serializeEngagementList(List<Engagement> list) {
+        return serializeJson(list);
+    }
+
+    @Named("serializeToJson")
+    protected String serializeToJson(Object value) {
+        return serializeJson(value);
+    }
+
+    private String serializeJson(Object value) {
+        if (value == null) return null;
+        try {
+            return objectMapper.writeValueAsString(value);
+        } catch (Exception e) {
+            log.warn("Échec de sérialisation JSONB: {}", e.getMessage());
             return null;
         }
     }
