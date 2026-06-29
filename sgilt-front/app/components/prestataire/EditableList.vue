@@ -17,7 +17,9 @@
     <!-- GHOST STATE: empty list, not editing -->
     <template v-if="modelValue.length === 0 && !isListEditing">
       <ul :class="['editable-list', marker && `marker-${marker}`, 'ghost-list']">
-        <li v-for="(gitem, i) in ghostItems" :key="i" class="list-item">{{ gitem }}</li>
+        <li v-for="(gitem, i) in ghostItems" :key="i" class="list-item">
+          <slot name="ghost-item" :ghost-text="gitem" :ghost-index="i">{{ gitem }}</slot>
+        </li>
       </ul>
     </template>
 
@@ -101,6 +103,7 @@ defineSlots<{
     update: (val: T) => void
     registerRef: (el: ComponentPublicInstance | Element | null) => void
   }): unknown
+  'ghost-item'(props: { ghostText: string; ghostIndex: number }): unknown
 }>()
 
 const modelValue = defineModel<T[]>({ required: true })

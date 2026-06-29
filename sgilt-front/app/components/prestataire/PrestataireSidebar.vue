@@ -17,7 +17,7 @@
       </Transition>
     </div>
 
-    <div v-if="prestataire.budget" class="sidebar-block sidebar-budget">
+    <div v-if="isEdit || prestataire.budget" class="sidebar-block sidebar-budget">
       <h3 class="title">{{ $t('provider.details.rates') }}</h3>
       <EditableText as="p" v-model="prestataire!.budget" field="budget" :editable="isEdit" class="text" />
     </div>

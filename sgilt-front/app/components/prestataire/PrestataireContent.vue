@@ -37,7 +37,7 @@
     </section>
 
     <!-- BUDGET (mobile uniquement) -->
-    <section v-if="prestataire?.budget" class="section budget-section mobile-only">
+    <section v-if="isEdit || prestataire?.budget" class="section budget-section mobile-only">
       <h2 class="title">{{ $t('provider.details.rates') }}</h2>
       <EditableText as="p" v-model="prestataire!.budget" field="budget" :editable="isEdit" class="budget-text" />
     </section>
@@ -52,6 +52,15 @@
         :new-item="newTestimony"
         :is-empty="isTestimonyEmpty"
       >
+        <template #ghost-item="{ ghostText }">
+          <blockquote class="testimony-ghost">
+            <p class="text">{{ ghostText }}</p>
+            <footer class="footer">
+              <span class="author">{{ t('provider.editable.testimonials.author.ghost') }}</span>
+              <span class="event">{{ t('provider.editable.testimonials.eventType.ghost') }}</span>
+            </footer>
+          </blockquote>
+        </template>
         <template #item="{ item, isEditing, update, registerRef }">
           <EditableTestimony
             :ref="registerRef"
@@ -120,6 +129,12 @@
           :new-item="newFaqItem"
           :is-empty="isFaqEmpty"
         >
+          <template #ghost-item="{ ghostText, ghostIndex }">
+            <div class="faq-ghost">
+              <p class="question">{{ ghostText }}</p>
+              <p class="answer">{{ faqGhostAnswers[ghostIndex] ?? '' }}</p>
+            </div>
+          </template>
           <template #item="{ item, isEditing, update, registerRef }">
             <EditableFaq
               :ref="registerRef"
@@ -146,6 +161,12 @@ const props = defineProps<{
   displayMode: DisplayMode
 }>()
 
+const { t, tm, rt } = useI18n()
+type RtArg = Parameters<typeof rt>[0]
+const faqGhostAnswers = computed<string[]>(() => {
+  const raw: unknown = tm('provider.editable.faq.ghost-answers')
+  return Array.isArray(raw) ? (raw as RtArg[]).map((item) => rt(item)) : []
+})
 const { prestataire } = usePrestataire()
 
 const isEdit = computed(() => props.displayMode === 'edit')
@@ -252,6 +273,65 @@ $section-gap: 2.5rem;
 
 .infos-section {
   gap: 1.5rem;
+}
+
+.faq-ghost {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  .question {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: $color-primary;
+    margin: 0;
+  }
+
+  .answer {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: $text-secondary;
+    margin: 0;
+  }
+}
+
+.testimony-ghost {
+  margin: 0;
+  padding: $spacing-m;
+  background: #fafafa;
+  border-radius: $radius-md;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+
+  .text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    font-style: italic;
+    line-height: 1.6;
+    color: $color-primary;
+    margin: 0 0 0.75rem;
+  }
+
+  .footer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .author {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: $text-secondary;
+  }
+
+  .event {
+    font-size: 0.8rem;
+    color: $text-secondary;
+    opacity: 0.6;
+
+    &::before {
+      content: '· ';
+    }
+  }
 }
 
 .infos-block {
