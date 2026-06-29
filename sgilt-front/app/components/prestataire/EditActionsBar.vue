@@ -4,9 +4,6 @@
       {{ saved ? $t('provider.edit.saved') : $t('provider.edit.save') }}
     </SgiltButton>
     <p v-if="saveError" class="error">{{ $t('provider.edit.save-error') }}</p>
-    <SgiltButton variant="secondary" class="btn-full" @click="onSubmit">
-      {{ $t('provider.edit.submit') }}
-    </SgiltButton>
   </div>
 </template>
 

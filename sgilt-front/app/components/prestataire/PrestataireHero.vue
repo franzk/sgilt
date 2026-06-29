@@ -169,8 +169,7 @@ async function share() {
       <ArrowLeftIcon />
     </button>
 
-    <!-- Bouton share (toujours visible) -->
-    <button class="share" @click="share" aria-label="Partager">
+    <button v-if="!isEdit" class="share" @click="share" aria-label="Partager">
       <ShareIcon />
     </button>
   </section>
