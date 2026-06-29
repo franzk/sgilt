@@ -94,7 +94,8 @@
       "save": "Enregistrer mes modifications",
       "saved": "✅ Enregistré",
       "save-error": "Échec de l'enregistrement, veuillez réessayer.",
-      "submit": "Soumettre ma fiche à Sgilt"
+      "submit": "Soumettre ma fiche à Sgilt",
+      "mode-badge": "Mode édition"
     },
     "availability": {
       "available": "🟢 Disponible",
