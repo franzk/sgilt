@@ -49,7 +49,10 @@
       "Bash(npx vue-tsc *)",
       "Bash(Remove-Item *)",
       "Bash(./mvnw compile *)",
-      "Bash(grep -E \"\\\\.\\(ts|js|vue\\)$\")"
+      "Bash(grep -E \"\\\\.\\(ts|js|vue\\)$\")",
+      "PowerShell(cd C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front; npx nuxi typecheck 2>&1 | Where-Object { $_ -match \"app/\" } | Select-Object -First 40)",
+      "PowerShell(cd C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front; \\(npx nuxi typecheck 2>&1\\) | Where-Object { \\($_ -notmatch \"node_modules\"\\) -and \\($_ -notmatch \"^npm\"\\) -and \\($_ -notmatch \"^node\"\\) } | Select-Object -First 50)",
+      "PowerShell(cd C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front; \\(npx nuxi typecheck 2>&1\\) -join \"`n\" | Select-String \"app/\" | Select-Object -First 30)"
     ]
   }
 }

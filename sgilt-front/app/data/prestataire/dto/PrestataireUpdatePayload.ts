@@ -9,10 +9,7 @@ import type { FaqItem } from '../domain/FaqItem'
  */
 export interface PrestataireUpdatePayload {
   baseline: string | null
-  heroImage: string | null
-  youtubeId: string | null
   shortDescription: string | null
-  photos: string[] | null
   badges: EngagementKey[] | null
   offerings: string[] | null
   identity: { quote: string | null; bio: string | null } | null

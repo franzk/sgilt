@@ -64,7 +64,7 @@
     <Teleport to="body">
       <Transition name="modal">
         <div
-          v-if="showVideo"
+          v-if="activeVideoId"
           class="modal-overlay dark"
           role="dialog"
           aria-modal="true"
@@ -74,7 +74,7 @@
           <button class="modal-close" aria-label="Fermer" @click="closeVideo">✕</button>
           <div class="video-wrapper">
             <iframe
-              :src="`https://www.youtube.com/embed/${prestataire.youtubeId}?autoplay=1`"
+              :src="youtubeEmbedUrl(activeVideoId)"
               allow="
                 accelerometer;
                 autoplay;
@@ -149,7 +149,7 @@ const galleryIndex = ref(0)
 const { toUrl } = useImageUrl()
 
 const galleryPhotos = computed<string[]>(() =>
-  [props.prestataire.heroImage, ...props.prestataire.photos].map(toUrl),
+  props.prestataire.medias.filter((m) => m.type === 'IMAGE').map((m) => toUrl(m.ref)),
 )
 
 function openGallery(index: number) {
@@ -168,12 +168,12 @@ function nextPhoto() {
 }
 
 // ── Vidéo ─────────────────────────────────────────────────────────────────────
-const showVideo = ref(false)
-function openVideo() {
-  showVideo.value = true
+const activeVideoId = ref<string | null>(null)
+function openVideo(youtubeId: string): void {
+  activeVideoId.value = youtubeId
 }
-function closeVideo() {
-  showVideo.value = false
+function closeVideo(): void {
+  activeVideoId.value = null
 }
 
 // ── Keyboard escape ───────────────────────────────────────────────────────────

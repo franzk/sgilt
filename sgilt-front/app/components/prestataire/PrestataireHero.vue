@@ -16,7 +16,7 @@ const { prestataire } = usePrestataire()
 const isEdit = computed(() => props.displayMode === 'edit')
 
 const emit = defineEmits<{
-  openVideo: []
+  openVideo: [youtubeId: string]
   openPhoto: [index: number]
   back: []
 }>()
@@ -26,15 +26,11 @@ type HeroImage = { type: 'image'; src: string }
 type HeroVideo = { type: 'video'; youtubeId: string }
 type HeroItem = HeroImage | HeroVideo
 
-const heroItems = computed<HeroItem[]>(() => {
-  const images: HeroItem[] = [props.prestataire.heroImage, ...props.prestataire.photos].map(
-    (src) => ({ type: 'image', src }),
-  )
-  if (props.prestataire.youtubeId) {
-    return [...images, { type: 'video', youtubeId: props.prestataire.youtubeId }]
-  }
-  return images
-})
+const heroItems = computed<HeroItem[]>(() =>
+  props.prestataire.medias.map((m) =>
+    m.type === 'IMAGE' ? { type: 'image', src: m.ref } : { type: 'video', youtubeId: m.ref },
+  ),
+)
 
 const heroIndex = ref(0)
 const touchStartX = ref(0)
@@ -54,22 +50,27 @@ function onTouchEnd(e: TouchEvent) {
 // ─── Mosaïque desktop ─────────────────────────────────────────────────────────
 type MosaicThumb =
   | { type: 'photo'; src: string; photoIndex: number }
-  | { type: 'video'; src: string }
+  | { type: 'video'; src: string; youtubeId: string }
 
-const mosaicThumbs = computed<MosaicThumb[]>(() => {
-  const thumbs: MosaicThumb[] = props.prestataire.photos.map((src, i) => ({
-    type: 'photo',
-    src,
-    photoIndex: i + 1, // 0 = heroImage dans la galerie
-  }))
-  if (props.prestataire.youtubeId) {
-    thumbs.push({
-      type: 'video',
-      src: `https://img.youtube.com/vi/${props.prestataire.youtubeId}/hqdefault.jpg`,
-    })
+const imageMedias = computed(() => props.prestataire.medias.filter((m) => m.type === 'IMAGE'))
+
+const mosaicThumbs = computed<MosaicThumb[]>(() =>
+  props.prestataire.medias.slice(1).map((m) => {
+    if (m.type === 'YOUTUBE') {
+      return { type: 'video', src: `https://img.youtube.com/vi/${m.ref}/hqdefault.jpg`, youtubeId: m.ref }
+    }
+    const photoIndex = imageMedias.value.findIndex((img) => img.position === m.position)
+    return { type: 'photo', src: m.ref, photoIndex: photoIndex === -1 ? 0 : photoIndex }
+  }),
+)
+
+function onThumbClick(thumb: MosaicThumb): void {
+  if (thumb.type === 'video') {
+    emit('openVideo', thumb.youtubeId)
+  } else {
+    emit('openPhoto', thumb.photoIndex)
   }
-  return thumbs
-})
+}
 
 // ─── Share ────────────────────────────────────────────────────────────────────
 async function share() {
@@ -105,7 +106,7 @@ async function share() {
             loading="eager"
           />
         </div>
-        <button class="video-play" @click="emit('openVideo')" aria-label="Lancer la vidéo">
+        <button class="video-play" @click="emit('openVideo', (heroItems[heroIndex] as HeroVideo).youtubeId)" aria-label="Lancer la vidéo">
           ▶
         </button>
       </template>
@@ -132,7 +133,7 @@ async function share() {
     <div class="mosaic">
       <!-- Photo principale -->
       <div class="mosaic-main">
-        <SgiltImage :src="prestataire.heroImage" :alt="prestataire.name" loading="eager" />
+        <SgiltImage :src="heroRef(prestataire.medias) ?? ''" :alt="prestataire.name" loading="eager" />
         <div class="overlay" aria-hidden="true" />
         <div class="content">
           <p class="category">{{ prestataire.category }}</p>
@@ -148,14 +149,7 @@ async function share() {
           :key="i"
           class="mosaic-thumb"
           :class="{ video: thumb.type === 'video' }"
-          @click="
-            thumb.type === 'video'
-              ? emit('openVideo')
-              : emit(
-                  'openPhoto',
-                  (thumb as { type: 'photo'; src: string; photoIndex: number }).photoIndex,
-                )
-          "
+          @click="onThumbClick(thumb)"
           :aria-label="thumb.type === 'video' ? 'Lancer la vidéo' : `Voir la photo`"
         >
           <SgiltImage :src="thumb.src" alt="" loading="lazy" />

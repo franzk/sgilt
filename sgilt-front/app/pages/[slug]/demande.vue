@@ -10,12 +10,12 @@
       v-if="!isMobile"
       :slug="slug"
       :prestataire-name="prestataire.name"
-      :prestataire-image="prestataire.image"
+      :prestataire-image="heroRef(prestataire.medias) ?? ''"
     />
     <DemandeMobile
       v-else
       :prestataire-name="prestataire.name"
-      :prestataire-image="prestataire.image"
+      :prestataire-image="heroRef(prestataire.medias) ?? ''"
       :slug="slug"
     />
   </template>
