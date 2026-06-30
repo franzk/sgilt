@@ -4,10 +4,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.prestataire.domain.Engagement;
+import net.franzka.sgilt.core.prestataire.domain.MediaUtils;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.dto.*;
 import org.mapstruct.*;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -27,6 +30,7 @@ public abstract class PrestataireMapper {
      * @param prestataire l'entité source
      * @return le DTO carte
      */
+    @Mapping(target = "heroImage", source = "medias", qualifiedByName = "resolveHeroImage")
     public abstract PrestataireCardDto toCardDto(Prestataire prestataire);
 
     /**
@@ -36,7 +40,7 @@ public abstract class PrestataireMapper {
      * @param prestataire l'entité source
      * @return le DTO complet
      */
-    @Mapping(target = "photos",       source = "photos",       qualifiedByName = "parseStringList")
+    @Mapping(target = "medias",        source = "medias",       qualifiedByName = "parseMediaList")
     @Mapping(target = "badges",       source = "badges",       qualifiedByName = "parseEngagementList")
     @Mapping(target = "offerings",    source = "offerings",    qualifiedByName = "parseStringList")
     @Mapping(target = "identity",     source = "identity",     qualifiedByName = "parseIdentity")
@@ -62,9 +66,9 @@ public abstract class PrestataireMapper {
     @Mapping(target = "categoryKey", ignore = true)
     @Mapping(target = "subcatKeys",  ignore = true)
     @Mapping(target = "avatar",      ignore = true)
+    @Mapping(target = "medias",      ignore = true)
     @Mapping(target = "createdAt",   ignore = true)
     @Mapping(target = "deletedAt",   ignore = true)
-    @Mapping(target = "photos",       source = "photos",       qualifiedByName = "serializeStringList")
     @Mapping(target = "badges",       source = "badges",       qualifiedByName = "serializeEngagementList")
     @Mapping(target = "offerings",    source = "offerings",    qualifiedByName = "serializeStringList")
     @Mapping(target = "identity",     source = "identity",     qualifiedByName = "serializeToJson")
@@ -77,9 +81,21 @@ public abstract class PrestataireMapper {
 
     // ── Convertisseurs JSONB ──────────────────────────────────────────────────
 
+    @Named("resolveHeroImage")
+    protected String resolveHeroImage(String mediasJson) {
+        return MediaUtils.heroImageRef(mediasJson);
+    }
+
     @Named("parseStringList")
     protected List<String> parseStringList(String json) {
         return parseJson(json, new TypeReference<>() {});
+    }
+
+    @Named("parseMediaList")
+    protected List<MediaDto> parseMediaList(String json) {
+        List<MediaDto> list = parseJson(json, new TypeReference<>() {});
+        if (list == null) return new ArrayList<>();
+        return list.stream().sorted(Comparator.comparingInt(MediaDto::position)).toList();
     }
 
     @Named("parseEngagementList")

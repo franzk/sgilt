@@ -13,10 +13,7 @@ import java.util.List;
 public record PrestataireUpdateDto(
         String name,
         String baseline,
-        String heroImage,
-        String youtubeId,
         String shortDescription,
-        List<String> photos,
         List<Engagement> badges,
         List<String> offerings,
         IdentityDto identity,

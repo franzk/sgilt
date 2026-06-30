@@ -49,17 +49,13 @@ public class Prestataire {
 
     private String baseline;
 
-    private String heroImage;
-
-    private String youtubeId;
-
     private String avatar;
 
     private String shortDescription;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    private String photos;
+    private String medias;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
