@@ -1,7 +1,8 @@
 ﻿<script setup lang="ts">
 import SgiltImage from '~/components/basics/media/SgiltImage.vue'
 import EditableText from '~/components/prestataire/EditableText.vue'
-import { ShareIcon, ArrowLeftIcon } from '@remixicons/vue/line'
+import PrestataireMediaDialog from '~/components/prestataire/PrestataireMediaDialog.vue'
+import { ShareIcon, ArrowLeftIcon, ImageAddIcon } from '@remixicons/vue/line'
 import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDetail'
 import type { DisplayMode } from '~/types/prestataire'
 
@@ -14,6 +15,7 @@ const props = defineProps<{
 
 const { prestataire } = usePrestataire()
 const isEdit = computed(() => props.displayMode === 'edit')
+const heroboardOpen = ref(false)
 
 const emit = defineEmits<{
   openVideo: [youtubeId: string]
@@ -57,7 +59,7 @@ const imageMedias = computed(() => props.prestataire.medias.filter((m) => m.type
 const mosaicThumbs = computed<MosaicThumb[]>(() =>
   props.prestataire.medias.slice(1).map((m) => {
     if (m.type === 'YOUTUBE') {
-      return { type: 'video', src: `https://img.youtube.com/vi/${m.ref}/hqdefault.jpg`, youtubeId: m.ref }
+      return { type: 'video', src: youtubeThumbnailUrl(m.ref), youtubeId: m.ref }
     }
     const photoIndex = imageMedias.value.findIndex((img) => img.position === m.position)
     return { type: 'photo', src: m.ref, photoIndex: photoIndex === -1 ? 0 : photoIndex }
@@ -101,12 +103,16 @@ async function share() {
       <template v-else-if="heroItems[heroIndex]?.type === 'video'">
         <div class="image">
           <SgiltImage
-            :src="`https://img.youtube.com/vi/${(heroItems[heroIndex] as HeroVideo).youtubeId}/hqdefault.jpg`"
+            :src="youtubeThumbnailUrl((heroItems[heroIndex] as HeroVideo).youtubeId)"
             alt="Vidéo"
             loading="eager"
           />
         </div>
-        <button class="video-play" @click="emit('openVideo', (heroItems[heroIndex] as HeroVideo).youtubeId)" aria-label="Lancer la vidéo">
+        <button
+          class="video-play"
+          @click="emit('openVideo', (heroItems[heroIndex] as HeroVideo).youtubeId)"
+          aria-label="Lancer la vidéo"
+        >
           ▶
         </button>
       </template>
@@ -116,7 +122,13 @@ async function share() {
       <div class="content">
         <p class="category">{{ prestataire.category }}</p>
         <h1 class="name">{{ prestataire.name }}</h1>
-        <EditableText as="p" v-model="prestataire!.baseline" field="baseline" :editable="isEdit" class="baseline" />
+        <EditableText
+          as="p"
+          v-model="prestataire!.baseline"
+          field="baseline"
+          :editable="isEdit"
+          class="baseline"
+        />
       </div>
 
       <div v-if="heroItems.length > 1" class="dots" aria-hidden="true">
@@ -133,12 +145,22 @@ async function share() {
     <div class="mosaic">
       <!-- Photo principale -->
       <div class="mosaic-main">
-        <SgiltImage :src="heroRef(prestataire.medias) ?? ''" :alt="prestataire.name" loading="eager" />
+        <SgiltImage
+          :src="heroRef(prestataire.medias) ?? ''"
+          :alt="prestataire.name"
+          loading="eager"
+        />
         <div class="overlay" aria-hidden="true" />
         <div class="content">
           <p class="category">{{ prestataire.category }}</p>
           <h1 class="name">{{ prestataire.name }}</h1>
-          <EditableText as="p" v-model="prestataire!.baseline" field="baseline" :editable="isEdit" class="baseline" />
+          <EditableText
+            as="p"
+            v-model="prestataire!.baseline"
+            field="baseline"
+            :editable="isEdit"
+            class="baseline"
+          />
         </div>
       </div>
 
@@ -166,6 +188,13 @@ async function share() {
     <button v-if="!isEdit" class="share" @click="share" aria-label="Partager">
       <ShareIcon />
     </button>
+
+    <button v-if="isEdit" class="edit-medias" type="button" @click="heroboardOpen = true">
+      <ImageAddIcon />
+      Modifier les médias
+    </button>
+
+    <PrestataireMediaDialog v-model:open="heroboardOpen" :prestataire="prestataire" />
   </section>
 </template>
 
@@ -343,6 +372,40 @@ async function share() {
   .share {
     @extend %overlay-btn;
     right: $spacing-m;
+  }
+
+  // ─── Bouton édition médias ────────────────────────────────────────────────
+  .edit-medias {
+    position: absolute;
+    bottom: $spacing-m;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: $spacing-xs $spacing-m;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(6px);
+    border-radius: 2rem;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 150ms ease;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
   }
 
   // ─── Bouton play (carousel mobile) ───────────────────────────────────────────

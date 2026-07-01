@@ -858,6 +858,16 @@
     "pay-now": "Payer maintenant"
   },
   "prestataire": {
+    "media-dialog": {
+      "title": "Modifier les médias",
+      "preview-empty": "Cliquez sur un slot pour l'éditer",
+      "upload-button": "Importer une photo",
+      "youtube-placeholder": "URL YouTube (youtube.com/watch?v=…)",
+      "youtube-ok": "OK",
+      "youtube-error": "Lien YouTube non valide",
+      "delete-media": "Supprimer ce média",
+      "error-no-hero": "Une image principale est requise"
+    },
     "finalisation": {
       "target-label": "Pour",
       "message-label": "Message au prestataire",

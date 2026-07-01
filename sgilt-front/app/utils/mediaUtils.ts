@@ -15,3 +15,26 @@ export function youtubeEmbedUrl(id: string | null): string {
   if (!id) return ''
   return `https://www.youtube.com/embed/${id}?autoplay=1`
 }
+
+/**
+ * Extrait l'ID YouTube depuis une URL (watch?v=, youtu.be/, embed/) ou un ID brut de 11 chars.
+ * Retourne null si le format n'est pas reconnu.
+ */
+export function youtubeThumbnailUrl(id: string): string {
+  return `https://img.youtube.com/vi/${id}/hqdefault.jpg`
+}
+
+export function extractYoutubeId(input: string): string | null {
+  const s = input.trim()
+  const patterns = [
+    /[?&]v=([A-Za-z0-9_-]{11})/, // youtube.com/watch?v=ID
+    /youtu\.be\/([A-Za-z0-9_-]{11})/, // youtu.be/ID
+    /embed\/([A-Za-z0-9_-]{11})/, // youtube.com/embed/ID
+  ]
+  for (const re of patterns) {
+    const m = s.match(re)
+    if (m?.[1]) return m[1]
+  }
+  if (/^[A-Za-z0-9_-]{11}$/.test(s)) return s
+  return null
+}
