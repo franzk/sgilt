@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.prestataire.api.PrestataireApi;
 import net.franzka.sgilt.core.prestataire.domain.Engagement;
+import net.franzka.sgilt.core.prestataire.dto.MediaUploadDto;
+import net.franzka.sgilt.core.prestataire.dto.MediasPutRequest;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireDetailDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireSearchResponseDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireUpdateDto;
@@ -14,6 +16,7 @@ import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
@@ -89,6 +92,39 @@ public class PrestataireController implements PrestataireApi {
         Utilisateur utilisateur = currentUserService.get();
         log.info("PATCH /prestataires/{} — email={}", id, utilisateur.getEmail());
         prestataireService.update(id, dto, utilisateur);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Upload une image vers R2 et retourne sa clé de stockage.
+     * Réservé au prestataire connecté (ROLE_PRO).
+     *
+     * @param file le fichier image à uploader
+     * @return la clé R2 du fichier uploadé
+     */
+    @Override
+    @Transactional
+    @PreAuthorize("hasAuthority('ROLE_PRO')")
+    public ResponseEntity<MediaUploadDto> uploadMedia(MultipartFile file) {
+        Utilisateur utilisateur = currentUserService.get();
+        log.info("POST /prestataires/ma-fiche/medias/upload — email={}", utilisateur.getEmail());
+        return ResponseEntity.ok(prestataireService.uploadMedia(utilisateur, file));
+    }
+
+    /**
+     * Remplace la collection complète de médias du prestataire connecté.
+     * Réservé au prestataire connecté (ROLE_PRO).
+     *
+     * @param body la liste des médias (remplacement total)
+     * @return 204 No Content
+     */
+    @Override
+    @Transactional
+    @PreAuthorize("hasAuthority('ROLE_PRO')")
+    public ResponseEntity<Void> updateMedias(MediasPutRequest body) {
+        Utilisateur utilisateur = currentUserService.get();
+        log.info("PUT /prestataires/ma-fiche/medias — email={}", utilisateur.getEmail());
+        prestataireService.updateMedias(utilisateur, body.medias());
         return ResponseEntity.noContent().build();
     }
 }

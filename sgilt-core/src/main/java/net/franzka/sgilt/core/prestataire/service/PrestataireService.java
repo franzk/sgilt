@@ -1,17 +1,25 @@
 package net.franzka.sgilt.core.prestataire.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.franzka.sgilt.core.prestataire.domain.MediaType;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.dto.*;
+import net.franzka.sgilt.core.prestataire.exception.MediasInvalidException;
 import net.franzka.sgilt.core.prestataire.exception.PrestataireForbiddenException;
 import net.franzka.sgilt.core.prestataire.exception.PrestataireNotFoundException;
 import net.franzka.sgilt.core.prestataire.mapper.PrestataireMapper;
 import net.franzka.sgilt.core.prestataire.repository.PrestataireRepository;
+import net.franzka.sgilt.core.storage.FileStorageException;
+import net.franzka.sgilt.core.storage.FileStorageService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -24,6 +32,8 @@ public class PrestataireService {
 
     private final PrestataireRepository prestataireRepository;
     private final PrestataireMapper prestataireMapper;
+    private final FileStorageService fileStorageService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * Charge un prestataire par son identifiant.
@@ -126,6 +136,48 @@ public class PrestataireService {
         prestataireRepository.save(prestataire);
     }
 
+    /**
+     * Upload une image vers R2 pour le compte du prestataire connecté.
+     * Retourne la clé de stockage du fichier uploadé.
+     *
+     * @param utilisateur l'utilisateur PRO connecté
+     * @param file        le fichier image à uploader
+     * @return le DTO contenant la clé R2 du fichier
+     * @throws FileStorageException en cas d'erreur de communication avec R2
+     */
+    public MediaUploadDto uploadMedia(Utilisateur utilisateur, MultipartFile file) {
+        try {
+            String key = fileStorageService.upload(file, "uploads");
+            return new MediaUploadDto(key);
+        } catch (IOException e) {
+            throw new FileStorageException("Erreur de stockage du média pour " + utilisateur.getEmail(), e);
+        }
+    }
+
+    /**
+     * Remplace la collection complète de médias du prestataire lié à l'utilisateur connecté.
+     * Valide que la position 0 est bien de type IMAGE avant toute persistance.
+     *
+     * @param utilisateur l'utilisateur PRO connecté
+     * @param medias      la liste complète des médias à persister (remplacement total)
+     * @throws MediasInvalidException     si la position 0 est absente ou n'est pas de type IMAGE
+     * @throws PrestataireNotFoundException si aucun prestataire actif n'est lié à cet utilisateur
+     */
+    public void updateMedias(Utilisateur utilisateur, List<MediaDto> medias) {
+        boolean heroPresent = medias.stream()
+                .anyMatch(m -> m.position() == 0 && m.type() == MediaType.IMAGE);
+        if (!heroPresent) {
+            throw new MediasInvalidException("La position 0 doit être une image principale (IMAGE)");
+        }
+        Prestataire prestataire = findPrestataire(utilisateur);
+        try {
+            prestataire.setMedias(objectMapper.writeValueAsString(medias));
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Échec de sérialisation des médias", e);
+        }
+        prestataireRepository.save(prestataire);
+    }
+
     // ── Résolution du filtre exclusif ─────────────────────────────────────────
 
     private List<Prestataire> resolveFiltered(String categoryKey, List<String> subcatKeys) {
@@ -148,6 +200,14 @@ public class PrestataireService {
                     .orElse(null);
         }
         return null;
+    }
+
+    // ── Lookup interne ────────────────────────────────────────────────────────
+
+    /** Charge le prestataire actif lié à un utilisateur, ou lève une exception. */
+    private Prestataire findPrestataire(Utilisateur utilisateur) {
+        return prestataireRepository.findByUtilisateurAndDeletedAtIsNull(utilisateur)
+                .orElseThrow(() -> new PrestataireNotFoundException(utilisateur.getEmail()));
     }
 
     // ── Compteurs ─────────────────────────────────────────────────────────────

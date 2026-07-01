@@ -20,4 +20,9 @@ public class PrestataireExceptionHandler {
     public ResponseEntity<Void> handleForbidden(PrestataireForbiddenException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
+
+    @ExceptionHandler(MediasInvalidException.class)
+    public ResponseEntity<Void> handleMediasInvalid(MediasInvalidException ex) {
+        return ResponseEntity.badRequest().build();
+    }
 }
