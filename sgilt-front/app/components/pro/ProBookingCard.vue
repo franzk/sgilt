@@ -60,7 +60,9 @@
         </span>
         <div class="date-info">
           <span class="info-label">{{ $t('pro.board.card.event-date-label') }}</span>
-          <span class="info-value">{{ reservation.date ? formatDate(reservation.date) : '—' }}</span>
+          <span class="info-value">{{
+            reservation.date ? formatDate(reservation.date) : '—'
+          }}</span>
         </div>
       </div>
     </div>

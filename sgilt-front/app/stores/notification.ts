@@ -42,5 +42,14 @@ export const useNotificationStore = defineStore('notifications', () => {
     notifications.value.forEach((n) => (n.read = true))
   }
 
-  return { notifications, unreadCount, hasMore, loading, fetchInitial, fetchMore, markAsRead, markAllAsRead }
+  return {
+    notifications,
+    unreadCount,
+    hasMore,
+    loading,
+    fetchInitial,
+    fetchMore,
+    markAsRead,
+    markAllAsRead,
+  }
 })

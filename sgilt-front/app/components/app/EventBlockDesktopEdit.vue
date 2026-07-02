@@ -6,11 +6,21 @@
         <div class="edit-fields">
           <div class="edit-field">
             <label class="label">{{ $t('event.block.party-edit-city') }}</label>
-            <input v-model="draft.ville" class="input" type="text" :placeholder="$t('event.block.party-city-placeholder')" />
+            <input
+              v-model="draft.ville"
+              class="input"
+              type="text"
+              :placeholder="$t('event.block.party-city-placeholder')"
+            />
           </div>
           <div class="edit-field">
             <label class="label">{{ $t('event.block.logistics-label') }}</label>
-            <input v-model="draft.lieu" class="input" type="text" :placeholder="$t('event.block.logistics-placeholder')" />
+            <input
+              v-model="draft.lieu"
+              class="input"
+              type="text"
+              :placeholder="$t('event.block.logistics-placeholder')"
+            />
           </div>
           <div class="edit-field">
             <label class="label">{{ $t('event.block.party-edit-guests') }}</label>
@@ -41,27 +51,56 @@
           <div class="edit-field">
             <label class="label">{{ $t('event.block.party-edit-event-type') }}</label>
             <select v-model="draft.eventType" class="select">
-<option v-for="o in EVENT_TYPE_OPTIONS" :key="o.value" :value="o.value">{{ o.emoji }} {{ o.label }}</option>
+              <option v-for="o in EVENT_TYPE_OPTIONS" :key="o.value" :value="o.value">
+                {{ o.emoji }} {{ o.label }}
+              </option>
             </select>
-            <input v-if="draft.eventType === 'autre'" v-model="draft.eventTypeCustom" class="input input-autre" type="text" placeholder="Précisez…" />
+            <input
+              v-if="draft.eventType === 'autre'"
+              v-model="draft.eventTypeCustom"
+              class="input input-autre"
+              type="text"
+              placeholder="Précisez…"
+            />
           </div>
           <div class="edit-field">
             <label class="label">{{ $t('event.block.party-edit-ambiance') }}</label>
             <select v-model="draft.ambiance" class="select">
-<option v-for="o in AMBIANCE_OPTIONS" :key="o.value" :value="o.value">{{ o.emoji }} {{ o.label }}</option>
+              <option v-for="o in AMBIANCE_OPTIONS" :key="o.value" :value="o.value">
+                {{ o.emoji }} {{ o.label }}
+              </option>
             </select>
-            <input v-if="draft.ambiance === 'autre'" v-model="draft.ambianceCustom" class="input input-autre" type="text" placeholder="Précisez…" />
+            <input
+              v-if="draft.ambiance === 'autre'"
+              v-model="draft.ambianceCustom"
+              class="input input-autre"
+              type="text"
+              placeholder="Précisez…"
+            />
           </div>
           <div class="edit-field">
             <label class="label">{{ $t('event.block.party-moment-label') }}</label>
             <select v-model="draft.momentCle" class="select">
-<option v-for="o in MOMENT_CLE_OPTIONS" :key="o.value" :value="o.value">{{ o.emoji }} {{ o.label }}</option>
+              <option v-for="o in MOMENT_CLE_OPTIONS" :key="o.value" :value="o.value">
+                {{ o.emoji }} {{ o.label }}
+              </option>
             </select>
-            <input v-if="draft.momentCle === 'autre'" v-model="draft.momentCleCustom" class="input input-autre" type="text" placeholder="Précisez…" />
+            <input
+              v-if="draft.momentCle === 'autre'"
+              v-model="draft.momentCleCustom"
+              class="input input-autre"
+              type="text"
+              placeholder="Précisez…"
+            />
           </div>
           <div class="edit-field">
             <label class="label">{{ $t('event.block.party-edit-description') }}</label>
-            <textarea v-model="draft.description" class="textarea" rows="3" :placeholder="$t('event.block.party-description-placeholder')" />
+            <textarea
+              v-model="draft.description"
+              class="textarea"
+              rows="3"
+              :placeholder="$t('event.block.party-description-placeholder')"
+            />
           </div>
         </div>
       </div>
@@ -99,10 +138,19 @@
       <div class="section">
         <div class="update-row">
           <span class="section-label">{{ $t('event.block.update-label') }}</span>
-          <button class="cancel-btn" type="button" @click="cancel">{{ $t('event.block.cancel') }}</button>
+          <button class="cancel-btn" type="button" @click="cancel">
+            {{ $t('event.block.cancel') }}
+          </button>
         </div>
         <div class="update-date-row">
-          <button v-if="lastUpdateDate" class="journal-btn" type="button" @click="$emit('openJournal')">{{ lastUpdateDate }}</button>
+          <button
+            v-if="lastUpdateDate"
+            class="journal-btn"
+            type="button"
+            @click="$emit('openJournal')"
+          >
+            {{ lastUpdateDate }}
+          </button>
           <p v-else class="field-value empty">{{ $t('event.block.no-update') }}</p>
           <button class="save-btn" type="button" :disabled="saving" @click="save">
             {{ saving ? $t('event.block.saving') : $t('event.block.save') }}
@@ -134,12 +182,21 @@ const emit = defineEmits<{
 }>()
 
 const draft = reactive({
-  eventType: '', eventTypeCustom: '',
-  ambiance: '', ambianceCustom: '',
-  momentCle: '', momentCleCustom: '',
-  ville: '', lieu: '', nbInvites: '',
-  sharedNote: '', description: '',
-  firstName: '', lastName: '', phone: '', email: '',
+  eventType: '',
+  eventTypeCustom: '',
+  ambiance: '',
+  ambianceCustom: '',
+  momentCle: '',
+  momentCleCustom: '',
+  ville: '',
+  lieu: '',
+  nbInvites: '',
+  sharedNote: '',
+  description: '',
+  firstName: '',
+  lastName: '',
+  phone: '',
+  email: '',
 })
 
 function initField(value: string | undefined, options: { value: string }[]) {
@@ -150,24 +207,27 @@ function initField(value: string | undefined, options: { value: string }[]) {
 }
 
 const effectiveEventType = computed(() =>
-  draft.eventType === 'autre' ? (draft.eventTypeCustom.trim() || 'autre') : draft.eventType,
+  draft.eventType === 'autre' ? draft.eventTypeCustom.trim() || 'autre' : draft.eventType,
 )
 const effectiveAmbiance = computed(() =>
-  draft.ambiance === 'autre' ? (draft.ambianceCustom.trim() || 'autre') : draft.ambiance,
+  draft.ambiance === 'autre' ? draft.ambianceCustom.trim() || 'autre' : draft.ambiance,
 )
 const effectiveMomentCle = computed(() =>
-  draft.momentCle === 'autre' ? (draft.momentCleCustom.trim() || 'autre') : draft.momentCle,
+  draft.momentCle === 'autre' ? draft.momentCleCustom.trim() || 'autre' : draft.momentCle,
 )
 
 onMounted(() => {
   const et = initField(props.event.eventType, EVENT_TYPE_OPTIONS)
-  draft.eventType = et.select ; draft.eventTypeCustom = et.custom
+  draft.eventType = et.select
+  draft.eventTypeCustom = et.custom
 
   const amb = initField(props.event.ambiance, AMBIANCE_OPTIONS)
-  draft.ambiance = amb.select ; draft.ambianceCustom = amb.custom
+  draft.ambiance = amb.select
+  draft.ambianceCustom = amb.custom
 
   const mc = initField(props.event.momentCle, MOMENT_CLE_OPTIONS)
-  draft.momentCle = mc.select ; draft.momentCleCustom = mc.custom
+  draft.momentCle = mc.select
+  draft.momentCleCustom = mc.custom
 
   draft.ville = props.event.ville ?? ''
   draft.lieu = props.event.lieu ?? ''
@@ -274,7 +334,11 @@ function autoResize() {
   font-size: 0.85rem;
   color: $text-primary;
   margin: 0;
-  &.empty { color: $text-secondary; opacity: 0.55; font-style: italic; }
+  &.empty {
+    color: $text-secondary;
+    opacity: 0.55;
+    font-style: italic;
+  }
 }
 
 .contact-name {
@@ -288,7 +352,10 @@ function autoResize() {
   font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: $text-primary;
-  &.email { font-size: 0.75rem; color: $text-secondary; }
+  &.email {
+    font-size: 0.75rem;
+    color: $text-secondary;
+  }
 }
 
 .update-row {
@@ -313,7 +380,9 @@ function autoResize() {
   cursor: pointer;
   padding: 4px 0;
   transition: color 150ms ease;
-  &:hover { color: $text-primary; }
+  &:hover {
+    color: $text-primary;
+  }
 }
 
 .save-btn {
@@ -326,9 +395,17 @@ function autoResize() {
   color: $text-primary;
   cursor: pointer;
   padding: 3px 10px;
-  transition: border-color 150ms ease, color 150ms ease;
-  &:hover { border-color: $brand-primary; color: $brand-primary; }
-  &:disabled { opacity: 0.45; cursor: default; }
+  transition:
+    border-color 150ms ease,
+    color 150ms ease;
+  &:hover {
+    border-color: $brand-primary;
+    color: $brand-primary;
+  }
+  &:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
 }
 
 .journal-btn {
@@ -344,7 +421,9 @@ function autoResize() {
   text-decoration: underline;
   text-underline-offset: 2px;
   transition: opacity 150ms ease;
-  &:hover { opacity: 1; }
+  &:hover {
+    opacity: 1;
+  }
 }
 
 .edit-fields {
@@ -378,7 +457,9 @@ function autoResize() {
     background: $surface-soft;
     outline: none;
     box-sizing: border-box;
-    transition: border-color 150ms ease, box-shadow 150ms ease;
+    transition:
+      border-color 150ms ease,
+      box-shadow 150ms ease;
     appearance: none;
 
     &:focus {
@@ -387,7 +468,10 @@ function autoResize() {
       background: #fff;
     }
 
-    &::placeholder { color: $text-secondary; opacity: 0.45; }
+    &::placeholder {
+      color: $text-secondary;
+      opacity: 0.45;
+    }
   }
 
   .select {

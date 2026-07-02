@@ -12,32 +12,59 @@
           v-for="(s, i) in slotDisplays"
           :key="i"
           class="slot-tile"
-          :class="{ selected: i === activeSlotIndex, empty: s.status === 'EMPTY', uploading: s.isUploading }"
+          :class="{
+            selected: i === activeSlotIndex,
+            empty: s.status === 'EMPTY',
+            uploading: s.isUploading,
+          }"
           type="button"
           @click="selectSlot(i)"
         >
-          <img v-if="s.thumbnailUrl" :src="s.thumbnailUrl" alt="" class="tile-img" :class="{ dim: s.isUploading }" />
+          <img
+            v-if="s.thumbnailUrl"
+            :src="s.thumbnailUrl"
+            alt=""
+            class="tile-img"
+            :class="{ dim: s.isUploading }"
+          />
           <span v-if="s.isUploading" class="tile-spinner" aria-hidden="true" />
           <span v-else-if="s.errorMessage" class="tile-error-icon" aria-hidden="true">!</span>
           <span v-else-if="s.status === 'EMPTY'" class="tile-empty" aria-hidden="true">+</span>
-          <span v-if="s.type === 'YOUTUBE' && s.status === 'OCCUPIED'" class="tile-play" aria-hidden="true">▶</span>
+          <span
+            v-if="s.type === 'YOUTUBE' && s.status === 'OCCUPIED'"
+            class="tile-play"
+            aria-hidden="true"
+            >▶</span
+          >
         </button>
       </div>
 
       <!-- Preview du slot actif -->
       <div class="preview">
-        <img v-if="activeSlot.thumbnailUrl && !activeSlot.isUploading" :src="activeSlot.thumbnailUrl" alt="Aperçu" class="preview-img" />
+        <img
+          v-if="activeSlot.thumbnailUrl && !activeSlot.isUploading"
+          :src="activeSlot.thumbnailUrl"
+          alt="Aperçu"
+          class="preview-img"
+        />
         <div v-else-if="activeSlot.isUploading" class="preview-loading" aria-hidden="true">
           <span class="preview-spinner" />
         </div>
-        <p v-else-if="activeSlot.errorMessage" class="preview-error">{{ activeSlot.errorMessage }}</p>
+        <p v-else-if="activeSlot.errorMessage" class="preview-error">
+          {{ activeSlot.errorMessage }}
+        </p>
         <p v-else class="preview-empty">{{ $t('prestataire.media-dialog.preview-empty') }}</p>
       </div>
 
       <!-- Contrôles du slot actif -->
       <div class="slot-controls">
         <!-- Bouton upload -->
-        <button class="upload-btn" type="button" :disabled="activeSlot.isUploading" @click="uploadInputRef?.click()">
+        <button
+          class="upload-btn"
+          type="button"
+          :disabled="activeSlot.isUploading"
+          @click="uploadInputRef?.click()"
+        >
           <ImageAddIcon />
           {{ $t('prestataire.media-dialog.upload-button') }}
         </button>
@@ -72,7 +99,12 @@
         </div>
 
         <!-- Bouton supprimer -->
-        <button v-if="activeSlot.status === 'OCCUPIED' || activeSlot.status === 'ERROR'" class="delete-btn" type="button" @click="deleteActiveSlot">
+        <button
+          v-if="activeSlot.status === 'OCCUPIED' || activeSlot.status === 'ERROR'"
+          class="delete-btn"
+          type="button"
+          @click="deleteActiveSlot"
+        >
           {{ $t('prestataire.media-dialog.delete-media') }}
         </button>
       </div>

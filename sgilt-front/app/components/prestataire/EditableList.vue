@@ -2,7 +2,14 @@
   <!-- DISPLAY MODE -->
   <ul v-if="!isEdit" :class="['editable-list', marker && `marker-${marker}`]">
     <li v-for="(item, i) in modelValue" :key="i" class="list-item">
-      <slot name="item" :item="item" :index="i" :is-editing="false" :update="getUpdateFn(i)" :register-ref="setItemRef(i)" />
+      <slot
+        name="item"
+        :item="item"
+        :index="i"
+        :is-editing="false"
+        :update="getUpdateFn(i)"
+        :register-ref="setItemRef(i)"
+      />
     </li>
   </ul>
 
@@ -145,11 +152,15 @@ function setItemRef(index: number) {
   }
 }
 
-watch(focusedInputIndex, (idx) => {
-  if (idx === null) return
-  itemRefs.value[idx]?.startEdit()
-  focusedInputIndex.value = null
-}, { flush: 'post' })
+watch(
+  focusedInputIndex,
+  (idx) => {
+    if (idx === null) return
+    itemRefs.value[idx]?.startEdit()
+    focusedInputIndex.value = null
+  },
+  { flush: 'post' },
+)
 
 // ── Actions ───────────────────────────────────────────────────────────────────
 function enterListEdit() {
@@ -341,7 +352,9 @@ $color-success: #2e7d32;
   line-height: 1;
   padding: 0.15rem 0.25rem;
   align-self: flex-start;
-  transition: opacity 120ms ease, color 120ms ease;
+  transition:
+    opacity 120ms ease,
+    color 120ms ease;
 
   &:hover {
     opacity: 1;
@@ -371,7 +384,9 @@ $color-success: #2e7d32;
   font-size: 0.82rem;
   color: $text-secondary;
   cursor: pointer;
-  transition: border-color 120ms ease, color 120ms ease;
+  transition:
+    border-color 120ms ease,
+    color 120ms ease;
 
   &:hover {
     border-color: $text-secondary;

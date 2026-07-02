@@ -1,7 +1,9 @@
 <template>
   <div class="banner">
     <span class="label">{{ flowLabel }}</span>
-    <button class="close" type="button" :aria-label="$t('common.cancel')" @click="abortOpen = true">✕</button>
+    <button class="close" type="button" :aria-label="$t('common.cancel')" @click="abortOpen = true">
+      ✕
+    </button>
   </div>
 
   <SgiltConfirmDialog

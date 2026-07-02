@@ -1,7 +1,9 @@
 <template>
   <div class="note-card" :class="note.author.role">
     <div class="body">
-      <strong class="titre">{{ note.generatedKey ? $t(note.generatedKey, { name: note.author.name }) : note.title }}</strong>
+      <strong class="titre">{{
+        note.generatedKey ? $t(note.generatedKey, { name: note.author.name }) : note.title
+      }}</strong>
       <p v-if="note.content" class="content">{{ note.content }}</p>
     </div>
     <div class="divider" />

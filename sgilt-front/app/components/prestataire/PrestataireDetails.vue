@@ -30,7 +30,9 @@
 
     <!-- ── Sticky CTA (mobile) ───────────────────────────────────────────────── -->
     <div class="sticky-cta">
-      <SgiltButton v-if="displayMode === 'display'" @click="onSelect">{{ $t('provider.details.send-request') }}</SgiltButton>
+      <SgiltButton v-if="displayMode === 'display'" @click="onSelect">{{
+        $t('provider.details.send-request')
+      }}</SgiltButton>
       <EditActionsBar v-else />
     </div>
 
@@ -104,13 +106,16 @@ import type { DisplayMode } from '~/types/prestataire'
 
 const { t } = useI18n()
 
-const props = withDefaults(defineProps<{
-  prestataire: PrestataireDetail
-  disableDate?: boolean
-  displayMode?: DisplayMode
-}>(), {
-  displayMode: 'display',
-})
+const props = withDefaults(
+  defineProps<{
+    prestataire: PrestataireDetail
+    disableDate?: boolean
+    displayMode?: DisplayMode
+  }>(),
+  {
+    displayMode: 'display',
+  },
+)
 
 const emit = defineEmits<{
   back: []

@@ -19,7 +19,9 @@ const { prestataire, load } = usePrestataire()
 
 watch(
   () => currentUser.slug,
-  (slug) => { if (slug) load(slug) },
+  (slug) => {
+    if (slug) load(slug)
+  },
   { immediate: true },
 )
 </script>

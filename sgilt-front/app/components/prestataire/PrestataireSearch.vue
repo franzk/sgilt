@@ -58,8 +58,7 @@ const props = defineProps<{
 defineEmits<{ select: [provider: PrestataireCardDetail] }>()
 
 // ── Search state ──────────────────────────────────────────────────────────────
-const { dateModel, categoryKey, showOnboarding, currentSubcats, toggleSubcat } =
-  useSearchUi()
+const { dateModel, categoryKey, showOnboarding, currentSubcats, toggleSubcat } = useSearchUi()
 const { results, loading, subcatCounts, error } = useSearchFetch()
 
 const isAllCategories = computed(() => categoryKey.value === APP_CATEGORIES[0]?.key)
@@ -152,7 +151,6 @@ onMounted(() => {
     padding: 0;
   }
 }
-
 
 .vibe-collapse-enter-active,
 .vibe-collapse-leave-active {

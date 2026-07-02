@@ -23,7 +23,7 @@
         v-for="option in options"
         :key="option.value"
         class="option"
-        :class="{ 'selected': modelValue === option.value }"
+        :class="{ selected: modelValue === option.value }"
         type="button"
         @click="select(option.value)"
       >

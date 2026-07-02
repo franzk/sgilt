@@ -157,7 +157,9 @@ const momentCleOpt = computed(() =>
   MOMENT_CLE_OPTIONS.find((o) => o.value === props.event.momentCle),
 )
 const momentCleLabel = computed(() =>
-  momentCleOpt.value ? `${momentCleOpt.value.emoji} ${momentCleOpt.value.label}` : (props.event.momentCle ?? null),
+  momentCleOpt.value
+    ? `${momentCleOpt.value.emoji} ${momentCleOpt.value.label}`
+    : (props.event.momentCle ?? null),
 )
 
 async function copyPhone() {

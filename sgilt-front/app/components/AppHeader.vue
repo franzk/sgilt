@@ -18,7 +18,11 @@
         <UserIcon v-else />
       </button>
 
-      <AccountMenuPopin :open="accountMenuOpen" :anchor-el="accountMenuAnchorRef" @close="accountMenuOpen = false" />
+      <AccountMenuPopin
+        :open="accountMenuOpen"
+        :anchor-el="accountMenuAnchorRef"
+        @close="accountMenuOpen = false"
+      />
     </div>
   </header>
 </template>

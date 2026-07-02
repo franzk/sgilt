@@ -15,10 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  RESERVATION_STATUS_PILLS,
-  RESERVATION_STATUS_CONFIG,
-} from '~/constants/reservation-status'
+import { RESERVATION_STATUS_PILLS, RESERVATION_STATUS_CONFIG } from '~/constants/reservation-status'
 import type { ReservationStatut } from '~/constants/reservation-status'
 
 const { t } = useI18n()

@@ -67,7 +67,8 @@ defineEmits<{ click: [] }>()
 const { toUrl } = useImageUrl()
 
 const coverUrl = computed(() => {
-  const path = props.coverImage ?? BANK_IMAGE_PATHS[props.eventType ?? ''] ?? BANK_IMAGE_PATHS.autre!
+  const path =
+    props.coverImage ?? BANK_IMAGE_PATHS[props.eventType ?? ''] ?? BANK_IMAGE_PATHS.autre!
   return toUrl(path)
 })
 </script>

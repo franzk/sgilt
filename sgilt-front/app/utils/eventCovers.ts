@@ -2,7 +2,7 @@ import type { EventDetail } from '~/data/evenement/domain/EventDetail'
 
 /**
  * Chemins des images par défaut.
-  */
+ */
 export const BANK_IMAGE_PATHS: Record<string, string> = {
   mariage: 'bank/mariage.jpg',
   anniversaire: 'bank/anniversaire.jpg',

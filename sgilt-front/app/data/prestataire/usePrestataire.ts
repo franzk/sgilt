@@ -13,7 +13,13 @@ const saving = ref(false)
 const saved = ref(false)
 const saveError = ref(false)
 
-watch(prestataire, () => { if (saved.value) saved.value = false }, { deep: true })
+watch(
+  prestataire,
+  () => {
+    if (saved.value) saved.value = false
+  },
+  { deep: true },
+)
 
 export function usePrestataire(slug?: string) {
   if (slug !== undefined) {

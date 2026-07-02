@@ -18,7 +18,12 @@ const { state, next } = useDemande()
 
 const villeError = ref<string | null>(null)
 
-watch(() => state.ville, () => { villeError.value = null })
+watch(
+  () => state.ville,
+  () => {
+    villeError.value = null
+  },
+)
 
 function handleContinue() {
   if (!state.ville.trim()) {

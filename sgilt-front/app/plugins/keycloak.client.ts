@@ -26,7 +26,7 @@ export default defineNuxtPlugin(async () => {
     })
     initKeycloak(kc, authenticated)
   } catch {
-    console.error('[KC] Échec de l\'initialisation Keycloak.')
+    console.error("[KC] Échec de l'initialisation Keycloak.")
     initKeycloak(kc, false)
   }
 })

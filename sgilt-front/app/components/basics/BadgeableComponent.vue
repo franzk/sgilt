@@ -5,7 +5,8 @@
       v-if="count > 0"
       class="count"
       :style="{ minWidth: `${size}px`, height: `${size}px`, lineHeight: `${size}px` }"
-    >{{ count }}</span>
+      >{{ count }}</span
+    >
   </div>
 </template>
 

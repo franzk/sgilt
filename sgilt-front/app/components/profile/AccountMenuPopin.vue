@@ -12,7 +12,13 @@
             <EditBoxIcon class="item-icon" />
             <span>{{ $t('profile.menu.edit-my-page') }}</span>
           </NuxtLink>
-          <button v-if="isAuthenticated" class="item item--danger" role="menuitem" type="button" @click="logout">
+          <button
+            v-if="isAuthenticated"
+            class="item item--danger"
+            role="menuitem"
+            type="button"
+            @click="logout"
+          >
             <LogoutBoxRIcon class="item-icon" />
             <span>{{ $t('profile.menu.logout') }}</span>
           </button>
@@ -59,7 +65,14 @@
 </template>
 
 <script setup lang="ts">
-import { UserIcon, LogoutBoxRIcon, LoginBoxIcon, QuestionIcon, MailIcon, EditBoxIcon } from '@remixicons/vue/line'
+import {
+  UserIcon,
+  LogoutBoxRIcon,
+  LoginBoxIcon,
+  QuestionIcon,
+  MailIcon,
+  EditBoxIcon,
+} from '@remixicons/vue/line'
 import { onClickOutside } from '@vueuse/core'
 import { useKeycloak } from '~/composables/useKeycloak'
 

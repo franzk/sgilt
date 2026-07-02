@@ -8,7 +8,7 @@ export type Category = {
 }
 
 export type SubCategory = {
-  key: string      // identifiant partagé front/back/DB ('dj', 'pop-rock'… — vide si pas en DB)
+  key: string // identifiant partagé front/back/DB ('dj', 'pop-rock'… — vide si pas en DB)
   name: string
   categoryKey: string
 }
@@ -19,16 +19,16 @@ export const APP_CATEGORIES: Category[] = [
     key: 'musique',
     name: 'Musique',
     subcategories: [
-      { key: 'dj',       name: 'DJ',       categoryKey: 'musique' },
+      { key: 'dj', name: 'DJ', categoryKey: 'musique' },
       { key: 'pop-rock', name: 'Pop/Rock', categoryKey: 'musique' },
-      { key: 'jazz',     name: 'Jazz',     categoryKey: 'musique' },
+      { key: 'jazz', name: 'Jazz', categoryKey: 'musique' },
     ],
   },
   {
     key: 'restauration',
     name: 'Restauration',
     subcategories: [
-      { key: 'traiteur',   name: 'Traiteur',   categoryKey: 'restauration' },
+      { key: 'traiteur', name: 'Traiteur', categoryKey: 'restauration' },
       { key: 'food-truck', name: 'Food Truck', categoryKey: 'restauration' },
     ],
   },
@@ -37,15 +37,15 @@ export const APP_CATEGORIES: Category[] = [
     name: 'Photo',
     subcategories: [
       { key: 'photographe', name: 'Photographe', categoryKey: 'photo' },
-      { key: '',            name: 'Vidéo',       categoryKey: 'photo' },
-      { key: 'photobooth',  name: 'Photobooth',  categoryKey: 'photo' },
+      { key: '', name: 'Vidéo', categoryKey: 'photo' },
+      { key: 'photobooth', name: 'Photobooth', categoryKey: 'photo' },
     ],
   },
   {
     key: 'services',
     name: 'Services',
     subcategories: [
-      { key: '',              name: 'Décoration',           categoryKey: 'services' },
+      { key: '', name: 'Décoration', categoryKey: 'services' },
       { key: 'location-lieu', name: 'Location de matériel', categoryKey: 'services' },
     ],
   },
@@ -82,4 +82,3 @@ export const ENGAGEMENT_ICON_MAP: Record<EngagementKey, string> = {
   INTERLOCUTEUR_UNIQUE: 'Person_Check',
   ECORESPONSABLE: 'Eco',
 }
-

@@ -24,10 +24,25 @@
     </section>
 
     <!-- TOUCHE IDENTITAIRE -->
-    <section v-if="isEdit || prestataire?.identity.quote || prestataire?.identity.bio" class="section identity-spotlight">
+    <section
+      v-if="isEdit || prestataire?.identity.quote || prestataire?.identity.bio"
+      class="section identity-spotlight"
+    >
       <div class="content">
-        <EditableText as="blockquote" v-model="prestataire!.identity.quote" field="identity.quote" :editable="isEdit" class="quote" />
-        <EditableText as="p" v-model="prestataire!.identity.bio" field="identity.bio" :editable="isEdit" class="bio" />
+        <EditableText
+          as="blockquote"
+          v-model="prestataire!.identity.quote"
+          field="identity.quote"
+          :editable="isEdit"
+          class="quote"
+        />
+        <EditableText
+          as="p"
+          v-model="prestataire!.identity.bio"
+          field="identity.bio"
+          :editable="isEdit"
+          class="bio"
+        />
       </div>
     </section>
 
@@ -39,7 +54,13 @@
     <!-- BUDGET (mobile uniquement) -->
     <section v-if="isEdit || prestataire?.budget" class="section budget-section mobile-only">
       <h2 class="title">{{ $t('provider.details.rates') }}</h2>
-      <EditableText as="p" v-model="prestataire!.budget" field="budget" :editable="isEdit" class="budget-text" />
+      <EditableText
+        as="p"
+        v-model="prestataire!.budget"
+        field="budget"
+        :editable="isEdit"
+        class="budget-text"
+      />
     </section>
 
     <!-- TÉMOIGNAGES -->
@@ -151,10 +172,19 @@
 
 <script setup lang="ts">
 import EditableEngagements from '~/components/prestataire/EditableEngagements.vue'
-import EditableText, { newItem as newString, isEmpty as isStringEmpty } from '~/components/prestataire/EditableText.vue'
+import EditableText, {
+  newItem as newString,
+  isEmpty as isStringEmpty,
+} from '~/components/prestataire/EditableText.vue'
 import EditableList from '~/components/prestataire/EditableList.vue'
-import EditableFaq, { newItem as newFaqItem, isEmpty as isFaqEmpty } from '~/components/prestataire/EditableFaq.vue'
-import EditableTestimony, { newItem as newTestimony, isEmpty as isTestimonyEmpty } from '~/components/prestataire/EditableTestimony.vue'
+import EditableFaq, {
+  newItem as newFaqItem,
+  isEmpty as isFaqEmpty,
+} from '~/components/prestataire/EditableFaq.vue'
+import EditableTestimony, {
+  newItem as newTestimony,
+  isEmpty as isTestimonyEmpty,
+} from '~/components/prestataire/EditableTestimony.vue'
 import type { DisplayMode } from '~/types/prestataire'
 
 const props = defineProps<{

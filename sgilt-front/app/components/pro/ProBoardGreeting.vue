@@ -1,8 +1,12 @@
 <template>
   <div class="pro-greeting">
     <p class="title">
-      <template v-if="user.loading || !user.firstName">{{ $t('pro.board.greeting.title') }}</template>
-      <template v-else>{{ $t('pro.board.greeting.titleNamed', { name: user.firstName }) }}</template>
+      <template v-if="user.loading || !user.firstName">{{
+        $t('pro.board.greeting.title')
+      }}</template>
+      <template v-else>{{
+        $t('pro.board.greeting.titleNamed', { name: user.firstName })
+      }}</template>
     </p>
     <Sk v-if="loading" width="220px" height="0.8rem" radius="4px" style="margin-top: 6px" />
 

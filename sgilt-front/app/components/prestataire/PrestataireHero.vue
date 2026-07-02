@@ -95,7 +95,7 @@ async function share() {
       <div v-if="heroItems[heroIndex]?.type === 'image'" class="image">
         <SgiltImage
           :src="(heroItems[heroIndex] as HeroImage).src"
-          :alt="prestataire.name"
+          :alt="prestataire?.name"
           loading="eager"
         />
       </div>
@@ -120,8 +120,8 @@ async function share() {
       <div class="overlay" aria-hidden="true" />
 
       <div class="content">
-        <p class="category">{{ prestataire.category }}</p>
-        <h1 class="name">{{ prestataire.name }}</h1>
+        <p class="category">{{ prestataire?.category }}</p>
+        <h1 class="name">{{ prestataire?.name }}</h1>
         <EditableText
           as="p"
           v-model="prestataire!.baseline"
@@ -146,14 +146,14 @@ async function share() {
       <!-- Photo principale -->
       <div class="mosaic-main">
         <SgiltImage
-          :src="heroRef(prestataire.medias) ?? ''"
-          :alt="prestataire.name"
+          :src="prestataire?.medias ? (heroRef(prestataire.medias) ?? '') : ''"
+          :alt="prestataire?.name"
           loading="eager"
         />
         <div class="overlay" aria-hidden="true" />
         <div class="content">
-          <p class="category">{{ prestataire.category }}</p>
-          <h1 class="name">{{ prestataire.name }}</h1>
+          <p class="category">{{ prestataire?.category }}</p>
+          <h1 class="name">{{ prestataire?.name }}</h1>
           <EditableText
             as="p"
             v-model="prestataire!.baseline"
@@ -194,7 +194,11 @@ async function share() {
       {{ $t('prestataire.edit-medias-btn') }}
     </button>
 
-    <PrestataireMediaDialog v-model:open="heroboardOpen" :prestataire="prestataire" />
+    <PrestataireMediaDialog
+      v-if="prestataire"
+      v-model:open="heroboardOpen"
+      :prestataire="prestataire"
+    />
   </section>
 </template>
 
@@ -377,9 +381,8 @@ async function share() {
   // ─── Bouton édition médias ────────────────────────────────────────────────
   .edit-medias {
     position: absolute;
-    bottom: $spacing-m;
-    left: 50%;
-    transform: translateX(-50%);
+    top: $spacing-m;
+    right: $spacing-m;
     z-index: 10;
     display: flex;
     align-items: center;
@@ -400,7 +403,6 @@ async function share() {
     &:hover,
     &:active {
       background: rgba(0, 0, 0, 0.7);
-      transform: translateX(-50%);
     }
 
     svg {

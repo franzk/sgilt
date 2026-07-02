@@ -1,4 +1,7 @@
-import { fetchReservationMeta, cancelReservation as cancelReservationService } from './service/reservationService'
+import {
+  fetchReservationMeta,
+  cancelReservation as cancelReservationService,
+} from './service/reservationService'
 import type { ReservationMeta } from './domain/ReservationMeta'
 
 export function useReservation(reservationId: string) {

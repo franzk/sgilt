@@ -21,7 +21,10 @@ export async function getEngagementKeysApi(): Promise<string[]> {
   return apiFetch<string[]>('/prestataires/engagements')
 }
 
-export async function patchPrestataireApi(id: string, payload: PrestataireUpdatePayload): Promise<void> {
+export async function patchPrestataireApi(
+  id: string,
+  payload: PrestataireUpdatePayload,
+): Promise<void> {
   return apiFetch<void>(`/prestataires/${id}`, { method: 'PATCH', body: payload })
 }
 

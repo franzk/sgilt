@@ -57,7 +57,6 @@ const currentFlow = ref<Flow>(_stored?.current ?? null)
 const flowPayload = ref<any>(_stored?.payload ?? null)
 const flowLabel = ref<string | null>(_stored?.label ?? null)
 
-
 // ── Composable ────────────────────────────────────────────────────────────────
 
 export function useFlow() {

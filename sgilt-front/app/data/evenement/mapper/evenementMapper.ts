@@ -76,7 +76,11 @@ export function mapJournalEntry(dto: JournalEvenementDto): JournalEntry {
   return {
     id: dto.id,
     date: new Date(dto.createdAt),
-    modifications: dto.modifications.map(m => ({ champ: m.champ, avant: m.avant, apres: m.apres })),
+    modifications: dto.modifications.map((m) => ({
+      champ: m.champ,
+      avant: m.avant,
+      apres: m.apres,
+    })),
     isCreation: false,
   }
 }

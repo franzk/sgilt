@@ -3,7 +3,9 @@ import type { ActiveReservationsDto } from '../dto/ActiveReservationsDto'
 import type { ReservationMetaDto } from '../dto/ReservationMetaDto'
 import type { EventReservationSummaryDto } from '~/data/evenement/dto/EventReservationSummaryDto'
 
-export async function getReservationsByEventApi(eventId: string): Promise<EventReservationSummaryDto[]> {
+export async function getReservationsByEventApi(
+  eventId: string,
+): Promise<EventReservationSummaryDto[]> {
   return apiFetch<EventReservationSummaryDto[]>(`/user/reservations`, { params: { eventId } })
 }
 

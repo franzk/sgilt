@@ -34,7 +34,10 @@ export function mapProReservationSummary(dto: ProReservationSummaryDto): ProRese
   }
 }
 
-function mapProReservationDetailEvent(reservationId: string, dto: ProReservationDetailDto): EventDetail {
+function mapProReservationDetailEvent(
+  reservationId: string,
+  dto: ProReservationDetailDto,
+): EventDetail {
   return {
     id: reservationId,
     title: dto.evenementTitre,
@@ -59,7 +62,10 @@ function mapProReservationDetailClientInfo(dto: ProReservationDetailDto): Client
   }
 }
 
-export function mapProReservationDetail(reservationId: string, dto: ProReservationDetailDto): ProReservationDetail {
+export function mapProReservationDetail(
+  reservationId: string,
+  dto: ProReservationDetailDto,
+): ProReservationDetail {
   return {
     id: dto.id,
     prestataireId: '',

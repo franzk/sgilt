@@ -29,7 +29,9 @@ export function useSearchUi() {
 
   watch(
     date,
-    (val) => { if (val) stateDate.value = new Date(val) },
+    (val) => {
+      if (val) stateDate.value = new Date(val)
+    },
     { immediate: true },
   )
 

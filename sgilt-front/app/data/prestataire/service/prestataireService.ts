@@ -1,8 +1,16 @@
 /**
  * Couche service — orchestration des appels API prestataire
  */
-import { searchPrestatairesApi, getPrestataireBySlugApi, patchPrestataireApi } from '../api/prestataireApi'
-import { mapPrestataireCard, mapPrestataireDetail, mapPrestataireUpdatePayload } from '../mapper/prestataireMapper'
+import {
+  searchPrestatairesApi,
+  getPrestataireBySlugApi,
+  patchPrestataireApi,
+} from '../api/prestataireApi'
+import {
+  mapPrestataireCard,
+  mapPrestataireDetail,
+  mapPrestataireUpdatePayload,
+} from '../mapper/prestataireMapper'
 import type { PrestataireSearchResponse } from '../domain/PrestataireSearchResponse'
 import type { PrestataireDetail } from '../domain/PrestataireDetail'
 

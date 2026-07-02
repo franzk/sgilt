@@ -9,11 +9,11 @@ const props = defineProps<{
 }>()
 
 const ICONS_MAP: Record<string, any> = {
-  all:          markRaw(IconConfetti),
-  musique:      markRaw(IconMusic),
+  all: markRaw(IconConfetti),
+  musique: markRaw(IconMusic),
   restauration: markRaw(RestaurantIcon),
-  photo:        markRaw(CameraIcon),
-  services:     markRaw(StarIcon),
+  photo: markRaw(CameraIcon),
+  services: markRaw(StarIcon),
 }
 
 const activeIcon = computed(() => ICONS_MAP[props.categoryKey ?? 'all'])

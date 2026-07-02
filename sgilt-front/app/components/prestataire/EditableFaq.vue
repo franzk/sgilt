@@ -33,8 +33,7 @@
 <!-- exports module-level : importables par le parent (impossible depuis <script setup>) -->
 <script lang="ts">
 export const newItem = (): FaqItem => ({ question: '', answer: '' })
-export const isEmpty = (item: FaqItem): boolean =>
-  !item.question.trim() && !item.answer.trim()
+export const isEmpty = (item: FaqItem): boolean => !item.question.trim() && !item.answer.trim()
 </script>
 
 <script setup lang="ts">

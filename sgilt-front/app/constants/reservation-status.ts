@@ -33,11 +33,7 @@ export const ALL_RESERVATION_STATUTS: ReservationStatut[] = [
   'realisee',
 ]
 
-export const DEFAULT_ACTIVE_PILLS: ReservationStatut[] = [
-  'nouvelle',
-  'en_discussion',
-  'confirmee',
-]
+export const DEFAULT_ACTIVE_PILLS: ReservationStatut[] = ['nouvelle', 'en_discussion', 'confirmee']
 
 export const RESERVATION_STATUS_PILLS: { id: ReservationStatut | 'toutes' }[] = [
   { id: 'toutes' },
@@ -54,9 +50,9 @@ export const RESERVATION_STATUS_PILLS: { id: ReservationStatut | 'toutes' }[] = 
 export const RESERVATION_STATUS_CONFIG: Record<
   ReservationStatus,
   {
-    color: string    // couleur principale : texte, bordure
-    bgColor: string  // fond pastel : pills compteur, badges soft
-    pillBg: string   // fond solid : StatusBadge
+    color: string // couleur principale : texte, bordure
+    bgColor: string // fond pastel : pills compteur, badges soft
+    pillBg: string // fond solid : StatusBadge
     pillText: string // texte solid : StatusBadge
   }
 > = {
@@ -153,9 +149,10 @@ export const STATUTS_AVEC_ACTION: ReservationStatut[] = ['nouvelle', 'en_discuss
 
 // ── Helper — fond overlay semi-transparent pour bandeau cover ─────────────────
 
-export function getStatusOverlayStyle(
-  status: ReservationStatus,
-): { background: string; color: string } {
+export function getStatusOverlayStyle(status: ReservationStatus): {
+  background: string
+  color: string
+} {
   const hex = RESERVATION_STATUS_CONFIG[status].color
   const r = parseInt(hex.slice(1, 3), 16)
   const g = parseInt(hex.slice(3, 5), 16)

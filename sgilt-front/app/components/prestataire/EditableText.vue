@@ -1,5 +1,10 @@
 <template>
-  <component :is="as ?? 'div'" class="editable-text" :class="{ 'is-edit': isEdit }" @click="startEdit">
+  <component
+    :is="as ?? 'div'"
+    class="editable-text"
+    :class="{ 'is-edit': isEdit }"
+    @click="startEdit"
+  >
     <p v-if="focused" class="prompt">{{ promptText }}</p>
     <textarea
       v-if="focused"
