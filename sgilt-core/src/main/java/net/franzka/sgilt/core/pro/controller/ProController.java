@@ -2,6 +2,7 @@ package net.franzka.sgilt.core.pro.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.franzka.sgilt.core.prestataire.service.PrestataireService;
 import net.franzka.sgilt.core.pro.api.ProApi;
 import net.franzka.sgilt.core.pro.dto.ProMeDto;
 import net.franzka.sgilt.core.pro.service.ProProvisioningService;
@@ -20,6 +21,7 @@ public class ProController implements ProApi {
 
     private final CurrentUserService currentUserService;
     private final ProProvisioningService proProvisioningService;
+    private final PrestataireService prestataireService;
 
     @Override
     @Transactional
@@ -30,11 +32,16 @@ public class ProController implements ProApi {
         // 2 - récupération de l'utilisateur
         Utilisateur utilisateur = currentUserService.get();
         log.info("GET /pro/me — email={}", utilisateur.getEmail());
+
+        String slug = prestataireService.getSlugByUtilisateur(utilisateur);
+
         return ResponseEntity.ok(new ProMeDto(
                 utilisateur.getId(),
                 utilisateur.getEmail(),
                 utilisateur.getFirstName(),
-                utilisateur.getLastName()
+                utilisateur.getLastName(),
+                slug
         ));
     }
+
 }

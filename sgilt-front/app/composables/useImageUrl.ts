@@ -7,10 +7,10 @@ export function useImageUrl() {
   const imageBaseUrl = config.public.imageBaseUrl || 'http://localhost:5029'
 
   function toUrl(imagePath: string): string {
-    if (!imagePath.startsWith('/images/')) {
-      return `${imageBaseUrl}/${imagePath}`
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return imagePath
     }
-    return imagePath
+    return `${imageBaseUrl}/${imagePath}`
   }
 
   return { toUrl }

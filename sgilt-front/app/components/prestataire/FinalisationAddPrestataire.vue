@@ -1,5 +1,10 @@
 <template>
-  <SgiltDialog v-model:open="open" v-model:confirmed="confirmed" :title="$t('tunnel.bottom-sheet.title')" max-width="520px">
+  <SgiltDialog
+    v-model:open="open"
+    v-model:confirmed="confirmed"
+    :title="$t('tunnel.bottom-sheet.title')"
+    max-width="520px"
+  >
     <div class="contact-form">
       <!-- Résumé événement (lecture seule) -->
       <div v-if="flowPayload" class="event-summary">
@@ -7,7 +12,9 @@
         <div class="summary-details">
           <span v-if="flowPayload.date"> 📅 {{ formatDate(flowPayload.date) }} </span>
           <span v-if="flowPayload.ville"> 📍 {{ flowPayload.ville }} </span>
-          <span v-if="flowPayload.invites"> 👥 {{ flowPayload.invites }} {{ $t('prestataire.finalisation.guests') }} </span>
+          <span v-if="flowPayload.invites">
+            👥 {{ flowPayload.invites }} {{ $t('prestataire.finalisation.guests') }}
+          </span>
         </div>
       </div>
 
@@ -19,7 +26,10 @@
 
       <!-- Message optionnel -->
       <div class="field">
-        <label class="label">{{ $t('prestataire.finalisation.message-label') }} <span class="optional">{{ $t('prestataire.finalisation.optional') }}</span></label>
+        <label class="label"
+          >{{ $t('prestataire.finalisation.message-label') }}
+          <span class="optional">{{ $t('prestataire.finalisation.optional') }}</span></label
+        >
         <textarea
           v-model="message"
           class="textarea"
@@ -29,8 +39,12 @@
       </div>
 
       <div class="form-actions">
-        <SgiltButton variant="secondary" @click="open = false">{{ $t('common.cancel') }}</SgiltButton>
-        <SgiltButton :loading="sending" @click="submit">{{ $t('prestataire.finalisation.submit') }}</SgiltButton>
+        <SgiltButton variant="secondary" @click="open = false">{{
+          $t('common.cancel')
+        }}</SgiltButton>
+        <SgiltButton :loading="sending" @click="submit">{{
+          $t('prestataire.finalisation.submit')
+        }}</SgiltButton>
       </div>
     </div>
   </SgiltDialog>
@@ -62,7 +76,6 @@ async function submit() {
     sending.value = false
   }
 }
-
 </script>
 
 <style scoped lang="scss">

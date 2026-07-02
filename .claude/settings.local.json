@@ -45,7 +45,14 @@
       "Bash(Format-Table -AutoSize)",
       "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-core\" -Depth 1 | Select-Object Name, PSIsContainer | Where-Object { $_.PSIsContainer -eq $true } | Select-Object -First 20)",
       "Bash(rm -f VerificationEmailTemplate.java SecurityAlertEmailTemplate.java WelcomeEmailTemplate.java)",
-      "Read(//c/c/Users/koehl/Documents/projects/sgilt/sgilt/sgilt-mailer/src/main/java/net/franzka/sgilt/sgilt_mailer/**)"
+      "Read(//c/c/Users/koehl/Documents/projects/sgilt/sgilt/sgilt-mailer/src/main/java/net/franzka/sgilt/sgilt_mailer/**)",
+      "Bash(npx vue-tsc *)",
+      "Bash(Remove-Item *)",
+      "Bash(./mvnw compile *)",
+      "Bash(grep -E \"\\\\.\\(ts|js|vue\\)$\")",
+      "PowerShell(cd C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front; npx nuxi typecheck 2>&1 | Where-Object { $_ -match \"app/\" } | Select-Object -First 40)",
+      "PowerShell(cd C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front; \\(npx nuxi typecheck 2>&1\\) | Where-Object { \\($_ -notmatch \"node_modules\"\\) -and \\($_ -notmatch \"^npm\"\\) -and \\($_ -notmatch \"^node\"\\) } | Select-Object -First 50)",
+      "PowerShell(cd C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front; \\(npx nuxi typecheck 2>&1\\) -join \"`n\" | Select-String \"app/\" | Select-Object -First 30)"
     ]
   }
 }

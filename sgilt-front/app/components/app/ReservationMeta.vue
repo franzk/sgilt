@@ -2,9 +2,11 @@
   <div
     ref="bannerRef"
     class="cover-banner"
-    :style="!loading && reservation?.prestatairePhoto
-      ? { backgroundImage: `url(${reservation.prestatairePhoto})` }
-      : {}"
+    :style="
+      !loading && reservation?.prestatairePhoto
+        ? { backgroundImage: `url(${reservation.prestatairePhoto})` }
+        : {}
+    "
   >
     <div class="cover-banner__overlay" />
 
@@ -159,7 +161,8 @@ $desktop: $breakpoint-desktop;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   transition: color 150ms ease;
 
-  &:active { color: #fff; }
+  &:active {
+    color: #fff;
+  }
 }
-
 </style>

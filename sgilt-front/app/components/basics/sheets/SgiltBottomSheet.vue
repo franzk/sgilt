@@ -6,7 +6,10 @@
 
     <DrawerPortal>
       <DrawerOverlay v-if="overlay" class="sgilt-sheet__overlay" />
-      <DrawerContent class="sgilt-sheet__content" :class="{ 'sgilt-sheet__content--fullscreen': fullscreen }">
+      <DrawerContent
+        class="sgilt-sheet__content"
+        :class="{ 'sgilt-sheet__content--fullscreen': fullscreen }"
+      >
         <!-- Accessibilité -->
         <DrawerTitle class="sr-only">{{ title }}</DrawerTitle>
         <DrawerDescription v-if="description" class="sr-only">{{ description }}</DrawerDescription>
@@ -22,7 +25,10 @@
         </slot>
 
         <!-- Corps -->
-        <div class="sgilt-sheet__body" :style="bottomOffset ? { paddingBottom: `${bottomOffset}px` } : undefined">
+        <div
+          class="sgilt-sheet__body"
+          :style="bottomOffset ? { paddingBottom: `${bottomOffset}px` } : undefined"
+        >
           <slot />
         </div>
       </DrawerContent>

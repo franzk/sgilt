@@ -19,7 +19,11 @@
       <time class="notif-item__time">{{ formatDateTime(notification.createdAt) }}</time>
     </div>
 
-    <span v-if="!notification.read" class="notif-item__dot" :aria-label="$t('notifications.item.unread-aria')" />
+    <span
+      v-if="!notification.read"
+      class="notif-item__dot"
+      :aria-label="$t('notifications.item.unread-aria')"
+    />
   </component>
 </template>
 

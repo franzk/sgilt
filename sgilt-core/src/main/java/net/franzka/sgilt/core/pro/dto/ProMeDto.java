@@ -9,5 +9,6 @@ import java.util.UUID;
  * @param email     adresse email
  * @param firstName prénom
  * @param lastName  nom de famille
+ * @param slug      slug de la fiche prestataire liée, ou {@code null} si aucune fiche n'est encore associée
  */
-public record ProMeDto(UUID id, String email, String firstName, String lastName) {}
+public record ProMeDto(UUID id, String email, String firstName, String lastName, String slug) {}

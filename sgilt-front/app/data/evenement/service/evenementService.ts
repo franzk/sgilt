@@ -1,9 +1,24 @@
 ﻿/**
  * Couche service — orchestration des appels API evenement
  */
-import { getEvenementsApi, getEventDetailApi, getEventCountsApi, getEventJournalApi, patchEventApi, uploadEventCoverApi, selectEventCoverApi, addReservationApi } from '../api/evenementApi'
+import {
+  getEvenementsApi,
+  getEventDetailApi,
+  getEventCountsApi,
+  getEventJournalApi,
+  patchEventApi,
+  uploadEventCoverApi,
+  selectEventCoverApi,
+  addReservationApi,
+} from '../api/evenementApi'
 import { getReservationsByEventApi } from '~/data/reservation/api/reservationApi'
-import { mapEvenementSummary, mapEventDetail, mapEventCounts, mapEventReservation, mapJournalEntry } from '../mapper/evenementMapper'
+import {
+  mapEvenementSummary,
+  mapEventDetail,
+  mapEventCounts,
+  mapEventReservation,
+  mapJournalEntry,
+} from '../mapper/evenementMapper'
 import type { EventSummary } from '../domain/EventSummary'
 import type { EventDetail } from '../domain/EventDetail'
 import type { EventCounts } from '../domain/EventCounts'
@@ -17,7 +32,9 @@ export async function getEvenements(): Promise<EventSummary[]> {
   return dtos.map(mapEvenementSummary)
 }
 
-export async function fetchEventDetail(id: string): Promise<{ event: EventDetail; clientInfo: ClientContactInfo }> {
+export async function fetchEventDetail(
+  id: string,
+): Promise<{ event: EventDetail; clientInfo: ClientContactInfo }> {
   const dto = await getEventDetailApi(id)
   return mapEventDetail(dto)
 }
@@ -32,7 +49,10 @@ export async function fetchEventReservations(id: string): Promise<ReservationSum
   return dtos.map(mapEventReservation)
 }
 
-export async function fetchEventJournal(id: string, page: number): Promise<{ entries: JournalEntry[]; last: boolean }> {
+export async function fetchEventJournal(
+  id: string,
+  page: number,
+): Promise<{ entries: JournalEntry[]; last: boolean }> {
   const dto = await getEventJournalApi(id, page)
   return { entries: dto.content.map(mapJournalEntry), last: dto.last }
 }
@@ -52,6 +72,10 @@ export async function selectEventCover(eventId: string, imagePath: string): Prom
   return dto.imagePath
 }
 
-export async function addReservation(eventId: string, prestataireId: string, message: string | null): Promise<void> {
+export async function addReservation(
+  eventId: string,
+  prestataireId: string,
+  message: string | null,
+): Promise<void> {
   await addReservationApi(eventId, prestataireId, message)
 }

@@ -185,7 +185,10 @@ function confirmAbandon() {
   editMode.value = false
 }
 
-async function onSave(payload: { eventPatch: EventPatchRequestDto; clientPatch: Partial<ClientContactInfo> }) {
+async function onSave(payload: {
+  eventPatch: EventPatchRequestDto
+  clientPatch: Partial<ClientContactInfo>
+}) {
   saving.value = true
   try {
     const updated = await patchEventApi(props.event.id, payload.eventPatch)
@@ -230,7 +233,9 @@ async function onSave(payload: { eventPatch: EventPatchRequestDto; clientPatch: 
   text-align: left;
   transition: background 120ms ease;
 
-  &:hover { background: $surface-soft; }
+  &:hover {
+    background: $surface-soft;
+  }
 }
 
 .pills {
@@ -334,7 +339,9 @@ async function onSave(payload: { eventPatch: EventPatchRequestDto; clientPatch: 
     text-align: center;
     transition: opacity 150ms ease;
 
-    &:hover { opacity: 0.75; }
+    &:hover {
+      opacity: 0.75;
+    }
   }
 }
 
@@ -343,12 +350,16 @@ async function onSave(payload: { eventPatch: EventPatchRequestDto; clientPatch: 
 .modal-enter-active,
 .modal-leave-active {
   transition: opacity 200ms ease;
-  .abandon-modal { transition: transform 200ms ease; }
+  .abandon-modal {
+    transition: transform 200ms ease;
+  }
 }
 
 .modal-enter-from,
 .modal-leave-to {
   opacity: 0;
-  .abandon-modal { transform: scale(0.96); }
+  .abandon-modal {
+    transform: scale(0.96);
+  }
 }
 </style>

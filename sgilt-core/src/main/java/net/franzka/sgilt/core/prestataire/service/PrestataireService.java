@@ -1,16 +1,25 @@
 package net.franzka.sgilt.core.prestataire.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.franzka.sgilt.core.prestataire.domain.MediaType;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.dto.*;
+import net.franzka.sgilt.core.prestataire.exception.MediasInvalidException;
+import net.franzka.sgilt.core.prestataire.exception.PrestataireForbiddenException;
 import net.franzka.sgilt.core.prestataire.exception.PrestataireNotFoundException;
 import net.franzka.sgilt.core.prestataire.mapper.PrestataireMapper;
 import net.franzka.sgilt.core.prestataire.repository.PrestataireRepository;
+import net.franzka.sgilt.core.storage.FileStorageException;
+import net.franzka.sgilt.core.storage.FileStorageService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -23,6 +32,8 @@ public class PrestataireService {
 
     private final PrestataireRepository prestataireRepository;
     private final PrestataireMapper prestataireMapper;
+    private final FileStorageService fileStorageService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * Charge un prestataire par son identifiant.
@@ -76,6 +87,40 @@ public class PrestataireService {
     }
 
     /**
+     * Applique les modifications sur la fiche d'un prestataire.
+     * Seuls les champs non-null du DTO sont écrits (nullValuePropertyMappingStrategy = IGNORE).
+     *
+     * @param id          identifiant du prestataire à modifier
+     * @param dto         les champs à mettre à jour
+     * @param utilisateur l'utilisateur connecté — utilisé pour vérifier la propriété de la fiche
+     * @throws PrestataireNotFoundException si aucune fiche active ne correspond à cet id
+     * @throws PrestataireForbiddenException si la fiche n'appartient pas à l'utilisateur
+     */
+    public void update(UUID id, PrestataireUpdateDto dto, Utilisateur utilisateur) {
+        Prestataire prestataire = getById(id);
+        if (prestataire.getDeletedAt() != null) {
+            throw new PrestataireNotFoundException(id.toString());
+        }
+        if (!prestataire.getUtilisateur().getId().equals(utilisateur.getId())) {
+            throw new PrestataireForbiddenException(id.toString());
+        }
+        prestataireMapper.updatePrestataire(prestataire, dto);
+        prestataireRepository.save(prestataire);
+    }
+
+    /**
+     * Retourne le slug du prestataire lié à un utilisateur PRO.
+     *
+     * @param utilisateur l'utilisateur propriétaire du compte pro
+     * @return le slug, ou {@code null} si aucun prestataire n'est encore lié
+     */
+    public String getSlugByUtilisateur(Utilisateur utilisateur) {
+        return prestataireRepository.findByUtilisateurAndDeletedAtIsNull(utilisateur)
+                .map(Prestataire::getSlug)
+                .orElse(null);
+    }
+
+    /**
      * Lie un utilisateur à un prestataire lors du bootstrap du compte PRO.
      * Sans effet si le prestataire est déjà lié à cet utilisateur.
      *
@@ -89,6 +134,51 @@ public class PrestataireService {
         if (utilisateur.getId().equals(prestataire.getUtilisateur().getId())) return;
         prestataire.setUtilisateur(utilisateur);
         prestataireRepository.save(prestataire);
+    }
+
+    /**
+     * Upload une image vers R2 pour le compte du prestataire connecté.
+     * Retourne la clé de stockage du fichier uploadé.
+     *
+     * @param utilisateur l'utilisateur PRO connecté
+     * @param file        le fichier image à uploader
+     * @return le DTO contenant la clé R2 du fichier
+     * @throws FileStorageException en cas d'erreur de communication avec R2
+     */
+    public MediaUploadDto uploadMedia(Utilisateur utilisateur, MultipartFile file) {
+        try {
+            String key = fileStorageService.upload(file, "uploads");
+            return new MediaUploadDto(key);
+        } catch (IOException e) {
+            throw new FileStorageException("Erreur de stockage du média pour " + utilisateur.getEmail(), e);
+        }
+    }
+
+    /**
+     * Remplace la collection complète de médias du prestataire lié à l'utilisateur connecté.
+     * Valide que la position 0 est bien de type IMAGE avant toute persistance.
+     * Retourne la fiche complète à jour pour permettre au front de resynchroniser son state.
+     *
+     * @param utilisateur l'utilisateur PRO connecté
+     * @param medias      la liste complète des médias à persister (remplacement total)
+     * @return la fiche prestataire complète après sauvegarde
+     * @throws MediasInvalidException     si la position 0 est absente ou n'est pas de type IMAGE
+     * @throws PrestataireNotFoundException si aucun prestataire actif n'est lié à cet utilisateur
+     */
+    public PrestataireDetailDto updateMedias(Utilisateur utilisateur, List<MediaDto> medias) {
+        boolean heroPresent = medias.stream()
+                .anyMatch(m -> m.position() == 0 && m.type() == MediaType.IMAGE);
+        if (!heroPresent) {
+            throw new MediasInvalidException("La position 0 doit être une image principale (IMAGE)");
+        }
+        Prestataire prestataire = findPrestataire(utilisateur);
+        try {
+            prestataire.setMedias(objectMapper.writeValueAsString(medias));
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Échec de sérialisation des médias", e);
+        }
+
+        return prestataireMapper.toDetailDto(prestataireRepository.save(prestataire));
     }
 
     // ── Résolution du filtre exclusif ─────────────────────────────────────────
@@ -113,6 +203,14 @@ public class PrestataireService {
                     .orElse(null);
         }
         return null;
+    }
+
+    // ── Lookup interne ────────────────────────────────────────────────────────
+
+    /** Charge le prestataire actif lié à un utilisateur, ou lève une exception. */
+    private Prestataire findPrestataire(Utilisateur utilisateur) {
+        return prestataireRepository.findByUtilisateurAndDeletedAtIsNull(utilisateur)
+                .orElseThrow(() -> new PrestataireNotFoundException(utilisateur.getEmail()));
     }
 
     // ── Compteurs ─────────────────────────────────────────────────────────────

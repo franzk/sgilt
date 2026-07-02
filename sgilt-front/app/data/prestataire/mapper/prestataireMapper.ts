@@ -1,10 +1,11 @@
 /**
- * Mapper — conversion PrestataireCardDto → PrestataireCardDetail et PrestataireDetailDto → PrestataireDetail
+ * Mapper — conversions entre DTOs, domain et payloads du domaine prestataire
  */
 import type { PrestataireCardDto } from '../dto/PrestataireCardDto'
 import type { PrestataireDetailDto } from '../dto/PrestataireDetailDto'
 import type { PrestataireCardDetail } from '../domain/PrestataireCardDetail'
 import type { PrestataireDetail } from '../domain/PrestataireDetail'
+import type { PrestataireUpdatePayload } from '../dto/PrestataireUpdatePayload'
 
 function categoryName(key: string): string {
   return APP_CATEGORIES.find((c) => c.key === key)?.name ?? key
@@ -29,21 +30,34 @@ export function mapPrestataireDetail(dto: PrestataireDetailDto): PrestataireDeta
     slug: dto.slug,
     baseline: dto.baseline,
     shortDescription: dto.shortDescription,
-    image: dto.heroImage,
-    heroImage: dto.heroImage,
-    youtubeId: dto.youtubeId,
     categoryKey: dto.categoryKey,
     category: categoryName(dto.categoryKey),
     subcats: dto.subcatKeys,
-    photos: dto.photos ?? [],
+    avatar: dto.avatar,
+    medias: dto.medias ?? [],
     badges: dto.badges ?? [],
     offerings: dto.offerings ?? [],
-    identity: dto.identity,
+    identity: { quote: dto.identity?.quote ?? null, bio: dto.identity?.bio ?? null },
     budget: dto.budget,
-    testimonials: dto.testimonials,
-    logistics: dto.logistics,
-    technical: dto.technical,
-    faq: dto.faq,
+    testimonials: dto.testimonials ?? [],
+    logistics: dto.logistics ?? [],
+    technical: dto.technical ?? [],
+    faq: dto.faq ?? [],
     unavailableDates: [],
+  }
+}
+
+export function mapPrestataireUpdatePayload(p: PrestataireDetail): PrestataireUpdatePayload {
+  return {
+    baseline: p.baseline,
+    shortDescription: p.shortDescription,
+    badges: p.badges,
+    offerings: p.offerings,
+    identity: p.identity,
+    budget: p.budget,
+    testimonials: p.testimonials,
+    logistics: p.logistics,
+    technical: p.technical,
+    faq: p.faq,
   }
 }

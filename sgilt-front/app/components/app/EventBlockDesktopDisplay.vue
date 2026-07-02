@@ -25,7 +25,9 @@
             <dd>{{ event.ville }}</dd>
           </template>
           <dt>{{ $t('event.block.logistics-label') }}</dt>
-          <dd :class="{ empty: !event.lieu }">{{ event.lieu || $t('event.block.logistics-empty') }}</dd>
+          <dd :class="{ empty: !event.lieu }">
+            {{ event.lieu || $t('event.block.logistics-empty') }}
+          </dd>
           <template v-if="event.nbInvites">
             <dt>{{ $t('event.block.party-edit-guests') }}</dt>
             <dd>{{ event.nbInvites }}</dd>
@@ -46,7 +48,10 @@
       <!-- 3. L'événement -->
       <div class="section">
         <span class="section-label">{{ $t('event.block.party-label') }}</span>
-        <dl v-if="eventTypeLabel || ambianceLabel || event.momentCle || event.description" class="brief-fields">
+        <dl
+          v-if="eventTypeLabel || ambianceLabel || event.momentCle || event.description"
+          class="brief-fields"
+        >
           <template v-if="eventTypeLabel">
             <dt>{{ $t('event.block.party-type-label') }}</dt>
             <dd>{{ eventTypeEmoji }} {{ eventTypeLabel }}</dd>
@@ -56,7 +61,9 @@
             <dd>{{ ambianceEmoji }} {{ ambianceLabel }}</dd>
           </template>
           <dt>{{ $t('event.block.party-moment-label') }}</dt>
-          <dd :class="{ empty: !event.momentCle }">{{ momentCleLabel || $t('event.block.party-moment-empty') }}</dd>
+          <dd :class="{ empty: !event.momentCle }">
+            {{ momentCleLabel || $t('event.block.party-moment-empty') }}
+          </dd>
           <template v-if="event.description">
             <dt>{{ $t('event.block.party-edit-description') }}</dt>
             <dd>{{ event.description }}</dd>
@@ -72,21 +79,34 @@
           <span class="contact-name">{{ clientInfo.firstName }}</span>
           <div class="contact-row">
             <span class="contact-value">{{ clientInfo.phone }}</span>
-            <button class="copy-btn" type="button" :class="{ copied: phoneCopied }" @click="copyPhone">
+            <button
+              class="copy-btn"
+              type="button"
+              :class="{ copied: phoneCopied }"
+              @click="copyPhone"
+            >
               <CheckIcon v-if="phoneCopied" class="copy-icon" />
               <FileCopyIcon v-else class="copy-icon" />
             </button>
           </div>
           <div class="contact-row">
             <span class="contact-value email">{{ clientInfo.email }}</span>
-            <button class="copy-btn" type="button" :class="{ copied: emailCopied }" @click="copyEmail">
+            <button
+              class="copy-btn"
+              type="button"
+              :class="{ copied: emailCopied }"
+              @click="copyEmail"
+            >
               <CheckIcon v-if="emailCopied" class="copy-icon" />
               <FileCopyIcon v-else class="copy-icon" />
             </button>
           </div>
         </template>
         <template v-else>
-          <span class="contact-name">{{ clientInfo.firstName }}{{ clientInfo.lastName ? ' ' + clientInfo.lastName : '' }}</span>
+          <span class="contact-name"
+            >{{ clientInfo.firstName
+            }}{{ clientInfo.lastName ? ' ' + clientInfo.lastName : '' }}</span
+          >
           <span class="contact-value">{{ clientInfo.phone }}</span>
           <span class="contact-value email">{{ clientInfo.email }}</span>
         </template>
@@ -97,12 +117,22 @@
       <div class="section">
         <div class="update-row">
           <span class="section-label">{{ $t('event.block.update-label') }}</span>
-          <button v-if="variant === 'client'" class="edit-btn" type="button" @click="$emit('openEdit')">
+          <button
+            v-if="variant === 'client'"
+            class="edit-btn"
+            type="button"
+            @click="$emit('openEdit')"
+          >
             <EditIcon />
           </button>
         </div>
         <div class="update-date-row">
-          <button v-if="lastUpdateDate" class="journal-btn" type="button" @click="$emit('openJournal')">
+          <button
+            v-if="lastUpdateDate"
+            class="journal-btn"
+            type="button"
+            @click="$emit('openJournal')"
+          >
             {{ lastUpdateDate }}
           </button>
           <p v-else class="field-value empty">{{ $t('event.block.no-update') }}</p>
@@ -117,8 +147,14 @@ import type { EventDetail } from '~/data/evenement/domain/EventDetail'
 import type { ClientContactInfo } from '~/data/reservation/domain/ClientContactInfo'
 import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/demande'
 import {
-  ArrowDownSIcon, ArrowUpSIcon, CalendarEventIcon, MapPin2Icon, GroupIcon,
-  FileCopyIcon, CheckIcon, EditIcon,
+  ArrowDownSIcon,
+  ArrowUpSIcon,
+  CalendarEventIcon,
+  MapPin2Icon,
+  GroupIcon,
+  FileCopyIcon,
+  CheckIcon,
+  EditIcon,
 } from '@remixicons/vue/line'
 
 const props = defineProps<{
@@ -134,7 +170,9 @@ const open = ref(true)
 const phoneCopied = ref(false)
 const emailCopied = ref(false)
 
-const eventTypeOpt = computed(() => EVENT_TYPE_OPTIONS.find((o) => o.value === props.event.eventType))
+const eventTypeOpt = computed(() =>
+  EVENT_TYPE_OPTIONS.find((o) => o.value === props.event.eventType),
+)
 const eventTypeLabel = computed(() => eventTypeOpt.value?.label ?? props.event.eventType ?? null)
 const eventTypeEmoji = computed(() => eventTypeOpt.value?.emoji ?? '')
 
@@ -142,9 +180,13 @@ const ambianceOpt = computed(() => AMBIANCE_OPTIONS.find((o) => o.value === prop
 const ambianceLabel = computed(() => ambianceOpt.value?.label ?? props.event.ambiance ?? null)
 const ambianceEmoji = computed(() => ambianceOpt.value?.emoji ?? '')
 
-const momentCleOpt = computed(() => MOMENT_CLE_OPTIONS.find((o) => o.value === props.event.momentCle))
+const momentCleOpt = computed(() =>
+  MOMENT_CLE_OPTIONS.find((o) => o.value === props.event.momentCle),
+)
 const momentCleLabel = computed(() =>
-  momentCleOpt.value ? `${momentCleOpt.value.emoji} ${momentCleOpt.value.label}` : (props.event.momentCle ?? null),
+  momentCleOpt.value
+    ? `${momentCleOpt.value.emoji} ${momentCleOpt.value.label}`
+    : (props.event.momentCle ?? null),
 )
 
 async function copyPhone() {
@@ -180,7 +222,9 @@ async function copyEmail() {
     text-align: left;
     transition: background 120ms ease;
 
-    &:hover { background: $surface-soft; }
+    &:hover {
+      background: $surface-soft;
+    }
   }
 
   .pills {
@@ -327,7 +371,9 @@ async function copyEmail() {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 120ms ease, color 120ms ease;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
 
   &.copied {
     background: $brand-accent;
@@ -365,7 +411,9 @@ async function copyEmail() {
   color: $brand-muted;
   border-radius: $radius-sm;
   cursor: pointer;
-  transition: background 150ms ease, color 150ms ease;
+  transition:
+    background 150ms ease,
+    color 150ms ease;
 
   &:hover {
     background: $surface-soft;
@@ -388,7 +436,9 @@ async function copyEmail() {
   text-underline-offset: 2px;
   transition: opacity 150ms ease;
 
-  &:hover { opacity: 1; }
+  &:hover {
+    opacity: 1;
+  }
 }
 
 .event-pill {

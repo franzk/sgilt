@@ -17,7 +17,14 @@
 
     <div class="field-group">
       <label class="field-label">{{ $t('tunnel.etape5.field-venue') }}</label>
-      <input v-model="state.lieu" class="field-input" type="text" name="venue" autocomplete="on" @focus="onFocus" />
+      <input
+        v-model="state.lieu"
+        class="field-input"
+        type="text"
+        name="venue"
+        autocomplete="on"
+        @focus="onFocus"
+      />
     </div>
 
     <div class="field-group">

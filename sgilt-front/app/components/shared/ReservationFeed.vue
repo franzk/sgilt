@@ -68,7 +68,9 @@
               <span class="author">{{ item.author.name }}</span>
               <span class="date">{{ formatDateShort(item.createdAt) }}</span>
             </div>
-            <strong class="titre">{{ item.generatedKey ? $t(item.generatedKey, { name: item.author.name }) : item.title }}</strong>
+            <strong class="titre">{{
+              item.generatedKey ? $t(item.generatedKey, { name: item.author.name }) : item.title
+            }}</strong>
             <p v-if="item.content" class="content">{{ item.content }}</p>
           </div>
 
@@ -280,7 +282,9 @@ async function sendNote() {
 $desktop: $breakpoint-desktop;
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .feed {

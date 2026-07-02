@@ -1,5 +1,7 @@
 package net.franzka.sgilt.core.prestataire.dto;
 
+import net.franzka.sgilt.core.prestataire.domain.Engagement;
+
 import java.util.List;
 
 /**
@@ -10,13 +12,12 @@ public record PrestataireDetailDto(
         String name,
         String slug,
         String baseline,
-        String heroImage,
-        String youtubeId,
+        String avatar,
         String shortDescription,
         String categoryKey,
         List<String> subcatKeys,
-        List<String> photos,
-        List<BadgeDto> badges,
+        List<MediaDto> medias,
+        List<Engagement> badges,
         List<String> offerings,
         IdentityDto identity,
         String budget,

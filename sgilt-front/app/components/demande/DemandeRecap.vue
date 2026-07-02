@@ -2,7 +2,7 @@
   <div v-if="state.prestataireName || hasContent">
     <!-- Cover -->
     <div v-if="state.prestataireImage" class="cover-wrap">
-      <img class="cover" :src="state.prestataireImage" :alt="state.prestataireName" />
+      <img class="cover" :src="toUrl(state.prestataireImage)" :alt="state.prestataireName" />
     </div>
 
     <!-- Identité -->
@@ -43,11 +43,14 @@
 
 <script setup lang="ts">
 import { useDemande } from '~/composables/useDemande'
+import { useImageUrl } from '~/composables/useImageUrl'
 
 const props = defineProps<{
   fullDetails?: boolean
   showTeaser?: boolean
 }>()
+
+const { toUrl } = useImageUrl()
 
 const {
   state,

@@ -12,7 +12,7 @@
 
       <!-- Card prestataire + date -->
       <SgiltContentCard class="recap-card presta-card">
-        <img class="presta-img" :src="state.prestataireImage" :alt="state.prestataireName" />
+        <img class="presta-img" :src="toUrl(state.prestataireImage)" :alt="state.prestataireName" />
         <div class="presta-info">
           <span class="presta-name">{{ state.prestataireName }}</span>
           <span v-if="state.date" class="presta-date">{{ formatDate(state.date) }}</span>
@@ -212,12 +212,14 @@ import SgiltContentCard from '~/components/basics/cards/SgiltContentCard.vue'
 import SgiltDemandeFieldGroup from '~/components/basics/SgiltDemandeFieldGroup.vue'
 import DemandeOptionSelect from '~/components/demande/DemandeOptionSelect.vue'
 import { useDemande } from '~/composables/useDemande'
+import { useImageUrl } from '~/composables/useImageUrl'
 import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/demande'
 
 defineEmits<{ cancel: [] }>()
 
 const { t } = useI18n()
 const isNewEventFlow = computed(() => useFlow().currentFlow.value === 'new-event')
+const { toUrl } = useImageUrl()
 
 const {
   state,

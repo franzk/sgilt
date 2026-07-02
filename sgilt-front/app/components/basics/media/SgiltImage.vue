@@ -11,6 +11,12 @@ const props = defineProps<{
   fit?: 'cover' | 'contain'
 }>()
 
+const { toUrl } = useImageUrl()
+
+const resolvedSrc = computed(() =>
+  props.src ? toUrl(props.src) : '/images/placeholder-default.jpg',
+)
+
 const isLoaded = ref(false)
 const hasError = ref(false)
 
@@ -32,14 +38,11 @@ watch(
       <ImageIcon />
     </div>
 
-    <NuxtImg
+    <img
       v-show="!hasError"
-      :src="src || '/images/placeholder-default.jpg'"
+      :src="resolvedSrc"
       :alt="alt"
-      :width="width"
-      :height="height"
       :loading="loading || 'lazy'"
-      :fit="fit || 'cover'"
       @load="isLoaded = true"
       @error="hasError = true"
       :class="{ 'is-visible': isLoaded }"

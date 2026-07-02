@@ -18,7 +18,7 @@
         </div>
 
         <SgiltContentCard class="presta-header">
-          <img class="presta-img" :src="props.prestataireImage" :alt="props.prestataireName" />
+          <img class="presta-img" :src="resolvedImage" :alt="props.prestataireName" />
           <div class="presta-info">
             <span class="presta-name">{{ props.prestataireName }}</span>
             <span v-if="state.date" class="presta-date">{{ formatDate(state.date) }}</span>
@@ -117,8 +117,12 @@ import DemandeEtape6 from '~/components/demande/DemandeEtape6.vue'
 import DemandeFinalisation from '~/components/demande/DemandeFinalisation.vue'
 import SgiltContentCard from '~/components/basics/cards/SgiltContentCard.vue'
 import { useDemande } from '~/composables/useDemande'
+import { useImageUrl } from '~/composables/useImageUrl'
 
 const props = defineProps<{ slug: string; prestataireName: string; prestataireImage: string }>()
+
+const { toUrl } = useImageUrl()
+const resolvedImage = computed(() => toUrl(props.prestataireImage))
 
 const router = useRouter()
 const { t } = useI18n()

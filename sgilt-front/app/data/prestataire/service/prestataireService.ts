@@ -1,10 +1,21 @@
 /**
  * Couche service — orchestration des appels API prestataire
  */
-import { searchPrestatairesApi, getPrestataireBySlugApi } from '../api/prestataireApi'
-import { mapPrestataireCard, mapPrestataireDetail } from '../mapper/prestataireMapper'
+import {
+  searchPrestatairesApi,
+  getPrestataireBySlugApi,
+  patchPrestataireApi,
+  putPrestataireMediasApi,
+  uploadPrestataireMediaApi,
+} from '../api/prestataireApi'
+import {
+  mapPrestataireCard,
+  mapPrestataireDetail,
+  mapPrestataireUpdatePayload,
+} from '../mapper/prestataireMapper'
 import type { PrestataireSearchResponse } from '../domain/PrestataireSearchResponse'
 import type { PrestataireDetail } from '../domain/PrestataireDetail'
+import type { Media } from '../domain/Media'
 
 export async function searchPrestataires(params: {
   date: string
@@ -37,4 +48,17 @@ export async function fetchPrestataireBySlug(slug: string): Promise<PrestataireD
   } catch {
     return null
   }
+}
+
+export async function savePrestataireUpdate(p: PrestataireDetail): Promise<void> {
+  await patchPrestataireApi(p.id, mapPrestataireUpdatePayload(p))
+}
+
+export async function saveMediasUpdate(medias: Media[]): Promise<PrestataireDetail> {
+  const dto = await putPrestataireMediasApi(medias)
+  return mapPrestataireDetail(dto)
+}
+
+export async function uploadPrestataireMedia(file: File): Promise<{ key: string }> {
+  return uploadPrestataireMediaApi(file)
 }

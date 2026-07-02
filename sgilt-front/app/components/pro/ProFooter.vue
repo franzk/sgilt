@@ -5,10 +5,7 @@
       class="item"
       :class="{ active: route.path.startsWith('/pro/reservations') }"
     >
-      <CalendarEventIcon
-        v-if="route.path.startsWith('/pro/reservations')"
-        class="icon"
-      />
+      <CalendarEventIcon v-if="route.path.startsWith('/pro/reservations')" class="icon" />
       <CalendarEventIcon v-else class="icon" />
       <span class="label">Réservations</span>
     </NuxtLink>
@@ -18,10 +15,7 @@
       class="item"
       :class="{ active: route.path.startsWith('/pro/notifications') }"
     >
-      <Notification3Icon
-        v-if="route.path.startsWith('/pro/notifications')"
-        class="icon"
-      />
+      <Notification3Icon v-if="route.path.startsWith('/pro/notifications')" class="icon" />
       <Notification3Icon v-else class="icon" />
       <span class="label">Notifications</span>
     </NuxtLink>

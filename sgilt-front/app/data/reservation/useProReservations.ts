@@ -5,7 +5,11 @@ import type { ProBoardCounts } from './domain/ProBoardCounts'
 export function useProReservations() {
   const { isAuthenticated } = useKeycloak()
   const reservations = ref<ProReservationSummary[]>([])
-  const boardCounts = ref<ProBoardCounts>({ countNouvelle: 0, countEnDiscussion: 0, countConfirmee: 0 })
+  const boardCounts = ref<ProBoardCounts>({
+    countNouvelle: 0,
+    countEnDiscussion: 0,
+    countConfirmee: 0,
+  })
   const loading = ref(true)
   const error = ref<unknown>(null)
 
@@ -23,9 +27,13 @@ export function useProReservations() {
     }
   }
 
-  watch(isAuthenticated, (authenticated) => {
-    if (authenticated) load()
-  }, { immediate: true })
+  watch(
+    isAuthenticated,
+    (authenticated) => {
+      if (authenticated) load()
+    },
+    { immediate: true },
+  )
 
   return { reservations, boardCounts, loading, error }
 }

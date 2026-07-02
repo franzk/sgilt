@@ -37,13 +37,17 @@
           <template #icon><MailSendIcon /></template>
           <template #title>Email</template>
           <template #content>{{ clientInfo.email }}</template>
-          <template #cta><a :href="mailtoHref">{{ $t('pro.contact.write-mail') }}</a></template>
+          <template #cta
+            ><a :href="mailtoHref">{{ $t('pro.contact.write-mail') }}</a></template
+          >
         </ContactActionCard>
 
         <!-- Carte mobile -->
         <ContactActionCard :copy-value="clientInfo.phone">
           <template #icon> <SmartphoneIcon v-if="isMobilePhone" /> <PhoneIcon v-else /> </template>
-          <template #title>{{ isMobilePhone ? $t('pro.contact.mobile') : $t('pro.contact.tel') }}</template>
+          <template #title>{{
+            isMobilePhone ? $t('pro.contact.mobile') : $t('pro.contact.tel')
+          }}</template>
           <template #content>{{ clientInfo.phone }}</template>
           <template #cta>
             <a v-if="isMobilePhone" :href="whatsappHref" target="_blank" rel="noopener">

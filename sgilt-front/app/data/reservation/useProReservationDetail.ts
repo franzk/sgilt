@@ -24,9 +24,13 @@ export function useProReservationDetail(reservationId: string) {
     }
   }
 
-  watch(isAuthenticated, (authenticated) => {
-    if (authenticated) load()
-  }, { immediate: true })
+  watch(
+    isAuthenticated,
+    (authenticated) => {
+      if (authenticated) load()
+    },
+    { immediate: true },
+  )
 
   async function markContacted() {
     await markDemandeContacted(reservationId)

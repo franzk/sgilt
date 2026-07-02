@@ -90,10 +90,117 @@
       "technical-title": "Technique",
       "faq-title": "Questions fréquentes"
     },
+    "edit": {
+      "save": "Enregistrer mes modifications",
+      "saved": "✅ Enregistré",
+      "save-error": "Échec de l'enregistrement, veuillez réessayer.",
+      "submit": "Soumettre ma fiche à Sgilt",
+      "mode-badge": "Mode édition"
+    },
     "availability": {
       "available": "🟢 Disponible",
       "option": "🟠 Sous option",
       "booked": "🔴 Réservé"
+    },
+    "editable": {
+      "baseline": {
+        "ghost": "On aide les beaux moments à trouver leur rythme.",
+        "prompt": "L'accroche qui apparaît sous votre nom sur la fiche"
+      },
+      "budget": {
+        "ghost": "Un bon tarif ne sort pas d'un chapeau : il dépend du lieu, du format, du timing, des besoins et des petits détails qui changent tout.\n\nAvant toute proposition, nous prenons le temps de comprendre le cadre de l'événement : date, lieu, durée, nombre d'invités, ambiance recherchée et niveau d'accompagnement attendu.\n\nCela permet de construire une proposition juste, lisible, et adaptée à ce que vous souhaitez vraiment préparer.",
+        "prompt": "Donnez une idée de vos tarifs pour aider les organisateurs à se projeter"
+      },
+      "identity": {
+        "quote": {
+          "ghost": "Des événements plus fluides, plus vivants, mieux préparés",
+          "prompt": "Votre phrase signature — celle qui dit en une ligne pourquoi vos clients vous choisissent"
+        },
+        "bio": {
+          "ghost": "Chez Let's Sgilt, nous accompagnons les événements qui ont besoin d'un fil conducteur : une ambiance à installer, des invités à accueillir, des moments à enchaîner, des détails à ne pas laisser au hasard.\n\nNotre rôle est de comprendre l'esprit de votre événement, puis de vous aider à lui donner une forme simple, chaleureuse et bien organisée.",
+          "prompt": "Racontez votre parcours, votre approche, ce qui rend votre façon de travailler unique"
+        }
+      },
+      "offerings": {
+        "ghost-items": [
+          "Une présence adaptée aux mariages, anniversaires, fêtes privées et événements d'entreprise",
+          "Une aide pour créer une ambiance cohérente, du premier accueil jusqu'au dernier temps fort",
+          "Une coordination simple avec les organisateurs et les autres prestataires",
+          "Une préparation claire pour que chaque détail important soit posé avant le jour J"
+        ],
+        "prompt": "Listez ici ce que vous proposez concrètement — ce que voient les organisateurs qui vous découvrent",
+        "item": {
+          "ghost": "Ex. : Animation live, formule cocktail…",
+          "prompt": ""
+        }
+      },
+      "logistics": {
+        "ghost-items": [
+          "Zone d'intervention : Alsace",
+          "Selon le format, nous prévoyons un temps d'installation avant l'arrivée des invités et un échange préparatoire pour caler les accès, les horaires, les temps forts et les prestataires déjà présents.",
+          "Pour les lieux difficiles d'accès, les installations en extérieur ou les événements avec plusieurs espaces, un repérage ou des précisions complémentaires peuvent être nécessaires."
+        ],
+        "prompt": "Décrivez vos conditions logistiques — ce que vous apportez, ce dont vous avez besoin",
+        "item": {
+          "ghost": "Ex. : Sono et éclairages fournis…",
+          "prompt": ""
+        }
+      },
+      "technical": {
+        "ghost-items": [
+          "Nous avons besoin d'un accès simple à l'espace d'intervention, d'un emplacement défini à l'avance et d'une prise électrique standard à proximité.",
+          "Selon l'événement, nous pouvons également demander un plan du lieu, les horaires d'accès, les contraintes de stationnement, ainsi que les contacts utiles sur place le jour J.",
+          "En extérieur, une solution de repli ou un espace abrité est à prévoir en cas de météo capricieuse."
+        ],
+        "prompt": "Les exigences techniques que les organisateurs doivent connaître à l'avance",
+        "item": {
+          "ghost": "Ex. : Puissance requise, surface nécessaire…",
+          "prompt": ""
+        }
+      },
+      "faq": {
+        "ghost-items": [
+          "Combien de temps faut-il prévoir avant l'événement ?",
+          "Peut-on adapter la prestation au format de l'événement ?",
+          "Et si notre événement ne rentre pas parfaitement dans les cases ?"
+        ],
+        "ghost-answers": [
+          "L'idéal est de prendre contact le plus tôt possible, surtout pour les dates très demandées. Cela permet de vérifier la disponibilité, de comprendre le format de l'événement et de préparer les détails importants sans urgence.",
+          "Oui. Chaque événement a son ambiance, son rythme et ses contraintes. La prestation peut être ajustée selon le lieu, le nombre d'invités, les moments prévus et le niveau d'accompagnement souhaité.",
+          "C'est souvent là que les choses deviennent intéressantes. Une fête a rarement la forme parfaite d'un formulaire : il y a des contraintes, des envies un peu folles, des horaires qui bougent et parfois une tante qui veut absolument chanter. Le plus simple, c'est d'en parler dès le départ pour voir ce qui est possible, utile et raisonnable."
+        ],
+        "prompt": "Ajoutez les questions que vos clients vous posent souvent…",
+        "question": {
+          "ghost": "",
+          "prompt": "Ex. : Est-ce que vous vous déplacez…"
+        },
+        "answer": {
+          "ghost": "",
+          "prompt": "Votre réponse détaillée…"
+        }
+      },
+      "badges": {
+        "ghost-keys": ["REPONSE_48H", "ACCOMPAGNEMENT", "INTERLOCUTEUR_UNIQUE"],
+        "prompt": "Choisissez jusqu'à 3 engagements qui vous représentent"
+      },
+      "testimonials": {
+        "ghost-items": [
+          "« On avait plusieurs idées, beaucoup d'envies, mais rien de vraiment structuré. Let's Sgilt nous a aidés à remettre les choses dans l'ordre, à clarifier les moments importants et à avancer avec les bons prestataires. Le jour J, on avait l'impression que tout respirait mieux. »"
+        ],
+        "prompt": "Ajoutez des témoignages de vos clients…",
+        "text": {
+          "ghost": "",
+          "prompt": "Le témoignage de votre client…"
+        },
+        "author": {
+          "ghost": "Élise",
+          "prompt": "Prénom Nom"
+        },
+        "eventType": {
+          "ghost": "Anniversaire privé",
+          "prompt": "Ex. : Mariage, anniversaire…"
+        }
+      }
     }
   },
   "tunnel": {
@@ -603,6 +710,7 @@
     },
     "menu": {
       "my-info": "Mes informations",
+      "edit-my-page": "Modifier ma page prestataire",
       "logout": "Déconnexion",
       "login": "Connexion",
       "help-center": "Centre d'aide",
@@ -750,6 +858,19 @@
     "pay-now": "Payer maintenant"
   },
   "prestataire": {
+    "edit-medias-btn": "Modifier les médias",
+    "media-dialog": {
+      "title": "Modifier les médias",
+      "preview-empty": "Cliquez sur un slot pour l'éditer",
+      "upload-button": "Importer une photo",
+      "youtube-placeholder": "URL YouTube (youtube.com/watch?v=…)",
+      "youtube-ok": "OK",
+      "youtube-error": "Lien YouTube non valide",
+      "delete-media": "Supprimer ce média",
+      "upload-error": "Échec de l'upload",
+      "error-no-hero": "Une image principale est requise",
+      "save-error": "Échec de l'enregistrement"
+    },
     "finalisation": {
       "target-label": "Pour",
       "message-label": "Message au prestataire",
@@ -823,5 +944,16 @@
       "title": "Oups !!",
       "message": "La page que vous recherchez n'existe pas."
     }
+  },
+  "engagement": {
+    "REPONSE_48H": { "label": "48h", "description": "Réponse sous 48h" },
+    "ADAPTABLE": { "label": "Adaptable", "description": "Prestation adaptable" },
+    "ACCOMPAGNEMENT": { "label": "Accompagné", "description": "Accompagnement personnalisé" },
+    "EQUIPE": { "label": "Équipé", "description": "Autonome et équipé" },
+    "INTERLOCUTEUR_UNIQUE": {
+      "label": "Interlocuteur Unique",
+      "description": "Interlocuteur unique"
+    },
+    "ECORESPONSABLE": { "label": "Éco", "description": "Éco-responsable" }
   }
 }

@@ -171,7 +171,9 @@ async function copy() {
       cursor: pointer;
       transition: opacity 150ms ease;
 
-      &:hover { opacity: 0.7; }
+      &:hover {
+        opacity: 0.7;
+      }
       @include pressable;
     }
   }

@@ -8,7 +8,7 @@ export type Category = {
 }
 
 export type SubCategory = {
-  key: string      // identifiant partagé front/back/DB ('dj', 'pop-rock'… — vide si pas en DB)
+  key: string // identifiant partagé front/back/DB ('dj', 'pop-rock'… — vide si pas en DB)
   name: string
   categoryKey: string
 }
@@ -19,16 +19,16 @@ export const APP_CATEGORIES: Category[] = [
     key: 'musique',
     name: 'Musique',
     subcategories: [
-      { key: 'dj',       name: 'DJ',       categoryKey: 'musique' },
+      { key: 'dj', name: 'DJ', categoryKey: 'musique' },
       { key: 'pop-rock', name: 'Pop/Rock', categoryKey: 'musique' },
-      { key: 'jazz',     name: 'Jazz',     categoryKey: 'musique' },
+      { key: 'jazz', name: 'Jazz', categoryKey: 'musique' },
     ],
   },
   {
     key: 'restauration',
     name: 'Restauration',
     subcategories: [
-      { key: 'traiteur',   name: 'Traiteur',   categoryKey: 'restauration' },
+      { key: 'traiteur', name: 'Traiteur', categoryKey: 'restauration' },
       { key: 'food-truck', name: 'Food Truck', categoryKey: 'restauration' },
     ],
   },
@@ -37,15 +37,15 @@ export const APP_CATEGORIES: Category[] = [
     name: 'Photo',
     subcategories: [
       { key: 'photographe', name: 'Photographe', categoryKey: 'photo' },
-      { key: '',            name: 'Vidéo',       categoryKey: 'photo' },
-      { key: 'photobooth',  name: 'Photobooth',  categoryKey: 'photo' },
+      { key: '', name: 'Vidéo', categoryKey: 'photo' },
+      { key: 'photobooth', name: 'Photobooth', categoryKey: 'photo' },
     ],
   },
   {
     key: 'services',
     name: 'Services',
     subcategories: [
-      { key: '',              name: 'Décoration',           categoryKey: 'services' },
+      { key: '', name: 'Décoration', categoryKey: 'services' },
       { key: 'location-lieu', name: 'Location de matériel', categoryKey: 'services' },
     ],
   },
@@ -66,27 +66,19 @@ export const eventTypes: EventType[] = [
 ]
 
 // ______________ Badges d'engagement ______________
-export type EngagementBadge = {
-  icon: string
-  label: string
-  color: string
-  description?: string
+export type EngagementKey =
+  | 'REPONSE_48H'
+  | 'ADAPTABLE'
+  | 'ACCOMPAGNEMENT'
+  | 'EQUIPE'
+  | 'INTERLOCUTEUR_UNIQUE'
+  | 'ECORESPONSABLE'
+
+export const ENGAGEMENT_ICON_MAP: Record<EngagementKey, string> = {
+  REPONSE_48H: 'Clock',
+  ADAPTABLE: 'Tune',
+  ACCOMPAGNEMENT: 'Handshake',
+  EQUIPE: 'Inventory_2',
+  INTERLOCUTEUR_UNIQUE: 'Person_Check',
+  ECORESPONSABLE: 'Eco',
 }
-export const engagementBadges: EngagementBadge[] = [
-  { icon: 'Clock', label: '48h', description: 'Réponse sous 48h', color: '#FACC15' },
-  { icon: 'Tune', label: 'Adaptable', description: 'Prestation adaptable', color: '#FACC15' },
-  {
-    icon: 'Handshake',
-    label: 'Accompagné',
-    description: 'Accompagnement personnalisé',
-    color: '#FACC15',
-  },
-  { icon: 'Inventory_2', label: 'Équipé', description: 'Autonome et équipé', color: '#FACC15' },
-  {
-    icon: 'Person_Check',
-    label: 'Interlocuteur Unique',
-    description: 'Interlocuteur unique',
-    color: '#FACC15',
-  },
-  { icon: 'Eco', label: 'Éco', description: 'Éco-responsable', color: '#22C55E' },
-]

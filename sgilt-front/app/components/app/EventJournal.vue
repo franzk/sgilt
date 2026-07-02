@@ -53,8 +53,13 @@ const emit = defineEmits<{ 'load-more': [] }>()
     cursor: pointer;
     transition: background 120ms ease;
 
-    &:hover:not(:disabled) { background: $surface-soft; }
-    &:disabled { opacity: 0.5; cursor: default; }
+    &:hover:not(:disabled) {
+      background: $surface-soft;
+    }
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
   }
 }
 </style>

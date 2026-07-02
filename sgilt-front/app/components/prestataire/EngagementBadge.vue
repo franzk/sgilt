@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { EngagementBadge } from '~/utils/constants'
+import type { EngagementKey } from '~/utils/constants'
+import { ENGAGEMENT_ICON_MAP } from '~/utils/constants'
 import type { Component } from 'vue'
 import {
   TimeIcon,
@@ -10,8 +11,10 @@ import {
 } from '@remixicons/vue/line'
 import IconHandshake from '~/components/icons/IconHandshake.vue'
 
-defineProps<{
-  badge: EngagementBadge
+const { t } = useI18n()
+
+const props = defineProps<{
+  engagementKey: EngagementKey
 }>()
 
 const iconMap: Record<string, Component> = {
@@ -25,15 +28,13 @@ const iconMap: Record<string, Component> = {
 </script>
 
 <template>
-  <div class="engagement-badge" :class="{ eco: badge.color === '#22C55E' }">
+  <div class="engagement-badge" :class="{ eco: props.engagementKey === 'ECORESPONSABLE' }">
     <div class="icon-wrap">
-      <component :is="iconMap[badge.icon]" class="icon" />
+      <component :is="iconMap[ENGAGEMENT_ICON_MAP[props.engagementKey]]" class="icon" />
     </div>
     <div class="body">
-      <span class="label">{{ badge.label }}</span>
-      <span v-if="badge.description" class="description">
-        {{ badge.description }}
-      </span>
+      <span class="label">{{ t(`engagement.${props.engagementKey}.label`) }}</span>
+      <span class="description">{{ t(`engagement.${props.engagementKey}.description`) }}</span>
     </div>
   </div>
 </template>

@@ -1,17 +1,23 @@
 /**
  * DTO — contrat API pour la fiche complète d'un prestataire
  */
-import type { PrestataireCardDto } from './PrestataireCardDto'
+import type { EngagementKey } from '~/utils/constants'
+import type { Media } from '../domain/Media'
 
-export interface PrestataireDetailDto extends PrestataireCardDto {
+export interface PrestataireDetailDto {
+  id: string
+  name: string
+  shortDescription: string
+  slug: string
+  categoryKey: string
   baseline: string
-  youtubeId?: string
+  avatar: string | null
   subcatKeys: string[]
-  photos: string[]
-  badges: { icon: string; label: string; description: string; color: string }[]
+  medias: Media[]
+  badges: EngagementKey[]
   offerings: string[]
   identity?: { quote: string; bio: string }
-  budget?: string
+  budget: string | null
   testimonials?: { author: string; text: string; eventType?: string }[]
   logistics?: string[]
   technical?: string[]

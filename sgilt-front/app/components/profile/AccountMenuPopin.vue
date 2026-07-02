@@ -8,7 +8,17 @@
             <UserIcon class="item-icon" />
             <span>{{ $t('profile.menu.my-info') }}</span>
           </NuxtLink>
-          <button v-if="isAuthenticated" class="item item--danger" role="menuitem" type="button" @click="logout">
+          <NuxtLink v-if="isPro" to="/pro/page-edition" class="item" role="menuitem" @click="close">
+            <EditBoxIcon class="item-icon" />
+            <span>{{ $t('profile.menu.edit-my-page') }}</span>
+          </NuxtLink>
+          <button
+            v-if="isAuthenticated"
+            class="item item--danger"
+            role="menuitem"
+            type="button"
+            @click="logout"
+          >
             <LogoutBoxRIcon class="item-icon" />
             <span>{{ $t('profile.menu.logout') }}</span>
           </button>
@@ -55,7 +65,14 @@
 </template>
 
 <script setup lang="ts">
-import { UserIcon, LogoutBoxRIcon, LoginBoxIcon, QuestionIcon, MailIcon } from '@remixicons/vue/line'
+import {
+  UserIcon,
+  LogoutBoxRIcon,
+  LoginBoxIcon,
+  QuestionIcon,
+  MailIcon,
+  EditBoxIcon,
+} from '@remixicons/vue/line'
 import { onClickOutside } from '@vueuse/core'
 import { useKeycloak } from '~/composables/useKeycloak'
 
@@ -68,7 +85,8 @@ onClickOutside(popinRef, () => emit('close'), {
   ignore: [() => props.anchorEl ?? null],
 })
 
-const { isAuthenticated, login, logout: kcLogout } = useKeycloak()
+const { isAuthenticated, hasRole, login, logout: kcLogout } = useKeycloak()
+const isPro = computed(() => isAuthenticated.value && hasRole('PRO'))
 
 function close() {
   emit('close')

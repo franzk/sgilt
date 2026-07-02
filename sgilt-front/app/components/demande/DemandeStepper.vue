@@ -7,7 +7,7 @@
     aria-valuemin="1"
     :aria-valuemax="steps ?? 6"
   >
-    <div v-for="n in (steps ?? 6)" :key="n" class="item">
+    <div v-for="n in steps ?? 6" :key="n" class="item">
       <div class="dot-col">
         <button
           class="dot"

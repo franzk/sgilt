@@ -1,16 +1,24 @@
 ﻿<script setup lang="ts">
 import SgiltImage from '~/components/basics/media/SgiltImage.vue'
-import { ShareIcon, ArrowLeftIcon } from '@remixicons/vue/line'
+import EditableText from '~/components/prestataire/EditableText.vue'
+import PrestataireMediaDialog from '~/components/prestataire/PrestataireMediaDialog.vue'
+import { ShareIcon, ArrowLeftIcon, ImageAddIcon } from '@remixicons/vue/line'
 import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDetail'
+import type { DisplayMode } from '~/types/prestataire'
 
 const router = useRouter()
 
 const props = defineProps<{
   prestataire: PrestataireDetail
+  displayMode: DisplayMode
 }>()
 
+const { prestataire } = usePrestataire()
+const isEdit = computed(() => props.displayMode === 'edit')
+const heroboardOpen = ref(false)
+
 const emit = defineEmits<{
-  openVideo: []
+  openVideo: [youtubeId: string]
   openPhoto: [index: number]
   back: []
 }>()
@@ -20,15 +28,11 @@ type HeroImage = { type: 'image'; src: string }
 type HeroVideo = { type: 'video'; youtubeId: string }
 type HeroItem = HeroImage | HeroVideo
 
-const heroItems = computed<HeroItem[]>(() => {
-  const images: HeroItem[] = [props.prestataire.heroImage, ...props.prestataire.photos].map(
-    (src) => ({ type: 'image', src }),
-  )
-  if (props.prestataire.youtubeId) {
-    return [...images, { type: 'video', youtubeId: props.prestataire.youtubeId }]
-  }
-  return images
-})
+const heroItems = computed<HeroItem[]>(() =>
+  props.prestataire.medias.map((m) =>
+    m.type === 'IMAGE' ? { type: 'image', src: m.ref } : { type: 'video', youtubeId: m.ref },
+  ),
+)
 
 const heroIndex = ref(0)
 const touchStartX = ref(0)
@@ -48,22 +52,27 @@ function onTouchEnd(e: TouchEvent) {
 // ─── Mosaïque desktop ─────────────────────────────────────────────────────────
 type MosaicThumb =
   | { type: 'photo'; src: string; photoIndex: number }
-  | { type: 'video'; src: string }
+  | { type: 'video'; src: string; youtubeId: string }
 
-const mosaicThumbs = computed<MosaicThumb[]>(() => {
-  const thumbs: MosaicThumb[] = props.prestataire.photos.map((src, i) => ({
-    type: 'photo',
-    src,
-    photoIndex: i + 1, // 0 = heroImage dans la galerie
-  }))
-  if (props.prestataire.youtubeId) {
-    thumbs.push({
-      type: 'video',
-      src: `https://img.youtube.com/vi/${props.prestataire.youtubeId}/hqdefault.jpg`,
-    })
+const imageMedias = computed(() => props.prestataire.medias.filter((m) => m.type === 'IMAGE'))
+
+const mosaicThumbs = computed<MosaicThumb[]>(() =>
+  props.prestataire.medias.slice(1).map((m) => {
+    if (m.type === 'YOUTUBE') {
+      return { type: 'video', src: youtubeThumbnailUrl(m.ref), youtubeId: m.ref }
+    }
+    const photoIndex = imageMedias.value.findIndex((img) => img.position === m.position)
+    return { type: 'photo', src: m.ref, photoIndex: photoIndex === -1 ? 0 : photoIndex }
+  }),
+)
+
+function onThumbClick(thumb: MosaicThumb): void {
+  if (thumb.type === 'video') {
+    emit('openVideo', thumb.youtubeId)
+  } else {
+    emit('openPhoto', thumb.photoIndex)
   }
-  return thumbs
-})
+}
 
 // ─── Share ────────────────────────────────────────────────────────────────────
 async function share() {
@@ -86,7 +95,7 @@ async function share() {
       <div v-if="heroItems[heroIndex]?.type === 'image'" class="image">
         <SgiltImage
           :src="(heroItems[heroIndex] as HeroImage).src"
-          :alt="prestataire.name"
+          :alt="prestataire?.name"
           loading="eager"
         />
       </div>
@@ -94,12 +103,16 @@ async function share() {
       <template v-else-if="heroItems[heroIndex]?.type === 'video'">
         <div class="image">
           <SgiltImage
-            :src="`https://img.youtube.com/vi/${(heroItems[heroIndex] as HeroVideo).youtubeId}/hqdefault.jpg`"
+            :src="youtubeThumbnailUrl((heroItems[heroIndex] as HeroVideo).youtubeId)"
             alt="Vidéo"
             loading="eager"
           />
         </div>
-        <button class="video-play" @click="emit('openVideo')" aria-label="Lancer la vidéo">
+        <button
+          class="video-play"
+          @click="emit('openVideo', (heroItems[heroIndex] as HeroVideo).youtubeId)"
+          aria-label="Lancer la vidéo"
+        >
           ▶
         </button>
       </template>
@@ -107,9 +120,15 @@ async function share() {
       <div class="overlay" aria-hidden="true" />
 
       <div class="content">
-        <p class="category">{{ prestataire.category }}</p>
-        <h1 class="name">{{ prestataire.name }}</h1>
-        <p class="baseline">{{ prestataire.baseline }}</p>
+        <p class="category">{{ prestataire?.category }}</p>
+        <h1 class="name">{{ prestataire?.name }}</h1>
+        <EditableText
+          as="p"
+          v-model="prestataire!.baseline"
+          field="baseline"
+          :editable="isEdit"
+          class="baseline"
+        />
       </div>
 
       <div v-if="heroItems.length > 1" class="dots" aria-hidden="true">
@@ -126,12 +145,22 @@ async function share() {
     <div class="mosaic">
       <!-- Photo principale -->
       <div class="mosaic-main">
-        <SgiltImage :src="prestataire.heroImage" :alt="prestataire.name" loading="eager" />
+        <SgiltImage
+          :src="prestataire?.medias ? (heroRef(prestataire.medias) ?? '') : ''"
+          :alt="prestataire?.name"
+          loading="eager"
+        />
         <div class="overlay" aria-hidden="true" />
         <div class="content">
-          <p class="category">{{ prestataire.category }}</p>
-          <h1 class="name">{{ prestataire.name }}</h1>
-          <p class="baseline">{{ prestataire.baseline }}</p>
+          <p class="category">{{ prestataire?.category }}</p>
+          <h1 class="name">{{ prestataire?.name }}</h1>
+          <EditableText
+            as="p"
+            v-model="prestataire!.baseline"
+            field="baseline"
+            :editable="isEdit"
+            class="baseline"
+          />
         </div>
       </div>
 
@@ -142,14 +171,7 @@ async function share() {
           :key="i"
           class="mosaic-thumb"
           :class="{ video: thumb.type === 'video' }"
-          @click="
-            thumb.type === 'video'
-              ? emit('openVideo')
-              : emit(
-                  'openPhoto',
-                  (thumb as { type: 'photo'; src: string; photoIndex: number }).photoIndex,
-                )
-          "
+          @click="onThumbClick(thumb)"
           :aria-label="thumb.type === 'video' ? 'Lancer la vidéo' : `Voir la photo`"
         >
           <SgiltImage :src="thumb.src" alt="" loading="lazy" />
@@ -163,10 +185,20 @@ async function share() {
       <ArrowLeftIcon />
     </button>
 
-    <!-- Bouton share (toujours visible) -->
-    <button class="share" @click="share" aria-label="Partager">
+    <button v-if="!isEdit" class="share" @click="share" aria-label="Partager">
       <ShareIcon />
     </button>
+
+    <button v-if="isEdit" class="edit-medias" type="button" @click="heroboardOpen = true">
+      <ImageAddIcon />
+      {{ $t('prestataire.edit-medias-btn') }}
+    </button>
+
+    <PrestataireMediaDialog
+      v-if="prestataire"
+      v-model:open="heroboardOpen"
+      :prestataire="prestataire"
+    />
   </section>
 </template>
 
@@ -182,7 +214,7 @@ async function share() {
   .carousel {
     position: relative;
     width: 100%;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 3 / 2;
     overflow: hidden;
 
     @media (min-width: $breakpoint-desktop) {
@@ -344,6 +376,40 @@ async function share() {
   .share {
     @extend %overlay-btn;
     right: $spacing-m;
+  }
+
+  // ─── Bouton édition médias ────────────────────────────────────────────────
+  .edit-medias {
+    position: absolute;
+    top: $spacing-m;
+    right: $spacing-m;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: $spacing-xs $spacing-m;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(6px);
+    border-radius: 2rem;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 150ms ease;
+
+    &:hover,
+    &:active {
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
   }
 
   // ─── Bouton play (carousel mobile) ───────────────────────────────────────────

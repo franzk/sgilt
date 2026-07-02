@@ -1,7 +1,11 @@
 ﻿/**
  * Composable — expose les données d'un événement unique (détail, counts, réservations)
  */
-import { fetchEventDetail, fetchEventCounts, fetchEventReservations } from './service/evenementService'
+import {
+  fetchEventDetail,
+  fetchEventCounts,
+  fetchEventReservations,
+} from './service/evenementService'
 import type { EventDetail } from './domain/EventDetail'
 import type { EventCounts } from './domain/EventCounts'
 import type { ClientContactInfo } from '~/data/reservation/domain/ClientContactInfo'

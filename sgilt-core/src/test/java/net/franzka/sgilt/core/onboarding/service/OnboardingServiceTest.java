@@ -235,7 +235,7 @@ class OnboardingServiceTest {
         }
 
         private ConfirmAccountRequest buildRequest() {
-            return new ConfirmAccountRequest(SP_TOKEN, "p@ssw0rd!");
+            return new ConfirmAccountRequest(SP_TOKEN, "p@ssw0rd!", true);
         }
     }
 }

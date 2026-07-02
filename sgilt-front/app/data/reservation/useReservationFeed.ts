@@ -1,4 +1,10 @@
-import { fetchFeed, addNote as addNoteService, uploadDocument as uploadDocumentService, downloadDocument, deleteDocument as deleteDocumentService } from './service/reservationFeedService'
+import {
+  fetchFeed,
+  addNote as addNoteService,
+  uploadDocument as uploadDocumentService,
+  downloadDocument,
+  deleteDocument as deleteDocumentService,
+} from './service/reservationFeedService'
 import type { FeedItem } from './domain/FeedItem'
 
 export function useReservationFeed(reservationId: string) {
@@ -18,9 +24,13 @@ export function useReservationFeed(reservationId: string) {
     }
   }
 
-  watch(isAuthenticated, (authenticated) => {
-    if (authenticated) load()
-  }, { immediate: true })
+  watch(
+    isAuthenticated,
+    (authenticated) => {
+      if (authenticated) load()
+    },
+    { immediate: true },
+  )
 
   async function addNote(title: string, content: string, isPersonal: boolean) {
     const item = await addNoteService(reservationId, title, content, isPersonal)
@@ -48,5 +58,15 @@ export function useReservationFeed(reservationId: string) {
     feed.value = feed.value.filter((item) => item.id !== id)
   }
 
-  return { feed, pending, error, uploading, load, addNote, uploadDocument, download, deleteDocument }
+  return {
+    feed,
+    pending,
+    error,
+    uploading,
+    load,
+    addNote,
+    uploadDocument,
+    download,
+    deleteDocument,
+  }
 }

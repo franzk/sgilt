@@ -113,7 +113,9 @@
               <input v-model="acceptedTerms" type="checkbox" class="terms__checkbox" />
               <i18n-t keypath="confirmation.form.terms-label" tag="span" scope="global">
                 <template #cgu>
-                  <a href="/m/cgu" target="_blank" rel="noopener">{{ $t('confirmation.form.terms-cgu') }}</a>
+                  <a href="/m/cgu" target="_blank" rel="noopener">{{
+                    $t('confirmation.form.terms-cgu')
+                  }}</a>
                 </template>
                 <template #privacy>
                   <a href="/m/confidentialite" target="_blank" rel="noopener">{{

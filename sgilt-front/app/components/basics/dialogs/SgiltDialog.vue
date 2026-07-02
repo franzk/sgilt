@@ -6,6 +6,7 @@
     v-model:confirmed="confirmed"
     :title="title"
     :description="description"
+    :fullscreen="props.fullscreen"
     overlay
   >
     <slot />
@@ -17,12 +18,17 @@
       <div
         v-if="open"
         class="sgilt-dialog"
+        :class="{ 'is-fullscreen': props.fullscreen }"
         role="dialog"
         aria-modal="true"
         :aria-label="title"
         @mousedown.self="open = false"
       >
-        <div class="panel" :style="props.maxWidth ? { maxWidth: props.maxWidth } : {}">
+        <div
+          class="panel"
+          :class="{ fullscreen: props.fullscreen }"
+          :style="props.maxWidth ? { maxWidth: props.maxWidth } : {}"
+        >
           <div class="header">
             <span class="title">{{ title }}</span>
             <button
@@ -54,6 +60,7 @@ const props = defineProps<{
   title: string
   description?: string
   maxWidth?: string
+  fullscreen?: boolean
 }>()
 
 const { isMobile } = useDevice()
@@ -74,6 +81,11 @@ const { isMobile } = useDevice()
   padding: $spacing-m;
   // max-height: calc(100vh - $app-header-height);
 
+  &.is-fullscreen {
+    padding: 0;
+    align-items: stretch;
+  }
+
   // ── Panel ──────────────────────────────────────────────────────────────────────
   .panel {
     background: #fff;
@@ -81,11 +93,16 @@ const { isMobile } = useDevice()
     width: 100%;
     max-width: 480px;
 
-    //max-height: 80vh;
     display: flex;
     flex-direction: column;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
     overflow: hidden;
+
+    &.fullscreen {
+      height: 100dvh;
+      border-radius: 0;
+      box-shadow: none;
+    }
   }
 
   .header {
