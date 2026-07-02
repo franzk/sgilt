@@ -858,6 +858,7 @@
     "pay-now": "Payer maintenant"
   },
   "prestataire": {
+    "edit-medias-btn": "Modifier les médias",
     "media-dialog": {
       "title": "Modifier les médias",
       "preview-empty": "Cliquez sur un slot pour l'éditer",

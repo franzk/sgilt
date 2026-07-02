@@ -191,7 +191,7 @@ async function share() {
 
     <button v-if="isEdit" class="edit-medias" type="button" @click="heroboardOpen = true">
       <ImageAddIcon />
-      Modifier les médias
+      {{ $t('prestataire.edit-medias-btn') }}
     </button>
 
     <PrestataireMediaDialog v-model:open="heroboardOpen" :prestataire="prestataire" />
@@ -397,8 +397,10 @@ async function share() {
     cursor: pointer;
     transition: background 150ms ease;
 
-    &:hover {
+    &:hover,
+    &:active {
       background: rgba(0, 0, 0, 0.7);
+      transform: translateX(-50%);
     }
 
     svg {
