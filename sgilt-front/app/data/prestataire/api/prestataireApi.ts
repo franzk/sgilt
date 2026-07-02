@@ -5,6 +5,7 @@ import { apiFetch } from '~/composables/useApi'
 import type { PrestataireDetailDto } from '../dto/PrestataireDetailDto'
 import type { PrestataireSearchResponseDto } from '../dto/PrestataireSearchResponseDto'
 import type { PrestataireUpdatePayload } from '../dto/PrestataireUpdatePayload'
+import type { Media } from '../domain/Media'
 
 export async function searchPrestatairesApi(params: {
   categoryKey?: string
@@ -32,4 +33,11 @@ export async function uploadPrestataireMediaApi(file: File): Promise<{ key: stri
   const body = new FormData()
   body.append('file', file)
   return apiFetch<{ key: string }>('/prestataires/ma-fiche/medias/upload', { method: 'POST', body })
+}
+
+export async function putPrestataireMediasApi(medias: Media[]): Promise<PrestataireDetailDto> {
+  return apiFetch<PrestataireDetailDto>('/prestataires/ma-fiche/medias', {
+    method: 'PUT',
+    body: { medias },
+  })
 }

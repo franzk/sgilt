@@ -3,8 +3,14 @@
  * Le ref vit au niveau module : une seule instance partagée par tous les consommateurs.
  * Appeler usePrestataire(slug) depuis la page déclenche le chargement et réécrit le ref.
  */
-import { fetchPrestataireBySlug, savePrestataireUpdate } from './service/prestataireService'
+import {
+  fetchPrestataireBySlug,
+  savePrestataireUpdate,
+  saveMediasUpdate,
+  uploadPrestataireMedia,
+} from './service/prestataireService'
 import type { PrestataireDetail } from './domain/PrestataireDetail'
+import type { Media } from './domain/Media'
 
 const prestataire = ref<PrestataireDetail | null>(null)
 const loading = ref(false)
@@ -55,5 +61,13 @@ export function usePrestataire(slug?: string) {
     }
   }
 
-  return { prestataire, loading, error, load, save, saving, saved, saveError }
+  async function saveMedias(medias: Media[]): Promise<void> {
+    prestataire.value = await saveMediasUpdate(medias)
+  }
+
+  async function uploadMedia(file: File): Promise<{ key: string }> {
+    return uploadPrestataireMedia(file)
+  }
+
+  return { prestataire, loading, error, load, save, saving, saved, saveError, saveMedias, uploadMedia }
 }

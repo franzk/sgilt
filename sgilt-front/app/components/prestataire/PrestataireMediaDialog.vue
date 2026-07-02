@@ -111,8 +111,8 @@
 
       <div class="actions">
         <p v-if="saveError" class="save-error">{{ saveError }}</p>
-        <SgiltButton variant="secondary" @click="open = false">Annuler</SgiltButton>
-        <SgiltButton @click="handleSave">Enregistrer</SgiltButton>
+        <SgiltButton variant="secondary" :disabled="isSaving" @click="open = false">{{ $t('common.cancel') }}</SgiltButton>
+        <SgiltButton :loading="isSaving" @click="handleSave">{{ $t('common.save') }}</SgiltButton>
       </div>
     </div>
   </SgiltDialog>
@@ -123,13 +123,14 @@ import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import { ImageAddIcon } from '@remixicons/vue/line'
 import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDetail'
-import { uploadPrestataireMediaApi } from '~/data/prestataire/api/prestataireApi'
+import type { Media } from '~/data/prestataire/domain/Media'
 
 const props = defineProps<{ prestataire: PrestataireDetail }>()
 const open = defineModel<boolean>('open', { required: true })
 
 const { t } = useI18n()
 const { toUrl } = useImageUrl()
+const { saveMedias, uploadMedia } = usePrestataire()
 
 // ── Types locaux ──────────────────────────────────────────────────────────────
 
@@ -158,6 +159,7 @@ const activeSlotIndex = ref(0)
 const youtubeInput = ref('')
 const youtubeError = ref<string | null>(null)
 const saveError = ref<string | null>(null)
+const isSaving = ref(false)
 const uploadInputRef = ref<HTMLInputElement | null>(null)
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -230,9 +232,10 @@ async function handleUpload(e: Event): Promise<void> {
   ;(e.target as HTMLInputElement).value = ''
   slots.value[idx] = { type: null, ref: null, status: 'UPLOADING' }
   try {
-    const { key } = await uploadPrestataireMediaApi(file)
+    const { key } = await uploadMedia(file)
     slots.value[idx] = { type: 'IMAGE', ref: key, status: 'OCCUPIED' }
-  } catch {
+  } catch (e) {
+    console.error('[PrestataireMediaDialog] upload failed', e)
     slots.value[idx] = { type: null, ref: null, status: 'ERROR' }
   }
 }
@@ -256,20 +259,32 @@ function deleteActiveSlot(): void {
   slots.value[activeSlotIndex.value] = emptySlot()
 }
 
-// ── Enregistrer (stub) ────────────────────────────────────────────────────────
+// ── Enregistrer ───────────────────────────────────────────────────────────────
 
-function handleSave(): void {
+async function handleSave(): Promise<void> {
   if (slots.value[0]?.status !== 'OCCUPIED') {
     saveError.value = t('prestataire.media-dialog.error-no-hero')
     return
   }
 
   saveError.value = null
-  const compacted = slots.value
-    .filter((slot) => slot.status === 'OCCUPIED')
+  const medias: Media[] = slots.value
+    .filter(
+      (slot): slot is DraftSlot & { type: 'IMAGE' | 'YOUTUBE'; ref: string } =>
+        slot.status === 'OCCUPIED' && slot.type !== null && slot.ref !== null,
+    )
     .map((slot, position) => ({ type: slot.type, ref: slot.ref, position }))
-  console.log('[HeroboardDialog] medias stub:', compacted)
-  open.value = false
+
+  isSaving.value = true
+  try {
+    await saveMedias(medias)
+    open.value = false
+  } catch (e) {
+    console.error('[PrestataireMediaDialog] save failed', e)
+    saveError.value = t('prestataire.media-dialog.save-error')
+  } finally {
+    isSaving.value = false
+  }
 }
 </script>
 
