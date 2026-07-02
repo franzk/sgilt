@@ -214,7 +214,7 @@ async function share() {
   .carousel {
     position: relative;
     width: 100%;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 3 / 2;
     overflow: hidden;
 
     @media (min-width: $breakpoint-desktop) {
