@@ -24,3 +24,9 @@ export async function getEngagementKeysApi(): Promise<string[]> {
 export async function patchPrestataireApi(id: string, payload: PrestataireUpdatePayload): Promise<void> {
   return apiFetch<void>(`/prestataires/${id}`, { method: 'PATCH', body: payload })
 }
+
+export async function uploadPrestataireMediaApi(file: File): Promise<{ key: string }> {
+  const body = new FormData()
+  body.append('file', file)
+  return apiFetch<{ key: string }>('/prestataires/ma-fiche/medias/upload', { method: 'POST', body })
+}

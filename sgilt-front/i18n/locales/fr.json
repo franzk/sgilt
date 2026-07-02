@@ -866,6 +866,7 @@
       "youtube-ok": "OK",
       "youtube-error": "Lien YouTube non valide",
       "delete-media": "Supprimer ce média",
+      "upload-error": "Échec de l'upload",
       "error-no-hero": "Une image principale est requise"
     },
     "finalisation": {

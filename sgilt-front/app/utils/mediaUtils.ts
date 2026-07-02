@@ -9,6 +9,14 @@ export function heroRef(medias: Media[]): string | null {
 }
 
 /**
+ * Retourne l'URL de visionnage YouTube à partir d'un ID vidéo, ou chaîne vide si null.
+ */
+export function youtubeWatchUrl(id: string | null): string {
+  if (!id) return ''
+  return `https://www.youtube.com/watch?v=${id}`
+}
+
+/**
  * Retourne l'URL d'embed YouTube à partir d'un ID vidéo, ou chaîne vide si null.
  */
 export function youtubeEmbedUrl(id: string | null): string {

@@ -9,28 +9,35 @@
       <!-- Grille 5 slots -->
       <div class="slot-grid">
         <button
-          v-for="({ slot, thumbnailUrl }, i) in slotDisplays"
+          v-for="(s, i) in slotDisplays"
           :key="i"
           class="slot-tile"
-          :class="{ selected: i === activeSlotIndex, empty: !slot }"
+          :class="{ selected: i === activeSlotIndex, empty: s.status === 'EMPTY', uploading: s.isUploading }"
           type="button"
           @click="selectSlot(i)"
         >
-          <img v-if="thumbnailUrl" :src="thumbnailUrl" alt="" class="tile-img" />
-          <span v-else class="tile-empty" aria-hidden="true">+</span>
-          <span v-if="slot?.type === 'YOUTUBE'" class="tile-play" aria-hidden="true">▶</span>
+          <img v-if="s.thumbnailUrl" :src="s.thumbnailUrl" alt="" class="tile-img" :class="{ dim: s.isUploading }" />
+          <span v-if="s.isUploading" class="tile-spinner" aria-hidden="true" />
+          <span v-else-if="s.errorMessage" class="tile-error-icon" aria-hidden="true">!</span>
+          <span v-else-if="s.status === 'EMPTY'" class="tile-empty" aria-hidden="true">+</span>
+          <span v-if="s.type === 'YOUTUBE' && s.status === 'OCCUPIED'" class="tile-play" aria-hidden="true">▶</span>
         </button>
       </div>
 
       <!-- Preview du slot actif -->
       <div class="preview">
-        <img v-if="activePreviewUrl" :src="activePreviewUrl" alt="Aperçu" class="preview-img" />
+        <img v-if="activeSlot.thumbnailUrl && !activeSlot.isUploading" :src="activeSlot.thumbnailUrl" alt="Aperçu" class="preview-img" />
+        <div v-else-if="activeSlot.isUploading" class="preview-loading" aria-hidden="true">
+          <span class="preview-spinner" />
+        </div>
+        <p v-else-if="activeSlot.errorMessage" class="preview-error">{{ activeSlot.errorMessage }}</p>
         <p v-else class="preview-empty">{{ $t('prestataire.media-dialog.preview-empty') }}</p>
       </div>
 
       <!-- Contrôles du slot actif -->
       <div class="slot-controls">
-        <button class="upload-btn" type="button" @click="uploadInputRef?.click()">
+        <!-- Bouton upload -->
+        <button class="upload-btn" type="button" :disabled="activeSlot.isUploading" @click="uploadInputRef?.click()">
           <ImageAddIcon />
           {{ $t('prestataire.media-dialog.upload-button') }}
         </button>
@@ -64,7 +71,8 @@
           <p v-if="youtubeError" class="field-error">{{ youtubeError }}</p>
         </div>
 
-        <button v-if="activeSlot" class="delete-btn" type="button" @click="deleteActiveSlot">
+        <!-- Bouton supprimer -->
+        <button v-if="activeSlot.status === 'OCCUPIED' || activeSlot.status === 'ERROR'" class="delete-btn" type="button" @click="deleteActiveSlot">
           {{ $t('prestataire.media-dialog.delete-media') }}
         </button>
       </div>
@@ -83,6 +91,7 @@ import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import { ImageAddIcon } from '@remixicons/vue/line'
 import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDetail'
+import { uploadPrestataireMediaApi } from '~/data/prestataire/api/prestataireApi'
 
 const props = defineProps<{ prestataire: PrestataireDetail }>()
 const open = defineModel<boolean>('open', { required: true })
@@ -92,16 +101,27 @@ const { toUrl } = useImageUrl()
 
 // ── Types locaux ──────────────────────────────────────────────────────────────
 
-type DraftImageSlot = { type: 'IMAGE'; ref: string }
-type DraftPendingSlot = { type: 'PENDING'; pendingFile: File; previewUrl: string }
-type DraftYoutubeSlot = { type: 'YOUTUBE'; ref: string }
-type DraftSlot = null | DraftImageSlot | DraftPendingSlot | DraftYoutubeSlot
+type SlotStatus = 'OCCUPIED' | 'UPLOADING' | 'ERROR' | 'EMPTY'
+
+type DraftSlot = {
+  type: 'IMAGE' | 'YOUTUBE' | null
+  ref: string | null
+  status: SlotStatus
+}
+
+type SlotDisplay = DraftSlot & {
+  isUploading: boolean
+  errorMessage: string | null
+  thumbnailUrl: string | null
+}
 
 const SLOT_COUNT = 5
 
+const emptySlot = (): DraftSlot => ({ type: null, ref: null, status: 'EMPTY' })
+
 // ── State ─────────────────────────────────────────────────────────────────────
 
-const slots = ref<DraftSlot[]>(Array.from({ length: SLOT_COUNT }, () => null))
+const slots = ref<DraftSlot[]>(Array.from({ length: SLOT_COUNT }, emptySlot))
 const activeSlotIndex = ref(0)
 const youtubeInput = ref('')
 const youtubeError = ref<string | null>(null)
@@ -110,38 +130,36 @@ const uploadInputRef = ref<HTMLInputElement | null>(null)
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function revokeSlotBlob(slot: DraftSlot): void {
-  if (slot?.type === 'PENDING') URL.revokeObjectURL(slot.previewUrl)
-}
-
-function slotThumbnailUrl(slot: DraftSlot): string | null {
-  if (!slot) return null
-  if (slot.type === 'PENDING') return slot.previewUrl
-  if (slot.type === 'YOUTUBE') return youtubeThumbnailUrl(slot.ref)
-  return toUrl(slot.ref)
+function toSlotDisplay(slot: DraftSlot): SlotDisplay {
+  const thumbnailUrl =
+    slot.status === 'OCCUPIED' && slot.ref
+      ? slot.type === 'YOUTUBE'
+        ? youtubeThumbnailUrl(slot.ref)
+        : toUrl(slot.ref)
+      : null
+  return {
+    ...slot,
+    isUploading: slot.status === 'UPLOADING',
+    errorMessage: slot.status === 'ERROR' ? t('prestataire.media-dialog.upload-error') : null,
+    thumbnailUrl,
+  }
 }
 
 // ── Computed ──────────────────────────────────────────────────────────────────
 
-const activeSlot = computed<DraftSlot>(() => slots.value[activeSlotIndex.value] ?? null)
+const slotDisplays = computed<SlotDisplay[]>(() => slots.value.map(toSlotDisplay))
 
-const activePreviewUrl = computed<string | null>(() => slotThumbnailUrl(activeSlot.value))
-
-const slotDisplays = computed(() =>
-  slots.value.map((slot) => ({ slot, thumbnailUrl: slotThumbnailUrl(slot) })),
+const activeSlot = computed<SlotDisplay>(
+  () => slotDisplays.value[activeSlotIndex.value] ?? toSlotDisplay(emptySlot()),
 )
 
 // ── Initialisation ────────────────────────────────────────────────────────────
 
 function resetDraft(): void {
-  slots.value.forEach(revokeSlotBlob)
-  const fresh: DraftSlot[] = Array.from({ length: SLOT_COUNT }, () => null)
+  const fresh: DraftSlot[] = Array.from({ length: SLOT_COUNT }, emptySlot)
   for (const media of props.prestataire.medias) {
     if (media.position >= 0 && media.position < SLOT_COUNT) {
-      fresh[media.position] =
-        media.type === 'IMAGE'
-          ? { type: 'IMAGE', ref: media.ref }
-          : { type: 'YOUTUBE', ref: media.ref }
+      fresh[media.position] = { type: media.type, ref: media.ref, status: 'OCCUPIED' }
     }
   }
   slots.value = fresh
@@ -162,29 +180,29 @@ watch(
   },
 )
 
-onUnmounted(() => {
-  slots.value.forEach(revokeSlotBlob)
-})
-
 // ── Sélection de slot ─────────────────────────────────────────────────────────
 
 function selectSlot(index: number): void {
   activeSlotIndex.value = index
   const slot = slots.value[index]
-  youtubeInput.value = slot?.type === 'YOUTUBE' ? `https://www.youtube.com/watch?v=${slot.ref}` : ''
+  youtubeInput.value = slot?.type === 'YOUTUBE' ? youtubeWatchUrl(slot.ref) : ''
   youtubeError.value = null
 }
 
 // ── Upload photo ──────────────────────────────────────────────────────────────
 
-function handleUpload(e: Event): void {
+async function handleUpload(e: Event): Promise<void> {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) return
   const idx = activeSlotIndex.value
-  revokeSlotBlob(slots.value[idx] ?? null)
-  const previewUrl = URL.createObjectURL(file)
-  slots.value[idx] = { type: 'PENDING', pendingFile: file, previewUrl }
   ;(e.target as HTMLInputElement).value = ''
+  slots.value[idx] = { type: null, ref: null, status: 'UPLOADING' }
+  try {
+    const { key } = await uploadPrestataireMediaApi(file)
+    slots.value[idx] = { type: 'IMAGE', ref: key, status: 'OCCUPIED' }
+  } catch {
+    slots.value[idx] = { type: null, ref: null, status: 'ERROR' }
+  }
 }
 
 // ── URL YouTube ───────────────────────────────────────────────────────────────
@@ -196,31 +214,28 @@ function handleYoutubeUrl(): void {
     return
   }
   youtubeError.value = null
-  const idx = activeSlotIndex.value
-  revokeSlotBlob(slots.value[idx] ?? null)
-  slots.value[idx] = { type: 'YOUTUBE', ref: id }
+  slots.value[activeSlotIndex.value] = { type: 'YOUTUBE', ref: id, status: 'OCCUPIED' }
   youtubeInput.value = ''
 }
 
 // ── Suppression ───────────────────────────────────────────────────────────────
 
 function deleteActiveSlot(): void {
-  const idx = activeSlotIndex.value
-  revokeSlotBlob(slots.value[idx] ?? null)
-  slots.value[idx] = null
+  slots.value[activeSlotIndex.value] = emptySlot()
 }
 
 // ── Enregistrer (stub) ────────────────────────────────────────────────────────
 
 function handleSave(): void {
-  if (!slots.value[0]) {
+  if (slots.value[0]?.status !== 'OCCUPIED') {
     saveError.value = t('prestataire.media-dialog.error-no-hero')
     return
   }
+
   saveError.value = null
   const compacted = slots.value
-    .filter((slot): slot is NonNullable<DraftSlot> => slot !== null)
-    .map((slot, position) => ({ ...slot, position }))
+    .filter((slot) => slot.status === 'OCCUPIED')
+    .map((slot, position) => ({ type: slot.type, ref: slot.ref, position }))
   console.log('[HeroboardDialog] medias stub:', compacted)
   open.value = false
 }
@@ -268,12 +283,20 @@ function handleSave(): void {
         }
       }
 
+      &.uploading {
+        cursor: default;
+      }
+
       .tile-img {
         position: absolute;
         inset: 0;
         width: 100%;
         height: 100%;
         object-fit: cover;
+
+        &.dim {
+          opacity: 0.4;
+        }
       }
 
       .tile-empty {
@@ -284,6 +307,36 @@ function handleSave(): void {
         justify-content: center;
         font-size: 1.2rem;
         color: $text-secondary;
+      }
+
+      .tile-spinner {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &::after {
+          content: '';
+          width: 14px;
+          height: 14px;
+          border: 2px solid rgba(255, 255, 255, 0.4);
+          border-top-color: #fff;
+          border-radius: 50%;
+          animation: tile-spin 0.7s linear infinite;
+        }
+      }
+
+      .tile-error-icon {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: $color-error;
+        background: rgba(255, 255, 255, 0.85);
       }
 
       .tile-play {
@@ -316,6 +369,32 @@ function handleSave(): void {
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+
+    .preview-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+
+      .preview-spinner {
+        display: block;
+        width: 28px;
+        height: 28px;
+        border: 3px solid rgba(0, 0, 0, 0.12);
+        border-top-color: $brand-accent;
+        border-radius: 50%;
+        animation: tile-spin 0.7s linear infinite;
+      }
+    }
+
+    .preview-error {
+      margin: 0;
+      font-size: 0.8rem;
+      color: $color-error;
+      text-align: center;
+      padding: $spacing-m;
     }
 
     .preview-empty {
@@ -435,6 +514,13 @@ function handleSave(): void {
     }
   }
 
+  // ── Upload button disabled ────────────────────────────────────────────────────
+  .upload-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
   // ── Actions globales (erreur inline + boutons) ───────────────────────────────
   .actions {
     display: flex;
@@ -448,6 +534,12 @@ function handleSave(): void {
       font-size: 0.82rem;
       color: $color-error;
     }
+  }
+}
+
+@keyframes tile-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>
