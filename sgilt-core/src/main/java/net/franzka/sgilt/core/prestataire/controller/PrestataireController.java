@@ -116,15 +116,14 @@ public class PrestataireController implements PrestataireApi {
      * Réservé au prestataire connecté (ROLE_PRO).
      *
      * @param body la liste des médias (remplacement total)
-     * @return 204 No Content
+     * @return la fiche prestataire complète après sauvegarde
      */
     @Override
     @Transactional
     @PreAuthorize("hasAuthority('ROLE_PRO')")
-    public ResponseEntity<Void> updateMedias(MediasPutRequest body) {
+    public ResponseEntity<PrestataireDetailDto> updateMedias(MediasPutRequest body) {
         Utilisateur utilisateur = currentUserService.get();
         log.info("PUT /prestataires/ma-fiche/medias — email={}", utilisateur.getEmail());
-        prestataireService.updateMedias(utilisateur, body.medias());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(prestataireService.updateMedias(utilisateur, body.medias()));
     }
 }

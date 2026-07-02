@@ -157,13 +157,15 @@ public class PrestataireService {
     /**
      * Remplace la collection complète de médias du prestataire lié à l'utilisateur connecté.
      * Valide que la position 0 est bien de type IMAGE avant toute persistance.
+     * Retourne la fiche complète à jour pour permettre au front de resynchroniser son state.
      *
      * @param utilisateur l'utilisateur PRO connecté
      * @param medias      la liste complète des médias à persister (remplacement total)
+     * @return la fiche prestataire complète après sauvegarde
      * @throws MediasInvalidException     si la position 0 est absente ou n'est pas de type IMAGE
      * @throws PrestataireNotFoundException si aucun prestataire actif n'est lié à cet utilisateur
      */
-    public void updateMedias(Utilisateur utilisateur, List<MediaDto> medias) {
+    public PrestataireDetailDto updateMedias(Utilisateur utilisateur, List<MediaDto> medias) {
         boolean heroPresent = medias.stream()
                 .anyMatch(m -> m.position() == 0 && m.type() == MediaType.IMAGE);
         if (!heroPresent) {
@@ -175,7 +177,8 @@ public class PrestataireService {
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Échec de sérialisation des médias", e);
         }
-        prestataireRepository.save(prestataire);
+
+        return prestataireMapper.toDetailDto(prestataireRepository.save(prestataire));
     }
 
     // ── Résolution du filtre exclusif ─────────────────────────────────────────

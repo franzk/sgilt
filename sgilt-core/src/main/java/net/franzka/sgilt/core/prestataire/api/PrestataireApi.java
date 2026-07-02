@@ -34,5 +34,5 @@ public interface PrestataireApi {
     ResponseEntity<MediaUploadDto> uploadMedia(@RequestPart("file") MultipartFile file);
 
     @PutMapping("/ma-fiche/medias")
-    ResponseEntity<Void> updateMedias(@RequestBody MediasPutRequest body);
+    ResponseEntity<PrestataireDetailDto> updateMedias(@RequestBody MediasPutRequest body);
 }
