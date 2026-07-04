@@ -7,3 +7,4 @@ spring:
     locations:
       - classpath:db/migration
       - classpath:db/seed
+    ignore-migration-patterns: "*:missing"

@@ -1,7 +1,7 @@
 <template>
   <BadgeableComponent :count="reservation.unreadNotesCount">
     <SgiltCard
-      :image="reservation.prestatairePhoto || FALLBACK_PHOTO"
+      :image="reservation.prestatairePhoto ? toUrl(reservation.prestatairePhoto) : FALLBACK_PHOTO"
       ratio="4/3"
       @click="$emit('click')"
     >
@@ -23,9 +23,12 @@ import BadgeableComponent from '~/components/basics/BadgeableComponent.vue'
 import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
 import StatusBadge from '~/components/basics/StatusBadge.vue'
 import type { ReservationSummary } from '~/types/event'
+import { useImageUrl } from '~/composables/useImageUrl'
 
 defineProps<{ reservation: ReservationSummary }>()
 defineEmits<{ click: [] }>()
+
+const { toUrl } = useImageUrl()
 
 const FALLBACK_PHOTO =
   'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&auto=format&fit=crop'
