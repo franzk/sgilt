@@ -1,6 +1,8 @@
-package net.franzka.sgilt.core.jwt;
+package net.franzka.sgilt.core.jwt.config;
 
 import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
+import net.franzka.sgilt.core.jwt.service.JwtService;
+import net.franzka.sgilt.core.jwt.service.TokenJwtService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

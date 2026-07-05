@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
-import net.franzka.sgilt.core.jwt.VerificationTokenHmacService;
+import net.franzka.sgilt.core.jwt.service.VerificationTokenHmacService;
 import net.franzka.sgilt.core.onboarding.domain.Onboarding;
 import net.franzka.sgilt.core.onboarding.domain.OnboardingState;
 import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
@@ -67,11 +67,10 @@ public class OnboardingSessionService {
      */
     public InitiationResult initiate(String email, Prestataire prestataire, InitOnboardingRequest request) {
         try {
-            String hmacToken = verificationTokenHmacService.generateToken();
-            String payload = hmacToken.substring(0, hmacToken.lastIndexOf("-"));
+            VerificationTokenHmacService.GeneratedToken generated = verificationTokenHmacService.generate();
 
             Onboarding onboarding = Onboarding.builder()
-                    .hmacPayload(payload)
+                    .hmacPayload(generated.payload())
                     .email(email)
                     .expiresAt(LocalDateTime.now().plusHours(
                             confirmationTokenProperties.confirmationExpirationHours()))
@@ -80,7 +79,7 @@ public class OnboardingSessionService {
                     .build();
 
             onboardingRepository.save(onboarding);
-            return new InitiationResult(onboarding, hmacToken);
+            return new InitiationResult(onboarding, generated.fullToken());
         } catch (JacksonException e) {
             throw new RuntimeException("Échec de la sérialisation des données du tunnel", e);
         }

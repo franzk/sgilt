@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.service.annotation.DeleteExchange;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
@@ -63,5 +64,20 @@ public interface KeycloakAdminClient {
             @RequestHeader("Authorization") String authorization,
             @PathVariable String userId,
             @RequestBody List<KeycloakRoleRepresentation> roles
+    );
+
+    /**
+     * Supprime un utilisateur du realm Keycloak par son UUID.
+     * Utilisé pour compenser une création DB échouée après un compte KC déjà créé.
+     *
+     * @param realm         le realm Keycloak cible
+     * @param authorization le header Authorization
+     * @param userId        l'UUID Keycloak de l'utilisateur à supprimer
+     */
+    @DeleteExchange("/admin/realms/{realm}/users/{userId}")
+    void deleteUser(
+            @PathVariable String realm,
+            @RequestHeader("Authorization") String authorization,
+            @PathVariable String userId
     );
 }

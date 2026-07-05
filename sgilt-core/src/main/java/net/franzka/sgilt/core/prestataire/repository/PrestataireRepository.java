@@ -25,6 +25,15 @@ public interface PrestataireRepository extends JpaRepository<Prestataire, UUID> 
     Optional<Prestataire> findBySlugAndDeletedAtIsNull(String slug);
 
     /**
+     * Vérifie si un slug est déjà utilisé, tous prestataires confondus (y compris supprimés,
+     * puisque la contrainte d'unicité en base porte sur la colonne sans filtre).
+     *
+     * @param slug le slug à vérifier
+     * @return {@code true} si le slug est déjà pris
+     */
+    boolean existsBySlug(String slug);
+
+    /**
      * Retourne tous les prestataires actifs.
      *
      * @return liste des prestataires non supprimés

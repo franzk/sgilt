@@ -1,6 +1,6 @@
 package net.franzka.sgilt.core.onboarding.service;
 
-import net.franzka.sgilt.core.jwt.TokenJwtService;
+import net.franzka.sgilt.core.jwt.service.TokenJwtService;
 import net.franzka.sgilt.core.onboarding.domain.Onboarding;
 import net.franzka.sgilt.core.onboarding.dto.SetPasswordTokenDto;
 import org.springframework.beans.factory.annotation.Qualifier;

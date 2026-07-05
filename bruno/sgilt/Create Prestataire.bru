@@ -1,0 +1,32 @@
+meta {
+  name: Create Prestataire
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{apiUrl}}/api/v1/admin/prestataires
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{login_token}}
+}
+
+body:json {
+  {
+    "email": "pro@ka.ka",
+    "firstName": "SgiltMan",
+    "lastName": "Pro",
+    "slug": "sgilt-man",
+    "prestataireName": "SgiltMan",
+    "category": "music",
+    "subcats": "pop-rock"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

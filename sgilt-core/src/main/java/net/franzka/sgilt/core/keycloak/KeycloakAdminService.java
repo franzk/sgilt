@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
 import javax.crypto.Mac;
@@ -55,31 +56,95 @@ public class KeycloakAdminService {
      * @throws KeycloakException en cas d'erreur lors des appels Keycloak
      */
     public void createClientUser(String email, String firstName, String lastName, String password) {
+        createUser(email, firstName, lastName,
+                List.of(new KeycloakCredential("password", password, false)),
+                "USER",
+                "Erreur lors de la création du compte client dans Keycloak.");
+    }
+
+    /**
+     * Crée un compte prestataire dans Keycloak, sans credential (aucun mot de passe utilisable),
+     * et lui assigne le rôle {@code PRO}. Le prestataire définira son mot de passe plus tard via
+     * le lien transmis par email (étapes suivantes du flux d'onboarding).
+     *
+     * @param email     l'adresse email (également utilisée comme username)
+     * @param firstName le prénom de l'utilisateur
+     * @param lastName  le nom de l'utilisateur
+     * @return l'UUID Keycloak du compte créé, à conserver pour compensation en cas d'échec DB
+     * @throws KeycloakException en cas d'erreur lors des appels Keycloak
+     */
+    public String createProUserWithoutPassword(String email, String firstName, String lastName) {
+        return createUser(email, firstName, lastName, List.of(), "PRO",
+                "Erreur lors de la création du compte prestataire dans Keycloak.");
+    }
+
+    /**
+     * Crée un utilisateur Keycloak avec les credentials et le rôle donné.
+     * Appelé par {@link #createClientUser} et {@link #createProUserWithoutPassword}.
+     *
+     * @param email        l'adresse email (également utilisée comme username)
+     * @param firstName    le prénom de l'utilisateur
+     * @param lastName     le nom de l'utilisateur
+     * @param credentials  les credentials à assigner (vide = aucun mot de passe utilisable)
+     * @param roleName     le nom du rôle realm à assigner (ex : {@code USER}, {@code PRO})
+     * @param errorMessage le message de {@link KeycloakException} en cas d'échec
+     * @return l'UUID Keycloak du compte créé
+     * @throws KeycloakUserAlreadyExistsException si un compte KC existe déjà pour cet email
+     * @throws KeycloakException en cas d'autre erreur lors des appels Keycloak
+     */
+    private String createUser(
+            String email, String firstName, String lastName,
+            List<KeycloakCredential> credentials, String roleName, String errorMessage) {
         try {
-            KeycloakTokenResponse adminToken = fetchAdminToken();
-            String auth = "Bearer " + adminToken.accessToken();
+            // 1. récupération du token admin
+            String auth = fetchAdminAuthHeader();
 
-            var response = keycloakAdminClient.createUser(
-                    keycloakProperties.realm(), auth,
-                    new KeycloakUserRequest(email, email, firstName, lastName, true, true,
-                            List.of(new KeycloakCredential("password", password, false)))
-            );
+            // 2. création du compte
+            var response = keycloakAdminClient.createUser(keycloakProperties.realm(), auth,
+                    new KeycloakUserRequest(email, email, firstName, lastName, true, true, credentials));
 
+            // 3. récupération de l'identifiant Keycloak du compte créé à partir du header Location
             String location = response.getHeaders().getFirst("Location");
             if (location == null) {
                 throw new KeycloakException("Header Location absent après création du user KC.");
             }
             String userId = location.substring(location.lastIndexOf('/') + 1);
 
-            KeycloakRoleRepresentation userRole = keycloakAdminClient.getRole(
-                    keycloakProperties.realm(), auth, "USER"
-            );
-            keycloakAdminClient.assignRoles(
-                    keycloakProperties.realm(), auth, userId, List.of(userRole)
-            );
+            // 4. assignation du rôle realm à l'utilisateur
+            KeycloakRoleRepresentation role = keycloakAdminClient.getRole(keycloakProperties.realm(), auth, roleName);
+            keycloakAdminClient.assignRoles(keycloakProperties.realm(), auth, userId, List.of(role));
+
+            return userId;
+        } catch (HttpClientErrorException.Conflict e) {
+            throw new KeycloakUserAlreadyExistsException(email, e);
         } catch (RestClientException e) {
-            throw new KeycloakException("Erreur lors de la création du compte client dans Keycloak.", e);
+            throw new KeycloakException(errorMessage, e);
         }
+    }
+
+    /**
+     * Supprime un compte Keycloak. Utilisé pour compenser une création DB échouée après qu'un
+     * compte KC a déjà été créé (aucun prestataire ne doit rester à moitié provisionné).
+     *
+     * @param userId l'UUID Keycloak du compte à supprimer
+     * @throws KeycloakException en cas d'erreur lors de la suppression
+     */
+    public void deleteUser(String userId) {
+        try {
+            String auth = fetchAdminAuthHeader();
+            keycloakAdminClient.deleteUser(keycloakProperties.realm(), auth, userId);
+        } catch (RestClientException e) {
+            throw new KeycloakException("Erreur lors de la suppression du compte KC " + userId + ".", e);
+        }
+    }
+
+    /**
+     * Obtient un token admin et le formatte en header {@code Authorization: Bearer <token>}.
+     *
+     * @return le header Authorization prêt à l'emploi
+     */
+    private String fetchAdminAuthHeader() {
+        return "Bearer " + fetchAdminToken().accessToken();
     }
 
     /**

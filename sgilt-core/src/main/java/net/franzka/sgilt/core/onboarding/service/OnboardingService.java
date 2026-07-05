@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
-import net.franzka.sgilt.core.jwt.TokenJwtService;
+import net.franzka.sgilt.core.jwt.service.TokenJwtService;
 import net.franzka.sgilt.core.keycloak.KeycloakAdminService;
 import net.franzka.sgilt.core.onboarding.domain.Onboarding;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountRequest;
@@ -94,7 +94,7 @@ public class OnboardingService {
         Claims claims;
         try {
             claims = setPasswordTokenJwtService.extractClaims(token);
-        } catch (JwtException ex) {
+        } catch (JwtException _) {
             throw new InvalidTokenException();
         }
 
