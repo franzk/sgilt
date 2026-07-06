@@ -72,7 +72,8 @@
       "Bash(curl -s -o /dev/null -w \"sgilt-core /api/v1/prestataires -> %{http_code}\\\\n\" http://localhost:5027/api/v1/prestataires)",
       "Bash(curl -sv --connect-timeout 3 http://localhost:5027/)",
       "Bash(docker exec *)",
-      "Bash(curl *)"
+      "Bash(curl *)",
+      "Bash(./gradlew compileJava test --tests \"*MailTemplateRegressionTest*\")"
     ]
   }
 }

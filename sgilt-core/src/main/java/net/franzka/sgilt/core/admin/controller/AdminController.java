@@ -5,6 +5,7 @@ import net.franzka.sgilt.core.admin.api.AdminApi;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireRequest;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireResponse;
 import net.franzka.sgilt.core.admin.exception.SlugAlreadyExistsException;
+import net.franzka.sgilt.core.admin.mailer.AdminMailerService;
 import net.franzka.sgilt.core.jwt.domain.ActionType;
 import net.franzka.sgilt.core.jwt.service.ActionLinkService;
 import net.franzka.sgilt.core.keycloak.KeycloakAdminService;
@@ -25,10 +26,12 @@ import java.util.Map;
 
 /**
  * Controller HTTP réservé à l'administration (rôle {@code ROLE_ADMIN}, distinct de PRO).
- * Etape 1/4 du flux de provisionnement prestataire : DB + Keycloak + token, sans mail ni front.
+ * Provisionne un prestataire de bout en bout : Keycloak + DB + email d'activation.
+ * L'adaptation de la mire front {@code /verify} au parcours prestataire reste à faire (étape 4).
  * Orchestre lui-même Keycloak (hors transaction) puis la création DB (transaction courte via
  * {@link TransactionTemplate}), chaque étape déléguée à une méthode à intention unique d'un
- * service de domaine ({@link UtilisateurService}, {@link PrestataireService}, {@link ActionLinkService}).
+ * service de domaine ({@link UtilisateurService}, {@link PrestataireService}, {@link ActionLinkService},
+ * {@link AdminMailerService}).
  */
 @RestController
 @Slf4j
@@ -39,11 +42,12 @@ public class AdminController implements AdminApi {
     private final UtilisateurService utilisateurService;
     private final ActionLinkService actionLinkService;
     private final KeycloakAdminService keycloakAdminService;
+    private final AdminMailerService adminMailerService;
     private final TransactionTemplate transactionTemplate;
 
     /**
      * Résultat interne à la transaction : la réponse HTTP et l'URL d'action créée, cette dernière
-     * destinée à l'envoi du mail (étape 3, pas encore branché).
+     * utilisée juste après pour l'envoi du mail d'activation.
      *
      * @param response  la réponse à retourner au client
      * @param actionUrl l'URL front créée (token signé inclus)
@@ -57,6 +61,7 @@ public class AdminController implements AdminApi {
      * @param utilisateurService   le service métier des utilisateurs
      * @param actionLinkService    le service de création des liens d'action (token + URL front)
      * @param keycloakAdminService le service métier des interactions Keycloak
+     * @param adminMailerService   le service d'envoi de l'email d'activation prestataire
      * @param transactionManager   le gestionnaire de transaction Spring, utilisé pour construire le {@link TransactionTemplate}
      */
     public AdminController(
@@ -64,11 +69,13 @@ public class AdminController implements AdminApi {
             UtilisateurService utilisateurService,
             ActionLinkService actionLinkService,
             KeycloakAdminService keycloakAdminService,
+            AdminMailerService adminMailerService,
             PlatformTransactionManager transactionManager) {
         this.prestataireService = prestataireService;
         this.utilisateurService = utilisateurService;
         this.actionLinkService = actionLinkService;
         this.keycloakAdminService = keycloakAdminService;
+        this.adminMailerService = adminMailerService;
         this.transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
@@ -76,13 +83,17 @@ public class AdminController implements AdminApi {
      * Provisionne un prestataire :
      * 1. création du compte Keycloak (rôle PRO, sans mot de passe utilisable)
      * 2. BDD : Utilisateur + Prestataire (fiche vierge) + lien d'action en base dans une transaction courte.
+     * 3. envoi de l'email d'activation, une fois la transaction commitée.
      * Si la création DB échoue après que le compte KC a été créé, compense
      * en le supprimant pour ne jamais laisser de prestataire à moitié provisionné.
+     * Si l'envoi du mail échoue, rien n'est compensé (le compte KC, l'utilisateur, le prestataire
+     * et le token restent en l'état — un nouvel appel recréerait un conflit de slug/email), mais
+     * l'endpoint renvoie une erreur pour que l'appelant sache que le mail n'est pas parti.
      * {@link TransactionTemplate} est utilisé plutôt que {@code @Transactional} : la frontière
      * transactionnelle doit démarrer précisément après l'appel Keycloak, dans la même méthode.
      *
      * @param request la requête de provisionnement
-     * @return 201 Created avec les identifiants créés
+     * @return 201 Created avec les identifiants créés, ou 500 si l'email n'a pas pu être envoyé
      * @throws SlugAlreadyExistsException si le slug est déjà utilisé
      */
     @Override
@@ -129,10 +140,16 @@ public class AdminController implements AdminApi {
                         return new ProvisioningResult(response, actionUrl);
                     });
 
-            // TODO: envoyer le mail avec result.actionUrl() (étape 3, hors périmètre ici)
             log.info("Provisionnement prestataire réussi — identifiants créés : {}", result.response());
 
-            // l'endpoint retourne les identifiants créés, mais pas le token (il sera envoyé par mail dans l'étape suivante)
+            // 4. envoi du mail d'activation, une fois la transaction commitée — pas de compensation si ça échoue
+            boolean mailSent = adminMailerService.sendPrestataireOnboardingEmail(
+                    request.email(), request.firstName(), result.actionUrl());
+            if (!mailSent) {
+                return ResponseEntity.internalServerError().build();
+            }
+
+            // l'endpoint retourne les identifiants créés, mais pas le token (transmis uniquement par email)
             return ResponseEntity.status(HttpStatus.CREATED).body(result.response());
         } catch (RuntimeException e) {
             log.error("Échec de la création DB après création du compte KC {} — compensation (deleteUser)", kcUserId, e);

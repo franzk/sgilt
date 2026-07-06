@@ -23,5 +23,11 @@ public enum MailType {
     /**
      * Mail de bienvenue envoyé après la confirmation de compte réussie.
      */
-    WELCOME_EMAIL
+    WELCOME_EMAIL,
+
+    /**
+     * Mail d'activation envoyé à un prestataire nouvellement provisionné par un admin,
+     * l'invitant à définir son mot de passe.
+     */
+    PRESTATAIRE_ONBOARDING_EMAIL
 }

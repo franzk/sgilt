@@ -1,0 +1,6 @@
+{
+  "subjectTemplate": "Votre fiche prestataire Sgilt est prête",
+  "htmlTemplate": "<p>Bonjour {firstName},</p>\n<p>Votre fiche prestataire a été créée sur Sgilt.</p>\n<p>Pour activer votre compte et définir votre mot de passe, cliquez sur le lien ci-dessous :</p>\n<p><a href=\"{actionUrl}\">Activer mon compte</a></p>\n<p>Ce lien expire dans 24 heures.</p>\n<p>À bientôt,</p>\n<p>L’équipe Sgilt.</p>\n",
+  "requiredVariables": ["firstName", "actionUrl"],
+  "htmlSafeVariables": []
+}
