@@ -74,7 +74,8 @@
       "Bash(docker exec *)",
       "Bash(curl *)",
       "Bash(./gradlew compileJava test --tests \"*MailTemplateRegressionTest*\")",
-      "Bash(./gradlew integrationTest --tests \"*ConfirmationAccountIT.givenValidToken_whenConfirmAccount_thenReturns200*\")"
+      "Bash(./gradlew integrationTest --tests \"*ConfirmationAccountIT.givenValidToken_whenConfirmAccount_thenReturns200*\")",
+      "Bash(grep *)"
     ]
   }
 }

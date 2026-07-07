@@ -859,6 +859,7 @@
   },
   "prestataire": {
     "edit-medias-btn": "Modifier les médias",
+    "add-medias-btn": "Ajouter des images",
     "media-dialog": {
       "title": "Modifier les médias",
       "preview-empty": "Cliquez sur un slot pour l'éditer",
