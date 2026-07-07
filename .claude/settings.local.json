@@ -52,7 +52,30 @@
       "Bash(grep -E \"\\\\.\\(ts|js|vue\\)$\")",
       "PowerShell(cd C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front; npx nuxi typecheck 2>&1 | Where-Object { $_ -match \"app/\" } | Select-Object -First 40)",
       "PowerShell(cd C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front; \\(npx nuxi typecheck 2>&1\\) | Where-Object { \\($_ -notmatch \"node_modules\"\\) -and \\($_ -notmatch \"^npm\"\\) -and \\($_ -notmatch \"^node\"\\) } | Select-Object -First 50)",
-      "PowerShell(cd C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front; \\(npx nuxi typecheck 2>&1\\) -join \"`n\" | Select-String \"app/\" | Select-Object -First 30)"
+      "PowerShell(cd C:\\\\Users\\\\koehl\\\\Documents\\\\projects\\\\sgilt\\\\sgilt\\\\sgilt-front; \\(npx nuxi typecheck 2>&1\\) -join \"`n\" | Select-String \"app/\" | Select-Object -First 30)",
+      "Bash(powershell -NoProfile -Command \"[guid]::NewGuid\\(\\).ToString\\(\\)\")",
+      "Bash(./gradlew compileJava -q)",
+      "Bash(docker volume *)",
+      "Bash(rm *)",
+      "Bash(timeout 90 ./gradlew.bat :sgilt-core:bootRun -Dspring.profiles.active=local --console=plain)",
+      "Bash(gradle -v)",
+      "Bash(timeout 90 ./gradlew.bat bootRun -Dspring.profiles.active=local --console=plain)",
+      "Bash(SPRING_PROFILES_ACTIVE=local timeout 90 ./gradlew.bat bootRun --console=plain)",
+      "Bash(powershell -Command \"Get-Process java -ErrorAction SilentlyContinue | Select-Object Id,StartTime\" 2>&1)",
+      "WebSearch",
+      "Bash(powershell -Command \"Get-ChildItem -Recurse -Path sgilt-mailer -Include *.java | Select-Object -ExpandProperty FullName\")",
+      "Bash(powershell -Command \"Select-String -Path 'sgilt-keycloak\\\\theme\\\\email\\\\theme.properties' -Pattern '.*'\")",
+      "Bash(powershell -Command \"Get-ChildItem -Recurse -Path sgilt-core\\\\src\\\\main\\\\java\\\\net\\\\franzka\\\\sgilt\\\\core\\\\jwt -Include *.java | Select-Object -ExpandProperty FullName\")",
+      "Bash(echo \"EXIT_CODE=$?\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:5027/actuator/health)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:5028/realms/sgilt)",
+      "Bash(curl -s -o /dev/null -w \"sgilt-core /api/v1/prestataires -> %{http_code}\\\\n\" http://localhost:5027/api/v1/prestataires)",
+      "Bash(curl -sv --connect-timeout 3 http://localhost:5027/)",
+      "Bash(docker exec *)",
+      "Bash(curl *)",
+      "Bash(./gradlew compileJava test --tests \"*MailTemplateRegressionTest*\")",
+      "Bash(./gradlew integrationTest --tests \"*ConfirmationAccountIT.givenValidToken_whenConfirmAccount_thenReturns200*\")",
+      "Bash(grep *)"
     ]
   }
 }

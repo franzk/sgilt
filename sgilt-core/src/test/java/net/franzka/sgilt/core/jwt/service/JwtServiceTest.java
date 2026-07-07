@@ -1,4 +1,4 @@
-package net.franzka.sgilt.core.jwt;
+package net.franzka.sgilt.core.jwt.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -18,8 +18,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 class JwtServiceTest {
 
-    private final String SECRET_A = randomBase64UrlSecret();
-    private final String SECRET_B = randomBase64UrlSecret();
+    private static final String SECRET_A = randomBase64UrlSecret();
+    private static final String SECRET_B = randomBase64UrlSecret();
     private static final String SUBJECT  = "user@example.com";
 
     private static String randomBase64UrlSecret() {

@@ -44,6 +44,11 @@ spring:
               predicates:
                 - Path=/api/v1/pro/**
 
+            - id: admin-private
+              uri: ${BACK_URL:http://localhost:5027}
+              predicates:
+                - Path=/api/v1/admin/**
+
   security:
     oauth2:
       resourceserver:

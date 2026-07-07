@@ -2,10 +2,13 @@ package net.franzka.sgilt.core.onboarding.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
-import net.franzka.sgilt.core.jwt.TokenJwtService;
+import net.franzka.sgilt.core.jwt.domain.ActionToken;
+import net.franzka.sgilt.core.jwt.service.ActionTokenService;
+import net.franzka.sgilt.core.jwt.service.TokenJwtService;
 import net.franzka.sgilt.core.keycloak.KeycloakAdminService;
 import net.franzka.sgilt.core.onboarding.domain.Onboarding;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountRequest;
+import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountResponse;
 import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
 import net.franzka.sgilt.core.onboarding.dto.InitOnboardingResponse;
 import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
@@ -17,11 +20,13 @@ import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,6 +53,7 @@ class OnboardingServiceTest {
     @Mock private OnboardingMailerService onboardingMailerService;
     @Mock private UtilisateurService utilisateurService;
     @Mock private KeycloakAdminService keycloakAdminService;
+    @Mock private ActionTokenService actionTokenService;
 
     @InjectMocks
     private OnboardingService onboardingService;
@@ -162,7 +168,7 @@ class OnboardingServiceTest {
             when(setPasswordTokenJwtService.isExpired(SP_TOKEN)).thenReturn(true);
 
             assertThatExceptionOfType(TokenExpiredException.class)
-                    .isThrownBy(() -> onboardingService.confirmAccount(buildRequest()));
+                    .isThrownBy(() -> onboardingService.confirmOnboarding(buildRequest()));
         }
 
         @Test
@@ -170,7 +176,7 @@ class OnboardingServiceTest {
             when(setPasswordTokenJwtService.isExpired(SP_TOKEN)).thenReturn(true);
 
             assertThatExceptionOfType(TokenExpiredException.class)
-                    .isThrownBy(() -> onboardingService.confirmAccount(buildRequest()));
+                    .isThrownBy(() -> onboardingService.confirmOnboarding(buildRequest()));
 
             verify(setPasswordTokenJwtService, never()).extractClaims(any());
         }
@@ -181,14 +187,14 @@ class OnboardingServiceTest {
             when(setPasswordTokenJwtService.extractClaims(SP_TOKEN)).thenThrow(new JwtException("bad token"));
 
             assertThatExceptionOfType(InvalidTokenException.class)
-                    .isThrownBy(() -> onboardingService.confirmAccount(buildRequest()));
+                    .isThrownBy(() -> onboardingService.confirmOnboarding(buildRequest()));
         }
 
         @Test
         void givenValidToken_whenConfirmAccount_thenCreatesKeycloakUser() {
             stubValidToken(UUID.randomUUID());
 
-            onboardingService.confirmAccount(buildRequest());
+            onboardingService.confirmOnboarding(buildRequest());
 
             verify(keycloakAdminService).createClientUser(EMAIL, FIRSTNAME, LASTNAME, "p@ssw0rd!");
         }
@@ -198,7 +204,7 @@ class OnboardingServiceTest {
             UUID onboardingId = UUID.randomUUID();
             InitOnboardingRequest formData = stubValidToken(onboardingId);
 
-            onboardingService.confirmAccount(buildRequest());
+            onboardingService.confirmOnboarding(buildRequest());
 
             verify(onboardingSessionService).createEntities(eq(formData), any(Prestataire.class), eq(EMAIL));
         }
@@ -207,13 +213,14 @@ class OnboardingServiceTest {
         void givenValidToken_whenConfirmAccount_thenSendsWelcomeEmail() {
             stubValidToken(UUID.randomUUID());
 
-            onboardingService.confirmAccount(buildRequest());
+            onboardingService.confirmOnboarding(buildRequest());
 
             verify(onboardingMailerService).sendWelcomeEmail(EMAIL);
         }
 
         private InitOnboardingRequest stubValidToken(UUID onboardingId) {
             Claims claims = mock(Claims.class);
+            when(claims.get("actionTokenId", String.class)).thenReturn(null);
             when(claims.get("onboardingId", String.class)).thenReturn(onboardingId.toString());
             when(claims.getSubject()).thenReturn(EMAIL);
             when(setPasswordTokenJwtService.isExpired(SP_TOKEN)).thenReturn(false);
@@ -232,6 +239,84 @@ class OnboardingServiceTest {
                     .thenReturn(UUID.randomUUID());
 
             return formData;
+        }
+
+        private ConfirmAccountRequest buildRequest() {
+            return new ConfirmAccountRequest(SP_TOKEN, "p@ssw0rd!", true);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // confirmAccount — repli sur le flux prestataire (claim actionTokenId)
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ConfirmPrestataireOnboarding {
+
+        private static final String KC_USER_ID = "kc-user-id";
+
+        @Test
+        void givenActionTokenClaim_whenConfirmAccount_thenDoesNotCreateNewKeycloakUser() {
+            stubValidActionToken(UUID.randomUUID());
+
+            onboardingService.confirmOnboarding(buildRequest());
+
+            verify(keycloakAdminService, never()).createClientUser(any(), any(), any(), any());
+        }
+
+        @Test
+        void givenActionTokenClaim_whenConfirmAccount_thenDoesNotCreateOnboardingEntities() {
+            stubValidActionToken(UUID.randomUUID());
+
+            onboardingService.confirmOnboarding(buildRequest());
+
+            verify(onboardingSessionService, never()).findById(any());
+            verify(onboardingSessionService, never()).createEntities(any(), any(), any());
+        }
+
+        @Test
+        void givenActionTokenClaim_whenConfirmAccount_thenResetsPasswordOnExistingKeycloakUser() {
+            stubValidActionToken(UUID.randomUUID());
+
+            onboardingService.confirmOnboarding(buildRequest());
+
+            verify(keycloakAdminService).getUserIdByEmail(EMAIL);
+            verify(keycloakAdminService).resetPassword(KC_USER_ID, "p@ssw0rd!");
+        }
+
+        @Test
+        void givenActionTokenClaim_whenConfirmAccount_thenConsumesActionTokenOnlyAfterPasswordReset() {
+            ActionToken actionToken = stubValidActionToken(UUID.randomUUID());
+
+            onboardingService.confirmOnboarding(buildRequest());
+
+            InOrder inOrder = inOrder(keycloakAdminService, actionTokenService);
+            inOrder.verify(keycloakAdminService).resetPassword(KC_USER_ID, "p@ssw0rd!");
+            inOrder.verify(actionTokenService).consume(actionToken);
+        }
+
+        @Test
+        void givenActionTokenClaim_whenConfirmAccount_thenReturnsMagicLoginUrlToProSpace() {
+            stubValidActionToken(UUID.randomUUID());
+            when(keycloakAdminService.getMagicLoginUrl(EMAIL, "/pro/page-edition")).thenReturn("https://sgilt/magic");
+
+            ConfirmAccountResponse response = onboardingService.confirmOnboarding(buildRequest());
+
+            assertThat(response.loginUrl()).isEqualTo("https://sgilt/magic");
+        }
+
+        private ActionToken stubValidActionToken(UUID actionTokenId) {
+            Claims claims = mock(Claims.class);
+            when(claims.get("actionTokenId", String.class)).thenReturn(actionTokenId.toString());
+            when(setPasswordTokenJwtService.isExpired(SP_TOKEN)).thenReturn(false);
+            when(setPasswordTokenJwtService.extractClaims(SP_TOKEN)).thenReturn(claims);
+
+            ActionToken actionToken = ActionToken.builder().id(actionTokenId).build();
+            when(actionTokenService.findById(actionTokenId)).thenReturn(actionToken);
+            when(actionTokenService.readPayload(actionToken)).thenReturn(Map.of("email", EMAIL));
+            when(keycloakAdminService.getUserIdByEmail(EMAIL)).thenReturn(KC_USER_ID);
+
+            return actionToken;
         }
 
         private ConfirmAccountRequest buildRequest() {

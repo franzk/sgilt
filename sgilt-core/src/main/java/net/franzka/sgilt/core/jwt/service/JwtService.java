@@ -1,4 +1,4 @@
-package net.franzka.sgilt.core.jwt;
+package net.franzka.sgilt.core.jwt.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -70,7 +70,7 @@ public class JwtService {
     public boolean isExpired(String token, SecretKey key) {
         try {
             return extractClaims(token, key).getExpiration().before(new Date());
-        } catch (ExpiredJwtException e) {
+        } catch (ExpiredJwtException _) {
             return true;
         }
     }

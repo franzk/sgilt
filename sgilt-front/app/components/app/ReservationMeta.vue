@@ -4,7 +4,7 @@
     class="cover-banner"
     :style="
       !loading && reservation?.prestatairePhoto
-        ? { backgroundImage: `url(${reservation.prestatairePhoto})` }
+        ? { backgroundImage: `url(${toUrl(reservation.prestatairePhoto)})` }
         : {}
     "
   >
@@ -41,6 +41,7 @@
 import { getStatusOverlayStyle } from '~/constants/reservation-status'
 import type { ReservationMeta } from '~/data/reservation/domain/ReservationMeta'
 import Sk from '~/components/basics/Sk.vue'
+import { useImageUrl } from '~/composables/useImageUrl'
 
 defineProps<{
   reservation: ReservationMeta | null
@@ -48,6 +49,8 @@ defineProps<{
 }>()
 
 defineEmits<{ back: [] }>()
+
+const { toUrl } = useImageUrl()
 
 const bannerRef = ref<HTMLElement | null>(null)
 let rafId: number | null = null

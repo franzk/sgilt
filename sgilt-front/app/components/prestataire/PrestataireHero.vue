@@ -16,6 +16,7 @@ const props = defineProps<{
 const { prestataire } = usePrestataire()
 const isEdit = computed(() => props.displayMode === 'edit')
 const heroboardOpen = ref(false)
+const hasMedia = computed(() => props.prestataire.medias.length > 0)
 
 const emit = defineEmits<{
   openVideo: [youtubeId: string]
@@ -89,36 +90,101 @@ async function share() {
 </script>
 
 <template>
-  <section class="hero" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
-    <!-- ── Mobile : carousel ── -->
-    <div class="carousel">
-      <div v-if="heroItems[heroIndex]?.type === 'image'" class="image">
-        <SgiltImage
-          :src="(heroItems[heroIndex] as HeroImage).src"
-          :alt="prestataire?.name"
-          loading="eager"
-        />
-      </div>
-
-      <template v-else-if="heroItems[heroIndex]?.type === 'video'">
-        <div class="image">
+  <section class="hero" :class="{ 'no-media': !hasMedia }" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
+    <template v-if="hasMedia">
+      <!-- ── Mobile : carousel ── -->
+      <div class="carousel">
+        <div v-if="heroItems[heroIndex]?.type === 'image'" class="image">
           <SgiltImage
-            :src="youtubeThumbnailUrl((heroItems[heroIndex] as HeroVideo).youtubeId)"
-            alt="Vidéo"
+            :src="(heroItems[heroIndex] as HeroImage).src"
+            :alt="prestataire?.name"
             loading="eager"
           />
         </div>
-        <button
-          class="video-play"
-          @click="emit('openVideo', (heroItems[heroIndex] as HeroVideo).youtubeId)"
-          aria-label="Lancer la vidéo"
-        >
-          ▶
-        </button>
-      </template>
 
-      <div class="overlay" aria-hidden="true" />
+        <template v-else-if="heroItems[heroIndex]?.type === 'video'">
+          <div class="image">
+            <SgiltImage
+              :src="youtubeThumbnailUrl((heroItems[heroIndex] as HeroVideo).youtubeId)"
+              alt="Vidéo"
+              loading="eager"
+            />
+          </div>
+          <button
+            class="video-play"
+            @click="emit('openVideo', (heroItems[heroIndex] as HeroVideo).youtubeId)"
+            aria-label="Lancer la vidéo"
+          >
+            ▶
+          </button>
+        </template>
 
+        <div class="overlay" aria-hidden="true" />
+
+        <div class="content">
+          <p class="category">{{ prestataire?.category }}</p>
+          <h1 class="name">{{ prestataire?.name }}</h1>
+          <EditableText
+            as="p"
+            v-model="prestataire!.baseline"
+            field="baseline"
+            :editable="isEdit"
+            class="baseline"
+          />
+        </div>
+
+        <div v-if="heroItems.length > 1" class="dots" aria-hidden="true">
+          <span
+            v-for="(_, i) in heroItems"
+            :key="i"
+            class="dot"
+            :class="{ active: i === heroIndex }"
+          />
+        </div>
+      </div>
+
+      <!-- ── Desktop : mosaïque ── -->
+      <div class="mosaic">
+        <!-- Photo principale -->
+        <div class="mosaic-main">
+          <SgiltImage
+            :src="prestataire?.medias ? (heroRef(prestataire.medias) ?? '') : ''"
+            :alt="prestataire?.name"
+            loading="eager"
+          />
+          <div class="overlay" aria-hidden="true" />
+          <div class="content">
+            <p class="category">{{ prestataire?.category }}</p>
+            <h1 class="name">{{ prestataire?.name }}</h1>
+            <EditableText
+              as="p"
+              v-model="prestataire!.baseline"
+              field="baseline"
+              :editable="isEdit"
+              class="baseline"
+            />
+          </div>
+        </div>
+
+        <!-- Miniatures -->
+        <div v-if="mosaicThumbs.length" class="mosaic-thumbs">
+          <button
+            v-for="(thumb, i) in mosaicThumbs"
+            :key="i"
+            class="mosaic-thumb"
+            :class="{ video: thumb.type === 'video' }"
+            @click="onThumbClick(thumb)"
+            :aria-label="thumb.type === 'video' ? 'Lancer la vidéo' : `Voir la photo`"
+          >
+            <SgiltImage :src="thumb.src" alt="" loading="lazy" />
+            <div v-if="thumb.type === 'video'" class="mosaic-play" aria-hidden="true">▶</div>
+          </button>
+        </div>
+      </div>
+    </template>
+
+    <!-- ── État sans média : pas de placeholder d'image, hero réduit au texte ── -->
+    <div v-else class="empty-hero">
       <div class="content">
         <p class="category">{{ prestataire?.category }}</p>
         <h1 class="name">{{ prestataire?.name }}</h1>
@@ -131,53 +197,10 @@ async function share() {
         />
       </div>
 
-      <div v-if="heroItems.length > 1" class="dots" aria-hidden="true">
-        <span
-          v-for="(_, i) in heroItems"
-          :key="i"
-          class="dot"
-          :class="{ active: i === heroIndex }"
-        />
-      </div>
-    </div>
-
-    <!-- ── Desktop : mosaïque ── -->
-    <div class="mosaic">
-      <!-- Photo principale -->
-      <div class="mosaic-main">
-        <SgiltImage
-          :src="prestataire?.medias ? (heroRef(prestataire.medias) ?? '') : ''"
-          :alt="prestataire?.name"
-          loading="eager"
-        />
-        <div class="overlay" aria-hidden="true" />
-        <div class="content">
-          <p class="category">{{ prestataire?.category }}</p>
-          <h1 class="name">{{ prestataire?.name }}</h1>
-          <EditableText
-            as="p"
-            v-model="prestataire!.baseline"
-            field="baseline"
-            :editable="isEdit"
-            class="baseline"
-          />
-        </div>
-      </div>
-
-      <!-- Miniatures -->
-      <div v-if="mosaicThumbs.length" class="mosaic-thumbs">
-        <button
-          v-for="(thumb, i) in mosaicThumbs"
-          :key="i"
-          class="mosaic-thumb"
-          :class="{ video: thumb.type === 'video' }"
-          @click="onThumbClick(thumb)"
-          :aria-label="thumb.type === 'video' ? 'Lancer la vidéo' : `Voir la photo`"
-        >
-          <SgiltImage :src="thumb.src" alt="" loading="lazy" />
-          <div v-if="thumb.type === 'video'" class="mosaic-play" aria-hidden="true">▶</div>
-        </button>
-      </div>
+      <button v-if="isEdit" class="add-media-cta" type="button" @click="heroboardOpen = true">
+        <ImageAddIcon />
+        {{ $t('prestataire.add-medias-btn') }}
+      </button>
     </div>
 
     <!-- Bouton back (toujours visible) -->
@@ -185,11 +208,11 @@ async function share() {
       <ArrowLeftIcon />
     </button>
 
-    <button v-if="!isEdit" class="share" @click="share" aria-label="Partager">
+    <button v-if="!isEdit && hasMedia" class="share" @click="share" aria-label="Partager">
       <ShareIcon />
     </button>
 
-    <button v-if="isEdit" class="edit-medias" type="button" @click="heroboardOpen = true">
+    <button v-if="isEdit && hasMedia" class="edit-medias" type="button" @click="heroboardOpen = true">
       <ImageAddIcon />
       {{ $t('prestataire.edit-medias-btn') }}
     </button>
@@ -294,6 +317,69 @@ async function share() {
       font-size: 1.1rem;
       pointer-events: none;
       z-index: 2;
+    }
+  }
+
+  // ─── État sans média : hero réduit au texte, pas de placeholder d'image ───────
+  .empty-hero {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-m;
+    padding: $spacing-xxl $spacing-m $spacing-l;
+    background: $surface-soft;
+
+    @media (min-width: $breakpoint-desktop) {
+      align-items: center;
+      text-align: center;
+      padding: $spacing-xxl $spacing-l;
+    }
+
+    .content {
+      position: static;
+      padding: 0;
+      color: $text-primary;
+      text-shadow: none;
+    }
+
+    .category {
+      color: $brand-accent;
+    }
+
+    .name {
+      color: $brand-primary;
+    }
+
+    .baseline {
+      color: $text-secondary;
+    }
+  }
+
+  .add-media-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-s $spacing-l;
+    background: $brand-primary;
+    color: $text-inverted;
+    border: none;
+    border-radius: $border-radius-xxl;
+    font-family: inherit;
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    cursor: pointer;
+    transition: opacity 150ms ease;
+
+    &:hover {
+      opacity: 0.85;
+    }
+
+    svg {
+      width: 1.1rem;
+      height: 1.1rem;
+      flex-shrink: 0;
     }
   }
 

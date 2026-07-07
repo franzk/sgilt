@@ -1,4 +1,4 @@
-package net.franzka.sgilt.core.jwt;
+package net.franzka.sgilt.core.jwt.service;
 
 import io.jsonwebtoken.Claims;
 
@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * Service JWT générique, configurable par constructeur.
- * Instancié via {@link JwtConfig} avec une clé dérivée et une durée d'expiration propres à chaque usage.
+ * Instancié via {@code JwtConfig} avec une clé dérivée et une durée d'expiration propres à chaque usage.
  * Non annoté {@code @Service} — géré comme bean Spring via {@code @Configuration}.
  */
 public class TokenJwtService {

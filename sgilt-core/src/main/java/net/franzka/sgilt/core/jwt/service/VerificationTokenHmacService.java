@@ -1,4 +1,4 @@
-package net.franzka.sgilt.core.jwt;
+package net.franzka.sgilt.core.jwt.service;
 
 import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
 import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
@@ -66,6 +66,27 @@ public class VerificationTokenHmacService {
      */
     public String generateToken() {
         return buildToken(generatePayload());
+    }
+
+    /**
+     * Résultat de {@link #generate()} : le payload seul (à persister) et le token complet
+     * (à transmettre par email) — évite à chaque appelant de reparser {@link #generateToken()}
+     * pour en extraire le payload.
+     *
+     * @param payload   le payload seul, à stocker en base (colonne unique)
+     * @param fullToken le token complet {@code payload-signature}, à inclure dans le lien transmis
+     */
+    public record GeneratedToken(String payload, String fullToken) {}
+
+    /**
+     * Génère un nouveau token de confirmation et retourne séparément son payload et sa forme complète.
+     *
+     * @return le token généré, payload et forme complète
+     */
+    public GeneratedToken generate() {
+        String fullToken = generateToken();
+        String payload = fullToken.substring(0, fullToken.lastIndexOf("-"));
+        return new GeneratedToken(payload, fullToken);
     }
 
     /**

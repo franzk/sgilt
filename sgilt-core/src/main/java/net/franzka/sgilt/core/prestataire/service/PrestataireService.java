@@ -109,6 +109,41 @@ public class PrestataireService {
     }
 
     /**
+     * Vérifie si un slug est déjà utilisé par un prestataire existant.
+     *
+     * @param slug le slug à vérifier
+     * @return {@code true} si le slug est déjà pris
+     */
+    public boolean existsBySlug(String slug) {
+        return prestataireRepository.existsBySlug(slug);
+    }
+
+    /**
+     * Crée et persiste une fiche prestataire vierge.
+     * Seuls {@code slug}, {@code name}, {@code categoryKey} et {@code subcatKeys} sont renseignés —
+     * tous les autres champs restent vides.
+     *
+     * @param utilisateur l'utilisateur déjà créé et lié à ce prestataire
+     * @param slug        le slug public de la fiche
+     * @param name        le nom du prestataire
+     * @param categoryKey la clé de catégorie
+     * @param subcatKeys  les clés de sous-catégories (peut être vide).
+     * @return le prestataire créé et persisté
+     */
+    public Prestataire createPrestataire(
+            Utilisateur utilisateur, String slug, String name, String categoryKey, List<String> subcatKeys) {
+        Prestataire prestataire = Prestataire.builder()
+                .utilisateur(utilisateur)
+                .slug(slug)
+                .name(name)
+                .categoryKey(categoryKey)
+                .subcatKeys(subcatKeys)
+                .build();
+
+        return prestataireRepository.save(prestataire);
+    }
+
+    /**
      * Retourne le slug du prestataire lié à un utilisateur PRO.
      *
      * @param utilisateur l'utilisateur propriétaire du compte pro
