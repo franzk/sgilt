@@ -5,7 +5,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.onboarding.api.OnboardingApi;
-import net.franzka.sgilt.core.onboarding.domain.Onboarding;
 import net.franzka.sgilt.core.onboarding.dto.*;
 import net.franzka.sgilt.core.onboarding.service.VerifyService;
 import net.franzka.sgilt.core.onboarding.service.OnboardingService;
@@ -45,8 +44,8 @@ public class OnboardingController implements OnboardingApi {
     }
 
     /**
-     * ETAPE 2 : vérification de l'email du client.
-     * Vérifie le token de confirmation reçu par email, fait passer la session en PENDING_CONFIRMATION
+     * ETAPE 2 : vérification de l'email du client, ou du token d'action prestataire.
+     * Effectue les actions en rapport avec le flow (onboarding client ou prestataire)
      * et retourne un JWT set-password valide 5 minutes.
      *
      * @param token le token de confirmation extrait du lien email
@@ -56,8 +55,7 @@ public class OnboardingController implements OnboardingApi {
     @Transactional
     public ResponseEntity<SetPasswordTokenDto> verifyToken(String token) {
         log.info("GET /confirmation — token présent: {}", token != null && !token.isBlank());
-        Onboarding onboarding = verifyService.validateVerificationToken(token);
-        return ResponseEntity.ok(verifyService.generateSetPasswordResponse(onboarding));
+        return ResponseEntity.ok(verifyService.verify(token));
     }
 
     /**
@@ -75,6 +73,6 @@ public class OnboardingController implements OnboardingApi {
     @Transactional
     public ResponseEntity<ConfirmAccountResponse> confirmAccount(@RequestBody @Valid ConfirmAccountRequest request) {
         log.info("POST /onboarding/confirm-account");
-        return ResponseEntity.ok(onboardingService.confirmAccount(request));
+        return ResponseEntity.ok(onboardingService.confirmOnboarding(request));
     }
 }

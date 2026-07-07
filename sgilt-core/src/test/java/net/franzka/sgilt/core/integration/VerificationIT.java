@@ -1,6 +1,6 @@
 package net.franzka.sgilt.core.integration;
 
-import net.franzka.sgilt.core.jwt.VerificationTokenHmacService;
+import net.franzka.sgilt.core.jwt.service.VerificationTokenHmacService;
 import net.franzka.sgilt.core.onboarding.domain.Onboarding;
 import net.franzka.sgilt.core.onboarding.domain.OnboardingState;
 import net.franzka.sgilt.core.onboarding.repository.OnboardingRepository;

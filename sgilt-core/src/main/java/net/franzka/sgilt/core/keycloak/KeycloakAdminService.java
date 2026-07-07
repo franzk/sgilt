@@ -139,6 +139,44 @@ public class KeycloakAdminService {
     }
 
     /**
+     * Retrouve l'UUID Keycloak d'un utilisateur existant par son email exact.
+     *
+     * @param email l'adresse email exacte recherchée
+     * @return l'UUID Keycloak du compte
+     * @throws KeycloakException si aucun compte ne correspond, ou en cas d'erreur d'appel
+     */
+    public String getUserIdByEmail(String email) {
+        try {
+            String auth = fetchAdminAuthHeader();
+            List<KeycloakUserRepresentation> users =
+                    keycloakAdminClient.getUsersByEmail(keycloakProperties.realm(), auth, email, true);
+            if (users.isEmpty()) {
+                throw new KeycloakException("Aucun compte Keycloak trouvé pour l'email '" + email + "'.");
+            }
+            return users.getFirst().id();
+        } catch (RestClientException e) {
+            throw new KeycloakException("Erreur lors de la recherche du compte Keycloak pour " + email + ".", e);
+        }
+    }
+
+    /**
+     * Définit un nouveau mot de passe (non temporaire) sur un compte Keycloak existant.
+     *
+     * @param userId   l'UUID Keycloak du compte
+     * @param password le nouveau mot de passe en clair
+     * @throws KeycloakException en cas d'erreur lors de l'appel Keycloak
+     */
+    public void resetPassword(String userId, String password) {
+        try {
+            String auth = fetchAdminAuthHeader();
+            keycloakAdminClient.resetPassword(keycloakProperties.realm(), auth, userId,
+                    new KeycloakCredential("password", password, false));
+        } catch (RestClientException e) {
+            throw new KeycloakException("Erreur lors de la définition du mot de passe pour " + userId + ".", e);
+        }
+    }
+
+    /**
      * Obtient un token admin et le formatte en header {@code Authorization: Bearer <token>}.
      *
      * @return le header Authorization prêt à l'emploi

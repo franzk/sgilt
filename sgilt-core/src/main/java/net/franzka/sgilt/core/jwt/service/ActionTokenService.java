@@ -1,15 +1,19 @@
 package net.franzka.sgilt.core.jwt.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
 import net.franzka.sgilt.core.jwt.domain.ActionToken;
 import net.franzka.sgilt.core.jwt.domain.ActionType;
 import net.franzka.sgilt.core.jwt.repository.ActionTokenRepository;
+import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import org.springframework.stereotype.Service;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Service métier pour l'entité {@link ActionToken}.
@@ -61,5 +65,62 @@ public class ActionTokenService {
         } catch (JacksonException e) {
             throw new IllegalStateException("Échec de sérialisation du payload du token d'action", e);
         }
+    }
+
+    /**
+     * Vérifie le token HMAC et charge le token d'action correspondant.
+     * Ne modifie/ne consomme rien.
+     *
+     * @param token le token {@code payload-signature} reçu par email
+     * @return le token d'action chargé et vérifié
+     * @throws net.franzka.sgilt.core.onboarding.exception.InvalidTokenException si la signature HMAC est invalide
+     * @throws EntityNotFoundException si aucun token ne correspond au payload
+     * @throws TokenExpiredException   si le token est expiré
+     */
+    public ActionToken checkToken(String token) {
+        String hmacPayload = verificationTokenHmacService.verify(token);
+
+        ActionToken actionToken = actionTokenRepository.findByHmacPayload(hmacPayload)
+                .orElseThrow(EntityNotFoundException::new);
+
+        if (!actionToken.getExpiresAt().isAfter(LocalDateTime.now())) {
+            throw new TokenExpiredException();
+        }
+
+        return actionToken;
+    }
+
+    /**
+     * Charge un token d'action par son identifiant.
+     *
+     * @param id l'identifiant du token
+     * @return le token correspondant
+     * @throws EntityNotFoundException si aucun token ne correspond à cet identifiant
+     */
+    public ActionToken findById(UUID id) {
+        return actionTokenRepository.findById(id)
+                .orElseThrow(EntityNotFoundException::new);
+    }
+
+    /**
+     * Supprime le token d'action, le marquant comme consommé.
+     * À n'appeler qu'après le succès de l'action que le token protégeait.
+     *
+     * @param actionToken le token à consommer
+     */
+    public void consume(ActionToken actionToken) {
+        actionTokenRepository.delete(actionToken);
+    }
+
+    /**
+     * Désérialise le payload jsonb du token en une map générique.
+     * Le service ne connaît pas la forme du payload — à l'appelant d'en interpréter les clés
+     * (chaque flow décide de ce qu'il y met à la création).
+     *
+     * @param actionToken le token dont on désérialise le payload
+     * @return le payload désérialisé
+     */
+    public Map<String, Object> readPayload(ActionToken actionToken) {
+        return objectMapper.readValue(actionToken.getPayload(), Map.class);
     }
 }

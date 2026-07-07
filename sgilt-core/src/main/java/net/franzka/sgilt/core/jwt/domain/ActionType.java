@@ -7,7 +7,7 @@ package net.franzka.sgilt.core.jwt.domain;
  */
 public enum ActionType {
 
-    PRESTATAIRE_ONBOARDING("/verify", "PRESTATAIRE_ONBOARDING");
+    PRESTATAIRE_ONBOARDING("/onboarding/verify", "PRESTATAIRE_ONBOARDING");
 
     private final String frontPath;
     private final String action;
@@ -20,7 +20,7 @@ public enum ActionType {
     /**
      * Retourne le chemin front auquel ce type d'action doit rediriger.
      *
-     * @return le chemin front (ex. {@code /verify})
+     * @return le chemin front (ex. {@code /onboarding/verify})
      */
     public String frontPath() {
         return frontPath;
@@ -29,7 +29,7 @@ public enum ActionType {
     /**
      * Retourne l'action que le front doit déclencher une fois sur ce chemin.
      *
-     * @return le nom de l'action (ex. {@code SET_PASSWORD})
+     * @return le nom de l'action
      */
     public String action() {
         return action;

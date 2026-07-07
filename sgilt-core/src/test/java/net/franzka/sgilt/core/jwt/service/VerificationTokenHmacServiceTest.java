@@ -1,4 +1,4 @@
-package net.franzka.sgilt.core.jwt;
+package net.franzka.sgilt.core.jwt.service;
 
 import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
 import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;

@@ -73,7 +73,8 @@
       "Bash(curl -sv --connect-timeout 3 http://localhost:5027/)",
       "Bash(docker exec *)",
       "Bash(curl *)",
-      "Bash(./gradlew compileJava test --tests \"*MailTemplateRegressionTest*\")"
+      "Bash(./gradlew compileJava test --tests \"*MailTemplateRegressionTest*\")",
+      "Bash(./gradlew integrationTest --tests \"*ConfirmationAccountIT.givenValidToken_whenConfirmAccount_thenReturns200*\")"
     ]
   }
 }

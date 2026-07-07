@@ -1,9 +1,9 @@
 package net.franzka.sgilt.core.integration;
 
 import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
-import net.franzka.sgilt.core.jwt.JwtService;
-import net.franzka.sgilt.core.jwt.TokenJwtService;
-import net.franzka.sgilt.core.jwt.VerificationTokenHmacService;
+import net.franzka.sgilt.core.jwt.service.JwtService;
+import net.franzka.sgilt.core.jwt.service.TokenJwtService;
+import net.franzka.sgilt.core.jwt.service.VerificationTokenHmacService;
 import net.franzka.sgilt.core.onboarding.repository.OnboardingRepository;
 import net.franzka.sgilt.core.reservation.domain.Note;
 import net.franzka.sgilt.core.reservation.domain.Reservation;

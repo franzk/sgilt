@@ -1,4 +1,4 @@
-package net.franzka.sgilt.core.jwt;
+package net.franzka.sgilt.core.jwt.service;
 
 import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class TokenJwtServiceTest {
 
-    private final String SECRET = randomBase64UrlSecret();
+    private static final String SECRET = randomBase64UrlSecret();
     private static final String SALT       = "test-salt";
 
     private static String randomBase64UrlSecret() {

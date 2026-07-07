@@ -6,7 +6,7 @@ import jakarta.persistence.EntityNotFoundException;
 import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
-import net.franzka.sgilt.core.jwt.VerificationTokenHmacService;
+import net.franzka.sgilt.core.jwt.service.VerificationTokenHmacService;
 import net.franzka.sgilt.core.onboarding.domain.Onboarding;
 import net.franzka.sgilt.core.onboarding.domain.OnboardingState;
 import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
@@ -69,7 +69,8 @@ class OnboardingSessionServiceTest {
 
         @Test
         void givenValidRequest_whenInitiate_thenReturnsHmacToken() throws JacksonException {
-            when(verificationTokenHmacService.generateToken()).thenReturn(TOKEN);
+            when(verificationTokenHmacService.generate())
+                    .thenReturn(new VerificationTokenHmacService.GeneratedToken(PAYLOAD, TOKEN));
             when(confirmationTokenProperties.confirmationExpirationHours()).thenReturn(EXPIRATION_HOURS);
             when(objectMapper.writeValueAsString(any())).thenReturn("{}");
 
@@ -81,7 +82,8 @@ class OnboardingSessionServiceTest {
 
         @Test
         void givenValidRequest_whenInitiate_thenSavesOnboardingWithPayload() throws JacksonException {
-            when(verificationTokenHmacService.generateToken()).thenReturn(TOKEN);
+            when(verificationTokenHmacService.generate())
+                    .thenReturn(new VerificationTokenHmacService.GeneratedToken(PAYLOAD, TOKEN));
             when(confirmationTokenProperties.confirmationExpirationHours()).thenReturn(EXPIRATION_HOURS);
             when(objectMapper.writeValueAsString(any())).thenReturn("{}");
 
@@ -94,7 +96,8 @@ class OnboardingSessionServiceTest {
 
         @Test
         void givenValidRequest_whenInitiate_thenSavesOnboardingWithEmailAndPrestataire() throws JacksonException {
-            when(verificationTokenHmacService.generateToken()).thenReturn(TOKEN);
+            when(verificationTokenHmacService.generate())
+                    .thenReturn(new VerificationTokenHmacService.GeneratedToken(PAYLOAD, TOKEN));
             when(confirmationTokenProperties.confirmationExpirationHours()).thenReturn(EXPIRATION_HOURS);
             when(objectMapper.writeValueAsString(any())).thenReturn("{}");
             Prestataire prestataire = buildPrestataire();
@@ -109,7 +112,8 @@ class OnboardingSessionServiceTest {
 
         @Test
         void givenProperties_whenInitiate_thenSavesOnboardingWithCorrectExpiry() throws JacksonException {
-            when(verificationTokenHmacService.generateToken()).thenReturn(TOKEN);
+            when(verificationTokenHmacService.generate())
+                    .thenReturn(new VerificationTokenHmacService.GeneratedToken(PAYLOAD, TOKEN));
             when(confirmationTokenProperties.confirmationExpirationHours()).thenReturn(EXPIRATION_HOURS);
             when(objectMapper.writeValueAsString(any())).thenReturn("{}");
 
@@ -125,7 +129,8 @@ class OnboardingSessionServiceTest {
 
         @Test
         void givenSerializationFailure_whenInitiate_thenThrowsRuntimeException() throws JacksonException {
-            when(verificationTokenHmacService.generateToken()).thenReturn(TOKEN);
+            when(verificationTokenHmacService.generate())
+                    .thenReturn(new VerificationTokenHmacService.GeneratedToken(PAYLOAD, TOKEN));
             when(confirmationTokenProperties.confirmationExpirationHours()).thenReturn(EXPIRATION_HOURS);
             when(objectMapper.writeValueAsString(any())).thenThrow(mock(JacksonException.class));
 
