@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: http://localhost:5028/realms/sgilt/protocol/openid-connect/token
+  url: {{authUrl}}/realms/sgilt/protocol/openid-connect/token
   body: formUrlEncoded
   auth: inherit
 }
