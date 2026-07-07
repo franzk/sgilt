@@ -12,10 +12,11 @@
       />
       <Transition name="fade">
         <p v-if="dateError" class="date-error">{{ dateError }}</p>
+        <!-- reintroduce when we handle availability
         <div v-else-if="dateModel" class="availability-badge" :class="availabilityClass">
           <span class="icon">{{ availabilityIcon }}</span>
           <span>{{ availabilityLabel }}</span>
-        </div>
+        </div-->
       </Transition>
     </div>
 

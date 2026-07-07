@@ -68,7 +68,8 @@
     }
   },
   "search": {
-    "results-count": "{count} prestataires sont disponibles à votre date.",
+    "results-count": "{count} prestataires correspondent à votre recherche.",
+    "results-count-with-dispo": "{count} prestataires sont disponibles à votre date.",
     "vibe-text": "Votre événement prend forme."
   },
   "provider": {
