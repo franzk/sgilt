@@ -78,6 +78,37 @@ public class PrestataireController implements PrestataireApi {
     }
 
     /**
+     * Charge la fiche complète du prestataire connecté, quel que soit son statut.
+     * Réservé au prestataire connecté (ROLE_PRO).
+     *
+     * @return la fiche complète
+     */
+    @Override
+    @Transactional
+    @PreAuthorize("hasAuthority('ROLE_PRO')")
+    public ResponseEntity<PrestataireDetailDto> getMaFiche() {
+        Utilisateur utilisateur = currentUserService.get();
+        log.info("GET /prestataires/ma-fiche — email={}", utilisateur.getEmail());
+        return ResponseEntity.ok(prestataireService.getByUtilisateurOwner(utilisateur));
+    }
+
+    /**
+     * Soumet la fiche du prestataire connecté pour revue admin.
+     * Réservé au prestataire connecté (ROLE_PRO).
+     *
+     * @return 204 No Content
+     */
+    @Override
+    @Transactional
+    @PreAuthorize("hasAuthority('ROLE_PRO')")
+    public ResponseEntity<Void> submit() {
+        Utilisateur utilisateur = currentUserService.get();
+        log.info("POST /prestataires/ma-fiche/submit — email={}", utilisateur.getEmail());
+        prestataireService.submitMaFiche(utilisateur);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
      * Met à jour la fiche d'un prestataire.
      * Réservé au propriétaire de la fiche (ROLE_PRO).
      *

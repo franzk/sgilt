@@ -67,6 +67,7 @@ public abstract class PrestataireMapper {
     @Mapping(target = "subcatKeys",  ignore = true)
     @Mapping(target = "avatar",      ignore = true)
     @Mapping(target = "medias",      ignore = true)
+    @Mapping(target = "status",      ignore = true)
     @Mapping(target = "createdAt",   ignore = true)
     @Mapping(target = "deletedAt",   ignore = true)
     @Mapping(target = "badges",       source = "badges",       qualifiedByName = "serializeEngagementList")

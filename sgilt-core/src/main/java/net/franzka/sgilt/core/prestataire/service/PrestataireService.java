@@ -7,9 +7,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.prestataire.domain.MediaType;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
+import net.franzka.sgilt.core.prestataire.domain.PrestataireStatus;
 import net.franzka.sgilt.core.prestataire.dto.*;
 import net.franzka.sgilt.core.prestataire.exception.MediasInvalidException;
 import net.franzka.sgilt.core.prestataire.exception.PrestataireForbiddenException;
+import net.franzka.sgilt.core.prestataire.exception.PrestataireInvalidStateException;
 import net.franzka.sgilt.core.prestataire.exception.PrestataireNotFoundException;
 import net.franzka.sgilt.core.prestataire.mapper.PrestataireMapper;
 import net.franzka.sgilt.core.prestataire.repository.PrestataireRepository;
@@ -51,16 +53,45 @@ public class PrestataireService {
     }
 
     /**
-     * Charge la fiche complète d'un prestataire par son slug.
+     * Charge la fiche complète d'un prestataire publié par son slug.
      *
      * @param slug le slug du prestataire
      * @return le DTO complet
-     * @throws PrestataireNotFoundException si aucun prestataire ne correspond
+     * @throws PrestataireNotFoundException si aucun prestataire publié ne correspond
      */
     public PrestataireDetailDto getBySlug(String slug) {
-        Prestataire p = prestataireRepository.findBySlugAndDeletedAtIsNull(slug)
+        Prestataire p = prestataireRepository.findBySlugAndStatusAndDeletedAtIsNull(slug, PrestataireStatus.PUBLISHED)
                 .orElseThrow(() -> new PrestataireNotFoundException(slug));
         return prestataireMapper.toDetailDto(p);
+    }
+
+    /**
+     * Charge la fiche complète de l'utilisateur PRO, quel que soit son statut.
+     *
+     * @param utilisateur l'utilisateur PRO
+     * @return le DTO complet
+     * @throws PrestataireNotFoundException si aucun prestataire n'est lié à cet utilisateur
+     */
+    public PrestataireDetailDto getByUtilisateurOwner(Utilisateur utilisateur) {
+        return prestataireMapper.toDetailDto(findPrestataire(utilisateur));
+    }
+
+    /**
+     * Soumet la fiche du prestataire connecté pour revue admin — passe de DRAFT à IN_REVIEW.
+     * Aucune validation de complétude : la confiance est accordée au prestataire.
+     *
+     * @param utilisateur l'utilisateur PRO connecté
+     * @throws PrestataireNotFoundException si aucun prestataire n'est lié à cet utilisateur
+     * @throws PrestataireInvalidStateException si le statut courant n'est pas DRAFT
+     */
+    public void submitMaFiche(Utilisateur utilisateur) {
+        Prestataire prestataire = findPrestataire(utilisateur);
+        if (prestataire.getStatus() != PrestataireStatus.DRAFT) {
+            throw new PrestataireInvalidStateException(
+                    "La fiche ne peut pas être soumise depuis le statut " + prestataire.getStatus());
+        }
+        prestataire.setStatus(PrestataireStatus.IN_REVIEW);
+        prestataireRepository.save(prestataire);
     }
 
     /**
@@ -74,7 +105,7 @@ public class PrestataireService {
      * @return réponse avec résultats, compteurs catégorie et compteurs sous-catégorie
      */
     public PrestataireSearchResponseDto search(String categoryKey, List<String> subcatKeys) {
-        List<Prestataire> all = prestataireRepository.findByDeletedAtIsNull();
+        List<Prestataire> all = prestataireRepository.findByStatusAndDeletedAtIsNull(PrestataireStatus.PUBLISHED);
 
         List<Prestataire> filtered = resolveFiltered(categoryKey, subcatKeys);
         String activeCategoryKey = resolveActiveCategoryKey(categoryKey, subcatKeys, filtered);
@@ -138,6 +169,7 @@ public class PrestataireService {
                 .name(name)
                 .categoryKey(categoryKey)
                 .subcatKeys(subcatKeys)
+                .status(PrestataireStatus.DRAFT)
                 .build();
 
         return prestataireRepository.save(prestataire);
@@ -220,12 +252,12 @@ public class PrestataireService {
 
     private List<Prestataire> resolveFiltered(String categoryKey, List<String> subcatKeys) {
         if (subcatKeys != null && !subcatKeys.isEmpty()) {
-            return prestataireRepository.findBySubcatKeysInAndDeletedAtIsNull(subcatKeys);
+            return prestataireRepository.findBySubcatKeysInAndStatusAndDeletedAtIsNull(subcatKeys, PrestataireStatus.PUBLISHED);
         }
         if (categoryKey != null) {
-            return prestataireRepository.findByCategoryKeyAndDeletedAtIsNull(categoryKey);
+            return prestataireRepository.findByCategoryKeyAndStatusAndDeletedAtIsNull(categoryKey, PrestataireStatus.PUBLISHED);
         }
-        return prestataireRepository.findByDeletedAtIsNull();
+        return prestataireRepository.findByStatusAndDeletedAtIsNull(PrestataireStatus.PUBLISHED);
     }
 
     private String resolveActiveCategoryKey(String categoryKey, List<String> subcatKeys, List<Prestataire> filtered) {
