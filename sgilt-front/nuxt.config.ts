@@ -15,6 +15,7 @@ export default defineNuxtConfig({
       kcUrl: '',
       kcRealm: '',
       kcClientId: '',
+      maxUploadSizeMb: '10',
     },
   },
 

@@ -280,6 +280,9 @@ jobs:
           # Core app
           MAILER_FROM=${{ vars.MAILER_FROM }}
 
+          # Uploads (valeur fixe, pas de variable GitHub dédiée)
+          MAX_UPLOAD_SIZE_MB=10
+
           # R2
           R2_ENDPOINT=${{ vars.R2_ENDPOINT }}
           R2_BUCKET=${{ vars.R2_BUCKET }}

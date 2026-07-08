@@ -47,6 +47,7 @@ services:
       R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY}
       R2_BUCKET: ${R2_BUCKET}
       R2_DOCUMENTS_BUCKET: ${R2_DOCUMENTS_BUCKET}
+      MAX_UPLOAD_SIZE_MB: ${MAX_UPLOAD_SIZE_MB}
     depends_on:
       sgilt-core-db:
         condition: service_healthy
@@ -65,6 +66,7 @@ services:
       BACK_URL: http://sgilt-core-${ENV}:5027
       KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER}
       APP_URL: ${APP_URL}
+      MAX_UPLOAD_SIZE_MB: ${MAX_UPLOAD_SIZE_MB}
     depends_on:
       - sgilt-core
     networks:
@@ -84,6 +86,7 @@ services:
       - /etc/ssl/sgilt:/etc/ssl/sgilt:ro
     environment:
       API_DOMAIN: ${API_DOMAIN}
+      MAX_UPLOAD_SIZE_MB: ${MAX_UPLOAD_SIZE_MB}
     depends_on:
       - sgilt-gateway
     networks:

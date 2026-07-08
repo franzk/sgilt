@@ -140,6 +140,7 @@ type DraftSlot = {
   type: 'IMAGE' | 'YOUTUBE' | null
   ref: string | null
   status: SlotStatus
+  errorReason?: 'GENERIC' | 'TOO_LARGE'
 }
 
 type SlotDisplay = DraftSlot & {
@@ -174,7 +175,14 @@ function toSlotDisplay(slot: DraftSlot): SlotDisplay {
   return {
     ...slot,
     isUploading: slot.status === 'UPLOADING',
-    errorMessage: slot.status === 'ERROR' ? t('prestataire.media-dialog.upload-error') : null,
+    errorMessage:
+      slot.status === 'ERROR'
+        ? t(
+            slot.errorReason === 'TOO_LARGE'
+              ? 'prestataire.media-dialog.upload-too-large'
+              : 'prestataire.media-dialog.upload-error',
+          )
+        : null,
     thumbnailUrl,
   }
 }
@@ -236,7 +244,8 @@ async function handleUpload(e: Event): Promise<void> {
     slots.value[idx] = { type: 'IMAGE', ref: key, status: 'OCCUPIED' }
   } catch (e) {
     console.error('[PrestataireMediaDialog] upload failed', e)
-    slots.value[idx] = { type: null, ref: null, status: 'ERROR' }
+    const errorReason = e instanceof Error && e.message === 'IMAGE_TOO_LARGE' ? 'TOO_LARGE' : 'GENERIC'
+    slots.value[idx] = { type: null, ref: null, status: 'ERROR', errorReason }
   }
 }
 

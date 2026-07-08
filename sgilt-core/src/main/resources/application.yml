@@ -28,8 +28,8 @@ spring:
 
   servlet:
     multipart:
-      max-file-size: ${MAX_FILE_SIZE:10MB}
-      max-request-size: ${MAX_REQUEST_SIZE:10MB}
+      max-file-size: ${MAX_UPLOAD_SIZE_MB:10}MB
+      max-request-size: ${MAX_UPLOAD_SIZE_MB:10}MB
 
 sgilt:
   r2:
