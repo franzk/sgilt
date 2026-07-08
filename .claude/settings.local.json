@@ -75,7 +75,10 @@
       "Bash(curl *)",
       "Bash(./gradlew compileJava test --tests \"*MailTemplateRegressionTest*\")",
       "Bash(./gradlew integrationTest --tests \"*ConfirmationAccountIT.givenValidToken_whenConfirmAccount_thenReturns200*\")",
-      "Bash(grep *)"
+      "Bash(grep *)",
+      "Bash(npm view *)",
+      "Bash(npx nuxi *)",
+      "Bash(npx eslint *)"
     ]
   }
 }

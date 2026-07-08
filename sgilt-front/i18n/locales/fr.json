@@ -870,6 +870,7 @@
       "youtube-error": "Lien YouTube non valide",
       "delete-media": "Supprimer ce média",
       "upload-error": "Échec de l'upload",
+      "upload-too-large": "Image trop lourde, réessayez avec un fichier plus léger",
       "error-no-hero": "Une image principale est requise",
       "save-error": "Échec de l'enregistrement"
     },

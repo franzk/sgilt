@@ -60,5 +60,7 @@ export async function saveMediasUpdate(medias: Media[]): Promise<PrestataireDeta
 }
 
 export async function uploadPrestataireMedia(file: File): Promise<{ key: string }> {
-  return uploadPrestataireMediaApi(file)
+  const maxUploadSizeMb = Number(useRuntimeConfig().public.maxUploadSizeMb)
+  const resized = await resizeImageForUpload(file, maxUploadSizeMb * 1024 * 1024)
+  return uploadPrestataireMediaApi(resized)
 }
