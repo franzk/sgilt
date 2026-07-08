@@ -1,5 +1,6 @@
 package net.franzka.sgilt.core.admin.controller;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.admin.api.AdminApi;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireRequest;
@@ -10,6 +11,7 @@ import net.franzka.sgilt.core.jwt.domain.ActionType;
 import net.franzka.sgilt.core.jwt.service.ActionLinkService;
 import net.franzka.sgilt.core.keycloak.KeycloakAdminService;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
+import net.franzka.sgilt.core.prestataire.dto.PrestataireAdminListItemDto;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Controller HTTP réservé à l'administration (rôle {@code ROLE_ADMIN}, distinct de PRO).
@@ -157,5 +160,45 @@ public class AdminController implements AdminApi {
             keycloakAdminService.deleteUser(kcUserId);
             throw e;
         }
+    }
+
+    /**
+     * Liste tous les prestataires actifs avec leur statut, pour le back-office admin.
+     *
+     * @return la liste des fiches (id, name, slug, status)
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<List<PrestataireAdminListItemDto>> listPrestataires() {
+        log.info("GET /admin/prestataires");
+        return ResponseEntity.ok(prestataireService.getAllForAdmin());
+    }
+
+    /**
+     * Publie une fiche prestataire (passe de IN_REVIEW à PUBLISHED).
+     *
+     * @param id identifiant du prestataire à publier
+     * @return 204 No Content
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<Void> publishPrestataire(UUID id) {
+        log.info("POST /admin/prestataires/{}/publish", id);
+        prestataireService.publish(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Renvoie une fiche publiée en revue — modération admin (passe de PUBLISHED à IN_REVIEW).
+     *
+     * @param id identifiant du prestataire à renvoyer en revue
+     * @return 204 No Content
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<Void> sendPrestataireBackToReview(UUID id) {
+        log.info("POST /admin/prestataires/{}/send-to-review", id);
+        prestataireService.sendBackToReview(id);
+        return ResponseEntity.noContent().build();
     }
 }

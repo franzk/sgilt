@@ -34,6 +34,15 @@ public abstract class PrestataireMapper {
     public abstract PrestataireCardDto toCardDto(Prestataire prestataire);
 
     /**
+     * Mappe un prestataire vers sa représentation allégée pour le back-office admin.
+     * Tous les champs sont des scalaires — génération automatique.
+     *
+     * @param prestataire l'entité source
+     * @return le DTO liste admin
+     */
+    public abstract PrestataireAdminListItemDto toAdminListItemDto(Prestataire prestataire);
+
+    /**
      * Mappe un prestataire vers sa fiche complète.
      * Les champs JSONB (String en base) sont désérialisés via les méthodes @Named ci-dessous.
      *

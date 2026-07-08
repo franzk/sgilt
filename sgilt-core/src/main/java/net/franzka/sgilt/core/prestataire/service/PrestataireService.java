@@ -118,6 +118,51 @@ public class PrestataireService {
     }
 
     /**
+     * Retourne tous les prestataires actifs avec leur statut, pour le back-office admin.
+     *
+     * @return la liste des fiches (id, name, slug, status)
+     */
+    public List<PrestataireAdminListItemDto> getAllForAdmin() {
+        return prestataireRepository.findByDeletedAtIsNull().stream()
+                .map(prestataireMapper::toAdminListItemDto)
+                .toList();
+    }
+
+    /**
+     * Publie une fiche prestataire — passe de IN_REVIEW à PUBLISHED. Action admin.
+     *
+     * @param id identifiant du prestataire à publier
+     * @throws EntityNotFoundException si aucun prestataire ne correspond
+     * @throws PrestataireInvalidStateException si le statut courant n'est pas IN_REVIEW
+     */
+    public void publish(UUID id) {
+        Prestataire prestataire = getById(id);
+        if (prestataire.getStatus() != PrestataireStatus.IN_REVIEW) {
+            throw new PrestataireInvalidStateException(
+                    "La fiche ne peut pas être publiée depuis le statut " + prestataire.getStatus());
+        }
+        prestataire.setStatus(PrestataireStatus.PUBLISHED);
+        prestataireRepository.save(prestataire);
+    }
+
+    /**
+     * Renvoie une fiche publiée en revue (modération admin) — passe de PUBLISHED à IN_REVIEW.
+     *
+     * @param id identifiant du prestataire à renvoyer en revue
+     * @throws EntityNotFoundException si aucun prestataire ne correspond
+     * @throws PrestataireInvalidStateException si le statut courant n'est pas PUBLISHED
+     */
+    public void sendBackToReview(UUID id) {
+        Prestataire prestataire = getById(id);
+        if (prestataire.getStatus() != PrestataireStatus.PUBLISHED) {
+            throw new PrestataireInvalidStateException(
+                    "La fiche ne peut pas être renvoyée en revue depuis le statut " + prestataire.getStatus());
+        }
+        prestataire.setStatus(PrestataireStatus.IN_REVIEW);
+        prestataireRepository.save(prestataire);
+    }
+
+    /**
      * Applique les modifications sur la fiche d'un prestataire.
      * Seuls les champs non-null du DTO sont écrits (nullValuePropertyMappingStrategy = IGNORE).
      *

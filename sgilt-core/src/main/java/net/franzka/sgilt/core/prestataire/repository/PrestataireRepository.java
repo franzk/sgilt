@@ -35,6 +35,13 @@ public interface PrestataireRepository extends JpaRepository<Prestataire, UUID> 
     boolean existsBySlug(String slug);
 
     /**
+     * Retourne tous les prestataires actifs, tous statuts confondus (pour le back-office admin).
+     *
+     * @return liste des prestataires non supprimés
+     */
+    List<Prestataire> findByDeletedAtIsNull();
+
+    /**
      * Recherche le prestataire actif lié à un utilisateur donné.
      *
      * @param utilisateur l'utilisateur propriétaire du compte pro

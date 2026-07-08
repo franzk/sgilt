@@ -2,6 +2,7 @@ package net.franzka.sgilt.core.prestataire.service;
 
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.domain.PrestataireStatus;
+import net.franzka.sgilt.core.prestataire.dto.PrestataireAdminListItemDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireDetailDto;
 import net.franzka.sgilt.core.prestataire.exception.PrestataireInvalidStateException;
 import net.franzka.sgilt.core.prestataire.exception.PrestataireNotFoundException;
@@ -198,6 +199,107 @@ class PrestataireServiceTest {
             prestataireService.createPrestataire(utilisateur, SLUG, "Jean Photographe", "photo", List.of());
 
             assertThat(captor.getValue().getStatus()).isEqualTo(PrestataireStatus.DRAFT);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // publish
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class Publish {
+
+        @Test
+        void givenInReviewPrestataire_whenPublish_thenStatusBecomesPublished() {
+            Prestataire prestataire = prestataireWith(PrestataireStatus.IN_REVIEW);
+            when(prestataireRepository.findById(prestataire.getId())).thenReturn(Optional.of(prestataire));
+
+            prestataireService.publish(prestataire.getId());
+
+            assertThat(prestataire.getStatus()).isEqualTo(PrestataireStatus.PUBLISHED);
+            verify(prestataireRepository).save(prestataire);
+        }
+
+        @Test
+        void givenDraftPrestataire_whenPublish_thenThrowsInvalidState() {
+            Prestataire prestataire = prestataireWith(PrestataireStatus.DRAFT);
+            when(prestataireRepository.findById(prestataire.getId())).thenReturn(Optional.of(prestataire));
+
+            assertThatThrownBy(() -> prestataireService.publish(prestataire.getId()))
+                    .isInstanceOf(PrestataireInvalidStateException.class);
+            verify(prestataireRepository, never()).save(any());
+        }
+
+        @Test
+        void givenPublishedPrestataire_whenPublish_thenThrowsInvalidState() {
+            Prestataire prestataire = prestataireWith(PrestataireStatus.PUBLISHED);
+            when(prestataireRepository.findById(prestataire.getId())).thenReturn(Optional.of(prestataire));
+
+            assertThatThrownBy(() -> prestataireService.publish(prestataire.getId()))
+                    .isInstanceOf(PrestataireInvalidStateException.class);
+            verify(prestataireRepository, never()).save(any());
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // sendBackToReview
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class SendBackToReview {
+
+        @Test
+        void givenPublishedPrestataire_whenSendBackToReview_thenStatusBecomesInReview() {
+            Prestataire prestataire = prestataireWith(PrestataireStatus.PUBLISHED);
+            when(prestataireRepository.findById(prestataire.getId())).thenReturn(Optional.of(prestataire));
+
+            prestataireService.sendBackToReview(prestataire.getId());
+
+            assertThat(prestataire.getStatus()).isEqualTo(PrestataireStatus.IN_REVIEW);
+            verify(prestataireRepository).save(prestataire);
+        }
+
+        @Test
+        void givenDraftPrestataire_whenSendBackToReview_thenThrowsInvalidState() {
+            Prestataire prestataire = prestataireWith(PrestataireStatus.DRAFT);
+            when(prestataireRepository.findById(prestataire.getId())).thenReturn(Optional.of(prestataire));
+
+            assertThatThrownBy(() -> prestataireService.sendBackToReview(prestataire.getId()))
+                    .isInstanceOf(PrestataireInvalidStateException.class);
+            verify(prestataireRepository, never()).save(any());
+        }
+
+        @Test
+        void givenInReviewPrestataire_whenSendBackToReview_thenThrowsInvalidState() {
+            Prestataire prestataire = prestataireWith(PrestataireStatus.IN_REVIEW);
+            when(prestataireRepository.findById(prestataire.getId())).thenReturn(Optional.of(prestataire));
+
+            assertThatThrownBy(() -> prestataireService.sendBackToReview(prestataire.getId()))
+                    .isInstanceOf(PrestataireInvalidStateException.class);
+            verify(prestataireRepository, never()).save(any());
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // getAllForAdmin
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetAllForAdmin {
+
+        @Test
+        void givenPrestatairesWithMixedStatuses_whenGetAllForAdmin_thenReturnsAllRegardlessOfStatus() {
+            Prestataire draft = prestataireWith(PrestataireStatus.DRAFT);
+            Prestataire published = prestataireWith(PrestataireStatus.PUBLISHED);
+            PrestataireAdminListItemDto draftDto = new PrestataireAdminListItemDto(draft.getId(), "Jean", SLUG, PrestataireStatus.DRAFT);
+            PrestataireAdminListItemDto publishedDto = new PrestataireAdminListItemDto(published.getId(), "Jean", SLUG, PrestataireStatus.PUBLISHED);
+            when(prestataireRepository.findByDeletedAtIsNull()).thenReturn(List.of(draft, published));
+            when(prestataireMapper.toAdminListItemDto(draft)).thenReturn(draftDto);
+            when(prestataireMapper.toAdminListItemDto(published)).thenReturn(publishedDto);
+
+            List<PrestataireAdminListItemDto> result = prestataireService.getAllForAdmin();
+
+            assertThat(result).containsExactly(draftDto, publishedDto);
         }
     }
 
