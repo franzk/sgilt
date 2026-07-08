@@ -3,6 +3,7 @@
  */
 import type { EngagementKey } from '~/utils/constants'
 import type { Media } from '../domain/Media'
+import type { PrestataireStatus } from '../domain/PrestataireStatus'
 
 export interface PrestataireDetailDto {
   id: string
@@ -22,4 +23,5 @@ export interface PrestataireDetailDto {
   logistics?: string[]
   technical?: string[]
   faq?: { question: string; answer: string }[]
+  status: PrestataireStatus
 }

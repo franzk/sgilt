@@ -41,3 +41,11 @@ export async function putPrestataireMediasApi(medias: Media[]): Promise<Prestata
     body: { medias },
   })
 }
+
+export async function getMaFicheApi(): Promise<PrestataireDetailDto> {
+  return apiFetch<PrestataireDetailDto>('/prestataires/ma-fiche')
+}
+
+export async function submitPrestataireApi(): Promise<void> {
+  return apiFetch<void>('/prestataires/ma-fiche/submit', { method: 'POST' })
+}

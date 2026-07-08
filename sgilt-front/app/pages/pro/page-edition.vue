@@ -15,12 +15,12 @@ definePageMeta({ layout: 'default' })
 
 const router = useRouter()
 const currentUser = useCurrentUser()
-const { prestataire, load } = usePrestataire()
+const { prestataire, loadMaFiche } = usePrestataire()
 
 watch(
   () => currentUser.slug,
   (slug) => {
-    if (slug) load(slug)
+    if (slug) loadMaFiche()
   },
   { immediate: true },
 )

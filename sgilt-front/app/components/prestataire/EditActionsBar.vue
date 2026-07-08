@@ -4,20 +4,31 @@
       {{ saved ? $t('provider.edit.saved') : $t('provider.edit.save') }}
     </SgiltButton>
     <p v-if="saveError" class="error">{{ $t('provider.edit.save-error') }}</p>
+
+    <SgiltButton
+      v-if="prestataire?.status === 'DRAFT'"
+      class="btn-full"
+      variant="secondary"
+      :loading="submitting"
+      @click="onSubmit"
+    >
+      {{ $t('provider.edit.submit') }}
+    </SgiltButton>
+    <p v-if="submitError" class="error">{{ $t('provider.edit.submit-error') }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 
-const { save, saving, saved, saveError } = usePrestataire()
+const { prestataire, save, saving, saved, saveError, submit, submitting, submitError } = usePrestataire()
 
 async function onSave() {
   await save()
 }
 
-function onSubmit() {
-  // stub — branché au brief 4b
+async function onSubmit() {
+  await submit()
 }
 </script>
 
