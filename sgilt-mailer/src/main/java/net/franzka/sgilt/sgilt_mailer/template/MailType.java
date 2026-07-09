@@ -28,5 +28,13 @@ public enum MailType {
      * Mail d'activation envoyé à un prestataire nouvellement provisionné par un admin,
      * l'invitant à définir son mot de passe.
      */
-    PRESTATAIRE_ONBOARDING_EMAIL
+    PRESTATAIRE_ONBOARDING_EMAIL,
+
+    /**
+     * Mail déjà entièrement rendu par l'appelant (sujet + HTML fournis tels quels dans le
+     * contexte), sans passer par un gabarit métier. Utilisé exclusivement par
+     * {@code sgilt-smtp-bridge} pour relayer les mails envoyés nativement par Keycloak
+     * (reset password, verify email), dont le contenu est déjà généré par le thème Keycloak.
+     */
+    RAW_EMAIL
 }

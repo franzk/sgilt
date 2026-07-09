@@ -1,0 +1,6 @@
+{
+  "subjectTemplate": "{subject}",
+  "htmlTemplate": "{html}",
+  "requiredVariables": ["subject", "html"],
+  "htmlSafeVariables": ["subject", "html"]
+}
