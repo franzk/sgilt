@@ -35,11 +35,12 @@ public abstract class PrestataireMapper {
 
     /**
      * Mappe un prestataire vers sa représentation allégée pour le back-office admin.
-     * Tous les champs sont des scalaires — génération automatique.
+     * {@code email} est résolu depuis l'utilisateur lié.
      *
      * @param prestataire l'entité source
      * @return le DTO liste admin
      */
+    @Mapping(target = "email", source = "utilisateur.email")
     public abstract PrestataireAdminListItemDto toAdminListItemDto(Prestataire prestataire);
 
     /**

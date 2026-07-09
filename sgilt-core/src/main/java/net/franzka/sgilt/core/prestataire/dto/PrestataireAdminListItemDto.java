@@ -11,5 +11,6 @@ public record PrestataireAdminListItemDto(
         UUID id,
         String name,
         String slug,
-        PrestataireStatus status
+        PrestataireStatus status,
+        String email
 ) {}

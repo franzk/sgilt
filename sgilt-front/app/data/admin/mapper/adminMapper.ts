@@ -14,6 +14,7 @@ export function mapPrestataireAdminFormat(dto: PrestataireAdminListItemDto): Pre
     name: dto.name,
     slug: dto.slug,
     status: dto.status,
+    email: dto.email,
   }
 }
 

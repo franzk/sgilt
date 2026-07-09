@@ -9,7 +9,10 @@
           <span class="avatar-initial">{{ row.name.charAt(0) }}</span>
         </template>
         <div class="row-content">
-          <p class="name">{{ row.name }}</p>
+          <div class="text">
+            <p class="name">{{ row.name }}</p>
+            <p class="email">{{ row.email }}</p>
+          </div>
           <PrestataireStatusBadge :status="row.status" />
         </div>
         <template #cta>
@@ -172,11 +175,29 @@ onMounted(() => load())
   .row-content {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: $spacing-xs;
+    min-width: 0;
+
+    .text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
 
     .name {
       margin: 0;
       font-weight: 500;
+    }
+
+    .email {
+      margin: 0;
+      font-size: 0.8rem;
+      color: $text-secondary;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 }

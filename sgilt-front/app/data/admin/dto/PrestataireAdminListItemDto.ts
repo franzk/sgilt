@@ -5,4 +5,5 @@ export interface PrestataireAdminListItemDto {
   name: string
   slug: string
   status: PrestataireStatus
+  email: string
 }

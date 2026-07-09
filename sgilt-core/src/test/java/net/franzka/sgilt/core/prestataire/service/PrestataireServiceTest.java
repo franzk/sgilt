@@ -291,8 +291,10 @@ class PrestataireServiceTest {
         void givenPrestatairesWithMixedStatuses_whenGetAllForAdmin_thenReturnsAllRegardlessOfStatus() {
             Prestataire draft = prestataireWith(PrestataireStatus.DRAFT);
             Prestataire published = prestataireWith(PrestataireStatus.PUBLISHED);
-            PrestataireAdminListItemDto draftDto = new PrestataireAdminListItemDto(draft.getId(), "Jean", SLUG, PrestataireStatus.DRAFT);
-            PrestataireAdminListItemDto publishedDto = new PrestataireAdminListItemDto(published.getId(), "Jean", SLUG, PrestataireStatus.PUBLISHED);
+            PrestataireAdminListItemDto draftDto =
+                    new PrestataireAdminListItemDto(draft.getId(), "Jean", SLUG, PrestataireStatus.DRAFT, "pro@sgilt.fr");
+            PrestataireAdminListItemDto publishedDto =
+                    new PrestataireAdminListItemDto(published.getId(), "Jean", SLUG, PrestataireStatus.PUBLISHED, "pro@sgilt.fr");
             when(prestataireRepository.findByDeletedAtIsNull()).thenReturn(List.of(draft, published));
             when(prestataireMapper.toAdminListItemDto(draft)).thenReturn(draftDto);
             when(prestataireMapper.toAdminListItemDto(published)).thenReturn(publishedDto);
