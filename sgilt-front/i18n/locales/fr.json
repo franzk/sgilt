@@ -959,5 +959,31 @@
       "description": "Interlocuteur unique"
     },
     "ECORESPONSABLE": { "label": "Éco", "description": "Éco-responsable" }
+  },
+  "admin": {
+    "prestataires": {
+      "title": "Prestataires",
+      "loading": "Chargement…",
+      "publish": "Publier",
+      "send-to-review": "Renvoyer en revue",
+      "status": {
+        "DRAFT": "Brouillon",
+        "IN_REVIEW": "En revue",
+        "PUBLISHED": "Publié"
+      },
+      "form": {
+        "title": "Ajouter un prestataire",
+        "prestataire-name": "Nom du prestataire",
+        "slug": "Slug",
+        "category": "Catégorie",
+        "subcats": "Sous-catégories (séparées par des virgules)",
+        "first-name": "Prénom",
+        "last-name": "Nom",
+        "email": "Email",
+        "submit": "Créer",
+        "success": "Prestataire créé (slug : {slug}), email d'activation envoyé.",
+        "error": "Échec de la création, vérifiez les champs (slug déjà pris ?)."
+      }
+    }
   }
 }
