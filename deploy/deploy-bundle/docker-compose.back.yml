@@ -119,7 +119,7 @@ services:
     container_name: sgilt-smtp-bridge-${ENV}
     pull_policy: always
     environment:
-      MAILER_URL: http://sgilt-mailer-${ENV}:5030
+      MAILER_URL: http://sgilt-mailer-${ENV}:5030/api/v1/mail
     networks:
       - sgilt-network
     restart: unless-stopped
