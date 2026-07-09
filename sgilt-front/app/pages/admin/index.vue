@@ -2,6 +2,27 @@
   <div class="admin-page">
     <h1>{{ $t('admin.prestataires.title') }}</h1>
 
+    <section class="list">
+      <p v-if="loading">{{ $t('admin.prestataires.loading') }}</p>
+      <SgiltCard v-for="row in rows" :key="row.id" format="small" tag="div" :clickable="false">
+        <template #avatar>
+          <span class="avatar-initial">{{ row.name.charAt(0) }}</span>
+        </template>
+        <div class="row-content">
+          <p class="name">{{ row.name }}</p>
+          <PrestataireStatusBadge :status="row.status" />
+        </div>
+        <template #cta>
+          <SgiltButton v-if="row.status === 'IN_REVIEW'" variant="secondary" @click="publish(row.id)">
+            {{ $t('admin.prestataires.publish') }}
+          </SgiltButton>
+          <SgiltButton v-if="row.status === 'PUBLISHED'" variant="secondary" @click="sendBackToReview(row.id)">
+            {{ $t('admin.prestataires.send-to-review') }}
+          </SgiltButton>
+        </template>
+      </SgiltCard>
+    </section>
+
     <section class="create-form">
       <h2>{{ $t('admin.prestataires.form.title') }}</h2>
 
@@ -27,27 +48,6 @@
         {{ $t('admin.prestataires.form.success', { slug: lastProvisionedSlug }) }}
       </p>
       <p v-if="provisionError" class="error">{{ $t('admin.prestataires.form.error') }}</p>
-    </section>
-
-    <section class="list">
-      <p v-if="loading">{{ $t('admin.prestataires.loading') }}</p>
-      <SgiltCard v-for="row in rows" :key="row.id" format="small" tag="div" :clickable="false">
-        <template #avatar>
-          <span class="avatar-initial">{{ row.name.charAt(0) }}</span>
-        </template>
-        <div class="row-content">
-          <p class="name">{{ row.name }}</p>
-          <PrestataireStatusBadge :status="row.status" />
-        </div>
-        <template #cta>
-          <SgiltButton v-if="row.status === 'IN_REVIEW'" variant="secondary" @click="publish(row.id)">
-            {{ $t('admin.prestataires.publish') }}
-          </SgiltButton>
-          <SgiltButton v-if="row.status === 'PUBLISHED'" variant="secondary" @click="sendBackToReview(row.id)">
-            {{ $t('admin.prestataires.send-to-review') }}
-          </SgiltButton>
-        </template>
-      </SgiltCard>
     </section>
   </div>
 </template>
