@@ -4,12 +4,13 @@ import axios from 'axios'
 import dotenv from 'dotenv'
 
 
-interface MailDetails {
-  from: string
+interface MailRequest {
   to: string
-  subject: string
-  text: string
-  html: string
+  mailType: 'RAW_EMAIL'
+  context: {
+    subject: string
+    html: string
+  }
 }
 
 dotenv.config()
@@ -44,19 +45,20 @@ const handleRequest = async (stream: SMTPServerDataStream) => {
     console.log('📧 Received email:', parsed.from?.text, parsed.subject)
 
     // process mail data
-    const payload: MailDetails = {
-      from: parsed.from?.text || '',
+    const payload: MailRequest = {
       to: Array.isArray(parsed.to)
         ? parsed.to.flatMap((addr) => addr.text).join(',')
         : parsed.to?.text || '',
-      subject: parsed.subject || '',
-      text: parsed.text || '',
-      html: parsed.html || ''
+      mailType: 'RAW_EMAIL',
+      context: {
+        subject: parsed.subject || '',
+        html: parsed.html || parsed.textAsHtml || ''
+      }
     }
 
-    // Send email to API
+    // Send email to API (contrat MailRequest de sgilt-mailer)
     await axios.post(process.env.MAILER_URL!, payload)
-    console.log(`✅ Mail forwarded to API: ${payload.subject}`)
+    console.log(`✅ Mail forwarded to API: ${payload.context.subject}`)
   } catch (err) {
     console.error('❌ Error handling email:', err)
   }
