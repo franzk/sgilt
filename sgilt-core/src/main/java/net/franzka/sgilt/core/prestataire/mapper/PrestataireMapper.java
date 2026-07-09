@@ -34,6 +34,16 @@ public abstract class PrestataireMapper {
     public abstract PrestataireCardDto toCardDto(Prestataire prestataire);
 
     /**
+     * Mappe un prestataire vers sa représentation allégée pour le back-office admin.
+     * {@code email} est résolu depuis l'utilisateur lié.
+     *
+     * @param prestataire l'entité source
+     * @return le DTO liste admin
+     */
+    @Mapping(target = "email", source = "utilisateur.email")
+    public abstract PrestataireAdminListItemDto toAdminListItemDto(Prestataire prestataire);
+
+    /**
      * Mappe un prestataire vers sa fiche complète.
      * Les champs JSONB (String en base) sont désérialisés via les méthodes @Named ci-dessous.
      *
@@ -67,6 +77,7 @@ public abstract class PrestataireMapper {
     @Mapping(target = "subcatKeys",  ignore = true)
     @Mapping(target = "avatar",      ignore = true)
     @Mapping(target = "medias",      ignore = true)
+    @Mapping(target = "status",      ignore = true)
     @Mapping(target = "createdAt",   ignore = true)
     @Mapping(target = "deletedAt",   ignore = true)
     @Mapping(target = "badges",       source = "badges",       qualifiedByName = "serializeEngagementList")

@@ -89,6 +89,11 @@ public class Prestataire {
     @Column(columnDefinition = "jsonb")
     private String faq;
 
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(columnDefinition = "prestataire_status", nullable = false)
+    private PrestataireStatus status;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

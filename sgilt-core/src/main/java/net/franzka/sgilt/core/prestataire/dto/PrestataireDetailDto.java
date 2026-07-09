@@ -1,6 +1,7 @@
 package net.franzka.sgilt.core.prestataire.dto;
 
 import net.franzka.sgilt.core.prestataire.domain.Engagement;
+import net.franzka.sgilt.core.prestataire.domain.PrestataireStatus;
 
 import java.util.List;
 
@@ -24,5 +25,6 @@ public record PrestataireDetailDto(
         List<TestimonialDto> testimonials,
         List<String> logistics,
         List<String> technical,
-        List<FaqItemDto> faq
+        List<FaqItemDto> faq,
+        PrestataireStatus status
 ) {}

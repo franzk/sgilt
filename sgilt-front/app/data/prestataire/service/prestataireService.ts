@@ -4,9 +4,11 @@
 import {
   searchPrestatairesApi,
   getPrestataireBySlugApi,
+  getMaFicheApi,
   patchPrestataireApi,
   putPrestataireMediasApi,
   uploadPrestataireMediaApi,
+  submitPrestataireApi,
 } from '../api/prestataireApi'
 import {
   mapPrestataireCard,
@@ -43,11 +45,22 @@ export async function searchPrestataires(params: {
 
 export async function fetchPrestataireBySlug(slug: string): Promise<PrestataireDetail | null> {
   try {
-    const dto = await getPrestataireBySlugApi(slug)
-    return mapPrestataireDetail(dto)
+    return mapPrestataireDetail(await getPrestataireBySlugApi(slug))
   } catch {
     return null
   }
+}
+
+export async function fetchMaFiche(): Promise<PrestataireDetail | null> {
+  try {
+    return mapPrestataireDetail(await getMaFicheApi())
+  } catch {
+    return null
+  }
+}
+
+export async function submitPrestataire(): Promise<void> {
+  await submitPrestataireApi()
 }
 
 export async function savePrestataireUpdate(p: PrestataireDetail): Promise<void> {

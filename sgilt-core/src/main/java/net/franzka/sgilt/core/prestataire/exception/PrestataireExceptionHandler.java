@@ -25,4 +25,9 @@ public class PrestataireExceptionHandler {
     public ResponseEntity<Void> handleMediasInvalid(MediasInvalidException ex) {
         return ResponseEntity.badRequest().build();
     }
+
+    @ExceptionHandler(PrestataireInvalidStateException.class)
+    public ResponseEntity<Void> handleInvalidState(PrestataireInvalidStateException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
 }

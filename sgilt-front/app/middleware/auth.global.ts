@@ -18,9 +18,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const isAppRoute = to.path.startsWith('/app')
   const isProRoute = to.path.startsWith('/pro')
+  const isAdminRoute = to.path.startsWith('/admin')
   const isRedirectRoute = to.path === '/auth/redirect'
 
-  if (!isAppRoute && !isProRoute && !isRedirectRoute) return
+  if (!isAppRoute && !isProRoute && !isAdminRoute && !isRedirectRoute) return
 
   if (!isAuthenticated.value) {
     await login({ redirectUri: globalThis.location.origin + '/auth/redirect' })
@@ -28,16 +29,28 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   if (isRedirectRoute) {
+    if (hasRole('ADMIN')) return navigateTo('/admin')
     return navigateTo(hasRole('PRO') ? '/pro' : '/app')
   }
 
-  // Espace client (/app) : USER et ADMIN autorisés, PRO seul est refusé
-  if (isAppRoute && hasRole('PRO') && !hasRole('USER') && !hasRole('ADMIN')) {
+  // Espace admin : réservé aux ADMIN, qui n'ont accès à aucun autre espace protégé
+  if (hasRole('ADMIN')) {
+    if (isAdminRoute) return
+    return navigateTo('/admin')
+  }
+
+  // Espace client (/app) : USER autorisé, PRO refusé (ADMIN déjà traité ci-dessus)
+  if (isAppRoute && hasRole('PRO') && !hasRole('USER')) {
     return navigateTo('/pro')
   }
 
-  // Espace pro (/pro) : PRO et ADMIN autorisés, USER seul est refusé
-  if (isProRoute && !hasRole('PRO') && !hasRole('ADMIN')) {
+  // Espace pro (/pro) : PRO autorisé, USER refusé (ADMIN déjà traité ci-dessus)
+  if (isProRoute && !hasRole('PRO')) {
+    return navigateTo('/app')
+  }
+
+  // Espace admin (/admin) : non-ADMIN à ce stade (traité plus haut sinon), donc refusé
+  if (isAdminRoute) {
     return navigateTo('/app')
   }
 })

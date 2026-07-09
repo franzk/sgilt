@@ -27,6 +27,12 @@ public interface PrestataireApi {
     @GetMapping("/engagements")
     ResponseEntity<List<String>> getEngagementKeys();
 
+    @GetMapping("/ma-fiche")
+    ResponseEntity<PrestataireDetailDto> getMaFiche();
+
+    @PostMapping("/ma-fiche/submit")
+    ResponseEntity<Void> submit();
+
     @PatchMapping("/{id}")
     ResponseEntity<Void> update(@PathVariable UUID id, @RequestBody PrestataireUpdateDto dto);
 

@@ -203,8 +203,8 @@ async function share() {
       </button>
     </div>
 
-    <!-- Bouton back (toujours visible) -->
-    <button class="back" @click="emit('back')" aria-label="Retour">
+    <!-- Bouton back (masqué en mode édition) -->
+    <button v-if="!isEdit" class="back" @click="emit('back')" aria-label="Retour">
       <ArrowLeftIcon />
     </button>
 
