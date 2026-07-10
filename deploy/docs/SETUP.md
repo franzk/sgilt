@@ -14,6 +14,67 @@ Follow this guide when setting up staging or production for the first time.
 
 ---
 
+## Step 0 — Harden server access 
+
+À faire avant toute autre chose, sur un serveur tout juste provisionné.
+
+### 0.1 Update the system
+
+```bash
+apt update && apt full-upgrade -y
+reboot
+```
+
+### 0.2 Create a personal sudo user (if not already done)
+
+```bash
+adduser franz
+usermod -aG sudo franz
+rsync --archive --chown=franz:franz ~/.ssh /home/franz
+```
+
+Teste la connexion avec ce nouvel utilisateur dans un **second terminal** avant de continuer.
+
+### 0.3 Disable root SSH login and password authentication
+
+Édite `/etc/ssh/sshd_config` :
+
+```
+PermitRootLogin no
+PasswordAuthentication no
+```
+
+```bash
+systemctl restart ssh
+```
+
+### 0.4 Install fail2ban
+
+```bash
+apt install fail2ban -y
+systemctl enable --now fail2ban
+```
+
+### 0.5 Add swap
+
+Recommandé pour absorber les pics mémoire sur la stack JVM (core, gateway, mailer, Keycloak) :
+
+```bash
+fallocate -l 2G /swapfile
+chmod 600 /swapfile
+mkswap /swapfile
+swapon /swapfile
+echo '/swapfile none swap sw 0 0' >> /etc/fstab
+```
+
+### 0.6 Set timezone
+
+```bash
+timedatectl set-timezone Europe/Paris
+```
+
+---
+
 ## Step 1 — Prepare the server
 
 ### 1.1 Install Docker
@@ -63,10 +124,10 @@ The private key (`sgilt_deploy`) will be stored as a GitHub secret (`SSH_PRIVATE
 
 In the Ionos panel, open the following TCP ports:
 
-| Environment | Ports |
-|---|---|
-| Staging | 8443, 2053 |
-| Production | 443, 2053 |
+| Environment | Ports            |
+|-------------|------------------|
+| Staging     | 8443, 2053, 2096 |
+| Production  | 443, 2053, 2096  |
 
 ---
 
@@ -167,7 +228,7 @@ In Settings → Secrets and variables → Actions → Repository secrets:
 ### 4.4 Add Environment variables
 
 | Variable             | Staging                         | Production                  |
-|----------------------|---------------------------------|-----------------------------|
+|----------------------|---------------------------------|------------------------------|
 | `APP_URL`            | `https://staging.sgilt.fr`      | `https://sgilt.alsace`      |
 | `APP_DOMAIN`         | `staging.sgilt.fr`              | `sgilt.alsace`              |
 | `AUTH_URL`           | `https://auth-staging.sgilt.fr` | `https://auth.sgilt.alsace` |

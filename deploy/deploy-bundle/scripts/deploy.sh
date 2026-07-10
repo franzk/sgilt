@@ -119,7 +119,10 @@ if [[ "$MODE" == "init" ]]; then
     sleep 5
     echo "   Attempt ${KC_WAIT_ATTEMPTS}: fetching token..."
     KC_TOKEN=$(kc_curl -X POST "${KC_BASE}/realms/master/protocol/openid-connect/token" \
-      -d "client_id=admin-cli&grant_type=password&username=${KC_BOOTSTRAP_ADMIN_USERNAME}&password=${KC_BOOTSTRAP_ADMIN_PASSWORD}" \
+      --data-urlencode "client_id=admin-cli" \
+      --data-urlencode "grant_type=password" \
+      --data-urlencode "username=${KC_BOOTSTRAP_ADMIN_USERNAME}" \
+      --data-urlencode "password=${KC_BOOTSTRAP_ADMIN_PASSWORD}" \
       | jq -r '.access_token // empty' 2>/dev/null) || true
     echo "   Token: ${KC_TOKEN:0:20}${KC_TOKEN:+...}"
     [[ -z "$KC_TOKEN" ]] && continue
