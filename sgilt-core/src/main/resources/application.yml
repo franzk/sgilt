@@ -31,6 +31,19 @@ spring:
       max-file-size: ${MAX_UPLOAD_SIZE_MB:10}MB
       max-request-size: ${MAX_UPLOAD_SIZE_MB:10}MB
 
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    template:
+      retry:
+        enabled: true
+        initial-interval: 1s
+        multiplier: 2
+        max-interval: 10s
+        max-retries: 3
+
 sgilt:
   r2:
     endpoint: ${R2_ENDPOINT:http://localhost:5029}
@@ -41,8 +54,6 @@ sgilt:
   jwt:
     confirmation-secret: ${CONFIRMATION_TOKEN_SECRET}
     confirmation-expiration-hours: 24
-  mailer:
-    url: ${MAILER_URL:http://localhost:5030}
   frontend:
     url: ${PUBLIC_SITE_URL:http://localhost:3000}
   keycloak:

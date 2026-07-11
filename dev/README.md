@@ -5,7 +5,7 @@ Services can be run independently, depending on what you are working on.
 
 ## Infrastructure services
 
-Keycloak, PostgreSQL, MailHog, SMTP bridge, R2 mock:
+Keycloak, PostgreSQL, MailHog, SMTP bridge, RabbitMQ, R2 mock:
 
 ### First time: build the Keycloak SPI
 
@@ -55,6 +55,8 @@ you want to work on.
 Once everything is running, you can:
 - access the frontend at http://localhost:3000
 - access Keycloak at http://localhost:5080 (admin:admin)
+- access the RabbitMQ management UI at http://localhost:15672 (guest:guest) — `sgilt-core` and
+  `sgilt-mailer` connect to `localhost:5672` by default (`guest`:`guest`), no local secret needed.
 
 
 ### SETUP sgilt-core — local secrets

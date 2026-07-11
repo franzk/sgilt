@@ -11,5 +11,20 @@ spring:
       mail.smtp.auth: ${SMTP_AUTH:false}
       mail.smtp.ssl.enable: ${SMTP_SSL:false}
 
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    listener:
+      simple:
+        default-requeue-rejected: false
+        retry:
+          enabled: true
+          initial-interval: 1s
+          multiplier: 2
+          max-interval: 10s
+          max-retries: 3
+
 server:
   port: 5030

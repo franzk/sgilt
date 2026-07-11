@@ -36,7 +36,10 @@ services:
       DB_PASSWORD: ${CORE_DB_PASSWORD}
       KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER}
       CONFIRMATION_TOKEN_SECRET: ${CONFIRMATION_TOKEN_SECRET}
-      MAILER_URL: http://sgilt-mailer-${ENV}:5030
+      SPRING_RABBITMQ_HOST: rabbitmq-${ENV}
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
       MAILER_FROM: ${MAILER_FROM}
       PUBLIC_SITE_URL: ${PUBLIC_SITE_URL}
       KC_ADMIN_URL: ${KC_ADMIN_URL}
@@ -50,6 +53,8 @@ services:
       MAX_UPLOAD_SIZE_MB: ${MAX_UPLOAD_SIZE_MB}
     depends_on:
       sgilt-core-db:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
     networks:
       - sgilt-network
@@ -107,6 +112,13 @@ services:
       SMTP_PASSWORD: ${SMTP_PASSWORD}
       SMTP_AUTH: ${SMTP_AUTH}
       SMTP_SSL: ${SMTP_SSL}
+      SPRING_RABBITMQ_HOST: rabbitmq-${ENV}
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     networks:
       - sgilt-network
     restart: unless-stopped
@@ -119,14 +131,39 @@ services:
     container_name: sgilt-smtp-bridge-${ENV}
     pull_policy: always
     environment:
-      MAILER_URL: http://sgilt-mailer-${ENV}:5030/api/v1/mail
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq-${ENV}:5672
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     networks:
       - sgilt-network
     restart: unless-stopped
 
+  # =====================
+  # RABBITMQ
+  # =====================
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    container_name: rabbitmq-${ENV}
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - sgilt-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   sgilt_core_pgdata:
     name: sgilt_core_pgdata_${ENV}
+  rabbitmq_data:
+    name: rabbitmq_data_${ENV}
 
 networks:
   sgilt-network:

@@ -38,9 +38,20 @@ services:
     image: sgilt-smtp-bridge
     container_name: sgilt-smtp-bridge
     environment:
-      - MAILER_URL=http://host.docker.internal:5030/api/v1/mail
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
     build:
       context: ../sgilt-smtp-bridge
+    depends_on:
+      - rabbitmq
+    networks:
+      - sgilt-dev-net
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    container_name: sgilt-rabbitmq
+    ports:
+      - "5672:5672"   # AMQP, for sgilt-core/sgilt-mailer run via bootRun on the host
+      - "15672:15672" # Management UI
     networks:
       - sgilt-dev-net
 
