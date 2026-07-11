@@ -30,16 +30,12 @@
 
         <div class="separator" />
 
-        <!-- ── Section 2 : aide + contact ────────────────────────────────────── -->
+        <!-- ── Section 2 : contact ─────────────────────────────────────────────── -->
         <div class="group">
-          <a href="#" class="item" role="menuitem" @click.prevent="close">
-            <QuestionIcon class="item-icon" />
-            <span>{{ $t('profile.menu.help-center') }}</span>
-          </a>
-          <a href="#" class="item" role="menuitem" @click.prevent="close">
+          <NuxtLink to="/m/nous-contacter" class="item" role="menuitem" @click="close">
             <MailIcon class="item-icon" />
             <span>{{ $t('profile.menu.contact-sgilt') }}</span>
-          </a>
+          </NuxtLink>
         </div>
 
         <div class="separator" />
@@ -55,9 +51,6 @@
           <NuxtLink to="/m/mentions-legales" class="item" role="menuitem" @click="close">
             <span>{{ $t('profile.menu.mentions-legales') }}</span>
           </NuxtLink>
-          <a href="#" class="item" role="menuitem" @click.prevent="close">
-            <span>{{ $t('profile.menu.about') }}</span>
-          </a>
         </div>
       </div>
     </Transition>
@@ -69,7 +62,6 @@ import {
   UserIcon,
   LogoutBoxRIcon,
   LoginBoxIcon,
-  QuestionIcon,
   MailIcon,
   EditBoxIcon,
 } from '@remixicons/vue/line'

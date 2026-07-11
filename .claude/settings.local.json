@@ -78,7 +78,11 @@
       "Bash(grep *)",
       "Bash(npm view *)",
       "Bash(npx nuxi *)",
-      "Bash(npx eslint *)"
+      "Bash(npx eslint *)",
+      "Bash(nohup pnpm run dev)",
+      "Read(//c/Users/koehl/AppData/Local/Temp/claude/C--Users-koehl-Documents-projects-sgilt-sgilt/fc92fc88-026c-4e4c-bc98-ce12d13098c3/scratchpad/**)",
+      "Bash(pkill -f \"nuxt dev\")",
+      "Bash(taskkill //F //IM node.exe //T)"
     ]
   }
 }

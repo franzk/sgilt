@@ -715,12 +715,26 @@
       "edit-my-page": "Modifier ma page prestataire",
       "logout": "Déconnexion",
       "login": "Connexion",
-      "help-center": "Centre d'aide",
       "contact-sgilt": "Contacter Sgilt",
       "terms": "Conditions générales",
       "privacy": "Confidentialité",
-      "mentions-legales": "Mentions légales",
-      "about": "À propos"
+      "mentions-legales": "Mentions légales"
+    }
+  },
+  "contact": {
+    "page": {
+      "eyebrow": "Contact",
+      "title": "Échangeons",
+      "description": "Une question, un projet ou simplement envie d'échanger ?",
+      "button": "Écrire à l'équipe Sgilt",
+      "card-title": "Vous pouvez nous contacter pour…",
+      "card-item-discover": "Découvrir Sgilt",
+      "card-item-become-provider": "Devenir prestataire",
+      "card-item-event": "Parler d'un événement",
+      "card-item-idea": "Partager une idée",
+      "delay": "Réponse sous 48 h",
+      "copy-email-aria": "Copier l'email",
+      "copied-aria": "Copié"
     }
   },
   "pro": {
