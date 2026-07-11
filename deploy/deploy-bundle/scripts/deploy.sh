@@ -133,7 +133,8 @@ if [[ "$MODE" == "init" ]]; then
       --data-urlencode "client_id=admin-cli" \
       --data-urlencode "grant_type=password" \
       --data-urlencode "username=${KC_BOOTSTRAP_ADMIN_USERNAME}" \
-      --data-urlencode "password=${KC_BOOTSTRAP_ADMIN_PASSWORD}" 2>/dev/null || true
+      --data-urlencode "password=${KC_BOOTSTRAP_ADMIN_PASSWORD}" || true
+    echo "   (debug) token.json: $(wc -c < "${KC_TMP_DIR}/token.json" 2>/dev/null || echo missing) bytes"
     KC_TOKEN=$(jq -r '.access_token // empty' "${KC_TMP_DIR}/token.json" 2>/dev/null) || true
     if [[ -z "$KC_TOKEN" ]]; then
       KC_TOKEN_ERR=$(jq -r '.error_description // .error // empty' "${KC_TMP_DIR}/token.json" 2>/dev/null) || true
