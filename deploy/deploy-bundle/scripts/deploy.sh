@@ -118,12 +118,13 @@ if [[ "$MODE" == "init" ]]; then
     fi
     sleep 5
     echo "   Attempt ${KC_WAIT_ATTEMPTS}: fetching token..."
-    KC_TOKEN=$(kc_curl -X POST "${KC_BASE}/realms/master/protocol/openid-connect/token" \
+    KC_TOKEN_RESP=$(kc_curl -X POST "${KC_BASE}/realms/master/protocol/openid-connect/token" \
       --data-urlencode "client_id=admin-cli" \
       --data-urlencode "grant_type=password" \
       --data-urlencode "username=${KC_BOOTSTRAP_ADMIN_USERNAME}" \
-      --data-urlencode "password=${KC_BOOTSTRAP_ADMIN_PASSWORD}" \
-      | jq -r '.access_token // empty' 2>/dev/null) || true
+      --data-urlencode "password=${KC_BOOTSTRAP_ADMIN_PASSWORD}" 2>/dev/null) || true
+    echo "   Token response: ${KC_TOKEN_RESP:0:200}"
+    KC_TOKEN=$(echo "$KC_TOKEN_RESP" | jq -r '.access_token // empty' 2>/dev/null) || true
     echo "   Token: ${KC_TOKEN:0:20}${KC_TOKEN:+...}"
     [[ -z "$KC_TOKEN" ]] && continue
     echo "   Token OK, fetching client UUID..."
