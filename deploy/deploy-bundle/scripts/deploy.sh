@@ -100,9 +100,20 @@ if [[ "$MODE" == "init" ]]; then
     -f ./docker-compose.keycloak.yml \
     up -d
 
-  # Wait for KC to be ready and retrieve the admin client secret
+  # Wait for KC to be ready and retrieve the admin client secret.
+  # Responses are written to files on a bind-mounted volume rather than read
+  # from stdout: the deploy pipeline's log capture appears to intercept/mangle
+  # stdout content that looks like a secret (JWTs, client secrets), which
+  # silently corrupted the token before it ever reached jq.
+  KC_TMP_DIR="$(mktemp -d)"
+  chmod 777 "$KC_TMP_DIR"
+  trap 'rm -rf "$KC_TMP_DIR"' EXIT
+
   kc_curl() {
-    docker run --rm --network "sgilt-network-${ENV}" curlimages/curl -s "$@"
+    local outfile="$1"; shift
+    docker run --rm --network "sgilt-network-${ENV}" \
+      -v "${KC_TMP_DIR}:/kcout" \
+      curlimages/curl -s -o "/kcout/${outfile}" "$@"
   }
   KC_BASE="http://sgilt-keycloak-${ENV}:8080"
 
@@ -118,20 +129,21 @@ if [[ "$MODE" == "init" ]]; then
     fi
     sleep 5
     echo "   Attempt ${KC_WAIT_ATTEMPTS}: fetching token..."
-    KC_TOKEN_RESP=$(kc_curl -X POST "${KC_BASE}/realms/master/protocol/openid-connect/token" \
+    kc_curl token.json -X POST "${KC_BASE}/realms/master/protocol/openid-connect/token" \
       --data-urlencode "client_id=admin-cli" \
       --data-urlencode "grant_type=password" \
       --data-urlencode "username=${KC_BOOTSTRAP_ADMIN_USERNAME}" \
-      --data-urlencode "password=${KC_BOOTSTRAP_ADMIN_PASSWORD}" 2>/dev/null) || true
-    echo "   Token response: ${KC_TOKEN_RESP:0:200}"
-    KC_TOKEN=$(echo "$KC_TOKEN_RESP" | jq -r '.access_token // empty' 2>/dev/null) || true
-    echo "   Token: ${KC_TOKEN:0:20}${KC_TOKEN:+...}"
-    [[ -z "$KC_TOKEN" ]] && continue
+      --data-urlencode "password=${KC_BOOTSTRAP_ADMIN_PASSWORD}" 2>/dev/null || true
+    KC_TOKEN=$(jq -r '.access_token // empty' "${KC_TMP_DIR}/token.json" 2>/dev/null) || true
+    if [[ -z "$KC_TOKEN" ]]; then
+      KC_TOKEN_ERR=$(jq -r '.error_description // .error // empty' "${KC_TMP_DIR}/token.json" 2>/dev/null) || true
+      echo "   Token: empty (${KC_TOKEN_ERR:-no response})"
+      continue
+    fi
     echo "   Token OK, fetching client UUID..."
-    CLIENTS_RESP=$(kc_curl "${KC_BASE}/admin/realms/sgilt/clients?clientId=sgilt-admin" \
-      -H "Authorization: Bearer ${KC_TOKEN}" 2>/dev/null) || true
-    echo "   Clients response: ${CLIENTS_RESP:0:200}"
-    CLIENT_UUID=$(echo "$CLIENTS_RESP" | jq -r '.[0].id // empty' 2>/dev/null) || true
+    kc_curl clients.json "${KC_BASE}/admin/realms/sgilt/clients?clientId=sgilt-admin" \
+      -H "Authorization: Bearer ${KC_TOKEN}" 2>/dev/null || true
+    CLIENT_UUID=$(jq -r '.[0].id // empty' "${KC_TMP_DIR}/clients.json" 2>/dev/null) || true
     echo "   CLIENT_UUID: ${CLIENT_UUID}"
   done
   echo "   sgilt realm and clients ready."
@@ -139,9 +151,10 @@ if [[ "$MODE" == "init" ]]; then
   echo "   Configuring application secrets..."
   CONFIRMATION_TOKEN_SECRET=$(openssl rand -hex 32)
 
-  KC_ADMIN_CLIENT_SECRET=$(kc_curl \
+  kc_curl client-secret.json \
     "${KC_BASE}/admin/realms/sgilt/clients/${CLIENT_UUID}/client-secret" \
-    -H "Authorization: Bearer ${KC_TOKEN}" | jq -r '.value')
+    -H "Authorization: Bearer ${KC_TOKEN}"
+  KC_ADMIN_CLIENT_SECRET=$(jq -r '.value // empty' "${KC_TMP_DIR}/client-secret.json" 2>/dev/null) || true
   [[ -z "$KC_ADMIN_CLIENT_SECRET" || "$KC_ADMIN_CLIENT_SECRET" == "null" ]] && { echo "❌ Failed to read KC_ADMIN_CLIENT_SECRET"; exit 1; }
 
   printf "KC_ADMIN_CLIENT_SECRET=%s\nCONFIRMATION_TOKEN_SECRET=%s\n" \
