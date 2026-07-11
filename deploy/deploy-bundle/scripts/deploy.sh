@@ -117,6 +117,8 @@ if [[ "$MODE" == "init" ]]; then
   }
   KC_BASE="http://sgilt-keycloak-${ENV}:8080"
 
+  echo "   (debug) jq: $(command -v jq || echo 'not found') $(jq --version 2>&1 || true)"
+
   echo "── Phase 2 : Waiting for Keycloak to be ready (including clients)..."
   KC_TOKEN=""
   CLIENT_UUID=""
@@ -135,9 +137,9 @@ if [[ "$MODE" == "init" ]]; then
       --data-urlencode "username=${KC_BOOTSTRAP_ADMIN_USERNAME}" \
       --data-urlencode "password=${KC_BOOTSTRAP_ADMIN_PASSWORD}" || true
     echo "   (debug) token.json: $(wc -c < "${KC_TMP_DIR}/token.json" 2>/dev/null || echo missing) bytes"
-    KC_TOKEN=$(jq -r '.access_token // empty' "${KC_TMP_DIR}/token.json" 2>/dev/null) || true
+    KC_TOKEN=$(jq -r '.access_token // empty' "${KC_TMP_DIR}/token.json") || true
     if [[ -z "$KC_TOKEN" ]]; then
-      KC_TOKEN_ERR=$(jq -r '.error_description // .error // empty' "${KC_TMP_DIR}/token.json" 2>/dev/null) || true
+      KC_TOKEN_ERR=$(jq -r '.error_description // .error // empty' "${KC_TMP_DIR}/token.json") || true
       echo "   Token: empty (${KC_TOKEN_ERR:-no response})"
       continue
     fi
