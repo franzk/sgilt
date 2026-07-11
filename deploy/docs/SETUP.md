@@ -11,6 +11,7 @@ Follow this guide when setting up staging or production for the first time.
 - A Cloudflare account managing the target domain (`sgilt.fr` or `sgilt.alsace`)
 - A GitHub account with access to the `franzk/sgilt` repository
 - Docker and Docker Compose installed on the server
+- `jq` installed on the server (used by `deploy.sh` to parse the Keycloak admin API responses during `init`)
 
 ---
 
@@ -82,6 +83,7 @@ timedatectl set-timezone Europe/Paris
 ```bash
 curl -fsSL https://get.docker.com | sh
 sudo usermod -aG docker $USER
+sudo apt install -y jq
 ```
 
 Log out and back in for the group change to take effect.
@@ -328,3 +330,5 @@ docker exec sgilt-keycloak-db-staging \
 Both `master` and `sgilt` should appear. If only `master` is present, the import failed silently. Re-run in `init` mode after fixing the realm template.
 
 **Cloudflare 526 error** — verify the Origin Rule has `/*` wildcard at the end of the match URL.
+
+**KC init loop, token always empty ("Token: empty (no response)")** — `jq` is likely missing on the server. `deploy.sh` uses it to parse the Keycloak admin API responses during `init`; without it, every attempt silently fails and the phase times out after 5 minutes. Install it (`sudo apt install -y jq`) and re-run in `init` mode.
