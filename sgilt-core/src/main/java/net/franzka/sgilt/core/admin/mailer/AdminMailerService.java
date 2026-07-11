@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.mailer.MailRequest;
 import net.franzka.sgilt.core.mailer.MailType;
 import net.franzka.sgilt.core.mailer.MailerClient;
+import org.springframework.amqp.AmqpException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
 
 import java.util.Map;
 
@@ -40,7 +40,7 @@ public class AdminMailerService {
                     Map.of("firstName", firstName, "actionUrl", actionUrl),
                     null));
             return true;
-        } catch (RestClientException e) {
+        } catch (AmqpException e) {
             log.error("Échec de l'envoi du mail d'activation pour {} — actionUrl={}", prestataireEmail, actionUrl, e);
             return false;
         }

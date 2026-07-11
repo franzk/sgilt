@@ -13,6 +13,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.RabbitMQContainer;
 
 @Tag("integration")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
@@ -22,10 +23,14 @@ import org.testcontainers.containers.PostgreSQLContainer;
 abstract class BaseIntegrationTest {
 
     static final PostgreSQLContainer<?> postgres;
+    static final RabbitMQContainer rabbitmq;
 
     static {
         postgres = new PostgreSQLContainer<>("postgres:17");
         postgres.start();
+
+        rabbitmq = new RabbitMQContainer("rabbitmq:4-management-alpine");
+        rabbitmq.start();
     }
 
     @DynamicPropertySource
@@ -33,6 +38,10 @@ abstract class BaseIntegrationTest {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("spring.rabbitmq.host", rabbitmq::getHost);
+        registry.add("spring.rabbitmq.port", rabbitmq::getAmqpPort);
+        registry.add("spring.rabbitmq.username", rabbitmq::getAdminUsername);
+        registry.add("spring.rabbitmq.password", rabbitmq::getAdminPassword);
     }
 
     @MockitoBean
