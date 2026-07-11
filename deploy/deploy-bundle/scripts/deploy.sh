@@ -118,15 +118,20 @@ if [[ "$MODE" == "init" ]]; then
     fi
     sleep 5
     echo "   Attempt ${KC_WAIT_ATTEMPTS}: fetching token..."
-    KC_TOKEN=$(kc_curl -X POST "${KC_BASE}/realms/master/protocol/openid-connect/token" \
-      -d "client_id=admin-cli&grant_type=password&username=${KC_BOOTSTRAP_ADMIN_USERNAME}&password=${KC_BOOTSTRAP_ADMIN_PASSWORD}" \
-      | jq -r '.access_token // empty' 2>/dev/null) || true
-    echo "   Token: ${KC_TOKEN:0:20}${KC_TOKEN:+...}"
-    [[ -z "$KC_TOKEN" ]] && continue
+    KC_TOKEN_RESP=$(kc_curl -X POST "${KC_BASE}/realms/master/protocol/openid-connect/token" \
+      --data-urlencode "client_id=admin-cli" \
+      --data-urlencode "grant_type=password" \
+      --data-urlencode "username=${KC_BOOTSTRAP_ADMIN_USERNAME}" \
+      --data-urlencode "password=${KC_BOOTSTRAP_ADMIN_PASSWORD}" 2>/dev/null) || true
+    KC_TOKEN=$(echo "$KC_TOKEN_RESP" | jq -r '.access_token // empty' 2>/dev/null) || true
+    if [[ -z "$KC_TOKEN" ]]; then
+      KC_TOKEN_ERR=$(echo "$KC_TOKEN_RESP" | jq -r '.error_description // .error // empty' 2>/dev/null) || true
+      echo "   Token: empty (${KC_TOKEN_ERR:-no response})"
+      continue
+    fi
     echo "   Token OK, fetching client UUID..."
     CLIENTS_RESP=$(kc_curl "${KC_BASE}/admin/realms/sgilt/clients?clientId=sgilt-admin" \
       -H "Authorization: Bearer ${KC_TOKEN}" 2>/dev/null) || true
-    echo "   Clients response: ${CLIENTS_RESP:0:200}"
     CLIENT_UUID=$(echo "$CLIENTS_RESP" | jq -r '.[0].id // empty' 2>/dev/null) || true
     echo "   CLIENT_UUID: ${CLIENT_UUID}"
   done
@@ -137,7 +142,7 @@ if [[ "$MODE" == "init" ]]; then
 
   KC_ADMIN_CLIENT_SECRET=$(kc_curl \
     "${KC_BASE}/admin/realms/sgilt/clients/${CLIENT_UUID}/client-secret" \
-    -H "Authorization: Bearer ${KC_TOKEN}" | jq -r '.value')
+    -H "Authorization: Bearer ${KC_TOKEN}" | jq -r '.value // empty')
   [[ -z "$KC_ADMIN_CLIENT_SECRET" || "$KC_ADMIN_CLIENT_SECRET" == "null" ]] && { echo "❌ Failed to read KC_ADMIN_CLIENT_SECRET"; exit 1; }
 
   printf "KC_ADMIN_CLIENT_SECRET=%s\nCONFIRMATION_TOKEN_SECRET=%s\n" \
