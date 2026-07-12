@@ -1,6 +1,6 @@
 package net.franzka.sgilt.core.notifier;
 
-import net.franzka.sgilt.core.reservation.event.ReservationCreatedEvent;
+import net.franzka.sgilt.core.reservation.event.events.ReservationCreatedEvent;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,0 +1,64 @@
+package net.franzka.sgilt.core.reservation.event.mapper;
+
+import net.franzka.sgilt.core.evenement.domain.Evenement;
+import net.franzka.sgilt.core.prestataire.domain.Prestataire;
+import net.franzka.sgilt.core.reservation.domain.Reservation;
+import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
+import net.franzka.sgilt.core.reservation.event.events.ReservationCreatedEvent;
+import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class ReservationEventMapperTest {
+
+    private final ReservationEventMapper mapper = new ReservationEventMapperImpl();
+
+    @Nested
+    class ToReservationCreatedEvent {
+
+        @Test
+        void givenReservation_whenToReservationCreatedEvent_thenMapsAllFields() {
+            UUID reservationId = UUID.randomUUID();
+            UUID prestataireUserId = UUID.randomUUID();
+            LocalDate date = LocalDate.now();
+
+            Utilisateur prestataireUtilisateur = Utilisateur.builder()
+                    .id(prestataireUserId)
+                    .email("presta@example.com")
+                    .build();
+            Prestataire prestataire = Prestataire.builder()
+                    .utilisateur(prestataireUtilisateur)
+                    .build();
+            Utilisateur client = Utilisateur.builder()
+                    .firstName("Sophie")
+                    .lastName("Leroy")
+                    .build();
+            Evenement evenement = Evenement.builder()
+                    .title("Anniversaire de Paul")
+                    .build();
+            Reservation reservation = Reservation.builder()
+                    .id(reservationId)
+                    .prestataire(prestataire)
+                    .utilisateur(client)
+                    .evenement(evenement)
+                    .date(date)
+                    .status(ReservationStatus.NEW)
+                    .build();
+
+            ReservationCreatedEvent event = mapper.toReservationCreatedEvent(reservation);
+
+            assertThat(event.reservationId()).isEqualTo(reservationId);
+            assertThat(event.recipientUserId()).isEqualTo(prestataireUserId);
+            assertThat(event.recipientEmail()).isEqualTo("presta@example.com");
+            assertThat(event.clientFirstName()).isEqualTo("Sophie");
+            assertThat(event.clientLastName()).isEqualTo("Leroy");
+            assertThat(event.eventTitle()).isEqualTo("Anniversaire de Paul");
+            assertThat(event.eventDate()).isEqualTo(date);
+        }
+    }
+}

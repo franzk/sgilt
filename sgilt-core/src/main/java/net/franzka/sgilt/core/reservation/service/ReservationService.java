@@ -2,7 +2,6 @@ package net.franzka.sgilt.core.reservation.service;
 
 import lombok.RequiredArgsConstructor;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
-import net.franzka.sgilt.core.reservation.event.ReservationCreatedEvent;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.reservation.domain.Note;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
@@ -16,6 +15,7 @@ import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
 import net.franzka.sgilt.core.reservation.dto.ReservationMetaDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.dto.RefuseReservationRequest;
+import net.franzka.sgilt.core.reservation.event.mapper.ReservationEventMapper;
 import net.franzka.sgilt.core.reservation.exception.InvalidStateException;
 import net.franzka.sgilt.core.reservation.exception.ReservationNotAllowedException;
 import net.franzka.sgilt.core.reservation.exception.ReservationNotFoundException;
@@ -45,6 +45,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final NoteRepository noteRepository;
     private final ReservationMapper reservationMapper;
+    private final ReservationEventMapper reservationEventMapper;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     /**
@@ -149,15 +150,7 @@ public class ReservationService {
                 .build();
         noteRepository.save(note);
 
-        applicationEventPublisher.publishEvent(new ReservationCreatedEvent(
-                reservation.getId(),
-                prestataire.getUtilisateur().getId(),
-                prestataire.getUtilisateur().getEmail(),
-                utilisateur.getFirstName(),
-                utilisateur.getLastName(),
-                evenement.getTitle(),
-                date
-        ));
+        applicationEventPublisher.publishEvent(reservationEventMapper.toReservationCreatedEvent(reservation));
 
         return reservation;
     }

@@ -1,11 +1,13 @@
 package net.franzka.sgilt.core.reservation.service;
 
 import net.franzka.sgilt.core.evenement.domain.Evenement;
-import net.franzka.sgilt.core.reservation.event.ReservationCreatedEvent;
+import net.franzka.sgilt.core.reservation.event.events.ReservationCreatedEvent;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
+import net.franzka.sgilt.core.reservation.event.mapper.ReservationEventMapper;
+import net.franzka.sgilt.core.reservation.mapper.ReservationMapper;
 import net.franzka.sgilt.core.reservation.repository.NoteRepository;
 import net.franzka.sgilt.core.reservation.repository.ReservationRepository;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
@@ -40,6 +42,12 @@ class ReservationServiceTest {
 
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
+
+    @Mock
+    private ReservationMapper reservationMapper;
+
+    @Mock
+    private ReservationEventMapper reservationEventMapper;
 
     @InjectMocks
     private ReservationService reservationService;
@@ -139,7 +147,7 @@ class ReservationServiceTest {
     class Create {
 
         @Test
-        void givenReservationCreated_whenCreate_thenReservationCreatedEventPublished() {
+        void givenReservationCreated_whenCreate_thenMappedEventPublished() {
             Utilisateur prestataireUtilisateur = Utilisateur.builder()
                     .id(UUID.randomUUID())
                     .email("presta@example.com")
@@ -164,19 +172,20 @@ class ReservationServiceTest {
                 reservation.setId(UUID.randomUUID());
                 return reservation;
             });
+            ReservationCreatedEvent mappedEvent = new ReservationCreatedEvent(
+                    UUID.randomUUID(), prestataireUtilisateur.getId(), "presta@example.com",
+                    "Sophie", "Leroy", "Anniversaire de Paul", date);
+            when(reservationEventMapper.toReservationCreatedEvent(any(Reservation.class))).thenReturn(mappedEvent);
 
             reservationService.create(evenement, prestataire, client, date, "Un message");
 
-            ArgumentCaptor<ReservationCreatedEvent> captor = ArgumentCaptor.forClass(ReservationCreatedEvent.class);
-            verify(applicationEventPublisher).publishEvent(captor.capture());
-            ReservationCreatedEvent event = captor.getValue();
+            ArgumentCaptor<Reservation> reservationCaptor = ArgumentCaptor.forClass(Reservation.class);
+            verify(reservationEventMapper).toReservationCreatedEvent(reservationCaptor.capture());
+            assertThat(reservationCaptor.getValue().getPrestataire()).isEqualTo(prestataire);
+            assertThat(reservationCaptor.getValue().getUtilisateur()).isEqualTo(client);
+            assertThat(reservationCaptor.getValue().getEvenement()).isEqualTo(evenement);
 
-            assertThat(event.recipientEmail()).isEqualTo("presta@example.com");
-            assertThat(event.recipientUserId()).isEqualTo(prestataireUtilisateur.getId());
-            assertThat(event.clientFirstName()).isEqualTo("Sophie");
-            assertThat(event.clientLastName()).isEqualTo("Leroy");
-            assertThat(event.eventTitle()).isEqualTo("Anniversaire de Paul");
-            assertThat(event.eventDate()).isEqualTo(date);
+            verify(applicationEventPublisher).publishEvent(mappedEvent);
         }
     }
 
