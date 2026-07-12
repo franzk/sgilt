@@ -3,6 +3,7 @@
  */
 import { apiFetch } from '~/composables/useApi'
 import type { PrestataireAdminListItemDto } from '../dto/PrestataireAdminListItemDto'
+import type { PrestataireOnboardingPendingDto } from '../dto/PrestataireOnboardingPendingDto'
 import type { ProvisionPrestataireRequestDto } from '../dto/ProvisionPrestataireRequestDto'
 import type { ProvisionPrestataireResponseDto } from '../dto/ProvisionPrestataireResponseDto'
 
@@ -40,4 +41,21 @@ export async function provisionPrestataireApi(
   request: ProvisionPrestataireRequestDto,
 ): Promise<ProvisionPrestataireResponseDto> {
   return apiFetch<ProvisionPrestataireResponseDto>('/admin/prestataires', { method: 'POST', body: request })
+}
+
+/**
+ * Liste les prestataires dont l'onboarding est en attente (lien envoyé par email, pas encore cliqué).
+ */
+export async function listPendingOnboardingsApi(): Promise<PrestataireOnboardingPendingDto[]> {
+  return apiFetch<PrestataireOnboardingPendingDto[]>('/admin/prestataires/onboarding-pending')
+}
+
+/**
+ * Renvoie le mail d'activation à un prestataire dont l'onboarding est en attente, en
+ * réinitialisant la période de validité du lien.
+ *
+ * @param id identifiant du prestataire dont l'onboarding doit être relancé
+ */
+export async function resendOnboardingEmailApi(id: string): Promise<void> {
+  return apiFetch<void>(`/admin/prestataires/${id}/resend-onboarding-email`, { method: 'POST' })
 }

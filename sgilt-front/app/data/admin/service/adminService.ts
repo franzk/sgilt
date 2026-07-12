@@ -6,9 +6,17 @@ import {
   publishPrestataireApi,
   sendPrestataireBackToReviewApi,
   provisionPrestataireApi,
+  listPendingOnboardingsApi,
+  resendOnboardingEmailApi,
 } from '../api/adminApi'
-import { mapPrestataireAdminFormat, mapProvisionRequest, mapProvisionResult } from '../mapper/adminMapper'
+import {
+  mapPrestataireAdminFormat,
+  mapProvisionRequest,
+  mapProvisionResult,
+  mapPrestataireOnboardingPending,
+} from '../mapper/adminMapper'
 import type { PrestataireAdminFormat } from '../domain/PrestataireAdminFormat'
+import type { PrestataireOnboardingPending } from '../domain/PrestataireOnboardingPending'
 import type { PrestataireProvisioning } from '../domain/PrestataireProvisioning'
 import type { ProvisionResult } from '../domain/ProvisionResult'
 
@@ -46,4 +54,22 @@ export async function sendPrestataireBackToReview(id: string): Promise<void> {
 export async function provisionPrestataire(provisioning: PrestataireProvisioning): Promise<ProvisionResult> {
   const dto = await provisionPrestataireApi(mapProvisionRequest(provisioning))
   return mapProvisionResult(dto)
+}
+
+/**
+ * Récupère les prestataires dont l'onboarding est en attente (lien envoyé par email, pas encore cliqué).
+ */
+export async function fetchPendingOnboardings(): Promise<PrestataireOnboardingPending[]> {
+  const dtos = await listPendingOnboardingsApi()
+  return dtos.map(mapPrestataireOnboardingPending)
+}
+
+/**
+ * Renvoie le mail d'activation à un prestataire dont l'onboarding est en attente, en
+ * réinitialisant la période de validité du lien.
+ *
+ * @param id identifiant du prestataire dont l'onboarding doit être relancé
+ */
+export async function resendOnboardingEmail(id: string): Promise<void> {
+  await resendOnboardingEmailApi(id)
 }

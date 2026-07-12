@@ -64,3 +64,9 @@ Les états et variantes sont imbriqués avec `&` :
   .icon { ... }
 }
 ```
+
+---
+
+## Ce que Claude Code ne doit pas faire
+
+- Ne jamais lancer de build du front (`nuxt build`, `nuxi typecheck`, `nuxt generate`, etc.) — l'environnement n'est pas fiable pour ça (échecs préexistants sans rapport avec le code modifié). Relire le code à la main et laisser l'utilisateur vérifier via `npm run dev`.

@@ -118,12 +118,14 @@ public class PrestataireService {
     }
 
     /**
-     * Retourne tous les prestataires actifs avec leur statut, pour le back-office admin.
+     * Retourne tous les prestataires confirmés (onboarding terminé) avec leur statut de fiche.
+     * Exclut les prestataires dont l'onboarding est encore en attente (lien non cliqué, compte pas
+     * encore activé) — filtré au niveau de la requête, voir {@link PrestataireRepository#findConfirmedByDeletedAtIsNull()}.
      *
-     * @return la liste des fiches (id, name, slug, status)
+     * @return la liste des fiches confirmées (id, name, slug, status)
      */
-    public List<PrestataireAdminListItemDto> getAllForAdmin() {
-        return prestataireRepository.findByDeletedAtIsNull().stream()
+    public List<PrestataireAdminListItemDto> getConfirmedPrestataires() {
+        return prestataireRepository.findConfirmedByDeletedAtIsNull().stream()
                 .map(prestataireMapper::toAdminListItemDto)
                 .toList();
     }
@@ -182,6 +184,20 @@ public class PrestataireService {
         }
         prestataireMapper.updatePrestataire(prestataire, dto);
         prestataireRepository.save(prestataire);
+    }
+
+    /**
+     * Charge le prestataire actif dont l'utilisateur lié a l'email donné.
+     * Utilisé par le back-office pour retrouver la fiche associée à un token d'action en attente,
+     * dont le payload ne porte que l'email du destinataire.
+     *
+     * @param email l'email de l'utilisateur propriétaire de la fiche
+     * @return le prestataire correspondant
+     * @throws PrestataireNotFoundException si aucune fiche active ne correspond à cet email
+     */
+    public Prestataire getByUtilisateurEmail(String email) {
+        return prestataireRepository.findByUtilisateur_EmailAndDeletedAtIsNull(email)
+                .orElseThrow(() -> new PrestataireNotFoundException(email));
     }
 
     /**
