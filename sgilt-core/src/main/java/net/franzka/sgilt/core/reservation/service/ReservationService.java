@@ -2,7 +2,7 @@ package net.franzka.sgilt.core.reservation.service;
 
 import lombok.RequiredArgsConstructor;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
-import net.franzka.sgilt.core.notifier.event.ReservationCreatedEvent;
+import net.franzka.sgilt.core.reservation.event.ReservationCreatedEvent;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.reservation.domain.Note;
 import net.franzka.sgilt.core.reservation.domain.Reservation;

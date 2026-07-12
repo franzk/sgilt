@@ -1,6 +1,6 @@
-package net.franzka.sgilt.core.notifier;
+package net.franzka.sgilt.core.reservation.event;
 
-import net.franzka.sgilt.core.notifier.event.ReservationCreatedEvent;
+import net.franzka.sgilt.core.notifier.DomainEventPublisher;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +33,7 @@ class ReservationCreatedEventListenerTest {
 
             listener.handle(event);
 
-            verify(domainEventPublisher).publishReservationCreated(event);
+            verify(domainEventPublisher).publish(ReservationCreatedEvent.ROUTING_KEY, event);
         }
     }
 }

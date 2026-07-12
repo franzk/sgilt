@@ -1,7 +1,7 @@
-package net.franzka.sgilt.core.notifier;
+package net.franzka.sgilt.core.reservation.event;
 
 import lombok.RequiredArgsConstructor;
-import net.franzka.sgilt.core.notifier.event.ReservationCreatedEvent;
+import net.franzka.sgilt.core.notifier.DomainEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -26,6 +26,6 @@ public class ReservationCreatedEventListener {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handle(ReservationCreatedEvent event) {
-        domainEventPublisher.publishReservationCreated(event);
+        domainEventPublisher.publish(ReservationCreatedEvent.ROUTING_KEY, event);
     }
 }

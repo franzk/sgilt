@@ -1,6 +1,6 @@
 package net.franzka.sgilt.core.notifier;
 
-import net.franzka.sgilt.core.notifier.event.ReservationCreatedEvent;
+import net.franzka.sgilt.core.reservation.event.ReservationCreatedEvent;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,15 +24,15 @@ class DomainEventPublisherTest {
     private DomainEventPublisher domainEventPublisher;
 
     @Nested
-    class PublishReservationCreated {
+    class Publish {
 
         @Test
-        void givenEvent_whenPublishReservationCreated_thenConvertAndSendOnDomainEventsExchange() {
+        void givenEventAndRoutingKey_whenPublish_thenConvertAndSendOnDomainEventsExchange() {
             ReservationCreatedEvent event = new ReservationCreatedEvent(
                     UUID.randomUUID(), UUID.randomUUID(), "presta@example.com",
                     "Sophie", "Leroy", "Anniversaire de Paul", LocalDate.now());
 
-            domainEventPublisher.publishReservationCreated(event);
+            domainEventPublisher.publish(ReservationCreatedEvent.ROUTING_KEY, event);
 
             verify(rabbitTemplate).convertAndSend("domain-events", "reservation.created", event);
         }
