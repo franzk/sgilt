@@ -1,0 +1,54 @@
+package net.franzka.sgilt.notifications.notification.listener;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.franzka.sgilt.notifications.notification.event.ReservationCreatedEvent;
+import net.franzka.sgilt.notifications.notification.service.NotificationService;
+import org.springframework.amqp.AmqpRejectAndDontRequeueException;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.support.AmqpHeaders;
+import org.springframework.amqp.support.converter.SmartMessageConverter;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.stereotype.Component;
+
+import static net.franzka.sgilt.notifications.config.RabbitConfig.DOMAIN_EVENTS_QUEUE;
+import static net.franzka.sgilt.notifications.config.RabbitConfig.RESERVATION_CREATED_RK;
+
+/**
+ * Consomme tous les évènements de domaine publiés par sgilt-core, depuis la queue partagée
+ * {@value net.franzka.sgilt.notifications.config.RabbitConfig#DOMAIN_EVENTS_QUEUE}. Dispatch manuel
+ * par routing key plutôt que par les {@code @RabbitHandler} multiples de Spring AMQP : ce mécanisme
+ * a besoin d'un header {@code __TypeId__} pour choisir entre plusieurs méthodes candidates, ce qui a
+ * été délibérément évité (précédence {@code INFERRED} — pas de couplage sur le FQCN producteur, de
+ * toute façon différent entre sgilt-core et sgilt-notifications). Un nouvel évènement ajoute donc un
+ * cas dans le {@code switch} et une méthode de traitement, pas de nouvelle queue ni de nouveau
+ * listener. Comme côté sgilt-mailer : le retry configuré sur le listener s'applique à toute
+ * exception avant dead-letter, pas de court-circuit pour les erreurs déterministes.
+ */
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class DomainEventListener {
+
+    private final NotificationService notificationService;
+    private final SmartMessageConverter messageConverter;
+
+    @RabbitListener(queues = DOMAIN_EVENTS_QUEUE)
+    public void onMessage(Message message, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String routingKey) {
+        switch (routingKey) {
+            case RESERVATION_CREATED_RK -> onReservationCreated(convert(message, ReservationCreatedEvent.class));
+            default -> throw new AmqpRejectAndDontRequeueException("Routing key inconnue : " + routingKey);
+        }
+    }
+
+    private void onReservationCreated(ReservationCreatedEvent event) {
+        log.info("onReservationCreated : reservationId={} recipientEmail={}", event.reservationId(), event.recipientEmail());
+        notificationService.createReservationRequestNotification(event);
+    }
+
+    private <T> T convert(Message message, Class<T> targetType) {
+        return targetType.cast(messageConverter.fromMessage(message, ParameterizedTypeReference.forType(targetType)));
+    }
+}

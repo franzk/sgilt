@@ -11,9 +11,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration RabbitMQ de sgilt-notifications. Déclare la queue consommant les évènements de
- * domaine {@value #RESERVATION_CREATED_RK} publiés par sgilt-core sur l'exchange
- * {@value #DOMAIN_EVENTS_EXCHANGE}, et sa dead-letter queue.
+ * Configuration RabbitMQ de sgilt-notifications. Tous les évènements de domaine consommés par ce
+ * service partagent une seule queue {@value #DOMAIN_EVENTS_QUEUE} (et sa DLQ) — pas une paire par
+ * type d'évènement, pour ne pas multiplier queues/DLQ/constantes à chaque nouvel évènement ajouté.
+ * Le dispatch par type se fait via plusieurs méthodes {@code @RabbitHandler} dans
+ * {@link net.franzka.sgilt.notifications.notification.listener.DomainEventListener}. Un nouvel
+ * évènement n'ajoute donc qu'un binding (routing key) ici et une méthode côté listener — pas de
+ * nouvelle queue.
  */
 @Configuration
 public class RabbitConfig {
@@ -24,10 +28,12 @@ public class RabbitConfig {
      * (406 inequivalent arg côté RabbitMQ).
      */
     public static final String DOMAIN_EVENTS_EXCHANGE = "domain-events";
-    public static final String RESERVATION_CREATED_RK = "reservation.created";
-    public static final String RESERVATION_CREATED_QUEUE = "notifications.reservation-created";
+    public static final String DOMAIN_EVENTS_QUEUE = "notifications.domain-events";
 
-    private static final String RESERVATION_CREATED_DLQ = "notifications.reservation-created.dlq";
+    /** Routing key publiée par {@code sgilt-core} pour une réservation nouvellement créée. */
+    public static final String RESERVATION_CREATED_RK = "reservation.created";
+
+    private static final String DOMAIN_EVENTS_DLQ = "notifications.domain-events.dlq";
 
     /**
      * Déclare l'exchange topic des évènements de domaine (sgilt-core publie dessus sans savoir qui
@@ -41,39 +47,39 @@ public class RabbitConfig {
     }
 
     /**
-     * Déclare la queue de consommation des évènements {@value #RESERVATION_CREATED_RK}, avec
-     * dead-lettering vers {@value #RESERVATION_CREATED_DLQ} (via l'échange par défaut) une fois les
-     * tentatives de consommation épuisées.
+     * Déclare la queue partagée de consommation des évènements de domaine, avec dead-lettering vers
+     * {@value #DOMAIN_EVENTS_DLQ} (via l'échange par défaut) une fois les tentatives épuisées.
      *
      * @return la queue de consommation
      */
     @Bean
-    public Queue reservationCreatedQueue() {
-        return QueueBuilder.durable(RESERVATION_CREATED_QUEUE)
+    public Queue domainEventsQueue() {
+        return QueueBuilder.durable(DOMAIN_EVENTS_QUEUE)
                 .deadLetterExchange("")
-                .deadLetterRoutingKey(RESERVATION_CREATED_DLQ)
+                .deadLetterRoutingKey(DOMAIN_EVENTS_DLQ)
                 .build();
     }
 
     /**
-     * Déclare la dead-letter queue associée à {@value #RESERVATION_CREATED_QUEUE}.
+     * Déclare la dead-letter queue associée à {@value #DOMAIN_EVENTS_QUEUE}.
      *
      * @return la dead-letter queue
      */
     @Bean
-    public Queue reservationCreatedDlq() {
-        return QueueBuilder.durable(RESERVATION_CREATED_DLQ).build();
+    public Queue domainEventsDlq() {
+        return QueueBuilder.durable(DOMAIN_EVENTS_DLQ).build();
     }
 
     /**
-     * Lie la queue de consommation à l'exchange des évènements de domaine sur la routing key
-     * {@value #RESERVATION_CREATED_RK}.
+     * Lie la queue partagée à l'exchange des évènements de domaine sur la routing key
+     * {@value #RESERVATION_CREATED_RK}. Un futur évènement ajoute un binding du même genre ici,
+     * pas une nouvelle queue.
      *
      * @return le binding
      */
     @Bean
     public Binding reservationCreatedBinding() {
-        return BindingBuilder.bind(reservationCreatedQueue())
+        return BindingBuilder.bind(domainEventsQueue())
                 .to(domainEventsExchange())
                 .with(RESERVATION_CREATED_RK);
     }
@@ -81,7 +87,7 @@ public class RabbitConfig {
     /**
      * Convertisseur JSON pour les messages RabbitMQ. Précédence de type explicitement laissée sur
      * {@code INFERRED} (comportement par défaut) : la désérialisation se base sur le type du
-     * paramètre du {@code @RabbitListener}, pas sur un header {@code __TypeId__} qui référencerait
+     * paramètre du {@code @RabbitHandler}, pas sur un header {@code __TypeId__} qui référencerait
      * le FQCN du DTO producteur (différent côté sgilt-core).
      *
      * @return le convertisseur de message JSON
