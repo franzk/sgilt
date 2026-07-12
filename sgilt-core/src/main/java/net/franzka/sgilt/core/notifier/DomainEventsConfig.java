@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Déclare l'exchange topic des évènements de domaine. Le convertisseur JSON RabbitMQ est déjà
- * fourni par {@link net.franzka.sgilt.core.mailer.MailerConfig#jsonMessageConverter()} — ne pas en
+ * fourni par {@link net.franzka.sgilt.core.config.RabbitConfig#jsonMessageConverter()} — ne pas en
  * redéclarer un second ici (ambiguïté de bean).
  */
 @Configuration
