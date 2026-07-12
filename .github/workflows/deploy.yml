@@ -54,7 +54,6 @@ jobs:
           S_SMTP_AUTH:                   ${{ secrets.SMTP_AUTH }}
           S_SMTP_SSL:                    ${{ secrets.SMTP_SSL }}
           S_RABBITMQ_PASSWORD:           ${{ secrets.RABBITMQ_PASSWORD }}
-          S_NOTIFICATIONS_DB_PASSWORD:   ${{ secrets.NOTIFICATIONS_DB_PASSWORD }}
           S_R2_ACCESS_KEY_ID:            ${{ secrets.R2_ACCESS_KEY_ID }}
           S_R2_SECRET_ACCESS_KEY:        ${{ secrets.R2_SECRET_ACCESS_KEY }}
           V_APP_URL:                     ${{ vars.APP_URL }}
@@ -90,7 +89,6 @@ jobs:
           [[ -z "$S_SMTP_AUTH" ]]                   && missing+=("secret: SMTP_AUTH")
           [[ -z "$S_SMTP_SSL" ]]                    && missing+=("secret: SMTP_SSL")
           [[ -z "$S_RABBITMQ_PASSWORD" ]]           && missing+=("secret: RABBITMQ_PASSWORD")
-          [[ -z "$S_NOTIFICATIONS_DB_PASSWORD" ]]   && missing+=("secret: NOTIFICATIONS_DB_PASSWORD")
           [[ -z "$S_R2_ACCESS_KEY_ID" ]]            && missing+=("secret: R2_ACCESS_KEY_ID")
           [[ -z "$S_R2_SECRET_ACCESS_KEY" ]]        && missing+=("secret: R2_SECRET_ACCESS_KEY")
           [[ -z "$V_APP_URL" ]]                     && missing+=("var: APP_URL")
@@ -320,9 +318,6 @@ jobs:
           # RabbitMQ (user non sensible, pas de variable GitHub dédiée)
           RABBITMQ_USER=sgilt
           RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}
-
-          # Notifications DB
-          NOTIFICATIONS_DB_PASSWORD=${{ secrets.NOTIFICATIONS_DB_PASSWORD }}
           EOF
 
       - name: Copy deployment files to server

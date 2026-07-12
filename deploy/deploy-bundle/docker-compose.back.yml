@@ -142,27 +142,6 @@ services:
     restart: unless-stopped
 
   # =====================
-  # SGILT-NOTIFICATIONS DB (Postgres)
-  # =====================
-  sgilt-notifications-db:
-    image: postgres:17
-    container_name: sgilt-notifications-db-${ENV}
-    environment:
-      POSTGRES_DB: sgilt-notifications
-      POSTGRES_USER: sgilt-notifications
-      POSTGRES_PASSWORD: ${NOTIFICATIONS_DB_PASSWORD}
-    volumes:
-      - sgilt_notifications_pgdata:/var/lib/postgresql/data
-    networks:
-      - sgilt-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U sgilt-notifications -d sgilt-notifications"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # =====================
   # SGILT-NOTIFICATIONS (Spring Boot)
   # =====================
   sgilt-notifications:
@@ -170,16 +149,16 @@ services:
     container_name: sgilt-notifications-${ENV}
     pull_policy: always
     environment:
-      DB_URL: jdbc:postgresql://sgilt-notifications-db-${ENV}:5432/sgilt-notifications
-      DB_USERNAME: sgilt-notifications
-      DB_PASSWORD: ${NOTIFICATIONS_DB_PASSWORD}
+      DB_URL: jdbc:postgresql://sgilt-core-db-${ENV}:5432/sgilt-core
+      DB_USERNAME: sgilt-core
+      DB_PASSWORD: ${CORE_DB_PASSWORD}
       KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER}
       SPRING_RABBITMQ_HOST: rabbitmq-${ENV}
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
       SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
     depends_on:
-      sgilt-notifications-db:
+      sgilt-core-db:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
@@ -210,8 +189,6 @@ services:
 volumes:
   sgilt_core_pgdata:
     name: sgilt_core_pgdata_${ENV}
-  sgilt_notifications_pgdata:
-    name: sgilt_notifications_pgdata_${ENV}
   rabbitmq_data:
     name: rabbitmq_data_${ENV}
 

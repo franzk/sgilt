@@ -57,8 +57,6 @@ Once everything is running, you can:
 - access Keycloak at http://localhost:5080 (admin:admin)
 - access the RabbitMQ management UI at http://localhost:15672 (guest:guest) — `sgilt-core` and
   `sgilt-mailer` connect to `localhost:5672` by default (`guest`:`guest`), no local secret needed.
-- `sgilt-notifications` connects to its own Postgres at `localhost:5433` by default (`sgilt-notifications`:`sgilt-notifications`), no local secret needed.
-
 
 ### SETUP sgilt-core — local secrets
 

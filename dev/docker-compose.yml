@@ -76,20 +76,6 @@ services:
     networks:
       - sgilt-dev-net
 
-  sgilt-notifications-db:
-    image: postgres:17
-    container_name: sgilt-notifications-db
-    environment:
-      POSTGRES_DB: sgilt-notifications
-      POSTGRES_USER: sgilt-notifications
-      POSTGRES_PASSWORD: sgilt-notifications
-    ports:
-      - "5433:5432"
-    volumes:
-      - sgilt_notifications_pgdata:/var/lib/postgresql/data
-    networks:
-      - sgilt-dev-net
-
   sgilt-r2-mock:
     image: sgilt-r2-mock
     container_name: sgilt-r2-mock
@@ -115,5 +101,4 @@ volumes:
   core_pgdata:
   keycloak_pgdata:
   sgilt_pgdata:
-  sgilt_notifications_pgdata:
   r2_mock_db:
