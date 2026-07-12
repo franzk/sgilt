@@ -876,6 +876,7 @@
   "prestataire": {
     "edit-medias-btn": "Modifier les médias",
     "add-medias-btn": "Ajouter des images",
+    "share-text": "Découvrez {name} sur Sgilt",
     "media-dialog": {
       "title": "Modifier les médias",
       "preview-empty": "Cliquez sur un slot pour l'éditer",
