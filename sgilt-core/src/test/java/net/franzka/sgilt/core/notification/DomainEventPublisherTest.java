@@ -1,0 +1,40 @@
+package net.franzka.sgilt.core.notification;
+
+import net.franzka.sgilt.core.notification.event.ReservationCreatedEvent;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+
+import java.time.LocalDate;
+import java.util.UUID;
+
+import static org.mockito.Mockito.verify;
+
+@ExtendWith(MockitoExtension.class)
+class DomainEventPublisherTest {
+
+    @Mock
+    private RabbitTemplate rabbitTemplate;
+
+    @InjectMocks
+    private DomainEventPublisher domainEventPublisher;
+
+    @Nested
+    class PublishReservationCreated {
+
+        @Test
+        void givenEvent_whenPublishReservationCreated_thenConvertAndSendOnDomainEventsExchange() {
+            ReservationCreatedEvent event = new ReservationCreatedEvent(
+                    UUID.randomUUID(), UUID.randomUUID(), "presta@example.com",
+                    "Sophie", "Leroy", "Anniversaire de Paul", LocalDate.now());
+
+            domainEventPublisher.publishReservationCreated(event);
+
+            verify(rabbitTemplate).convertAndSend("domain-events", "reservation.created", event);
+        }
+    }
+}

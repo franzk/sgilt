@@ -225,6 +225,7 @@ In Settings → Secrets and variables → Actions → Repository secrets:
 | `SMTP_AUTH`                   | `true`                                                                              |
 | `SMTP_SSL`                    | `true`                                                                              |
 | `RABBITMQ_PASSWORD`           | RabbitMQ password (choose a strong password) — user is hardcoded to `sgilt`        |
+| `NOTIFICATIONS_DB_PASSWORD`   | sgilt-notifications PostgreSQL password (choose a strong password)                 |
 | `R2_ACCESS_KEY_ID`            | Cloudflare R2 API token access key ID                                               |
 | `R2_SECRET_ACCESS_KEY`        | Cloudflare R2 API token secret access key                                           |
 

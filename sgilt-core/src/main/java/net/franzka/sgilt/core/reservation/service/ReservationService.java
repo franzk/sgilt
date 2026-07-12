@@ -2,6 +2,7 @@ package net.franzka.sgilt.core.reservation.service;
 
 import lombok.RequiredArgsConstructor;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
+import net.franzka.sgilt.core.notification.event.ReservationCreatedEvent;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.reservation.domain.Note;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
@@ -22,6 +23,7 @@ import net.franzka.sgilt.core.reservation.mapper.ReservationMapper;
 import net.franzka.sgilt.core.reservation.repository.NoteRepository;
 import net.franzka.sgilt.core.reservation.repository.ReservationRepository;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -43,6 +45,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final NoteRepository noteRepository;
     private final ReservationMapper reservationMapper;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     /**
      * Retourne les demandes actives (NEW et IN_DISCUSSION) de l'utilisateur, triées NEW en premier,
@@ -145,6 +148,16 @@ public class ReservationService {
                 .content(initialMessage)
                 .build();
         noteRepository.save(note);
+
+        applicationEventPublisher.publishEvent(new ReservationCreatedEvent(
+                reservation.getId(),
+                prestataire.getUtilisateur().getId(),
+                prestataire.getUtilisateur().getEmail(),
+                utilisateur.getFirstName(),
+                utilisateur.getLastName(),
+                evenement.getTitle(),
+                date
+        ));
 
         return reservation;
     }

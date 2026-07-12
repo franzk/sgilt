@@ -54,6 +54,7 @@ jobs:
           S_SMTP_AUTH:                   ${{ secrets.SMTP_AUTH }}
           S_SMTP_SSL:                    ${{ secrets.SMTP_SSL }}
           S_RABBITMQ_PASSWORD:           ${{ secrets.RABBITMQ_PASSWORD }}
+          S_NOTIFICATIONS_DB_PASSWORD:   ${{ secrets.NOTIFICATIONS_DB_PASSWORD }}
           S_R2_ACCESS_KEY_ID:            ${{ secrets.R2_ACCESS_KEY_ID }}
           S_R2_SECRET_ACCESS_KEY:        ${{ secrets.R2_SECRET_ACCESS_KEY }}
           V_APP_URL:                     ${{ vars.APP_URL }}
@@ -89,6 +90,7 @@ jobs:
           [[ -z "$S_SMTP_AUTH" ]]                   && missing+=("secret: SMTP_AUTH")
           [[ -z "$S_SMTP_SSL" ]]                    && missing+=("secret: SMTP_SSL")
           [[ -z "$S_RABBITMQ_PASSWORD" ]]           && missing+=("secret: RABBITMQ_PASSWORD")
+          [[ -z "$S_NOTIFICATIONS_DB_PASSWORD" ]]   && missing+=("secret: NOTIFICATIONS_DB_PASSWORD")
           [[ -z "$S_R2_ACCESS_KEY_ID" ]]            && missing+=("secret: R2_ACCESS_KEY_ID")
           [[ -z "$S_R2_SECRET_ACCESS_KEY" ]]        && missing+=("secret: R2_SECRET_ACCESS_KEY")
           [[ -z "$V_APP_URL" ]]                     && missing+=("var: APP_URL")
@@ -143,6 +145,7 @@ jobs:
           echo "SGILT_MAILER_VERSION=$(cat sgilt-mailer/VERSION)" >> $GITHUB_ENV
           echo "SGILT_CORE_VERSION=$(cat sgilt-core/VERSION)" >> $GITHUB_ENV
           echo "SGILT_GATEWAY_VERSION=$(cat sgilt-gateway/VERSION)" >> $GITHUB_ENV
+          echo "SGILT_NOTIFICATIONS_VERSION=$(cat sgilt-notifications/VERSION)" >> $GITHUB_ENV
 
       - name: Build and push sgilt-front
         run: |
@@ -213,6 +216,17 @@ jobs:
             echo "✅ Pushed $IMAGE_TAG"
           fi
 
+      - name: Build and push sgilt-notifications
+        run: |
+          IMAGE_TAG="${{ env.IMAGE_PREFIX }}/sgilt-notifications:${{ env.SGILT_NOTIFICATIONS_VERSION }}"
+          if docker manifest inspect $IMAGE_TAG > /dev/null 2>&1; then
+            echo "⏭️ $IMAGE_TAG already exists, skipping build"
+          else
+            docker build -t $IMAGE_TAG sgilt-notifications
+            docker push $IMAGE_TAG
+            echo "✅ Pushed $IMAGE_TAG"
+          fi
+
   # =====================
   # DEPLOY
   # =====================
@@ -233,6 +247,7 @@ jobs:
           echo "SGILT_MAILER_VERSION=$(cat sgilt-mailer/VERSION)" >> $GITHUB_ENV
           echo "SGILT_CORE_VERSION=$(cat sgilt-core/VERSION)" >> $GITHUB_ENV
           echo "SGILT_GATEWAY_VERSION=$(cat sgilt-gateway/VERSION)" >> $GITHUB_ENV
+          echo "SGILT_NOTIFICATIONS_VERSION=$(cat sgilt-notifications/VERSION)" >> $GITHUB_ENV
 
       - name: Generate .env
         run: |
@@ -247,6 +262,7 @@ jobs:
           SGILT_MAILER_VERSION=${{ env.SGILT_MAILER_VERSION }}
           SGILT_CORE_VERSION=${{ env.SGILT_CORE_VERSION }}
           SGILT_GATEWAY_VERSION=${{ env.SGILT_GATEWAY_VERSION }}
+          SGILT_NOTIFICATIONS_VERSION=${{ env.SGILT_NOTIFICATIONS_VERSION }}
 
           # URLs
           APP_URL=${{ vars.APP_URL }}
@@ -304,6 +320,9 @@ jobs:
           # RabbitMQ (user non sensible, pas de variable GitHub dédiée)
           RABBITMQ_USER=sgilt
           RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}
+
+          # Notifications DB
+          NOTIFICATIONS_DB_PASSWORD=${{ secrets.NOTIFICATIONS_DB_PASSWORD }}
           EOF
 
       - name: Copy deployment files to server

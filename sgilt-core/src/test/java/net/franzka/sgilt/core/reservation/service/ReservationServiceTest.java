@@ -1,20 +1,30 @@
 package net.franzka.sgilt.core.reservation.service;
 
+import net.franzka.sgilt.core.evenement.domain.Evenement;
+import net.franzka.sgilt.core.notification.event.ReservationCreatedEvent;
+import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
+import net.franzka.sgilt.core.reservation.repository.NoteRepository;
 import net.franzka.sgilt.core.reservation.repository.ReservationRepository;
+import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,6 +35,11 @@ class ReservationServiceTest {
     @Mock
     private ReservationRepository reservationRepository;
 
+    @Mock
+    private NoteRepository noteRepository;
+
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @InjectMocks
     private ReservationService reservationService;
@@ -113,6 +128,55 @@ class ReservationServiceTest {
                     .thenReturn(false);
 
             assertThat(reservationService.prestataireAReservationSurEvenement(EVENT_ID, PRESTATAIRE_USER_ID)).isFalse();
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // create
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class Create {
+
+        @Test
+        void givenReservationCreated_whenCreate_thenReservationCreatedEventPublished() {
+            Utilisateur prestataireUtilisateur = Utilisateur.builder()
+                    .id(UUID.randomUUID())
+                    .email("presta@example.com")
+                    .build();
+            Prestataire prestataire = Prestataire.builder()
+                    .id(UUID.randomUUID())
+                    .utilisateur(prestataireUtilisateur)
+                    .build();
+            Utilisateur client = Utilisateur.builder()
+                    .id(UUID.randomUUID())
+                    .firstName("Sophie")
+                    .lastName("Leroy")
+                    .build();
+            Evenement evenement = Evenement.builder()
+                    .id(UUID.randomUUID())
+                    .title("Anniversaire de Paul")
+                    .build();
+            LocalDate date = LocalDate.now();
+
+            when(reservationRepository.save(any(Reservation.class))).thenAnswer(invocation -> {
+                Reservation reservation = invocation.getArgument(0);
+                reservation.setId(UUID.randomUUID());
+                return reservation;
+            });
+
+            reservationService.create(evenement, prestataire, client, date, "Un message");
+
+            ArgumentCaptor<ReservationCreatedEvent> captor = ArgumentCaptor.forClass(ReservationCreatedEvent.class);
+            verify(applicationEventPublisher).publishEvent(captor.capture());
+            ReservationCreatedEvent event = captor.getValue();
+
+            assertThat(event.recipientEmail()).isEqualTo("presta@example.com");
+            assertThat(event.recipientUserId()).isEqualTo(prestataireUtilisateur.getId());
+            assertThat(event.clientFirstName()).isEqualTo("Sophie");
+            assertThat(event.clientLastName()).isEqualTo("Leroy");
+            assertThat(event.eventTitle()).isEqualTo("Anniversaire de Paul");
+            assertThat(event.eventDate()).isEqualTo(date);
         }
     }
 
