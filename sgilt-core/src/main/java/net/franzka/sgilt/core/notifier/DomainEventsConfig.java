@@ -1,4 +1,4 @@
-package net.franzka.sgilt.core.notification;
+package net.franzka.sgilt.core.notifier;
 
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.context.annotation.Bean;

@@ -1,7 +1,7 @@
-package net.franzka.sgilt.core.notification;
+package net.franzka.sgilt.core.notifier;
 
 import lombok.RequiredArgsConstructor;
-import net.franzka.sgilt.core.notification.event.ReservationCreatedEvent;
+import net.franzka.sgilt.core.notifier.event.ReservationCreatedEvent;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
