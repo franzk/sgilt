@@ -82,7 +82,14 @@
       "Bash(nohup pnpm run dev)",
       "Read(//c/Users/koehl/AppData/Local/Temp/claude/C--Users-koehl-Documents-projects-sgilt-sgilt/fc92fc88-026c-4e4c-bc98-ce12d13098c3/scratchpad/**)",
       "Bash(pkill -f \"nuxt dev\")",
-      "Bash(taskkill //F //IM node.exe //T)"
+      "Bash(taskkill //F //IM node.exe //T)",
+      "Bash(git status *)",
+      "Bash(./gradlew compileJava compileTestJava -q --console=plain)",
+      "Bash(./gradlew compileJava compileTestJava --console=plain)",
+      "Bash(./gradlew compileJava --console=plain)",
+      "Bash(git mv *)",
+      "Bash(mv src/main/java/net/franzka/sgilt/core/admin/dto/PrestataireOnboardingPendingDto.java src/main/java/net/franzka/sgilt/core/prestataire/dto/PrestataireOnboardingPendingDto.java)",
+      "PowerShell(curl.exe -s -o - -w \"`nHTTP_STATUS:%{http_code}`n\" -X POST \"http://localhost:5028/realms/sgilt/protocol/openid-connect/token\" -d \"grant_type=client_credentials\" -d \"client_id=sgilt-admin\" -d \"client_secret=dev-admin-secret\")"
     ]
   }
 }

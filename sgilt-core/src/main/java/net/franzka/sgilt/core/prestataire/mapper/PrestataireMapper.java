@@ -9,6 +9,7 @@ import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.dto.*;
 import org.mapstruct.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -42,6 +43,22 @@ public abstract class PrestataireMapper {
      */
     @Mapping(target = "email", source = "utilisateur.email")
     public abstract PrestataireAdminListItemDto toAdminListItemDto(Prestataire prestataire);
+
+    /**
+     * Mappe un prestataire et les métadonnées de son lien d'onboarding vers le DTO du back-office
+     * listant les onboardings en attente. {@code linkSentAt}/{@code linkExpiresAt} proviennent du
+     * token d'action associé (hors du domaine prestataire), fournis par l'appelant.
+     *
+     * @param prestataire   l'entité source (email résolu depuis l'utilisateur lié)
+     * @param linkSentAt    date de création du lien envoyé par email
+     * @param linkExpiresAt date d'expiration courante du lien
+     * @return le DTO d'onboarding en attente
+     */
+    @Mapping(target = "prestataireId", source = "prestataire.id")
+    @Mapping(target = "prestataireName", source = "prestataire.name")
+    @Mapping(target = "email", source = "prestataire.utilisateur.email")
+    public abstract PrestataireOnboardingPendingDto toOnboardingPendingDto(
+            Prestataire prestataire, LocalDateTime linkSentAt, LocalDateTime linkExpiresAt);
 
     /**
      * Mappe un prestataire vers sa fiche complète.

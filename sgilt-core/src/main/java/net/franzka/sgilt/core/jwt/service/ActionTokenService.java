@@ -12,6 +12,7 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -58,7 +59,7 @@ public class ActionTokenService {
                     .hmacPayload(generated.payload())
                     .type(type)
                     .payload(objectMapper.writeValueAsString(payload))
-                    .expiresAt(LocalDateTime.now().plusHours(confirmationTokenProperties.confirmationExpirationHours()))
+                    .expiresAt(LocalDateTime.now().plusHours(confirmationTokenProperties.prestataireOnboardingExpirationHours()))
                     .build();
 
             return new TokenCreationResult(actionTokenRepository.save(token), generated.fullToken());
@@ -110,6 +111,51 @@ public class ActionTokenService {
      */
     public void consume(ActionToken actionToken) {
         actionTokenRepository.delete(actionToken);
+    }
+
+    /**
+     * Liste tous les tokens d'action en attente pour un flow donné, quel que soit leur état
+     * d'expiration. Utilisé par le back-office pour afficher les onboardings dont le lien n'a
+     * pas encore été cliqué.
+     *
+     * @param type le type d'action recherché
+     * @return les tokens en attente pour ce type
+     */
+    public List<ActionToken> findAllByType(ActionType type) {
+        return actionTokenRepository.findByType(type);
+    }
+
+    /**
+     * Charge le token d'action en attente correspondant à l'email donné, pour un flow donné.
+     * Le payload étant un jsonb libre propre à chaque flow, la recherche filtre en mémoire les
+     * tokens du type demandé — acceptable ici car le volume de tokens en attente reste faible
+     * (provisionnement manuel admin, un seul type de flow aujourd'hui).
+     *
+     * @param type  le type d'action recherché
+     * @param email l'email du destinataire, tel que stocké dans le payload à la création
+     * @return le token correspondant
+     * @throws EntityNotFoundException si aucun token en attente ne correspond à cet email
+     */
+    public ActionToken findPendingByEmail(ActionType type, String email) {
+        return findAllByType(type).stream()
+                .filter(token -> email.equals(readPayload(token).get("email")))
+                .findFirst()
+                .orElseThrow(EntityNotFoundException::new);
+    }
+
+    /**
+     * Réinitialise la période de validité d'un token d'action existant à la durée de validité
+     * courante du flow prestataire. Le token lui-même n'est pas régénéré : le lien déjà transmis
+     * au destinataire reste valide, seule sa date d'expiration change.
+     *
+     * @param actionToken le token dont la validité doit être réinitialisée
+     * @return le token complet ({@code payload-signature}) à inclure dans le lien renvoyé
+     */
+    public String renewExpiration(ActionToken actionToken) {
+        actionToken.setExpiresAt(
+                LocalDateTime.now().plusHours(confirmationTokenProperties.prestataireOnboardingExpirationHours()));
+        actionTokenRepository.save(actionToken);
+        return verificationTokenHmacService.buildToken(actionToken.getHmacPayload());
     }
 
     /**

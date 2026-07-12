@@ -4,6 +4,7 @@ import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.domain.PrestataireStatus;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -35,11 +36,26 @@ public interface PrestataireRepository extends JpaRepository<Prestataire, UUID> 
     boolean existsBySlug(String slug);
 
     /**
-     * Retourne tous les prestataires actifs, tous statuts confondus (pour le back-office admin).
+     * Retourne tous les prestataires actifs confirmés (onboarding terminé), tous statuts de fiche
+     * confondus — exclut ceux ayant encore un {@code ActionToken} de type
+     * {@code PRESTATAIRE_ONBOARDING} en attente.
+     * Requête SQL native, exceptionnellement : le rapprochement se fait sur le contenu jsonb
+     * {@code action_tokens.payload->>'email'}, une autre table/agrégat non lié par une relation
+     * JPA, non exprimable par une derived query ni par du JPQL portable.
      *
-     * @return liste des prestataires non supprimés
+     * @return liste des prestataires confirmés, non supprimés
      */
-    List<Prestataire> findByDeletedAtIsNull();
+    @Query(value = """
+            SELECT p.* FROM prestataires p
+            JOIN utilisateurs u ON u.id = p.utilisateur_id
+            WHERE p.deleted_at IS NULL
+              AND NOT EXISTS (
+                  SELECT 1 FROM action_tokens t
+                  WHERE t.type = 'PRESTATAIRE_ONBOARDING'
+                    AND t.payload ->> 'email' = u.email
+              )
+            """, nativeQuery = true)
+    List<Prestataire> findConfirmedByDeletedAtIsNull();
 
     /**
      * Recherche le prestataire actif lié à un utilisateur donné.
@@ -84,4 +100,12 @@ public interface PrestataireRepository extends JpaRepository<Prestataire, UUID> 
      * @return prestataires correspondants
      */
     List<Prestataire> findBySubcatKeysInAndStatusAndDeletedAtIsNull(Collection<String> subcatKeys, PrestataireStatus status);
+
+    /**
+     * Recherche le prestataire actif dont l'utilisateur lié a l'email donné.
+     *
+     * @param email l'email de l'utilisateur propriétaire de la fiche
+     * @return le prestataire correspondant, ou vide si aucun n'est lié
+     */
+    Optional<Prestataire> findByUtilisateur_EmailAndDeletedAtIsNull(String email);
 }
