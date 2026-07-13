@@ -3,10 +3,11 @@ package net.franzka.sgilt.notifications.notification.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.notifications.notification.domain.Notification;
-import net.franzka.sgilt.notifications.notification.domain.NotificationType;
+import net.franzka.sgilt.notifications.notification.event.ReservationConfirmedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationCreatedEvent;
 import net.franzka.sgilt.notifications.notification.exception.NotificationAccessDeniedException;
 import net.franzka.sgilt.notifications.notification.exception.NotificationNotFoundException;
+import net.franzka.sgilt.notifications.notification.mapper.NotificationEventMapper;
 import net.franzka.sgilt.notifications.notification.repository.NotificationRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +18,10 @@ import java.util.UUID;
 
 /**
  * Gère le cycle de vie des notifications in-app : création à partir des évènements de domaine
- * reçus, consultation et marquage comme lue pour le destinataire authentifié.
+ * reçus, consultation et marquage comme lue pour le destinataire authentifié. La construction de la
+ * notification à partir de l'évènement (clé i18n, params, lien) est déléguée à
+ * {@link NotificationEventMapper} — un nouveau type d'évènement ajoute une méthode là-bas et un cas
+ * dans le {@code switch} de {@link #createFromEvent}, pas de nouvelle méthode ici.
  */
 @Service
 @RequiredArgsConstructor
@@ -27,28 +31,25 @@ public class NotificationService {
     private static final int PAGE_SIZE = 10;
 
     private final NotificationRepository notificationRepository;
+    private final NotificationEventMapper notificationEventMapper;
 
     /**
-     * Crée la notification "nouvelle demande de réservation" pour le prestataire concerné, à partir
-     * des faits bruts publiés par sgilt-core. Construit ici le texte affiché (titre/corps) et le
-     * lien de navigation — sgilt-core ne connaît ni l'un ni l'autre.
+     * Crée et persiste la notification correspondant à l'évènement de domaine reçu, quel que soit son
+     * type — {@code DomainEventListener} n'a besoin de connaître que la classe cible pour la
+     * désérialisation, pas la méthode de création à appeler.
      *
-     * @param event les faits bruts de la réservation créée
+     * @param event l'évènement de domaine désérialisé (ex. {@link ReservationCreatedEvent})
+     * @throws IllegalArgumentException si le type de l'évènement n'est pas géré
      */
-    public void createReservationRequestNotification(ReservationCreatedEvent event) {
-        String clientDisplayName = event.clientFirstName() + " " + initial(event.clientLastName());
-        Notification notification = Notification.builder()
-                .recipientEmail(event.recipientEmail())
-                .recipientUserId(event.recipientUserId())
-                .type(NotificationType.NEW_REQUEST)
-                .title("Nouvelle demande")
-                .body(clientDisplayName + " vous a envoyé une demande pour " + event.eventTitle() + ".")
-                .href("/pro/reservations/" + event.reservationId())
-                .read(false)
-                .build();
+    public void createFromEvent(Object event) {
+        Notification notification = switch (event) {
+            case ReservationCreatedEvent e -> notificationEventMapper.toNotification(e);
+            case ReservationConfirmedEvent e -> notificationEventMapper.toNotification(e);
+            default -> throw new IllegalArgumentException("Type d'évènement de notification inconnu : " + event.getClass());
+        };
 
         notificationRepository.save(notification);
-        log.info("Notification NEW_REQUEST créée pour {} (réservation {})", event.recipientEmail(), event.reservationId());
+        log.info("Notification {} créée pour {} ({})", notification.getType(), notification.getRecipientEmail(), notification.getHref());
     }
 
     /**
@@ -89,12 +90,5 @@ public class NotificationService {
         List<Notification> unread = notificationRepository.findByRecipientEmailAndReadFalse(recipientEmail);
         unread.forEach(notification -> notification.setRead(true));
         notificationRepository.saveAll(unread);
-    }
-
-    private String initial(String lastName) {
-        if (lastName == null || lastName.isBlank()) {
-            return "";
-        }
-        return lastName.substring(0, 1) + ".";
     }
 }

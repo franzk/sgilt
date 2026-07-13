@@ -1,11 +1,11 @@
-package net.franzka.sgilt.core.reservation.event.events;
+package net.franzka.sgilt.core.reservation.event.reservationcreated;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
 /**
  * Évènement Spring in-process publié quand une réservation est créée — faits bruts, pas de texte
- * pré-rendu. Republié sur RabbitMQ par {@link net.franzka.sgilt.core.reservation.event.listeners.ReservationCreatedEventListener}
+ * pré-rendu. Republié sur RabbitMQ par {@link ReservationCreatedEventListener}
  * une fois la transaction commitée. Structure identique (mêmes noms de champs) à l'enregistrement
  * consommé côté {@code sgilt-notifications}.
  *

@@ -326,6 +326,8 @@ public class ReservationService {
                 .generatedKey("feed.system.confirmed")
                 .isPersonal(false)
                 .build());
+
+        applicationEventPublisher.publishEvent(reservationEventMapper.toReservationConfirmedEvent(reservation));
     }
 
     /**

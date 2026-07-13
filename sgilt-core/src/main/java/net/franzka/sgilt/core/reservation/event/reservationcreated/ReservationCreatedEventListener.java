@@ -1,8 +1,7 @@
-package net.franzka.sgilt.core.reservation.event.listeners;
+package net.franzka.sgilt.core.reservation.event.reservationcreated;
 
 import lombok.RequiredArgsConstructor;
 import net.franzka.sgilt.core.notifier.DomainEventPublisher;
-import net.franzka.sgilt.core.reservation.event.events.ReservationCreatedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;

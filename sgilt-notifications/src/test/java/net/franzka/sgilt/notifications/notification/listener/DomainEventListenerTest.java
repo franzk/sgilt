@@ -1,6 +1,7 @@
 package net.franzka.sgilt.notifications.notification.listener;
 
 import net.franzka.sgilt.notifications.config.RabbitConfig;
+import net.franzka.sgilt.notifications.notification.event.ReservationConfirmedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationCreatedEvent;
 import net.franzka.sgilt.notifications.notification.service.NotificationService;
 import org.junit.jupiter.api.Nested;
@@ -48,7 +49,20 @@ class DomainEventListenerTest {
 
             listener.onMessage(message, RabbitConfig.RESERVATION_CREATED_RK);
 
-            verify(notificationService).createReservationRequestNotification(event);
+            verify(notificationService).createFromEvent(event);
+        }
+
+        @Test
+        void givenReservationConfirmedRoutingKey_whenOnMessage_thenDelegatesToNotificationService() {
+            ReservationConfirmedEvent event = new ReservationConfirmedEvent(
+                    UUID.randomUUID(), UUID.randomUUID(), "client@example.com",
+                    "Studio Fleur", "Anniversaire de Paul", LocalDate.now());
+            Message message = mock(Message.class);
+            when(messageConverter.fromMessage(eq(message), any())).thenReturn(event);
+
+            listener.onMessage(message, RabbitConfig.RESERVATION_CONFIRMED_RK);
+
+            verify(notificationService).createFromEvent(event);
         }
 
         @Test

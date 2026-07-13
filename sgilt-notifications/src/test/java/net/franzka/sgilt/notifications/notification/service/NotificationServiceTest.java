@@ -2,14 +2,15 @@ package net.franzka.sgilt.notifications.notification.service;
 
 import net.franzka.sgilt.notifications.notification.domain.Notification;
 import net.franzka.sgilt.notifications.notification.domain.NotificationType;
+import net.franzka.sgilt.notifications.notification.event.ReservationConfirmedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationCreatedEvent;
 import net.franzka.sgilt.notifications.notification.exception.NotificationAccessDeniedException;
 import net.franzka.sgilt.notifications.notification.exception.NotificationNotFoundException;
+import net.franzka.sgilt.notifications.notification.mapper.NotificationEventMapper;
 import net.franzka.sgilt.notifications.notification.repository.NotificationRepository;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -36,31 +37,47 @@ class NotificationServiceTest {
     @Mock
     private NotificationRepository notificationRepository;
 
+    @Mock
+    private NotificationEventMapper notificationEventMapper;
+
     @InjectMocks
     private NotificationService notificationService;
 
     @Nested
-    class CreateReservationRequestNotification {
+    class CreateFromEvent {
 
         @Test
-        void givenEvent_whenCreateReservationRequestNotification_thenSavesExpectedNotification() {
-            UUID reservationId = UUID.randomUUID();
+        void givenReservationCreatedEvent_whenCreateFromEvent_thenSavesMappedNotification() {
             ReservationCreatedEvent event = new ReservationCreatedEvent(
-                    reservationId, UUID.randomUUID(), "presta@example.com",
+                    UUID.randomUUID(), UUID.randomUUID(), "presta@example.com",
                     "Sophie", "Leroy", "Anniversaire de Paul", LocalDate.now());
+            Notification mapped = Notification.builder().type(NotificationType.NEW_REQUEST).build();
+            when(notificationEventMapper.toNotification(event)).thenReturn(mapped);
 
-            notificationService.createReservationRequestNotification(event);
+            notificationService.createFromEvent(event);
 
-            ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
-            verify(notificationRepository).save(captor.capture());
-            Notification saved = captor.getValue();
+            verify(notificationRepository).save(mapped);
+        }
 
-            assertThat(saved.getRecipientEmail()).isEqualTo("presta@example.com");
-            assertThat(saved.getRecipientUserId()).isEqualTo(event.recipientUserId());
-            assertThat(saved.getType()).isEqualTo(NotificationType.NEW_REQUEST);
-            assertThat(saved.isRead()).isFalse();
-            assertThat(saved.getHref()).isEqualTo("/pro/reservations/" + reservationId);
-            assertThat(saved.getBody()).contains("Sophie L.").contains("Anniversaire de Paul");
+        @Test
+        void givenReservationConfirmedEvent_whenCreateFromEvent_thenSavesMappedNotification() {
+            ReservationConfirmedEvent event = new ReservationConfirmedEvent(
+                    UUID.randomUUID(), UUID.randomUUID(), "client@example.com",
+                    "Studio Fleur", "Anniversaire de Paul", LocalDate.now());
+            Notification mapped = Notification.builder().type(NotificationType.STATE_CHANGE).build();
+            when(notificationEventMapper.toNotification(event)).thenReturn(mapped);
+
+            notificationService.createFromEvent(event);
+
+            verify(notificationRepository).save(mapped);
+        }
+
+        @Test
+        void givenUnknownEventType_whenCreateFromEvent_thenThrowsIllegalArgument() {
+            assertThatThrownBy(() -> notificationService.createFromEvent("not an event"))
+                    .isInstanceOf(IllegalArgumentException.class);
+
+            verify(notificationRepository, never()).save(any());
         }
     }
 

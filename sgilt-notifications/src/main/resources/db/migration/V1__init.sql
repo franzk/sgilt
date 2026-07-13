@@ -14,8 +14,8 @@ CREATE TABLE notifications (
     recipient_email   VARCHAR(255)       NOT NULL,
     recipient_user_id UUID,
     type              notification_type  NOT NULL,
-    title             VARCHAR(255)       NOT NULL,
-    body              TEXT,
+    message_key       VARCHAR(255)       NOT NULL,
+    params            JSONB              NOT NULL DEFAULT '{}'::jsonb,
     href              VARCHAR(255)       NOT NULL,
     is_read           BOOLEAN            NOT NULL DEFAULT FALSE,
     created_at        TIMESTAMPTZ        NOT NULL

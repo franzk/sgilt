@@ -1,7 +1,8 @@
 package net.franzka.sgilt.core.reservation.event.mapper;
 
 import net.franzka.sgilt.core.reservation.domain.Reservation;
-import net.franzka.sgilt.core.reservation.event.events.ReservationCreatedEvent;
+import net.franzka.sgilt.core.reservation.event.reservationconfirmed.ReservationConfirmedEvent;
+import net.franzka.sgilt.core.reservation.event.reservationcreated.ReservationCreatedEvent;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -21,4 +22,12 @@ public interface ReservationEventMapper {
     @Mapping(source = "evenement.title",                target = "eventTitle")
     @Mapping(source = "date",                           target = "eventDate")
     ReservationCreatedEvent toReservationCreatedEvent(Reservation reservation);
+
+    @Mapping(source = "id",                target = "reservationId")
+    @Mapping(source = "utilisateur.id",    target = "recipientUserId")
+    @Mapping(source = "utilisateur.email", target = "recipientEmail")
+    @Mapping(source = "prestataire.name",  target = "prestataireName")
+    @Mapping(source = "evenement.title",   target = "eventTitle")
+    @Mapping(source = "date",              target = "eventDate")
+    ReservationConfirmedEvent toReservationConfirmedEvent(Reservation reservation);
 }

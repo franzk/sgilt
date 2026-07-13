@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,12 +53,14 @@ class NotificationControllerTest {
                     .id(UUID.randomUUID())
                     .recipientEmail(EMAIL)
                     .type(NotificationType.NEW_REQUEST)
-                    .title("Nouvelle demande")
+                    .messageKey("notification.reservation.new_request")
+                    .params(Map.of("eventTitle", "Anniversaire de Paul"))
                     .href("/pro/reservations/x")
                     .read(false)
                     .createdAt(Instant.now())
                     .build();
-            NotificationDto dto = new NotificationDto(notification.getId(), "new_request", false, notification.getCreatedAt(), "Nouvelle demande", null, "/pro/reservations/x");
+            NotificationDto dto = new NotificationDto(notification.getId(), "new_request", false, notification.getCreatedAt(),
+                    "notification.reservation.new_request", Map.of("eventTitle", "Anniversaire de Paul"), "/pro/reservations/x");
             Page<Notification> page = new PageImpl<>(List.of(notification), PageRequest.of(0, 10), 1);
 
             when(currentUserService.getEmail()).thenReturn(EMAIL);

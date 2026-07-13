@@ -6,6 +6,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -35,10 +36,12 @@ public class Notification {
     @Column(columnDefinition = "notification_type", nullable = false)
     private NotificationType type;
 
-    @Column(nullable = false)
-    private String title;
+    @Column(name = "message_key", nullable = false)
+    private String messageKey;
 
-    private String body;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb", nullable = false)
+    private Map<String, String> params;
 
     @Column(nullable = false)
     private String href;

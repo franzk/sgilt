@@ -1,7 +1,8 @@
 package net.franzka.sgilt.core.reservation.service;
 
 import net.franzka.sgilt.core.evenement.domain.Evenement;
-import net.franzka.sgilt.core.reservation.event.events.ReservationCreatedEvent;
+import net.franzka.sgilt.core.reservation.event.reservationconfirmed.ReservationConfirmedEvent;
+import net.franzka.sgilt.core.reservation.event.reservationcreated.ReservationCreatedEvent;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
@@ -22,6 +23,7 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -185,6 +187,41 @@ class ReservationServiceTest {
             assertThat(reservationCaptor.getValue().getUtilisateur()).isEqualTo(client);
             assertThat(reservationCaptor.getValue().getEvenement()).isEqualTo(evenement);
 
+            verify(applicationEventPublisher).publishEvent(mappedEvent);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // confirm
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class Confirm {
+
+        @Test
+        void givenReservationInDiscussion_whenConfirm_thenMappedEventPublished() {
+            UUID reservationId = UUID.randomUUID();
+            Utilisateur client = Utilisateur.builder().id(UUID.randomUUID()).email("client@example.com").build();
+            Prestataire prestataire = Prestataire.builder().id(UUID.randomUUID()).name("Studio Fleur").build();
+            Evenement evenement = Evenement.builder().id(UUID.randomUUID()).title("Anniversaire de Paul").build();
+            Reservation reservation = Reservation.builder()
+                    .id(reservationId)
+                    .status(ReservationStatus.IN_DISCUSSION)
+                    .prestataire(prestataire)
+                    .utilisateur(client)
+                    .evenement(evenement)
+                    .date(LocalDate.now())
+                    .build();
+            when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
+
+            ReservationConfirmedEvent mappedEvent = new ReservationConfirmedEvent(
+                    reservationId, client.getId(), "client@example.com",
+                    "Studio Fleur", "Anniversaire de Paul", reservation.getDate());
+            when(reservationEventMapper.toReservationConfirmedEvent(reservation)).thenReturn(mappedEvent);
+
+            reservationService.confirm(reservationId);
+
+            assertThat(reservation.getStatus()).isEqualTo(ReservationStatus.CONFIRMED);
             verify(applicationEventPublisher).publishEvent(mappedEvent);
         }
     }
