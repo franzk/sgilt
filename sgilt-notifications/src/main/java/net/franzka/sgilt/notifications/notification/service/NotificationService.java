@@ -3,8 +3,8 @@ package net.franzka.sgilt.notifications.notification.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.notifications.notification.domain.Notification;
-import net.franzka.sgilt.notifications.notification.event.ReservationConfirmedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationCreatedEvent;
+import net.franzka.sgilt.notifications.notification.event.ReservationStatusChangedEvent;
 import net.franzka.sgilt.notifications.notification.exception.NotificationAccessDeniedException;
 import net.franzka.sgilt.notifications.notification.exception.NotificationNotFoundException;
 import net.franzka.sgilt.notifications.notification.mapper.NotificationEventMapper;
@@ -44,7 +44,7 @@ public class NotificationService {
     public void createFromEvent(Object event) {
         Notification notification = switch (event) {
             case ReservationCreatedEvent e -> notificationEventMapper.toNotification(e);
-            case ReservationConfirmedEvent e -> notificationEventMapper.toNotification(e);
+            case ReservationStatusChangedEvent e -> notificationEventMapper.toNotification(e);
             default -> throw new IllegalArgumentException("Type d'évènement de notification inconnu : " + event.getClass());
         };
 

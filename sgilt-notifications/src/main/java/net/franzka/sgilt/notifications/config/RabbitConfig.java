@@ -1,7 +1,7 @@
 package net.franzka.sgilt.notifications.config;
 
-import net.franzka.sgilt.notifications.notification.event.ReservationConfirmedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationCreatedEvent;
+import net.franzka.sgilt.notifications.notification.event.ReservationStatusChangedEvent;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
@@ -38,8 +38,13 @@ public class RabbitConfig {
     /** Routing key publiée par {@code sgilt-core} pour une réservation nouvellement créée. */
     public static final String RESERVATION_CREATED_RK = "reservation.created";
 
-    /** Routing key publiée par {@code sgilt-core} pour une réservation confirmée par le prestataire. */
-    public static final String RESERVATION_CONFIRMED_RK = "reservation.confirmed";
+    /**
+     * Routing key publiée par {@code sgilt-core} pour tout changement de statut, dans les deux sens
+     * (prestataire agit → client notifié, ou client agit → prestataire notifié) — un seul type
+     * d'évènement ({@code ReservationStatusChangedEvent}) couvre les deux, la direction se lit dans
+     * son champ {@code actorRole}.
+     */
+    public static final String RESERVATION_STATUS_CHANGED_RK = "reservation.status_changed";
 
     private static final String DOMAIN_EVENTS_DLQ = "notifications.domain-events.dlq";
 
@@ -94,15 +99,15 @@ public class RabbitConfig {
 
     /**
      * Lie la queue partagée à l'exchange des évènements de domaine sur la routing key
-     * {@value #RESERVATION_CONFIRMED_RK}.
+     * {@value #RESERVATION_STATUS_CHANGED_RK}.
      *
      * @return le binding
      */
     @Bean
-    public Binding reservationConfirmedBinding() {
+    public Binding reservationStatusChangedBinding() {
         return BindingBuilder.bind(domainEventsQueue())
                 .to(domainEventsExchange())
-                .with(RESERVATION_CONFIRMED_RK);
+                .with(RESERVATION_STATUS_CHANGED_RK);
     }
 
     /**
@@ -134,7 +139,7 @@ public class RabbitConfig {
         DefaultJacksonJavaTypeMapper typeMapper = new DefaultJacksonJavaTypeMapper();
         typeMapper.setIdClassMapping(Map.of(
                 RESERVATION_CREATED_RK, ReservationCreatedEvent.class,
-                RESERVATION_CONFIRMED_RK, ReservationConfirmedEvent.class));
+                RESERVATION_STATUS_CHANGED_RK, ReservationStatusChangedEvent.class));
         return typeMapper;
     }
 }

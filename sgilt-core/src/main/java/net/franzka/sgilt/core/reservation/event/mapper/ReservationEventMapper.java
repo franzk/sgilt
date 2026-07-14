@@ -1,8 +1,9 @@
 package net.franzka.sgilt.core.reservation.event.mapper;
 
 import net.franzka.sgilt.core.reservation.domain.Reservation;
-import net.franzka.sgilt.core.reservation.event.reservationconfirmed.ReservationConfirmedEvent;
+import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.event.reservationcreated.ReservationCreatedEvent;
+import net.franzka.sgilt.core.reservation.event.reservationstatuschanged.ReservationStatusChangedEvent;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -23,12 +24,49 @@ public interface ReservationEventMapper {
     @Mapping(source = "date",                           target = "eventDate")
     ReservationCreatedEvent toReservationCreatedEvent(Reservation reservation);
 
-    @Mapping(source = "id",                target = "reservationId")
-    @Mapping(source = "evenement.id",      target = "eventId")
-    @Mapping(source = "utilisateur.id",    target = "recipientUserId")
-    @Mapping(source = "utilisateur.email", target = "recipientEmail")
-    @Mapping(source = "prestataire.name",  target = "prestataireName")
-    @Mapping(source = "evenement.title",   target = "eventTitle")
-    @Mapping(source = "date",              target = "eventDate")
-    ReservationConfirmedEvent toReservationConfirmedEvent(Reservation reservation);
+    /**
+     * Construit l'évènement générique de changement de statut à destination du client, pour toute
+     * transition déclenchée par le prestataire (prise de contact, confirmation, refus, annulation
+     * post-confirmation). {@code status} est passé séparément — c'est le nouveau statut, déjà affecté
+     * à {@code reservation} par l'appelant au moment de l'appel. {@code Prestataire.name} est déjà un
+     * champ unique, mappable directement — contrairement à {@link #toStatusChangedEventForPro}.
+     *
+     * @param reservation la réservation dont le statut vient de changer
+     * @param status      le nouveau statut
+     * @return l'évènement à publier
+     */
+    @Mapping(source = "reservation.id",                target = "reservationId")
+    @Mapping(source = "reservation.evenement.id",      target = "eventId")
+    @Mapping(source = "reservation.utilisateur.id",    target = "recipientUserId")
+    @Mapping(source = "reservation.utilisateur.email", target = "recipientEmail")
+    @Mapping(source = "status",                        target = "status")
+    @Mapping(source = "reservation.prestataire.name",  target = "actorName")
+    @Mapping(target = "actorRole",                     constant = "PRO")
+    @Mapping(source = "reservation.evenement.title",   target = "eventTitle")
+    @Mapping(source = "reservation.date",              target = "eventDate")
+    ReservationStatusChangedEvent toStatusChangedEventForClient(Reservation reservation, ReservationStatus status);
+
+    /**
+     * Construit l'évènement générique de changement de statut à destination du prestataire, pour
+     * l'annulation déclenchée par le client. {@code actorName} concatène prénom et nom du client —
+     * seule exception {@code expression} de ce mapper, pour une simple concaténation d'un champ,
+     * toujours dans le périmètre "construire l'évènement" (contrairement à
+     * {@code NotificationEventMapper}, où construire des params/href entiers en annotation n'aurait
+     * apporté aucun gain).
+     *
+     * @param reservation la réservation annulée par le client
+     * @param status      le nouveau statut ({@code CANCELED_BY_CLIENT_PRE_CONTACT} ou
+     *                    {@code CANCELED_BY_CLIENT_POST_CONTACT})
+     * @return l'évènement à publier
+     */
+    @Mapping(source = "reservation.id",                            target = "reservationId")
+    @Mapping(source = "reservation.evenement.id",                  target = "eventId")
+    @Mapping(source = "reservation.prestataire.utilisateur.id",    target = "recipientUserId")
+    @Mapping(source = "reservation.prestataire.utilisateur.email", target = "recipientEmail")
+    @Mapping(source = "status",                                    target = "status")
+    @Mapping(target = "actorName",                                 expression = "java(reservation.getUtilisateur().getFirstName() + \" \" + reservation.getUtilisateur().getLastName())")
+    @Mapping(target = "actorRole",                                 constant = "USER")
+    @Mapping(source = "reservation.evenement.title",               target = "eventTitle")
+    @Mapping(source = "reservation.date",                          target = "eventDate")
+    ReservationStatusChangedEvent toStatusChangedEventForPro(Reservation reservation, ReservationStatus status);
 }

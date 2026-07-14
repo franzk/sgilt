@@ -2,8 +2,8 @@ package net.franzka.sgilt.notifications.notification.listener;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.franzka.sgilt.notifications.notification.event.ReservationConfirmedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationCreatedEvent;
+import net.franzka.sgilt.notifications.notification.event.ReservationStatusChangedEvent;
 import net.franzka.sgilt.notifications.notification.service.NotificationService;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.Message;
@@ -15,8 +15,8 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
 import static net.franzka.sgilt.notifications.config.RabbitConfig.DOMAIN_EVENTS_QUEUE;
-import static net.franzka.sgilt.notifications.config.RabbitConfig.RESERVATION_CONFIRMED_RK;
 import static net.franzka.sgilt.notifications.config.RabbitConfig.RESERVATION_CREATED_RK;
+import static net.franzka.sgilt.notifications.config.RabbitConfig.RESERVATION_STATUS_CHANGED_RK;
 
 /**
  * Consomme tous les évènements de domaine publiés par sgilt-core, depuis la queue partagée
@@ -43,7 +43,7 @@ public class DomainEventListener {
         log.info("onMessage : routingKey={}", routingKey);
         switch (routingKey) {
             case RESERVATION_CREATED_RK -> notificationService.createFromEvent(convert(message, ReservationCreatedEvent.class));
-            case RESERVATION_CONFIRMED_RK -> notificationService.createFromEvent(convert(message, ReservationConfirmedEvent.class));
+            case RESERVATION_STATUS_CHANGED_RK -> notificationService.createFromEvent(convert(message, ReservationStatusChangedEvent.class));
             default -> throw new AmqpRejectAndDontRequeueException("Routing key inconnue : " + routingKey);
         }
     }

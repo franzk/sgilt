@@ -2,8 +2,8 @@ package net.franzka.sgilt.notifications.notification.service;
 
 import net.franzka.sgilt.notifications.notification.domain.Notification;
 import net.franzka.sgilt.notifications.notification.domain.NotificationType;
-import net.franzka.sgilt.notifications.notification.event.ReservationConfirmedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationCreatedEvent;
+import net.franzka.sgilt.notifications.notification.event.ReservationStatusChangedEvent;
 import net.franzka.sgilt.notifications.notification.exception.NotificationAccessDeniedException;
 import net.franzka.sgilt.notifications.notification.exception.NotificationNotFoundException;
 import net.franzka.sgilt.notifications.notification.mapper.NotificationEventMapper;
@@ -60,10 +60,10 @@ class NotificationServiceTest {
         }
 
         @Test
-        void givenReservationConfirmedEvent_whenCreateFromEvent_thenSavesMappedNotification() {
-            ReservationConfirmedEvent event = new ReservationConfirmedEvent(
+        void givenReservationStatusChangedEvent_whenCreateFromEvent_thenSavesMappedNotification() {
+            ReservationStatusChangedEvent event = new ReservationStatusChangedEvent(
                     UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "client@example.com",
-                    "Studio Fleur", "Anniversaire de Paul", LocalDate.now());
+                    "CONFIRMED", "Studio Fleur", "PRO", "Anniversaire de Paul", LocalDate.now());
             Notification mapped = Notification.builder().type(NotificationType.STATE_CHANGE).build();
             when(notificationEventMapper.toNotification(event)).thenReturn(mapped);
 

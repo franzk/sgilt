@@ -2,8 +2,8 @@ package net.franzka.sgilt.notifications.notification.mapper;
 
 import net.franzka.sgilt.notifications.notification.domain.Notification;
 import net.franzka.sgilt.notifications.notification.domain.NotificationType;
-import net.franzka.sgilt.notifications.notification.event.ReservationConfirmedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationCreatedEvent;
+import net.franzka.sgilt.notifications.notification.event.ReservationStatusChangedEvent;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -20,7 +20,7 @@ import java.util.Map;
 public class NotificationEventMapper {
 
     private static final String MESSAGE_KEY_NEW_REQUEST = "notification.reservation.new_request";
-    private static final String MESSAGE_KEY_RESERVATION_CONFIRMED = "notification.reservation.confirmed";
+    private static final String MESSAGE_KEY_STATUS_PREFIX = "notification.reservation.status.";
 
     /**
      * Construit la notification "nouvelle demande de réservation" pour le prestataire concerné.
@@ -44,21 +44,30 @@ public class NotificationEventMapper {
     }
 
     /**
-     * Construit la notification "réservation confirmée" pour le client concerné.
+     * Construit la notification de changement de statut, dans les deux sens (prestataire agit →
+     * client notifié, ou client agit → prestataire notifié — {@code event.actorRole()} porte la
+     * direction). La clé i18n se dérive du statut ({@code notification.reservation.status.<status en
+     * minuscules>}), le lien de navigation de la direction (le client a une page de réservation
+     * imbriquée sous l'évènement, pas le prestataire).
      *
-     * @param event les faits bruts de la réservation confirmée
+     * @param event les faits bruts du changement de statut
      * @return la notification à persister
      */
-    public Notification toNotification(ReservationConfirmedEvent event) {
+    public Notification toNotification(ReservationStatusChangedEvent event) {
+        boolean clientNotified = "PRO".equals(event.actorRole());
+        String href = clientNotified
+                ? "/app/events/" + event.eventId() + "/reservations/" + event.reservationId()
+                : "/pro/reservations/" + event.reservationId();
+
         return Notification.builder()
                 .recipientEmail(event.recipientEmail())
                 .recipientUserId(event.recipientUserId())
                 .type(NotificationType.STATE_CHANGE)
-                .messageKey(MESSAGE_KEY_RESERVATION_CONFIRMED)
+                .messageKey(MESSAGE_KEY_STATUS_PREFIX + event.status().toLowerCase())
                 .params(Map.of(
-                        "prestataireName", event.prestataireName(),
+                        "actorName", event.actorName(),
                         "eventTitle", event.eventTitle()))
-                .href("/app/events/" + event.eventId() + "/reservations/" + event.reservationId())
+                .href(href)
                 .read(false)
                 .build();
     }

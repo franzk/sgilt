@@ -1,7 +1,7 @@
 package net.franzka.sgilt.core.config;
 
-import net.franzka.sgilt.core.reservation.event.reservationconfirmed.ReservationConfirmedEvent;
 import net.franzka.sgilt.core.reservation.event.reservationcreated.ReservationCreatedEvent;
+import net.franzka.sgilt.core.reservation.event.reservationstatuschanged.ReservationStatusChangedEvent;
 import org.springframework.amqp.support.converter.DefaultJacksonJavaTypeMapper;
 import org.springframework.amqp.support.converter.JacksonJavaTypeMapper;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
@@ -54,7 +54,7 @@ public class RabbitConfig {
         DefaultJacksonJavaTypeMapper typeMapper = new DefaultJacksonJavaTypeMapper();
         typeMapper.setIdClassMapping(Map.of(
                 ReservationCreatedEvent.ROUTING_KEY, ReservationCreatedEvent.class,
-                ReservationConfirmedEvent.ROUTING_KEY, ReservationConfirmedEvent.class));
+                ReservationStatusChangedEvent.ROUTING_KEY, ReservationStatusChangedEvent.class));
         return typeMapper;
     }
 }

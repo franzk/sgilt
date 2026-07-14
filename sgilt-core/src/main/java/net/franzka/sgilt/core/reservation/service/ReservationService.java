@@ -210,6 +210,9 @@ public class ReservationService {
                 .generatedKey("feed.system.cancelled")
                 .isPersonal(false)
                 .build());
+
+        applicationEventPublisher.publishEvent(
+                reservationEventMapper.toStatusChangedEventForPro(reservation, reservation.getStatus()));
     }
 
     /**
@@ -298,6 +301,8 @@ public class ReservationService {
                 .generatedKey("feed.system.contacted")
                 .isPersonal(false)
                 .build());
+
+        publishStatusChangedEvent(reservation);
     }
 
     /**
@@ -327,7 +332,7 @@ public class ReservationService {
                 .isPersonal(false)
                 .build());
 
-        applicationEventPublisher.publishEvent(reservationEventMapper.toReservationConfirmedEvent(reservation));
+        publishStatusChangedEvent(reservation);
     }
 
     /**
@@ -354,6 +359,8 @@ public class ReservationService {
                 .generatedKey("feed.system.cancelled")
                 .isPersonal(false)
                 .build());
+
+        publishStatusChangedEvent(reservation);
     }
 
     /**
@@ -386,6 +393,13 @@ public class ReservationService {
                 .content(request.reason())
                 .isPersonal(false)
                 .build());
+
+        publishStatusChangedEvent(reservation);
+    }
+
+    private void publishStatusChangedEvent(Reservation reservation) {
+        applicationEventPublisher.publishEvent(
+                reservationEventMapper.toStatusChangedEventForClient(reservation, reservation.getStatus()));
     }
 
     /**

@@ -621,12 +621,38 @@
   "notification": {
     "reservation": {
       "new_request": {
-        "title": "Nouvelle demande",
-        "body": "{clientFirstName} vous a envoyé une demande pour {eventTitle}."
+        "title": "Une nouvelle demande ✨",
+        "body": "{clientFirstName} souhaite vous parler de {eventTitle}."
       },
-      "confirmed": {
-        "title": "Réservation confirmée",
-        "body": "{prestataireName} a confirmé votre réservation pour {eventTitle}."
+      "status": {
+        "in_discussion": {
+          "title": "La discussion est lancée",
+          "body": "{actorName} vous a répondu au sujet de {eventTitle}."
+        },
+        "confirmed": {
+          "title": "C’est confirmé 🎉",
+          "body": "{actorName} a confirmé la réservation pour {eventTitle}."
+        },
+        "refused_pre_contact": {
+          "title": "Pas de suite pour cette demande",
+          "body": "{actorName} n’a pas souhaité donner suite à votre demande pour {eventTitle}."
+        },
+        "refused_post_contact": {
+          "title": "La réservation ne se fera pas",
+          "body": "Après discussion, {actorName} ne donnera pas suite pour {eventTitle}."
+        },
+        "canceled_post_confirmation": {
+          "title": "La réservation est annulée",
+          "body": "{actorName} a annulé la réservation pour {eventTitle}."
+        },
+        "canceled_by_client_pre_contact": {
+          "title": "La demande est retirée",
+          "body": "{actorName} a retiré sa demande pour {eventTitle}."
+        },
+        "canceled_by_client_post_contact": {
+          "title": "La réservation est annulée",
+          "body": "{actorName} a annulé sa réservation pour {eventTitle}."
+        }
       }
     }
   },
