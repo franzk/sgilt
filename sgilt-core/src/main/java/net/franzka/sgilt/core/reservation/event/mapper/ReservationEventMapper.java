@@ -2,7 +2,9 @@ package net.franzka.sgilt.core.reservation.event.mapper;
 
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
+import net.franzka.sgilt.core.reservation.event.FeedItemType;
 import net.franzka.sgilt.core.reservation.event.reservationcreated.ReservationCreatedEvent;
+import net.franzka.sgilt.core.reservation.event.reservationfeeditemadded.ReservationFeedItemAddedEvent;
 import net.franzka.sgilt.core.reservation.event.reservationstatuschanged.ReservationStatusChangedEvent;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -69,4 +71,44 @@ public interface ReservationEventMapper {
     @Mapping(source = "reservation.evenement.title",               target = "eventTitle")
     @Mapping(source = "reservation.date",                          target = "eventDate")
     ReservationStatusChangedEvent toStatusChangedEventForPro(Reservation reservation, ReservationStatus status);
+
+    /**
+     * Construit l'évènement générique d'ajout au feed à destination du client, pour un ajout
+     * déclenché par le prestataire. {@code itemType} est passé séparément — même raison que
+     * {@code status} dans {@link #toStatusChangedEventForClient}.
+     *
+     * @param reservation la réservation dont le feed vient de recevoir un élément
+     * @param itemType    le type d'élément ajouté (note ou document)
+     * @return l'évènement à publier
+     */
+    @Mapping(source = "reservation.id",                target = "reservationId")
+    @Mapping(source = "reservation.evenement.id",      target = "eventId")
+    @Mapping(source = "reservation.utilisateur.id",    target = "recipientUserId")
+    @Mapping(source = "reservation.utilisateur.email", target = "recipientEmail")
+    @Mapping(source = "itemType",                      target = "itemType")
+    @Mapping(source = "reservation.prestataire.name",  target = "actorName")
+    @Mapping(target = "actorRole",                     constant = "PRO")
+    @Mapping(source = "reservation.evenement.title",   target = "eventTitle")
+    @Mapping(source = "reservation.date",              target = "eventDate")
+    ReservationFeedItemAddedEvent toFeedItemAddedEventForClient(Reservation reservation, FeedItemType itemType);
+
+    /**
+     * Construit l'évènement générique d'ajout au feed à destination du prestataire, pour un ajout
+     * déclenché par le client. Même exception {@code expression} que {@link #toStatusChangedEventForPro}
+     * pour {@code actorName}.
+     *
+     * @param reservation la réservation dont le feed vient de recevoir un élément
+     * @param itemType    le type d'élément ajouté (note ou document)
+     * @return l'évènement à publier
+     */
+    @Mapping(source = "reservation.id",                            target = "reservationId")
+    @Mapping(source = "reservation.evenement.id",                  target = "eventId")
+    @Mapping(source = "reservation.prestataire.utilisateur.id",    target = "recipientUserId")
+    @Mapping(source = "reservation.prestataire.utilisateur.email", target = "recipientEmail")
+    @Mapping(source = "itemType",                                  target = "itemType")
+    @Mapping(target = "actorName",                                 expression = "java(reservation.getUtilisateur().getFirstName() + \" \" + reservation.getUtilisateur().getLastName())")
+    @Mapping(target = "actorRole",                                 constant = "USER")
+    @Mapping(source = "reservation.evenement.title",               target = "eventTitle")
+    @Mapping(source = "reservation.date",                          target = "eventDate")
+    ReservationFeedItemAddedEvent toFeedItemAddedEventForPro(Reservation reservation, FeedItemType itemType);
 }

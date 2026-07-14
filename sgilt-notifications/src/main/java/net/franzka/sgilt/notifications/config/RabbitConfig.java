@@ -1,6 +1,7 @@
 package net.franzka.sgilt.notifications.config;
 
 import net.franzka.sgilt.notifications.notification.event.ReservationCreatedEvent;
+import net.franzka.sgilt.notifications.notification.event.ReservationFeedItemAddedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationStatusChangedEvent;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -45,6 +46,12 @@ public class RabbitConfig {
      * son champ {@code actorRole}.
      */
     public static final String RESERVATION_STATUS_CHANGED_RK = "reservation.status_changed";
+
+    /**
+     * Routing key publiée par {@code sgilt-core} pour tout ajout au feed d'une réservation (note ou
+     * document), dans les deux sens — même principe que {@link #RESERVATION_STATUS_CHANGED_RK}.
+     */
+    public static final String RESERVATION_FEED_ITEM_ADDED_RK = "reservation.feed_item_added";
 
     private static final String DOMAIN_EVENTS_DLQ = "notifications.domain-events.dlq";
 
@@ -111,6 +118,19 @@ public class RabbitConfig {
     }
 
     /**
+     * Lie la queue partagée à l'exchange des évènements de domaine sur la routing key
+     * {@value #RESERVATION_FEED_ITEM_ADDED_RK}.
+     *
+     * @return le binding
+     */
+    @Bean
+    public Binding reservationFeedItemAddedBinding() {
+        return BindingBuilder.bind(domainEventsQueue())
+                .to(domainEventsExchange())
+                .with(RESERVATION_FEED_ITEM_ADDED_RK);
+    }
+
+    /**
      * Convertisseur JSON pour les messages RabbitMQ. Le dispatch se fait manuellement sur la routing
      * key dans {@code DomainEventListener.onMessage(Message, ...)}, qui reçoit un {@code Message} brut
      * — Spring ne peut donc pas déduire de type depuis la signature de la méthode et retombe sur le
@@ -139,7 +159,8 @@ public class RabbitConfig {
         DefaultJacksonJavaTypeMapper typeMapper = new DefaultJacksonJavaTypeMapper();
         typeMapper.setIdClassMapping(Map.of(
                 RESERVATION_CREATED_RK, ReservationCreatedEvent.class,
-                RESERVATION_STATUS_CHANGED_RK, ReservationStatusChangedEvent.class));
+                RESERVATION_STATUS_CHANGED_RK, ReservationStatusChangedEvent.class,
+                RESERVATION_FEED_ITEM_ADDED_RK, ReservationFeedItemAddedEvent.class));
         return typeMapper;
     }
 }

@@ -653,6 +653,14 @@
           "title": "La réservation est annulée",
           "body": "{actorName} a annulé sa réservation pour {eventTitle}."
         }
+      },
+      "note_added": {
+        "title": "Nouvelle note",
+        "body": "{actorName} a ajouté une note au sujet de {eventTitle}."
+      },
+      "document_added": {
+        "title": "Nouveau document",
+        "body": "{actorName} a déposé un document pour {eventTitle}."
       }
     }
   },

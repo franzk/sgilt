@@ -3,6 +3,7 @@ package net.franzka.sgilt.notifications.notification.listener;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.notifications.notification.event.ReservationCreatedEvent;
+import net.franzka.sgilt.notifications.notification.event.ReservationFeedItemAddedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationStatusChangedEvent;
 import net.franzka.sgilt.notifications.notification.service.NotificationService;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import static net.franzka.sgilt.notifications.config.RabbitConfig.DOMAIN_EVENTS_QUEUE;
 import static net.franzka.sgilt.notifications.config.RabbitConfig.RESERVATION_CREATED_RK;
+import static net.franzka.sgilt.notifications.config.RabbitConfig.RESERVATION_FEED_ITEM_ADDED_RK;
 import static net.franzka.sgilt.notifications.config.RabbitConfig.RESERVATION_STATUS_CHANGED_RK;
 
 /**
@@ -44,6 +46,7 @@ public class DomainEventListener {
         switch (routingKey) {
             case RESERVATION_CREATED_RK -> notificationService.createFromEvent(convert(message, ReservationCreatedEvent.class));
             case RESERVATION_STATUS_CHANGED_RK -> notificationService.createFromEvent(convert(message, ReservationStatusChangedEvent.class));
+            case RESERVATION_FEED_ITEM_ADDED_RK -> notificationService.createFromEvent(convert(message, ReservationFeedItemAddedEvent.class));
             default -> throw new AmqpRejectAndDontRequeueException("Routing key inconnue : " + routingKey);
         }
     }

@@ -2,6 +2,7 @@ package net.franzka.sgilt.notifications.notification.listener;
 
 import net.franzka.sgilt.notifications.config.RabbitConfig;
 import net.franzka.sgilt.notifications.notification.event.ReservationCreatedEvent;
+import net.franzka.sgilt.notifications.notification.event.ReservationFeedItemAddedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationStatusChangedEvent;
 import net.franzka.sgilt.notifications.notification.service.NotificationService;
 import org.junit.jupiter.api.Nested;
@@ -61,6 +62,19 @@ class DomainEventListenerTest {
             when(messageConverter.fromMessage(eq(message), any())).thenReturn(event);
 
             listener.onMessage(message, RabbitConfig.RESERVATION_STATUS_CHANGED_RK);
+
+            verify(notificationService).createFromEvent(event);
+        }
+
+        @Test
+        void givenReservationFeedItemAddedRoutingKey_whenOnMessage_thenDelegatesToNotificationService() {
+            ReservationFeedItemAddedEvent event = new ReservationFeedItemAddedEvent(
+                    UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "client@example.com",
+                    "NOTE", "Studio Fleur", "PRO", "Anniversaire de Paul", LocalDate.now());
+            Message message = mock(Message.class);
+            when(messageConverter.fromMessage(eq(message), any())).thenReturn(event);
+
+            listener.onMessage(message, RabbitConfig.RESERVATION_FEED_ITEM_ADDED_RK);
 
             verify(notificationService).createFromEvent(event);
         }

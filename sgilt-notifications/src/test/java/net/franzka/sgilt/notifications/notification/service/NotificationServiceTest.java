@@ -3,6 +3,7 @@ package net.franzka.sgilt.notifications.notification.service;
 import net.franzka.sgilt.notifications.notification.domain.Notification;
 import net.franzka.sgilt.notifications.notification.domain.NotificationType;
 import net.franzka.sgilt.notifications.notification.event.ReservationCreatedEvent;
+import net.franzka.sgilt.notifications.notification.event.ReservationFeedItemAddedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationStatusChangedEvent;
 import net.franzka.sgilt.notifications.notification.exception.NotificationAccessDeniedException;
 import net.franzka.sgilt.notifications.notification.exception.NotificationNotFoundException;
@@ -65,6 +66,19 @@ class NotificationServiceTest {
                     UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "client@example.com",
                     "CONFIRMED", "Studio Fleur", "PRO", "Anniversaire de Paul", LocalDate.now());
             Notification mapped = Notification.builder().type(NotificationType.STATE_CHANGE).build();
+            when(notificationEventMapper.toNotification(event)).thenReturn(mapped);
+
+            notificationService.createFromEvent(event);
+
+            verify(notificationRepository).save(mapped);
+        }
+
+        @Test
+        void givenReservationFeedItemAddedEvent_whenCreateFromEvent_thenSavesMappedNotification() {
+            ReservationFeedItemAddedEvent event = new ReservationFeedItemAddedEvent(
+                    UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "client@example.com",
+                    "NOTE", "Studio Fleur", "PRO", "Anniversaire de Paul", LocalDate.now());
+            Notification mapped = Notification.builder().type(NotificationType.NEW_NOTE).build();
             when(notificationEventMapper.toNotification(event)).thenReturn(mapped);
 
             notificationService.createFromEvent(event);

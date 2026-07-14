@@ -5,7 +5,9 @@ import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.event.ActorRole;
+import net.franzka.sgilt.core.reservation.event.FeedItemType;
 import net.franzka.sgilt.core.reservation.event.reservationcreated.ReservationCreatedEvent;
+import net.franzka.sgilt.core.reservation.event.reservationfeeditemadded.ReservationFeedItemAddedEvent;
 import net.franzka.sgilt.core.reservation.event.reservationstatuschanged.ReservationStatusChangedEvent;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.junit.jupiter.api.Nested;
@@ -150,6 +152,100 @@ class ReservationEventMapperTest {
             assertThat(event.recipientUserId()).isEqualTo(prestataireUserId);
             assertThat(event.recipientEmail()).isEqualTo("presta@example.com");
             assertThat(event.status()).isEqualTo(ReservationStatus.CANCELED_BY_CLIENT_PRE_CONTACT);
+            assertThat(event.actorName()).isEqualTo("Sophie Leroy");
+            assertThat(event.actorRole()).isEqualTo(ActorRole.USER);
+            assertThat(event.eventTitle()).isEqualTo("Anniversaire de Paul");
+            assertThat(event.eventDate()).isEqualTo(date);
+        }
+    }
+
+    @Nested
+    class ToFeedItemAddedEventForClient {
+
+        @Test
+        void givenReservationAndItemType_whenToFeedItemAddedEventForClient_thenMapsAllFields() {
+            UUID reservationId = UUID.randomUUID();
+            UUID clientId = UUID.randomUUID();
+            UUID eventId = UUID.randomUUID();
+            LocalDate date = LocalDate.now();
+
+            Utilisateur client = Utilisateur.builder()
+                    .id(clientId)
+                    .email("client@example.com")
+                    .build();
+            Prestataire prestataire = Prestataire.builder()
+                    .name("Studio Fleur")
+                    .build();
+            Evenement evenement = Evenement.builder()
+                    .id(eventId)
+                    .title("Anniversaire de Paul")
+                    .build();
+            Reservation reservation = Reservation.builder()
+                    .id(reservationId)
+                    .prestataire(prestataire)
+                    .utilisateur(client)
+                    .evenement(evenement)
+                    .date(date)
+                    .status(ReservationStatus.CONFIRMED)
+                    .build();
+
+            ReservationFeedItemAddedEvent event =
+                    mapper.toFeedItemAddedEventForClient(reservation, FeedItemType.NOTE);
+
+            assertThat(event.reservationId()).isEqualTo(reservationId);
+            assertThat(event.eventId()).isEqualTo(eventId);
+            assertThat(event.recipientUserId()).isEqualTo(clientId);
+            assertThat(event.recipientEmail()).isEqualTo("client@example.com");
+            assertThat(event.itemType()).isEqualTo(FeedItemType.NOTE);
+            assertThat(event.actorName()).isEqualTo("Studio Fleur");
+            assertThat(event.actorRole()).isEqualTo(ActorRole.PRO);
+            assertThat(event.eventTitle()).isEqualTo("Anniversaire de Paul");
+            assertThat(event.eventDate()).isEqualTo(date);
+        }
+    }
+
+    @Nested
+    class ToFeedItemAddedEventForPro {
+
+        @Test
+        void givenReservationAndItemType_whenToFeedItemAddedEventForPro_thenMapsAllFields() {
+            UUID reservationId = UUID.randomUUID();
+            UUID prestataireUserId = UUID.randomUUID();
+            UUID eventId = UUID.randomUUID();
+            LocalDate date = LocalDate.now();
+
+            Utilisateur prestataireUtilisateur = Utilisateur.builder()
+                    .id(prestataireUserId)
+                    .email("presta@example.com")
+                    .build();
+            Prestataire prestataire = Prestataire.builder()
+                    .utilisateur(prestataireUtilisateur)
+                    .build();
+            Utilisateur client = Utilisateur.builder()
+                    .firstName("Sophie")
+                    .lastName("Leroy")
+                    .build();
+            Evenement evenement = Evenement.builder()
+                    .id(eventId)
+                    .title("Anniversaire de Paul")
+                    .build();
+            Reservation reservation = Reservation.builder()
+                    .id(reservationId)
+                    .prestataire(prestataire)
+                    .utilisateur(client)
+                    .evenement(evenement)
+                    .date(date)
+                    .status(ReservationStatus.CONFIRMED)
+                    .build();
+
+            ReservationFeedItemAddedEvent event =
+                    mapper.toFeedItemAddedEventForPro(reservation, FeedItemType.DOCUMENT);
+
+            assertThat(event.reservationId()).isEqualTo(reservationId);
+            assertThat(event.eventId()).isEqualTo(eventId);
+            assertThat(event.recipientUserId()).isEqualTo(prestataireUserId);
+            assertThat(event.recipientEmail()).isEqualTo("presta@example.com");
+            assertThat(event.itemType()).isEqualTo(FeedItemType.DOCUMENT);
             assertThat(event.actorName()).isEqualTo("Sophie Leroy");
             assertThat(event.actorRole()).isEqualTo(ActorRole.USER);
             assertThat(event.eventTitle()).isEqualTo("Anniversaire de Paul");
