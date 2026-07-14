@@ -59,11 +59,14 @@ export function usePrestataire(slug?: string) {
   }
 
   async function submit() {
+    if (!prestataire.value) return
     submitting.value = true
     submitError.value = false
     try {
+      // save before submit
+      await savePrestataireUpdate(prestataire.value)
       await submitPrestataire()
-      if (prestataire.value) prestataire.value.status = 'IN_REVIEW'
+      prestataire.value.status = 'IN_REVIEW'
     } catch {
       submitError.value = true
     } finally {
