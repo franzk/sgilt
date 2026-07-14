@@ -1,7 +1,9 @@
 package net.franzka.sgilt.core.jwt.service;
 
 import lombok.RequiredArgsConstructor;
+import net.franzka.sgilt.core.jwt.domain.ActionToken;
 import net.franzka.sgilt.core.jwt.domain.ActionType;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +36,25 @@ public class ActionLinkService {
      */
     public String createLink(ActionType type, Object payload) {
         ActionTokenService.TokenCreationResult result = actionTokenService.createToken(type, payload);
+        return getLink(type, result.hmacToken());
+    }
+
+    /**
+     * Réinitialise la période de validité d'un token d'action existant et reconstruit l'URL front
+     * à laquelle il pointe. Le token lui-même n'est pas régénéré : le lien renvoyé est identique à
+     * celui déjà transmis au destinataire, seule sa date d'expiration change.
+     *
+     * @param actionToken le token existant dont la validité doit être réinitialisée
+     * @return l'URL front complète (avec le token signé), prête à être retransmise (renvoi de mail)
+     */
+    public String rebuildLink(ActionToken actionToken) {
+        String hmacToken = actionTokenService.renewExpiration(actionToken);
+        return getLink(actionToken.getType(), hmacToken);
+    }
+
+    // construit l'URL front à partir du type (frontPath) et du token HMAC complet
+    private @NonNull String getLink(ActionType type, String hmacToken) {
         return frontendUrl + type.frontPath()
-                + "?token=" + URLEncoder.encode(result.hmacToken(), StandardCharsets.UTF_8);
+                + "?token=" + URLEncoder.encode(hmacToken, StandardCharsets.UTF_8);
     }
 }

@@ -106,6 +106,32 @@ class PrestataireServiceTest {
     }
 
     // -------------------------------------------------------------------------
+    // getByUtilisateurEmail
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetByUtilisateurEmail {
+
+        @Test
+        void givenPrestataireLinkedToEmail_whenGetByUtilisateurEmail_thenReturnsPrestataire() {
+            Prestataire prestataire = prestataireWith(PrestataireStatus.DRAFT);
+            when(prestataireRepository.findByUtilisateur_EmailAndDeletedAtIsNull(utilisateur.getEmail()))
+                    .thenReturn(Optional.of(prestataire));
+
+            assertThat(prestataireService.getByUtilisateurEmail(utilisateur.getEmail())).isEqualTo(prestataire);
+        }
+
+        @Test
+        void givenNoPrestataireForEmail_whenGetByUtilisateurEmail_thenThrowsNotFound() {
+            when(prestataireRepository.findByUtilisateur_EmailAndDeletedAtIsNull(utilisateur.getEmail()))
+                    .thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> prestataireService.getByUtilisateurEmail(utilisateur.getEmail()))
+                    .isInstanceOf(PrestataireNotFoundException.class);
+        }
+    }
+
+    // -------------------------------------------------------------------------
     // submitMaFiche
     // -------------------------------------------------------------------------
 
@@ -285,21 +311,21 @@ class PrestataireServiceTest {
     // -------------------------------------------------------------------------
 
     @Nested
-    class GetAllForAdmin {
+    class GetConfirmedPrestataires {
 
         @Test
-        void givenPrestatairesWithMixedStatuses_whenGetAllForAdmin_thenReturnsAllRegardlessOfStatus() {
+        void givenConfirmedPrestatairesWithMixedStatuses_whenGetConfirmedPrestataires_thenReturnsAllRegardlessOfStatus() {
             Prestataire draft = prestataireWith(PrestataireStatus.DRAFT);
             Prestataire published = prestataireWith(PrestataireStatus.PUBLISHED);
             PrestataireAdminListItemDto draftDto =
                     new PrestataireAdminListItemDto(draft.getId(), "Jean", SLUG, PrestataireStatus.DRAFT, "pro@sgilt.fr");
             PrestataireAdminListItemDto publishedDto =
                     new PrestataireAdminListItemDto(published.getId(), "Jean", SLUG, PrestataireStatus.PUBLISHED, "pro@sgilt.fr");
-            when(prestataireRepository.findByDeletedAtIsNull()).thenReturn(List.of(draft, published));
+            when(prestataireRepository.findConfirmedByDeletedAtIsNull()).thenReturn(List.of(draft, published));
             when(prestataireMapper.toAdminListItemDto(draft)).thenReturn(draftDto);
             when(prestataireMapper.toAdminListItemDto(published)).thenReturn(publishedDto);
 
-            List<PrestataireAdminListItemDto> result = prestataireService.getAllForAdmin();
+            List<PrestataireAdminListItemDto> result = prestataireService.getConfirmedPrestataires();
 
             assertThat(result).containsExactly(draftDto, publishedDto);
         }

@@ -7,6 +7,7 @@ import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDet
 import type { DisplayMode } from '~/types/prestataire'
 
 const router = useRouter()
+const { t } = useI18n()
 
 const props = defineProps<{
   prestataire: PrestataireDetail
@@ -80,7 +81,7 @@ async function share() {
   if (navigator.share) {
     await navigator.share({
       title: props.prestataire.name,
-      text: props.prestataire.baseline,
+      text: t('prestataire.share-text', { name: props.prestataire.name }),
       url: window.location.href,
     })
   } else {
@@ -90,7 +91,12 @@ async function share() {
 </script>
 
 <template>
-  <section class="hero" :class="{ 'no-media': !hasMedia }" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
+  <section
+    class="hero"
+    :class="{ 'no-media': !hasMedia }"
+    @touchstart.passive="onTouchStart"
+    @touchend.passive="onTouchEnd"
+  >
     <template v-if="hasMedia">
       <!-- ── Mobile : carousel ── -->
       <div class="carousel">
@@ -212,7 +218,12 @@ async function share() {
       <ShareIcon />
     </button>
 
-    <button v-if="isEdit && hasMedia" class="edit-medias" type="button" @click="heroboardOpen = true">
+    <button
+      v-if="isEdit && hasMedia"
+      class="edit-medias"
+      type="button"
+      @click="heroboardOpen = true"
+    >
       <ImageAddIcon />
       {{ $t('prestataire.edit-medias-btn') }}
     </button>

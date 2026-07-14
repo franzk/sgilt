@@ -3,6 +3,8 @@
  */
 import type { PrestataireAdminListItemDto } from '../dto/PrestataireAdminListItemDto'
 import type { PrestataireAdminFormat } from '../domain/PrestataireAdminFormat'
+import type { PrestataireOnboardingPendingDto } from '../dto/PrestataireOnboardingPendingDto'
+import type { PrestataireOnboardingPending } from '../domain/PrestataireOnboardingPending'
 import type { ProvisionPrestataireRequestDto } from '../dto/ProvisionPrestataireRequestDto'
 import type { PrestataireProvisioning } from '../domain/PrestataireProvisioning'
 import type { ProvisionPrestataireResponseDto } from '../dto/ProvisionPrestataireResponseDto'
@@ -35,5 +37,17 @@ export function mapProvisionResult(dto: ProvisionPrestataireResponseDto): Provis
     prestataireId: dto.prestataireId,
     utilisateurId: dto.utilisateurId,
     slug: dto.slug,
+  }
+}
+
+export function mapPrestataireOnboardingPending(
+  dto: PrestataireOnboardingPendingDto,
+): PrestataireOnboardingPending {
+  return {
+    prestataireId: dto.prestataireId,
+    prestataireName: dto.prestataireName,
+    email: dto.email,
+    linkSentAt: dto.linkSentAt,
+    linkExpiresAt: dto.linkExpiresAt,
   }
 }

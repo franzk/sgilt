@@ -119,6 +119,11 @@ flows (pas seulement l'onboarding prestataire) :
   que rien après le token dans l'URL n'est couvert par la signature (donc falsifiable si exposé).
   `type`/`action`/`payload` ne sont dérivables qu'en rechargeant la ligne `ActionToken` côté back,
   à la vérification.
+- Durée de validité du lien : **1 semaine** (`sgilt.jwt.prestataire-onboarding-expiration-hours`,
+  168h), propriété dédiée au flow prestataire — distincte de
+  `sgilt.jwt.confirmation-expiration-hours` (24h, flow client, tunnel de demande initiale). Les
+  deux propriétés partagent le même secret HMAC (`confirmationSecret`) mais des durées différentes,
+  volontairement découplées pour ne pas impacter le tunnel client en changeant l'une ou l'autre.
 
 ### Compte-rendu des échecs
 
@@ -131,8 +136,8 @@ flows (pas seulement l'onboarding prestataire) :
 | Échec de l'envoi du mail                   | 500     | reste       | reste (aucune compensation)   |
 
 Le dernier cas est **volontairement non compensé** : une fois la transaction DB commitée, tout
-recréer coûterait un nouveau conflit de slug/email pour un nouvel appel. C'est un manque connu —
-voir "Limitations connues" ci-dessous.
+recréer coûterait un nouveau conflit de slug/email pour un nouvel appel. En rattrapage, le
+back-office admin permet de renvoyer le mail (voir "Rattrapage : renvoi du mail" ci-dessous).
 
 ---
 
@@ -149,6 +154,21 @@ dont les entités n'existent pas encore).
 - Ne relance jamais l'exception en cas d'échec réseau — retourne un `boolean`. C'est
   `AdminController` qui décide de la réponse HTTP à renvoyer (`500` si `false`), sans jamais
   compenser KC/DB.
+
+### Rattrapage : renvoi du mail
+
+Écran back-office dédié (`GET /admin/prestataires/onboarding-pending`) listant tous les
+prestataires dont l'`ActionToken` `PRESTATAIRE_ONBOARDING` existe toujours en base (lien non
+cliqué, qu'il soit encore valide ou déjà expiré). Chaque ligne expose un bouton de renvoi
+(`POST /admin/prestataires/{id}/resend-onboarding-email`), orchestré par `AdminOnboardingService` :
+
+1. Résout le prestataire par id, puis son `ActionToken` en attente par email
+   (`ActionTokenService.findPendingByEmail`).
+2. Réinitialise la date d'expiration du token existant à la durée de validité courante
+   (`ActionTokenService.renewExpiration`) — **le token n'est pas régénéré**, seul son
+   `expiresAt` change : le lien renvoyé par mail est identique à celui déjà envoyé (même token
+   HMAC, reconstruit via `VerificationTokenHmacService.buildToken`).
+3. Renvoie le mail via `AdminMailerService.sendPrestataireOnboardingEmail`, comme en phase 2.
 
 ---
 
@@ -184,8 +204,8 @@ Dans les deux cas, retourne le même DTO `SetPasswordTokenDto {email, setPasswor
 `onboardingId` (client) ou `actionTokenId` (prestataire).
 
 **Durée de vie du JWT set-password : 5 minutes** (`JwtConfig.SET_PASSWORD_TOKEN_TTL`),
-volontairement indépendante de la durée de validité du lien email (24h,
-`confirmationExpirationHours`) — une fois le lien vérifié, la fenêtre pour soumettre effectivement
+volontairement indépendante de la durée de validité du lien email (1 semaine,
+`prestataireOnboardingExpirationHours`) — une fois le lien vérifié, la fenêtre pour soumettre effectivement
 le mot de passe doit être courte. La vérification de signature est **implicite** : `isExpired`/
 `extractClaims` passent par `Jwts.parser().verifyWith(key)...parseSignedClaims(token)`, qui valide
 la signature avant même de retourner les claims — un token forgé lève une `JwtException` (400),
@@ -225,7 +245,6 @@ ce mécanisme était déjà entièrement générique.
 | Sujet | État | Détail |
 |---|---|---|
 | Deux tables de tokens | Pont temporaire (dispatch essai-erreur) | Voir ticket Trello "Unifier les mécanismes de token de confirmation" |
-| Échec de l'envoi du mail | Pas de rattrapage | Entités déjà en base, pas de moyen de renvoyer le lien après coup — à construire dans une session dédiée |
 | Session SSO magic-link | Bug connu, non corrigé | Si le navigateur a déjà une session KC active pour un autre utilisateur, le magic-link ne la remplace pas. Piste : `prompt=login` sur l'URL générée par `getMagicLoginUrl` — nécessite une vérification en navigateur réel |
 | `ActionType.action()` | Champ présent mais non consommé | Pensé pour que le front puisse un jour dispatcher son propre affichage selon l'action ; pour l'instant le front ne change pas, donc rien ne le lit encore |
 
@@ -233,8 +252,9 @@ ce mécanisme était déjà entièrement générique.
 
 ## Pointeurs code
 
-- `sgilt-core/.../admin/controller/AdminController.java` — phase 1
+- `sgilt-core/.../admin/controller/AdminController.java` — phase 1, écran BO onboarding en attente
 - `sgilt-core/.../admin/mailer/AdminMailerService.java` — phase 2
+- `sgilt-core/.../admin/service/AdminOnboardingService.java` — rattrapage : liste + renvoi du mail
 - `sgilt-core/.../onboarding/service/VerifyService.java` — phase 3, dispatch verify
 - `sgilt-core/.../onboarding/service/OnboardingService.java` — phase 3, dispatch confirm
 - `sgilt-core/.../jwt/` — `ActionToken`, `ActionType`, `ActionTokenService`, `ActionLinkService`,
@@ -243,3 +263,4 @@ ce mécanisme était déjà entièrement générique.
   `getUserIdByEmail`, `resetPassword`, `getMagicLoginUrl`
 - `sgilt-keycloak/spi/` — authenticator `magic-link`
 - `sgilt-front/app/pages/onboarding/verify.vue`, `sgilt-front/app/middleware/auth.global.ts`
+- `sgilt-front/app/pages/admin/onboarding.vue` — écran BO des onboardings en attente (renvoi de mail)

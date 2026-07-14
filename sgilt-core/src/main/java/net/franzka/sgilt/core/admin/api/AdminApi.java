@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireRequest;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireResponse;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireAdminListItemDto;
+import net.franzka.sgilt.core.prestataire.dto.PrestataireOnboardingPendingDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,4 +30,10 @@ public interface AdminApi {
 
     @PostMapping("/prestataires/{id}/send-to-review")
     ResponseEntity<Void> sendPrestataireBackToReview(@PathVariable UUID id);
+
+    @GetMapping("/prestataires/onboarding-pending")
+    ResponseEntity<List<PrestataireOnboardingPendingDto>> listPendingOnboardings();
+
+    @PostMapping("/prestataires/{id}/resend-onboarding-email")
+    ResponseEntity<Void> resendOnboardingEmail(@PathVariable UUID id);
 }

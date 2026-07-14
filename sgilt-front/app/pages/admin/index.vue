@@ -1,6 +1,11 @@
 <template>
   <div class="admin-page">
-    <h1>{{ $t('admin.prestataires.title') }}</h1>
+    <div class="page-header">
+      <h1>{{ $t('admin.prestataires.title') }}</h1>
+      <NuxtLink class="onboarding-link" to="/admin/onboarding">
+        {{ $t('admin.prestataires.onboarding-pending-link') }}
+      </NuxtLink>
+    </div>
 
     <section class="list">
       <p v-if="loading">{{ $t('admin.prestataires.loading') }}</p>
@@ -118,6 +123,18 @@ onMounted(() => load())
   padding: $spacing-l;
   max-width: 720px;
   margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-s;
+
+  .onboarding-link {
+    font-size: 0.85rem;
+    color: $text-secondary;
+  }
 }
 
 .create-form {

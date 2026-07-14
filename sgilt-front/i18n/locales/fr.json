@@ -868,6 +868,7 @@
   "prestataire": {
     "edit-medias-btn": "Modifier les médias",
     "add-medias-btn": "Ajouter des images",
+    "share-text": "Découvrez {name} sur Sgilt",
     "media-dialog": {
       "title": "Modifier les médias",
       "preview-empty": "Cliquez sur un slot pour l'éditer",
@@ -972,6 +973,7 @@
       "loading": "Chargement…",
       "publish": "Publier",
       "send-to-review": "Renvoyer en revue",
+      "onboarding-pending-link": "Onboardings en attente",
       "status": {
         "DRAFT": "Brouillon",
         "IN_REVIEW": "En revue",
@@ -990,6 +992,17 @@
         "success": "Prestataire créé (slug : {slug}), email d'activation envoyé.",
         "error": "Échec de la création, vérifiez les champs (slug déjà pris ?)."
       }
+    },
+    "onboarding": {
+      "title": "Onboardings en attente",
+      "back-to-prestataires": "← Prestataires",
+      "loading": "Chargement…",
+      "empty": "Aucun onboarding en attente.",
+      "sent-at": "Envoyé le {date}",
+      "expires-at": "expire le {date}",
+      "resend": "Renvoyer le mail",
+      "resend-success": "Mail renvoyé, validité réinitialisée à 1 semaine.",
+      "resend-error": "Échec de l'envoi du mail."
     }
   }
 }

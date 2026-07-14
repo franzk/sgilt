@@ -7,11 +7,13 @@ import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireRequest;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireResponse;
 import net.franzka.sgilt.core.admin.exception.SlugAlreadyExistsException;
 import net.franzka.sgilt.core.admin.mailer.AdminMailerService;
+import net.franzka.sgilt.core.admin.service.AdminOnboardingService;
 import net.franzka.sgilt.core.jwt.domain.ActionType;
 import net.franzka.sgilt.core.jwt.service.ActionLinkService;
 import net.franzka.sgilt.core.keycloak.KeycloakAdminService;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireAdminListItemDto;
+import net.franzka.sgilt.core.prestataire.dto.PrestataireOnboardingPendingDto;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
@@ -46,6 +48,7 @@ public class AdminController implements AdminApi {
     private final ActionLinkService actionLinkService;
     private final KeycloakAdminService keycloakAdminService;
     private final AdminMailerService adminMailerService;
+    private final AdminOnboardingService adminOnboardingService;
     private final TransactionTemplate transactionTemplate;
 
     /**
@@ -65,6 +68,7 @@ public class AdminController implements AdminApi {
      * @param actionLinkService    le service de création des liens d'action (token + URL front)
      * @param keycloakAdminService le service métier des interactions Keycloak
      * @param adminMailerService   le service d'envoi de l'email d'activation prestataire
+     * @param adminOnboardingService le service de suivi et de relance des onboardings en attente
      * @param transactionManager   le gestionnaire de transaction Spring, utilisé pour construire le {@link TransactionTemplate}
      */
     public AdminController(
@@ -73,12 +77,14 @@ public class AdminController implements AdminApi {
             ActionLinkService actionLinkService,
             KeycloakAdminService keycloakAdminService,
             AdminMailerService adminMailerService,
+            AdminOnboardingService adminOnboardingService,
             PlatformTransactionManager transactionManager) {
         this.prestataireService = prestataireService;
         this.utilisateurService = utilisateurService;
         this.actionLinkService = actionLinkService;
         this.keycloakAdminService = keycloakAdminService;
         this.adminMailerService = adminMailerService;
+        this.adminOnboardingService = adminOnboardingService;
         this.transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
@@ -171,7 +177,7 @@ public class AdminController implements AdminApi {
     @Transactional
     public ResponseEntity<List<PrestataireAdminListItemDto>> listPrestataires() {
         log.info("GET /admin/prestataires");
-        return ResponseEntity.ok(prestataireService.getAllForAdmin());
+        return ResponseEntity.ok(prestataireService.getConfirmedPrestataires());
     }
 
     /**
@@ -199,6 +205,37 @@ public class AdminController implements AdminApi {
     public ResponseEntity<Void> sendPrestataireBackToReview(UUID id) {
         log.info("POST /admin/prestataires/{}/send-to-review", id);
         prestataireService.sendBackToReview(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Liste tous les prestataires dont l'onboarding est en attente — le lien envoyé par email n'a
+     * pas encore été cliqué.
+     *
+     * @return la liste des onboardings en attente
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<List<PrestataireOnboardingPendingDto>> listPendingOnboardings() {
+        log.info("GET /admin/prestataires/onboarding-pending");
+        return ResponseEntity.ok(adminOnboardingService.listPendingOnboardings());
+    }
+
+    /**
+     * Renvoie le mail d'activation à un prestataire dont l'onboarding est en attente, en
+     * réinitialisant la période de validité du lien.
+     *
+     * @param id identifiant du prestataire dont l'onboarding doit être relancé
+     * @return 204 No Content, ou 500 si l'email n'a pas pu être envoyé
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<Void> resendOnboardingEmail(UUID id) {
+        log.info("POST /admin/prestataires/{}/resend-onboarding-email", id);
+        boolean mailSent = adminOnboardingService.resendOnboardingEmail(id);
+        if (!mailSent) {
+            return ResponseEntity.internalServerError().build();
+        }
         return ResponseEntity.noContent().build();
     }
 }
