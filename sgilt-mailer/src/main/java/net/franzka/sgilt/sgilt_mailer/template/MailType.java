@@ -36,5 +36,38 @@ public enum MailType {
      * {@code sgilt-smtp-bridge} pour relayer les mails envoyés nativement par Keycloak
      * (reset password, verify email), dont le contenu est déjà généré par le thème Keycloak.
      */
-    RAW_EMAIL
+    RAW_EMAIL,
+
+    /**
+     * Mail envoyé au prestataire quand un client lui envoie une nouvelle demande de réservation.
+     * Producteur : {@code sgilt-notifications}.
+     */
+    RESERVATION_NEW_REQUEST_EMAIL,
+
+    /** Mail envoyé au client quand le prestataire a pris contact (NEW → IN_DISCUSSION). */
+    RESERVATION_STATUS_IN_DISCUSSION_EMAIL,
+
+    /** Mail envoyé au client quand le prestataire confirme sa réservation. */
+    RESERVATION_STATUS_CONFIRMED_EMAIL,
+
+    /** Mail envoyé au client quand le prestataire refuse sa demande, avant prise de contact. */
+    RESERVATION_STATUS_REFUSED_PRE_CONTACT_EMAIL,
+
+    /** Mail envoyé au client quand le prestataire refuse sa demande, après discussion. */
+    RESERVATION_STATUS_REFUSED_POST_CONTACT_EMAIL,
+
+    /** Mail envoyé au client quand le prestataire annule une réservation déjà confirmée. */
+    RESERVATION_STATUS_CANCELED_POST_CONFIRMATION_EMAIL,
+
+    /** Mail envoyé au prestataire quand le client retire sa demande, avant prise de contact. */
+    RESERVATION_STATUS_CANCELED_BY_CLIENT_PRE_CONTACT_EMAIL,
+
+    /** Mail envoyé au prestataire quand le client annule sa réservation, après discussion. */
+    RESERVATION_STATUS_CANCELED_BY_CLIENT_POST_CONTACT_EMAIL,
+
+    /** Mail envoyé à l'autre partie quand une note (non personnelle) est ajoutée au feed. */
+    RESERVATION_NOTE_ADDED_EMAIL,
+
+    /** Mail envoyé à l'autre partie quand un document (non personnel) est ajouté au feed. */
+    RESERVATION_DOCUMENT_ADDED_EMAIL
 }

@@ -1,0 +1,6 @@
+{
+  "subjectTemplate": "{actorName} vous a répondu au sujet de {eventTitle}",
+  "htmlTemplate": "<p>Bonjour,</p>\n<p>{actorName} vous a répondu au sujet de {eventTitle}.</p>\n<p><a href=\"{actionUrl}\">Voir la réservation</a></p>\n<p>À bientôt,</p>\n<p>L’équipe Sgilt.</p>\n",
+  "requiredVariables": ["actorName", "eventTitle", "actionUrl"],
+  "htmlSafeVariables": []
+}

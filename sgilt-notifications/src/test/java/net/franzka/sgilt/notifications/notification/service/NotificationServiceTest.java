@@ -7,6 +7,7 @@ import net.franzka.sgilt.notifications.notification.event.ReservationFeedItemAdd
 import net.franzka.sgilt.notifications.notification.event.ReservationStatusChangedEvent;
 import net.franzka.sgilt.notifications.notification.exception.NotificationAccessDeniedException;
 import net.franzka.sgilt.notifications.notification.exception.NotificationNotFoundException;
+import net.franzka.sgilt.notifications.notification.mailer.NotificationMailerService;
 import net.franzka.sgilt.notifications.notification.mapper.NotificationEventMapper;
 import net.franzka.sgilt.notifications.notification.repository.NotificationRepository;
 import org.junit.jupiter.api.Nested;
@@ -41,6 +42,9 @@ class NotificationServiceTest {
     @Mock
     private NotificationEventMapper notificationEventMapper;
 
+    @Mock
+    private NotificationMailerService notificationMailerService;
+
     @InjectMocks
     private NotificationService notificationService;
 
@@ -48,7 +52,7 @@ class NotificationServiceTest {
     class CreateFromEvent {
 
         @Test
-        void givenReservationCreatedEvent_whenCreateFromEvent_thenSavesMappedNotification() {
+        void givenReservationCreatedEvent_whenCreateFromEvent_thenSavesMappedNotificationAndSendsEmail() {
             ReservationCreatedEvent event = new ReservationCreatedEvent(
                     UUID.randomUUID(), UUID.randomUUID(), "presta@example.com",
                     "Sophie", "Leroy", "Anniversaire de Paul", LocalDate.now());
@@ -58,10 +62,11 @@ class NotificationServiceTest {
             notificationService.createFromEvent(event);
 
             verify(notificationRepository).save(mapped);
+            verify(notificationMailerService).sendNotificationEmail(mapped);
         }
 
         @Test
-        void givenReservationStatusChangedEvent_whenCreateFromEvent_thenSavesMappedNotification() {
+        void givenReservationStatusChangedEvent_whenCreateFromEvent_thenSavesMappedNotificationAndSendsEmail() {
             ReservationStatusChangedEvent event = new ReservationStatusChangedEvent(
                     UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "client@example.com",
                     "CONFIRMED", "Studio Fleur", "PRO", "Anniversaire de Paul", LocalDate.now());
@@ -71,10 +76,11 @@ class NotificationServiceTest {
             notificationService.createFromEvent(event);
 
             verify(notificationRepository).save(mapped);
+            verify(notificationMailerService).sendNotificationEmail(mapped);
         }
 
         @Test
-        void givenReservationFeedItemAddedEvent_whenCreateFromEvent_thenSavesMappedNotification() {
+        void givenReservationFeedItemAddedEvent_whenCreateFromEvent_thenSavesMappedNotificationAndSendsEmail() {
             ReservationFeedItemAddedEvent event = new ReservationFeedItemAddedEvent(
                     UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "client@example.com",
                     "NOTE", "Studio Fleur", "PRO", "Anniversaire de Paul", LocalDate.now());
@@ -84,6 +90,7 @@ class NotificationServiceTest {
             notificationService.createFromEvent(event);
 
             verify(notificationRepository).save(mapped);
+            verify(notificationMailerService).sendNotificationEmail(mapped);
         }
 
         @Test

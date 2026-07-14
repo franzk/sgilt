@@ -8,6 +8,7 @@ import net.franzka.sgilt.notifications.notification.event.ReservationFeedItemAdd
 import net.franzka.sgilt.notifications.notification.event.ReservationStatusChangedEvent;
 import net.franzka.sgilt.notifications.notification.exception.NotificationAccessDeniedException;
 import net.franzka.sgilt.notifications.notification.exception.NotificationNotFoundException;
+import net.franzka.sgilt.notifications.notification.mailer.NotificationMailerService;
 import net.franzka.sgilt.notifications.notification.mapper.NotificationEventMapper;
 import net.franzka.sgilt.notifications.notification.repository.NotificationRepository;
 import org.springframework.data.domain.Page;
@@ -22,7 +23,9 @@ import java.util.UUID;
  * reçus, consultation et marquage comme lue pour le destinataire authentifié. La construction de la
  * notification à partir de l'évènement (clé i18n, params, lien) est déléguée à
  * {@link NotificationEventMapper} — un nouveau type d'évènement ajoute une méthode là-bas et un cas
- * dans le {@code switch} de {@link #createFromEvent}, pas de nouvelle méthode ici.
+ * dans le {@code switch} de {@link #createFromEvent}, pas de nouvelle méthode ici. Chaque notification
+ * créée déclenche aussi un email via {@link NotificationMailerService} (pas encore de préférence par
+ * type/utilisateur — tout est forwardé pour l'instant, une matrice de préférence viendra plus tard).
  */
 @Service
 @RequiredArgsConstructor
@@ -33,6 +36,7 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final NotificationEventMapper notificationEventMapper;
+    private final NotificationMailerService notificationMailerService;
 
     /**
      * Crée et persiste la notification correspondant à l'évènement de domaine reçu, quel que soit son
@@ -52,6 +56,8 @@ public class NotificationService {
 
         notificationRepository.save(notification);
         log.info("Notification {} créée pour {} ({})", notification.getType(), notification.getRecipientEmail(), notification.getHref());
+
+        notificationMailerService.sendNotificationEmail(notification);
     }
 
     /**

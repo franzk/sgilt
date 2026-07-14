@@ -16,9 +16,9 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitConfig {
 
     /**
-     * Nom de la queue d'envoi de mail, alimentée par sgilt-core et sgilt-smtp-bridge.
+     * Nom de la queue d'envoi de mail, alimentée par sgilt-core, sgilt-notifications et sgilt-smtp-bridge.
      * Les arguments de cette déclaration (durable + dead-letter) doivent rester identiques à ceux
-     * déclarés côté sgilt-core et sgilt-smtp-bridge — un mismatch fait échouer RabbitMQ au démarrage
+     * déclarés côté ces trois producteurs — un mismatch fait échouer RabbitMQ au démarrage
      * (406 inequivalent arg).
      */
     public static final String MAIL_SEND_QUEUE = "mail.send";

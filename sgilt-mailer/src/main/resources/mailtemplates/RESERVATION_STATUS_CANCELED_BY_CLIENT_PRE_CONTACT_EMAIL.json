@@ -1,0 +1,6 @@
+{
+  "subjectTemplate": "La demande pour {eventTitle} a été retirée",
+  "htmlTemplate": "<p>Bonjour,</p>\n<p>{actorName} a retiré sa demande pour {eventTitle}.</p>\n<p><a href=\"{actionUrl}\">Voir la réservation</a></p>\n<p>À bientôt,</p>\n<p>L’équipe Sgilt.</p>\n",
+  "requiredVariables": ["actorName", "eventTitle", "actionUrl"],
+  "htmlSafeVariables": []
+}
