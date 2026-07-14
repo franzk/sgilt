@@ -53,6 +53,11 @@ spring:
               predicates:
                 - Path=/api/v1/admin/**
 
+            - id: notifications-private
+              uri: ${NOTIFICATIONS_URL:http://localhost:5031}
+              predicates:
+                - Path=/api/v1/notifications/**
+
   security:
     oauth2:
       resourceserver:

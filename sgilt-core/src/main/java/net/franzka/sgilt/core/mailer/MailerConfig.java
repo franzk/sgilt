@@ -2,14 +2,13 @@ package net.franzka.sgilt.core.mailer;
 
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
-import org.springframework.amqp.support.converter.JacksonJavaTypeMapper;
-import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * Configuration Spring de la connexion RabbitMQ vers sgilt-mailer.
- * Déclare la queue {@value #MAIL_SEND_QUEUE} et le convertisseur JSON utilisés par {@link MailerClient}.
+ * Déclare la queue {@value #MAIL_SEND_QUEUE} utilisée par {@link MailerClient}. Le convertisseur JSON
+ * RabbitMQ, partagé par tous les usages du broker, vit dans {@link net.franzka.sgilt.core.config.RabbitConfig}.
  */
 @Configuration
 public class MailerConfig {
@@ -34,21 +33,5 @@ public class MailerConfig {
                 .deadLetterExchange("")
                 .deadLetterRoutingKey(MAIL_SEND_DLQ)
                 .build();
-    }
-
-    /**
-     * Convertisseur JSON pour les messages RabbitMQ, utilisé à la fois pour la publication
-     * ({@link org.springframework.amqp.rabbit.core.RabbitTemplate}) et pour la désérialisation.
-     * Précédence de type explicitement laissée sur {@code INFERRED} (comportement par défaut) :
-     * la désérialisation se base sur le type du paramètre du {@code @RabbitListener} côté sgilt-mailer,
-     * pas sur un header {@code __TypeId__} qui référencerait le FQCN de ce module (différent côté mailer).
-     *
-     * @return le convertisseur de message JSON
-     */
-    @Bean
-    public JacksonJsonMessageConverter jsonMessageConverter() {
-        JacksonJsonMessageConverter converter = new JacksonJsonMessageConverter();
-        converter.setTypePrecedence(JacksonJavaTypeMapper.TypePrecedence.INFERRED);
-        return converter;
     }
 }

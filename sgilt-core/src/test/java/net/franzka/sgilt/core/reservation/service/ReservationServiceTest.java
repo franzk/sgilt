@@ -1,20 +1,36 @@
 package net.franzka.sgilt.core.reservation.service;
 
+import net.franzka.sgilt.core.evenement.domain.Evenement;
+import net.franzka.sgilt.core.reservation.event.ActorRole;
+import net.franzka.sgilt.core.reservation.event.reservationcreated.ReservationCreatedEvent;
+import net.franzka.sgilt.core.reservation.event.reservationstatuschanged.ReservationStatusChangedEvent;
+import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
+import net.franzka.sgilt.core.reservation.dto.RefuseReservationRequest;
 import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
+import net.franzka.sgilt.core.reservation.event.mapper.ReservationEventMapper;
+import net.franzka.sgilt.core.reservation.mapper.ReservationMapper;
+import net.franzka.sgilt.core.reservation.repository.NoteRepository;
 import net.franzka.sgilt.core.reservation.repository.ReservationRepository;
+import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,6 +41,17 @@ class ReservationServiceTest {
     @Mock
     private ReservationRepository reservationRepository;
 
+    @Mock
+    private NoteRepository noteRepository;
+
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    @Mock
+    private ReservationMapper reservationMapper;
+
+    @Mock
+    private ReservationEventMapper reservationEventMapper;
 
     @InjectMocks
     private ReservationService reservationService;
@@ -114,6 +141,200 @@ class ReservationServiceTest {
 
             assertThat(reservationService.prestataireAReservationSurEvenement(EVENT_ID, PRESTATAIRE_USER_ID)).isFalse();
         }
+    }
+
+    // -------------------------------------------------------------------------
+    // create
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class Create {
+
+        @Test
+        void givenReservationCreated_whenCreate_thenMappedEventPublished() {
+            Utilisateur prestataireUtilisateur = Utilisateur.builder()
+                    .id(UUID.randomUUID())
+                    .email("presta@example.com")
+                    .build();
+            Prestataire prestataire = Prestataire.builder()
+                    .id(UUID.randomUUID())
+                    .utilisateur(prestataireUtilisateur)
+                    .build();
+            Utilisateur client = Utilisateur.builder()
+                    .id(UUID.randomUUID())
+                    .firstName("Sophie")
+                    .lastName("Leroy")
+                    .build();
+            Evenement evenement = Evenement.builder()
+                    .id(UUID.randomUUID())
+                    .title("Anniversaire de Paul")
+                    .build();
+            LocalDate date = LocalDate.now();
+
+            when(reservationRepository.save(any(Reservation.class))).thenAnswer(invocation -> {
+                Reservation reservation = invocation.getArgument(0);
+                reservation.setId(UUID.randomUUID());
+                return reservation;
+            });
+            ReservationCreatedEvent mappedEvent = new ReservationCreatedEvent(
+                    UUID.randomUUID(), prestataireUtilisateur.getId(), "presta@example.com",
+                    "Sophie", "Leroy", "Anniversaire de Paul", date);
+            when(reservationEventMapper.toReservationCreatedEvent(any(Reservation.class))).thenReturn(mappedEvent);
+
+            reservationService.create(evenement, prestataire, client, date, "Un message");
+
+            ArgumentCaptor<Reservation> reservationCaptor = ArgumentCaptor.forClass(Reservation.class);
+            verify(reservationEventMapper).toReservationCreatedEvent(reservationCaptor.capture());
+            assertThat(reservationCaptor.getValue().getPrestataire()).isEqualTo(prestataire);
+            assertThat(reservationCaptor.getValue().getUtilisateur()).isEqualTo(client);
+            assertThat(reservationCaptor.getValue().getEvenement()).isEqualTo(evenement);
+
+            verify(applicationEventPublisher).publishEvent(mappedEvent);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // markContacted
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class MarkContacted {
+
+        @Test
+        void givenReservationNew_whenMarkContacted_thenMappedEventPublished() {
+            UUID reservationId = UUID.randomUUID();
+            Reservation reservation = Reservation.builder()
+                    .id(reservationId)
+                    .status(ReservationStatus.NEW)
+                    .build();
+            when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
+
+            ReservationStatusChangedEvent mappedEvent = statusChangedEvent(reservationId, ReservationStatus.IN_DISCUSSION);
+            when(reservationEventMapper.toStatusChangedEventForClient(reservation,ReservationStatus.IN_DISCUSSION))
+                    .thenReturn(mappedEvent);
+
+            reservationService.markContacted(reservationId);
+
+            assertThat(reservation.getStatus()).isEqualTo(ReservationStatus.IN_DISCUSSION);
+            verify(applicationEventPublisher).publishEvent(mappedEvent);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // confirm
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class Confirm {
+
+        @Test
+        void givenReservationInDiscussion_whenConfirm_thenMappedEventPublished() {
+            UUID reservationId = UUID.randomUUID();
+            Reservation reservation = Reservation.builder()
+                    .id(reservationId)
+                    .status(ReservationStatus.IN_DISCUSSION)
+                    .build();
+            when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
+
+            ReservationStatusChangedEvent mappedEvent = statusChangedEvent(reservationId, ReservationStatus.CONFIRMED);
+            when(reservationEventMapper.toStatusChangedEventForClient(reservation,ReservationStatus.CONFIRMED))
+                    .thenReturn(mappedEvent);
+
+            reservationService.confirm(reservationId);
+
+            assertThat(reservation.getStatus()).isEqualTo(ReservationStatus.CONFIRMED);
+            verify(applicationEventPublisher).publishEvent(mappedEvent);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // refuse
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class Refuse {
+
+        @Test
+        void givenReservationNew_whenRefuse_thenMappedEventPublished() {
+            UUID reservationId = UUID.randomUUID();
+            Reservation reservation = Reservation.builder()
+                    .id(reservationId)
+                    .status(ReservationStatus.NEW)
+                    .build();
+            when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
+
+            ReservationStatusChangedEvent mappedEvent = statusChangedEvent(reservationId, ReservationStatus.REFUSED_PRE_CONTACT);
+            when(reservationEventMapper.toStatusChangedEventForClient(reservation,ReservationStatus.REFUSED_PRE_CONTACT))
+                    .thenReturn(mappedEvent);
+
+            reservationService.refuse(reservationId, new RefuseReservationRequest("Indisponible"));
+
+            assertThat(reservation.getStatus()).isEqualTo(ReservationStatus.REFUSED_PRE_CONTACT);
+            verify(applicationEventPublisher).publishEvent(mappedEvent);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // cancelByPro
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class CancelByPro {
+
+        @Test
+        void givenReservationConfirmed_whenCancelByPro_thenMappedEventPublished() {
+            UUID reservationId = UUID.randomUUID();
+            Reservation reservation = Reservation.builder()
+                    .id(reservationId)
+                    .status(ReservationStatus.CONFIRMED)
+                    .build();
+            when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
+
+            ReservationStatusChangedEvent mappedEvent = statusChangedEvent(reservationId, ReservationStatus.CANCELED_POST_CONFIRMATION);
+            when(reservationEventMapper.toStatusChangedEventForClient(reservation,ReservationStatus.CANCELED_POST_CONFIRMATION))
+                    .thenReturn(mappedEvent);
+
+            reservationService.cancelByPro(reservationId);
+
+            assertThat(reservation.getStatus()).isEqualTo(ReservationStatus.CANCELED_POST_CONFIRMATION);
+            verify(applicationEventPublisher).publishEvent(mappedEvent);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // cancel
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class Cancel {
+
+        @Test
+        void givenReservationNew_whenCancel_thenMappedEventPublished() {
+            UUID reservationId = UUID.randomUUID();
+            Reservation reservation = Reservation.builder()
+                    .id(reservationId)
+                    .status(ReservationStatus.NEW)
+                    .build();
+            when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
+
+            ReservationStatusChangedEvent mappedEvent = new ReservationStatusChangedEvent(
+                    reservationId, UUID.randomUUID(), UUID.randomUUID(), "presta@example.com",
+                    ReservationStatus.CANCELED_BY_CLIENT_PRE_CONTACT, "Sophie Leroy", ActorRole.USER,
+                    "Anniversaire de Paul", LocalDate.now());
+            when(reservationEventMapper.toStatusChangedEventForPro(reservation, ReservationStatus.CANCELED_BY_CLIENT_PRE_CONTACT))
+                    .thenReturn(mappedEvent);
+
+            reservationService.cancel(reservationId);
+
+            assertThat(reservation.getStatus()).isEqualTo(ReservationStatus.CANCELED_BY_CLIENT_PRE_CONTACT);
+            verify(applicationEventPublisher).publishEvent(mappedEvent);
+        }
+    }
+
+    private ReservationStatusChangedEvent statusChangedEvent(UUID reservationId, ReservationStatus status) {
+        return new ReservationStatusChangedEvent(
+                reservationId, UUID.randomUUID(), UUID.randomUUID(), "client@example.com",
+                status, "Studio Fleur", ActorRole.PRO, "Anniversaire de Paul", LocalDate.now());
     }
 
     private Reservation reservationWith(ReservationStatus status) {

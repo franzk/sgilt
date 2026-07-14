@@ -1,0 +1,6 @@
+{
+  "subjectTemplate": "Une nouvelle demande sur Sgilt",
+  "htmlTemplate": "<p>Bonjour,</p>\n<p>{clientFirstName} souhaite vous parler de {eventTitle}.</p>\n<p><a href=\"{actionUrl}\">Voir la demande</a></p>\n<p>À bientôt,</p>\n<p>L’équipe Sgilt.</p>\n",
+  "requiredVariables": ["clientFirstName", "eventTitle", "actionUrl"],
+  "htmlSafeVariables": []
+}

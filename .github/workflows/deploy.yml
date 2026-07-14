@@ -143,6 +143,7 @@ jobs:
           echo "SGILT_MAILER_VERSION=$(cat sgilt-mailer/VERSION)" >> $GITHUB_ENV
           echo "SGILT_CORE_VERSION=$(cat sgilt-core/VERSION)" >> $GITHUB_ENV
           echo "SGILT_GATEWAY_VERSION=$(cat sgilt-gateway/VERSION)" >> $GITHUB_ENV
+          echo "SGILT_NOTIFICATIONS_VERSION=$(cat sgilt-notifications/VERSION)" >> $GITHUB_ENV
 
       - name: Build and push sgilt-front
         run: |
@@ -213,6 +214,17 @@ jobs:
             echo "✅ Pushed $IMAGE_TAG"
           fi
 
+      - name: Build and push sgilt-notifications
+        run: |
+          IMAGE_TAG="${{ env.IMAGE_PREFIX }}/sgilt-notifications:${{ env.SGILT_NOTIFICATIONS_VERSION }}"
+          if docker manifest inspect $IMAGE_TAG > /dev/null 2>&1; then
+            echo "⏭️ $IMAGE_TAG already exists, skipping build"
+          else
+            docker build -t $IMAGE_TAG sgilt-notifications
+            docker push $IMAGE_TAG
+            echo "✅ Pushed $IMAGE_TAG"
+          fi
+
   # =====================
   # DEPLOY
   # =====================
@@ -233,6 +245,7 @@ jobs:
           echo "SGILT_MAILER_VERSION=$(cat sgilt-mailer/VERSION)" >> $GITHUB_ENV
           echo "SGILT_CORE_VERSION=$(cat sgilt-core/VERSION)" >> $GITHUB_ENV
           echo "SGILT_GATEWAY_VERSION=$(cat sgilt-gateway/VERSION)" >> $GITHUB_ENV
+          echo "SGILT_NOTIFICATIONS_VERSION=$(cat sgilt-notifications/VERSION)" >> $GITHUB_ENV
 
       - name: Generate .env
         run: |
@@ -247,6 +260,7 @@ jobs:
           SGILT_MAILER_VERSION=${{ env.SGILT_MAILER_VERSION }}
           SGILT_CORE_VERSION=${{ env.SGILT_CORE_VERSION }}
           SGILT_GATEWAY_VERSION=${{ env.SGILT_GATEWAY_VERSION }}
+          SGILT_NOTIFICATIONS_VERSION=${{ env.SGILT_NOTIFICATIONS_VERSION }}
 
           # URLs
           APP_URL=${{ vars.APP_URL }}

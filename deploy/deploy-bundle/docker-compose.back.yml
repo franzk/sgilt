@@ -69,11 +69,13 @@ services:
     pull_policy: always
     environment:
       BACK_URL: http://sgilt-core-${ENV}:5027
+      NOTIFICATIONS_URL: http://sgilt-notifications-${ENV}:5031
       KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER}
       APP_URL: ${APP_URL}
       MAX_UPLOAD_SIZE_MB: ${MAX_UPLOAD_SIZE_MB}
     depends_on:
       - sgilt-core
+      - sgilt-notifications
     networks:
       - sgilt-network
     restart: unless-stopped
@@ -133,6 +135,32 @@ services:
     environment:
       RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq-${ENV}:5672
     depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - sgilt-network
+    restart: unless-stopped
+
+  # =====================
+  # SGILT-NOTIFICATIONS (Spring Boot)
+  # =====================
+  sgilt-notifications:
+    image: ghcr.io/franzk/sgilt/sgilt-notifications:${SGILT_NOTIFICATIONS_VERSION}
+    container_name: sgilt-notifications-${ENV}
+    pull_policy: always
+    environment:
+      DB_URL: jdbc:postgresql://sgilt-core-db-${ENV}:5432/sgilt-core
+      DB_USERNAME: sgilt-core
+      DB_PASSWORD: ${CORE_DB_PASSWORD}
+      KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER}
+      PUBLIC_SITE_URL: ${PUBLIC_SITE_URL}
+      SPRING_RABBITMQ_HOST: rabbitmq-${ENV}
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+    depends_on:
+      sgilt-core-db:
+        condition: service_healthy
       rabbitmq:
         condition: service_healthy
     networks:

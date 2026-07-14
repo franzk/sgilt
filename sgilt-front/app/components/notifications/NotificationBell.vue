@@ -4,12 +4,15 @@
       ref="bellRef"
       class="notif-bell__btn"
       type="button"
-      :aria-label="`Notifications${store.unreadCount ? ` (${store.unreadCount} non lues)` : ''}`"
+      :aria-label="`Notifications${unreadCount ? ` (${unreadCount} non lues)` : ''}`"
+      aria-haspopup="true"
+      :aria-expanded="popinOpen"
+      aria-controls="notif-popin"
       @click="toggle"
     >
       <IconBell class="notif-bell__icon" />
-      <span v-if="store.unreadCount > 0" class="notif-bell__badge">
-        {{ store.unreadCount > 9 ? '9+' : store.unreadCount }}
+      <span v-if="unreadCount > 0" class="notif-bell__badge">
+        {{ unreadCount > 9 ? '9+' : unreadCount }}
       </span>
     </button>
 
@@ -20,13 +23,11 @@
 <script setup lang="ts">
 import IconBell from '~/components/icons/IconBell.vue'
 import NotificationPopin from './NotificationPopin.vue'
-import { useNotificationStore } from '~/stores/notification'
+import { useNotifications } from '~/data/notification/useNotifications'
 
-const store = useNotificationStore()
+const { unreadCount } = useNotifications()
 const popinOpen = ref(false)
 const bellRef = ref<HTMLElement | null>(null)
-
-onMounted(() => store.fetchInitial())
 
 function toggle() {
   popinOpen.value = !popinOpen.value

@@ -1,23 +1,21 @@
 <template>
   <Teleport to="body">
     <Transition name="popin">
-      <div v-if="open" ref="popinRef" class="notif-popin" role="dialog" aria-label="Notifications">
+      <div id="notif-popin" v-if="open" ref="popinRef" class="notif-popin" aria-label="Notifications">
         <div class="notif-popin__header">
           <span class="notif-popin__title">Notifications</span>
           <button
-            v-if="store.unreadCount > 0"
+            v-if="unreadCount > 0"
             class="notif-popin__mark-all"
             type="button"
-            @click="store.markAllAsRead()"
+            @click="markAllAsRead()"
           >
             Tout marquer comme lu
           </button>
         </div>
 
         <div class="notif-popin__list">
-          <p v-if="store.notifications.length === 0" class="notif-popin__empty">
-            Aucune notification.
-          </p>
+          <p v-if="notifications.length === 0" class="notif-popin__empty">Aucune notification.</p>
           <NotificationItem
             v-for="n in preview"
             :key="n.id"
@@ -36,7 +34,7 @@
 
 <script setup lang="ts">
 import NotificationItem from './NotificationItem.vue'
-import { useNotificationStore } from '~/stores/notification'
+import { useNotifications } from '~/data/notification/useNotifications'
 import { onClickOutside } from '@vueuse/core'
 
 const PREVIEW_COUNT = 8
@@ -44,27 +42,27 @@ const PREVIEW_COUNT = 8
 const props = defineProps<{ open: boolean; anchorEl?: HTMLElement | null }>()
 const emit = defineEmits<{ close: [] }>()
 
-const store = useNotificationStore()
+const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications()
 const popinRef = ref<HTMLElement | null>(null)
 
-const preview = computed(() => store.notifications.slice(0, PREVIEW_COUNT))
+const preview = computed(() => notifications.value.slice(0, PREVIEW_COUNT))
 
 // Fermeture au clic extérieur
 onClickOutside(popinRef, () => emit('close'), {
-  ignore: [() => props.anchorEl ?? null],
+  ignore: () => [props.anchorEl ?? null], // sert à exclure la cloche elle-même de la détection "clic à l'extérieur"
 })
 
 // Marque les visibles comme lus à l'ouverture
 watch(
   () => props.open,
   (val) => {
-    if (val) preview.value.forEach((n) => store.markAsRead(n.id))
+    if (val) preview.value.forEach((n) => markAsRead(n.id))
   },
 )
 
 function onItemClick(id: string) {
-  store.markAsRead(id)
-  const n = store.notifications.find((n) => n.id === id)
+  markAsRead(id)
+  const n = notifications.value.find((n) => n.id === id)
   if (n?.href) navigateTo(n.href)
   emit('close')
 }
