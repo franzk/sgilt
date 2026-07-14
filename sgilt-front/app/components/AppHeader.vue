@@ -7,6 +7,8 @@
     </h1>
 
     <div class="quick-actions">
+      <NotificationBell v-if="mounted && isAuthenticated" />
+
       <button
         ref="accountMenuAnchorRef"
         class="action-button"
@@ -29,6 +31,7 @@
 
 <script setup lang="ts">
 import AccountMenuPopin from '~/components/profile/AccountMenuPopin.vue'
+import NotificationBell from '~/components/notifications/NotificationBell.vue'
 import UserAvatar from '~/components/basics/UserAvatar.vue'
 import { UserIcon } from '@remixicons/vue/line'
 

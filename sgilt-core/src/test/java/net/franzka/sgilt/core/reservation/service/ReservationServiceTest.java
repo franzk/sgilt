@@ -215,7 +215,7 @@ class ReservationServiceTest {
             when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
 
             ReservationConfirmedEvent mappedEvent = new ReservationConfirmedEvent(
-                    reservationId, client.getId(), "client@example.com",
+                    reservationId, evenement.getId(), client.getId(), "client@example.com",
                     "Studio Fleur", "Anniversaire de Paul", reservation.getDate());
             when(reservationEventMapper.toReservationConfirmedEvent(reservation)).thenReturn(mappedEvent);
 

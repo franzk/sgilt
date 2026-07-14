@@ -55,7 +55,7 @@ class DomainEventListenerTest {
         @Test
         void givenReservationConfirmedRoutingKey_whenOnMessage_thenDelegatesToNotificationService() {
             ReservationConfirmedEvent event = new ReservationConfirmedEvent(
-                    UUID.randomUUID(), UUID.randomUUID(), "client@example.com",
+                    UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "client@example.com",
                     "Studio Fleur", "Anniversaire de Paul", LocalDate.now());
             Message message = mock(Message.class);
             when(messageConverter.fromMessage(eq(message), any())).thenReturn(event);

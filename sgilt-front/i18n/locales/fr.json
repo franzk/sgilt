@@ -517,60 +517,6 @@
       "abandon-continue": "Continuer à éditer",
       "abandon-confirm": "Abandonner"
     },
-    "activities": {
-      "reservation-sent": {
-        "title": "Demande de réservation envoyée !",
-        "content": "Votre demande a été envoyée avec succès. {partnerName} va vous contactez."
-      },
-      "reservation-viewed": {
-        "title": "{partnerName} a vu votre demande",
-        "content": "Bonne nouvelle ! {partnerName} a consulté votre demande. Vous devriez recevoir une réponse bientôt."
-      },
-      "message-sent": {
-        "title": "Vous avez envoyé un message à {partnerName}",
-        "content": "Votre message a été transmis à {partnerName}. Vous serez notifié dès qu'une réponse sera reçue."
-      },
-      "message-received": {
-        "title": "{partnerName} vous a envoyé un message",
-        "content": "{partnerName} vous a écrit : \"{messagePreview}\". Cliquez ici pour ouvrir la conversation."
-      },
-      "reservation-approved": {
-        "title": "{partnerName} a accepté votre demande",
-        "content": "Votre demande de réservation a été acceptée. Il ne vous reste plus qu'à effectuer le paiement pour finaliser la réservation."
-      },
-      "payment-request": {
-        "title": "Paiement requis pour {partnerName}",
-        "content": "Votre demande a été acceptée par {partnerName}. Vous devez maintenant procéder au paiement pour confirmer la réservation."
-      },
-      "payment-success": {
-        "title": "Paiement confirmé pour {partnerName}",
-        "content": "Votre paiement a bien été reçu par {partnerName}. Votre réservation est maintenant confirmée ! 🎉"
-      },
-      "payment-failed": {
-        "title": "Échec du paiement pour {partnerName}",
-        "content": "Nous avons rencontré un problème avec votre paiement. Merci de réessayer ou de contacter {partnerName} pour plus d'informations."
-      },
-      "reservation-cancelled-user": {
-        "title": "Vous avez annulé la réservation avec {partnerName}",
-        "content": "Votre réservation avec {partnerName} a été annulée. Vous pouvez toujours refaire une demande si besoin."
-      },
-      "reservation-cancelled-partner": {
-        "title": "{partnerName} a annulé votre réservation",
-        "content": "Malheureusement, {partnerName} a dû annuler votre réservation. Vous pouvez le contacter pour plus d'informations ou chercher un autre prestataire."
-      },
-      "reservation-updated": {
-        "title": "{partnerName} a mis à jour votre réservation",
-        "content": "Les détails de votre réservation avec {partnerName} ont été modifiés. Pensez à vérifier les nouvelles informations."
-      },
-      "reservation-modified-user": {
-        "title": "Vous avez modifié votre réservation avec {partnerName}",
-        "content": "Vous avez effectué des changements sur votre réservation avec {partnerName}. Ces modifications sont maintenant en attente de validation."
-      },
-      "partner-unavailable": {
-        "title": "{partnerName} ne peut plus assurer la prestation",
-        "content": "Nous sommes désolés, mais {partnerName} a indiqué qu'il ne pourra pas honorer la réservation. Vous pouvez rechercher un autre prestataire."
-      }
-    },
     "reservation": {
       "steps": {
         "pending": "Demande envoyée !",
@@ -670,6 +616,18 @@
     },
     "item": {
       "unread-aria": "Non lue"
+    }
+  },
+  "notification": {
+    "reservation": {
+      "new_request": {
+        "title": "Nouvelle demande",
+        "body": "{clientFirstName} vous a envoyé une demande pour {eventTitle}."
+      },
+      "confirmed": {
+        "title": "Réservation confirmée",
+        "body": "{prestataireName} a confirmé votre réservation pour {eventTitle}."
+      }
     }
   },
   "journal": {

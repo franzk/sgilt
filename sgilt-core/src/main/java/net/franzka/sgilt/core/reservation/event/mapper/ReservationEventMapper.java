@@ -24,6 +24,7 @@ public interface ReservationEventMapper {
     ReservationCreatedEvent toReservationCreatedEvent(Reservation reservation);
 
     @Mapping(source = "id",                target = "reservationId")
+    @Mapping(source = "evenement.id",      target = "eventId")
     @Mapping(source = "utilisateur.id",    target = "recipientUserId")
     @Mapping(source = "utilisateur.email", target = "recipientEmail")
     @Mapping(source = "prestataire.name",  target = "prestataireName")

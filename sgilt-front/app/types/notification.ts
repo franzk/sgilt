@@ -5,7 +5,7 @@ export interface AppNotification {
   type: NotificationType
   read: boolean
   createdAt: string // ISO string
-  title: string
-  body?: string
+  messageKey: string // clé i18n, résolue en `${messageKey}.title` / `${messageKey}.body`
+  params: Record<string, string> // paramètres d'interpolation du message
   href: string // cible de navigation au clic
 }

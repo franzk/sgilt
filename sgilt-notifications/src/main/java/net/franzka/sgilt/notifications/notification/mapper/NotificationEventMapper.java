@@ -58,7 +58,7 @@ public class NotificationEventMapper {
                 .params(Map.of(
                         "prestataireName", event.prestataireName(),
                         "eventTitle", event.eventTitle()))
-                .href("/user/reservations/" + event.reservationId())
+                .href("/app/events/" + event.eventId() + "/reservations/" + event.reservationId())
                 .read(false)
                 .build();
     }

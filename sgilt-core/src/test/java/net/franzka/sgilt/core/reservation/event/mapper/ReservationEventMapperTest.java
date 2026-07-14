@@ -79,7 +79,9 @@ class ReservationEventMapperTest {
             Prestataire prestataire = Prestataire.builder()
                     .name("Studio Fleur")
                     .build();
+            UUID eventId = UUID.randomUUID();
             Evenement evenement = Evenement.builder()
+                    .id(eventId)
                     .title("Anniversaire de Paul")
                     .build();
             Reservation reservation = Reservation.builder()
@@ -94,6 +96,7 @@ class ReservationEventMapperTest {
             ReservationConfirmedEvent event = mapper.toReservationConfirmedEvent(reservation);
 
             assertThat(event.reservationId()).isEqualTo(reservationId);
+            assertThat(event.eventId()).isEqualTo(eventId);
             assertThat(event.recipientUserId()).isEqualTo(clientId);
             assertThat(event.recipientEmail()).isEqualTo("client@example.com");
             assertThat(event.prestataireName()).isEqualTo("Studio Fleur");

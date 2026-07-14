@@ -3,17 +3,17 @@
     <div class="notif-page__toolbar">
       <h1 class="notif-page__heading">{{ $t('notifications.page.heading') }}</h1>
       <button
-        v-if="store.unreadCount > 0"
+        v-if="unreadCount > 0"
         class="notif-page__mark-all"
         type="button"
-        @click="store.markAllAsRead()"
+        @click="markAllAsRead()"
       >
         {{ $t('notifications.page.mark-all') }}
       </button>
     </div>
 
     <div class="notif-page__list">
-      <p v-if="store.notifications.length === 0 && !store.loading" class="notif-page__empty">
+      <p v-if="notifications.length === 0 && !loading" class="notif-page__empty">
         {{ $t('notifications.page.empty') }}
       </p>
 
@@ -30,27 +30,27 @@
 
       <div ref="sentinelRef" class="notif-page__sentinel" />
 
-      <p v-if="store.loading" class="notif-page__loading">{{ $t('notifications.page.loading') }}</p>
+      <p v-if="loading" class="notif-page__loading">{{ $t('notifications.page.loading') }}</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import NotificationItem from '~/components/notifications/NotificationItem.vue'
-import { useNotificationStore } from '~/stores/notification'
+import { useNotifications } from '~/data/notification/useNotifications'
+import type { AppNotification } from '~/types/notification'
 
 definePageMeta({ layout: 'account' })
 
 const { t } = useI18n()
-const store = useNotificationStore()
+const { notifications, unreadCount, loading, fetchMore, markAsRead, markAllAsRead } =
+  useNotifications()
 const sentinelRef = ref<HTMLElement | null>(null)
 
 onMounted(() => {
-  store.fetchInitial()
-
   const observer = new IntersectionObserver(
     (entries) => {
-      if (entries[0]?.isIntersecting) store.fetchMore()
+      if (entries[0]?.isIntersecting) fetchMore()
     },
     { rootMargin: '200px' },
   )
@@ -58,11 +58,11 @@ onMounted(() => {
   onUnmounted(() => observer.disconnect())
 })
 
-type Group = { label: string; items: typeof store.notifications }
+type Group = { label: string; items: AppNotification[] }
 
 const groups = computed<Group[]>(() => {
-  const unread = store.notifications.filter((n) => !n.read)
-  const read = store.notifications.filter((n) => n.read)
+  const unread = notifications.value.filter((n) => !n.read)
+  const read = notifications.value.filter((n) => n.read)
   const result: Group[] = []
   if (unread.length) result.push({ label: t('notifications.page.group-unread'), items: unread })
   if (read.length) result.push({ label: t('notifications.page.group-read'), items: read })
@@ -70,8 +70,8 @@ const groups = computed<Group[]>(() => {
 })
 
 function onItemClick(id: string) {
-  store.markAsRead(id)
-  const n = store.notifications.find((n) => n.id === id)
+  markAsRead(id)
+  const n = notifications.value.find((n) => n.id === id)
   if (n?.href) navigateTo(n.href)
 }
 </script>

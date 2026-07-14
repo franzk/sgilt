@@ -28,7 +28,7 @@ class ReservationConfirmedEventListenerTest {
         @Test
         void givenEvent_whenHandle_thenDelegatesToDomainEventPublisher() {
             ReservationConfirmedEvent event = new ReservationConfirmedEvent(
-                    UUID.randomUUID(), UUID.randomUUID(), "client@example.com",
+                    UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "client@example.com",
                     "Studio Fleur", "Anniversaire de Paul", LocalDate.now());
 
             listener.handle(event);

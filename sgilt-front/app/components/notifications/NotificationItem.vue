@@ -14,8 +14,8 @@
     </div>
 
     <div class="notif-item__body">
-      <p class="notif-item__title">{{ notification.title }}</p>
-      <p v-if="notification.body" class="notif-item__desc">{{ notification.body }}</p>
+      <p class="notif-item__title">{{ $t(`${notification.messageKey}.title`, notification.params) }}</p>
+      <p class="notif-item__desc">{{ $t(`${notification.messageKey}.body`, notification.params) }}</p>
       <time class="notif-item__time">{{ formatDateTime(notification.createdAt) }}</time>
     </div>
 

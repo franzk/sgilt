@@ -13,6 +13,8 @@ import java.util.UUID;
  * destinataire ici est le client, pas le prestataire.
  *
  * @param reservationId    l'identifiant de la réservation confirmée
+ * @param eventId          l'identifiant de l'évènement concerné — nécessaire à la construction du
+ *                          lien de navigation côté client ({@code /app/events/{eventId}/reservations/{reservationId}})
  * @param recipientUserId  l'identifiant {@code Utilisateur} du client à notifier (traçabilité)
  * @param recipientEmail   l'email du client à notifier — clé de résolution du destinataire
  * @param prestataireName  le nom du prestataire ayant confirmé
@@ -21,6 +23,7 @@ import java.util.UUID;
  */
 public record ReservationConfirmedEvent(
         UUID reservationId,
+        UUID eventId,
         UUID recipientUserId,
         String recipientEmail,
         String prestataireName,

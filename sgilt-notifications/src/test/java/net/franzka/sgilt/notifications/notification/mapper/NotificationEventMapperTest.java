@@ -47,9 +47,10 @@ class NotificationEventMapperTest {
         @Test
         void givenEvent_whenToNotification_thenBuildsExpectedNotification() {
             UUID reservationId = UUID.randomUUID();
+            UUID eventId = UUID.randomUUID();
             UUID recipientUserId = UUID.randomUUID();
             ReservationConfirmedEvent event = new ReservationConfirmedEvent(
-                    reservationId, recipientUserId, "client@example.com",
+                    reservationId, eventId, recipientUserId, "client@example.com",
                     "Studio Fleur", "Anniversaire de Paul", LocalDate.now());
 
             Notification notification = mapper.toNotification(event);
@@ -60,7 +61,7 @@ class NotificationEventMapperTest {
             assertThat(notification.getMessageKey()).isEqualTo("notification.reservation.confirmed");
             assertThat(notification.getParams()).containsEntry("prestataireName", "Studio Fleur")
                     .containsEntry("eventTitle", "Anniversaire de Paul");
-            assertThat(notification.getHref()).isEqualTo("/user/reservations/" + reservationId);
+            assertThat(notification.getHref()).isEqualTo("/app/events/" + eventId + "/reservations/" + reservationId);
             assertThat(notification.isRead()).isFalse();
         }
     }

@@ -62,7 +62,7 @@ class NotificationServiceTest {
         @Test
         void givenReservationConfirmedEvent_whenCreateFromEvent_thenSavesMappedNotification() {
             ReservationConfirmedEvent event = new ReservationConfirmedEvent(
-                    UUID.randomUUID(), UUID.randomUUID(), "client@example.com",
+                    UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "client@example.com",
                     "Studio Fleur", "Anniversaire de Paul", LocalDate.now());
             Notification mapped = Notification.builder().type(NotificationType.STATE_CHANGE).build();
             when(notificationEventMapper.toNotification(event)).thenReturn(mapped);
