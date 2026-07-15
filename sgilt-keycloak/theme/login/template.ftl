@@ -66,6 +66,7 @@
         <img src="${url.resourcesPath}/images/sgilt-login.png" alt="" />
     </div>
     <div class="${properties.kcFormCardClass!}">
+      <div class="kc-card">
         <header class="${properties.kcFormHeaderClass!}">
             <#if realm.internationalizationEnabled  && locale.supported?size gt 1>
                 <div class="${properties.kcLocaleMainClass!}" id="kc-locale">
@@ -170,6 +171,7 @@
               </div>
           </#if>
         </div>
+      </div>
       </div>
 
     </div>

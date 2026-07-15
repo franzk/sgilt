@@ -36,6 +36,7 @@
   --shadow-m: rgba(47, 42, 37, 0.12);
   --input-border: rgba(47, 42, 37, 0.12);
   --input-radius: 1.4rem;
+  --card-radius: 20px;
   --header-height: 3.3rem;
 }
 
@@ -163,23 +164,31 @@ a:hover {
   object-fit: cover;
 }
 
-/* Right panel — form */
+/* Right panel — arrière-plan crème sur lequel la card flotte */
 .login-pf .card-pf {
   flex: 1;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  padding: 40px 48px;
+  padding: 48px;
   overflow-y: auto;
-  background: #fdfaf5;
+  background: var(--color-surface-soft);
   margin: 0;
   height: auto;
-  align-content: unset;
 }
 
 .card-pf {
-  background: transparent;
   box-shadow: none;
+}
+
+/* ── Card ──────────────────────────────────────────────────── */
+.kc-card {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  border-radius: var(--card-radius);
+  box-shadow: 0 4px 24px var(--shadow-m);
+  padding: 40px 40px 36px;
 }
 
 /* ── Form area ─────────────────────────────────────────────── */
@@ -349,9 +358,16 @@ form input[type="submit"]:active {
   text-align: center;
 }
 
+.kc-form-options-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
 #kc-form-options {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   font-size: 14px;
 }
@@ -382,6 +398,7 @@ form input[type="submit"]:active {
   accent-color: var(--color-primary);
   width: 15px;
   height: 15px;
+  margin-top: 0;
   cursor: pointer;
 }
 
@@ -529,23 +546,26 @@ form input[type="submit"]:active {
   }
 
   .login-pf .card-pf {
-    padding: 32px 36px;
+    padding: 32px 24px;
+  }
+
+  .kc-card {
+    padding: 36px 32px;
   }
 }
 
-/* Mobile : image masquée, formulaire sur fond blanc */
+/* Mobile : image masquée, card resserrée sur fond crème */
 @media (max-width: 640px) {
   #kc-form-image {
     display: none;
   }
 
   .login-pf .card-pf {
-    padding: 40px 24px 32px;
-    background: #fff;
+    padding: 32px 16px;
   }
 
-  #kc-content {
-    max-width: 100%;
+  .kc-card {
+    padding: 32px 24px 28px;
   }
 }
 

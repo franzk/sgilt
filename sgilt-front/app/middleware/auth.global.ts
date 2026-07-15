@@ -24,11 +24,17 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (!isAppRoute && !isProRoute && !isAdminRoute && !isRedirectRoute) return
 
   if (!isAuthenticated.value) {
-    await login({ redirectUri: globalThis.location.origin + '/auth/redirect' })
+    const redirectUri = new URL('/auth/redirect', globalThis.location.origin)
+    redirectUri.searchParams.set('target', to.fullPath)
+    await login({ redirectUri: redirectUri.toString() })
     return
   }
 
   if (isRedirectRoute) {
+    const target = typeof to.query.target === 'string' ? to.query.target : null
+    if (target && target.startsWith('/') && !target.startsWith('//') && !target.includes('://')) {
+      return navigateTo(target)
+    }
     if (hasRole('ADMIN')) return navigateTo('/admin')
     return navigateTo(hasRole('PRO') ? '/pro' : '/app')
   }
