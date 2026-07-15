@@ -398,6 +398,7 @@ form input[type="submit"]:active {
   accent-color: var(--color-primary);
   width: 15px;
   height: 15px;
+  margin-top: 0;
   cursor: pointer;
 }
 
