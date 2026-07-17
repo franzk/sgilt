@@ -89,7 +89,13 @@
       "Bash(./gradlew compileJava --console=plain)",
       "Bash(git mv *)",
       "Bash(mv src/main/java/net/franzka/sgilt/core/admin/dto/PrestataireOnboardingPendingDto.java src/main/java/net/franzka/sgilt/core/prestataire/dto/PrestataireOnboardingPendingDto.java)",
-      "PowerShell(curl.exe -s -o - -w \"`nHTTP_STATUS:%{http_code}`n\" -X POST \"http://localhost:5028/realms/sgilt/protocol/openid-connect/token\" -d \"grant_type=client_credentials\" -d \"client_id=sgilt-admin\" -d \"client_secret=dev-admin-secret\")"
+      "PowerShell(curl.exe -s -o - -w \"`nHTTP_STATUS:%{http_code}`n\" -X POST \"http://localhost:5028/realms/sgilt/protocol/openid-connect/token\" -d \"grant_type=client_credentials\" -d \"client_id=sgilt-admin\" -d \"client_secret=dev-admin-secret\")",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(git ls-remote *)",
+      "WebFetch(domain:github.com)",
+      "Bash(./gradlew --console=plain dependencies --configuration compileClasspath)",
+      "Bash(./gradlew --console=plain compileJava)",
+      "Bash(./gradlew --console=plain build -x test)"
     ]
   }
 }
