@@ -40,8 +40,7 @@ export function mapPrestataireDetail(dto: PrestataireDetailDto): PrestataireDeta
     identity: { quote: dto.identity?.quote ?? null, bio: dto.identity?.bio ?? null },
     budget: dto.budget,
     testimonials: dto.testimonials ?? [],
-    logistics: dto.logistics ?? [],
-    technical: dto.technical ?? [],
+    details: dto.details ?? [],
     faq: dto.faq ?? [],
     unavailableDates: [],
     status: dto.status,
@@ -57,8 +56,7 @@ export function mapPrestataireUpdatePayload(p: PrestataireDetail): PrestataireUp
     identity: p.identity,
     budget: p.budget,
     testimonials: p.testimonials,
-    logistics: p.logistics,
-    technical: p.technical,
+    details: null, // pas encore éditable depuis cette UI — null = ne pas toucher le champ
     faq: p.faq,
   }
 }

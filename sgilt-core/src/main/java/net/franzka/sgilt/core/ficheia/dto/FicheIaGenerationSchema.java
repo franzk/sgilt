@@ -28,7 +28,6 @@ public class FicheIaGenerationSchema {
     public static class Testimonial {
         public String author;
         public String text;
-        public String eventType;
     }
 
     public static class PracticalInformation {

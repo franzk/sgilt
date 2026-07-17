@@ -23,8 +23,7 @@ public record PrestataireDetailDto(
         IdentityDto identity,
         String budget,
         List<TestimonialDto> testimonials,
-        List<String> logistics,
-        List<String> technical,
+        List<DetailDto> details,
         List<FaqItemDto> faq,
         PrestataireStatus status
 ) {}

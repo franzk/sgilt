@@ -78,7 +78,6 @@
             <p class="text">{{ ghostText }}</p>
             <footer class="footer">
               <span class="author">{{ t('provider.editable.testimonials.author.ghost') }}</span>
-              <span class="event">{{ t('provider.editable.testimonials.eventType.ghost') }}</span>
             </footer>
           </blockquote>
         </template>
@@ -97,48 +96,13 @@
     <section v-if="isEdit || hasInfosPratiques" class="section infos-section">
       <h2 class="title">{{ $t('provider.details.infos-title') }}</h2>
 
-      <div v-if="isEdit || !!prestataire?.logistics.length" class="infos-block">
-        <h3 class="title">{{ $t('provider.details.logistics-title') }}</h3>
-        <EditableList
-          v-model="prestataire!.logistics"
-          marker="dash"
-          field="logistics"
-          :display-mode="props.displayMode"
-          :new-item="newString"
-          :is-empty="isStringEmpty"
-        >
-          <template #item="{ item, isEditing, update, registerRef }">
-            <EditableText
-              :ref="registerRef"
-              :model-value="item"
-              :editable="isEditing"
-              field="logistics.item"
-              @update:model-value="update($event ?? '')"
-            />
-          </template>
-        </EditableList>
-      </div>
-
-      <div v-if="isEdit || !!prestataire?.technical.length" class="infos-block">
-        <h3 class="title">{{ $t('provider.details.technical-title') }}</h3>
-        <EditableList
-          v-model="prestataire!.technical"
-          marker="dash"
-          field="technical"
-          :display-mode="props.displayMode"
-          :new-item="newString"
-          :is-empty="isStringEmpty"
-        >
-          <template #item="{ item, isEditing, update, registerRef }">
-            <EditableText
-              :ref="registerRef"
-              :model-value="item"
-              :editable="isEditing"
-              field="technical.item"
-              @update:model-value="update($event ?? '')"
-            />
-          </template>
-        </EditableList>
+      <div v-for="group in detailGroups" :key="group.category" class="infos-block">
+        <h3 class="title">{{ $t(`provider.details.category.${group.category.toLowerCase()}`) }}</h3>
+        <div class="detail-list">
+          <div v-for="(item, index) in group.items" :key="index" class="detail-item">
+            <p class="detail-content">{{ item.content }}</p>
+          </div>
+        </div>
       </div>
 
       <div v-if="isEdit || !!prestataire?.faq.length" class="infos-block">
@@ -186,6 +150,7 @@ import EditableTestimony, {
   isEmpty as isTestimonyEmpty,
 } from '~/components/prestataire/EditableTestimony.vue'
 import type { DisplayMode } from '~/types/prestataire'
+import { DETAIL_CATEGORY_ORDER } from '~/utils/constants'
 
 const props = defineProps<{
   displayMode: DisplayMode
@@ -201,11 +166,16 @@ const { prestataire } = usePrestataire()
 
 const isEdit = computed(() => props.displayMode === 'edit')
 
+const detailGroups = computed(() => {
+  const details = prestataire.value?.details ?? []
+  return DETAIL_CATEGORY_ORDER.map((category) => ({
+    category,
+    items: details.filter((detail) => detail.category === category),
+  })).filter((group) => group.items.length > 0)
+})
+
 const hasInfosPratiques = computed(
-  () =>
-    !!prestataire.value?.logistics.length ||
-    !!prestataire.value?.technical.length ||
-    !!prestataire.value?.faq.length,
+  () => !!prestataire.value?.details.length || !!prestataire.value?.faq.length,
 )
 </script>
 
@@ -352,16 +322,6 @@ $section-gap: 2.5rem;
     font-weight: 600;
     color: $text-secondary;
   }
-
-  .event {
-    font-size: 0.8rem;
-    color: $text-secondary;
-    opacity: 0.6;
-
-    &::before {
-      content: '· ';
-    }
-  }
 }
 
 .infos-block {
@@ -376,6 +336,25 @@ $section-gap: 2.5rem;
     text-transform: uppercase;
     color: $text-secondary;
     opacity: 0.6;
+    margin: 0;
+  }
+
+  .detail-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .detail-content {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: $text-secondary;
     margin: 0;
   }
 }

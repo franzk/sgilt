@@ -4,7 +4,6 @@
       <p class="text">« {{ model.text }} »</p>
       <footer class="footer">
         <span class="author">{{ model.author }}</span>
-        <span v-if="model.eventType" class="event">{{ model.eventType }}</span>
       </footer>
     </blockquote>
   </template>
@@ -28,15 +27,6 @@
           :editable="true"
           class="author"
           @update:model-value="setAuthor"
-          @enter="eventTypeRef?.startEdit()"
-        />
-        <EditableText
-          ref="eventTypeRef"
-          :model-value="eventTypeModel"
-          field="testimonials.eventType"
-          :editable="true"
-          class="event"
-          @update:model-value="setEventType"
         />
       </div>
     </div>
@@ -45,9 +35,8 @@
 
 <!-- exports module-level : importables par le parent (impossible depuis <script setup>) -->
 <script lang="ts">
-export const newItem = (): Testimonial => ({ text: '', author: '', eventType: '' })
-export const isEmpty = (item: Testimonial): boolean =>
-  !item.text.trim() && !item.author.trim() && !(item.eventType ?? '').trim()
+export const newItem = (): Testimonial => ({ text: '', author: '' })
+export const isEmpty = (item: Testimonial): boolean => !item.text.trim() && !item.author.trim()
 </script>
 
 <script setup lang="ts">
@@ -60,7 +49,6 @@ const model = defineModel<Testimonial>({ required: true })
 
 const textModel = computed(() => model.value.text)
 const authorModel = computed(() => model.value.author)
-const eventTypeModel = computed(() => model.value.eventType ?? '')
 
 function setText(val: string | null) {
   model.value = { ...model.value, text: val ?? '' }
@@ -68,13 +56,9 @@ function setText(val: string | null) {
 function setAuthor(val: string | null) {
   model.value = { ...model.value, author: val ?? '' }
 }
-function setEventType(val: string | null) {
-  model.value = { ...model.value, eventType: val ?? '' }
-}
 
 const textRef = ref<{ startEdit: () => void } | null>(null)
 const authorRef = ref<{ startEdit: () => void } | null>(null)
-const eventTypeRef = ref<{ startEdit: () => void } | null>(null)
 
 function startEdit() {
   textRef.value?.startEdit()
@@ -115,16 +99,6 @@ defineExpose({ startEdit })
   font-size: 0.85rem;
   font-weight: 600;
   color: $text-secondary;
-}
-
-.event {
-  font-size: 0.8rem;
-  color: $text-secondary;
-  opacity: 0.6;
-
-  &::before {
-    content: '· ';
-  }
 }
 
 // ── Edit mode ─────────────────────────────────────────────────────────────────

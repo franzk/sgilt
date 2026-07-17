@@ -347,7 +347,7 @@ class PrestataireServiceTest {
     private PrestataireDetailDto dummyDetailDto() {
         return new PrestataireDetailDto(
                 UUID.randomUUID().toString(), "Jean Photographe", SLUG, null, null, null, "photo",
-                List.of(), List.of(), List.of(), List.of(), null, null, List.of(), List.of(), List.of(), List.of(),
+                List.of(), List.of(), List.of(), List.of(), null, null, List.of(), List.of(), List.of(),
                 PrestataireStatus.PUBLISHED
         );
     }

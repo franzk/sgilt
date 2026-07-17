@@ -1,6 +1,7 @@
 import type { EngagementKey } from '~/utils/constants'
 import type { Testimonial } from '../domain/Testimonial'
 import type { FaqItem } from '../domain/FaqItem'
+import type { DetailItem } from '../domain/DetailItem'
 
 /**
  * Payload PATCH /pro/me/fiche.
@@ -15,7 +16,6 @@ export interface PrestataireUpdatePayload {
   identity: { quote: string | null; bio: string | null } | null
   budget: string | null
   testimonials: Testimonial[] | null
-  logistics: string[] | null
-  technical: string[] | null
+  details: DetailItem[] | null
   faq: FaqItem[] | null
 }

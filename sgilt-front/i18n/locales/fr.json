@@ -87,8 +87,13 @@
       "offerings-title": "Ce que nous proposons",
       "testimonials-title": "Ils en parlent",
       "infos-title": "Informations pratiques",
-      "logistics-title": "Logistique",
-      "technical-title": "Technique",
+      "category": {
+        "format": "Format",
+        "process": "Déroulement",
+        "deliverable": "Inclus / Remis",
+        "logistics": "Logistique",
+        "other": "Autres informations"
+      },
       "faq-title": "Questions fréquentes"
     },
     "edit": {
@@ -136,30 +141,6 @@
           "prompt": ""
         }
       },
-      "logistics": {
-        "ghost-items": [
-          "Zone d'intervention : Alsace",
-          "Selon le format, nous prévoyons un temps d'installation avant l'arrivée des invités et un échange préparatoire pour caler les accès, les horaires, les temps forts et les prestataires déjà présents.",
-          "Pour les lieux difficiles d'accès, les installations en extérieur ou les événements avec plusieurs espaces, un repérage ou des précisions complémentaires peuvent être nécessaires."
-        ],
-        "prompt": "Décrivez vos conditions logistiques — ce que vous apportez, ce dont vous avez besoin",
-        "item": {
-          "ghost": "Ex. : Sono et éclairages fournis…",
-          "prompt": ""
-        }
-      },
-      "technical": {
-        "ghost-items": [
-          "Nous avons besoin d'un accès simple à l'espace d'intervention, d'un emplacement défini à l'avance et d'une prise électrique standard à proximité.",
-          "Selon l'événement, nous pouvons également demander un plan du lieu, les horaires d'accès, les contraintes de stationnement, ainsi que les contacts utiles sur place le jour J.",
-          "En extérieur, une solution de repli ou un espace abrité est à prévoir en cas de météo capricieuse."
-        ],
-        "prompt": "Les exigences techniques que les organisateurs doivent connaître à l'avance",
-        "item": {
-          "ghost": "Ex. : Puissance requise, surface nécessaire…",
-          "prompt": ""
-        }
-      },
       "faq": {
         "ghost-items": [
           "Combien de temps faut-il prévoir avant l'événement ?",
@@ -197,10 +178,6 @@
         "author": {
           "ghost": "Élise",
           "prompt": "Prénom Nom"
-        },
-        "eventType": {
-          "ghost": "Anniversaire privé",
-          "prompt": "Ex. : Mariage, anniversaire…"
         }
       }
     }

@@ -4,6 +4,7 @@
 import type { EngagementKey } from '~/utils/constants'
 import type { Testimonial } from './Testimonial'
 import type { FaqItem } from './FaqItem'
+import type { DetailItem } from './DetailItem'
 import type { Media } from './Media'
 import type { PrestataireStatus } from './PrestataireStatus'
 
@@ -24,8 +25,7 @@ export interface PrestataireDetail {
   budget: string | null
   unavailableDates: string[]
   testimonials: Testimonial[]
-  logistics: string[]
-  technical: string[]
+  details: DetailItem[]
   faq: FaqItem[]
   status: PrestataireStatus
 }

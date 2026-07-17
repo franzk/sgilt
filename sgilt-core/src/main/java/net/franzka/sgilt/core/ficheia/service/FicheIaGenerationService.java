@@ -86,7 +86,7 @@ public class FicheIaGenerationService {
                 schema.offerings,
                 new IdentityDto(schema.identity.quote, schema.identity.bio),
                 schema.testimonials.stream()
-                        .map(testimonial -> new TestimonialDto(testimonial.author, testimonial.text, testimonial.eventType))
+                        .map(testimonial -> new TestimonialDto(testimonial.author, testimonial.text))
                         .toList(),
                 schema.practicalInformations.stream()
                         .map(info -> new PracticalInformationDto(info.category, info.title, info.description))

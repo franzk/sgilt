@@ -73,8 +73,7 @@ public abstract class PrestataireMapper {
     @Mapping(target = "identity",     source = "identity",     qualifiedByName = "parseIdentity")
     @Mapping(target = "budget",       source = "budget",       qualifiedByName = "parseJsonString")
     @Mapping(target = "testimonials", source = "testimonials", qualifiedByName = "parseTestimonialList")
-    @Mapping(target = "logistics",    source = "logistics",    qualifiedByName = "parseStringList")
-    @Mapping(target = "technical",    source = "technical",    qualifiedByName = "parseStringList")
+    @Mapping(target = "details",      source = "details",      qualifiedByName = "parseDetailList")
     @Mapping(target = "faq",          source = "faq",          qualifiedByName = "parseFaqList")
     public abstract PrestataireDetailDto toDetailDto(Prestataire prestataire);
 
@@ -102,8 +101,7 @@ public abstract class PrestataireMapper {
     @Mapping(target = "identity",     source = "identity",     qualifiedByName = "serializeToJson")
     @Mapping(target = "budget",       source = "budget",       qualifiedByName = "serializeToJson")
     @Mapping(target = "testimonials", source = "testimonials", qualifiedByName = "serializeToJson")
-    @Mapping(target = "logistics",    source = "logistics",    qualifiedByName = "serializeStringList")
-    @Mapping(target = "technical",    source = "technical",    qualifiedByName = "serializeStringList")
+    @Mapping(target = "details",      source = "details",      qualifiedByName = "serializeToJson")
     @Mapping(target = "faq",          source = "faq",          qualifiedByName = "serializeToJson")
     public abstract void updatePrestataire(@MappingTarget Prestataire prestataire, PrestataireUpdateDto dto);
 
@@ -148,6 +146,11 @@ public abstract class PrestataireMapper {
 
     @Named("parseFaqList")
     protected List<FaqItemDto> parseFaqList(String json) {
+        return parseJson(json, new TypeReference<>() {});
+    }
+
+    @Named("parseDetailList")
+    protected List<DetailDto> parseDetailList(String json) {
         return parseJson(json, new TypeReference<>() {});
     }
 
