@@ -96,14 +96,40 @@
     <section v-if="isEdit || hasInfosPratiques" class="section infos-section">
       <h2 class="title">{{ $t('provider.details.infos-title') }}</h2>
 
-      <div v-for="group in detailGroups" :key="group.category" class="infos-block">
-        <h3 class="title">{{ $t(`provider.details.category.${group.category.toLowerCase()}`) }}</h3>
-        <div class="detail-list">
-          <div v-for="(item, index) in group.items" :key="index" class="detail-item">
-            <p class="detail-content">{{ item.content }}</p>
+      <template v-if="!isEdit">
+        <div v-for="group in detailGroups" :key="group.category" class="infos-block">
+          <h3 class="title">{{ $t(`provider.details.category.${group.category.toLowerCase()}`) }}</h3>
+          <div class="detail-list">
+            <div v-for="(item, index) in group.items" :key="index" class="detail-item">
+              <p class="detail-content">{{ item.content }}</p>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
+
+      <template v-else>
+        <div v-for="group in detailGroupsEdit" :key="group.category" class="infos-block">
+          <h3 class="title">{{ $t(`provider.details.category.${group.category.toLowerCase()}`) }}</h3>
+          <EditableList
+            v-model="group.items.value"
+            field="details"
+            :display-mode="props.displayMode"
+            :new-item="() => newDetailItem(group.category)"
+            :is-empty="isDetailEmpty"
+          >
+            <template #item="{ item, isEditing, update, registerRef }">
+              <EditableText
+                :ref="registerRef"
+                :model-value="item.content"
+                :editable="isEditing"
+                field="details.item"
+                class="detail-content"
+                @update:model-value="update({ ...item, content: $event ?? '' })"
+              />
+            </template>
+          </EditableList>
+        </div>
+      </template>
 
       <div v-if="isEdit || !!prestataire?.faq.length" class="infos-block">
         <h3 class="title">{{ $t('provider.details.faq-title') }}</h3>
@@ -150,7 +176,8 @@ import EditableTestimony, {
   isEmpty as isTestimonyEmpty,
 } from '~/components/prestataire/EditableTestimony.vue'
 import type { DisplayMode } from '~/types/prestataire'
-import { DETAIL_CATEGORY_ORDER } from '~/utils/constants'
+import { DETAIL_CATEGORY_ORDER, type DetailCategory } from '~/utils/constants'
+import type { DetailItem } from '~/data/prestataire/domain/DetailItem'
 
 const props = defineProps<{
   displayMode: DisplayMode
@@ -177,6 +204,30 @@ const detailGroups = computed(() => {
 const hasInfosPratiques = computed(
   () => !!prestataire.value?.details.length || !!prestataire.value?.faq.length,
 )
+
+function detailsForCategory(category: DetailCategory) {
+  return computed<DetailItem[]>({
+    get: () => (prestataire.value?.details ?? []).filter((detail) => detail.category === category),
+    set: (items) => {
+      if (!prestataire.value) return
+      prestataire.value.details = DETAIL_CATEGORY_ORDER.flatMap((cat) =>
+        cat === category ? items : prestataire.value!.details.filter((detail) => detail.category === cat),
+      )
+    },
+  })
+}
+
+const detailGroupsEdit = DETAIL_CATEGORY_ORDER.map((category) => ({
+  category,
+  items: detailsForCategory(category),
+}))
+
+function newDetailItem(category: DetailCategory): DetailItem {
+  return { content: '', category }
+}
+function isDetailEmpty(item: DetailItem): boolean {
+  return !item.content.trim()
+}
 </script>
 
 <style scoped lang="scss">

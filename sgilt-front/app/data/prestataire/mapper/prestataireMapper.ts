@@ -56,7 +56,7 @@ export function mapPrestataireUpdatePayload(p: PrestataireDetail): PrestataireUp
     identity: p.identity,
     budget: p.budget,
     testimonials: p.testimonials,
-    details: null, // pas encore éditable depuis cette UI — null = ne pas toucher le champ
+    details: p.details,
     faq: p.faq,
   }
 }

@@ -179,6 +179,12 @@
           "ghost": "Élise",
           "prompt": "Prénom Nom"
         }
+      },
+      "details": {
+        "ghost-items": [
+          "Cliquez ici pour ajouter une information pratique"
+        ],
+        "prompt": "Ajoutez les informations pratiques utiles à cette catégorie…"
       }
     }
   },
