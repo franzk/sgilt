@@ -1,6 +1,7 @@
 package net.franzka.sgilt.core.prestataire.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -320,6 +321,155 @@ public class PrestataireService {
         return prestataireMapper.toDetailDto(prestataireRepository.save(prestataire));
     }
 
+    // ── Application de contenu généré (ex. génération IA) ─────────────────────
+    // Chaque section expose un remplacement direct ; les sections liste exposent en plus un ajout
+    // (concaténation à la liste existante). Les valeurs viennent de l'appelant — ce service ignore
+    // leur origine (génération IA ou autre).
+
+    /**
+     * Remplace la baseline du prestataire.
+     *
+     * @param prestataire l'entité à mettre à jour
+     * @param baseline    la nouvelle valeur
+     * @return la fiche complète après sauvegarde
+     */
+    public PrestataireDetailDto replaceBaseline(Prestataire prestataire, String baseline) {
+        prestataire.setBaseline(baseline);
+        return saveAndMap(prestataire);
+    }
+
+    /**
+     * Remplace le résumé court du prestataire.
+     *
+     * @param prestataire      l'entité à mettre à jour
+     * @param shortDescription la nouvelle valeur
+     * @return la fiche complète après sauvegarde
+     */
+    public PrestataireDetailDto replaceShortDescription(Prestataire prestataire, String shortDescription) {
+        prestataire.setShortDescription(shortDescription);
+        return saveAndMap(prestataire);
+    }
+
+    /**
+     * Remplace l'identité (citation + bio) du prestataire.
+     *
+     * @param prestataire l'entité à mettre à jour
+     * @param identity    la nouvelle identité
+     * @return la fiche complète après sauvegarde
+     */
+    public PrestataireDetailDto replaceIdentity(Prestataire prestataire, IdentityDto identity) {
+        prestataire.setIdentity(serializeJson(identity));
+        return saveAndMap(prestataire);
+    }
+
+    /**
+     * Remplace le texte de budget du prestataire.
+     *
+     * @param prestataire l'entité à mettre à jour
+     * @param budget      la nouvelle valeur
+     * @return la fiche complète après sauvegarde
+     */
+    public PrestataireDetailDto replaceBudget(Prestataire prestataire, String budget) {
+        prestataire.setBudget(serializeJson(budget));
+        return saveAndMap(prestataire);
+    }
+
+    /**
+     * Remplace intégralement la liste des offres du prestataire.
+     *
+     * @param prestataire l'entité à mettre à jour
+     * @param offerings   la nouvelle liste
+     * @return la fiche complète après sauvegarde
+     */
+    public PrestataireDetailDto replaceOfferings(Prestataire prestataire, List<String> offerings) {
+        prestataire.setOfferings(serializeJson(offerings));
+        return saveAndMap(prestataire);
+    }
+
+    /**
+     * Concatène des offres à la fin de la liste existante du prestataire.
+     *
+     * @param prestataire l'entité à mettre à jour
+     * @param offerings   les offres à ajouter
+     * @return la fiche complète après sauvegarde
+     */
+    public PrestataireDetailDto appendOfferings(Prestataire prestataire, List<String> offerings) {
+        return replaceOfferings(prestataire, concat(parseJson(prestataire.getOfferings(), new TypeReference<>() {
+        }), offerings));
+    }
+
+    /**
+     * Remplace intégralement la liste des témoignages du prestataire.
+     *
+     * @param prestataire l'entité à mettre à jour
+     * @param testimonials la nouvelle liste
+     * @return la fiche complète après sauvegarde
+     */
+    public PrestataireDetailDto replaceTestimonials(Prestataire prestataire, List<TestimonialDto> testimonials) {
+        prestataire.setTestimonials(serializeJson(testimonials));
+        return saveAndMap(prestataire);
+    }
+
+    /**
+     * Concatène des témoignages à la fin de la liste existante du prestataire.
+     *
+     * @param prestataire  l'entité à mettre à jour
+     * @param testimonials les témoignages à ajouter
+     * @return la fiche complète après sauvegarde
+     */
+    public PrestataireDetailDto appendTestimonials(Prestataire prestataire, List<TestimonialDto> testimonials) {
+        return replaceTestimonials(prestataire, concat(parseJson(prestataire.getTestimonials(), new TypeReference<>() {
+        }), testimonials));
+    }
+
+    /**
+     * Remplace intégralement la liste des informations pratiques du prestataire.
+     *
+     * @param prestataire l'entité à mettre à jour
+     * @param details     la nouvelle liste
+     * @return la fiche complète après sauvegarde
+     */
+    public PrestataireDetailDto replaceDetails(Prestataire prestataire, List<DetailDto> details) {
+        prestataire.setDetails(serializeJson(details));
+        return saveAndMap(prestataire);
+    }
+
+    /**
+     * Concatène des informations pratiques à la fin de la liste existante du prestataire.
+     *
+     * @param prestataire l'entité à mettre à jour
+     * @param details     les informations à ajouter
+     * @return la fiche complète après sauvegarde
+     */
+    public PrestataireDetailDto appendDetails(Prestataire prestataire, List<DetailDto> details) {
+        return replaceDetails(prestataire, concat(parseJson(prestataire.getDetails(), new TypeReference<>() {
+        }), details));
+    }
+
+    /**
+     * Remplace intégralement la FAQ du prestataire.
+     *
+     * @param prestataire l'entité à mettre à jour
+     * @param faq         la nouvelle liste
+     * @return la fiche complète après sauvegarde
+     */
+    public PrestataireDetailDto replaceFaq(Prestataire prestataire, List<FaqItemDto> faq) {
+        prestataire.setFaq(serializeJson(faq));
+        return saveAndMap(prestataire);
+    }
+
+    /**
+     * Concatène des entrées de FAQ à la fin de la liste existante du prestataire.
+     *
+     * @param prestataire l'entité à mettre à jour
+     * @param faq         les entrées à ajouter
+     * @return la fiche complète après sauvegarde
+     */
+    public PrestataireDetailDto appendFaq(Prestataire prestataire, List<FaqItemDto> faq) {
+        return replaceFaq(prestataire, concat(parseJson(prestataire.getFaq(), new TypeReference<>() {
+        }), faq));
+    }
+
     // ── Résolution du filtre exclusif ─────────────────────────────────────────
 
     private List<Prestataire> resolveFiltered(String categoryKey, List<String> subcatKeys) {
@@ -350,6 +500,35 @@ public class PrestataireService {
     private Prestataire findPrestataire(Utilisateur utilisateur) {
         return prestataireRepository.findByUtilisateurAndDeletedAtIsNull(utilisateur)
                 .orElseThrow(() -> new PrestataireNotFoundException(utilisateur.getEmail()));
+    }
+
+    // ── JSONB pour l'application de contenu généré ─────────────────────────────
+
+    private PrestataireDetailDto saveAndMap(Prestataire prestataire) {
+        return prestataireMapper.toDetailDto(prestataireRepository.save(prestataire));
+    }
+
+    private <T> List<T> concat(List<T> existing, List<T> toAppend) {
+        List<T> merged = new ArrayList<>(existing != null ? existing : List.of());
+        merged.addAll(toAppend);
+        return merged;
+    }
+
+    private <T> List<T> parseJson(String json, TypeReference<List<T>> typeRef) {
+        if (json == null) return new ArrayList<>();
+        try {
+            return objectMapper.readValue(json, typeRef);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Échec de désérialisation JSONB", e);
+        }
+    }
+
+    private String serializeJson(Object value) {
+        try {
+            return objectMapper.writeValueAsString(value);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Échec de sérialisation JSONB", e);
+        }
     }
 
     // ── Compteurs ─────────────────────────────────────────────────────────────

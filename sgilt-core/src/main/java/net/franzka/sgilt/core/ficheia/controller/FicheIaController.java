@@ -4,9 +4,12 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.ficheia.api.FicheIaApi;
+import net.franzka.sgilt.core.ficheia.dto.FicheIaApplyRequest;
 import net.franzka.sgilt.core.ficheia.dto.FicheIaGenerationRequest;
 import net.franzka.sgilt.core.ficheia.dto.FicheIaGenerationResultDto;
+import net.franzka.sgilt.core.ficheia.service.FicheIaApplyService;
 import net.franzka.sgilt.core.ficheia.service.FicheIaOrchestrationService;
+import net.franzka.sgilt.core.prestataire.dto.PrestataireDetailDto;
 import net.franzka.sgilt.core.security.CurrentUserService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class FicheIaController implements FicheIaApi {
 
     private final FicheIaOrchestrationService ficheIaOrchestrationService;
+    private final FicheIaApplyService ficheIaApplyService;
     private final CurrentUserService currentUserService;
 
     /**
@@ -38,5 +42,23 @@ public class FicheIaController implements FicheIaApi {
         Utilisateur utilisateur = currentUserService.get();
         log.info("POST /prestataires/ma-fiche/generation-ia — email={}", utilisateur.getEmail());
         return ResponseEntity.ok(ficheIaOrchestrationService.generate(utilisateur, request.url()));
+    }
+
+    /**
+     * Applique une instruction (section + action) issue de la dernière génération IA à la fiche du
+     * prestataire connecté. Les valeurs appliquées sont lues côté serveur, jamais transmises dans
+     * la requête. Réservé au prestataire connecté (ROLE_PRO).
+     *
+     * @param request l'instruction (section + action, ou action seule pour ECRASER_TOUT)
+     * @return la fiche complète après application
+     */
+    @Override
+    @Transactional
+    @PreAuthorize("hasAuthority('ROLE_PRO')")
+    public ResponseEntity<PrestataireDetailDto> apply(FicheIaApplyRequest request) {
+        Utilisateur utilisateur = currentUserService.get();
+        log.info("PATCH /prestataires/ma-fiche/generation-ia — email={}, section={}, action={}",
+                utilisateur.getEmail(), request.section(), request.action());
+        return ResponseEntity.ok(ficheIaApplyService.apply(utilisateur, request.section(), request.action()));
     }
 }

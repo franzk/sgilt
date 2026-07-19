@@ -36,4 +36,21 @@ public class FicheIaExceptionHandler {
     public ResponseEntity<Void> handleGenerationFailed(FicheIaGenerationFailedException ex) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).build();
     }
+
+    /**
+     * Combinaison section/action invalide dans la commande d'application (ex. AJOUTER sur une
+     * section à valeur simple).
+     */
+    @ExceptionHandler(FicheIaInvalidInstructionException.class)
+    public ResponseEntity<Void> handleInvalidInstruction(FicheIaInvalidInstructionException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    /**
+     * Aucune génération IA exploitable disponible pour appliquer la commande.
+     */
+    @ExceptionHandler(FicheIaNoResultAvailableException.class)
+    public ResponseEntity<Void> handleNoResultAvailable(FicheIaNoResultAvailableException ex) {
+        return ResponseEntity.notFound().build();
+    }
 }

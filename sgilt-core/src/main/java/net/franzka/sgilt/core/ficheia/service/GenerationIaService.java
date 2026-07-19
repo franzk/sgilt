@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import net.franzka.sgilt.core.ficheia.domain.GenerationIa;
 import net.franzka.sgilt.core.ficheia.dto.FicheIaGenerationDto;
+import net.franzka.sgilt.core.ficheia.exception.FicheIaNoResultAvailableException;
 import net.franzka.sgilt.core.ficheia.repository.GenerationIaRepository;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import org.springframework.stereotype.Service;
@@ -74,11 +75,36 @@ public class GenerationIaService {
         return generationIaRepository.save(generationIa);
     }
 
+    /**
+     * Charge et désérialise le dernier résultat de génération IA exploitable d'un prestataire.
+     *
+     * @param prestataire le prestataire concerné
+     * @return le contenu généré
+     * @throws FicheIaNoResultAvailableException si aucune génération exploitable n'est disponible
+     */
+    public FicheIaGenerationDto getLastGeneration(Prestataire prestataire) {
+        String lastGeneration = generationIaRepository.findByPrestataire(prestataire)
+                .map(GenerationIa::getLastGeneration)
+                .orElse(null);
+        if (lastGeneration == null) {
+            throw new FicheIaNoResultAvailableException(prestataire.getId().toString());
+        }
+        return fromJson(lastGeneration);
+    }
+
     private String toJson(FicheIaGenerationDto dto) {
         try {
             return objectMapper.writeValueAsString(dto);
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Échec de sérialisation du résultat de génération IA", e);
+        }
+    }
+
+    private FicheIaGenerationDto fromJson(String json) {
+        try {
+            return objectMapper.readValue(json, FicheIaGenerationDto.class);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Échec de désérialisation du résultat de génération IA", e);
         }
     }
 }
