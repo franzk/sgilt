@@ -5,7 +5,6 @@ import type { PrestataireCardDto } from '../dto/PrestataireCardDto'
 import type { PrestataireDetailDto } from '../dto/PrestataireDetailDto'
 import type { PrestataireCardDetail } from '../domain/PrestataireCardDetail'
 import type { PrestataireDetail } from '../domain/PrestataireDetail'
-import type { PrestataireUpdatePayload } from '../dto/PrestataireUpdatePayload'
 
 function categoryName(key: string): string {
   return APP_CATEGORIES.find((c) => c.key === key)?.name ?? key
@@ -44,19 +43,5 @@ export function mapPrestataireDetail(dto: PrestataireDetailDto): PrestataireDeta
     faq: dto.faq ?? [],
     unavailableDates: [],
     status: dto.status,
-  }
-}
-
-export function mapPrestataireUpdatePayload(p: PrestataireDetail): PrestataireUpdatePayload {
-  return {
-    baseline: p.baseline,
-    shortDescription: p.shortDescription,
-    badges: p.badges,
-    offerings: p.offerings,
-    identity: p.identity,
-    budget: p.budget,
-    testimonials: p.testimonials,
-    details: p.details,
-    faq: p.faq,
   }
 }

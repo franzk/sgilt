@@ -12,6 +12,8 @@ const props = defineProps<{
   displayMode: DisplayMode
 }>()
 
+const emit = defineEmits<{ commit: [value: EngagementKey[]] }>()
+
 const modelValue = defineModel<EngagementKey[]>({ required: true })
 const isEdit = computed(() => props.displayMode === 'edit')
 
@@ -20,6 +22,16 @@ const containerRef = ref<HTMLElement | null>(null)
 onClickOutside(containerRef, () => {
   if (isEditing.value) commitEdit()
 })
+
+/** Instantané des badges à l'entrée en édition, pour ne sauvegarder que si la sélection a changé. */
+let entrySnapshot = ''
+
+/** Filet de sécurité pour le changement d'onglet (voir EditableList.vue::onFocusOut). */
+function onFocusOut(e: FocusEvent) {
+  if (!isEditing.value) return
+  const next = e.relatedTarget as Node | null
+  if (!next || !containerRef.value?.contains(next)) commitEdit()
+}
 
 const { catalogue, load } = useEngagementCatalogue()
 
@@ -34,6 +46,7 @@ const ghostKeys = computed<EngagementKey[]>(() => {
 function enterEdit() {
   if (isEditing.value) return
   isEditing.value = true
+  entrySnapshot = JSON.stringify(modelValue.value)
   load()
 }
 
@@ -49,6 +62,9 @@ function toggle(key: EngagementKey) {
 
 function commitEdit() {
   isEditing.value = false
+  if (JSON.stringify(modelValue.value) !== entrySnapshot) {
+    emit('commit', modelValue.value)
+  }
 }
 </script>
 
@@ -65,6 +81,7 @@ function commitEdit() {
     class="editable-engagements"
     :class="{ 'is-active': isEditing }"
     @click="!isEditing ? enterEdit() : undefined"
+    @focusout="onFocusOut"
   >
     <!-- Ghost: 0 badges, pas en édition -->
     <div v-if="modelValue.length === 0 && !isEditing" class="badges ghost">

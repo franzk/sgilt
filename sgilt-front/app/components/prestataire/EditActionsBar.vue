@@ -1,9 +1,11 @@
 <template>
   <div class="edit-actions">
-    <SgiltButton class="btn-full" :loading="saving" @click="onSave">
-      {{ saved ? $t('provider.edit.saved') : $t('provider.edit.save') }}
-    </SgiltButton>
-    <p v-if="saveError" class="error">{{ $t('provider.edit.save-error') }}</p>
+    <div v-if="statusText" class="save-status" :class="{ error: saveError }">
+      <p>{{ statusText }}</p>
+      <SgiltButton v-if="saveError" variant="tertiary" class="retry-btn" @click="retrySave">
+        {{ $t('provider.edit.retry') }}
+      </SgiltButton>
+    </div>
 
     <SgiltButton
       v-if="prestataire?.status === 'DRAFT'"
@@ -15,19 +17,31 @@
       {{ $t('provider.edit.submit') }}
     </SgiltButton>
     <p v-if="submitError" class="error">{{ $t('provider.edit.submit-error') }}</p>
+    <p v-if="submitBlockedMessage" class="error">{{ submitBlockedMessage }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 
-const { prestataire, save, saving, saved, saveError, submit, submitting, submitError } = usePrestataire()
+const { t } = useI18n()
+const { prestataire, saving, saveError, retrySave, submit, submitting, submitError } =
+  usePrestataire()
 
-async function onSave() {
-  await save()
-}
+const submitBlockedMessage = ref<string | null>(null)
+
+const statusText = computed(() => {
+  if (saving.value) return t('provider.edit.saving')
+  if (saveError.value) return t('provider.edit.save-error')
+  return ''
+})
 
 async function onSubmit() {
+  if (saving.value) {
+    submitBlockedMessage.value = t('provider.edit.submit-blocked-saving')
+    return
+  }
+  submitBlockedMessage.value = null
   await submit()
 }
 </script>
@@ -44,6 +58,30 @@ async function onSubmit() {
 
 .btn-full {
   width: 100%;
+}
+
+.save-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: $text-secondary;
+
+  p {
+    margin: 0;
+  }
+
+  &.error {
+    color: $state-error;
+  }
+}
+
+.retry-btn {
+  height: auto;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.8rem;
+  text-decoration: underline;
 }
 
 .error {

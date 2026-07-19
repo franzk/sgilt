@@ -10,6 +10,7 @@
         :display-mode="props.displayMode"
         :new-item="newString"
         :is-empty="isStringEmpty"
+        @commit="saveField('offerings', $event)"
       >
         <template #item="{ item, isEditing, update, registerRef }">
           <EditableText
@@ -35,6 +36,7 @@
           field="identity.quote"
           :editable="isEdit"
           class="quote"
+          @commit="saveIdentity"
         />
         <EditableText
           as="p"
@@ -42,13 +44,18 @@
           field="identity.bio"
           :editable="isEdit"
           class="bio"
+          @commit="saveIdentity"
         />
       </div>
     </section>
 
     <!-- BADGES -->
     <section v-if="isEdit || !!prestataire?.badges.length" class="section badges-section">
-      <EditableEngagements v-model="prestataire!.badges" :display-mode="props.displayMode" />
+      <EditableEngagements
+        v-model="prestataire!.badges"
+        :display-mode="props.displayMode"
+        @commit="saveField('badges', $event)"
+      />
     </section>
 
     <!-- BUDGET (mobile uniquement) -->
@@ -60,6 +67,7 @@
         field="budget"
         :editable="isEdit"
         class="budget-text"
+        @commit="saveField('budget', $event)"
       />
     </section>
 
@@ -72,6 +80,7 @@
         :display-mode="props.displayMode"
         :new-item="newTestimony"
         :is-empty="isTestimonyEmpty"
+        @commit="saveField('testimonials', $event)"
       >
         <template #ghost-item="{ ghostText }">
           <blockquote class="testimony-ghost">
@@ -116,6 +125,7 @@
             :display-mode="props.displayMode"
             :new-item="() => newDetailItem(group.category)"
             :is-empty="isDetailEmpty"
+            @commit="saveField('details', prestataire!.details)"
           >
             <template #item="{ item, isEditing, update, registerRef }">
               <EditableText
@@ -139,6 +149,7 @@
           :display-mode="props.displayMode"
           :new-item="newFaqItem"
           :is-empty="isFaqEmpty"
+          @commit="saveField('faq', $event)"
         >
           <template #ghost-item="{ ghostText, ghostIndex }">
             <div class="faq-ghost">
@@ -189,9 +200,15 @@ const faqGhostAnswers = computed<string[]>(() => {
   const raw: unknown = tm('provider.editable.faq.ghost-answers')
   return Array.isArray(raw) ? (raw as RtArg[]).map((item) => rt(item)) : []
 })
-const { prestataire } = usePrestataire()
+const { prestataire, saveField } = usePrestataire()
 
 const isEdit = computed(() => props.displayMode === 'edit')
+
+/** identity est un bloc unique côté back — le blur de quote OU bio sauvegarde les deux ensemble. */
+function saveIdentity() {
+  if (!prestataire.value) return
+  saveField('identity', prestataire.value.identity)
+}
 
 const detailGroups = computed(() => {
   const details = prestataire.value?.details ?? []

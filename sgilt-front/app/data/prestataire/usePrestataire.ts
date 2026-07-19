@@ -6,30 +6,24 @@
 import {
   fetchPrestataireBySlug,
   fetchMaFiche,
-  savePrestataireUpdate,
+  savePrestataireField,
   saveMediasUpdate,
   uploadPrestataireMedia,
   submitPrestataire,
 } from './service/prestataireService'
 import type { PrestataireDetail } from './domain/PrestataireDetail'
+import type { PrestataireFieldEntry, PrestataireUpdatePayload } from './dto/PrestataireUpdatePayload'
 import type { Media } from './domain/Media'
 
 const prestataire = ref<PrestataireDetail | null>(null)
 const loading = ref(false)
 const error = ref<unknown>(null)
 const saving = ref(false)
-const saved = ref(false)
 const saveError = ref(false)
+/** Dernier couple (champ, valeur) dont la sauvegarde a échoué — rejouable via retrySave(). */
+const lastFailedSave = ref<PrestataireFieldEntry | null>(null)
 const submitting = ref(false)
 const submitError = ref(false)
-
-watch(
-  prestataire,
-  () => {
-    if (saved.value) saved.value = false
-  },
-  { deep: true },
-)
 
 export function usePrestataire(slug?: string) {
   if (slug !== undefined) {
@@ -63,8 +57,6 @@ export function usePrestataire(slug?: string) {
     submitting.value = true
     submitError.value = false
     try {
-      // save before submit
-      await savePrestataireUpdate(prestataire.value)
       await submitPrestataire()
       prestataire.value.status = 'IN_REVIEW'
     } catch {
@@ -74,16 +66,36 @@ export function usePrestataire(slug?: string) {
     }
   }
 
-  async function save() {
+  /**
+   * Sauvegarde un unique champ, déclenché au blur d'un champ éditable. Chaque appel écrase
+   * uniquement ce champ en base (voir {@link savePrestataireField}) — jamais un instantané complet.
+   */
+  async function saveField<K extends keyof PrestataireUpdatePayload>(
+    field: K,
+    value: PrestataireUpdatePayload[K],
+  ): Promise<void> {
+    await saveEntry({ field, value })
+  }
+
+  /**
+   * Rejoue la dernière sauvegarde de champ ayant échoué (bouton "Réessayer" affiché en cas
+   * d'erreur). Sans effet si aucune sauvegarde n'est en échec.
+   */
+  async function retrySave(): Promise<void> {
+    if (!lastFailedSave.value) return
+    await saveEntry(lastFailedSave.value)
+  }
+
+  async function saveEntry(entry: PrestataireFieldEntry): Promise<void> {
     if (!prestataire.value) return
     saving.value = true
-    saved.value = false
     saveError.value = false
     try {
-      await savePrestataireUpdate(prestataire.value)
-      saved.value = true
+      await savePrestataireField(prestataire.value.id, entry)
+      lastFailedSave.value = null
     } catch {
       saveError.value = true
+      lastFailedSave.value = entry
     } finally {
       saving.value = false
     }
@@ -103,9 +115,9 @@ export function usePrestataire(slug?: string) {
     error,
     load,
     loadMaFiche,
-    save,
+    saveField,
+    retrySave,
     saving,
-    saved,
     saveError,
     saveMedias,
     uploadMedia,

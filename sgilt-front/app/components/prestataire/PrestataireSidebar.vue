@@ -28,6 +28,7 @@
         field="budget"
         :editable="isEdit"
         class="text"
+        @commit="saveField('budget', $event)"
       />
     </div>
 
@@ -55,7 +56,7 @@ const props = defineProps<{
   dateError: string | null
 }>()
 
-const { prestataire } = usePrestataire()
+const { prestataire, saveField } = usePrestataire()
 const isEdit = computed(() => props.displayMode === 'edit')
 
 const emit = defineEmits<{

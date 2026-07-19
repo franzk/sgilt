@@ -14,7 +14,7 @@ const props = defineProps<{
   displayMode: DisplayMode
 }>()
 
-const { prestataire } = usePrestataire()
+const { prestataire, saveField } = usePrestataire()
 const isEdit = computed(() => props.displayMode === 'edit')
 const heroboardOpen = ref(false)
 const hasMedia = computed(() => props.prestataire.medias.length > 0)
@@ -136,6 +136,7 @@ async function share() {
             field="baseline"
             :editable="isEdit"
             class="baseline"
+            @commit="saveField('baseline', $event)"
           />
         </div>
 
@@ -168,6 +169,7 @@ async function share() {
               field="baseline"
               :editable="isEdit"
               class="baseline"
+              @commit="saveField('baseline', $event)"
             />
           </div>
         </div>
@@ -200,6 +202,7 @@ async function share() {
           field="baseline"
           :editable="isEdit"
           class="baseline"
+          @commit="saveField('baseline', $event)"
         />
       </div>
 

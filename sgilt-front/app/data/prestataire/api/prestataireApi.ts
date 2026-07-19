@@ -24,7 +24,7 @@ export async function getEngagementKeysApi(): Promise<string[]> {
 
 export async function patchPrestataireApi(
   id: string,
-  payload: PrestataireUpdatePayload,
+  payload: Partial<PrestataireUpdatePayload>,
 ): Promise<void> {
   return apiFetch<void>(`/prestataires/${id}`, { method: 'PATCH', body: payload })
 }

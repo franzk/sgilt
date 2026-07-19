@@ -97,11 +97,12 @@
       "faq-title": "Questions fréquentes"
     },
     "edit": {
-      "save": "Enregistrer mes modifications",
-      "saved": "✅ Enregistré",
-      "save-error": "Échec de l'enregistrement, veuillez réessayer.",
+      "saving": "Enregistrement…",
+      "save-error": "❌ Non enregistré.",
+      "retry": "Réessayer",
       "submit": "Soumettre ma fiche à Sgilt",
       "submit-error": "Échec de la soumission, veuillez réessayer.",
+      "submit-blocked-saving": "Un enregistrement est en cours, réessayez dans un instant.",
       "mode-badge": "Mode édition"
     },
     "availability": {

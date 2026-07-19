@@ -19,3 +19,12 @@ export interface PrestataireUpdatePayload {
   details: DetailItem[] | null
   faq: FaqItem[] | null
 }
+
+/**
+ * Couple (champ, valeur) cohérent — un membre de cette union par champ de `PrestataireUpdatePayload`.
+ * Permet de faire transiter le couple tel quel (ex. pour rejouer une sauvegarde échouée) sans que
+ * TypeScript perde le lien entre le champ et le type de sa valeur.
+ */
+export type PrestataireFieldEntry = {
+  [K in keyof PrestataireUpdatePayload]: { field: K; value: PrestataireUpdatePayload[K] }
+}[keyof PrestataireUpdatePayload]
