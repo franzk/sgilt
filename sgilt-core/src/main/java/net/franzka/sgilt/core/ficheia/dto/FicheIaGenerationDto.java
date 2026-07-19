@@ -1,5 +1,6 @@
 package net.franzka.sgilt.core.ficheia.dto;
 
+import net.franzka.sgilt.core.prestataire.dto.DetailDto;
 import net.franzka.sgilt.core.prestataire.dto.FaqItemDto;
 import net.franzka.sgilt.core.prestataire.dto.IdentityDto;
 import net.franzka.sgilt.core.prestataire.dto.TestimonialDto;
@@ -16,7 +17,7 @@ public record FicheIaGenerationDto(
         List<String> offerings,
         IdentityDto identity,
         List<TestimonialDto> testimonials,
-        List<PracticalInformationDto> practicalInformations,
+        List<DetailDto> details,
         List<FaqItemDto> faq,
         String budget
 ) {}

@@ -1,5 +1,7 @@
 package net.franzka.sgilt.core.ficheia.dto;
 
+import net.franzka.sgilt.core.prestataire.domain.DetailCategory;
+
 import java.util.List;
 
 /**
@@ -16,7 +18,7 @@ public class FicheIaGenerationSchema {
     public List<String> offerings;
     public Identity identity;
     public List<Testimonial> testimonials;
-    public List<PracticalInformation> practicalInformations;
+    public List<Detail> details;
     public List<Faq> faq;
     public String budget;
 
@@ -30,10 +32,9 @@ public class FicheIaGenerationSchema {
         public String text;
     }
 
-    public static class PracticalInformation {
-        public String category;
-        public String title;
-        public String description;
+    public static class Detail {
+        public String content;
+        public DetailCategory category;
     }
 
     public static class Faq {

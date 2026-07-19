@@ -9,8 +9,8 @@ import com.openai.models.responses.WebSearchTool;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.ficheia.dto.FicheIaGenerationDto;
 import net.franzka.sgilt.core.ficheia.dto.FicheIaGenerationSchema;
-import net.franzka.sgilt.core.ficheia.dto.PracticalInformationDto;
 import net.franzka.sgilt.core.ficheia.exception.FicheIaEmptyResultException;
+import net.franzka.sgilt.core.prestataire.dto.DetailDto;
 import net.franzka.sgilt.core.prestataire.dto.FaqItemDto;
 import net.franzka.sgilt.core.prestataire.dto.IdentityDto;
 import net.franzka.sgilt.core.prestataire.dto.TestimonialDto;
@@ -89,8 +89,8 @@ public class FicheIaGenerationService {
                 schema.testimonials.stream()
                         .map(testimonial -> new TestimonialDto(testimonial.author, testimonial.text))
                         .toList(),
-                schema.practicalInformations.stream()
-                        .map(info -> new PracticalInformationDto(info.category, info.title, info.description))
+                schema.details.stream()
+                        .map(detail -> new DetailDto(detail.content, detail.category))
                         .toList(),
                 schema.faq.stream()
                         .map(faq -> new FaqItemDto(faq.question, faq.answer))
