@@ -103,7 +103,13 @@
       "submit": "Soumettre ma fiche à Sgilt",
       "submit-error": "Échec de la soumission, veuillez réessayer.",
       "submit-blocked-saving": "Un enregistrement est en cours, réessayez dans un instant.",
-      "mode-badge": "Mode édition"
+      "tabs": {
+        "edition": "Édition",
+        "preview": "Aperçu",
+        "ia": "IA",
+        "preview-placeholder": "L'aperçu de la fiche arrive bientôt.",
+        "ia-placeholder": "La génération IA de fiche arrive bientôt."
+      }
     },
     "availability": {
       "available": "🟢 Disponible",
@@ -182,9 +188,7 @@
         }
       },
       "details": {
-        "ghost-items": [
-          "Cliquez ici pour ajouter une information pratique"
-        ],
+        "ghost-items": ["Cliquez ici pour ajouter une information pratique"],
         "prompt": "Ajoutez les informations pratiques utiles à cette catégorie…"
       }
     }

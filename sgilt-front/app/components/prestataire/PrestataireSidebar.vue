@@ -1,7 +1,5 @@
 <template>
   <div class="sidebar-body">
-    <div v-if="isEdit" class="edit-mode-badge">{{ $t('provider.edit.mode-badge') }}</div>
-
     <div v-if="!isEdit" class="sidebar-block">
       <SgiltDatePicker
         v-model="dateModel"
@@ -96,19 +94,6 @@ const availabilityClass = computed(() => (isUnavailable.value ? 'unavailable' : 
   @media (min-width: $breakpoint-desktop) {
     padding: 1.5rem;
   }
-}
-
-.edit-mode-badge {
-  display: inline-block;
-  padding: 0.35rem 0.75rem;
-  border-radius: 2rem;
-  border: 1px solid $color-primary;
-  background: #fff;
-  color: $color-primary;
-  font-size: 0.8rem;
-  font-weight: 500;
-  width: fit-content;
-  align-self: flex-end;
 }
 
 .sidebar-block {

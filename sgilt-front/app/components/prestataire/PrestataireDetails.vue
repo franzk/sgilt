@@ -9,10 +9,19 @@
       @back="$emit('back')"
     />
 
+    <!-- ── Onglets (desktop) : élément propre à page-edition, vide ailleurs ──── -->
+    <div v-if="$slots.tabs" class="tabs-desktop-slot">
+      <slot name="tabs" />
+    </div>
+
     <!-- ── Layout principal ─────────────────────────────────────────────────── -->
     <div class="page-layout">
       <!-- Sidebar : datepicker + tarifs + CTA -->
       <aside ref="datepickerAreaRef" class="sidebar">
+        <!-- Onglets (mobile) : réutilise l'espace du datepicker masqué en édition -->
+        <div v-if="$slots.tabs" class="tabs-mobile-slot">
+          <slot name="tabs" />
+        </div>
         <PrestataireSidebar
           :prestataire="prestataire"
           :display-mode="displayMode"
@@ -24,7 +33,9 @@
 
       <!-- Contenu principal -->
       <div class="main">
-        <PrestataireContent :display-mode="displayMode" />
+        <slot name="main">
+          <PrestataireContent :display-mode="displayMode" />
+        </slot>
       </div>
     </div>
 
@@ -231,6 +242,22 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 
   @media (min-width: $breakpoint-desktop) {
     padding-bottom: 0;
+  }
+}
+
+// ── Onglets page-edition : desktop sous le hero, mobile dans le datepicker ─────
+.tabs-desktop-slot {
+  display: none;
+
+  @media (min-width: $breakpoint-desktop) {
+    display: block;
+    width: 100%;
+  }
+}
+
+.tabs-mobile-slot {
+  @media (min-width: $breakpoint-desktop) {
+    display: none;
   }
 }
 
