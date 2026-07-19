@@ -121,7 +121,7 @@ Une même information ne doit pas être répétée dans plusieurs champs, sauf r
 Répartition attendue :
 
 * `offerings` décrit ce qui est proposé ;
-* `practicalInformations` décrit les choix concrets, le déroulement, l’organisation et ce qui est remis au client ;
+* `details` décrit les choix concrets, le déroulement, l’organisation et ce qui est remis au client ;
 * `faq` présente uniquement des conditions ou cas particuliers qui gagnent réellement à être formulés en question-réponse ;
 * `budget` concentre les informations tarifaires.
 
@@ -186,7 +186,7 @@ Par exemple, ne sépare pas « festivals », « bars », « cocktails » et « m
 
 N’ajoute aucune modalité supposée ni argument publicitaire.
 
-### `practicalInformations`
+### `details`
 
 Liste d’informations concrètes et utiles qui aident l’organisateur à comprendre :
 
@@ -199,12 +199,11 @@ Liste d’informations concrètes et utiles qui aident l’organisateur à compr
 Chaque élément contient :
 
 * `category` : `FORMAT`, `PROCESS`, `LOGISTICS`, `DELIVERABLE` ou `OTHER` ;
-* `title` : un intitulé court ;
-* `description` : une explication factuelle, autonome et concise.
+* `content` : une explication factuelle, autonome et concise de cette information.
 
 ### Règle de tri prioritaire
 
-Avant d’ajouter une information dans `practicalInformations`, vérifie qu’elle décrit au moins l’un des éléments suivants :
+Avant d’ajouter une information dans `details`, vérifie qu’elle décrit au moins l’un des éléments suivants :
 
 * un choix concret proposé au client ;
 * une étape réelle de la collaboration ;
@@ -370,9 +369,9 @@ Questions et réponses présentant des conditions, exceptions ou cas particulier
 
 Ne crée jamais une question uniquement parce qu’elle semble pertinente ou probable.
 
-Ne répète pas une information déjà entièrement exprimée dans `offerings`, `practicalInformations` ou `budget`.
+Ne répète pas une information déjà entièrement exprimée dans `offerings`, `details` ou `budget`.
 
-Si une information peut être exprimée clairement dans `practicalInformations`, ne la répète pas dans `faq`.
+Si une information peut être exprimée clairement dans `details`, ne la répète pas dans `faq`.
 
 Une liste vide est préférable à une FAQ répétitive.
 
