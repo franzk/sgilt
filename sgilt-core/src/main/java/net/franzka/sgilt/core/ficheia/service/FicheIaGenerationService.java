@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.ficheia.dto.FicheIaGenerationDto;
 import net.franzka.sgilt.core.ficheia.dto.FicheIaGenerationSchema;
 import net.franzka.sgilt.core.ficheia.dto.PracticalInformationDto;
+import net.franzka.sgilt.core.ficheia.exception.FicheIaEmptyResultException;
 import net.franzka.sgilt.core.prestataire.dto.FaqItemDto;
 import net.franzka.sgilt.core.prestataire.dto.IdentityDto;
 import net.franzka.sgilt.core.prestataire.dto.TestimonialDto;
@@ -55,7 +56,7 @@ public class FicheIaGenerationService {
      *
      * @param url l'URL du site du prestataire
      * @return le contenu de fiche généré, aligné sur les champs de l'entité Prestataire
-     * @throws IllegalStateException si OpenAI ne retourne aucune sortie structurée exploitable
+     * @throws FicheIaEmptyResultException si OpenAI ne retourne aucune sortie structurée exploitable
      */
     public FicheIaGenerationDto generate(String url) {
         log.info("Génération IA de fiche à partir de l'URL {}", url);
@@ -74,7 +75,7 @@ public class FicheIaGenerationService {
                 .flatMap(message -> message.content().stream())
                 .flatMap(content -> content.outputText().stream())
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Aucune sortie structurée reçue d'OpenAI pour " + url));
+                .orElseThrow(() -> new FicheIaEmptyResultException("Aucune sortie structurée reçue d'OpenAI pour " + url));
 
         return toDto(schema);
     }

@@ -108,7 +108,8 @@
       "Bash(timeout 40 ./gradlew bootRun --args='--spring.profiles.active=local')",
       "Bash(./gradlew bootRun --args='--spring.profiles.active=local')",
       "Bash(echo \"started with pid $!\")",
-      "Bash(rm -f /tmp/bootrun3.log)"
+      "Bash(rm -f /tmp/bootrun3.log)",
+      "Bash(./gradlew --console=plain compileJava --rerun)"
     ]
   }
 }

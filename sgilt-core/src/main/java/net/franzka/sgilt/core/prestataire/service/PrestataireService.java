@@ -77,6 +77,17 @@ public class PrestataireService {
     }
 
     /**
+     * Charge l'entité prestataire active liée à un utilisateur PRO.
+     *
+     * @param utilisateur l'utilisateur PRO
+     * @return l'entité prestataire
+     * @throws PrestataireNotFoundException si aucun prestataire n'est lié à cet utilisateur
+     */
+    public Prestataire getEntityByUtilisateurOwner(Utilisateur utilisateur) {
+        return findPrestataire(utilisateur);
+    }
+
+    /**
      * Soumet la fiche du prestataire connecté pour revue admin — passe de DRAFT à IN_REVIEW.
      * Aucune validation de complétude : la confiance est accordée au prestataire.
      *
