@@ -1,6 +1,6 @@
 <template>
   <div class="sidebar-body">
-    <div v-if="!isEdit" class="sidebar-block">
+    <div v-if="displayMode === 'display'" class="sidebar-block">
       <SgiltDatePicker
         v-model="dateModel"
         :booked-dates="unavailableDatesAsDate"
@@ -30,10 +30,14 @@
       />
     </div>
 
-    <SgiltButton v-if="!isEdit" class="sidebar-cta" @click="emit('select-intent')">
+    <SgiltButton
+      v-if="displayMode === 'display'"
+      class="sidebar-cta"
+      @click="emit('select-intent')"
+    >
       {{ $t('provider.details.send-request') }}
     </SgiltButton>
-    <EditActionsBar v-else class="sidebar-edit-actions" />
+    <EditActionsBar v-else-if="isEdit" class="sidebar-edit-actions" />
   </div>
 </template>
 

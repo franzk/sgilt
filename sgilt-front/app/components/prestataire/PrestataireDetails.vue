@@ -40,11 +40,11 @@
     </div>
 
     <!-- ── Sticky CTA (mobile) ───────────────────────────────────────────────── -->
-    <div class="sticky-cta">
+    <div v-if="displayMode !== 'preview'" class="sticky-cta">
       <SgiltButton v-if="displayMode === 'display'" @click="onSelect">{{
         $t('provider.details.send-request')
       }}</SgiltButton>
-      <EditActionsBar v-else />
+      <EditActionsBar v-else-if="displayMode === 'edit'" />
     </div>
 
     <!-- ── Modale galerie ────────────────────────────────────────────────────── -->

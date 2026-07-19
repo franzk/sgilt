@@ -2,7 +2,7 @@
   <PrestataireDetails
     v-if="prestataire"
     :prestataire="prestataire"
-    display-mode="edit"
+    :display-mode="displayMode"
     @select="() => {}"
     @back="router.back()"
   >
@@ -18,6 +18,7 @@
 <script setup lang="ts">
 import PrestataireDetails from '~/components/prestataire/PrestataireDetails.vue'
 import PageEditionTabs from '~/components/prestataire/PageEditionTabs.vue'
+import type { DisplayMode } from '~/types/prestataire'
 
 definePageMeta({ layout: 'default' })
 
@@ -25,6 +26,12 @@ const router = useRouter()
 const route = useRoute()
 const currentUser = useCurrentUser()
 const { prestataire, loadMaFiche } = usePrestataire()
+
+// L'onglet Preview affiche la fiche en lecture seule, chrome de réservation masqué ; les autres
+// onglets gardent le shell d'édition.
+const displayMode = computed<DisplayMode>(() =>
+  route.path === '/pro/page-edition/preview' ? 'preview' : 'edit',
+)
 
 watch(
   () => currentUser.slug,
