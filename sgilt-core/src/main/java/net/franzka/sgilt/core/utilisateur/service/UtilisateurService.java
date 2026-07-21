@@ -82,7 +82,7 @@ public class UtilisateurService {
      * @throws UtilisateurNotFoundException si aucun utilisateur ne correspond
      */
     public Utilisateur getByEmail(String email) {
-        return utilisateurRepository.findByEmail(email)
+        return utilisateurRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(UtilisateurNotFoundException::new);
     }
 
@@ -104,7 +104,7 @@ public class UtilisateurService {
      * @throws UtilisateurNotFoundException si aucun utilisateur ne correspond à cet email
      */
     public UtilisateurProfileDto getProfile(String email) {
-        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+        Utilisateur utilisateur = utilisateurRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(UtilisateurNotFoundException::new);
         return new UtilisateurProfileDto(
                 utilisateur.getFirstName(),

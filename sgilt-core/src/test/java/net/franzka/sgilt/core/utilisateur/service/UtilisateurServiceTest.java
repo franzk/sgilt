@@ -121,14 +121,14 @@ class UtilisateurServiceTest {
         @Test
         void givenExistingEmail_whenGetByEmail_thenReturnsUtilisateur() {
             Utilisateur user = Utilisateur.builder().email(EMAIL).build();
-            when(utilisateurRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
+            when(utilisateurRepository.findByEmailIgnoreCase(EMAIL)).thenReturn(Optional.of(user));
 
             assertThat(utilisateurService.getByEmail(EMAIL)).isSameAs(user);
         }
 
         @Test
         void givenUnknownEmail_whenGetByEmail_thenThrowsUtilisateurNotFoundException() {
-            when(utilisateurRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
+            when(utilisateurRepository.findByEmailIgnoreCase(EMAIL)).thenReturn(Optional.empty());
 
             assertThatExceptionOfType(UtilisateurNotFoundException.class)
                     .isThrownBy(() -> utilisateurService.getByEmail(EMAIL));
@@ -150,7 +150,7 @@ class UtilisateurServiceTest {
                     .email(EMAIL)
                     .avatarUrl(null)
                     .build();
-            when(utilisateurRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
+            when(utilisateurRepository.findByEmailIgnoreCase(EMAIL)).thenReturn(Optional.of(user));
 
             UtilisateurProfileDto result = utilisateurService.getProfile(EMAIL);
 
@@ -162,7 +162,7 @@ class UtilisateurServiceTest {
 
         @Test
         void givenUnknownEmail_whenGetProfile_thenThrowsUtilisateurNotFoundException() {
-            when(utilisateurRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
+            when(utilisateurRepository.findByEmailIgnoreCase(EMAIL)).thenReturn(Optional.empty());
 
             assertThatExceptionOfType(UtilisateurNotFoundException.class)
                     .isThrownBy(() -> utilisateurService.getProfile(EMAIL));
