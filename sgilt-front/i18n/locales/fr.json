@@ -106,8 +106,19 @@
       "tabs": {
         "edition": "Édition",
         "preview": "Aperçu",
-        "ia": "IA",
-        "ia-placeholder": "La génération IA de fiche arrive bientôt."
+        "ia": "Assistant IA"
+      },
+      "ia": {
+        "intro": "Votre site contient déjà une bonne partie de votre histoire. Indiquez son adresse et nous vous proposerons des textes pour compléter votre fiche Sgilt. Vous pourrez ensuite les relire, les modifier et choisir ceux que vous souhaitez utiliser.",
+        "url-label": "Adresse de votre site",
+        "url-placeholder": "https://monsite.fr",
+        "url-required": "Veuillez renseigner l’adresse de votre site.",
+        "url-invalid": "Veuillez renseigner une adresse valide (ex. https://monsite.fr).",
+        "submit": "Créer une proposition pour ma fiche",
+        "generating": "Préparation de votre proposition… Cela peut prendre jusqu’à 30 secondes.",
+        "error-quota": "Vous avez utilisé tous vos essais de génération.",
+        "error-technical": "Une erreur est survenue. Veuillez réessayer dans quelques instants.",
+        "generated-placeholder": "Votre proposition est prête."
       }
     },
     "availability": {

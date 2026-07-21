@@ -12,11 +12,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class FicheIaExceptionHandler {
 
     /**
-     * Quota épuisé : le frontend doit afficher un état "plus d'essais" dédié.
+     * Quota épuisé : le frontend doit afficher un état "plus d'essais" dédié. 429 plutôt que 400
+     * pour rester distinguable sans ambiguïté d'un futur 400 générique (payload invalide, etc.).
      */
     @ExceptionHandler(FicheIaQuotaExhaustedException.class)
     public ResponseEntity<Void> handleQuotaExhausted(FicheIaQuotaExhaustedException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
     }
 
     /**

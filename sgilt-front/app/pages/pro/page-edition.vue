@@ -9,7 +9,12 @@
     <template #tabs>
       <PageEditionTabs />
     </template>
-    <template #main>
+    <!-- Onglet IA : rien n'appartenant à la fiche (pas de sidebar réservation/soumission, pas de
+         contenu fiche) — remplace intégralement la zone de contenu par défaut. -->
+    <template v-if="isIaTab" #content>
+      <NuxtPage />
+    </template>
+    <template v-else #main>
       <NuxtPage />
     </template>
   </PrestataireDetails>
@@ -27,11 +32,14 @@ const route = useRoute()
 const currentUser = useCurrentUser()
 const { prestataire, loadMaFiche } = usePrestataire()
 
-// L'onglet Preview affiche la fiche en lecture seule, chrome de réservation masqué ; les autres
-// onglets gardent le shell d'édition.
-const displayMode = computed<DisplayMode>(() =>
-  route.path === '/pro/page-edition/preview' ? 'preview' : 'edit',
-)
+// L'onglet Preview affiche la fiche en lecture seule, chrome de réservation masqué
+const displayMode = computed<DisplayMode>(() => {
+  if (route.path === '/pro/page-edition/preview') return 'preview'
+  if (route.path === '/pro/page-edition/ia') return 'IA'
+  return 'edit'
+})
+
+const isIaTab = computed(() => displayMode.value === 'IA')
 
 watch(
   () => currentUser.slug,

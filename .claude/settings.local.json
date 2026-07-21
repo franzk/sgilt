@@ -109,7 +109,16 @@
       "Bash(./gradlew bootRun --args='--spring.profiles.active=local')",
       "Bash(echo \"started with pid $!\")",
       "Bash(rm -f /tmp/bootrun3.log)",
-      "Bash(./gradlew --console=plain compileJava --rerun)"
+      "Bash(./gradlew --console=plain compileJava --rerun)",
+      "Read(//c/Users/koehl/.gradle/**)",
+      "Read(//c//**)",
+      "PowerShell(Get-ChildItem *)",
+      "Bash(jar xf *)",
+      "Bash(javap -p -c com/openai/core/ClientOptions.class)",
+      "Bash(javap -p -c 'com/openai/core/Timeout$Companion.class')",
+      "Bash(javap -p -c 'com/openai/core/Timeout$Builder.class')",
+      "Bash(javap -p -c -constants 'com/openai/core/Timeout$Builder.class')",
+      "Bash(javap -p -c -constants com/openai/core/Timeout.class)"
     ]
   }
 }

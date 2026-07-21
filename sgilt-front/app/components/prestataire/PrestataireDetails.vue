@@ -13,39 +13,42 @@
     <div v-if="$slots.tabs" class="tabs-desktop-slot">
       <slot name="tabs" />
     </div>
+    <!-- ── Onglets (mobile) : même emplacement visuel que le datepicker en display ──── -->
+    <div v-if="$slots.tabs" class="tabs-mobile-slot">
+      <slot name="tabs" />
+    </div>
 
-    <!-- ── Layout principal ─────────────────────────────────────────────────── -->
-    <div class="page-layout">
-      <!-- Sidebar : datepicker + tarifs + CTA -->
-      <aside ref="datepickerAreaRef" class="sidebar">
-        <!-- Onglets (mobile) : réutilise l'espace du datepicker masqué en édition -->
-        <div v-if="$slots.tabs" class="tabs-mobile-slot">
-          <slot name="tabs" />
+    <!-- ── Contenu : par défaut fiche (sidebar réservation/soumission + main), remplaçable
+         intégralement par l'appelant (ex. onglet IA, qui n'a rien à voir avec la fiche) ──── -->
+    <slot name="content">
+      <div class="page-layout">
+        <!-- Sidebar : datepicker + tarifs + CTA -->
+        <aside ref="datepickerAreaRef" class="sidebar">
+          <PrestataireSidebar
+            :prestataire="prestataire"
+            :display-mode="displayMode"
+            :disable-date="disableDate"
+            :date-error="dateError"
+            @select-intent="onSelect"
+          />
+        </aside>
+
+        <!-- Contenu principal -->
+        <div class="main">
+          <slot name="main">
+            <PrestataireContent :display-mode="displayMode" />
+          </slot>
         </div>
-        <PrestataireSidebar
-          :prestataire="prestataire"
-          :display-mode="displayMode"
-          :disable-date="disableDate"
-          :date-error="dateError"
-          @select-intent="onSelect"
-        />
-      </aside>
-
-      <!-- Contenu principal -->
-      <div class="main">
-        <slot name="main">
-          <PrestataireContent :display-mode="displayMode" />
-        </slot>
       </div>
-    </div>
 
-    <!-- ── Sticky CTA (mobile) ───────────────────────────────────────────────── -->
-    <div v-if="displayMode !== 'preview'" class="sticky-cta">
-      <SgiltButton v-if="displayMode === 'display'" @click="onSelect">{{
-        $t('provider.details.send-request')
-      }}</SgiltButton>
-      <EditActionsBar v-else-if="displayMode === 'edit'" />
-    </div>
+      <!-- ── Sticky CTA (mobile) ─────────────────────────────────────────────── -->
+      <div v-if="displayMode !== 'preview'" class="sticky-cta">
+        <SgiltButton v-if="displayMode === 'display'" @click="onSelect">{{
+          $t('provider.details.send-request')
+        }}</SgiltButton>
+        <EditActionsBar v-else-if="displayMode === 'edit'" />
+      </div>
+    </slot>
 
     <!-- ── Modale galerie ────────────────────────────────────────────────────── -->
     <Teleport to="body">
@@ -245,7 +248,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   }
 }
 
-// ── Onglets page-edition : desktop sous le hero, mobile dans le datepicker ─────
+// ── Onglets page-edition : l'un des deux s'affiche selon le breakpoint ─────────
 .tabs-desktop-slot {
   display: none;
 
