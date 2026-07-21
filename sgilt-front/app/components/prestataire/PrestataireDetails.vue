@@ -18,6 +18,11 @@
       <slot name="tabs" />
     </div>
 
+    <!-- ── Actions d'édition (desktop) : juste sous les onglets ──── -->
+    <div v-if="displayMode === 'edit'" class="edit-actions-desktop-slot">
+      <EditActionsBar />
+    </div>
+
     <!-- ── Contenu : par défaut fiche (sidebar réservation/soumission + main), remplaçable
          intégralement par l'appelant (ex. onglet IA, qui n'a rien à voir avec la fiche) ──── -->
     <slot name="content">
@@ -261,6 +266,18 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 .tabs-mobile-slot {
   @media (min-width: $breakpoint-desktop) {
     display: none;
+  }
+}
+
+.edit-actions-desktop-slot {
+  display: none;
+
+  @media (min-width: $breakpoint-desktop) {
+    display: block;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1.5rem 2.5rem 0;
+    width: 100%;
   }
 }
 

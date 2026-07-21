@@ -128,78 +128,67 @@
     },
     "editable": {
       "baseline": {
-        "ghost": "On aide les beaux moments à trouver leur rythme.",
-        "prompt": "L'accroche qui apparaît sous votre nom sur la fiche"
+        "ghost": "Cliquez ici pour ajouter votre accroche",
+        "prompt": "La phrase courte qui apparaît sous votre nom sur la fiche"
       },
       "budget": {
-        "ghost": "Un bon tarif ne sort pas d'un chapeau : il dépend du lieu, du format, du timing, des besoins et des petits détails qui changent tout.\n\nAvant toute proposition, nous prenons le temps de comprendre le cadre de l'événement : date, lieu, durée, nombre d'invités, ambiance recherchée et niveau d'accompagnement attendu.\n\nCela permet de construire une proposition juste, lisible, et adaptée à ce que vous souhaitez vraiment préparer.",
+        "ghost": "Cliquez ici pour présenter vos tarifs et expliquer ce qui peut faire varier le prix",
         "prompt": "Donnez une idée de vos tarifs pour aider les organisateurs à se projeter"
       },
       "identity": {
         "quote": {
-          "ghost": "Des événements plus fluides, plus vivants, mieux préparés",
-          "prompt": "Votre phrase signature — celle qui dit en une ligne pourquoi vos clients vous choisissent"
+          "ghost": "Cliquez ici pour ajouter votre phrase signature",
+          "prompt": "La phrase qui résume en une ligne ce qui vous distingue"
         },
         "bio": {
-          "ghost": "Chez Let's Sgilt, nous accompagnons les événements qui ont besoin d'un fil conducteur : une ambiance à installer, des invités à accueillir, des moments à enchaîner, des détails à ne pas laisser au hasard.\n\nNotre rôle est de comprendre l'esprit de votre événement, puis de vous aider à lui donner une forme simple, chaleureuse et bien organisée.",
-          "prompt": "Racontez votre parcours, votre approche, ce qui rend votre façon de travailler unique"
+          "ghost": "Cliquez ici pour présenter votre parcours, votre approche et ce qui rend votre façon de travailler unique",
+          "prompt": "Racontez votre parcours, votre approche et ce qui rend votre façon de travailler unique"
         }
       },
       "offerings": {
-        "ghost-items": [
-          "Une présence adaptée aux mariages, anniversaires, fêtes privées et événements d'entreprise",
-          "Une aide pour créer une ambiance cohérente, du premier accueil jusqu'au dernier temps fort",
-          "Une coordination simple avec les organisateurs et les autres prestataires",
-          "Une préparation claire pour que chaque détail important soit posé avant le jour J"
-        ],
-        "prompt": "Listez ici ce que vous proposez concrètement — ce que voient les organisateurs qui vous découvrent",
+        "ghost-items": ["Cliquez ici pour ajouter une prestation ou un service"],
+        "prompt": "Présentez concrètement ce que vous proposez aux organisateurs",
         "item": {
-          "ghost": "Ex. : Animation live, formule cocktail…",
+          "ghost": "Ex. : Animation musicale, formule cocktail…",
           "prompt": ""
         }
       },
       "faq": {
-        "ghost-items": [
-          "Combien de temps faut-il prévoir avant l'événement ?",
-          "Peut-on adapter la prestation au format de l'événement ?",
-          "Et si notre événement ne rentre pas parfaitement dans les cases ?"
-        ],
-        "ghost-answers": [
-          "L'idéal est de prendre contact le plus tôt possible, surtout pour les dates très demandées. Cela permet de vérifier la disponibilité, de comprendre le format de l'événement et de préparer les détails importants sans urgence.",
-          "Oui. Chaque événement a son ambiance, son rythme et ses contraintes. La prestation peut être ajustée selon le lieu, le nombre d'invités, les moments prévus et le niveau d'accompagnement souhaité.",
-          "C'est souvent là que les choses deviennent intéressantes. Une fête a rarement la forme parfaite d'un formulaire : il y a des contraintes, des envies un peu folles, des horaires qui bougent et parfois une tante qui veut absolument chanter. Le plus simple, c'est d'en parler dès le départ pour voir ce qui est possible, utile et raisonnable."
-        ],
-        "prompt": "Ajoutez les questions que vos clients vous posent souvent…",
+        "ghost-items": ["Cliquez ici pour ajouter une question fréquente"],
+        "ghost-answers": ["Cliquez ici pour ajouter votre réponse"],
+        "prompt": "Ajoutez les questions que vos clients vous posent souvent",
         "question": {
-          "ghost": "",
-          "prompt": "Ex. : Est-ce que vous vous déplacez…"
+          "ghost": "Ex. : Est-ce que vous vous déplacez ?",
+          "prompt": ""
         },
         "answer": {
-          "ghost": "",
-          "prompt": "Votre réponse détaillée…"
+          "ghost": "Rédigez votre réponse…",
+          "prompt": ""
         }
       },
       "badges": {
-        "ghost-keys": ["REPONSE_48H", "ACCOMPAGNEMENT", "INTERLOCUTEUR_UNIQUE"],
-        "prompt": "Choisissez jusqu'à 3 engagements qui vous représentent"
+        "ghost-keys": [],
+        "prompt": "Choisissez jusqu’à 3 engagements qui vous représentent"
       },
       "testimonials": {
-        "ghost-items": [
-          "« On avait plusieurs idées, beaucoup d'envies, mais rien de vraiment structuré. Let's Sgilt nous a aidés à remettre les choses dans l'ordre, à clarifier les moments importants et à avancer avec les bons prestataires. Le jour J, on avait l'impression que tout respirait mieux. »"
-        ],
-        "prompt": "Ajoutez des témoignages de vos clients…",
+        "ghost-items": ["Cliquez ici pour ajouter un témoignage client"],
+        "prompt": "Ajoutez les témoignages de vos clients",
         "text": {
-          "ghost": "",
-          "prompt": "Le témoignage de votre client…"
+          "ghost": "Saisissez le témoignage de votre client…",
+          "prompt": ""
         },
         "author": {
-          "ghost": "Élise",
-          "prompt": "Prénom Nom"
+          "ghost": "Prénom ou nom du client",
+          "prompt": ""
         }
       },
       "details": {
         "ghost-items": ["Cliquez ici pour ajouter une information pratique"],
-        "prompt": "Ajoutez les informations pratiques utiles à cette catégorie…"
+        "prompt": "Ajoutez les informations pratiques utiles aux organisateurs",
+        "item": {
+          "ghost": "Saisissez l'information pratique…",
+          "prompt": ""
+        }
       }
     }
   },
