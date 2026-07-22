@@ -57,7 +57,11 @@ async function onSubmit() {
 }
 
 .btn-submit {
-  width: 15rem;
+  width: 100%;
+
+  @media (min-width: $breakpoint-desktop) {
+    width: 15rem;
+  }
 }
 
 .save-status {
