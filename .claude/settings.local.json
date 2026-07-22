@@ -118,7 +118,8 @@
       "Bash(javap -p -c 'com/openai/core/Timeout$Companion.class')",
       "Bash(javap -p -c 'com/openai/core/Timeout$Builder.class')",
       "Bash(javap -p -c -constants 'com/openai/core/Timeout$Builder.class')",
-      "Bash(javap -p -c -constants com/openai/core/Timeout.class)"
+      "Bash(javap -p -c -constants com/openai/core/Timeout.class)",
+      "Bash(gh run *)"
     ]
   }
 }

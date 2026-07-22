@@ -186,12 +186,12 @@ jobs:
       - name: Build and push sgilt-core
         run: |
           IMAGE_TAG="${{ env.IMAGE_PREFIX }}/sgilt-core:${{ env.SGILT_CORE_VERSION }}"
-          if docker manifest inspect $IMAGE_TAG > /dev/null 2>&1; then
-            echo "⏭️ $IMAGE_TAG already exists, skipping build"
-          else
+          if [ "${{ inputs.mode }}" = "init" ] || ! docker manifest inspect $IMAGE_TAG > /dev/null 2>&1; then
             docker build -t $IMAGE_TAG sgilt-core
             docker push $IMAGE_TAG
             echo "✅ Pushed $IMAGE_TAG"
+          else
+            echo "⏭️ $IMAGE_TAG already exists, skipping build"
           fi
 
       - name: Build and push sgilt-gateway
