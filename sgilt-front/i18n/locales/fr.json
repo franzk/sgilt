@@ -147,6 +147,15 @@
           "replace": "Remplacer",
           "add": "Ajouter"
         }
+      },
+      "fork": {
+        "title": "Votre aventure Sgilt commence ici",
+        "subtitle": "Donnez vie à votre fiche avec l’aide de l’IA, ou construisez-la vous-même, à votre rythme.",
+        "ia-title": "Créer ma fiche avec l’IA",
+        "ia-description": "Partagez l’adresse de votre site. L’IA s’appuiera sur vos contenus pour préparer une première proposition qui vous ressemble.",
+        "manual-title": "Créer ma fiche moi-même",
+        "manual-description": "Prenez les commandes et construisez votre fiche section après section.",
+        "applying": "Application de la proposition à votre fiche…"
       }
     },
     "availability": {
