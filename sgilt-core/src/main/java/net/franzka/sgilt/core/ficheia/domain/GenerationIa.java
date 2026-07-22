@@ -64,4 +64,13 @@ public class GenerationIa {
                 .triesLeft(DEFAULT_TRIES_LEFT)
                 .build();
     }
+
+    /**
+     * Quota d'essais de génération par défaut, appliqué à toute nouvelle ligne de génération IA.
+     *
+     * @return le quota par défaut
+     */
+    public static int defaultTriesLeft() {
+        return DEFAULT_TRIES_LEFT;
+    }
 }

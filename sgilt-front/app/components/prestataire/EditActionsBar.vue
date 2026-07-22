@@ -9,7 +9,7 @@
 
     <SgiltButton
       v-if="prestataire?.status === 'DRAFT'"
-      class="btn-full"
+      class="btn-submit"
       variant="secondary"
       :loading="submitting"
       @click="onSubmit"
@@ -56,8 +56,8 @@ async function onSubmit() {
   width: 100%;
 }
 
-.btn-full {
-  width: 100%;
+.btn-submit {
+  width: 15rem;
 }
 
 .save-status {

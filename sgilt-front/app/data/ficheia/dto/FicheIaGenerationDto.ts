@@ -17,6 +17,7 @@ export interface FicheIaGenerationContentDto {
 }
 
 export interface FicheIaGenerationResultDto {
-  result: FicheIaGenerationContentDto
+  result: FicheIaGenerationContentDto | null
   triesLeft: number
+  lastGenerationDateTime: string | null
 }

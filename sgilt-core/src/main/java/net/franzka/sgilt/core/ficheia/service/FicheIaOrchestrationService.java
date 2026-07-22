@@ -64,6 +64,19 @@ public class FicheIaOrchestrationService {
         }
 
         GenerationIa saved = generationIaService.recordSuccess(generationIa, dto, url);
-        return new FicheIaGenerationResultDto(dto, saved.getTriesLeft());
+        return new FicheIaGenerationResultDto(dto, saved.getTriesLeft(), saved.getLastGenerationDateTime());
+    }
+
+    /**
+     * Récupère l'état courant de la génération IA pour le prestataire lié à l'utilisateur connecté,
+     * en lecture seule (aucune ligne créée si aucune génération n'existe encore).
+     *
+     * @param utilisateur l'utilisateur PRO connecté
+     * @return le dernier résultat généré (ou {@code null}), le quota restant et l'horodatage de la
+     *         dernière génération (ou {@code null})
+     */
+    public FicheIaGenerationResultDto getState(Utilisateur utilisateur) {
+        Prestataire prestataire = prestataireService.getEntityByUtilisateurOwner(utilisateur);
+        return generationIaService.getState(prestataire);
     }
 }

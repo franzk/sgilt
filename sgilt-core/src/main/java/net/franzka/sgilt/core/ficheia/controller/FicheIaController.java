@@ -61,4 +61,20 @@ public class FicheIaController implements FicheIaApi {
                 utilisateur.getEmail(), request.section(), request.action());
         return ResponseEntity.ok(ficheIaApplyService.apply(utilisateur, request.section(), request.action()));
     }
+
+    /**
+     * Récupère l'état courant de la génération IA du prestataire connecté (résultat généré, quota
+     * restant, date de dernière génération), sans créer de ligne en base si aucune génération
+     * n'existe encore. Réservé au prestataire connecté (ROLE_PRO).
+     *
+     * @return l'état courant de la génération IA
+     */
+    @Override
+    @Transactional
+    @PreAuthorize("hasAuthority('ROLE_PRO')")
+    public ResponseEntity<FicheIaGenerationResultDto> getState() {
+        Utilisateur utilisateur = currentUserService.get();
+        log.info("GET /prestataires/ma-fiche/generation-ia — email={}", utilisateur.getEmail());
+        return ResponseEntity.ok(ficheIaOrchestrationService.getState(utilisateur));
+    }
 }

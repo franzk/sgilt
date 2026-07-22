@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import net.franzka.sgilt.core.ficheia.domain.GenerationIa;
 import net.franzka.sgilt.core.ficheia.dto.FicheIaGenerationDto;
+import net.franzka.sgilt.core.ficheia.dto.FicheIaGenerationResultDto;
 import net.franzka.sgilt.core.ficheia.exception.FicheIaNoResultAvailableException;
 import net.franzka.sgilt.core.ficheia.repository.GenerationIaRepository;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
@@ -90,6 +91,26 @@ public class GenerationIaService {
             throw new FicheIaNoResultAvailableException(prestataire.getId().toString());
         }
         return fromJson(lastGeneration);
+    }
+
+    /**
+     * Lit l'état courant de la génération IA d'un prestataire sans aucun effet de bord :
+     * contrairement à {@link #getOrCreateFor}, ne crée jamais de ligne en base. À utiliser
+     * uniquement pour une lecture (endpoint GET) — ne jamais appeler avant une opération qui doit
+     * consommer le quota.
+     *
+     * @param prestataire le prestataire concerné
+     * @return le dernier contenu généré (ou {@code null} si aucune génération n'existe), le quota
+     *         restant (valeur par défaut si aucune ligne n'existe) et l'horodatage de la dernière
+     *         génération (ou {@code null})
+     */
+    public FicheIaGenerationResultDto getState(Prestataire prestataire) {
+        return generationIaRepository.findByPrestataire(prestataire)
+                .map(g -> new FicheIaGenerationResultDto(
+                        g.getLastGeneration() == null ? null : fromJson(g.getLastGeneration()),
+                        g.getTriesLeft(),
+                        g.getLastGenerationDateTime()))
+                .orElseGet(() -> new FicheIaGenerationResultDto(null, GenerationIa.defaultTriesLeft(), null));
     }
 
     private String toJson(FicheIaGenerationDto dto) {

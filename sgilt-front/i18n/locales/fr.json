@@ -109,6 +109,7 @@
         "ia": "Assistant IA"
       },
       "ia": {
+        "loading": "Chargement…",
         "intro": "Votre site contient déjà une bonne partie de votre histoire. Indiquez son adresse et nous vous proposerons des textes pour compléter votre fiche Sgilt. Vous pourrez ensuite les relire, les modifier et choisir ceux que vous souhaitez utiliser.",
         "url-label": "Adresse de votre site",
         "url-placeholder": "https://monsite.fr",
@@ -118,7 +119,34 @@
         "generating": "Préparation de votre proposition… Cela peut prendre jusqu’à 30 secondes.",
         "error-quota": "Vous avez utilisé tous vos essais de génération.",
         "error-technical": "Une erreur est survenue. Veuillez réessayer dans quelques instants.",
-        "generated-placeholder": "Votre proposition est prête."
+        "relaunch-link": "Relancer avec une autre URL",
+        "bulk-overwrite": "Écraser ma fiche avec la proposition IA",
+        "bulk-overwrite-dialog": {
+          "title": "Écraser toute ma fiche ?",
+          "message": "Cette action remplace immédiatement le contenu de votre fiche (accroche, description, offres, témoignages, infos pratiques, FAQ, budget) par la proposition générée. Cette action est irréversible.",
+          "confirm": "Écraser ma fiche",
+          "cancel": "Annuler"
+        },
+        "apply-error": "Une erreur est survenue lors de l’application. Veuillez réessayer.",
+        "block": {
+          "presentation": "Présentation",
+          "testimonials": "Témoignages",
+          "details": "Infos pratiques",
+          "faq": "FAQ",
+          "budget": "Budget"
+        },
+        "field": {
+          "baseline": "Accroche",
+          "short-description": "Description courte",
+          "identity": "Identité",
+          "offerings": "Prestations",
+          "budget": "Budget"
+        },
+        "action": {
+          "copy": "Copier",
+          "replace": "Remplacer",
+          "add": "Ajouter"
+        }
       }
     },
     "availability": {

@@ -5,6 +5,7 @@ import net.franzka.sgilt.core.ficheia.dto.FicheIaGenerationRequest;
 import net.franzka.sgilt.core.ficheia.dto.FicheIaGenerationResultDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireDetailDto;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,4 +19,7 @@ public interface FicheIaApi {
 
     @PatchMapping
     ResponseEntity<PrestataireDetailDto> apply(@RequestBody FicheIaApplyRequest request);
+
+    @GetMapping
+    ResponseEntity<FicheIaGenerationResultDto> getState();
 }
