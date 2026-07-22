@@ -120,7 +120,7 @@
         "generating": "Préparation de votre proposition… Cela peut prendre jusqu’à 30 secondes.",
         "error-quota": "Vous avez utilisé tous vos essais de génération.",
         "error-technical": "Une erreur est survenue. Veuillez réessayer dans quelques instants.",
-        "relaunch-link": "Relancer avec une autre URL",
+        "relaunch-link": "Relancer avec une autre URL ({count} essai restant) | Relancer avec une autre URL ({count} essais restants)",
         "bulk-overwrite": "Écraser ma fiche avec la proposition IA",
         "bulk-overwrite-dialog": {
           "title": "Écraser toute ma fiche ?",

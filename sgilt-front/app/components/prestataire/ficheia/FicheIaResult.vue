@@ -1,17 +1,5 @@
 <template>
   <div class="ia-result">
-    <div class="relaunch">
-      <button
-        v-if="triesLeft && triesLeft > 0"
-        type="button"
-        class="link"
-        @click="$emit('relaunch')"
-      >
-        {{ $t('provider.edit.ia.relaunch-link') }}
-      </button>
-      <p v-else class="quota-exhausted">{{ $t('provider.edit.ia.error-quota') }}</p>
-    </div>
-
     <SgiltButton class="bulk-btn" @click="overwriteConfirmOpen = true">
       {{ $t('provider.edit.ia.bulk-overwrite') }}
     </SgiltButton>
@@ -158,6 +146,18 @@
       >
         {{ $t('provider.edit.ia.card-preview-copy') }}
       </SgiltButton>
+    </div>
+
+    <div class="relaunch">
+      <button
+        v-if="triesLeft && triesLeft > 0"
+        type="button"
+        class="link"
+        @click="$emit('relaunch')"
+      >
+        {{ $t('provider.edit.ia.relaunch-link', { count: triesLeft }, triesLeft ?? 0) }}
+      </button>
+      <p v-else class="quota-exhausted">{{ $t('provider.edit.ia.error-quota') }}</p>
     </div>
   </div>
 </template>
