@@ -67,15 +67,16 @@ cp sgilt-core/src/main/resources/application-local-secrets.yml.example \
    sgilt-core/src/main/resources/application-local-secrets.yml
 ```
 
-Then fill in the two values:
+Then fill in the values:
 
 | Property                             | Where to find it                                                       |
 |--------------------------------------|------------------------------------------------------------------------|
 | `sgilt.jwt.confirmation-secret`      | Any random string — generate with `openssl rand -base64 64`            |
 | `sgilt.keycloak.admin-client-secret` | `dev-admin-secret` (hardcoded in the dev realm)                        |
 | `sgilt.keycloak.magic-link-secret`   | `dev-magic-secret-change-in-prod` (default value in `application.yml`) |
+| `sgilt.openai.api-key`               | OpenAI API key (`OPENAI_API_KEY`) — no default, required for the fiche generation IA feature |
 
-The file is gitignored. Without it, the service starts but JWT signing and Keycloak admin calls will fail.
+The file is gitignored. Without it, the service starts but JWT signing, Keycloak admin calls and IA fiche generation will fail.
 
 ---
 
