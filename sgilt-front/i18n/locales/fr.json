@@ -138,7 +138,6 @@
         },
         "field": {
           "baseline": "Accroche",
-          "short-description": "Description courte",
           "identity": "Identité",
           "offerings": "Prestations",
           "budget": "Budget"
@@ -147,7 +146,9 @@
           "copy": "Copier",
           "replace": "Remplacer",
           "add": "Ajouter"
-        }
+        },
+        "card-preview-title": "Aperçu de votre fiche avec la proposition IA",
+        "card-preview-copy": "Copier la légende"
       },
       "fork": {
         "title": "Votre aventure Sgilt commence ici",

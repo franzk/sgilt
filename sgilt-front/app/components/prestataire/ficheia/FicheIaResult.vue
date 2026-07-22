@@ -1,7 +1,12 @@
 <template>
   <div class="ia-result">
     <div class="relaunch">
-      <button v-if="triesLeft && triesLeft > 0" type="button" class="link" @click="$emit('relaunch')">
+      <button
+        v-if="triesLeft && triesLeft > 0"
+        type="button"
+        class="link"
+        @click="$emit('relaunch')"
+      >
         {{ $t('provider.edit.ia.relaunch-link') }}
       </button>
       <p v-else class="quota-exhausted">{{ $t('provider.edit.ia.error-quota') }}</p>
@@ -25,7 +30,10 @@
     />
 
     <div v-if="result" class="blocks">
-      <FicheIaCollapsibleBlock :title="$t('provider.edit.ia.block.presentation')" :default-open="justGenerated">
+      <FicheIaCollapsibleBlock
+        :title="$t('provider.edit.ia.block.presentation')"
+        :default-open="justGenerated"
+      >
         <FicheIaFieldRow
           :label="$t('provider.edit.ia.field.baseline')"
           section="BASELINE"
@@ -35,17 +43,6 @@
           @apply="onApply"
         >
           <p>{{ result.baseline }}</p>
-        </FicheIaFieldRow>
-
-        <FicheIaFieldRow
-          :label="$t('provider.edit.ia.field.short-description')"
-          section="SHORT_DESCRIPTION"
-          :is-list="false"
-          :has-existing-content="false"
-          :applying-key="applying"
-          @apply="onApply"
-        >
-          <p>{{ result.shortDescription }}</p>
         </FicheIaFieldRow>
 
         <FicheIaFieldRow
@@ -74,7 +71,10 @@
         </FicheIaFieldRow>
       </FicheIaCollapsibleBlock>
 
-      <FicheIaCollapsibleBlock :title="$t('provider.edit.ia.block.testimonials')" :default-open="justGenerated">
+      <FicheIaCollapsibleBlock
+        :title="$t('provider.edit.ia.block.testimonials')"
+        :default-open="justGenerated"
+      >
         <FicheIaFieldRow
           :label="$t('provider.edit.ia.block.testimonials')"
           section="TESTIMONIALS"
@@ -90,7 +90,10 @@
         </FicheIaFieldRow>
       </FicheIaCollapsibleBlock>
 
-      <FicheIaCollapsibleBlock :title="$t('provider.edit.ia.block.details')" :default-open="justGenerated">
+      <FicheIaCollapsibleBlock
+        :title="$t('provider.edit.ia.block.details')"
+        :default-open="justGenerated"
+      >
         <FicheIaFieldRow
           :label="$t('provider.edit.ia.block.details')"
           section="DETAILS"
@@ -108,7 +111,10 @@
         </FicheIaFieldRow>
       </FicheIaCollapsibleBlock>
 
-      <FicheIaCollapsibleBlock :title="$t('provider.edit.ia.block.faq')" :default-open="justGenerated">
+      <FicheIaCollapsibleBlock
+        :title="$t('provider.edit.ia.block.faq')"
+        :default-open="justGenerated"
+      >
         <FicheIaFieldRow
           :label="$t('provider.edit.ia.block.faq')"
           section="FAQ"
@@ -124,7 +130,10 @@
         </FicheIaFieldRow>
       </FicheIaCollapsibleBlock>
 
-      <FicheIaCollapsibleBlock :title="$t('provider.edit.ia.block.budget')" :default-open="justGenerated">
+      <FicheIaCollapsibleBlock
+        :title="$t('provider.edit.ia.block.budget')"
+        :default-open="justGenerated"
+      >
         <FicheIaFieldRow
           :label="$t('provider.edit.ia.field.budget')"
           section="BUDGET"
@@ -137,6 +146,19 @@
         </FicheIaFieldRow>
       </FicheIaCollapsibleBlock>
     </div>
+
+    <!-- APERÇU CARD RECHERCHE : même card que la fiche réelle, légende remplacée par celle générée -->
+    <div v-if="cardPreview" class="card-preview-section">
+      <p class="label">{{ $t('provider.edit.ia.card-preview-title') }}</p>
+      <PrestataireCard :provider="cardPreview" selectable class="card-preview" />
+      <SgiltButton
+        variant="secondary"
+        :loading="applying === 'SHORT_DESCRIPTION:REMPLACER'"
+        @click="onApply('SHORT_DESCRIPTION', 'REMPLACER')"
+      >
+        {{ $t('provider.edit.ia.card-preview-copy') }}
+      </SgiltButton>
+    </div>
   </div>
 </template>
 
@@ -145,7 +167,10 @@ import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 import FicheIaCollapsibleBlock from './FicheIaCollapsibleBlock.vue'
 import FicheIaFieldRow from './FicheIaFieldRow.vue'
+import PrestataireCard from '~/components/cards/PrestataireCard.vue'
+import { mapPrestataireDetailToCard } from '~/data/prestataire/mapper/prestataireMapper'
 import { DETAIL_CATEGORY_ORDER } from '~/utils/constants'
+import type { PrestataireCardDetail } from '~/data/prestataire/domain/PrestataireCardDetail'
 import type { FicheIaSection, FicheIaAction } from '~/data/ficheia/dto/FicheIaApplyDto'
 
 defineEmits<{ relaunch: [] }>()
@@ -154,6 +179,15 @@ const { result, triesLeft, justGenerated, applying, applyError, applyOne, applyA
 const { prestataire } = usePrestataire()
 
 const overwriteConfirmOpen = ref(false)
+
+/** Card réelle (photo, nom, catégorie), légende remplacée par celle proposée par l'IA. */
+const cardPreview = computed<PrestataireCardDetail | undefined>(() => {
+  if (!prestataire.value || !result.value) return undefined
+  return {
+    ...mapPrestataireDetailToCard(prestataire.value),
+    shortDescription: result.value.shortDescription,
+  }
+})
 
 const iaDetailGroups = computed(() =>
   DETAIL_CATEGORY_ORDER.map((category) => ({
@@ -209,6 +243,25 @@ function onApply(section: FicheIaSection, action: FicheIaAction): void {
   display: flex;
   flex-direction: column;
   gap: $spacing-m;
+}
+
+.card-preview-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-s;
+
+  .label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: $text-secondary;
+    margin: 0;
+  }
+}
+
+.card-preview {
+  width: 100%;
+  max-width: 220px;
 }
 
 .testimonial,

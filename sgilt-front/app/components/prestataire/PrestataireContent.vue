@@ -168,22 +168,6 @@
         </EditableList>
       </div>
     </section>
-
-    <!-- APERÇU CARD RECHERCHE : réutilise le composant existant, légende éditable en place -->
-    <section v-if="isEdit || prestataire?.shortDescription" class="section card-preview-section">
-      <h2 class="title">{{ $t('provider.details.card-preview-title') }}</h2>
-      <PrestataireCard :provider="cardPreview" selectable class="card-preview">
-        <template v-if="isEdit" #description>
-          <EditableText
-            as="div"
-            v-model="prestataire!.shortDescription"
-            field="shortDescription"
-            :editable="isEdit"
-            @commit="saveField('shortDescription', $event)"
-          />
-        </template>
-      </PrestataireCard>
-    </section>
   </div>
 </template>
 
@@ -202,9 +186,6 @@ import EditableTestimony, {
   newItem as newTestimony,
   isEmpty as isTestimonyEmpty,
 } from '~/components/prestataire/EditableTestimony.vue'
-import PrestataireCard from '~/components/cards/PrestataireCard.vue'
-import { mapPrestataireDetailToCard } from '~/data/prestataire/mapper/prestataireMapper'
-import type { PrestataireCardDetail } from '~/data/prestataire/domain/PrestataireCardDetail'
 import type { DisplayMode } from '~/types/prestataire'
 import { DETAIL_CATEGORY_ORDER, type DetailCategory } from '~/utils/constants'
 import type { DetailItem } from '~/data/prestataire/domain/DetailItem'
@@ -239,10 +220,6 @@ const detailGroups = computed(() => {
 
 const hasInfosPratiques = computed(
   () => !!prestataire.value?.details.length || !!prestataire.value?.faq.length,
-)
-
-const cardPreview = computed<PrestataireCardDetail | undefined>(() =>
-  prestataire.value ? mapPrestataireDetailToCard(prestataire.value) : undefined,
 )
 
 function detailsForCategory(category: DetailCategory) {
@@ -326,11 +303,6 @@ $section-gap: 2.5rem;
   > * {
     width: 6rem;
   }
-}
-
-.card-preview {
-  width: 100%;
-  max-width: 220px;
 }
 
 .identity-spotlight {

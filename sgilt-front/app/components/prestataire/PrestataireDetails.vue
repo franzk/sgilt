@@ -46,6 +46,9 @@
         </div>
       </div>
 
+      <!-- ── Aperçu card recherche : à la toute fin de la fiche, hors des 2 colonnes ──── -->
+      <PrestataireCardPreviewSection :display-mode="displayMode" />
+
       <!-- ── Sticky CTA (mobile) ─────────────────────────────────────────────── -->
       <div v-if="displayMode !== 'preview'" class="sticky-cta">
         <SgiltButton v-if="displayMode === 'display'" @click="onSelect">{{
@@ -119,6 +122,7 @@
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import PrestataireHero from '~/components/prestataire/PrestataireHero.vue'
 import PrestataireContent from '~/components/prestataire/PrestataireContent.vue'
+import PrestataireCardPreviewSection from '~/components/prestataire/PrestataireCardPreviewSection.vue'
 import EditActionsBar from '~/components/prestataire/EditActionsBar.vue'
 import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDetail'
 import type { DisplayMode } from '~/types/prestataire'
