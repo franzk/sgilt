@@ -29,10 +29,9 @@ function handleClick() {
   >
     <div class="image-wrapper">
       <template v-if="!loading">
-        <!--img :src="provider?.image" :alt="provider?.name" loading="lazy" /-->
         <SgiltImage :src="provider?.image" :alt="provider?.name" width="400" height="360" />
         <div class="category-tag">
-          <span><SgiltCategoryIcon :categoryId="provider?.categoryId" class="inner-icon" /></span>
+          <span><SgiltCategoryIcon :categoryKey="provider?.categoryKey" class="inner-icon" /></span>
           <span class="category-name">{{ provider?.categoryName }}</span>
         </div>
       </template>
@@ -50,7 +49,7 @@ function handleClick() {
       </div>
 
       <div v-if="!loading" class="description">
-        {{ provider?.shortDescription }}
+        <slot name="description">{{ provider?.shortDescription }}</slot>
       </div>
       <div v-else class="description-group">
         <Sk />
@@ -122,7 +121,7 @@ function handleClick() {
       border-radius: 5rem;
       border: 1px solid rgba(255, 255, 255, 0.2);
 
-      padding: 0px 6px;
+      padding: 0 6px;
 
       align-items: center;
       justify-content: center;

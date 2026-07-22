@@ -94,7 +94,8 @@
         "logistics": "Logistique",
         "other": "Autres informations"
       },
-      "faq-title": "Questions fréquentes"
+      "faq-title": "Questions fréquentes",
+      "card-preview-title": "Votre fiche dans les résultats de recherche"
     },
     "edit": {
       "saving": "Enregistrement…",
@@ -167,6 +168,10 @@
       "baseline": {
         "ghost": "Cliquez ici pour ajouter votre accroche",
         "prompt": "La phrase courte qui apparaît sous votre nom sur la fiche"
+      },
+      "shortDescription": {
+        "ghost": "Cliquez ici pour ajouter la légende de votre fiche",
+        "prompt": ""
       },
       "budget": {
         "ghost": "Cliquez ici pour présenter vos tarifs et expliquer ce qui peut faire varier le prix",
