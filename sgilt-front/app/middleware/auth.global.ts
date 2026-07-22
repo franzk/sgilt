@@ -1,3 +1,5 @@
+import { checkCurrentFicheIsEmpty } from '~/data/prestataire/usePrestataire'
+
 export default defineNuxtRouteMiddleware(async (to) => {
   // Le middleware ne s'exécute que côté client (KC est client-side only)
   if (import.meta.server) return
@@ -36,7 +38,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
       return navigateTo(target)
     }
     if (hasRole('ADMIN')) return navigateTo('/admin')
-    return navigateTo(hasRole('PRO') ? '/pro' : '/app')
+    if (hasRole('PRO')) {
+      return navigateTo((await checkCurrentFicheIsEmpty()) ? '/pro/page-edition' : '/pro')
+    }
+    return navigateTo('/app')
   }
 
   // Espace admin : réservé aux ADMIN, qui n'ont accès à aucun autre espace protégé

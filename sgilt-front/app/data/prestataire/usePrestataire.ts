@@ -15,6 +15,34 @@ import type { PrestataireDetail } from './domain/PrestataireDetail'
 import type { PrestataireFieldEntry, PrestataireUpdatePayload } from './dto/PrestataireUpdatePayload'
 import type { Media } from './domain/Media'
 
+/**
+ * Une fiche est considérée vide quand aucun des 8 champs de contenu applicables par l'IA
+ * (voir FicheIaSection) n'est renseigné — c'est la condition d'affichage du fork d'onboarding.
+ */
+export function isEmptyPrestataireFiche(fiche: PrestataireDetail): boolean {
+  return (
+    !fiche.baseline &&
+    !fiche.shortDescription &&
+    fiche.offerings.length === 0 &&
+    !fiche.identity.quote &&
+    !fiche.identity.bio &&
+    !fiche.budget &&
+    fiche.testimonials.length === 0 &&
+    fiche.details.length === 0 &&
+    fiche.faq.length === 0
+  )
+}
+
+/**
+ * Vérifie si la fiche du prestataire connecté est actuellement vide. Appel dédié, indépendant du
+ * ref partagé `prestataire` — ne l'écrase pas, pour ne pas provoquer un flash de chargement chez
+ * un consommateur qui l'aurait déjà peuplé (ex. page-edition.vue).
+ */
+export async function checkCurrentFicheIsEmpty(): Promise<boolean> {
+  const fiche = await fetchMaFiche()
+  return !!fiche && isEmptyPrestataireFiche(fiche)
+}
+
 const prestataire = ref<PrestataireDetail | null>(null)
 const loading = ref(false)
 const error = ref<unknown>(null)

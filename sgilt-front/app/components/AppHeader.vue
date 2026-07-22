@@ -34,16 +34,12 @@ import AccountMenuPopin from '~/components/profile/AccountMenuPopin.vue'
 import NotificationBell from '~/components/notifications/NotificationBell.vue'
 import UserAvatar from '~/components/basics/UserAvatar.vue'
 import { UserIcon } from '@remixicons/vue/line'
+import { checkCurrentFicheIsEmpty } from '~/data/prestataire/usePrestataire'
 
 const accountMenuAnchorRef = ref<HTMLElement | null>(null)
 const accountMenuOpen = ref(false)
 
 const { isAuthenticated, hasRole } = useKeycloak()
-
-const logoLink = computed(() => {
-  if (!mounted.value || !isAuthenticated.value) return '/'
-  return hasRole('PRO') ? '/pro' : '/app'
-})
 
 const ROUTES_WITHOUT_SHADOW_MOBILE = ['/', '/search']
 const ROUTES_SHADOW_ON_SCROLL = ['/app', '/app/events', '/pro/reservations']
@@ -65,6 +61,27 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('scroll', updateScrolled)
+})
+
+/**
+ * Fiche prestataire encore entièrement vide : ramène vers le fork d'onboarding plutôt que vers
+ * le board habituel. Revérifié à chaque transition vers un compte PRO authentifié (pas de cache
+ * persistant), pour rester cohérent si un autre compte se connecte dans la même session.
+ */
+const proFicheEmpty = ref(false)
+
+watch(
+  () => mounted.value && isAuthenticated.value && hasRole('PRO'),
+  async (isProAuthenticated) => {
+    proFicheEmpty.value = isProAuthenticated ? await checkCurrentFicheIsEmpty() : false
+  },
+  { immediate: true },
+)
+
+const logoLink = computed(() => {
+  if (!mounted.value || !isAuthenticated.value) return '/'
+  if (hasRole('PRO')) return proFicheEmpty.value ? '/pro/page-edition' : '/pro'
+  return '/app'
 })
 
 const hideShadow = computed(() => {

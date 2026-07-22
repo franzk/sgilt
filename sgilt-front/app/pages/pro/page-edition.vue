@@ -27,6 +27,7 @@
 import PrestataireDetails from '~/components/prestataire/PrestataireDetails.vue'
 import PageEditionTabs from '~/components/prestataire/PageEditionTabs.vue'
 import FicheOnboardingFork from '~/components/prestataire/FicheOnboardingFork.vue'
+import { isEmptyPrestataireFiche } from '~/data/prestataire/usePrestataire'
 import type { DisplayMode } from '~/types/prestataire'
 
 definePageMeta({ layout: 'default' })
@@ -43,21 +44,7 @@ const { prestataire, loadMaFiche } = usePrestataire()
  */
 const manualChosen = ref(false)
 
-const isEmptyFiche = computed(() => {
-  const p = prestataire.value
-  if (!p) return false
-  return (
-    !p.baseline &&
-    !p.shortDescription &&
-    p.offerings.length === 0 &&
-    !p.identity.quote &&
-    !p.identity.bio &&
-    !p.budget &&
-    p.testimonials.length === 0 &&
-    p.details.length === 0 &&
-    p.faq.length === 0
-  )
-})
+const isEmptyFiche = computed(() => (prestataire.value ? isEmptyPrestataireFiche(prestataire.value) : false))
 
 const showFork = computed(() => isEmptyFiche.value && !manualChosen.value)
 
