@@ -9,32 +9,54 @@
       @back="$emit('back')"
     />
 
-    <!-- ── Layout principal ─────────────────────────────────────────────────── -->
-    <div class="page-layout">
-      <!-- Sidebar : datepicker + tarifs + CTA -->
-      <aside ref="datepickerAreaRef" class="sidebar">
-        <PrestataireSidebar
-          :prestataire="prestataire"
-          :display-mode="displayMode"
-          :disable-date="disableDate"
-          :date-error="dateError"
-          @select-intent="onSelect"
-        />
-      </aside>
+    <!-- ── Onglets (desktop) : élément propre à page-edition, vide ailleurs ──── -->
+    <div v-if="$slots.tabs" class="tabs-desktop-slot">
+      <slot name="tabs" />
+    </div>
+    <!-- ── Onglets (mobile) : même emplacement visuel que le datepicker en display ──── -->
+    <div v-if="$slots.tabs" class="tabs-mobile-slot">
+      <slot name="tabs" />
+    </div>
 
-      <!-- Contenu principal -->
-      <div class="main">
-        <PrestataireContent :display-mode="displayMode" />
+    <!-- ── Actions d'édition (desktop) : juste sous les onglets ──── -->
+    <div v-if="displayMode === 'edit'" class="edit-actions-desktop-slot">
+      <EditActionsBar />
+    </div>
+
+    <!-- ── Contenu : par défaut fiche (sidebar réservation/soumission + main), remplaçable
+         intégralement par l'appelant (ex. onglet IA, qui n'a rien à voir avec la fiche) ──── -->
+    <slot name="content">
+      <div class="page-layout">
+        <!-- Sidebar : datepicker + tarifs + CTA -->
+        <aside ref="datepickerAreaRef" class="sidebar">
+          <PrestataireSidebar
+            :prestataire="prestataire"
+            :display-mode="displayMode"
+            :disable-date="disableDate"
+            :date-error="dateError"
+            @select-intent="onSelect"
+          />
+        </aside>
+
+        <!-- Contenu principal -->
+        <div class="main">
+          <slot name="main">
+            <PrestataireContent :display-mode="displayMode" />
+          </slot>
+        </div>
       </div>
-    </div>
 
-    <!-- ── Sticky CTA (mobile) ───────────────────────────────────────────────── -->
-    <div class="sticky-cta">
-      <SgiltButton v-if="displayMode === 'display'" @click="onSelect">{{
-        $t('provider.details.send-request')
-      }}</SgiltButton>
-      <EditActionsBar v-else />
-    </div>
+      <!-- ── Aperçu card recherche : à la toute fin de la fiche, hors des 2 colonnes ──── -->
+      <PrestataireCardPreviewSection :display-mode="displayMode" />
+
+      <!-- ── Sticky CTA (mobile) ─────────────────────────────────────────────── -->
+      <div v-if="displayMode !== 'preview'" class="sticky-cta">
+        <SgiltButton v-if="displayMode === 'display'" @click="onSelect">{{
+          $t('provider.details.send-request')
+        }}</SgiltButton>
+        <EditActionsBar v-else-if="displayMode === 'edit'" />
+      </div>
+    </slot>
 
     <!-- ── Modale galerie ────────────────────────────────────────────────────── -->
     <Teleport to="body">
@@ -100,6 +122,7 @@
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import PrestataireHero from '~/components/prestataire/PrestataireHero.vue'
 import PrestataireContent from '~/components/prestataire/PrestataireContent.vue'
+import PrestataireCardPreviewSection from '~/components/prestataire/PrestataireCardPreviewSection.vue'
 import EditActionsBar from '~/components/prestataire/EditActionsBar.vue'
 import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDetail'
 import type { DisplayMode } from '~/types/prestataire'
@@ -231,6 +254,34 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 
   @media (min-width: $breakpoint-desktop) {
     padding-bottom: 0;
+  }
+}
+
+// ── Onglets page-edition : l'un des deux s'affiche selon le breakpoint ─────────
+.tabs-desktop-slot {
+  display: none;
+
+  @media (min-width: $breakpoint-desktop) {
+    display: block;
+    width: 100%;
+  }
+}
+
+.tabs-mobile-slot {
+  @media (min-width: $breakpoint-desktop) {
+    display: none;
+  }
+}
+
+.edit-actions-desktop-slot {
+  display: none;
+
+  @media (min-width: $breakpoint-desktop) {
+    display: block;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1.5rem 2.5rem 0;
+    width: 100%;
   }
 }
 

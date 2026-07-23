@@ -10,6 +10,7 @@
         :display-mode="props.displayMode"
         :new-item="newString"
         :is-empty="isStringEmpty"
+        @commit="saveField('offerings', $event)"
       >
         <template #item="{ item, isEditing, update, registerRef }">
           <EditableText
@@ -35,6 +36,7 @@
           field="identity.quote"
           :editable="isEdit"
           class="quote"
+          @commit="saveIdentity"
         />
         <EditableText
           as="p"
@@ -42,13 +44,18 @@
           field="identity.bio"
           :editable="isEdit"
           class="bio"
+          @commit="saveIdentity"
         />
       </div>
     </section>
 
     <!-- BADGES -->
     <section v-if="isEdit || !!prestataire?.badges.length" class="section badges-section">
-      <EditableEngagements v-model="prestataire!.badges" :display-mode="props.displayMode" />
+      <EditableEngagements
+        v-model="prestataire!.badges"
+        :display-mode="props.displayMode"
+        @commit="saveField('badges', $event)"
+      />
     </section>
 
     <!-- BUDGET (mobile uniquement) -->
@@ -60,6 +67,7 @@
         field="budget"
         :editable="isEdit"
         class="budget-text"
+        @commit="saveField('budget', $event)"
       />
     </section>
 
@@ -72,13 +80,13 @@
         :display-mode="props.displayMode"
         :new-item="newTestimony"
         :is-empty="isTestimonyEmpty"
+        @commit="saveField('testimonials', $event)"
       >
         <template #ghost-item="{ ghostText }">
           <blockquote class="testimony-ghost">
             <p class="text">{{ ghostText }}</p>
             <footer class="footer">
               <span class="author">{{ t('provider.editable.testimonials.author.ghost') }}</span>
-              <span class="event">{{ t('provider.editable.testimonials.eventType.ghost') }}</span>
             </footer>
           </blockquote>
         </template>
@@ -97,49 +105,41 @@
     <section v-if="isEdit || hasInfosPratiques" class="section infos-section">
       <h2 class="title">{{ $t('provider.details.infos-title') }}</h2>
 
-      <div v-if="isEdit || !!prestataire?.logistics.length" class="infos-block">
-        <h3 class="title">{{ $t('provider.details.logistics-title') }}</h3>
-        <EditableList
-          v-model="prestataire!.logistics"
-          marker="dash"
-          field="logistics"
-          :display-mode="props.displayMode"
-          :new-item="newString"
-          :is-empty="isStringEmpty"
-        >
-          <template #item="{ item, isEditing, update, registerRef }">
-            <EditableText
-              :ref="registerRef"
-              :model-value="item"
-              :editable="isEditing"
-              field="logistics.item"
-              @update:model-value="update($event ?? '')"
-            />
-          </template>
-        </EditableList>
-      </div>
+      <template v-if="!isEdit">
+        <div v-for="group in detailGroups" :key="group.category" class="infos-block">
+          <h3 class="title">{{ $t(`provider.details.category.${group.category.toLowerCase()}`) }}</h3>
+          <div class="detail-list">
+            <div v-for="(item, index) in group.items" :key="index" class="detail-item">
+              <p class="detail-content">{{ item.content }}</p>
+            </div>
+          </div>
+        </div>
+      </template>
 
-      <div v-if="isEdit || !!prestataire?.technical.length" class="infos-block">
-        <h3 class="title">{{ $t('provider.details.technical-title') }}</h3>
-        <EditableList
-          v-model="prestataire!.technical"
-          marker="dash"
-          field="technical"
-          :display-mode="props.displayMode"
-          :new-item="newString"
-          :is-empty="isStringEmpty"
-        >
-          <template #item="{ item, isEditing, update, registerRef }">
-            <EditableText
-              :ref="registerRef"
-              :model-value="item"
-              :editable="isEditing"
-              field="technical.item"
-              @update:model-value="update($event ?? '')"
-            />
-          </template>
-        </EditableList>
-      </div>
+      <template v-else>
+        <div v-for="group in detailGroupsEdit" :key="group.category" class="infos-block">
+          <h3 class="title">{{ $t(`provider.details.category.${group.category.toLowerCase()}`) }}</h3>
+          <EditableList
+            v-model="group.items.value"
+            field="details"
+            :display-mode="props.displayMode"
+            :new-item="() => newDetailItem(group.category)"
+            :is-empty="isDetailEmpty"
+            @commit="saveField('details', prestataire!.details)"
+          >
+            <template #item="{ item, isEditing, update, registerRef }">
+              <EditableText
+                :ref="registerRef"
+                :model-value="item.content"
+                :editable="isEditing"
+                field="details.item"
+                class="detail-content"
+                @update:model-value="update({ ...item, content: $event ?? '' })"
+              />
+            </template>
+          </EditableList>
+        </div>
+      </template>
 
       <div v-if="isEdit || !!prestataire?.faq.length" class="infos-block">
         <h3 class="title">{{ $t('provider.details.faq-title') }}</h3>
@@ -149,6 +149,7 @@
           :display-mode="props.displayMode"
           :new-item="newFaqItem"
           :is-empty="isFaqEmpty"
+          @commit="saveField('faq', $event)"
         >
           <template #ghost-item="{ ghostText, ghostIndex }">
             <div class="faq-ghost">
@@ -186,6 +187,8 @@ import EditableTestimony, {
   isEmpty as isTestimonyEmpty,
 } from '~/components/prestataire/EditableTestimony.vue'
 import type { DisplayMode } from '~/types/prestataire'
+import { DETAIL_CATEGORY_ORDER, type DetailCategory } from '~/utils/constants'
+import type { DetailItem } from '~/data/prestataire/domain/DetailItem'
 
 const props = defineProps<{
   displayMode: DisplayMode
@@ -197,16 +200,51 @@ const faqGhostAnswers = computed<string[]>(() => {
   const raw: unknown = tm('provider.editable.faq.ghost-answers')
   return Array.isArray(raw) ? (raw as RtArg[]).map((item) => rt(item)) : []
 })
-const { prestataire } = usePrestataire()
+const { prestataire, saveField } = usePrestataire()
 
 const isEdit = computed(() => props.displayMode === 'edit')
 
+/** identity est un bloc unique côté back — le blur de quote OU bio sauvegarde les deux ensemble. */
+function saveIdentity() {
+  if (!prestataire.value) return
+  saveField('identity', prestataire.value.identity)
+}
+
+const detailGroups = computed(() => {
+  const details = prestataire.value?.details ?? []
+  return DETAIL_CATEGORY_ORDER.map((category) => ({
+    category,
+    items: details.filter((detail) => detail.category === category),
+  })).filter((group) => group.items.length > 0)
+})
+
 const hasInfosPratiques = computed(
-  () =>
-    !!prestataire.value?.logistics.length ||
-    !!prestataire.value?.technical.length ||
-    !!prestataire.value?.faq.length,
+  () => !!prestataire.value?.details.length || !!prestataire.value?.faq.length,
 )
+
+function detailsForCategory(category: DetailCategory) {
+  return computed<DetailItem[]>({
+    get: () => (prestataire.value?.details ?? []).filter((detail) => detail.category === category),
+    set: (items) => {
+      if (!prestataire.value) return
+      prestataire.value.details = DETAIL_CATEGORY_ORDER.flatMap((cat) =>
+        cat === category ? items : prestataire.value!.details.filter((detail) => detail.category === cat),
+      )
+    },
+  })
+}
+
+const detailGroupsEdit = DETAIL_CATEGORY_ORDER.map((category) => ({
+  category,
+  items: detailsForCategory(category),
+}))
+
+function newDetailItem(category: DetailCategory): DetailItem {
+  return { content: '', category }
+}
+function isDetailEmpty(item: DetailItem): boolean {
+  return !item.content.trim()
+}
 </script>
 
 <style scoped lang="scss">
@@ -352,16 +390,6 @@ $section-gap: 2.5rem;
     font-weight: 600;
     color: $text-secondary;
   }
-
-  .event {
-    font-size: 0.8rem;
-    color: $text-secondary;
-    opacity: 0.6;
-
-    &::before {
-      content: '· ';
-    }
-  }
 }
 
 .infos-block {
@@ -376,6 +404,25 @@ $section-gap: 2.5rem;
     text-transform: uppercase;
     color: $text-secondary;
     opacity: 0.6;
+    margin: 0;
+  }
+
+  .detail-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .detail-content {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: $text-secondary;
     margin: 0;
   }
 }

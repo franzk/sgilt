@@ -4,5 +4,4 @@
 export interface Testimonial {
   author: string
   text: string
-  eventType?: string
 }

@@ -1,8 +1,6 @@
 <template>
   <div class="sidebar-body">
-    <div v-if="isEdit" class="edit-mode-badge">{{ $t('provider.edit.mode-badge') }}</div>
-
-    <div v-if="!isEdit" class="sidebar-block">
+    <div v-if="displayMode === 'display'" class="sidebar-block">
       <SgiltDatePicker
         v-model="dateModel"
         :booked-dates="unavailableDatesAsDate"
@@ -28,13 +26,17 @@
         field="budget"
         :editable="isEdit"
         class="text"
+        @commit="saveField('budget', $event)"
       />
     </div>
 
-    <SgiltButton v-if="!isEdit" class="sidebar-cta" @click="emit('select-intent')">
+    <SgiltButton
+      v-if="displayMode === 'display'"
+      class="sidebar-cta"
+      @click="emit('select-intent')"
+    >
       {{ $t('provider.details.send-request') }}
     </SgiltButton>
-    <EditActionsBar v-else class="sidebar-edit-actions" />
   </div>
 </template>
 
@@ -42,7 +44,6 @@
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
 import EditableText from '~/components/prestataire/EditableText.vue'
-import EditActionsBar from '~/components/prestataire/EditActionsBar.vue'
 import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDetail'
 import type { DisplayMode } from '~/types/prestataire'
 
@@ -55,7 +56,7 @@ const props = defineProps<{
   dateError: string | null
 }>()
 
-const { prestataire } = usePrestataire()
+const { prestataire, saveField } = usePrestataire()
 const isEdit = computed(() => props.displayMode === 'edit')
 
 const emit = defineEmits<{
@@ -97,19 +98,6 @@ const availabilityClass = computed(() => (isUnavailable.value ? 'unavailable' : 
   }
 }
 
-.edit-mode-badge {
-  display: inline-block;
-  padding: 0.35rem 0.75rem;
-  border-radius: 2rem;
-  border: 1px solid $color-primary;
-  background: #fff;
-  color: $color-primary;
-  font-size: 0.8rem;
-  font-weight: 500;
-  width: fit-content;
-  align-self: flex-end;
-}
-
 .sidebar-block {
   display: flex;
   flex-direction: column;
@@ -141,17 +129,11 @@ const availabilityClass = computed(() => (isUnavailable.value ? 'unavailable' : 
   }
 }
 
-.sidebar-cta,
-.sidebar-edit-actions {
+.sidebar-cta {
   display: none;
 
   @media (min-width: $breakpoint-desktop) {
     display: flex;
-  }
-}
-
-.sidebar-cta {
-  @media (min-width: $breakpoint-desktop) {
     align-self: center;
   }
 }

@@ -14,7 +14,7 @@ const props = defineProps<{
   displayMode: DisplayMode
 }>()
 
-const { prestataire } = usePrestataire()
+const { prestataire, saveField } = usePrestataire()
 const isEdit = computed(() => props.displayMode === 'edit')
 const heroboardOpen = ref(false)
 const hasMedia = computed(() => props.prestataire.medias.length > 0)
@@ -136,6 +136,7 @@ async function share() {
             field="baseline"
             :editable="isEdit"
             class="baseline"
+            @commit="saveField('baseline', $event)"
           />
         </div>
 
@@ -168,6 +169,7 @@ async function share() {
               field="baseline"
               :editable="isEdit"
               class="baseline"
+              @commit="saveField('baseline', $event)"
             />
           </div>
         </div>
@@ -200,6 +202,7 @@ async function share() {
           field="baseline"
           :editable="isEdit"
           class="baseline"
+          @commit="saveField('baseline', $event)"
         />
       </div>
 
@@ -368,7 +371,11 @@ async function share() {
     }
   }
 
+  // Positionné hors du flux : sa présence ne doit pas augmenter la hauteur du hero.
   .add-media-cta {
+    position: absolute;
+    top: $spacing-m;
+    right: $spacing-m;
     display: inline-flex;
     align-items: center;
     gap: $spacing-xs;
@@ -381,7 +388,15 @@ async function share() {
     font-size: $font-size-md;
     font-weight: $font-weight-semibold;
     cursor: pointer;
+    white-space: nowrap;
     transition: opacity 150ms ease;
+
+    // Desktop : le texte est centré et plus court, on peut recentrer le bouton verticalement.
+    @media (min-width: $breakpoint-desktop) {
+      top: 50%;
+      right: $spacing-l;
+      transform: translateY(-50%);
+    }
 
     &:hover {
       opacity: 0.85;

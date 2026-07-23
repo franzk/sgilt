@@ -2,12 +2,13 @@ package net.franzka.sgilt.core;
 
 import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
 import net.franzka.sgilt.core.config.KeycloakProperties;
+import net.franzka.sgilt.core.config.OpenAiProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-@EnableConfigurationProperties({ConfirmationTokenProperties.class, KeycloakProperties.class})
+@EnableConfigurationProperties({ConfirmationTokenProperties.class, KeycloakProperties.class, OpenAiProperties.class})
 public class SgiltCoreApplication {
 
 	static void main(String[] args) {

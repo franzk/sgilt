@@ -1,7 +1,7 @@
 /**
  * DTO — contrat API pour la fiche complète d'un prestataire
  */
-import type { EngagementKey } from '~/utils/constants'
+import type { DetailCategory, EngagementKey } from '~/utils/constants'
 import type { Media } from '../domain/Media'
 import type { PrestataireStatus } from '../domain/PrestataireStatus'
 
@@ -19,9 +19,8 @@ export interface PrestataireDetailDto {
   offerings: string[]
   identity?: { quote: string; bio: string }
   budget: string | null
-  testimonials?: { author: string; text: string; eventType?: string }[]
-  logistics?: string[]
-  technical?: string[]
+  testimonials?: { author: string; text: string }[]
+  details?: { content: string; category: DetailCategory }[]
   faq?: { question: string; answer: string }[]
   status: PrestataireStatus
 }

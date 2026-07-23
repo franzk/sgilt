@@ -20,6 +20,7 @@
     class="editable-list-edit"
     :class="{ 'is-active': isListEditing }"
     @click="!isListEditing ? enterListEdit() : undefined"
+    @focusout="onFocusOut"
   >
     <!-- GHOST STATE: empty list, not editing -->
     <template v-if="modelValue.length === 0 && !isListEditing">
@@ -113,6 +114,8 @@ defineSlots<{
   'ghost-item'(props: { ghostText: string; ghostIndex: number }): unknown
 }>()
 
+const emit = defineEmits<{ commit: [value: T[]] }>()
+
 const modelValue = defineModel<T[]>({ required: true })
 const isEdit = computed(() => props.displayMode === 'edit')
 
@@ -129,6 +132,20 @@ const containerRef = ref<HTMLElement | null>(null)
 onClickOutside(containerRef, () => {
   if (isListEditing.value) commitEdit()
 })
+
+/** Instantané de la liste à l'entrée en édition, pour ne sauvegarder que si elle a changé. */
+let entrySnapshot = ''
+
+/**
+ * Filet de sécurité pour le changement d'onglet : `onClickOutside` ne réagit qu'aux clics, pas à
+ * la perte de focus par `Ctrl+Tab`/changement de fenêtre. `focusout` couvre ce cas (relatedTarget
+ * hors du conteneur = focus parti ailleurs qu'entre les éléments internes de la liste).
+ */
+function onFocusOut(e: FocusEvent) {
+  if (!isListEditing.value) return
+  const next = e.relatedTarget as Node | null
+  if (!next || !containerRef.value?.contains(next)) commitEdit()
+}
 
 // ── Item IDs (stable keys, independent of content) ───────────────────────────
 const itemIds = ref<string[]>([])
@@ -166,6 +183,7 @@ watch(
 function enterListEdit() {
   if (isListEditing.value) return
   isListEditing.value = true
+  entrySnapshot = JSON.stringify(modelValue.value)
   if (modelValue.value.length === 0) addItem()
 }
 
@@ -173,6 +191,7 @@ function onItemClick(event: MouseEvent, index: number) {
   if (isListEditing.value) return
   event.stopPropagation()
   isListEditing.value = true
+  entrySnapshot = JSON.stringify(modelValue.value)
   focusedInputIndex.value = index
 }
 
@@ -209,6 +228,9 @@ function commitEdit() {
   itemIds.value = kept.map(({ id }) => id)
   modelValue.value = kept.map(({ item }) => item)
   isListEditing.value = false
+  if (JSON.stringify(modelValue.value) !== entrySnapshot) {
+    emit('commit', modelValue.value)
+  }
 }
 </script>
 

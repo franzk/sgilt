@@ -10,13 +10,10 @@ import {
   uploadPrestataireMediaApi,
   submitPrestataireApi,
 } from '../api/prestataireApi'
-import {
-  mapPrestataireCard,
-  mapPrestataireDetail,
-  mapPrestataireUpdatePayload,
-} from '../mapper/prestataireMapper'
+import { mapPrestataireCard, mapPrestataireDetail } from '../mapper/prestataireMapper'
 import type { PrestataireSearchResponse } from '../domain/PrestataireSearchResponse'
 import type { PrestataireDetail } from '../domain/PrestataireDetail'
+import type { PrestataireFieldEntry, PrestataireUpdatePayload } from '../dto/PrestataireUpdatePayload'
 import type { Media } from '../domain/Media'
 
 export async function searchPrestataires(params: {
@@ -63,8 +60,16 @@ export async function submitPrestataire(): Promise<void> {
   await submitPrestataireApi()
 }
 
-export async function savePrestataireUpdate(p: PrestataireDetail): Promise<void> {
-  await patchPrestataireApi(p.id, mapPrestataireUpdatePayload(p))
+/**
+ * Sauvegarde un unique champ de la fiche (déclenché au blur, ou rejoué après échec — voir
+ * usePrestataire::retrySave). Les autres champs sont absents du payload — le backend traite une
+ * clé absente comme `null` (non touché), au même titre qu'une valeur explicitement nulle.
+ */
+export async function savePrestataireField(id: string, entry: PrestataireFieldEntry): Promise<void> {
+  // TS ne relie pas une clé calculée à sa valeur dans un littéral d'objet — le couple est déjà
+  // garanti cohérent par le type `PrestataireFieldEntry` du paramètre `entry`.
+  const payload = { [entry.field]: entry.value } as Partial<PrestataireUpdatePayload>
+  await patchPrestataireApi(id, payload)
 }
 
 export async function saveMediasUpdate(medias: Media[]): Promise<PrestataireDetail> {

@@ -82,3 +82,14 @@ export const ENGAGEMENT_ICON_MAP: Record<EngagementKey, string> = {
   INTERLOCUTEUR_UNIQUE: 'Person_Check',
   ECORESPONSABLE: 'Eco',
 }
+
+// ______________ Catégories d'information pratique ______________
+export type DetailCategory = 'FORMAT' | 'PROCESS' | 'DELIVERABLE' | 'LOGISTICS' | 'OTHER'
+
+export const DETAIL_CATEGORY_ORDER: DetailCategory[] = [
+  'FORMAT',
+  'PROCESS',
+  'DELIVERABLE',
+  'LOGISTICS',
+  'OTHER',
+]

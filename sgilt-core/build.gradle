@@ -45,6 +45,8 @@ dependencies {
 
 	implementation 'org.mapstruct:mapstruct:1.6.3'
 
+	implementation 'com.openai:openai-java:4.43.0'
+
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'

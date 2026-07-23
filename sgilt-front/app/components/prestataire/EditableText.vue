@@ -43,7 +43,7 @@ export const isEmpty = (s: string | null): boolean => !s?.trim()
 </script>
 
 <script setup lang="ts">
-const emit = defineEmits<{ enter: [] }>()
+const emit = defineEmits<{ enter: []; commit: [value: string] }>()
 
 const props = defineProps<{
   /** Balise sémantique de rendu (ex. 'blockquote', 'p'). Défaut : 'div' */
@@ -100,6 +100,7 @@ function onBlur() {
   focused.value = false
   if (localValue.value !== (modelValue.value ?? '')) {
     modelValue.value = localValue.value
+    emit('commit', localValue.value)
   }
 }
 

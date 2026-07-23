@@ -47,6 +47,7 @@ jobs:
           S_KC_BOOTSTRAP_ADMIN_PASSWORD: ${{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD }}
           S_CORE_DB_PASSWORD:            ${{ secrets.CORE_DB_PASSWORD }}
           S_MAGIC_LINK_SECRET:           ${{ secrets.MAGIC_LINK_SECRET }}
+          S_OPENAI_API_KEY:              ${{ secrets.OPENAI_API_KEY }}
           S_SMTP_HOST:                   ${{ secrets.SMTP_HOST }}
           S_SMTP_PORT:                   ${{ secrets.SMTP_PORT }}
           S_SMTP_USERNAME:               ${{ secrets.SMTP_USERNAME }}
@@ -82,6 +83,7 @@ jobs:
           [[ -z "$S_KC_BOOTSTRAP_ADMIN_PASSWORD" ]] && missing+=("secret: KC_BOOTSTRAP_ADMIN_PASSWORD")
           [[ -z "$S_CORE_DB_PASSWORD" ]]            && missing+=("secret: CORE_DB_PASSWORD")
           [[ -z "$S_MAGIC_LINK_SECRET" ]]           && missing+=("secret: MAGIC_LINK_SECRET")
+          [[ -z "$S_OPENAI_API_KEY" ]]              && missing+=("secret: OPENAI_API_KEY")
           [[ -z "$S_SMTP_HOST" ]]                   && missing+=("secret: SMTP_HOST")
           [[ -z "$S_SMTP_PORT" ]]                   && missing+=("secret: SMTP_PORT")
           [[ -z "$S_SMTP_USERNAME" ]]               && missing+=("secret: SMTP_USERNAME")
@@ -184,12 +186,12 @@ jobs:
       - name: Build and push sgilt-core
         run: |
           IMAGE_TAG="${{ env.IMAGE_PREFIX }}/sgilt-core:${{ env.SGILT_CORE_VERSION }}"
-          if docker manifest inspect $IMAGE_TAG > /dev/null 2>&1; then
-            echo "⏭️ $IMAGE_TAG already exists, skipping build"
-          else
+          if [ "${{ inputs.mode }}" = "init" ] || ! docker manifest inspect $IMAGE_TAG > /dev/null 2>&1; then
             docker build -t $IMAGE_TAG sgilt-core
             docker push $IMAGE_TAG
             echo "✅ Pushed $IMAGE_TAG"
+          else
+            echo "⏭️ $IMAGE_TAG already exists, skipping build"
           fi
 
       - name: Build and push sgilt-gateway
@@ -295,6 +297,7 @@ jobs:
 
           # Core app
           MAILER_FROM=${{ vars.MAILER_FROM }}
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
 
           # Uploads (valeur fixe, pas de variable GitHub dédiée)
           MAX_UPLOAD_SIZE_MB=10
