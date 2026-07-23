@@ -1,5 +1,5 @@
 <template>
-  <section v-if="isEdit || prestataire?.shortDescription" class="card-preview-section">
+  <section v-if="isEdit || displayMode === 'preview'" class="card-preview-section">
     <h2 class="title">{{ $t('provider.details.card-preview-title') }}</h2>
     <PrestataireCard :provider="cardPreview" selectable class="card-preview">
       <template v-if="isEdit" #description>
