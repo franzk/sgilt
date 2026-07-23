@@ -25,6 +25,7 @@
         v-model="prestataire!.budget"
         field="budget"
         :editable="isEdit"
+        multiline
         class="text"
         @commit="saveField('budget', $event)"
       />

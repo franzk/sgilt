@@ -43,6 +43,7 @@
           v-model="prestataire!.identity.bio"
           field="identity.bio"
           :editable="isEdit"
+          multiline
           class="bio"
           @commit="saveIdentity"
         />
@@ -66,6 +67,7 @@
         v-model="prestataire!.budget"
         field="budget"
         :editable="isEdit"
+        multiline
         class="budget-text"
         @commit="saveField('budget', $event)"
       />

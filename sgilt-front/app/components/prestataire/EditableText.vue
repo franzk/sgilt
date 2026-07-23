@@ -13,10 +13,10 @@
       class="input"
       rows="1"
       @input="onInput"
-      @keydown.enter.prevent="handleEnter"
+      @keydown.enter="onKeydownEnter"
       @blur="onBlur"
     />
-    <span v-else :class="{ ghost: !modelValue }">{{ modelValue || ghostText }}</span>
+    <span v-else :class="{ ghost: !modelValue, multiline }">{{ modelValue || ghostText }}</span>
     <button v-if="isEdit && !focused" type="button" class="pencil" @click.stop="startEdit">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -52,6 +52,8 @@ const props = defineProps<{
   field: string
   /** Active le mode édition (crayon, clic, prompt au focus). Défaut : false */
   editable?: boolean
+  /** Autorise les retours à la ligne (Entrée insère un saut de ligne, affichage nl2br). Défaut : false */
+  multiline?: boolean
 }>()
 
 /** Valeur courante — `null` affiche le texte fantôme */
@@ -94,6 +96,12 @@ function onInput(e: Event) {
 function handleEnter() {
   textareaRef.value?.blur()
   emit('enter')
+}
+
+function onKeydownEnter(e: KeyboardEvent) {
+  if (props.multiline) return
+  e.preventDefault()
+  handleEnter()
 }
 
 function onBlur() {
@@ -158,6 +166,10 @@ defineExpose({ startEdit })
 
 .ghost {
   opacity: 0.4;
+}
+
+.multiline {
+  white-space: pre-line;
 }
 
 .prompt {
