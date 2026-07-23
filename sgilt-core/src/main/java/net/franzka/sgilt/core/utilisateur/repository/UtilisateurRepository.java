@@ -27,5 +27,5 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, UUID> 
      * @param email l'adresse email à rechercher
      * @return l'utilisateur correspondant, ou {@code empty} si introuvable
      */
-    Optional<Utilisateur> findByEmail(String email);
+    Optional<Utilisateur> findByEmailIgnoreCase(String email);
 }
