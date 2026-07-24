@@ -121,7 +121,7 @@
         "error-quota": "Vous avez utilisé tous vos essais de génération.",
         "error-technical": "Une erreur est survenue. Veuillez réessayer dans quelques instants.",
         "relaunch-link": "Relancer avec une autre URL ({count} essai restant) | Relancer avec une autre URL ({count} essais restants)",
-        "bulk-overwrite": "Importer toute la proposition de l'IA dans ma fiche",
+        "bulk-overwrite": "Importer tout dans ma fiche",
         "bulk-overwrite-dialog": {
           "title": "Importer toute la proposition de l'IA dans ma fiche ?",
           "message": "Cette action remplace immédiatement le contenu de votre fiche (accroche, description, offres, témoignages, infos pratiques, FAQ, budget) par la proposition générée. Cette action est irréversible.",
