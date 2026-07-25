@@ -97,11 +97,11 @@
           </h2>
           <ul>
             <li>
-              Le prestataire est <strong>seul responsable du contenu de sa fiche</strong>&nbsp;:
+              Le prestataire est <strong>seul responsable du contenu de sa page</strong>&nbsp;:
               exactitude des tarifs, descriptifs, disponibilités et informations publiées.
             </li>
             <li>
-              Sgilt peut accompagner le prestataire dans la rédaction de sa fiche, mais celui-ci
+              Sgilt peut accompagner le prestataire dans la rédaction de sa page, mais celui-ci
               <strong>valide et publie son contenu sous sa propre responsabilité</strong>.
             </li>
             <li>
