@@ -5,8 +5,7 @@ import type { EngagementKey } from '~/utils/constants'
 import EngagementBadge from './EngagementBadge.vue'
 import { useEngagementCatalogue } from '~/data/prestataire/useEngagementCatalogue'
 
-const { t, tm, rt } = useI18n()
-type RtArg = Parameters<typeof rt>[0]
+const { t } = useI18n()
 
 const props = defineProps<{
   displayMode: DisplayMode
@@ -15,22 +14,29 @@ const props = defineProps<{
 const emit = defineEmits<{ commit: [value: EngagementKey[]] }>()
 
 const modelValue = defineModel<EngagementKey[]>({ required: true })
-const isEdit = computed(() => props.displayMode === 'edit')
 
-const isEditing = ref(false)
+/** Le champ est modifiable sur cette page (fiche en mode édition vs lecture seule). */
+const isEditable = computed(() => props.displayMode === 'edit')
+
+/** Aucun engagement n'est encore sélectionné. */
+const isEmpty = computed(() => modelValue.value.length === 0)
+
+/** L'éditeur (grille de sélection du catalogue) est ouvert. */
+const isEditorOpen = ref(false)
+
 const containerRef = ref<HTMLElement | null>(null)
 onClickOutside(containerRef, () => {
-  if (isEditing.value) commitEdit()
+  if (isEditorOpen.value) closeEditor()
 })
 
-/** Instantané des badges à l'entrée en édition, pour ne sauvegarder que si la sélection a changé. */
-let entrySnapshot = ''
+/** Dernière valeur connue comme sauvegardée, pour ne commit que si la sélection a changé. */
+let lastCommitted = JSON.stringify(modelValue.value)
 
 /** Filet de sécurité pour le changement d'onglet (voir EditableList.vue::onFocusOut). */
 function onFocusOut(e: FocusEvent) {
-  if (!isEditing.value) return
+  if (!isEditorOpen.value) return
   const next = e.relatedTarget as Node | null
-  if (!next || !containerRef.value?.contains(next)) commitEdit()
+  if (!next || !containerRef.value?.contains(next)) closeEditor()
 }
 
 const { catalogue, load } = useEngagementCatalogue()
@@ -38,15 +44,8 @@ const { catalogue, load } = useEngagementCatalogue()
 // API mirrors the Java Engagement enum — keys are trusted EngagementKey values
 const catalogueKeys = computed(() => catalogue.value as EngagementKey[])
 
-const ghostKeys = computed<EngagementKey[]>(() => {
-  const raw: unknown = tm('provider.editable.badges.ghost-keys')
-  return Array.isArray(raw) ? (raw as RtArg[]).map((item) => rt(item) as EngagementKey) : []
-})
-
-function enterEdit() {
-  if (isEditing.value) return
-  isEditing.value = true
-  entrySnapshot = JSON.stringify(modelValue.value)
+function openEditor() {
+  isEditorOpen.value = true
   load()
 }
 
@@ -60,40 +59,43 @@ function toggle(key: EngagementKey) {
   }
 }
 
-function commitEdit() {
-  isEditing.value = false
-  if (JSON.stringify(modelValue.value) !== entrySnapshot) {
+function closeEditor() {
+  isEditorOpen.value = false
+  const current = JSON.stringify(modelValue.value)
+  if (current !== lastCommitted) {
+    lastCommitted = current
     emit('commit', modelValue.value)
   }
 }
 </script>
 
 <template>
-  <!-- DISPLAY MODE -->
-  <div v-if="!isEdit" class="badges">
+  <!-- LECTURE SEULE -->
+  <div v-if="!isEditable" class="badges">
     <EngagementBadge v-for="key in modelValue" :key="key" :engagement-key="key" />
   </div>
 
-  <!-- EDIT MODE -->
+  <!-- MODIFIABLE -->
   <div
     v-else
     ref="containerRef"
     class="editable-engagements"
-    :class="{ 'is-active': isEditing }"
-    @click="!isEditing ? enterEdit() : undefined"
+    :class="{ 'is-active': isEditorOpen }"
     @focusout="onFocusOut"
   >
-    <!-- Ghost: 0 badges, pas en édition -->
-    <div v-if="modelValue.length === 0 && !isEditing" class="badges ghost">
-      <EngagementBadge v-for="key in ghostKeys" :key="key" :engagement-key="key" />
+    <!-- Fermé, rien de sélectionné: bouton d'appel -->
+    <div v-if="!isEditorOpen && isEmpty" class="badges-empty">
+      <button type="button" class="choose-btn" @mousedown.prevent @click="openEditor">
+        {{ t('provider.editable.badges.choose') }}
+      </button>
     </div>
 
-    <!-- Preview: badges sélectionnés, pas encore en édition -->
-    <div v-else-if="!isEditing" class="badges">
+    <!-- Fermé, engagements déjà sélectionnés: aperçu compact, cliquable pour rouvrir -->
+    <div v-else-if="!isEditorOpen" class="badges" @click="openEditor">
       <EngagementBadge v-for="key in modelValue" :key="key" :engagement-key="key" />
     </div>
 
-    <!-- Édition active: tous les badges du catalogue -->
+    <!-- Ouvert: grille complète du catalogue, mécanique de sélection -->
     <template v-else>
       <div class="edit-header">
         <p class="edit-prompt">{{ t('provider.editable.badges.prompt') }}</p>
@@ -118,7 +120,7 @@ function commitEdit() {
       </div>
 
       <div class="edit-footer">
-        <button type="button" class="commit-btn" aria-label="Valider" @click.stop="commitEdit">
+        <button type="button" class="commit-btn" aria-label="Valider" @click.stop="closeEditor">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -153,18 +155,37 @@ $badge-width: 6rem;
   > * {
     width: $badge-width;
   }
+}
 
-  &.ghost {
-    > * {
-      opacity: 0.35;
-    }
+.badges-empty {
+  display: flex;
+  justify-content: center;
+}
+
+.choose-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $text-secondary;
+  background: none;
+  border: 1px dashed $divider-color;
+  border-radius: $radius-md;
+  padding: $spacing-s $spacing-m;
+  cursor: pointer;
+  transition:
+    color 150ms ease,
+    border-color 150ms ease;
+
+  &:hover {
+    color: $color-primary;
+    border-color: $color-primary;
   }
 }
 
 .editable-engagements {
   border-radius: $radius-md;
 
-  &:not(.is-active) {
+  &:not(.is-active) .badges {
     cursor: pointer;
   }
 
