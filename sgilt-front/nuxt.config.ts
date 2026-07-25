@@ -94,20 +94,6 @@ export default defineNuxtConfig({
 
   /**
    * ======================
-   * Robots.txt
-   * ======================
-   */
-  robots: {
-    groups: [
-      {
-        userAgent: '*',
-        disallow: process.env.ENV === 'production' ? [] : '/',
-      },
-    ],
-  },
-
-  /**
-   * ======================
    * i18n
    * ======================
    */
