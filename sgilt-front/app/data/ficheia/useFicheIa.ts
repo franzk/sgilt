@@ -13,9 +13,6 @@ import type { FicheIaSection, FicheIaAction } from './dto/FicheIaApplyDto'
 
 export type FicheIaGenerationError = 'quota' | 'technical'
 
-/** Fenêtre après une génération pendant laquelle les blocs de résultat s'ouvrent par défaut. */
-const JUST_GENERATED_WINDOW_MS = 60_000
-
 const result = ref<FicheIaGenerationContentDto | null>(null)
 const triesLeft = ref<number | null>(null)
 const lastGenerationDateTime = ref<string | null>(null)
@@ -25,11 +22,6 @@ const loadingState = ref(false)
 /** Clé `"SECTION:ACTION"` de l'appel apply en cours, ou `'ALL'` pour l'écrasement total. */
 const applying = ref<string | null>(null)
 const applyError = ref(false)
-
-const justGenerated = computed(() => {
-  if (!lastGenerationDateTime.value) return false
-  return Date.now() - new Date(lastGenerationDateTime.value).getTime() < JUST_GENERATED_WINDOW_MS
-})
 
 export function useFicheIa() {
   /**
@@ -102,7 +94,6 @@ export function useFicheIa() {
     result,
     triesLeft,
     lastGenerationDateTime,
-    justGenerated,
     generating,
     generationError,
     loadingState,

@@ -11,12 +11,11 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+defineProps<{
   title: string
-  defaultOpen: boolean
 }>()
 
-const open = ref(props.defaultOpen)
+const open = ref(true)
 </script>
 
 <style scoped lang="scss">

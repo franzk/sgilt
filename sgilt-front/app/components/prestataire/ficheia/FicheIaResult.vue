@@ -20,7 +20,6 @@
     <div v-if="result" class="blocks">
       <FicheIaCollapsibleBlock
         :title="$t('provider.edit.ia.block.presentation')"
-        :default-open="justGenerated"
       >
         <FicheIaFieldRow
           :label="$t('provider.edit.ia.field.baseline')"
@@ -73,7 +72,6 @@
 
       <FicheIaCollapsibleBlock
         :title="$t('provider.edit.ia.block.budget')"
-        :default-open="justGenerated"
       >
         <FicheIaFieldRow
           :label="$t('provider.edit.ia.field.budget')"
@@ -92,7 +90,6 @@
 
       <FicheIaCollapsibleBlock
         :title="$t('provider.edit.ia.block.testimonials')"
-        :default-open="justGenerated"
       >
         <FicheIaFieldRow
           :label="$t('provider.edit.ia.block.testimonials')"
@@ -117,7 +114,6 @@
 
       <FicheIaCollapsibleBlock
         :title="$t('provider.edit.ia.block.details')"
-        :default-open="justGenerated"
       >
         <FicheIaFieldRow
           :label="$t('provider.edit.ia.block.details')"
@@ -146,7 +142,6 @@
 
       <FicheIaCollapsibleBlock
         :title="$t('provider.edit.ia.block.faq')"
-        :default-open="justGenerated"
       >
         <FicheIaFieldRow
           :label="$t('provider.edit.ia.block.faq')"
@@ -219,7 +214,7 @@ import type { FicheIaSection, FicheIaAction } from '~/data/ficheia/dto/FicheIaAp
 
 defineEmits<{ relaunch: [] }>()
 
-const { result, triesLeft, justGenerated, applying, applyError, applyOne, applyAll } = useFicheIa()
+const { result, triesLeft, applying, applyError, applyOne, applyAll } = useFicheIa()
 const { prestataire } = usePrestataire()
 
 const overwriteConfirmOpen = ref(false)
