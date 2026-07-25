@@ -101,8 +101,7 @@ export default defineNuxtConfig({
     groups: [
       {
         userAgent: '*',
-        disallow: '/',
-        // disallow: ['/app/', '/recherche'],
+        disallow: process.env.ENV === 'production' ? [] : '/',
       },
     ],
   },
