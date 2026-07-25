@@ -80,7 +80,7 @@
           <h3>Si vous êtes prestataire</h3>
           <ul>
             <li>Votre identité et vos coordonnées professionnelles</li>
-            <li>Le contenu de votre fiche&nbsp;: descriptif, tarifs, formules, photos</li>
+            <li>Le contenu de votre page&nbsp;: descriptif, tarifs, formules, photos</li>
             <li>Les notes que vous rédigez, personnelles ou partagées</li>
             <li>Les documents que vous échangez (PDF, images)</li>
           </ul>

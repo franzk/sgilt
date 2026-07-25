@@ -95,13 +95,13 @@
         "other": "Autres informations"
       },
       "faq-title": "Questions fréquentes",
-      "card-preview-title": "Votre fiche dans les résultats de recherche"
+      "card-preview-title": "Votre page dans les résultats de recherche"
     },
     "edit": {
       "saving": "Enregistrement…",
       "save-error": "❌ Non enregistré.",
       "retry": "Réessayer",
-      "submit": "Soumettre ma fiche à Sgilt",
+      "submit": "Soumettre ma page à Sgilt",
       "submit-error": "Échec de la soumission, veuillez réessayer.",
       "submit-blocked-saving": "Un enregistrement est en cours, réessayez dans un instant.",
       "tabs": {
@@ -111,24 +111,27 @@
       },
       "ia": {
         "loading": "Chargement…",
-        "intro": "Votre site contient déjà une bonne partie de votre histoire. Indiquez son adresse et nous vous proposerons des textes pour compléter votre fiche Sgilt. Vous pourrez ensuite les relire, les modifier et choisir ceux que vous souhaitez utiliser.",
+        "intro": "Votre site contient déjà une bonne partie de votre histoire. Indiquez son adresse et nous vous proposerons des textes pour compléter votre page Sgilt. Vous pourrez ensuite les relire, les modifier et choisir ceux que vous souhaitez utiliser.",
         "url-label": "Adresse de votre site",
         "url-placeholder": "https://monsite.fr",
         "url-required": "Veuillez renseigner l’adresse de votre site.",
         "url-invalid": "Veuillez renseigner une adresse valide (ex. https://monsite.fr).",
-        "submit": "Créer une proposition pour ma fiche",
+        "submit": "Préparer mon profil avec l’IA",
         "generating": "Préparation de votre proposition… Cela peut prendre jusqu’à 30 secondes.",
         "error-quota": "Vous avez utilisé tous vos essais de génération.",
         "error-technical": "Une erreur est survenue. Veuillez réessayer dans quelques instants.",
         "relaunch-link": "Relancer avec une autre URL ({count} essai restant) | Relancer avec une autre URL ({count} essais restants)",
-        "bulk-overwrite": "Écraser ma fiche avec la proposition IA",
+        "bulk-overwrite": "Importer tout dans ma page",
         "bulk-overwrite-dialog": {
-          "title": "Écraser toute ma fiche ?",
-          "message": "Cette action remplace immédiatement le contenu de votre fiche (accroche, description, offres, témoignages, infos pratiques, FAQ, budget) par la proposition générée. Cette action est irréversible.",
-          "confirm": "Écraser ma fiche",
+          "title": "Importer toute la proposition de l'IA dans ma page ?",
+          "message": "Cette action remplace immédiatement le contenu de votre page Sgilt (accroche, description, offres, témoignages, infos pratiques, FAQ, budget) par la proposition générée. Cette action est irréversible.",
+          "confirm": "Importer la proposition",
           "cancel": "Annuler"
         },
         "apply-error": "Une erreur est survenue lors de l’application. Veuillez réessayer.",
+        "current-label": "Actuel",
+        "proposal-label": "Proposition IA",
+        "no-current-content": "Aucun contenu actuellement",
         "block": {
           "presentation": "Présentation",
           "testimonials": "Témoignages",
@@ -143,21 +146,21 @@
           "budget": "Budget"
         },
         "action": {
-          "copy": "Copier",
+          "copy": "Importer dans ma page",
           "replace": "Remplacer",
           "add": "Ajouter"
         },
-        "card-preview-title": "Aperçu de votre fiche avec la proposition IA",
-        "card-preview-copy": "Copier la légende"
+        "card-preview-title": "Aperçu de votre page avec la proposition IA",
+        "card-preview-copy": "Importer la légende"
       },
       "fork": {
         "title": "Votre aventure Sgilt commence ici",
-        "subtitle": "Donnez vie à votre fiche avec l’aide de l’IA, ou construisez-la vous-même, à votre rythme.",
-        "ia-title": "Créer ma fiche avec l’IA",
-        "ia-description": "Partagez l’adresse de votre site. L’IA s’appuiera sur vos contenus pour préparer une première proposition qui vous ressemble.",
-        "manual-title": "Créer ma fiche moi-même",
-        "manual-description": "Prenez les commandes et construisez votre fiche section après section.",
-        "applying": "Application de la proposition à votre fiche…"
+        "subtitle": "À vous de choisir le point de départ : laissez l’IA poser les premières pierres à partir de votre site, ou créez votre profil vous-même, à votre rythme.",
+        "ia-title": "Donner vie à mon profil avec l’IA",
+        "ia-description": "Partagez l’adresse de votre site. L’IA s’inspire de vos contenus pour préparer un premier brouillon fidèle à votre univers, prêt à être relu et ajusté.",
+        "manual-title": "Créer mon profil à ma façon",
+        "manual-description": "Vous préférez partir d’une page blanche ? Construisez votre profil librement, section après section.",
+        "applying": "Voir le résultat…"
       }
     },
     "availability": {
@@ -168,10 +171,10 @@
     "editable": {
       "baseline": {
         "ghost": "Cliquez ici pour ajouter votre accroche",
-        "prompt": "La phrase courte qui apparaît sous votre nom sur la fiche"
+        "prompt": "La phrase courte qui apparaît sous votre nom sur la page"
       },
       "shortDescription": {
-        "ghost": "Cliquez ici pour ajouter la légende de votre fiche",
+        "ghost": "Cliquez ici pour ajouter la légende de votre page",
         "prompt": ""
       },
       "budget": {
@@ -734,7 +737,7 @@
     },
     "menu": {
       "my-info": "Mes informations",
-      "edit-my-page": "Modifier ma page prestataire",
+      "edit-my-page": "Modifier ma page Sgilt",
       "logout": "Déconnexion",
       "login": "Connexion",
       "contact-sgilt": "Contacter Sgilt",
@@ -747,7 +750,7 @@
     "page": {
       "eyebrow": "Contact",
       "title": "Échangeons",
-      "description": "Une question, un projet ou simplement envie d'échanger ?",
+      "description": "Une question, un projet ou simplement envie d'échanger ?",
       "button": "Écrire à l'équipe Sgilt",
       "card-title": "Vous pouvez nous contacter pour…",
       "card-item-discover": "Découvrir Sgilt",

@@ -26,23 +26,14 @@
           :label="$t('provider.edit.ia.field.baseline')"
           section="BASELINE"
           :is-list="false"
-          :has-existing-content="false"
+          :has-existing-content="!!prestataire?.baseline"
           :applying-key="applying"
           @apply="onApply"
         >
+          <template #current>
+            <p>{{ prestataire?.baseline }}</p>
+          </template>
           <p>{{ result.baseline }}</p>
-        </FicheIaFieldRow>
-
-        <FicheIaFieldRow
-          :label="$t('provider.edit.ia.field.identity')"
-          section="IDENTITY"
-          :is-list="false"
-          :has-existing-content="false"
-          :applying-key="applying"
-          @apply="onApply"
-        >
-          <blockquote>{{ result.identity.quote }}</blockquote>
-          <p>{{ result.identity.bio }}</p>
         </FicheIaFieldRow>
 
         <FicheIaFieldRow
@@ -53,9 +44,49 @@
           :applying-key="applying"
           @apply="onApply"
         >
+          <template #current>
+            <ul>
+              <li v-for="(offering, i) in prestataire?.offerings" :key="i">{{ offering }}</li>
+            </ul>
+          </template>
           <ul>
             <li v-for="(offering, i) in result.offerings" :key="i">{{ offering }}</li>
           </ul>
+        </FicheIaFieldRow>
+
+        <FicheIaFieldRow
+          :label="$t('provider.edit.ia.field.identity')"
+          section="IDENTITY"
+          :is-list="false"
+          :has-existing-content="!!(prestataire?.identity.quote || prestataire?.identity.bio)"
+          :applying-key="applying"
+          @apply="onApply"
+        >
+          <template #current>
+            <blockquote>{{ prestataire?.identity.quote }}</blockquote>
+            <p class="multiline-text">{{ prestataire?.identity.bio }}</p>
+          </template>
+          <blockquote>{{ result.identity.quote }}</blockquote>
+          <p class="multiline-text">{{ result.identity.bio }}</p>
+        </FicheIaFieldRow>
+      </FicheIaCollapsibleBlock>
+
+      <FicheIaCollapsibleBlock
+        :title="$t('provider.edit.ia.block.budget')"
+        :default-open="justGenerated"
+      >
+        <FicheIaFieldRow
+          :label="$t('provider.edit.ia.field.budget')"
+          section="BUDGET"
+          :is-list="false"
+          :has-existing-content="!!prestataire?.budget"
+          :applying-key="applying"
+          @apply="onApply"
+        >
+          <template #current>
+            <p class="multiline-text">{{ prestataire?.budget }}</p>
+          </template>
+          <p class="multiline-text">{{ result.budget }}</p>
         </FicheIaFieldRow>
       </FicheIaCollapsibleBlock>
 
@@ -71,6 +102,12 @@
           :applying-key="applying"
           @apply="onApply"
         >
+          <template #current>
+            <div v-for="(testimonial, i) in prestataire?.testimonials" :key="i" class="testimonial">
+              <p class="text">{{ testimonial.text }}</p>
+              <p class="author">{{ testimonial.author }}</p>
+            </div>
+          </template>
           <div v-for="(testimonial, i) in result.testimonials" :key="i" class="testimonial">
             <p class="text">{{ testimonial.text }}</p>
             <p class="author">{{ testimonial.author }}</p>
@@ -90,6 +127,14 @@
           :applying-key="applying"
           @apply="onApply"
         >
+          <template #current>
+            <div v-for="group in currentDetailGroups" :key="group.category" class="detail-group">
+              <h4>{{ $t(`provider.details.category.${group.category.toLowerCase()}`) }}</h4>
+              <ul>
+                <li v-for="(item, i) in group.items" :key="i">{{ item.content }}</li>
+              </ul>
+            </div>
+          </template>
           <div v-for="group in iaDetailGroups" :key="group.category" class="detail-group">
             <h4>{{ $t(`provider.details.category.${group.category.toLowerCase()}`) }}</h4>
             <ul>
@@ -111,26 +156,16 @@
           :applying-key="applying"
           @apply="onApply"
         >
+          <template #current>
+            <div v-for="(item, i) in prestataire?.faq" :key="i" class="faq-item">
+              <p class="question">{{ item.question }}</p>
+              <p class="answer">{{ item.answer }}</p>
+            </div>
+          </template>
           <div v-for="(item, i) in result.faq" :key="i" class="faq-item">
             <p class="question">{{ item.question }}</p>
             <p class="answer">{{ item.answer }}</p>
           </div>
-        </FicheIaFieldRow>
-      </FicheIaCollapsibleBlock>
-
-      <FicheIaCollapsibleBlock
-        :title="$t('provider.edit.ia.block.budget')"
-        :default-open="justGenerated"
-      >
-        <FicheIaFieldRow
-          :label="$t('provider.edit.ia.field.budget')"
-          section="BUDGET"
-          :is-list="false"
-          :has-existing-content="false"
-          :applying-key="applying"
-          @apply="onApply"
-        >
-          <p>{{ result.budget }}</p>
         </FicheIaFieldRow>
       </FicheIaCollapsibleBlock>
     </div>
@@ -138,7 +173,16 @@
     <!-- APERÇU CARD RECHERCHE : même card que la fiche réelle, légende remplacée par celle générée -->
     <div v-if="cardPreview" class="card-preview-section">
       <p class="label">{{ $t('provider.edit.ia.card-preview-title') }}</p>
-      <PrestataireCard :provider="cardPreview" selectable class="card-preview" />
+      <div class="card-comparison">
+        <div class="card-column proposal">
+          <span class="column-label">{{ $t('provider.edit.ia.proposal-label') }}</span>
+          <PrestataireCard :provider="cardPreview" selectable class="card-preview" />
+        </div>
+        <div v-if="currentCardPreview" class="card-column current">
+          <span class="column-label">{{ $t('provider.edit.ia.current-label') }}</span>
+          <PrestataireCard :provider="currentCardPreview" selectable class="card-preview" />
+        </div>
+      </div>
       <SgiltButton
         variant="secondary"
         :loading="applying === 'SHORT_DESCRIPTION:REMPLACER'"
@@ -189,10 +233,22 @@ const cardPreview = computed<PrestataireCardDetail | undefined>(() => {
   }
 })
 
+/** Card réelle telle qu'affichée aujourd'hui dans les résultats de recherche. */
+const currentCardPreview = computed<PrestataireCardDetail | undefined>(() =>
+  prestataire.value ? mapPrestataireDetailToCard(prestataire.value) : undefined,
+)
+
 const iaDetailGroups = computed(() =>
   DETAIL_CATEGORY_ORDER.map((category) => ({
     category,
     items: (result.value?.details ?? []).filter((d) => d.category === category),
+  })).filter((group) => group.items.length > 0),
+)
+
+const currentDetailGroups = computed(() =>
+  DETAIL_CATEGORY_ORDER.map((category) => ({
+    category,
+    items: (prestataire.value?.details ?? []).filter((d) => d.category === category),
   })).filter((group) => group.items.length > 0),
 )
 
@@ -259,9 +315,45 @@ function onApply(section: FicheIaSection, action: FicheIaAction): void {
   }
 }
 
+.card-comparison {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: $spacing-m;
+  width: 100%;
+}
+
+.card-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-xxs;
+  flex: 0 1 220px;
+
+  .column-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: $text-secondary;
+    opacity: 0.6;
+  }
+
+  &.current {
+    font-style: italic;
+    opacity: 0.6;
+  }
+}
+
 .card-preview {
   width: 100%;
   max-width: 220px;
+}
+
+.multiline-text {
+  white-space: pre-line;
 }
 
 .testimonial,
