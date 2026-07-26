@@ -91,6 +91,11 @@ export default defineNuxtConfig({
       },
     },
 
+    // /m seul = route parente technique, pas de contenu propre
+    '/m': {
+      redirect: { to: '/', statusCode: 301 },
+    },
+
     // /            -> SSR + SEO (default)
     // /m/**        -> SSR + SEO (default)
     // /:slug       -> SSR + SEO (default)
