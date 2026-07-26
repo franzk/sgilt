@@ -4,16 +4,7 @@
   </NuxtLayout>
 </template>
 
-<script setup lang="ts">
-useHead({
-  titleTemplate: '%s · Sgilt',
-  meta: [
-    { name: 'robots', content: 'noindex, nofollow' },
-    { name: 'theme-color', content: '#ffffff' },
-    { name: 'color-scheme', content: 'light' },
-  ],
-})
-</script>
+<script setup lang="ts"></script>
 
 <style lang="scss">
 @use '@/assets/styles/base' as *;
