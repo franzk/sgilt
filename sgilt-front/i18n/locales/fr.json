@@ -1017,7 +1017,7 @@
         "prestataire-name": "Nom du prestataire",
         "slug": "Slug",
         "category": "Catégorie",
-        "subcats": "Sous-catégories (séparées par des virgules)",
+        "subcats": "Sous-catégories",
         "first-name": "Prénom",
         "last-name": "Nom",
         "email": "Email",

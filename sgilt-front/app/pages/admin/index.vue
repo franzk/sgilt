@@ -43,7 +43,11 @@
             {{ category.name }}
           </option>
         </select>
-        <input v-model="form.subcats" type="text" :placeholder="$t('admin.prestataires.form.subcats')" />
+        <select v-model="selectedSubcats" multiple :disabled="subcategories.length === 0">
+          <option v-for="subcategory in subcategories" :key="subcategory.key" :value="subcategory.key">
+            {{ subcategory.name }}
+          </option>
+        </select>
         <input v-model="form.firstName" type="text" :placeholder="$t('admin.prestataires.form.first-name')" />
         <input v-model="form.lastName" type="text" :placeholder="$t('admin.prestataires.form.last-name')" />
         <input v-model="form.email" type="email" :placeholder="$t('admin.prestataires.form.email')" />
@@ -93,6 +97,23 @@ const emptyForm = () => ({
 
 const form = reactive(emptyForm())
 
+const subcategories = computed(
+  () => categories.find((c) => c.key === form.category)?.subcategories.filter((s) => s.key) ?? [],
+)
+
+const selectedSubcats = ref<string[]>([])
+
+watch(selectedSubcats, (value) => {
+  form.subcats = value.join(',')
+})
+
+watch(
+  () => form.category,
+  () => {
+    selectedSubcats.value = []
+  },
+)
+
 const isFormValid = computed(
   () =>
     !!form.email &&
@@ -107,6 +128,7 @@ async function onProvision() {
   const ok = await provision({ ...form })
   if (ok) {
     Object.assign(form, emptyForm())
+    selectedSubcats.value = []
   }
 }
 
