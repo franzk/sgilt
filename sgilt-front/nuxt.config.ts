@@ -56,6 +56,16 @@ export default defineNuxtConfig({
       headers: { 'X-Robots-Tag': 'noindex, nofollow' },
     },
 
+    // Admin = SPA, pas de SEO
+    '/admin': {
+      ssr: false,
+      headers: { 'X-Robots-Tag': 'noindex, nofollow' },
+    },
+    '/admin/**': {
+      ssr: false,
+      headers: { 'X-Robots-Tag': 'noindex, nofollow' },
+    },
+
     // Account = SPA, pas de SEO
     '/account/**': {
       ssr: false,
@@ -75,7 +85,7 @@ export default defineNuxtConfig({
     },
 
     // Recherche = utilitaire, pas indexée
-    '/recherche': {
+    '/search': {
       headers: {
         'X-Robots-Tag': 'noindex, nofollow',
       },
@@ -88,22 +98,16 @@ export default defineNuxtConfig({
 
   // Source de vérité SEO (utilisée notamment pour les canonicals)
   site: {
-    // url: 'https://sgilt.alsace',
+    name: 'Sgilt',
     trailingSlash: false, // => canonicals en /path (sans / final)
   },
 
-  /**
-   * ======================
-   * Robots.txt
-   * ======================
-   */
-  robots: {
-    groups: [
-      {
-        userAgent: '*',
-        disallow: process.env.ENV === 'production' ? [] : '/',
-      },
-    ],
+  schemaOrg: {
+    identity: {
+      type: 'Organization',
+      name: 'Sgilt',
+      logo: '/sgilt-logo.svg',
+    },
   },
 
   /**
@@ -150,7 +154,13 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      meta: [{ name: 'theme-color', content: '#ffffff' }],
+      titleTemplate: '%s · Sgilt',
+      meta: [
+        { name: 'theme-color', content: '#ffffff' },
+        { name: 'color-scheme', content: 'light' },
+        { name: 'apple-mobile-web-app-title', content: 'Sgilt' },
+        { name: 'application-name', content: 'Sgilt' },
+      ],
     },
   },
 

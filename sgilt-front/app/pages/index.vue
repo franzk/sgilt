@@ -43,7 +43,13 @@ import IconConfetti from '~/components/icons/IconConfetti.vue'
 import { EVENT_TYPE_OPTIONS } from '~/types/demande'
 import { toISODate } from '~/utils/dateUtils'
 
-useHead({ title: 'Sgilt', titleTemplate: '%s' })
+useHead({ titleTemplate: '%s' })
+
+useSeoMeta({
+  title: 'Sgilt - Organisez votre événement en Alsace avec les bons prestataires',
+  description:
+    "Trouvez les bons prestataires en Alsace pour votre mariage, anniversaire ou fête d'entreprise. Retrouvez vos demandes, échanges et réservations au même endroit.",
+})
 
 const { showOnboarding } = useSearchUi()
 const { state } = useDemande()
