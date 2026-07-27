@@ -2,9 +2,6 @@
   <div class="admin-page">
     <div class="page-header">
       <h1>{{ $t('admin.prestataires.title') }}</h1>
-      <NuxtLink class="onboarding-link" to="/admin/onboarding">
-        {{ $t('admin.prestataires.onboarding-pending-link') }}
-      </NuxtLink>
     </div>
 
     <section class="list">
@@ -76,7 +73,7 @@ import PrestataireStatusBadge from '~/components/admin/PrestataireStatusBadge.vu
 import type { PrestataireAdminFormat, PrestataireReservationCounts } from '~/data/admin/domain/PrestataireAdminFormat'
 import type { ReservationStatus } from '~/data/reservation/domain/ReservationStatus'
 
-definePageMeta({ layout: 'default' })
+definePageMeta({ layout: 'admin' })
 
 const { t } = useI18n()
 
@@ -193,11 +190,6 @@ onMounted(() => load())
 
   h1 {
     margin: 0;
-  }
-
-  .onboarding-link {
-    font-size: 0.85rem;
-    color: $text-secondary;
   }
 }
 

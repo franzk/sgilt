@@ -1001,12 +1001,17 @@
     "ECORESPONSABLE": { "label": "Éco", "description": "Éco-responsable" }
   },
   "admin": {
+    "nav": {
+      "prestataires": "Prestataires",
+      "onboarding": "Onboardings pro",
+      "onboarding-clients": "Onboardings clients",
+      "reservations": "Réservations"
+    },
     "prestataires": {
       "title": "Prestataires",
       "loading": "Chargement…",
       "publish": "Publier",
       "send-to-review": "Renvoyer en revue",
-      "onboarding-pending-link": "Onboardings en attente",
       "status": {
         "DRAFT": "Brouillon",
         "IN_REVIEW": "En revue",
@@ -1028,8 +1033,7 @@
       "reservations-empty": "0 réservation"
     },
     "onboarding": {
-      "title": "Onboardings en attente",
-      "back-to-prestataires": "← Prestataires",
+      "title": "Onboardings prestataires en attente",
       "loading": "Chargement…",
       "empty": "Aucun onboarding en attente.",
       "sent-at": "Envoyé le {date}",
@@ -1037,6 +1041,42 @@
       "resend": "Renvoyer le mail",
       "resend-success": "Mail renvoyé, validité réinitialisée à 1 semaine.",
       "resend-error": "Échec de l'envoi du mail."
+    },
+    "reservations": {
+      "title": "Réservations",
+      "loading": "Chargement…",
+      "empty": "Aucune réservation.",
+      "filter-all": "Toutes",
+      "table": {
+        "event": "Événement",
+        "organizer": "Organisateur",
+        "provider": "Prestataire",
+        "status": "État",
+        "created-at": "Créée le"
+      },
+      "status": {
+        "NEW": "Nouvelle",
+        "IN_DISCUSSION": "En discussion",
+        "CONFIRMED": "Confirmée",
+        "DONE": "Réalisée",
+        "REFUSED_PRE_CONTACT": "Refusée (avant contact)",
+        "REFUSED_POST_CONTACT": "Refusée (après contact)",
+        "CANCELED_BY_CLIENT_PRE_CONTACT": "Annulée par le client (avant contact)",
+        "CANCELED_BY_CLIENT_POST_CONTACT": "Annulée par le client (après contact)",
+        "CANCELED_POST_CONFIRMATION": "Annulée après confirmation"
+      }
+    },
+    "onboarding-clients": {
+      "title": "Onboardings clients en attente",
+      "loading": "Chargement…",
+      "empty": "Aucun onboarding client en attente.",
+      "target": "Vers {name}",
+      "sent-at": "Envoyé le {date}",
+      "expires-at": "expire le {date}",
+      "state": {
+        "OPEN": "En attente d'ouverture du lien",
+        "PENDING_CONFIRMATION": "Lien ouvert, mot de passe non défini"
+      }
     }
   }
 }

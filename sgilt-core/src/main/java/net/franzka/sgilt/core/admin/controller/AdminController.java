@@ -11,10 +11,14 @@ import net.franzka.sgilt.core.admin.service.AdminOnboardingService;
 import net.franzka.sgilt.core.jwt.domain.ActionType;
 import net.franzka.sgilt.core.jwt.service.ActionLinkService;
 import net.franzka.sgilt.core.keycloak.KeycloakAdminService;
+import net.franzka.sgilt.core.onboarding.dto.OnboardingPendingDto;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireAdminListItemDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireOnboardingPendingDto;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
+import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
+import net.franzka.sgilt.core.reservation.dto.AdminReservationListItemDto;
+import net.franzka.sgilt.core.reservation.service.ReservationService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
 import org.springframework.http.HttpStatus;
@@ -49,6 +53,7 @@ public class AdminController implements AdminApi {
     private final KeycloakAdminService keycloakAdminService;
     private final AdminMailerService adminMailerService;
     private final AdminOnboardingService adminOnboardingService;
+    private final ReservationService reservationService;
     private final TransactionTemplate transactionTemplate;
 
     /**
@@ -69,6 +74,7 @@ public class AdminController implements AdminApi {
      * @param keycloakAdminService le service métier des interactions Keycloak
      * @param adminMailerService   le service d'envoi de l'email d'activation prestataire
      * @param adminOnboardingService le service de suivi et de relance des onboardings en attente
+     * @param reservationService  le service métier des réservations
      * @param transactionManager   le gestionnaire de transaction Spring, utilisé pour construire le {@link TransactionTemplate}
      */
     public AdminController(
@@ -78,6 +84,7 @@ public class AdminController implements AdminApi {
             KeycloakAdminService keycloakAdminService,
             AdminMailerService adminMailerService,
             AdminOnboardingService adminOnboardingService,
+            ReservationService reservationService,
             PlatformTransactionManager transactionManager) {
         this.prestataireService = prestataireService;
         this.utilisateurService = utilisateurService;
@@ -85,6 +92,7 @@ public class AdminController implements AdminApi {
         this.keycloakAdminService = keycloakAdminService;
         this.adminMailerService = adminMailerService;
         this.adminOnboardingService = adminOnboardingService;
+        this.reservationService = reservationService;
         this.transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
@@ -237,5 +245,32 @@ public class AdminController implements AdminApi {
             return ResponseEntity.internalServerError().build();
         }
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Liste toutes les réservations pour le back-office admin, triées par date de création
+     * décroissante, filtrées par statut si fourni.
+     *
+     * @param status le statut à filtrer, ou {@code null} pour toutes les réservations
+     * @return la liste des réservations
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<List<AdminReservationListItemDto>> listReservations(ReservationStatus status) {
+        log.info("GET /admin/reservations — status={}", status);
+        return ResponseEntity.ok(reservationService.getAdminReservations(status));
+    }
+
+    /**
+     * Liste les sessions d'onboarding utilisateur (client) en attente — le lien envoyé par email
+     * n'a pas encore été utilisé pour finaliser la création du compte.
+     *
+     * @return la liste des sessions en attente
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<List<OnboardingPendingDto>> listPendingUserOnboardings() {
+        log.info("GET /admin/onboarding-pending");
+        return ResponseEntity.ok(adminOnboardingService.listPendingUserOnboardings());
     }
 }

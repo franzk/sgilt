@@ -6,6 +6,9 @@ import type { PrestataireAdminListItemDto } from '../dto/PrestataireAdminListIte
 import type { PrestataireOnboardingPendingDto } from '../dto/PrestataireOnboardingPendingDto'
 import type { ProvisionPrestataireRequestDto } from '../dto/ProvisionPrestataireRequestDto'
 import type { ProvisionPrestataireResponseDto } from '../dto/ProvisionPrestataireResponseDto'
+import type { AdminReservationListItemDto } from '../dto/AdminReservationListItemDto'
+import type { AdminReservationStatus } from '../domain/AdminReservationStatus'
+import type { OnboardingPendingDto } from '../dto/OnboardingPendingDto'
 
 /**
  * Liste tous les prestataires actifs avec leur statut, pour le back-office admin.
@@ -58,4 +61,24 @@ export async function listPendingOnboardingsApi(): Promise<PrestataireOnboarding
  */
 export async function resendOnboardingEmailApi(id: string): Promise<void> {
   return apiFetch<void>(`/admin/prestataires/${id}/resend-onboarding-email`, { method: 'POST' })
+}
+
+/**
+ * Liste toutes les réservations pour le back-office admin, filtrées par statut si fourni.
+ *
+ * @param status le statut à filtrer, ou undefined pour toutes les réservations
+ */
+export async function listAdminReservationsApi(
+  status?: AdminReservationStatus,
+): Promise<AdminReservationListItemDto[]> {
+  return apiFetch<AdminReservationListItemDto[]>('/admin/reservations', {
+    params: status ? { status } : undefined,
+  })
+}
+
+/**
+ * Liste les sessions d'onboarding utilisateur (client) en attente.
+ */
+export async function listPendingUserOnboardingsApi(): Promise<OnboardingPendingDto[]> {
+  return apiFetch<OnboardingPendingDto[]>('/admin/onboarding-pending')
 }

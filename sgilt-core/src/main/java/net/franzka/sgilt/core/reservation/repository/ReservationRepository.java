@@ -71,4 +71,21 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
      */
     List<Reservation> findByPrestataireId(UUID prestataireId);
 
+    /**
+     * Retourne toutes les réservations, triées par date de création décroissante.
+     * Utilisé par le back-office admin.
+     *
+     * @return la liste des réservations, la plus récente en premier
+     */
+    List<Reservation> findAllByOrderByCreatedAtDesc();
+
+    /**
+     * Retourne les réservations d'un statut donné, triées par date de création décroissante.
+     * Utilisé par le back-office admin.
+     *
+     * @param status le statut à filtrer
+     * @return la liste des réservations correspondantes, la plus récente en premier
+     */
+    List<Reservation> findByStatusOrderByCreatedAtDesc(ReservationStatus status);
+
 }
