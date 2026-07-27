@@ -36,13 +36,16 @@ public abstract class PrestataireMapper {
 
     /**
      * Mappe un prestataire vers sa représentation allégée pour le back-office admin.
-     * {@code email} est résolu depuis l'utilisateur lié.
+     * {@code email} est résolu depuis l'utilisateur lié, {@code reservationCounts} calculé hors du
+     * domaine prestataire (fourni par l'appelant).
      *
-     * @param prestataire l'entité source
+     * @param prestataire       l'entité source
+     * @param reservationCounts les compteurs de réservations du prestataire
      * @return le DTO liste admin
      */
-    @Mapping(target = "email", source = "utilisateur.email")
-    public abstract PrestataireAdminListItemDto toAdminListItemDto(Prestataire prestataire);
+    @Mapping(target = "email", source = "prestataire.utilisateur.email")
+    public abstract PrestataireAdminListItemDto toAdminListItemDto(
+            Prestataire prestataire, PrestataireReservationCountsDto reservationCounts);
 
     /**
      * Mappe un prestataire et les métadonnées de son lien d'onboarding vers le DTO du back-office

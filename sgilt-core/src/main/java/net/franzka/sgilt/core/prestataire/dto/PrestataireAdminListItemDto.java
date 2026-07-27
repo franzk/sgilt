@@ -2,6 +2,7 @@ package net.franzka.sgilt.core.prestataire.dto;
 
 import net.franzka.sgilt.core.prestataire.domain.PrestataireStatus;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -12,5 +13,8 @@ public record PrestataireAdminListItemDto(
         String name,
         String slug,
         PrestataireStatus status,
-        String email
+        String email,
+        String categoryKey,
+        List<String> subcatKeys,
+        PrestataireReservationCountsDto reservationCounts
 ) {}

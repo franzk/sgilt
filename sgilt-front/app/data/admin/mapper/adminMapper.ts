@@ -17,6 +17,9 @@ export function mapPrestataireAdminFormat(dto: PrestataireAdminListItemDto): Pre
     slug: dto.slug,
     status: dto.status,
     email: dto.email,
+    categoryKey: dto.categoryKey,
+    subcatKeys: dto.subcatKeys,
+    reservationCounts: dto.reservationCounts,
   }
 }
 

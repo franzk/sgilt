@@ -1017,14 +1017,15 @@
         "prestataire-name": "Nom du prestataire",
         "slug": "Slug",
         "category": "Catégorie",
-        "subcats": "Sous-catégories (séparées par des virgules)",
+        "subcats": "Sous-catégories",
         "first-name": "Prénom",
         "last-name": "Nom",
         "email": "Email",
         "submit": "Créer",
         "success": "Prestataire créé (slug : {slug}), email d'activation envoyé.",
         "error": "Échec de la création, vérifiez les champs (slug déjà pris ?)."
-      }
+      },
+      "reservations-empty": "0 réservation"
     },
     "onboarding": {
       "title": "Onboardings en attente",

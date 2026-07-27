@@ -4,10 +4,13 @@ import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.domain.PrestataireStatus;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireAdminListItemDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireDetailDto;
+import net.franzka.sgilt.core.prestataire.dto.PrestataireReservationCountsDto;
 import net.franzka.sgilt.core.prestataire.exception.PrestataireInvalidStateException;
 import net.franzka.sgilt.core.prestataire.exception.PrestataireNotFoundException;
 import net.franzka.sgilt.core.prestataire.mapper.PrestataireMapper;
 import net.franzka.sgilt.core.prestataire.repository.PrestataireRepository;
+import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
+import net.franzka.sgilt.core.reservation.service.ReservationService;
 import net.franzka.sgilt.core.storage.FileStorageService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.junit.jupiter.api.Nested;
@@ -19,12 +22,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -41,6 +46,9 @@ class PrestataireServiceTest {
 
     @Mock
     private FileStorageService fileStorageService;
+
+    @Mock
+    private ReservationService reservationService;
 
     @InjectMocks
     private PrestataireService prestataireService;
@@ -317,17 +325,40 @@ class PrestataireServiceTest {
         void givenConfirmedPrestatairesWithMixedStatuses_whenGetConfirmedPrestataires_thenReturnsAllRegardlessOfStatus() {
             Prestataire draft = prestataireWith(PrestataireStatus.DRAFT);
             Prestataire published = prestataireWith(PrestataireStatus.PUBLISHED);
-            PrestataireAdminListItemDto draftDto =
-                    new PrestataireAdminListItemDto(draft.getId(), "Jean", SLUG, PrestataireStatus.DRAFT, "pro@sgilt.fr");
-            PrestataireAdminListItemDto publishedDto =
-                    new PrestataireAdminListItemDto(published.getId(), "Jean", SLUG, PrestataireStatus.PUBLISHED, "pro@sgilt.fr");
+            PrestataireAdminListItemDto draftDto = new PrestataireAdminListItemDto(
+                    draft.getId(), "Jean", SLUG, PrestataireStatus.DRAFT, "pro@sgilt.fr", "photo", List.of(), emptyCounts());
+            PrestataireAdminListItemDto publishedDto = new PrestataireAdminListItemDto(
+                    published.getId(), "Jean", SLUG, PrestataireStatus.PUBLISHED, "pro@sgilt.fr", "photo", List.of(), emptyCounts());
             when(prestataireRepository.findConfirmedByDeletedAtIsNull()).thenReturn(List.of(draft, published));
-            when(prestataireMapper.toAdminListItemDto(draft)).thenReturn(draftDto);
-            when(prestataireMapper.toAdminListItemDto(published)).thenReturn(publishedDto);
+            when(reservationService.getStatusCountsByPrestataire(any())).thenReturn(Map.of());
+            when(prestataireMapper.toAdminListItemDto(eq(draft), any())).thenReturn(draftDto);
+            when(prestataireMapper.toAdminListItemDto(eq(published), any())).thenReturn(publishedDto);
 
             List<PrestataireAdminListItemDto> result = prestataireService.getConfirmedPrestataires();
 
             assertThat(result).containsExactly(draftDto, publishedDto);
+        }
+
+        @Test
+        void givenPrestataireWithReservations_whenGetConfirmedPrestataires_thenBuildsCountsFromReservationService() {
+            Prestataire published = prestataireWith(PrestataireStatus.PUBLISHED);
+            when(prestataireRepository.findConfirmedByDeletedAtIsNull()).thenReturn(List.of(published));
+            when(reservationService.getStatusCountsByPrestataire(published.getId())).thenReturn(Map.of(
+                    ReservationStatus.NEW, 2,
+                    ReservationStatus.IN_DISCUSSION, 1
+            ));
+            ArgumentCaptor<PrestataireReservationCountsDto> countsCaptor =
+                    ArgumentCaptor.forClass(PrestataireReservationCountsDto.class);
+            when(prestataireMapper.toAdminListItemDto(eq(published), countsCaptor.capture()))
+                    .thenReturn(new PrestataireAdminListItemDto(
+                            published.getId(), "Jean", SLUG, PrestataireStatus.PUBLISHED, "pro@sgilt.fr",
+                            "photo", List.of(), emptyCounts()));
+
+            prestataireService.getConfirmedPrestataires();
+
+            assertThat(countsCaptor.getValue().nouvelleCount()).isEqualTo(2);
+            assertThat(countsCaptor.getValue().inDiscussionCount()).isEqualTo(1);
+            assertThat(countsCaptor.getValue().confirmedCount()).isZero();
         }
     }
 
@@ -342,6 +373,10 @@ class PrestataireServiceTest {
                 .slug(SLUG)
                 .status(status)
                 .build();
+    }
+
+    private PrestataireReservationCountsDto emptyCounts() {
+        return new PrestataireReservationCountsDto(0, 0, 0, 0, 0, 0);
     }
 
     private PrestataireDetailDto dummyDetailDto() {
