@@ -7,6 +7,9 @@ import net.franzka.sgilt.core.jwt.domain.ActionToken;
 import net.franzka.sgilt.core.jwt.domain.ActionType;
 import net.franzka.sgilt.core.jwt.service.ActionLinkService;
 import net.franzka.sgilt.core.jwt.service.ActionTokenService;
+import net.franzka.sgilt.core.onboarding.mapper.OnboardingMapper;
+import net.franzka.sgilt.core.onboarding.dto.OnboardingPendingDto;
+import net.franzka.sgilt.core.onboarding.service.OnboardingSessionService;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireOnboardingPendingDto;
 import net.franzka.sgilt.core.prestataire.mapper.PrestataireMapper;
@@ -31,6 +34,8 @@ public class AdminOnboardingService {
     private final PrestataireService prestataireService;
     private final PrestataireMapper prestataireMapper;
     private final AdminMailerService adminMailerService;
+    private final OnboardingSessionService onboardingSessionService;
+    private final OnboardingMapper onboardingMapper;
 
     /**
      * Liste tous les prestataires dont l'onboarding est en attente — le lien envoyé par email n'a
@@ -63,6 +68,18 @@ public class AdminOnboardingService {
         log.info("resendOnboardingEmail — relance de l'onboarding prestataire pour {}", utilisateur.getEmail());
         return adminMailerService.sendPrestataireOnboardingEmail(
                 utilisateur.getEmail(), utilisateur.getFirstName(), actionUrl);
+    }
+
+    /**
+     * Liste les sessions d'onboarding utilisateur (client) en attente — le lien envoyé par email
+     * n'a pas encore été utilisé pour finaliser la création du compte.
+     *
+     * @return la liste des sessions en attente
+     */
+    public List<OnboardingPendingDto> listPendingUserOnboardings() {
+        return onboardingSessionService.listPending().stream()
+                .map(onboardingMapper::toPendingDto)
+                .toList();
     }
 
     private PrestataireOnboardingPendingDto toPendingDto(ActionToken actionToken) {

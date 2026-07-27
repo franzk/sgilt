@@ -7,6 +7,7 @@ import net.franzka.sgilt.core.reservation.event.reservationstatuschanged.Reserva
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
+import net.franzka.sgilt.core.reservation.dto.AdminReservationListItemDto;
 import net.franzka.sgilt.core.reservation.dto.RefuseReservationRequest;
 import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
 import net.franzka.sgilt.core.reservation.event.mapper.ReservationEventMapper;
@@ -24,6 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -363,6 +365,43 @@ class ReservationServiceTest {
 
             assertThat(reservation.getStatus()).isEqualTo(ReservationStatus.CANCELED_BY_CLIENT_PRE_CONTACT);
             verify(applicationEventPublisher).publishEvent(mappedEvent);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // getAdminReservations
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetAdminReservations {
+
+        @Test
+        void givenNoStatusFilter_whenGetAdminReservations_thenListsAllOrderedByCreatedAtDesc() {
+            Reservation reservation = reservationWith(ReservationStatus.NEW);
+            AdminReservationListItemDto dto = new AdminReservationListItemDto(
+                    reservation.getId(), "Anniversaire de Paul", "client@example.com",
+                    "presta@example.com", "studio-fleur", ReservationStatus.NEW, LocalDateTime.now());
+            when(reservationRepository.findAllByOrderByCreatedAtDesc()).thenReturn(List.of(reservation));
+            when(reservationMapper.toAdminListItemDto(reservation)).thenReturn(dto);
+
+            List<AdminReservationListItemDto> result = reservationService.getAdminReservations(null);
+
+            assertThat(result).containsExactly(dto);
+        }
+
+        @Test
+        void givenStatusFilter_whenGetAdminReservations_thenListsFilteredByStatus() {
+            Reservation reservation = reservationWith(ReservationStatus.CONFIRMED);
+            AdminReservationListItemDto dto = new AdminReservationListItemDto(
+                    reservation.getId(), "Anniversaire de Paul", "client@example.com",
+                    "presta@example.com", "studio-fleur", ReservationStatus.CONFIRMED, LocalDateTime.now());
+            when(reservationRepository.findByStatusOrderByCreatedAtDesc(ReservationStatus.CONFIRMED))
+                    .thenReturn(List.of(reservation));
+            when(reservationMapper.toAdminListItemDto(reservation)).thenReturn(dto);
+
+            List<AdminReservationListItemDto> result = reservationService.getAdminReservations(ReservationStatus.CONFIRMED);
+
+            assertThat(result).containsExactly(dto);
         }
     }
 

@@ -22,6 +22,7 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -145,6 +146,17 @@ public class OnboardingSessionService {
                     o.setState(OnboardingState.CANCELLED);
                     onboardingRepository.save(o);
                 });
+    }
+
+    /**
+     * Retourne les sessions d'onboarding utilisateur en attente (OPEN ou PENDING_CONFIRMATION),
+     * triées par date de création décroissante — pour le suivi admin.
+     *
+     * @return la liste des sessions en attente
+     */
+    public List<Onboarding> listPending() {
+        return onboardingRepository.findByStateInOrderByCreatedAtDesc(
+                List.of(OnboardingState.OPEN, OnboardingState.PENDING_CONFIRMATION));
     }
 
     /**

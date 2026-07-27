@@ -8,17 +8,24 @@ import {
   provisionPrestataireApi,
   listPendingOnboardingsApi,
   resendOnboardingEmailApi,
+  listAdminReservationsApi,
+  listPendingUserOnboardingsApi,
 } from '../api/adminApi'
 import {
   mapPrestataireAdminFormat,
   mapProvisionRequest,
   mapProvisionResult,
   mapPrestataireOnboardingPending,
+  mapAdminReservationListItem,
+  mapOnboardingPending,
 } from '../mapper/adminMapper'
 import type { PrestataireAdminFormat } from '../domain/PrestataireAdminFormat'
 import type { PrestataireOnboardingPending } from '../domain/PrestataireOnboardingPending'
 import type { PrestataireProvisioning } from '../domain/PrestataireProvisioning'
 import type { ProvisionResult } from '../domain/ProvisionResult'
+import type { AdminReservationListItem } from '../domain/AdminReservationListItem'
+import type { AdminReservationStatus } from '../domain/AdminReservationStatus'
+import type { OnboardingPending } from '../domain/OnboardingPending'
 
 /**
  * Récupère tous les prestataires actifs avec leur statut, pour le back-office admin.
@@ -72,4 +79,22 @@ export async function fetchPendingOnboardings(): Promise<PrestataireOnboardingPe
  */
 export async function resendOnboardingEmail(id: string): Promise<void> {
   await resendOnboardingEmailApi(id)
+}
+
+/**
+ * Récupère toutes les réservations pour le back-office admin, filtrées par statut si fourni.
+ *
+ * @param status le statut à filtrer, ou undefined pour toutes les réservations
+ */
+export async function fetchAdminReservations(status?: AdminReservationStatus): Promise<AdminReservationListItem[]> {
+  const dtos = await listAdminReservationsApi(status)
+  return dtos.map(mapAdminReservationListItem)
+}
+
+/**
+ * Récupère les sessions d'onboarding utilisateur (client) en attente.
+ */
+export async function fetchPendingUserOnboardings(): Promise<OnboardingPending[]> {
+  const dtos = await listPendingUserOnboardingsApi()
+  return dtos.map(mapOnboardingPending)
 }

@@ -31,4 +31,13 @@ public interface OnboardingRepository extends JpaRepository<Onboarding, UUID> {
      * @return la liste des sessions correspondantes
      */
     List<Onboarding> findByEmailAndState(String email, OnboardingState state);
+
+    /**
+     * Retourne les sessions d'onboarding dont l'état fait partie de la liste fournie,
+     * triées par date de création décroissante.
+     *
+     * @param states les états à inclure
+     * @return la liste des sessions correspondantes, la plus récente en premier
+     */
+    List<Onboarding> findByStateInOrderByCreatedAtDesc(List<OnboardingState> states);
 }

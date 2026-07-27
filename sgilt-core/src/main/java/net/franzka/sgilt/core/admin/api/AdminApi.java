@@ -3,14 +3,18 @@ package net.franzka.sgilt.core.admin.api;
 import jakarta.validation.Valid;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireRequest;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireResponse;
+import net.franzka.sgilt.core.onboarding.dto.OnboardingPendingDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireAdminListItemDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireOnboardingPendingDto;
+import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
+import net.franzka.sgilt.core.reservation.dto.AdminReservationListItemDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.UUID;
@@ -36,4 +40,11 @@ public interface AdminApi {
 
     @PostMapping("/prestataires/{id}/resend-onboarding-email")
     ResponseEntity<Void> resendOnboardingEmail(@PathVariable UUID id);
+
+    @GetMapping("/reservations")
+    ResponseEntity<List<AdminReservationListItemDto>> listReservations(
+            @RequestParam(required = false) ReservationStatus status);
+
+    @GetMapping("/onboarding-pending")
+    ResponseEntity<List<OnboardingPendingDto>> listPendingUserOnboardings();
 }

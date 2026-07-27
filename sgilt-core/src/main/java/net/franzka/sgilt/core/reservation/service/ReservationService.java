@@ -8,6 +8,7 @@ import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.dto.ActiveReservationItemDto;
 import net.franzka.sgilt.core.reservation.dto.ActiveReservationsDto;
+import net.franzka.sgilt.core.reservation.dto.AdminReservationListItemDto;
 import net.franzka.sgilt.core.reservation.dto.ProBoardCountsDto;
 import net.franzka.sgilt.core.reservation.dto.ProReservationDetailDto;
 import net.franzka.sgilt.core.reservation.dto.ProReservationSummaryDto;
@@ -458,6 +459,22 @@ public class ReservationService {
      */
     private int count(List<Reservation> reservations, ReservationStatus status) {
         return (int) reservations.stream().filter(r -> status.equals(r.getStatus())).count();
+    }
+
+    /**
+     * Retourne toutes les réservations pour le back-office admin, triées par date de création
+     * décroissante, filtrées par statut si fourni.
+     *
+     * @param status le statut à filtrer, ou {@code null} pour toutes les réservations
+     * @return la liste des réservations pour l'admin
+     */
+    public List<AdminReservationListItemDto> getAdminReservations(ReservationStatus status) {
+        List<Reservation> reservations = status == null
+                ? reservationRepository.findAllByOrderByCreatedAtDesc()
+                : reservationRepository.findByStatusOrderByCreatedAtDesc(status);
+        return reservations.stream()
+                .map(reservationMapper::toAdminListItemDto)
+                .toList();
     }
 
 }

@@ -1,51 +1,41 @@
 <template>
   <div class="admin-page">
     <div class="page-header">
-      <h1>{{ $t('admin.onboarding.title') }}</h1>
+      <h1>{{ $t('admin.onboarding-clients.title') }}</h1>
     </div>
 
     <section class="list">
-      <p v-if="loading">{{ $t('admin.onboarding.loading') }}</p>
-      <p v-else-if="rows.length === 0" class="empty">{{ $t('admin.onboarding.empty') }}</p>
-      <SgiltCard v-for="row in rows" :key="row.prestataireId" format="small" tag="div" :clickable="false">
+      <p v-if="loading">{{ $t('admin.onboarding-clients.loading') }}</p>
+      <p v-else-if="rows.length === 0" class="empty">{{ $t('admin.onboarding-clients.empty') }}</p>
+      <SgiltCard v-for="row in rows" :key="row.id" format="small" tag="div" :clickable="false">
         <template #avatar>
-          <span class="avatar-initial">{{ row.prestataireName.charAt(0) }}</span>
+          <span class="avatar-initial">{{ row.email.charAt(0).toUpperCase() }}</span>
         </template>
         <div class="row-content">
           <div class="text">
-            <p class="name">{{ row.prestataireName }}</p>
             <p class="email">{{ row.email }}</p>
+            <p class="meta">{{ $t('admin.onboarding-clients.target', { name: row.prestataireName }) }}</p>
             <p class="dates">
-              {{ $t('admin.onboarding.sent-at', { date: formatDateTime(row.linkSentAt) }) }}
+              {{ $t(`admin.onboarding-clients.state.${row.state}`) }}
               ·
-              {{ $t('admin.onboarding.expires-at', { date: formatDateTime(row.linkExpiresAt) }) }}
+              {{ $t('admin.onboarding-clients.sent-at', { date: formatDateTime(row.createdAt) }) }}
+              ·
+              {{ $t('admin.onboarding-clients.expires-at', { date: formatDateTime(row.expiresAt) }) }}
             </p>
           </div>
         </div>
-        <template #cta>
-          <SgiltButton
-            variant="secondary"
-            :loading="resendingId === row.prestataireId"
-            @click="resend(row.prestataireId)"
-          >
-            {{ $t('admin.onboarding.resend') }}
-          </SgiltButton>
-        </template>
       </SgiltCard>
-      <p v-if="resentId" class="success">{{ $t('admin.onboarding.resend-success') }}</p>
-      <p v-if="resendErrorId" class="error">{{ $t('admin.onboarding.resend-error') }}</p>
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
 import { formatDateTime } from '~/utils/dateUtils'
 
 definePageMeta({ layout: 'admin' })
 
-const { rows, loading, load, resend, resendingId, resendErrorId, resentId } = useAdminOnboarding()
+const { rows, loading, load } = useAdminUserOnboarding()
 
 onMounted(() => load())
 </script>
@@ -103,37 +93,20 @@ onMounted(() => load())
       min-width: 0;
     }
 
-    .name {
-      margin: 0;
-      font-weight: 500;
-    }
-
     .email {
       margin: 0;
-      font-size: 0.8rem;
-      color: $text-secondary;
+      font-weight: 500;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
+    .meta,
     .dates {
       margin: 0;
       font-size: 0.75rem;
       color: $text-secondary;
     }
-  }
-
-  .success {
-    margin: 0;
-    font-size: 0.85rem;
-    color: $state-success;
-  }
-
-  .error {
-    margin: 0;
-    font-size: 0.85rem;
-    color: $state-error;
   }
 }
 </style>

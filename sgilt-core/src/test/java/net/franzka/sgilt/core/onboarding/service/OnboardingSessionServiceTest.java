@@ -330,6 +330,36 @@ class OnboardingSessionServiceTest {
     }
 
     // -------------------------------------------------------------------------
+    // listPending
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ListPending {
+
+        @Test
+        void givenPendingSessions_whenListPending_thenReturnsThemOrderedByCreatedAtDesc() {
+            Onboarding open = Onboarding.builder().state(OnboardingState.OPEN).build();
+            Onboarding pendingConfirmation = Onboarding.builder().state(OnboardingState.PENDING_CONFIRMATION).build();
+            when(onboardingRepository.findByStateInOrderByCreatedAtDesc(
+                    List.of(OnboardingState.OPEN, OnboardingState.PENDING_CONFIRMATION)))
+                    .thenReturn(List.of(pendingConfirmation, open));
+
+            List<Onboarding> result = onboardingSessionService.listPending();
+
+            assertThat(result).containsExactly(pendingConfirmation, open);
+        }
+
+        @Test
+        void givenNoPendingSessions_whenListPending_thenReturnsEmptyList() {
+            when(onboardingRepository.findByStateInOrderByCreatedAtDesc(
+                    List.of(OnboardingState.OPEN, OnboardingState.PENDING_CONFIRMATION)))
+                    .thenReturn(List.of());
+
+            assertThat(onboardingSessionService.listPending()).isEmpty();
+        }
+    }
+
+    // -------------------------------------------------------------------------
     // findById
     // -------------------------------------------------------------------------
 

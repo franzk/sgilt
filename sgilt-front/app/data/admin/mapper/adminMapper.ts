@@ -9,6 +9,10 @@ import type { ProvisionPrestataireRequestDto } from '../dto/ProvisionPrestataire
 import type { PrestataireProvisioning } from '../domain/PrestataireProvisioning'
 import type { ProvisionPrestataireResponseDto } from '../dto/ProvisionPrestataireResponseDto'
 import type { ProvisionResult } from '../domain/ProvisionResult'
+import type { AdminReservationListItemDto } from '../dto/AdminReservationListItemDto'
+import type { AdminReservationListItem } from '../domain/AdminReservationListItem'
+import type { OnboardingPendingDto } from '../dto/OnboardingPendingDto'
+import type { OnboardingPending } from '../domain/OnboardingPending'
 
 export function mapPrestataireAdminFormat(dto: PrestataireAdminListItemDto): PrestataireAdminFormat {
   return {
@@ -52,5 +56,28 @@ export function mapPrestataireOnboardingPending(
     email: dto.email,
     linkSentAt: dto.linkSentAt,
     linkExpiresAt: dto.linkExpiresAt,
+  }
+}
+
+export function mapAdminReservationListItem(dto: AdminReservationListItemDto): AdminReservationListItem {
+  return {
+    id: dto.id,
+    eventTitle: dto.eventTitle,
+    organizerEmail: dto.organizerEmail,
+    providerEmail: dto.providerEmail,
+    providerSlug: dto.providerSlug,
+    status: dto.status,
+    createdAt: dto.createdAt,
+  }
+}
+
+export function mapOnboardingPending(dto: OnboardingPendingDto): OnboardingPending {
+  return {
+    id: dto.id,
+    email: dto.email,
+    prestataireName: dto.prestataireName,
+    state: dto.state,
+    createdAt: dto.createdAt,
+    expiresAt: dto.expiresAt,
   }
 }

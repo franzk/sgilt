@@ -5,6 +5,11 @@ import net.franzka.sgilt.core.jwt.domain.ActionToken;
 import net.franzka.sgilt.core.jwt.domain.ActionType;
 import net.franzka.sgilt.core.jwt.service.ActionLinkService;
 import net.franzka.sgilt.core.jwt.service.ActionTokenService;
+import net.franzka.sgilt.core.onboarding.domain.Onboarding;
+import net.franzka.sgilt.core.onboarding.domain.OnboardingState;
+import net.franzka.sgilt.core.onboarding.dto.OnboardingPendingDto;
+import net.franzka.sgilt.core.onboarding.mapper.OnboardingMapper;
+import net.franzka.sgilt.core.onboarding.service.OnboardingSessionService;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireOnboardingPendingDto;
 import net.franzka.sgilt.core.prestataire.mapper.PrestataireMapper;
@@ -43,6 +48,12 @@ class AdminOnboardingServiceTest {
 
     @Mock
     private AdminMailerService adminMailerService;
+
+    @Mock
+    private OnboardingSessionService onboardingSessionService;
+
+    @Mock
+    private OnboardingMapper onboardingMapper;
 
     @InjectMocks
     private AdminOnboardingService adminOnboardingService;
@@ -134,6 +145,39 @@ class AdminOnboardingServiceTest {
                     .thenReturn(false);
 
             assertThat(adminOnboardingService.resendOnboardingEmail(prestataire.getId())).isFalse();
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // listPendingUserOnboardings
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ListPendingUserOnboardings {
+
+        @Test
+        void givenPendingSessions_whenListPendingUserOnboardings_thenReturnsMappedDtos() {
+            Onboarding onboarding = Onboarding.builder()
+                    .id(UUID.randomUUID())
+                    .email("client@example.com")
+                    .state(OnboardingState.OPEN)
+                    .build();
+            OnboardingPendingDto dto = new OnboardingPendingDto(
+                    onboarding.getId(), "client@example.com", "Jean Photographe",
+                    OnboardingState.OPEN, LocalDateTime.now(), LocalDateTime.now().plusHours(24));
+            when(onboardingSessionService.listPending()).thenReturn(List.of(onboarding));
+            when(onboardingMapper.toPendingDto(onboarding)).thenReturn(dto);
+
+            List<OnboardingPendingDto> result = adminOnboardingService.listPendingUserOnboardings();
+
+            assertThat(result).containsExactly(dto);
+        }
+
+        @Test
+        void givenNoPendingSessions_whenListPendingUserOnboardings_thenReturnsEmptyList() {
+            when(onboardingSessionService.listPending()).thenReturn(List.of());
+
+            assertThat(adminOnboardingService.listPendingUserOnboardings()).isEmpty();
         }
     }
 }

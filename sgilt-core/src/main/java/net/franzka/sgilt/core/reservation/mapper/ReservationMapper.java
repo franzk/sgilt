@@ -5,6 +5,7 @@ import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.dto.ActiveReservationItemDto;
+import net.franzka.sgilt.core.reservation.dto.AdminReservationListItemDto;
 import net.franzka.sgilt.core.reservation.dto.ProReservationDetailDto;
 import net.franzka.sgilt.core.reservation.dto.ProReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationMetaDto;
@@ -74,6 +75,13 @@ public interface ReservationMapper {
     @Mapping(source = "status",                  target = "status")
     @Mapping(target = "unreadNotesCount",        constant = "0")
     ReservationMetaDto toReservationMetaDto(Reservation reservation);
+
+    @Mapping(source = "evenement.title",         target = "eventTitle")
+    @Mapping(source = "utilisateur.email",       target = "organizerEmail")
+    @Mapping(source = "prestataire.utilisateur.email", target = "providerEmail")
+    @Mapping(source = "prestataire.slug",        target = "providerSlug")
+    @Mapping(source = "status",                  target = "status")
+    AdminReservationListItemDto toAdminListItemDto(Reservation reservation);
 
     /**
      * Retourne l'avatar du prestataire, ou l'image hero (fallback).
