@@ -25,6 +25,7 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -114,6 +115,40 @@ class ReservationServiceTest {
 
             assertThat(result.confirmedCount()).isEqualTo(2);
             assertThat(result.inDiscussionCount()).isEqualTo(1);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // getStatusCountsByPrestataire
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetStatusCountsByPrestataire {
+
+        private final UUID prestataireId = UUID.randomUUID();
+
+        @Test
+        void givenNoReservations_whenGetStatusCountsByPrestataire_thenReturnsEmptyMap() {
+            when(reservationRepository.findByPrestataireId(prestataireId)).thenReturn(List.of());
+
+            Map<ReservationStatus, Integer> result = reservationService.getStatusCountsByPrestataire(prestataireId);
+
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        void givenMixedStatuses_whenGetStatusCountsByPrestataire_thenGroupsByStatus() {
+            when(reservationRepository.findByPrestataireId(prestataireId)).thenReturn(List.of(
+                    reservationWith(ReservationStatus.NEW),
+                    reservationWith(ReservationStatus.NEW),
+                    reservationWith(ReservationStatus.IN_DISCUSSION)
+            ));
+
+            Map<ReservationStatus, Integer> result = reservationService.getStatusCountsByPrestataire(prestataireId);
+
+            assertThat(result)
+                    .containsEntry(ReservationStatus.NEW, 2)
+                    .containsEntry(ReservationStatus.IN_DISCUSSION, 1);
         }
     }
 

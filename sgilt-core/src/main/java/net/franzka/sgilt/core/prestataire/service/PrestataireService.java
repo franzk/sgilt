@@ -16,6 +16,8 @@ import net.franzka.sgilt.core.prestataire.exception.PrestataireInvalidStateExcep
 import net.franzka.sgilt.core.prestataire.exception.PrestataireNotFoundException;
 import net.franzka.sgilt.core.prestataire.mapper.PrestataireMapper;
 import net.franzka.sgilt.core.prestataire.repository.PrestataireRepository;
+import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
+import net.franzka.sgilt.core.reservation.service.ReservationService;
 import net.franzka.sgilt.core.storage.FileStorageException;
 import net.franzka.sgilt.core.storage.FileStorageService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
@@ -36,6 +38,7 @@ public class PrestataireService {
     private final PrestataireRepository prestataireRepository;
     private final PrestataireMapper prestataireMapper;
     private final FileStorageService fileStorageService;
+    private final ReservationService reservationService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
@@ -138,7 +141,7 @@ public class PrestataireService {
      */
     public List<PrestataireAdminListItemDto> getConfirmedPrestataires() {
         return prestataireRepository.findConfirmedByDeletedAtIsNull().stream()
-                .map(prestataireMapper::toAdminListItemDto)
+                .map(p -> prestataireMapper.toAdminListItemDto(p, buildReservationCounts(p.getId())))
                 .toList();
     }
 
@@ -547,5 +550,27 @@ public class PrestataireService {
                 .filter(p -> activeCategoryKey.equals(p.getCategoryKey()))
                 .forEach(p -> p.getSubcatKeys().forEach(key -> counts.merge(key, 1L, Long::sum)));
         return counts;
+    }
+
+    /**
+     * Mappe les comptes par statut de réservation d'un prestataire en DTO de compteurs pour la
+     * liste admin.
+     *
+     * @param prestataireId l'identifiant du prestataire
+     * @return un DTO contenant les compteurs par statut
+     */
+    private PrestataireReservationCountsDto buildReservationCounts(UUID prestataireId) {
+        Map<ReservationStatus, Integer> counts = reservationService.getStatusCountsByPrestataire(prestataireId);
+        return new PrestataireReservationCountsDto(
+                counts.getOrDefault(ReservationStatus.CONFIRMED, 0),
+                counts.getOrDefault(ReservationStatus.IN_DISCUSSION, 0),
+                counts.getOrDefault(ReservationStatus.NEW, 0),
+                counts.getOrDefault(ReservationStatus.REFUSED_PRE_CONTACT, 0)
+                        + counts.getOrDefault(ReservationStatus.REFUSED_POST_CONTACT, 0),
+                counts.getOrDefault(ReservationStatus.CANCELED_BY_CLIENT_PRE_CONTACT, 0)
+                        + counts.getOrDefault(ReservationStatus.CANCELED_BY_CLIENT_POST_CONTACT, 0)
+                        + counts.getOrDefault(ReservationStatus.CANCELED_POST_CONFIRMATION, 0),
+                counts.getOrDefault(ReservationStatus.DONE, 0)
+        );
     }
 }

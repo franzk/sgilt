@@ -1024,7 +1024,8 @@
         "submit": "Créer",
         "success": "Prestataire créé (slug : {slug}), email d'activation envoyé.",
         "error": "Échec de la création, vérifiez les champs (slug déjà pris ?)."
-      }
+      },
+      "reservations-empty": "0 réservation"
     },
     "onboarding": {
       "title": "Onboardings en attente",
