@@ -103,6 +103,7 @@ export default defineNuxtConfig({
 
   // Source de vérité SEO (utilisée notamment pour les canonicals)
   site: {
+    url: 'https://sgilt.alsace',
     name: 'Sgilt',
     trailingSlash: false, // => canonicals en /path (sans / final)
   },
