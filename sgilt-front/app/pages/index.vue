@@ -49,6 +49,8 @@ useSeoMeta({
   title: 'Sgilt - Organisez votre événement en Alsace avec les bons prestataires',
   description:
     "Trouvez les bons prestataires en Alsace pour votre mariage, anniversaire ou fête d'entreprise. Retrouvez vos demandes, échanges et réservations au même endroit.",
+  ogImage: '/images/sgilt.jpg',
+  twitterCard: 'summary_large_image',
 })
 
 const { showOnboarding } = useSearchUi()
