@@ -11,7 +11,7 @@ const emit = defineEmits(['toggle'])
 
 const subcategories = computed(() => {
   const cat = APP_CATEGORIES.find((c) => c.key === props.categoryKey)
-  return cat?.subcategories.filter((s) => s.key) ?? []
+  return cat?.subcategories.filter((s) => s.key && props.counts[s.key]) ?? []
 })
 </script>
 
@@ -65,7 +65,6 @@ const subcategories = computed(() => {
   white-space: nowrap;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  // outline: none;
 
   .label {
     font-size: 0.85rem;
