@@ -10,7 +10,6 @@
     <SgiltButton
       v-if="prestataire?.status === 'DRAFT'"
       class="btn-submit"
-      variant="secondary"
       :loading="submitting"
       @click="onSubmit"
     >

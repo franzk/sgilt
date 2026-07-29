@@ -17,175 +17,59 @@
       @confirm="applyAll"
     />
 
-    <div v-if="result" class="blocks">
-      <FicheIaCollapsibleBlock
-        :title="$t('provider.edit.ia.block.presentation')"
-      >
-        <FicheIaFieldRow
-          :label="$t('provider.edit.ia.field.baseline')"
-          section="BASELINE"
-          :is-list="false"
-          :has-existing-content="!!prestataire?.baseline"
-          :applying-key="applying"
-          @apply="onApply"
-        >
-          <template #current>
-            <p>{{ prestataire?.baseline }}</p>
-          </template>
-          <p>{{ result.baseline }}</p>
-        </FicheIaFieldRow>
+    <FicheIaApplyDialog
+      v-model:open="applyDialogOpen"
+      :is-list="dialogIsList"
+      @confirm="onDialogConfirm"
+      @replace="onDialogReplace"
+      @add="onDialogAdd"
+    />
 
-        <FicheIaFieldRow
-          :label="$t('provider.edit.ia.field.offerings')"
-          section="OFFERINGS"
-          :is-list="true"
-          :has-existing-content="(prestataire?.offerings.length ?? 0) > 0"
-          :applying-key="applying"
-          @apply="onApply"
-        >
-          <template #current>
-            <ul>
-              <li v-for="(offering, i) in prestataire?.offerings" :key="i">{{ offering }}</li>
-            </ul>
-          </template>
-          <ul>
-            <li v-for="(offering, i) in result.offerings" :key="i">{{ offering }}</li>
-          </ul>
-        </FicheIaFieldRow>
-
-        <FicheIaFieldRow
-          :label="$t('provider.edit.ia.field.identity')"
-          section="IDENTITY"
-          :is-list="false"
-          :has-existing-content="!!(prestataire?.identity.quote || prestataire?.identity.bio)"
-          :applying-key="applying"
-          @apply="onApply"
-        >
-          <template #current>
-            <blockquote>{{ prestataire?.identity.quote }}</blockquote>
-            <p class="multiline-text">{{ prestataire?.identity.bio }}</p>
-          </template>
-          <blockquote>{{ result.identity.quote }}</blockquote>
-          <p class="multiline-text">{{ result.identity.bio }}</p>
-        </FicheIaFieldRow>
-      </FicheIaCollapsibleBlock>
-
-      <FicheIaCollapsibleBlock
-        :title="$t('provider.edit.ia.block.budget')"
-      >
-        <FicheIaFieldRow
-          :label="$t('provider.edit.ia.field.budget')"
-          section="BUDGET"
-          :is-list="false"
-          :has-existing-content="!!prestataire?.budget"
-          :applying-key="applying"
-          @apply="onApply"
-        >
-          <template #current>
-            <p class="multiline-text">{{ prestataire?.budget }}</p>
-          </template>
-          <p class="multiline-text">{{ result.budget }}</p>
-        </FicheIaFieldRow>
-      </FicheIaCollapsibleBlock>
-
-      <FicheIaCollapsibleBlock
-        :title="$t('provider.edit.ia.block.testimonials')"
-      >
-        <FicheIaFieldRow
-          :label="$t('provider.edit.ia.block.testimonials')"
-          section="TESTIMONIALS"
-          :is-list="true"
-          :has-existing-content="(prestataire?.testimonials.length ?? 0) > 0"
-          :applying-key="applying"
-          @apply="onApply"
-        >
-          <template #current>
-            <div v-for="(testimonial, i) in prestataire?.testimonials" :key="i" class="testimonial">
-              <p class="text">{{ testimonial.text }}</p>
-              <p class="author">{{ testimonial.author }}</p>
-            </div>
-          </template>
-          <div v-for="(testimonial, i) in result.testimonials" :key="i" class="testimonial">
-            <p class="text">{{ testimonial.text }}</p>
-            <p class="author">{{ testimonial.author }}</p>
+    <div v-if="result" class="preview-layout">
+      <div class="preview-main">
+        <!-- BASELINE : au-dessus du bloc aperçu, pas dans le flux standard des champs de contenu -->
+        <section v-if="result.baseline" class="section baseline-section">
+          <div class="section-header">
+            <h2 class="title">{{ $t('provider.edit.ia.field.baseline') }}</h2>
+            <SgiltButton variant="secondary" @click="openApplyDialog('BASELINE')">
+              {{ $t('provider.edit.ia.apply-field') }}
+            </SgiltButton>
           </div>
-        </FicheIaFieldRow>
-      </FicheIaCollapsibleBlock>
+          <p class="baseline-caption">{{ $t('provider.edit.ia.baseline-caption') }}</p>
+          <p class="baseline-text">{{ result.baseline }}</p>
+        </section>
 
-      <FicheIaCollapsibleBlock
-        :title="$t('provider.edit.ia.block.details')"
-      >
-        <FicheIaFieldRow
-          :label="$t('provider.edit.ia.block.details')"
-          section="DETAILS"
-          :is-list="true"
-          :has-existing-content="(prestataire?.details.length ?? 0) > 0"
-          :applying-key="applying"
-          @apply="onApply"
-        >
-          <template #current>
-            <div v-for="group in currentDetailGroups" :key="group.category" class="detail-group">
-              <h4>{{ $t(`provider.details.category.${group.category.toLowerCase()}`) }}</h4>
-              <ul>
-                <li v-for="(item, i) in group.items" :key="i">{{ item.content }}</li>
-              </ul>
-            </div>
-          </template>
-          <div v-for="group in iaDetailGroups" :key="group.category" class="detail-group">
-            <h4>{{ $t(`provider.details.category.${group.category.toLowerCase()}`) }}</h4>
-            <ul>
-              <li v-for="(item, i) in group.items" :key="i">{{ item.content }}</li>
-            </ul>
-          </div>
-        </FicheIaFieldRow>
-      </FicheIaCollapsibleBlock>
+        <FicheIaPreview :content="result" @apply="openApplyDialog" />
+      </div>
 
-      <FicheIaCollapsibleBlock
-        :title="$t('provider.edit.ia.block.faq')"
-      >
-        <FicheIaFieldRow
-          :label="$t('provider.edit.ia.block.faq')"
-          section="FAQ"
-          :is-list="true"
-          :has-existing-content="(prestataire?.faq.length ?? 0) > 0"
-          :applying-key="applying"
-          @apply="onApply"
-        >
-          <template #current>
-            <div v-for="(item, i) in prestataire?.faq" :key="i" class="faq-item">
-              <p class="question">{{ item.question }}</p>
-              <p class="answer">{{ item.answer }}</p>
-            </div>
-          </template>
-          <div v-for="(item, i) in result.faq" :key="i" class="faq-item">
-            <p class="question">{{ item.question }}</p>
-            <p class="answer">{{ item.answer }}</p>
+      <!-- TARIFS : sidebar sticky sur desktop, comme dans l'onglet Aperçu -->
+      <aside v-if="result.budget" class="preview-sidebar">
+        <section class="section budget-section">
+          <div class="section-header">
+            <h2 class="title">{{ $t('provider.details.rates') }}</h2>
+            <SgiltButton variant="secondary" @click="openApplyDialog('BUDGET')">
+              {{ $t('provider.edit.ia.apply-field') }}
+            </SgiltButton>
           </div>
-        </FicheIaFieldRow>
-      </FicheIaCollapsibleBlock>
+          <p class="budget-text">{{ result.budget }}</p>
+        </section>
+      </aside>
     </div>
 
     <!-- APERÇU CARD RECHERCHE : même card que la fiche réelle, légende remplacée par celle générée -->
-    <div v-if="cardPreview" class="card-preview-section">
-      <p class="label">{{ $t('provider.edit.ia.card-preview-title') }}</p>
-      <div class="card-comparison">
-        <div class="card-column proposal">
-          <span class="column-label">{{ $t('provider.edit.ia.proposal-label') }}</span>
-          <PrestataireCard :provider="cardPreview" selectable class="card-preview" />
-        </div>
-        <div v-if="currentCardPreview" class="card-column current">
-          <span class="column-label">{{ $t('provider.edit.ia.current-label') }}</span>
-          <PrestataireCard :provider="currentCardPreview" selectable class="card-preview" />
-        </div>
+    <section v-if="cardPreview" class="section card-preview-section">
+      <div class="section-header">
+        <h2 class="title">{{ $t('provider.edit.ia.card-preview-title') }}</h2>
       </div>
+      <PrestataireCard :provider="cardPreview" selectable class="card-preview" />
       <SgiltButton
+        class="card-preview-apply-btn"
         variant="secondary"
-        :loading="applying === 'SHORT_DESCRIPTION:REMPLACER'"
-        @click="onApply('SHORT_DESCRIPTION', 'REMPLACER')"
+        @click="openApplyDialog('SHORT_DESCRIPTION')"
       >
-        {{ $t('provider.edit.ia.card-preview-copy') }}
+        {{ $t('provider.edit.ia.apply-field') }}
       </SgiltButton>
-    </div>
+    </section>
 
     <div class="relaunch">
       <button
@@ -196,7 +80,17 @@
       >
         {{ $t('provider.edit.ia.relaunch-link', { count: triesLeft }, triesLeft ?? 0) }}
       </button>
-      <p v-else class="quota-exhausted">{{ $t('provider.edit.ia.error-quota') }}</p>
+      <i18n-t
+        v-else
+        keypath="provider.edit.ia.error-quota"
+        tag="p"
+        class="quota-exhausted"
+        scope="global"
+      >
+        <template #contact>
+          <NuxtLink to="/m/nous-contacter">{{ $t('provider.edit.ia.error-quota-contact') }}</NuxtLink>
+        </template>
+      </i18n-t>
     </div>
   </div>
 </template>
@@ -204,13 +98,12 @@
 <script setup lang="ts">
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
-import FicheIaCollapsibleBlock from './FicheIaCollapsibleBlock.vue'
-import FicheIaFieldRow from './FicheIaFieldRow.vue'
+import FicheIaPreview from './FicheIaPreview.vue'
+import FicheIaApplyDialog from './FicheIaApplyDialog.vue'
 import PrestataireCard from '~/components/cards/PrestataireCard.vue'
 import { mapPrestataireDetailToCard } from '~/data/prestataire/mapper/prestataireMapper'
-import { DETAIL_CATEGORY_ORDER } from '~/utils/constants'
 import type { PrestataireCardDetail } from '~/data/prestataire/domain/PrestataireCardDetail'
-import type { FicheIaSection, FicheIaAction } from '~/data/ficheia/dto/FicheIaApplyDto'
+import { FICHE_IA_LIST_SECTIONS, type FicheIaSection } from '~/data/ficheia/dto/FicheIaApplyDto'
 
 defineEmits<{ relaunch: [] }>()
 
@@ -221,34 +114,33 @@ const overwriteConfirmOpen = ref(false)
 
 /** Card réelle (photo, nom, catégorie), légende remplacée par celle proposée par l'IA. */
 const cardPreview = computed<PrestataireCardDetail | undefined>(() => {
-  if (!prestataire.value || !result.value) return undefined
+  if (!prestataire.value || !result.value?.shortDescription) return undefined
   return {
     ...mapPrestataireDetailToCard(prestataire.value),
     shortDescription: result.value.shortDescription,
   }
 })
 
-/** Card réelle telle qu'affichée aujourd'hui dans les résultats de recherche. */
-const currentCardPreview = computed<PrestataireCardDetail | undefined>(() =>
-  prestataire.value ? mapPrestataireDetailToCard(prestataire.value) : undefined,
+// ── Modale d'application par champ ────────────────────────────────────────────
+const applyDialogOpen = ref(false)
+const pendingSection = ref<FicheIaSection | null>(null)
+const dialogIsList = computed(() =>
+  pendingSection.value ? FICHE_IA_LIST_SECTIONS.includes(pendingSection.value) : false,
 )
 
-const iaDetailGroups = computed(() =>
-  DETAIL_CATEGORY_ORDER.map((category) => ({
-    category,
-    items: (result.value?.details ?? []).filter((d) => d.category === category),
-  })).filter((group) => group.items.length > 0),
-)
+function openApplyDialog(section: FicheIaSection): void {
+  pendingSection.value = section
+  applyDialogOpen.value = true
+}
 
-const currentDetailGroups = computed(() =>
-  DETAIL_CATEGORY_ORDER.map((category) => ({
-    category,
-    items: (prestataire.value?.details ?? []).filter((d) => d.category === category),
-  })).filter((group) => group.items.length > 0),
-)
-
-function onApply(section: FicheIaSection, action: FicheIaAction): void {
-  applyOne(section, action)
+function onDialogConfirm(): void {
+  if (pendingSection.value) applyOne(pendingSection.value, 'REMPLACER')
+}
+function onDialogReplace(): void {
+  if (pendingSection.value) applyOne(pendingSection.value, 'REMPLACER')
+}
+function onDialogAdd(): void {
+  if (pendingSection.value) applyOne(pendingSection.value, 'AJOUTER')
 }
 </script>
 
@@ -277,6 +169,11 @@ function onApply(section: FicheIaSection, action: FicheIaAction): void {
     font-size: $font-size-sm;
     color: $text-secondary;
     margin: 0;
+
+    a {
+      color: $color-primary;
+      text-decoration: underline;
+    }
   }
 }
 
@@ -290,94 +187,102 @@ function onApply(section: FicheIaSection, action: FicheIaAction): void {
   margin: 0;
 }
 
-.blocks {
+// ── Layout deux colonnes (main + sidebar tarifs), comme l'onglet Aperçu ────────
+.preview-layout {
   display: flex;
   flex-direction: column;
-  gap: $spacing-m;
+  gap: 2.5rem;
+
+  @media (min-width: $breakpoint-desktop) {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    grid-template-areas: 'main sidebar';
+    gap: 3rem;
+    align-items: start;
+  }
 }
 
-.card-preview-section {
+.preview-main {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: $spacing-s;
+  gap: 2.5rem;
+  min-width: 0;
 
-  .label {
-    font-size: 0.85rem;
+  @media (min-width: $breakpoint-desktop) {
+    grid-area: main;
+  }
+}
+
+.preview-sidebar {
+  @media (min-width: $breakpoint-desktop) {
+    grid-area: sidebar;
+    position: sticky;
+    top: 5rem;
+    padding: 1.5rem;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: $radius-md;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  }
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-m;
+  flex-wrap: wrap;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+  .title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
     font-weight: 600;
-    color: $text-secondary;
+    color: $color-primary;
     margin: 0;
   }
 }
 
-.card-comparison {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: flex-start;
-  gap: $spacing-m;
-  width: 100%;
-}
-
-.card-column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: $spacing-xxs;
-  flex: 0 1 220px;
-
-  .column-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: $text-secondary;
-    opacity: 0.6;
-  }
-
-  &.current {
+.baseline-section {
+  .baseline-caption {
+    font-size: 0.8rem;
     font-style: italic;
-    opacity: 0.6;
+    color: $text-secondary;
+    opacity: 0.7;
+    margin: 0;
+  }
+
+  .baseline-text {
+    font-size: 1rem;
+    color: $text-primary;
+    margin: 0;
   }
 }
 
-.card-preview {
-  width: 100%;
-  max-width: 220px;
-}
-
-.multiline-text {
+.budget-text {
+  font-size: 0.95rem;
+  color: $text-secondary;
+  line-height: 1.6;
+  margin: 0;
   white-space: pre-line;
 }
 
-.testimonial,
-.faq-item {
-  & + & {
-    margin-top: $spacing-s;
+.card-preview-section {
+  .card-preview {
+    align-self: center;
+    width: 100%;
+    max-width: 220px;
   }
 }
 
-.testimonial .author,
-.faq-item .question {
-  font-weight: $font-weight-medium;
-}
-
-.detail-group {
-  & + & {
-    margin-top: $spacing-s;
-  }
-
-  h4 {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: $text-secondary;
-    margin: 0 0 $spacing-xxs;
-  }
-
-  ul {
-    margin: 0;
-    padding-left: 1.2rem;
-  }
+.card-preview-apply-btn {
+  align-self: center;
 }
 </style>

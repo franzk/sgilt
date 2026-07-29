@@ -27,9 +27,14 @@
           <ProBookingCard v-for="i in 4" :key="i" skeleton />
         </template>
 
-        <p v-else-if="filteredReservations.length === 0" class="empty">
-          {{ $t('pro.reservations.empty') }}
-        </p>
+        <div v-else-if="filteredReservations.length === 0" class="empty">
+          <p class="empty-title">{{ $t('pro.reservations.empty-title') }}</p>
+          <i18n-t keypath="pro.reservations.empty-text" tag="p" class="empty-text" scope="global">
+            <template #link>
+              <NuxtLink to="/pro/page-edition">{{ $t('pro.reservations.empty-link') }}</NuxtLink>
+            </template>
+          </i18n-t>
+        </div>
 
         <ProBookingCard
           v-for="(reservation, index) in filteredReservations"
@@ -148,12 +153,29 @@ $filter-h: 50px;
   }
 
   .empty {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+    text-align: center;
+    padding: $spacing-xl $spacing-m;
+  }
+
+  .empty-title {
+    font-size: 1rem;
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+    margin: 0;
+  }
+
+  .empty-text {
     font-size: 0.875rem;
     color: $text-secondary;
-    font-style: italic;
-    text-align: center;
-    padding: $spacing-xl 0;
     margin: 0;
+
+    a {
+      color: $color-primary;
+      text-decoration: underline;
+    }
   }
 }
 </style>

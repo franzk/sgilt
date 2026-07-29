@@ -26,7 +26,8 @@ onMounted(() => loadState())
   width: 100%;
 
   @media (min-width: $breakpoint-desktop) {
-    padding: $spacing-xl $spacing-m;
+    max-width: 1280px;
+    padding: $spacing-xl 2.5rem;
   }
 }
 

@@ -20,9 +20,17 @@
     </SgiltButton>
 
     <p v-if="generating" class="hint">{{ $t('provider.edit.ia.generating') }}</p>
-    <p v-if="generationError === 'quota'" class="error">
-      {{ $t('provider.edit.ia.error-quota') }}
-    </p>
+    <i18n-t
+      v-if="generationError === 'quota'"
+      keypath="provider.edit.ia.error-quota"
+      tag="p"
+      class="error"
+      scope="global"
+    >
+      <template #contact>
+        <NuxtLink to="/m/nous-contacter">{{ $t('provider.edit.ia.error-quota-contact') }}</NuxtLink>
+      </template>
+    </i18n-t>
     <p v-if="generationError === 'technical'" class="error">
       {{ $t('provider.edit.ia.error-technical') }}
     </p>
@@ -126,6 +134,11 @@ async function onGenerate(): Promise<void> {
     font-size: $font-size-sm;
     color: $state-error;
     margin: 0;
+
+    a {
+      color: inherit;
+      text-decoration: underline;
+    }
   }
 }
 </style>
