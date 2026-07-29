@@ -16,6 +16,8 @@ const props = defineProps<{
 
 const { prestataire, saveField } = usePrestataire()
 const isEdit = computed(() => props.displayMode === 'edit')
+/** Bouton back masqué sur les 3 onglets de page-edition (edit/preview/IA), visible uniquement sur la fiche publique. */
+const showBack = computed(() => props.displayMode === 'display')
 const heroboardOpen = ref(false)
 const hasMedia = computed(() => props.prestataire.medias.length > 0)
 
@@ -212,8 +214,8 @@ async function share() {
       </button>
     </div>
 
-    <!-- Bouton back (masqué en mode édition) -->
-    <button v-if="!isEdit" class="back" @click="emit('back')" aria-label="Retour">
+    <!-- Bouton back (masqué sur les 3 onglets de page-edition, visible uniquement sur la fiche publique) -->
+    <button v-if="showBack" class="back" @click="emit('back')" aria-label="Retour">
       <ArrowLeftIcon />
     </button>
 

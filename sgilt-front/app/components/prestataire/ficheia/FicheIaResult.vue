@@ -80,7 +80,17 @@
       >
         {{ $t('provider.edit.ia.relaunch-link', { count: triesLeft }, triesLeft ?? 0) }}
       </button>
-      <p v-else class="quota-exhausted">{{ $t('provider.edit.ia.error-quota') }}</p>
+      <i18n-t
+        v-else
+        keypath="provider.edit.ia.error-quota"
+        tag="p"
+        class="quota-exhausted"
+        scope="global"
+      >
+        <template #contact>
+          <NuxtLink to="/m/nous-contacter">{{ $t('provider.edit.ia.error-quota-contact') }}</NuxtLink>
+        </template>
+      </i18n-t>
     </div>
   </div>
 </template>
@@ -159,6 +169,11 @@ function onDialogAdd(): void {
     font-size: $font-size-sm;
     color: $text-secondary;
     margin: 0;
+
+    a {
+      color: $color-primary;
+      text-decoration: underline;
+    }
   }
 }
 
