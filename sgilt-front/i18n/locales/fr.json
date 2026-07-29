@@ -121,7 +121,7 @@
         "error-quota": "Vous avez utilisé tous vos essais de génération.",
         "error-technical": "Une erreur est survenue. Veuillez réessayer dans quelques instants.",
         "relaunch-link": "Relancer avec une autre URL ({count} essai restant) | Relancer avec une autre URL ({count} essais restants)",
-        "bulk-overwrite": "Importer tout dans ma page",
+        "bulk-overwrite": "Appliquer les données générées par l’IA",
         "bulk-overwrite-dialog": {
           "title": "Importer toute la proposition de l'IA dans ma page ?",
           "message": "Cette action remplace immédiatement le contenu de votre page Sgilt (accroche, description, offres, témoignages, infos pratiques, FAQ, budget) par la proposition générée. Cette action est irréversible.",
@@ -129,29 +129,28 @@
           "cancel": "Annuler"
         },
         "apply-error": "Une erreur est survenue lors de l’application. Veuillez réessayer.",
-        "current-label": "Actuel",
-        "proposal-label": "Proposition IA",
-        "no-current-content": "Aucun contenu actuellement",
+        "apply-field": "Appliquer à ma page",
+        "baseline-caption": "Cette phrase s’affiche sous votre nom.",
+        "apply-dialog": {
+          "title": "Appliquer à ma page ?",
+          "simple-message": "Cette action remplace immédiatement le contenu actuel de ce champ par la proposition générée par l’IA.",
+          "confirm": "Appliquer",
+          "replace-desc": "Remplace l’ensemble des éléments actuels par ceux proposés par l’IA.",
+          "add-desc": "Ajoute les éléments proposés par l’IA à ceux déjà présents, sans rien supprimer."
+        },
         "block": {
-          "presentation": "Présentation",
-          "testimonials": "Témoignages",
           "details": "Infos pratiques",
-          "faq": "FAQ",
-          "budget": "Budget"
+          "faq": "FAQ"
         },
         "field": {
           "baseline": "Accroche",
-          "identity": "Identité",
-          "offerings": "Prestations",
-          "budget": "Budget"
+          "identity": "Identité"
         },
         "action": {
-          "copy": "Importer dans ma page",
           "replace": "Remplacer",
           "add": "Ajouter"
         },
-        "card-preview-title": "Aperçu de votre page avec la proposition IA",
-        "card-preview-copy": "Importer la légende"
+        "card-preview-title": "Aperçu de votre page avec la proposition IA"
       },
       "fork": {
         "title": "Votre aventure Sgilt commence ici",

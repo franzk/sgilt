@@ -13,6 +13,14 @@ export type FicheIaSection =
 
 export type FicheIaAction = 'REMPLACER' | 'AJOUTER' | 'ECRASER_TOUT'
 
+/** Sections dont le contenu est une liste — pilote le choix Remplacer/Ajouter dans la modale d'application. */
+export const FICHE_IA_LIST_SECTIONS: readonly FicheIaSection[] = [
+  'OFFERINGS',
+  'TESTIMONIALS',
+  'DETAILS',
+  'FAQ',
+]
+
 export interface FicheIaApplyRequest {
   section: FicheIaSection | null
   action: FicheIaAction
