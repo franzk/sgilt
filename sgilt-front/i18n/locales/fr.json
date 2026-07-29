@@ -780,7 +780,9 @@
       }
     },
     "reservations": {
-      "empty": "Aucune demande pour le moment.",
+      "empty-title": "Les premières demandes arrivent bientôt ✨",
+      "empty-text": "Profitez-en pour {link} et mettre toutes les chances de votre côté.",
+      "empty-link": "enrichir votre page Sgilt",
       "filters": {
         "toutes": "Toutes"
       }
