@@ -21,7 +21,11 @@ defineProps<{
 @use 'sass:color';
 
 // global
-$background: linear-gradient(to bottom, #ffd84d 0%, #f2c200 100%);
+$background: linear-gradient(
+  to bottom,
+  color.adjust($color-accent, $lightness: 12%) 0%,
+  $color-accent 100%
+);
 
 // font
 $font-size: 1.125rem;
@@ -35,7 +39,7 @@ $border: 0.0625rem solid rgba(255, 255, 255, 0.35);
 $box-shadow:
   0 0.25rem 0.5rem rgba(0, 0, 0, 0.14),
   0 0.75rem 1.75rem rgba(0, 0, 0, 0.08),
-  0 0.75rem 2rem rgba(242, 194, 0, 0.18);
+  0 0.75rem 2rem rgba($color-accent, 0.18);
 
 // hover & active
 $hover-text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);

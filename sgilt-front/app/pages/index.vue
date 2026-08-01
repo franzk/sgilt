@@ -345,10 +345,10 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
       letter-spacing: 0.02rem;
       margin-top: 0.2rem;
       margin-bottom: 0;
-      color: $color-accent;
+      color: #fff7dd; // $color-accent;
       text-shadow:
         0 0 12px rgba(255, 210, 0, 0.4),
-        0 8px 24px rgba(0, 0, 0, 0.2);
+        0 8px 24px rgba(0, 0, 0, 0.49);
     }
   }
 
@@ -522,7 +522,7 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
         margin: 0;
         text-align: center;
         font-size: 0.95rem;
-        color: rgba(255, 255, 255, 0.95);
+        color: #fff;
         text-shadow:
           0 1px 3px rgba(0, 0, 0, 0.6),
           0 2px 10px rgba(0, 0, 0, 0.4);
