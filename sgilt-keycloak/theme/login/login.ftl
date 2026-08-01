@@ -1,5 +1,5 @@
 <#import "template.ftl" as layout>
-<@layout.registrationLayout displayMessage=!messagesPerField.existsError('username','password') displayInfo=realm.password && realm.registrationAllowed && !registrationDisabled??; section>
+<@layout.registrationLayout displayMessage=!messagesPerField.existsError('username','password') displayInfo=true; section>
     <#if section = "header">
         ${msg("loginAccountTitle")}
     <#elseif section = "form">
@@ -100,6 +100,8 @@
                 </ul>
             </div>
         </#if>
+    <#elseif section = "info">
+        <span>${msg("noAccountDiscover")} <a href="${(client.baseUrl)!""}m/comment-ca-marche">${msg("discoverHowItWorks")}</a></span>
     </#if>
 
 </@layout.registrationLayout>

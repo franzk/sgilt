@@ -26,6 +26,10 @@
             <LoginBoxIcon class="item-icon" />
             <span>{{ $t('profile.menu.login') }}</span>
           </button>
+          <NuxtLink v-if="!isAuthenticated" to="/m/comment-ca-marche" class="item" role="menuitem" @click="close">
+            <QuestionIcon class="item-icon" />
+            <span>{{ $t('profile.menu.how-it-works') }}</span>
+          </NuxtLink>
         </div>
 
         <div class="separator" />
@@ -62,6 +66,7 @@ import {
   UserIcon,
   LogoutBoxRIcon,
   LoginBoxIcon,
+  QuestionIcon,
   MailIcon,
   EditBoxIcon,
 } from '@remixicons/vue/line'
