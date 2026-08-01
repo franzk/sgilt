@@ -18,16 +18,35 @@
         </h3>
       </div>
 
-      <!-- composants -->
-      <div class="inputs">
-        <SgiltDatePicker placeholder="Votre date" v-model="dateFilter" :disabled="isLocked" />
+      <div class="form-bottom">
+        <!-- composants -->
+        <div class="inputs">
+          <SgiltDatePicker placeholder="Votre date" v-model="dateFilter" :disabled="isLocked" />
 
-        <SgiltSelect :options="selectOptions" v-model="selectedOption" :disabled="isLocked">
-          <template v-slot:left-icon> <IconConfetti :size="20" /> </template>
-        </SgiltSelect>
-        <SgiltHeroButton class="submit_button" @click="launch">
-          {{ $t('landing.search-banner.cta') }}
-        </SgiltHeroButton>
+          <SgiltSelect :options="selectOptions" v-model="selectedOption" :disabled="isLocked">
+            <template v-slot:left-icon> <IconConfetti :size="20" /> </template>
+          </SgiltSelect>
+          <SgiltHeroButton class="submit_button" @click="launch">
+            {{ $t('landing.search-banner.cta') }}
+          </SgiltHeroButton>
+        </div>
+
+        <!-- accès direct sans filtres -->
+        <div class="browse-alt">
+          <div class="divider" aria-hidden="true">
+            <span>{{ $t('landing.search-banner.or') }}</span>
+          </div>
+          <SgiltHeroButton variant="secondary" class="browse-button" @click="browseToSearch">
+            {{ $t('landing.search-banner.browse-cta') }}
+          </SgiltHeroButton>
+
+          <p class="browse-line">
+            {{ $t('landing.search-banner.or') }}
+            <NuxtLink to="/search" class="browse-link">
+              {{ $t('landing.search-banner.browse-cta-desktop') }}
+            </NuxtLink>
+          </p>
+        </div>
       </div>
     </section>
     <section class="photo-layer" aria-hidden="true"></section>
@@ -96,6 +115,10 @@ const launch = () => {
     query: { date: dateFilter.value ? toISODate(dateFilter.value) : undefined },
   })
 }
+
+const browseToSearch = () => {
+  navigateTo('/search')
+}
 </script>
 
 <style scoped lang="scss">
@@ -142,13 +165,8 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
   background: $background;
   padding-top: $padding-top;
 
-  // Grille mobile : 2 zones empilées
-  display: grid;
-  grid-template-rows: 50% 50%;
-  grid-template-columns: 1fr;
-  grid-template-areas:
-    'content'
-    'visual';
+  display: flex;
+  flex-direction: column;
 
   @media (max-width: #{$breakpoint-desktop - 1px}) {
     // Cacher l'ombre du header uniquement sur mobile
@@ -158,8 +176,6 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
   }
 
   @media (min-width: $breakpoint-desktop) {
-    display: flex;
-    flex-direction: column;
     justify-content: flex-start;
     padding-top: 0;
     color: #fff;
@@ -167,7 +183,8 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
 
   // ── Photo de fond ──────────────────────────────────────────────────────────
   .photo-layer {
-    grid-area: visual;
+    position: absolute;
+    inset: 50% 0 0 0;
     z-index: 1;
     filter: $photo-filter;
     background-image: url('/images/hero-party.png');
@@ -183,7 +200,6 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     pointer-events: none;
 
     @media (min-width: $breakpoint-desktop) {
-      position: absolute;
       inset: 0;
       z-index: 0;
       background-image: url('/images/hero-party-desktop.png');
@@ -203,7 +219,6 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
   // ── Zone de recherche ──────────────────────────────────────────────────────
   .search-form {
     z-index: 2;
-    grid-area: content;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -213,7 +228,7 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     gap: $search-form-gap;
 
     @media (min-width: $breakpoint-desktop) {
-      height: 50vh;
+      min-height: 50vh;
       padding-top: 6%;
       padding-bottom: 3%;
       justify-content: space-between;
@@ -244,6 +259,19 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
         );
         pointer-events: none;
       }
+    }
+  }
+
+  // ── Groupe barre de recherche + accès direct (écart fixe entre les deux) ────
+  .form-bottom {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $search-form-gap;
+
+    @media (min-width: $breakpoint-desktop) {
+      gap: 1.5rem;
     }
   }
 
@@ -408,6 +436,84 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
         box-shadow:
           0 8px 20px rgba(0, 0, 0, 0.25),
           0 2px 6px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+
+  // ── Accès direct sans filtres ──────────────────────────────────────────────
+  .browse-alt {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    width: $inputs-width;
+    max-width: $inputs-max-width;
+
+    @media (min-width: $breakpoint-desktop) {
+      width: unset;
+      max-width: unset;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      color: $text-secondary;
+      font-size: 0.8rem;
+
+      &::before,
+      &::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: $divider-color;
+      }
+
+      span {
+        padding: 0 0.75rem;
+      }
+
+      @media (min-width: $breakpoint-desktop) {
+        display: none;
+      }
+    }
+
+    .browse-button {
+      height: 2.25rem;
+      padding: 0 1.5rem;
+      font-size: 0.9rem;
+
+      @media (min-width: $breakpoint-desktop) {
+        display: none;
+      }
+    }
+
+    .browse-line {
+      display: none;
+
+      @media (min-width: $breakpoint-desktop) {
+        display: block;
+        width: 100%;
+        margin: 0;
+        text-align: center;
+        font-size: 0.95rem;
+        color: rgba(255, 255, 255, 0.95);
+        text-shadow:
+          0 1px 3px rgba(0, 0, 0, 0.6),
+          0 2px 10px rgba(0, 0, 0, 0.4);
+      }
+
+      .browse-link {
+        color: inherit;
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        transition: color 120ms ease;
+
+        &:hover {
+          color: $color-accent;
+        }
       }
     }
   }

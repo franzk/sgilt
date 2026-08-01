@@ -18,7 +18,6 @@ defineProps<{
 </script>
 
 <style scoped lang="scss">
-// TODO : vérifier le secondary
 @use 'sass:color';
 
 // global
@@ -54,7 +53,7 @@ $hover-text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
   background: $background;
   color: $color;
   text-shadow: $text-shadow;
-  border: none;
+  border: $border;
   border-radius: $border-radius;
 
   &:hover {
@@ -66,14 +65,14 @@ $hover-text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
     box-shadow: $input-focus-box-shadow;
   }
 
-  border: $border;
-
   box-shadow: $box-shadow;
 }
 
 .secondary {
-  background-color: white;
-  color: $color-accent;
+  background: white;
+  color: $text-primary;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 
   &:hover {
     background-color: color.adjust($color-secondary, $lightness: -10%);
