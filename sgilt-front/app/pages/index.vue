@@ -35,7 +35,7 @@
         </div>
 
         <!-- accès direct sans filtres -->
-        <div class="browse-alt">
+        <div v-if="currentFlow !== 'new-event'" class="browse-alt">
           <div class="divider" aria-hidden="true">
             <span>{{ $t('landing.search-banner.or') }}</span>
           </div>
