@@ -744,6 +744,7 @@
       "edit-my-page": "Modifier ma page Sgilt",
       "logout": "Déconnexion",
       "login": "Connexion",
+      "how-it-works": "Comment ça marche ?",
       "contact-sgilt": "Contacter Sgilt",
       "terms": "Conditions générales",
       "privacy": "Confidentialité",
@@ -764,6 +765,26 @@
       "delay": "Réponse sous 48 h",
       "copy-email-aria": "Copier l'email",
       "copied-aria": "Copié"
+    }
+  },
+  "how-it-works": {
+    "page": {
+      "eyebrow": "Comment ça marche",
+      "title": "Votre compte se crée tout seul.",
+      "lede": "Pas d'inscription à remplir à l'avance : découvrez les prestataires, envoyez votre demande, et votre espace personnel apparaît automatiquement.",
+      "step-1-title": "Découvrez",
+      "step-1-description": "Parcourez les prestataires présents sur Sgilt.",
+      "step-2-title": "Envoyez une demande",
+      "step-2-description": "Présentez votre événement au prestataire de votre choix.",
+      "step-3-title": "Retrouvez tout au même endroit",
+      "step-3-description": "Votre espace est créé automatiquement pour suivre vos demandes, gérer vos réservations et organiser un ou plusieurs événements.",
+      "cta": "Voir les prestataires",
+      "already-account": "Vous avez déjà un compte ?",
+      "login": "Se connecter",
+      "provider-title": "Vous êtes prestataire ?",
+      "provider-question": "Vous souhaitez présenter votre activité sur Sgilt ?",
+      "provider-instructions": "Envoyez-nous quelques mots sur vos prestations, votre zone d'intervention et un lien vers votre site ou vos réseaux à {email}.",
+      "provider-callback": "Nous vous recontacterons après avoir découvert votre activité."
     }
   },
   "pro": {
