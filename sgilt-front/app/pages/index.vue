@@ -5,7 +5,10 @@
       <div class="hero">
         <p class="title">
           <span class="title-thin">{{ $t('landing.search-banner.title-part-1') }}</span>
-          <span class="title-bold">{{ $t('landing.search-banner.title-part-2') }}</span>
+          <span class="title-bold"
+            >{{ $t('landing.search-banner.title-part-2')
+            }}<span class="title-mark">{{ $t('landing.search-banner.title-mark') }}</span></span
+          >
         </p>
         <h3 class="tagline">
           <template v-if="currentFlow === 'new-event'">
@@ -299,6 +302,7 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
   .title {
     display: flex;
     flex-direction: column;
+    align-items: center;
     color: $hero-color;
 
     @media (min-width: $breakpoint-desktop) {
@@ -325,6 +329,8 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
   }
 
   .title-bold {
+    display: inline-flex;
+    align-items: center;
     font-weight: $title-bold-font-weight;
     font-size: $title-bold-font-size;
     line-height: $title-bold-line-height;
@@ -332,6 +338,7 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     margin-bottom: $title-bold-margin-bottom;
 
     @media (min-width: $breakpoint-desktop) {
+      display: inline;
       font-weight: 800;
       font-size: 4rem;
       line-height: 1.05;
@@ -342,6 +349,23 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
       text-shadow:
         0 0 12px rgba(255, 210, 0, 0.4),
         0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  // Le "?" reprend le style du début de phrase, seul "FÊTE" garde la grosse typo accent
+  .title-mark {
+    font-weight: $title-thin-font-weight;
+    font-size: $title-thin-font-size;
+    line-height: $title-thin-line-height;
+    font-family: 'Cormorant Garamond', serif;
+    letter-spacing: normal;
+    color: $hero-color;
+
+    @media (min-width: $breakpoint-desktop) {
+      font-size: 3.2rem;
+      line-height: 1.05;
+      color: $color-primary;
+      text-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
     }
   }
 
