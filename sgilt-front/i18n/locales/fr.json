@@ -720,24 +720,13 @@
   "profile": {
     "page": {
       "personal-info-title": "Informations personnelles",
-      "connection-title": "Connexion",
       "field-firstname": "Prénom",
       "field-lastname": "Nom",
       "field-phone": "Téléphone",
       "field-company": "Entreprise",
-      "field-email": "Email",
-      "field-password": "Mot de passe",
-      "keycloak-link": "Modifier via mon espace sécurisé",
+      "keycloak-link": "Modifier mon mot de passe via mon espace sécurisé",
       "save": "Sauvegarder",
-      "cancel": "Annuler",
-      "delete-account": "Supprimer mon compte",
-      "delete-dialog": {
-        "title": "Supprimer mon compte",
-        "description": "Cette action est irréversible. Toutes vos données seront supprimées.",
-        "body": "Êtes-vous sûr de vouloir supprimer votre compte\u00a0? Vos événements et demandes en cours seront définitivement perdus.",
-        "confirm": "Oui, supprimer",
-        "keep": "Non, garder mon compte"
-      }
+      "cancel": "Annuler"
     },
     "menu": {
       "my-info": "Mes informations",

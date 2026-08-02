@@ -14,24 +14,9 @@
         <!-- Colonne gauche : avatar -->
         <div class="avatar-col">
           <div class="avatar-row">
-            <div
-              class="avatar-wrapper"
-              :class="{ 'avatar-wrapper--editing': editing }"
-              @click="editing && avatarInput?.click()"
-            >
+            <div class="avatar-wrapper">
               <UserAvatar :size="5" />
-              <img v-if="previewUrl" :src="previewUrl" alt="" class="avatar-preview" />
-              <div v-if="editing" class="avatar-overlay" aria-hidden="true">
-                <CameraIcon class="avatar-overlay-icon" />
-              </div>
             </div>
-            <input
-              ref="avatarInput"
-              type="file"
-              accept="image/*"
-              class="avatar-file-input"
-              @change="onAvatarChange"
-            />
           </div>
         </div>
 
@@ -48,7 +33,7 @@
               <input
                 v-if="editing"
                 id="field-firstname"
-                v-model="draft.firstName"
+                v-model="profile.firstName"
                 class="field-input"
                 type="text"
                 autocomplete="given-name"
@@ -62,7 +47,7 @@
               <input
                 v-if="editing"
                 id="field-lastname"
-                v-model="draft.lastName"
+                v-model="profile.lastName"
                 class="field-input"
                 type="text"
                 autocomplete="family-name"
@@ -82,7 +67,7 @@
               <input
                 v-if="editing"
                 id="field-phone"
-                v-model="draft.phone"
+                v-model="profile.phone"
                 class="field-input"
                 type="tel"
                 autocomplete="tel"
@@ -90,19 +75,19 @@
               <span v-else class="field-value">{{ profile.phone }}</span>
             </div>
 
-            <div v-if="profile.role === 'prestataire'" class="field">
+            <div v-if="role === 'prestataire'" class="field">
               <label class="field-label" :for="editing ? 'field-company' : undefined">
                 {{ $t('profile.page.field-company') }}
               </label>
               <input
                 v-if="editing"
                 id="field-company"
-                v-model="draft.companyName"
+                v-model="companyName"
                 class="field-input"
                 type="text"
                 autocomplete="organization"
               />
-              <span v-else class="field-value">{{ profile.companyName }}</span>
+              <span v-else class="field-value">{{ companyName }}</span>
             </div>
           </div>
         </div>
@@ -110,7 +95,7 @@
 
       <!-- Actions édition -->
       <div v-if="editing" class="edit-actions">
-        <SgiltButton :loading="saving" @click="save">{{ $t('profile.page.save') }}</SgiltButton>
+        <SgiltButton :loading="saving" @click="onSave">{{ $t('profile.page.save') }}</SgiltButton>
         <SgiltButton variant="secondary" @click="cancelEdit">{{
           $t('profile.page.cancel')
         }}</SgiltButton>
@@ -119,129 +104,48 @@
 
     <!-- ── Bloc 2 — Connexion ─────────────────────────────────────────────────── -->
     <section class="section">
-      <h2 class="section-title">{{ $t('profile.page.connection-title') }}</h2>
-
-      <div class="connection-layout">
-        <div class="fields">
-          <div class="field">
-            <span class="field-label">{{ $t('profile.page.field-email') }}</span>
-            <span class="field-value">{{ profile.email }}</span>
-          </div>
-
-          <hr class="field-sep" />
-
-          <div class="field">
-            <span class="field-label">{{ $t('profile.page.field-password') }}</span>
-            <span class="field-value field-value--password">••••••••</span>
-          </div>
-        </div>
-
-        <a href="/account/security" class="keycloak-link">
-          <ShieldIcon class="keycloak-icon" />
-          {{ $t('profile.page.keycloak-link') }} <span class="link-arrow">→</span>
-        </a>
-      </div>
+      <button type="button" class="keycloak-link" @click="changePassword">
+        <ShieldIcon class="keycloak-icon" />
+        {{ $t('profile.page.keycloak-link') }}
+      </button>
     </section>
 
-    <!-- ── Suppression de compte (clients uniquement) ─────────────────────────── -->
-    <div v-if="profile.role === 'client'" class="danger-zone">
-      <button class="danger-zone-btn" type="button" @click="deleteOpen = true">
-        {{ $t('profile.page.delete-account') }}
-      </button>
-    </div>
-
-    <!-- ── Dialog confirmation suppression ───────────────────────────────────── -->
-    <SgiltConfirmDialog
-      v-model:open="deleteOpen"
-      :title="$t('profile.page.delete-dialog.title')"
-      :message="$t('profile.page.delete-dialog.body')"
-      :confirm-label="$t('profile.page.delete-dialog.confirm')"
-      :cancel-label="$t('profile.page.delete-dialog.keep')"
-      :confirm-loading="deleting"
-      destructive
-      max-width="400px"
-      @confirm="deleteAccount"
-    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { CameraIcon, EditIcon, ShieldIcon } from '@remixicons/vue/line'
+import { EditIcon, ShieldIcon } from '@remixicons/vue/line'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
-import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 import UserAvatar from '~/components/basics/UserAvatar.vue'
+import { useUtilisateur } from '~/data/utilisateur/useUtilisateur'
 
 definePageMeta({ layout: 'account' })
 
-// ── Type ──────────────────────────────────────────────────────────────────────
+// ── Profil ────────────────────────────────────────────────────────────────────
+// Rôle/entreprise : pas encore backés par l'API, restent en état local mock.
 
-interface UserProfile {
-  firstName: string
-  lastName: string
-  phone: string
-  email: string
-  photo?: string
-  role: 'client' | 'prestataire'
-  companyName?: string
+const role = ref<'client' | 'prestataire'>('client')
+const companyName = ref<string | undefined>(undefined)
+
+const { profile, editing, saving, saveError, startEdit, cancelEdit, save } = useUtilisateur()
+
+async function onSave() {
+  const firstName = profile.firstName
+  const lastName = profile.lastName
+  await save()
+  if (saveError.value) return
+  patchCurrentUser({ firstName, lastName })
 }
 
-// ── Mock ──────────────────────────────────────────────────────────────────────
+// ── Connexion ─────────────────────────────────────────────────────────────────
 
-const profile = ref<UserProfile>({
-  firstName: 'Julie',
-  lastName: 'Muller',
-  phone: '+33 6 12 34 56 78',
-  email: 'julie.muller@email.fr',
-  role: 'client',
-})
+const { login } = useKeycloak()
 
-// ── Avatar ────────────────────────────────────────────────────────────────────
-
-const avatarInput = ref<HTMLInputElement | null>(null)
-const previewUrl = ref<string | null>(profile.value.photo ?? null)
-
-function onAvatarChange(e: Event) {
-  const file = (e.target as HTMLInputElement).files?.[0]
-  if (!file) return
-  previewUrl.value = URL.createObjectURL(file)
-}
-
-// ── Édition ───────────────────────────────────────────────────────────────────
-
-const editing = ref(false)
-const saving = ref(false)
-
-const draft = ref<UserProfile>({ ...profile.value })
-
-function startEdit() {
-  draft.value = { ...profile.value }
-  editing.value = true
-}
-
-function cancelEdit() {
-  editing.value = false
-  previewUrl.value = profile.value.photo ?? null
-}
-
-async function save() {
-  saving.value = true
-  await new Promise((r) => setTimeout(r, 400))
-  profile.value = { ...draft.value }
-  saving.value = false
-  editing.value = false
-}
-
-// ── Suppression ───────────────────────────────────────────────────────────────
-
-const deleteOpen = ref(false)
-const deleting = ref(false)
-
-async function deleteAccount() {
-  deleting.value = true
-  await new Promise((r) => setTimeout(r, 500))
-  deleting.value = false
-  deleteOpen.value = false
-  navigateTo('/')
+function changePassword() {
+  login({
+    action: 'UPDATE_PASSWORD',
+    redirectUri: window.location.origin + '/account/profile',
+  })
 }
 </script>
 
@@ -320,13 +224,6 @@ $desktop: $breakpoint-desktop;
   flex-shrink: 0;
 }
 
-.field-sep {
-  border: none;
-  border-top: 1px solid $divider-color;
-  margin: 0;
-  flex-shrink: 0;
-}
-
 // ── Avatar ────────────────────────────────────────────────────────────────────
 
 .avatar-row {
@@ -338,40 +235,6 @@ $desktop: $breakpoint-desktop;
 .avatar-wrapper {
   position: relative;
   border-radius: 50%;
-  cursor: default;
-
-  &--editing {
-    cursor: pointer;
-  }
-
-  .avatar-preview {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-
-  .avatar-overlay {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    .avatar-overlay-icon {
-      width: 1.4rem;
-      height: 1.4rem;
-      color: #fff;
-    }
-  }
-}
-
-.avatar-file-input {
-  display: none;
 }
 
 // ── Ligne Prénom | Nom ────────────────────────────────────────────────────────
@@ -460,21 +323,19 @@ $desktop: $breakpoint-desktop;
   align-self: flex-start;
   margin: 0 $spacing-m $spacing-m;
   padding: $spacing-xs $spacing-m;
+  border: none;
   border-radius: 9999px;
   background: $brand-accent;
   font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
   color: $brand-primary;
+  cursor: pointer;
   text-decoration: none;
   transition: opacity 150ms ease;
 
   &:hover {
     opacity: 0.85;
-  }
-
-  .link-arrow {
-    display: none;
   }
 }
 
@@ -491,13 +352,6 @@ $desktop: $breakpoint-desktop;
 }
 
 .fields-col {
-  display: flex;
-  flex-direction: column;
-}
-
-// ── Layout Bloc 2 ─────────────────────────────────────────────────────────────
-
-.connection-layout {
   display: flex;
   flex-direction: column;
 }
@@ -549,79 +403,8 @@ $desktop: $breakpoint-desktop;
     border-bottom: 1px solid $divider-color;
   }
 
-  // Bloc 2 — deux colonnes
-  .connection-layout {
-    flex-direction: row;
-    align-items: stretch;
-
-    .fields {
-      flex: 1;
-      border-right: 1px solid $divider-color;
-    }
-  }
-
   .keycloak-link {
-    flex: 0 0 auto;
-    align-self: center;
     margin: $spacing-s $spacing-m;
-  }
-}
-
-// ── Zone dangereuse ───────────────────────────────────────────────────────────
-
-.danger-zone {
-  display: flex;
-  justify-content: center;
-  padding: $spacing-s 0;
-
-  .danger-zone-btn {
-    background: none;
-    border: none;
-    font-family: inherit;
-    font-size: 0.82rem;
-    color: #dc2626;
-    cursor: pointer;
-    padding: 0;
-    opacity: 0.7;
-    transition: opacity 150ms ease;
-
-    &:hover {
-      opacity: 1;
-    }
-  }
-}
-
-// ── Dialog suppression ────────────────────────────────────────────────────────
-
-.delete-dialog {
-  padding: $spacing-m;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-m;
-
-  .delete-dialog-text {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.88rem;
-    color: $text-secondary;
-    line-height: 1.55;
-    margin: 0;
-  }
-
-  .delete-dialog-actions {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-s;
-
-    :deep(.btn-destructive.btn) {
-      background: #dc2626;
-      box-shadow: none;
-      border-top: none;
-      text-shadow: none;
-
-      &:hover:not(:disabled) {
-        filter: brightness(0.92);
-      }
-    }
   }
 }
 </style>

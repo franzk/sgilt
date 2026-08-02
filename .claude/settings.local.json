@@ -120,7 +120,8 @@
       "Bash(javap -p -c -constants 'com/openai/core/Timeout$Builder.class')",
       "Bash(javap -p -c -constants com/openai/core/Timeout.class)",
       "Bash(gh run *)",
-      "Bash(./gradlew compileJava compileTestJava -q)"
+      "Bash(./gradlew compileJava compileTestJava -q)",
+      "Bash(xargs -I{} basename {})"
     ]
   }
 }
