@@ -20,11 +20,17 @@ COPY --from=spi-builder /build/target/sgilt-keycloak-spi-1.0.0.jar /opt/keycloak
 
 # Thème custom
 COPY ./theme /opt/keycloak/themes/sgilt-theme
+COPY ./VERSION /tmp/VERSION
 
 # Realm (init mode only)
 COPY realm/realm-import.json /opt/keycloak/data/import/
 
-RUN /opt/keycloak/bin/kc.sh build && \
+# Injecte VERSION dans l'URL du CSS (styles.css?v=...) : l'URL de thème Keycloak ne change
+# qu'avec la version de Keycloak elle-même, jamais avec nos changements de thème —
+# --> sans ce cache-busting, navigateurs/CDN continuent de servir l'ancien CSS après un déploiement.
+RUN sed -i "s/__THEME_VERSION__/$(cat /tmp/VERSION)/" /opt/keycloak/themes/sgilt-theme/login/theme.properties && \
+    rm /tmp/VERSION && \
+    /opt/keycloak/bin/kc.sh build && \
     chown -R 1000:0 /opt/keycloak/data && \
     chmod -R g+rwX /opt/keycloak/data
 
