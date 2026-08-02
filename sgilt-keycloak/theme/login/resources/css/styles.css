@@ -352,10 +352,40 @@ form input[type="submit"]:active {
   box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
 }
 
+/* ── Bouton secondaire / annuler ──────────────────────────────────────── */
+/* kcButtonDefaultClass (ex. cancel-aia sur une required action type       */
+/* update-password) résout vers "btn-default" dans le thème de base        */
+/* Keycloak — un bouton Bootstrap non stylé. Cible générique, couvre tout  */
+/* formulaire du thème de base qui affiche ce bouton.                     */
+.pf-c-button.btn-default {
+  width: 100%;
+  padding: 12px 20px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--input-border);
+  border-radius: var(--input-radius);
+  font-size: 16px;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.pf-c-button.btn-default:hover {
+  background: var(--color-surface-soft);
+  color: var(--color-primary);
+}
+
 /* ── Form options row (remember me / forgot password) ──────── */
-.pf-c-form-group.pf-m-action,
+.pf-c-form-group.pf-m-action {
+  text-align: center;
+}
+
 #kc-form-buttons {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .kc-form-options-row {

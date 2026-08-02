@@ -4,7 +4,7 @@
       <div v-if="open" ref="popinRef" class="account-popin" role="menu" aria-label="Menu">
         <!-- ── Section 1 : compte ─────────────────────────────────────────────── -->
         <div class="group">
-          <NuxtLink v-if="isAuthenticated" to="#" class="item" role="menuitem" @click="close">
+          <NuxtLink v-if="isAuthenticated" to="/account/profile" class="item" role="menuitem" @click="close">
             <UserIcon class="item-icon" />
             <span>{{ $t('profile.menu.my-info') }}</span>
           </NuxtLink>

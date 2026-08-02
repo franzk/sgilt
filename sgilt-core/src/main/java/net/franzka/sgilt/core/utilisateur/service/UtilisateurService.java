@@ -2,7 +2,9 @@ package net.franzka.sgilt.core.utilisateur.service;
 
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import net.franzka.sgilt.core.utilisateur.domain.UtilisateurStatus;
+import net.franzka.sgilt.core.utilisateur.dto.UtilisateurEditDto;
 import net.franzka.sgilt.core.utilisateur.dto.UtilisateurProfileDto;
+import net.franzka.sgilt.core.utilisateur.dto.UtilisateurUpdateDto;
 import net.franzka.sgilt.core.utilisateur.exception.UtilisateurAlreadyExistException;
 import net.franzka.sgilt.core.utilisateur.exception.UtilisateurNotFoundException;
 import net.franzka.sgilt.core.utilisateur.repository.UtilisateurRepository;
@@ -112,5 +114,39 @@ public class UtilisateurService {
                 utilisateur.getEmail(),
                 utilisateur.getAvatarUrl()
         );
+    }
+
+    /**
+     * Retourne les champs éditables du profil de l'utilisateur (prénom, nom, téléphone, email).
+     *
+     * @param utilisateur l'utilisateur connecté
+     * @return le profil éditable
+     */
+    public UtilisateurEditDto getEditProfile(Utilisateur utilisateur) {
+        return new UtilisateurEditDto(
+                utilisateur.getFirstName(),
+                utilisateur.getLastName(),
+                utilisateur.getPhone(),
+                utilisateur.getEmail()
+        );
+    }
+
+    /**
+     * Met à jour le prénom et/ou le nom de l'utilisateur. Seuls les champs non-null du DTO sont écrits.
+     *
+     * @param utilisateur l'utilisateur connecté
+     * @param dto         les champs à mettre à jour (null = non modifié)
+     */
+    public void updateProfile(Utilisateur utilisateur, UtilisateurUpdateDto dto) {
+        if (dto.firstName() != null) {
+            utilisateur.setFirstName(dto.firstName());
+        }
+        if (dto.lastName() != null) {
+            utilisateur.setLastName(dto.lastName());
+        }
+        if (dto.phone() != null) {
+            utilisateur.setPhone(dto.phone());
+        }
+        utilisateurRepository.save(utilisateur);
     }
 }

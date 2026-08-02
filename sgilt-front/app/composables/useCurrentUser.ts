@@ -76,3 +76,10 @@ export function useCurrentUser(): CurrentUser {
 
   return _user
 }
+
+/**
+ * Met à jour le cache utilisateur courant après une mutation réussie côté serveur.
+ */
+export function patchCurrentUser(partial: Partial<Pick<CurrentUser, 'firstName' | 'lastName'>>): void {
+  Object.assign(_user, partial)
+}
