@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@PreAuthorize("hasAuthority('ROLE_USER')")
 public class UtilisateurController implements UtilisateurApi {
 
     private final UtilisateurService utilisateurService;
     private final CurrentUserService currentUserService;
 
     @Override
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     @Transactional(readOnly = true)
     public ResponseEntity<UtilisateurProfileDto> getMe() {
         String email = currentUserService.getEmail();
@@ -33,10 +33,12 @@ public class UtilisateurController implements UtilisateurApi {
 
     /**
      * Retourne les champs éditables (prénom, nom, téléphone, email) du profil de l'utilisateur connecté.
+     * Accessible à tous les rôles (client, prestataire, admin) : ils éditent tous le même profil.
      *
      * @return le profil éditable
      */
     @Override
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_PRO', 'ROLE_ADMIN')")
     @Transactional(readOnly = true)
     public ResponseEntity<UtilisateurEditDto> getEditProfile() {
         Utilisateur utilisateur = currentUserService.get();
@@ -46,11 +48,13 @@ public class UtilisateurController implements UtilisateurApi {
 
     /**
      * Met à jour le prénom et/ou le nom de l'utilisateur connecté.
+     * Accessible à tous les rôles (client, prestataire, admin) : ils éditent tous le même profil.
      *
      * @param dto les champs à mettre à jour (null = non modifié)
      * @return 204 No Content
      */
     @Override
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_PRO', 'ROLE_ADMIN')")
     @Transactional
     public ResponseEntity<Void> updateMe(UtilisateurUpdateDto dto) {
         Utilisateur utilisateur = currentUserService.get();

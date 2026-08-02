@@ -28,6 +28,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/user/**").hasAuthority("ROLE_USER")
                 .requestMatchers("/api/v1/pro/**").hasAuthority("ROLE_PRO")
+                .requestMatchers("/api/v1/users/me/edit").hasAnyAuthority("ROLE_USER", "ROLE_PRO", "ROLE_ADMIN")
                 .requestMatchers("/api/v1/users/**").hasAuthority("ROLE_USER")
                 .requestMatchers("/api/v1/admin/**").hasAuthority("ROLE_ADMIN")
                 .requestMatchers("/api/v1/reservations/*/feed", "/api/v1/reservations/*/feed/**").hasAnyAuthority("ROLE_USER", "ROLE_PRO")
