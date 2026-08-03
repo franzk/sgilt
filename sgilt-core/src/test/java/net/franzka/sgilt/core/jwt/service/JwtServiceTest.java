@@ -79,6 +79,16 @@ class JwtServiceTest {
 
             assertThat(jti1).isNotEqualTo(jti2);
         }
+
+        @Test
+        void givenValidInputs_whenGenerateToken_thenSignedWithExplicitHS256() {
+            String token = jwtService.generateToken(Map.of(), SUBJECT, Duration.ofMinutes(10), testKey);
+
+            String headerJson = new String(
+                    Base64.getUrlDecoder().decode(token.split("\\.")[0]), java.nio.charset.StandardCharsets.UTF_8);
+
+            assertThat(headerJson).contains("\"alg\":\"HS256\"");
+        }
     }
 
     // -------------------------------------------------------------------------

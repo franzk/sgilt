@@ -107,7 +107,7 @@ class OnboardingServiceTest {
 
             onboardingService.initOnboardingSession(buildRequest());
 
-            verify(prestataireService).getById(PRESTATAIRE_ID);
+            verify(prestataireService).getPublishedById(PRESTATAIRE_ID);
         }
 
         @Test
@@ -140,7 +140,7 @@ class OnboardingServiceTest {
         private Prestataire stubHappyPath() {
             when(utilisateurService.existsByEmail(EMAIL)).thenReturn(false);
             Prestataire prestataire = Prestataire.builder().id(PRESTATAIRE_ID).build();
-            when(prestataireService.getById(PRESTATAIRE_ID)).thenReturn(prestataire);
+            when(prestataireService.getPublishedById(PRESTATAIRE_ID)).thenReturn(prestataire);
             Onboarding onboarding = Onboarding.builder().email(EMAIL).build();
             OnboardingSessionService.InitiationResult result =
                     new OnboardingSessionService.InitiationResult(onboarding, "hmac.token");

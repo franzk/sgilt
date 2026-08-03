@@ -88,6 +88,36 @@ class PrestataireServiceTest {
     }
 
     // -------------------------------------------------------------------------
+    // getPublishedById
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetPublishedById {
+
+        @Test
+        void givenPublishedPrestataire_whenGetPublishedById_thenReturnsPrestataire() {
+            Prestataire prestataire = prestataireWith(PrestataireStatus.PUBLISHED);
+            when(prestataireRepository.findByIdAndStatusAndDeletedAtIsNull(prestataire.getId(), PrestataireStatus.PUBLISHED))
+                    .thenReturn(Optional.of(prestataire));
+
+            assertThat(prestataireService.getPublishedById(prestataire.getId())).isEqualTo(prestataire);
+        }
+
+        @Test
+        void givenNoPublishedPrestataireForId_whenGetPublishedById_thenThrowsNotFound() {
+            // la requête filtre déjà par statut PUBLISHED et deletedAt IS NULL : id inconnu,
+            // non publié (DRAFT/IN_REVIEW) et soft-deleted produisent tous Optional.empty() ici —
+            // même exception dans les 3 cas, pour ne pas exposer la distinction à l'appelant
+            UUID id = UUID.randomUUID();
+            when(prestataireRepository.findByIdAndStatusAndDeletedAtIsNull(id, PrestataireStatus.PUBLISHED))
+                    .thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> prestataireService.getPublishedById(id))
+                    .isInstanceOf(PrestataireNotFoundException.class);
+        }
+    }
+
+    // -------------------------------------------------------------------------
     // getMaFiche
     // -------------------------------------------------------------------------
 

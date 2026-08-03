@@ -6,6 +6,8 @@ import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Base64;
 
@@ -107,7 +109,10 @@ public class VerificationTokenHmacService {
         String receivedSignature = token.substring(separatorIndex + 1);
         String expectedSignature = new HmacUtils(HmacAlgorithms.HMAC_SHA_256, confirmationTokenProperties.confirmationSecret())
                 .hmacHex(payload);
-        if (!expectedSignature.equals(receivedSignature)) {
+        boolean signatureMatches = MessageDigest.isEqual(
+                expectedSignature.getBytes(StandardCharsets.UTF_8),
+                receivedSignature.getBytes(StandardCharsets.UTF_8));
+        if (!signatureMatches) {
             throw new InvalidTokenException();
         }
         return payload;
