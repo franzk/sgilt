@@ -70,6 +70,21 @@ public class PrestataireService {
     }
 
     /**
+     * Charge un prestataire publié par son identifiant.
+     * Utilisé pour valider une cible avant création d'une ressource publique (ex. onboarding) —
+     * lève la même exception qu'un identifiant inexistant, qu'il soit inexistant, non publié ou
+     * supprimé, pour ne pas exposer cette distinction à un appelant non authentifié.
+     *
+     * @param id l'identifiant du prestataire
+     * @return le prestataire correspondant
+     * @throws PrestataireNotFoundException si aucun prestataire publié ne correspond à cet identifiant
+     */
+    public Prestataire getPublishedById(UUID id) {
+        return prestataireRepository.findByIdAndStatusAndDeletedAtIsNull(id, PrestataireStatus.PUBLISHED)
+                .orElseThrow(() -> new PrestataireNotFoundException(id.toString()));
+    }
+
+    /**
      * Charge la fiche complète de l'utilisateur PRO, quel que soit son statut.
      *
      * @param utilisateur l'utilisateur PRO

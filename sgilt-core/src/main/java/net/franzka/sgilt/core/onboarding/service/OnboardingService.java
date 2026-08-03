@@ -62,7 +62,7 @@ public class OnboardingService {
         log.info("createDemandeReservation — nouvel email, création de la session : {}", request.email());
         onboardingSessionService.cancelExistingForEmail(request.email());
 
-        Prestataire prestataire = prestataireService.getById(request.prestataireId());
+        Prestataire prestataire = prestataireService.getPublishedById(request.prestataireId());
 
         OnboardingSessionService.InitiationResult result =
                 onboardingSessionService.initiate(request.email(), prestataire, request);

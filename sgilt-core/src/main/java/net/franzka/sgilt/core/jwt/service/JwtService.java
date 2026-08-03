@@ -40,7 +40,7 @@ public class JwtService {
                 .id(UUID.randomUUID().toString())
                 .issuedAt(new Date())
                 .expiration(Date.from(Instant.now().plus(expiration)))
-                .signWith(key)
+                .signWith(key, Jwts.SIG.HS256)
                 .compact();
     }
 

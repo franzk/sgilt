@@ -75,6 +75,15 @@ public interface PrestataireRepository extends JpaRepository<Prestataire, UUID> 
     Optional<Prestataire> findBySlugAndStatusAndDeletedAtIsNull(String slug, PrestataireStatus status);
 
     /**
+     * Recherche un prestataire actif par son identifiant, restreint à un statut donné.
+     *
+     * @param id     l'identifiant du prestataire
+     * @param status le statut requis
+     * @return le prestataire correspondant, ou vide
+     */
+    Optional<Prestataire> findByIdAndStatusAndDeletedAtIsNull(UUID id, PrestataireStatus status);
+
+    /**
      * Retourne tous les prestataires actifs dans un statut donné.
      *
      * @param status le statut requis

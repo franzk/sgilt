@@ -170,6 +170,17 @@ class VerificationTokenHmacServiceTest {
         }
 
         @Test
+        void givenSignatureOfDifferentLength_whenVerify_thenThrowsInvalidTokenException() {
+            // la comparaison à temps constant (MessageDigest.isEqual) doit rester sûre même quand
+            // les tableaux de bytes comparés n'ont pas la même longueur
+            when(confirmationTokenProperties.confirmationSecret()).thenReturn(SECRET);
+            String tooShort = PAYLOAD + "-" + "abc";
+
+            assertThatExceptionOfType(InvalidTokenException.class)
+                    .isThrownBy(() -> verificationTokenHmacService.verify(tooShort));
+        }
+
+        @Test
         void givenGeneratedToken_whenVerify_thenRoundTripExtractsConsistentPayload() {
             when(confirmationTokenProperties.confirmationSecret()).thenReturn(SECRET);
             String token = verificationTokenHmacService.generateToken();
