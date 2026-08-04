@@ -1,9 +1,6 @@
 <template>
-  <!-- Fiche entièrement vide : fork plein écran, aucun onglet n'a de sens tant qu'elle n'existe pas. -->
-  <FicheOnboardingFork v-if="prestataire && showFork" @choose-manual="manualChosen = true" />
-
   <PrestataireDetails
-    v-else-if="prestataire"
+    v-if="prestataire"
     :prestataire="prestataire"
     :display-mode="displayMode"
     @select="() => {}"
@@ -26,8 +23,6 @@
 <script setup lang="ts">
 import PrestataireDetails from '~/components/prestataire/PrestataireDetails.vue'
 import PageEditionTabs from '~/components/prestataire/PageEditionTabs.vue'
-import FicheOnboardingFork from '~/components/prestataire/FicheOnboardingFork.vue'
-import { isEmptyPrestataireFiche } from '~/data/prestataire/usePrestataire'
 import type { DisplayMode } from '~/types/prestataire'
 
 definePageMeta({ layout: 'default' })
@@ -36,17 +31,6 @@ const router = useRouter()
 const route = useRoute()
 const currentUser = useCurrentUser()
 const { prestataire, loadMaFiche } = usePrestataire()
-
-/**
- * Choix explicite de remplissage manuel : déverrouille les 3 onglets sans attendre qu'un champ
- * soit réellement rempli. Non persisté à dessein — un rechargement réévalue uniquement l'état de
- * la fiche, donc re-présente le fork tant qu'aucun champ n'est rempli.
- */
-const manualChosen = ref(false)
-
-const isEmptyFiche = computed(() => (prestataire.value ? isEmptyPrestataireFiche(prestataire.value) : false))
-
-const showFork = computed(() => isEmptyFiche.value && !manualChosen.value)
 
 // L'onglet Preview affiche la fiche en lecture seule, chrome de réservation masqué
 const displayMode = computed<DisplayMode>(() => {
@@ -65,9 +49,17 @@ watch(
   { immediate: true },
 )
 
-// Aucune sous-route active (ex. arrivée directe sur /pro/page-edition) : l'onglet Édition
-// est celui par défaut.
-if (route.path === '/pro/page-edition') {
-  await navigateTo('/pro/page-edition/edition', { replace: true })
-}
+// Aucune sous-route active (ex. arrivée directe sur /pro/page-edition, ou retour dessus via le
+// logo sans que le composant ne remonte) : l'onglet Édition est celui par défaut. En `watch`
+// plutôt qu'un simple `if` top-level, pour se redéclencher à chaque navigation vers le chemin nu,
+// pas seulement au montage du composant (réutilisé entre les sous-routes edition/preview/ia).
+watch(
+  () => route.path,
+  (path) => {
+    if (path === '/pro/page-edition') {
+      navigateTo('/pro/page-edition/edition', { replace: true })
+    }
+  },
+  { immediate: true },
+)
 </script>
