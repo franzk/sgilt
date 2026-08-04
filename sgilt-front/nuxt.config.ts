@@ -96,8 +96,22 @@ export default defineNuxtConfig({
       redirect: { to: '/', statusCode: 301 },
     },
 
+    // Pages légales = pas d'intérêt SEO, pas indexées
+    // (clé `robots` plutôt que `headers` : @nuxtjs/robots aligne alors
+    // le header X-Robots-Tag ET la balise <meta name="robots"> rendue en SSR,
+    // en évitant tout conflit entre les deux signaux)
+    '/m/mentions-legales': {
+      robots: 'noindex, nofollow',
+    },
+    '/m/cgu': {
+      robots: 'noindex, nofollow',
+    },
+    '/m/confidentialite': {
+      robots: 'noindex, nofollow',
+    },
+
     // /            -> SSR + SEO (default)
-    // /m/**        -> SSR + SEO (default)
+    // /m/**        -> SSR + SEO (default) sauf pages légales ci-dessus
     // /:slug       -> SSR + SEO (default)
   },
 
