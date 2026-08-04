@@ -49,9 +49,17 @@ watch(
   { immediate: true },
 )
 
-// Aucune sous-route active (ex. arrivée directe sur /pro/page-edition) : l'onglet Édition
-// est celui par défaut.
-if (route.path === '/pro/page-edition') {
-  await navigateTo('/pro/page-edition/edition', { replace: true })
-}
+// Aucune sous-route active (ex. arrivée directe sur /pro/page-edition, ou retour dessus via le
+// logo sans que le composant ne remonte) : l'onglet Édition est celui par défaut. En `watch`
+// plutôt qu'un simple `if` top-level, pour se redéclencher à chaque navigation vers le chemin nu,
+// pas seulement au montage du composant (réutilisé entre les sous-routes edition/preview/ia).
+watch(
+  () => route.path,
+  (path) => {
+    if (path === '/pro/page-edition') {
+      navigateTo('/pro/page-edition/edition', { replace: true })
+    }
+  },
+  { immediate: true },
+)
 </script>

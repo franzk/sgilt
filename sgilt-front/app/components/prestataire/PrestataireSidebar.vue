@@ -1,10 +1,14 @@
 <template>
   <div class="sidebar-body">
-    <div v-if="displayMode === 'display'" class="sidebar-block">
+    <div
+      v-if="displayMode === 'display' || displayMode === 'preview'"
+      class="sidebar-block"
+      :class="{ 'preview-only-desktop': displayMode === 'preview' }"
+    >
       <SgiltDatePicker
         v-model="dateModel"
         :booked-dates="unavailableDatesAsDate"
-        :disabled="disableDate"
+        :disabled="disableDate || displayMode === 'preview'"
         :placeholder="$t('provider.details.verify-date')"
         :error="!!dateError"
       />
@@ -32,8 +36,9 @@
     </div>
 
     <SgiltButton
-      v-if="displayMode === 'display'"
+      v-if="displayMode === 'display' || displayMode === 'preview'"
       class="sidebar-cta"
+      :disabled="displayMode === 'preview'"
       @click="emit('select-intent')"
     >
       {{ $t('provider.details.send-request') }}
@@ -103,6 +108,16 @@ const availabilityClass = computed(() => (isUnavailable.value ? 'unavailable' : 
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
+
+  // Onglet Aperçu : chrome de réservation visible en desktop uniquement (pour se faire une
+  // idée du rendu), toujours masqué en mobile comme avant.
+  &.preview-only-desktop {
+    display: none;
+
+    @media (min-width: $breakpoint-desktop) {
+      display: flex;
+    }
+  }
 }
 
 .sidebar-budget {
