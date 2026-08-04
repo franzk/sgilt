@@ -123,7 +123,15 @@
       "Bash(./gradlew compileJava compileTestJava -q)",
       "Bash(xargs -I{} basename {})",
       "Bash(git grep *)",
-      "Bash(git log *)"
+      "Bash(git log *)",
+      "Bash(npm run *)",
+      "Bash(echo \"started with PID $!\")",
+      "Bash(break)",
+      "Bash(kill %1)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill //F //PID 41460)",
+      "Bash(taskkill //F //PID 36700)",
+      "Bash(rm -f dev-server.log /tmp/page.html)"
     ]
   }
 }
