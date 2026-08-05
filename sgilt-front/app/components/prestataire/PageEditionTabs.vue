@@ -18,6 +18,7 @@ const { t } = useI18n()
 const tabs = computed(() => [
   { to: '/pro/page-edition/edition', label: t('provider.edit.tabs.edition') },
   { to: '/pro/page-edition/preview', label: t('provider.edit.tabs.preview') },
+  { to: '/pro/page-edition/ia', label: t('provider.edit.tabs.ia') },
 ])
 </script>
 

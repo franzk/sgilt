@@ -131,7 +131,9 @@
       "Bash(netstat -ano)",
       "Bash(taskkill //F //PID 41460)",
       "Bash(taskkill //F //PID 36700)",
-      "Bash(rm -f dev-server.log /tmp/page.html)"
+      "Bash(rm -f dev-server.log /tmp/page.html)",
+      "Bash(git show *)",
+      "Read(//tmp/**)"
     ]
   }
 }
