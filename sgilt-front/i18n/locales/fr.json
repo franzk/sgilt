@@ -156,6 +156,15 @@
           "add": "Ajouter"
         },
         "card-preview-title": "Aperçu de votre page avec la proposition IA"
+      },
+      "fork": {
+        "title": "Votre aventure Sgilt commence ici",
+        "subtitle": "À vous de choisir le point de départ : laissez l’IA poser les premières pierres à partir de votre site, ou créez votre profil vous-même, à votre rythme.",
+        "ia-title": "Donner vie à mon profil avec l’IA",
+        "ia-description": "Partagez l’adresse de votre site. L’IA s’inspire de vos contenus pour préparer un premier brouillon fidèle à votre univers, prêt à être relu et ajusté.",
+        "manual-title": "Créer mon profil à ma façon",
+        "manual-description": "Vous préférez partir d’une page blanche ? Construisez votre profil librement, section après section.",
+        "applying": "Voir le résultat…"
       }
     },
     "availability": {
