@@ -40,3 +40,34 @@ docker_compose_up() {
 
   docker compose "${args[@]}" ps
 }
+
+#
+# Install (or refresh) the nightly backup cron entry for an environment.
+# Idempotent: replaces any previous entry carrying the same marker instead of
+# appending a duplicate on every deploy.
+# Arguments:
+#   env: staging | production
+#
+install_backup_cron() {
+  local env="${1:?env required}"
+  local dir marker hour cron_line existing
+
+  if ! command -v crontab >/dev/null 2>&1; then
+    echo "⚠️  crontab not available — skipping backup cron install."
+    return 0
+  fi
+
+  dir="$(pwd)"
+  marker="sgilt-backup-${env}"
+  hour=3
+  [[ "$env" == "staging" ]] && hour=4
+
+  mkdir -p "${dir}/backups/${env}"
+
+  cron_line="0 ${hour} * * * cd ${dir} && ./scripts/backup.sh ${env} >> ${dir}/backups/${env}/backup.log 2>&1 # ${marker}"
+
+  # crontab -l exits non-zero when no crontab exists yet (first run) — tolerate that.
+  existing="$(crontab -l 2>/dev/null | grep -v "# ${marker}" || true)"
+  printf '%s\n%s\n' "$existing" "$cron_line" | grep -v '^$' | crontab -
+  echo "🕒 Backup cron installed for ${env}: ${cron_line}"
+}

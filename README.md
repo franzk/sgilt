@@ -37,6 +37,11 @@ Built on a Docker-first, single-server architecture with Keycloak authentication
 
 👉 [deploy/docs/SSL.md](deploy/docs/SSL.md)
 
+### Backups
+> Automated PostgreSQL backups (local + offsite on R2) and restore procedure.
+
+👉 [deploy/docs/BACKUP.md](deploy/docs/BACKUP.md)
+
 ---
 
 ## Services overview

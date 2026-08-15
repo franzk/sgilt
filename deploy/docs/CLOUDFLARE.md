@@ -13,6 +13,8 @@
 
 Le bucket documents est **privé** et n'a volontairement aucun custom domain : c'est ce qui le rend non accessible publiquement, pas un oubli. L'accès se fait uniquement via le SDK S3 du back (`streamDocument`), qui vérifie l'appartenance de l'utilisateur avant de servir le fichier.
 
+Ce même bucket (privé) est aussi utilisé pour les dumps PostgreSQL sous le préfixe `backup/` — voir [BACKUP.md](BACKUP.md). Ne pas pousser de dumps dans le bucket `media`, qui est public.
+
 ### Créer un bucket
 
 Dashboard → **R2** → **Create bucket** → choisir un nom → Region : `EU`.
