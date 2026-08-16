@@ -99,7 +99,8 @@
         "other": "Autres informations"
       },
       "faq-title": "Questions fréquentes",
-      "card-preview-title": "Votre page dans les résultats de recherche"
+      "card-preview-title": "Votre page dans les résultats de recherche",
+      "google-preview-title": "Aperçu dans les résultats Google"
     },
     "edit": {
       "saving": "Enregistrement…",
@@ -180,6 +181,14 @@
       "shortDescription": {
         "ghost": "Cliquez ici pour ajouter la légende de votre page",
         "prompt": ""
+      },
+      "metaTitle": {
+        "ghost": "Cliquez ici pour ajouter le titre affiché dans les résultats Google",
+        "prompt": "Le titre affiché dans l'onglet du navigateur et les résultats de recherche (60 caractères environ)"
+      },
+      "metaDescription": {
+        "ghost": "Cliquez ici pour ajouter la description affichée dans les résultats Google",
+        "prompt": "Le texte affiché sous le titre dans les résultats de recherche (155 caractères environ)"
       },
       "budget": {
         "ghost": "Cliquez ici pour présenter vos tarifs et expliquer ce qui peut faire varier le prix",
