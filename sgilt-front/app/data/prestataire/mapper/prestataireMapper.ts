@@ -43,6 +43,8 @@ export function mapPrestataireDetail(dto: PrestataireDetailDto): PrestataireDeta
     slug: dto.slug,
     baseline: dto.baseline,
     shortDescription: dto.shortDescription,
+    metaTitle: dto.metaTitle,
+    metaDescription: dto.metaDescription,
     categoryKey: dto.categoryKey,
     category: categoryName(dto.categoryKey),
     subcats: dto.subcatKeys,

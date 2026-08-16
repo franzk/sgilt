@@ -12,6 +12,8 @@ export interface PrestataireDetail {
   id: string
   name: string
   shortDescription: string
+  metaTitle: string | null
+  metaDescription: string | null
   slug: string
   baseline: string
   categoryKey: string
