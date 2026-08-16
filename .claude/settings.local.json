@@ -133,7 +133,11 @@
       "Bash(taskkill //F //PID 36700)",
       "Bash(rm -f dev-server.log /tmp/page.html)",
       "Bash(git show *)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(bash -n deploy/deploy-bundle/scripts/backup.sh)",
+      "Bash(bash -n deploy/deploy-bundle/scripts/lib.sh)",
+      "Bash(bash -n deploy/deploy-bundle/scripts/deploy.sh)",
+      "Bash(docker --version)"
     ]
   }
 }

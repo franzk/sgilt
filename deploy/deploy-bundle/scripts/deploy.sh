@@ -157,4 +157,8 @@ fi
 
 docker_compose_up "$PROJECT" "${COMPOSE_FILES[@]}"
 
+echo ""
+echo "── Installing nightly backup cron..."
+install_backup_cron "$ENV"
+
 echo "✅ Deployment complete."
