@@ -14,6 +14,8 @@ public record PrestataireUpdateDto(
         String name,
         String baseline,
         String shortDescription,
+        String metaTitle,
+        String metaDescription,
         List<Engagement> badges,
         List<String> offerings,
         IdentityDto identity,

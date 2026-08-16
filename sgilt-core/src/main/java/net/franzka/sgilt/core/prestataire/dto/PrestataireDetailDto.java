@@ -15,6 +15,8 @@ public record PrestataireDetailDto(
         String baseline,
         String avatar,
         String shortDescription,
+        String metaTitle,
+        String metaDescription,
         String categoryKey,
         List<String> subcatKeys,
         List<MediaDto> medias,
