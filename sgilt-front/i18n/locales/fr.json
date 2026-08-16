@@ -100,7 +100,8 @@
       },
       "faq-title": "Questions fréquentes",
       "card-preview-title": "Votre page dans les résultats de recherche",
-      "google-preview-title": "Aperçu dans les résultats Google"
+      "google-preview-title": "Aperçu dans les résultats Google",
+      "google-preview-noindex-warning": "Cette page ne sera pas indexée par Google tant que le titre et la description ne sont pas renseignés."
     },
     "edit": {
       "saving": "Enregistrement…",

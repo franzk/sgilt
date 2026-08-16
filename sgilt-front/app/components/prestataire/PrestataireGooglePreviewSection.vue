@@ -27,6 +27,10 @@
         @commit="saveField('metaDescription', $event)"
       />
     </div>
+
+    <p v-if="isEdit && !isIndexable" class="noindex-warning">
+      {{ $t('provider.details.google-preview-noindex-warning') }}
+    </p>
   </section>
 </template>
 
@@ -41,6 +45,7 @@ const props = defineProps<{
 const { prestataire, saveField } = usePrestataire()
 
 const isEdit = computed(() => props.displayMode === 'edit')
+const isIndexable = computed(() => !!prestataire.value?.metaTitle && !!prestataire.value?.metaDescription)
 
 const site = useSiteConfig()
 const host = computed(() => site.url.replace(/^https?:\/\//, ''))
@@ -139,5 +144,13 @@ function truncate(value: string | null | undefined, limit: number): string | nul
   :deep(span) {
     overflow-wrap: anywhere;
   }
+}
+
+.noindex-warning {
+  width: 100%;
+  max-width: 560px;
+  margin: 0;
+  font-size: 0.8rem;
+  color: $state-warning;
 }
 </style>
