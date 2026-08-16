@@ -32,7 +32,34 @@ const slug = route.params.slug as string
 
 const { prestataire, loading } = usePrestataire(slug)
 
-useHead(computed(() => ({ title: prestataire.value?.name ?? '' })))
+/**
+ * Indexation conditionnée à la présence des deux champs SEO — pas de génération de repli, une
+ * fiche sans meta title/description explicites reste hors des résultats de recherche.
+ */
+const isIndexable = computed(() => !!prestataire.value?.metaTitle && !!prestataire.value?.metaDescription)
+
+// titleTemplate désactivé : le meta title custom est un override complet, sans suffixe. Le nom en
+// repli (pas de meta title renseigné) garde « · Sgilt » par simple concaténation, pas par le
+// template global.
+useHead({
+  title: () =>
+    prestataire.value?.metaTitle || (prestataire.value?.name ? `${prestataire.value.name} · Sgilt` : ''),
+  titleTemplate: null,
+})
+
+const { toUrl } = useImageUrl()
+const ogImage = computed(() => {
+  const ref = prestataire.value ? heroRef(prestataire.value.medias) : null
+  return ref ? toUrl(ref) : undefined
+})
+
+useSeoMeta({
+  description: () => prestataire.value?.metaDescription || undefined,
+  ogTitle: () => prestataire.value?.metaTitle || prestataire.value?.name || undefined,
+  ogDescription: () => prestataire.value?.metaDescription || undefined,
+  ogImage: () => ogImage.value,
+  robots: () => (isIndexable.value ? undefined : 'noindex, nofollow'),
+})
 
 const { currentFlow } = useFlow()
 const disableDatePicker = computed(() => currentFlow.value === 'add-prestataire')
@@ -46,7 +73,7 @@ function onSelect(p: PrestataireDetail) {
     return
   }
 
-  useDemande().initDemande(p.id, p.name, p.image, p.slug, dateModel.value)
+  useDemande().initDemande(p.id, p.name, heroRef(p.medias) ?? '', p.slug, dateModel.value)
 
   navigateTo(`/${p.slug}/demande`)
 }
