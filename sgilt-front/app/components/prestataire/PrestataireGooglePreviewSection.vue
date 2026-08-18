@@ -2,6 +2,11 @@
   <section v-if="isEdit || displayMode === 'preview'" class="google-preview-section">
     <h2 class="title">{{ $t('provider.details.google-preview-title') }}</h2>
 
+    <ul v-if="isEdit" class="seo-tips">
+      <li>💡 {{ $t('provider.details.google-preview-tip-title') }}</li>
+      <li>💡 {{ $t('provider.details.google-preview-tip-description') }}</li>
+    </ul>
+
     <div class="google-result">
       <div class="breadcrumb">
         <span class="favicon" aria-hidden="true" />
@@ -152,5 +157,23 @@ function truncate(value: string | null | undefined, limit: number): string | nul
   margin: 0;
   font-size: 0.8rem;
   color: $state-warning;
+}
+
+.seo-tips {
+  width: 100%;
+  max-width: 560px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+
+  li {
+    font-size: 0.8rem;
+    font-style: italic;
+    color: $text-secondary;
+    opacity: 0.7;
+  }
 }
 </style>
