@@ -53,6 +53,10 @@ public class Prestataire {
 
     private String shortDescription;
 
+    private String metaTitle;
+
+    private String metaDescription;
+
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private String medias;

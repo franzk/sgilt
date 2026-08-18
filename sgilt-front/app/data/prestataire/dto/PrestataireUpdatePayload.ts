@@ -11,6 +11,8 @@ import type { DetailItem } from '../domain/DetailItem'
 export interface PrestataireUpdatePayload {
   baseline: string | null
   shortDescription: string | null
+  metaTitle: string | null
+  metaDescription: string | null
   badges: EngagementKey[] | null
   offerings: string[] | null
   identity: { quote: string | null; bio: string | null } | null

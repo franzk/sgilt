@@ -16,7 +16,9 @@
       @keydown.enter="onKeydownEnter"
       @blur="onBlur"
     />
-    <span v-else :class="{ ghost: !modelValue, multiline }">{{ modelValue || ghostText }}</span>
+    <span v-else :class="{ ghost: !modelValue, multiline }">{{
+      modelValue ? (displayValue ?? modelValue) : ghostText
+    }}</span>
     <button v-if="isEdit && !focused" type="button" class="pencil" @click.stop="startEdit">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -54,6 +56,8 @@ const props = defineProps<{
   editable?: boolean
   /** Autorise les retours à la ligne (Entrée insère un saut de ligne, affichage nl2br). Défaut : false */
   multiline?: boolean
+  /** Texte affiché à la place de la valeur réelle quand non focus (ex. aperçu tronqué). Défaut : la valeur elle-même */
+  displayValue?: string | null
 }>()
 
 /** Valeur courante — `null` affiche le texte fantôme */

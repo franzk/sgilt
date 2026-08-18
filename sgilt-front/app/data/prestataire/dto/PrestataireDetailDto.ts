@@ -9,6 +9,8 @@ export interface PrestataireDetailDto {
   id: string
   name: string
   shortDescription: string
+  metaTitle: string | null
+  metaDescription: string | null
   slug: string
   categoryKey: string
   baseline: string
