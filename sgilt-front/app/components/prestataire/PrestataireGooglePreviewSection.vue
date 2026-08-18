@@ -2,11 +2,6 @@
   <section v-if="isEdit || displayMode === 'preview'" class="google-preview-section">
     <h2 class="title">{{ $t('provider.details.google-preview-title') }}</h2>
 
-    <ul v-if="isEdit" class="seo-tips">
-      <li>💡 {{ $t('provider.details.google-preview-tip-title') }}</li>
-      <li>💡 {{ $t('provider.details.google-preview-tip-description') }}</li>
-    </ul>
-
     <div class="google-result">
       <div class="breadcrumb">
         <span class="favicon" aria-hidden="true" />
@@ -36,6 +31,11 @@
     <p v-if="isEdit && !isIndexable" class="noindex-warning">
       {{ $t('provider.details.google-preview-noindex-warning') }}
     </p>
+
+    <ul v-if="isEdit" class="seo-tips">
+      <li>💡 {{ $t('provider.details.google-preview-tip-title') }}</li>
+      <li>💡 {{ $t('provider.details.google-preview-tip-description') }}</li>
+    </ul>
   </section>
 </template>
 

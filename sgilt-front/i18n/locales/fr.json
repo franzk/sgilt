@@ -101,6 +101,8 @@
       "faq-title": "Questions fréquentes",
       "card-preview-title": "Votre page dans les résultats de recherche",
       "google-preview-title": "Aperçu dans les résultats Google",
+      "google-preview-tip-title": "Le titre : commencez par les mots-clés qui vous décrivent le mieux pour aider les clients à vous trouver. Exemple : « Julien H. Photographe mariage Alsace ». Environ 60 caractères maximum.",
+      "google-preview-tip-description": "La description : en une phrase, donnez envie d’en savoir plus en mettant en avant ce qui vous distingue. Environ 155 caractères maximum.",
       "google-preview-noindex-warning": "Cette page ne sera pas indexée par Google tant que le titre et la description ne sont pas renseignés."
     },
     "edit": {
