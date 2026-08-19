@@ -56,7 +56,7 @@ const submitError = ref(false)
 export function usePrestataire(slug?: string) {
   if (slug !== undefined) {
     loading.value = true
-    onMounted(() => load(slug))
+    useAsyncData(`prestataire-${slug}`, () => load(slug))
   }
 
   async function loadFrom(fetcher: () => Promise<PrestataireDetail | null>) {
