@@ -637,11 +637,14 @@
     "cancel-dialog": {
       "title": "Annuler la demande",
       "body": "Êtes-vous sûr de vouloir annuler cette demande\u00a0?",
+      "title-confirmed": "Annuler la réservation",
+      "body-confirmed": "Êtes-vous sûr de vouloir annuler cette réservation ?",
       "confirm": "Oui, annuler",
       "keep": "Non, garder",
       "reason-placeholder": "Motif de l'annulation (facultatif)"
     },
     "cancel-btn": "Annuler la demande",
+    "cancel-btn-confirmed": "Annuler la réservation",
     "mark-contacted-dialog": {
       "title": "Marquer comme contacté",
       "body": "Confirmez-vous avoir été contacté·e par ce prestataire ?",
@@ -884,7 +887,7 @@
       "back": "‹ Retour",
       "cancel-reservation": {
         "label": "Annuler la réservation",
-        "desc-active": "Passe la demande en statut Annulée.",
+        "desc-active": "",
         "desc-inactive": "Cette demande ne peut plus être annulée.",
         "dialog-title": "Annuler la réservation",
         "dialog-body": "Êtes-vous sûr de vouloir annuler cette réservation ? Cette action est difficilement réversible.",

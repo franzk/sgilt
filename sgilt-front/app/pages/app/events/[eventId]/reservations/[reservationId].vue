@@ -40,7 +40,7 @@
       </button>
 
       <button v-if="canCancel" class="cancel-btn" type="button" @click="cancelDialogOpen = true">
-        {{ $t('reservation.cancel-btn') }}
+        {{ isConfirmed ? $t('reservation.cancel-btn-confirmed') : $t('reservation.cancel-btn') }}
       </button>
     </div>
   </div>
@@ -72,8 +72,8 @@
   <!-- ── Dialog confirmation annulation ─────────────────────────────────────── -->
   <SgiltConfirmDialog
     v-model:open="cancelDialogOpen"
-    :title="t('reservation.cancel-dialog.title')"
-    :message="t('reservation.cancel-dialog.body')"
+    :title="isConfirmed ? t('reservation.cancel-dialog.title-confirmed') : t('reservation.cancel-dialog.title')"
+    :message="isConfirmed ? t('reservation.cancel-dialog.body-confirmed') : t('reservation.cancel-dialog.body')"
     :confirm-label="t('reservation.cancel-dialog.confirm')"
     :cancel-label="t('reservation.cancel-dialog.keep')"
     :confirm-loading="cancelling"
@@ -101,6 +101,8 @@ import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.v
 import { useReservation } from '~/data/reservation/useReservation'
 import { useReservationFeed } from '~/data/reservation/useReservationFeed'
 import { useEventDetail } from '~/data/evenement/useEvenement'
+import { useCurrentUser } from '~/composables/useCurrentUser'
+import type { FeedItem } from '~/data/reservation/domain/FeedItem'
 
 definePageMeta({ layout: 'app' })
 
@@ -143,13 +145,41 @@ const {
   deleteDocument,
 } = useReservationFeed(reservationId)
 
+// ── Note système optimiste ────────────────────────────────────────────────────
+// Le contenu d'une note système (contacté/confirmé/annulé) est entièrement déductible
+// côté front — pas besoin d'aller-retour serveur pour l'afficher immédiatement.
+const currentUser = useCurrentUser()
+
+function pushSystemNote(generatedKey: string, content?: string, isPersonal = false) {
+  const item: FeedItem = {
+    type: 'note',
+    id: crypto.randomUUID(),
+    title: '',
+    author: {
+      id: '',
+      name: `${currentUser.firstName} ${currentUser.lastName}`.trim(),
+      photo: currentUser.photo ?? undefined,
+      role: 'client',
+    },
+    createdAt: new Date(),
+    content: content ?? null,
+    isPersonal,
+    generatedKey,
+  }
+  feed.value.unshift(item)
+}
+
 // ── Annulation ─────────────────────────────────────────────────────────────────
+const isConfirmed = computed(() => reservation.value?.status === 'confirmee')
 const cancelDialogOpen = ref(false)
 const cancelReason = ref('')
 const cancelIsPersonal = ref(false)
 
 async function cancelReservation() {
-  await cancel(cancelReason.value.trim() || undefined, cancelIsPersonal.value)
+  const reason = cancelReason.value.trim() || undefined
+  const isPersonal = cancelIsPersonal.value
+  await cancel(reason, isPersonal)
+  pushSystemNote('feed.system.cancelled', reason, isPersonal)
   cancelDialogOpen.value = false
   cancelReason.value = ''
   cancelIsPersonal.value = false
@@ -161,11 +191,13 @@ const confirmDialogOpen = ref(false)
 
 async function onDeclareContacted() {
   await declareContacted()
+  pushSystemNote('feed.system.contacted')
   contactedOpen.value = false
 }
 
 async function onConfirm() {
   await confirm()
+  pushSystemNote('feed.system.confirmed')
   confirmDialogOpen.value = false
 }
 
