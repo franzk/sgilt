@@ -3,6 +3,7 @@ package net.franzka.sgilt.core.reservation.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.reservation.api.ProReservationApi;
+import net.franzka.sgilt.core.reservation.dto.CancelReservationRequest;
 import net.franzka.sgilt.core.reservation.dto.ProBoardCountsDto;
 import net.franzka.sgilt.core.reservation.dto.ProReservationDetailDto;
 import net.franzka.sgilt.core.reservation.dto.ProReservationSummaryDto;
@@ -53,26 +54,6 @@ public class ProReservationController implements ProReservationApi {
 
     @Override
     @Transactional
-    public ResponseEntity<Void> markContacted(UUID reservationId) {
-        UUID userId = currentUserService.getId();
-        log.info("POST /pro/reservations/{}/mark-contacted", reservationId);
-        reservationService.verifyProOwnershipByReservationId(reservationId, userId);
-        reservationService.markContacted(reservationId);
-        return ResponseEntity.noContent().build();
-    }
-
-    @Override
-    @Transactional
-    public ResponseEntity<Void> confirm(UUID reservationId) {
-        UUID userId = currentUserService.getId();
-        log.info("POST /pro/reservations/{}/confirm", reservationId);
-        reservationService.verifyProOwnershipByReservationId(reservationId, userId);
-        reservationService.confirm(reservationId);
-        return ResponseEntity.noContent().build();
-    }
-
-    @Override
-    @Transactional
     public ResponseEntity<Void> refuse(UUID reservationId, RefuseReservationRequest body) {
         UUID userId = currentUserService.getId();
         log.info("POST /pro/reservations/{}/refuse", reservationId);
@@ -83,11 +64,11 @@ public class ProReservationController implements ProReservationApi {
 
     @Override
     @Transactional
-    public ResponseEntity<Void> cancelByPro(UUID reservationId) {
+    public ResponseEntity<Void> cancelByPro(UUID reservationId, CancelReservationRequest body) {
         UUID userId = currentUserService.getId();
         log.info("POST /pro/reservations/{}/cancel", reservationId);
         reservationService.verifyProOwnershipByReservationId(reservationId, userId);
-        reservationService.cancelByPro(reservationId);
+        reservationService.cancelByPro(reservationId, body.reason(), body.isPersonal());
         return ResponseEntity.noContent().build();
     }
 }

@@ -21,15 +21,57 @@
         @delete-document="onDeleteDocument"
       />
 
-      <button v-if="canCancel" class="cancel-btn" type="button" @click="confirmOpen = true">
+      <button
+        v-if="canDeclareContacted"
+        class="status-btn"
+        type="button"
+        @click="contactedOpen = true"
+      >
+        {{ $t('reservation.mark-contacted-btn') }}
+      </button>
+
+      <button
+        v-if="canConfirm"
+        class="status-btn"
+        type="button"
+        @click="confirmDialogOpen = true"
+      >
+        {{ $t('reservation.confirm-btn') }}
+      </button>
+
+      <button v-if="canCancel" class="cancel-btn" type="button" @click="cancelDialogOpen = true">
         {{ $t('reservation.cancel-btn') }}
       </button>
     </div>
   </div>
 
+  <!-- ── Dialog confirmation "contacté" ────────────────────────────────────── -->
+  <SgiltConfirmDialog
+    v-model:open="contactedOpen"
+    :title="t('reservation.mark-contacted-dialog.title')"
+    :message="t('reservation.mark-contacted-dialog.body')"
+    :confirm-label="t('reservation.mark-contacted-dialog.confirm')"
+    :cancel-label="t('reservation.mark-contacted-dialog.cancel')"
+    :confirm-loading="declaringContacted"
+    max-width="400px"
+    @confirm="onDeclareContacted"
+  />
+
+  <!-- ── Dialog confirmation "confirm"  ──────────────────────────────────── -->
+  <SgiltConfirmDialog
+    v-model:open="confirmDialogOpen"
+    :title="t('reservation.confirm-dialog.title')"
+    :message="t('reservation.confirm-dialog.body')"
+    :confirm-label="t('reservation.confirm-dialog.confirm')"
+    :cancel-label="t('reservation.confirm-dialog.cancel')"
+    :confirm-loading="confirming"
+    max-width="400px"
+    @confirm="onConfirm"
+  />
+
   <!-- ── Dialog confirmation annulation ─────────────────────────────────────── -->
   <SgiltConfirmDialog
-    v-model:open="confirmOpen"
+    v-model:open="cancelDialogOpen"
     :title="t('reservation.cancel-dialog.title')"
     :message="t('reservation.cancel-dialog.body')"
     :confirm-label="t('reservation.cancel-dialog.confirm')"
@@ -38,7 +80,18 @@
     destructive
     max-width="400px"
     @confirm="cancelReservation"
-  />
+  >
+    <textarea
+      v-model="cancelReason"
+      class="confirm-reason"
+      :placeholder="t('reservation.cancel-dialog.reason-placeholder')"
+      rows="3"
+    />
+    <label class="confirm-personal-toggle">
+      <input v-model="cancelIsPersonal" type="checkbox" />
+      <span>{{ $t('feed.add-note-dialog.private-toggle') }}</span>
+    </label>
+  </SgiltConfirmDialog>
 </template>
 
 <script setup lang="ts">
@@ -63,6 +116,12 @@ const {
   cancelling,
   canCancel,
   cancel,
+  declaringContacted,
+  canDeclareContacted,
+  declareContacted,
+  confirming,
+  canConfirm,
+  confirm,
 } = useReservation(reservationId)
 const { event } = useEventDetail(eventId)
 
@@ -85,11 +144,29 @@ const {
 } = useReservationFeed(reservationId)
 
 // ── Annulation ─────────────────────────────────────────────────────────────────
-const confirmOpen = ref(false)
+const cancelDialogOpen = ref(false)
+const cancelReason = ref('')
+const cancelIsPersonal = ref(false)
 
 async function cancelReservation() {
-  await cancel()
-  confirmOpen.value = false
+  await cancel(cancelReason.value.trim() || undefined, cancelIsPersonal.value)
+  cancelDialogOpen.value = false
+  cancelReason.value = ''
+  cancelIsPersonal.value = false
+}
+
+// ── Contacté / confirm ────────────────────────────────────────────────────────
+const contactedOpen = ref(false)
+const confirmDialogOpen = ref(false)
+
+async function onDeclareContacted() {
+  await declareContacted()
+  contactedOpen.value = false
+}
+
+async function onConfirm() {
+  await confirm()
+  confirmDialogOpen.value = false
 }
 
 // ── Handlers ──────────────────────────────────────────────────────────────────
@@ -140,24 +217,38 @@ $desktop: $breakpoint-desktop;
 }
 
 // ── Bouton annulation ──────────────────────────────────────────────────────────
-.cancel-btn {
+.cancel-btn,
+.status-btn {
   align-self: center;
   background: none;
-  border: 1px solid rgba($state-error, 0.35);
   border-radius: $radius-md;
   padding: $spacing-xs $spacing-m;
   font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   font-weight: 500;
-  color: $state-error;
   cursor: pointer;
   transition:
     background 150ms ease,
     border-color 150ms ease;
+}
+
+.cancel-btn {
+  border: 1px solid rgba($state-error, 0.35);
+  color: $state-error;
 
   &:hover {
     background: rgba($state-error, 0.06);
     border-color: $state-error;
+  }
+}
+
+.status-btn {
+  border: 1px solid rgba($brand-primary, 0.35);
+  color: $brand-primary;
+
+  &:hover {
+    background: rgba($brand-primary, 0.06);
+    border-color: $brand-primary;
   }
 }
 

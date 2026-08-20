@@ -40,14 +40,8 @@
     <div class="right">
       <div class="right-row">
         <span v-if="needsAction" class="action-required" :class="`${reservation.statut}`">
-          <template v-if="reservation.statut === 'nouvelle'">
-            <PhoneIcon />
-            {{ $t('pro.board.card.contact-client') }}</template
-          >
-          <template v-else-if="reservation.statut === 'en_discussion'">
-            <CheckboxCircleIcon />
-            {{ $t('pro.board.card.validate-request') }}</template
-          >
+          <PhoneIcon />
+          {{ $t('pro.board.card.contact-client') }}
         </span>
         <span v-else class="status-tag" :class="`${reservation.statut}`">
           {{ $t(`reservation.statut.${reservation.statut}`) }}
@@ -75,7 +69,7 @@ import Sk from '~/components/basics/Sk.vue'
 import type { ProReservationSummary } from '~/types/event'
 import { STATUTS_AVEC_ACTION } from '~/constants/reservation-status'
 import { resolveEventCover } from '~/utils/eventCovers'
-import { CalendarEventIcon, CheckboxCircleIcon, PhoneIcon } from '@remixicons/vue/line'
+import { CalendarEventIcon, PhoneIcon } from '@remixicons/vue/line'
 
 const props = defineProps<{
   reservation?: ProReservationSummary

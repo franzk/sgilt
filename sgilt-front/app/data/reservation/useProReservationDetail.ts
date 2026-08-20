@@ -1,7 +1,5 @@
 import {
   fetchProReservationDetail,
-  markDemandeContacted,
-  confirmReservation,
   refuseReservation,
   cancelReservationByPro,
 } from './service/reservationService'
@@ -32,25 +30,15 @@ export function useProReservationDetail(reservationId: string) {
     { immediate: true },
   )
 
-  async function markContacted() {
-    await markDemandeContacted(reservationId)
-    if (reservation.value) reservation.value.status = 'en_discussion'
-  }
-
-  async function confirm() {
-    await confirmReservation(reservationId)
-    if (reservation.value) reservation.value.status = 'confirmee'
-  }
-
   async function refuse(reason: string) {
     await refuseReservation(reservationId, reason)
     if (reservation.value) reservation.value.status = 'refusee'
   }
 
-  async function cancelByPro() {
-    await cancelReservationByPro(reservationId)
+  async function cancelByPro(reason?: string, isPersonal?: boolean) {
+    await cancelReservationByPro(reservationId, reason, isPersonal)
     if (reservation.value) reservation.value.status = 'annulee'
   }
 
-  return { reservation, loading, error, markContacted, confirm, refuse, cancelByPro }
+  return { reservation, loading, error, refuse, cancelByPro }
 }

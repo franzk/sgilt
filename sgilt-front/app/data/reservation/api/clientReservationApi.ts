@@ -13,8 +13,23 @@ export async function getReservationMetaApi(reservationId: string): Promise<Rese
   return apiFetch<ReservationMetaDto>(`/user/reservations/${reservationId}`)
 }
 
-export async function cancelReservationApi(reservationId: string): Promise<void> {
-  await apiFetch(`/user/reservations/${reservationId}/cancel`, { method: 'POST' })
+export async function cancelReservationApi(
+  reservationId: string,
+  reason?: string,
+  isPersonal?: boolean,
+): Promise<void> {
+  await apiFetch(`/user/reservations/${reservationId}/cancel`, {
+    method: 'POST',
+    body: { reason: reason ?? null, isPersonal: isPersonal ?? false },
+  })
+}
+
+export async function markContactedApi(reservationId: string): Promise<void> {
+  await apiFetch(`/user/reservations/${reservationId}/mark-contacted`, { method: 'POST' })
+}
+
+export async function confirmReservationApi(reservationId: string): Promise<void> {
+  await apiFetch(`/user/reservations/${reservationId}/confirm`, { method: 'POST' })
 }
 
 export async function getActiveReservationsApi(): Promise<ActiveReservationsDto> {

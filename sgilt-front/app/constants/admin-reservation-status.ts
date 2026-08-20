@@ -9,5 +9,6 @@ export const ADMIN_RESERVATION_STATUS_CONFIG: Record<AdminReservationStatus, { p
   REFUSED_POST_CONTACT: { pillBg: '#E0E0E0', pillText: '#6B6B6B' },
   CANCELED_BY_CLIENT_PRE_CONTACT: { pillBg: '#E0E0E0', pillText: '#6B6B6B' },
   CANCELED_BY_CLIENT_POST_CONTACT: { pillBg: '#E0E0E0', pillText: '#6B6B6B' },
-  CANCELED_POST_CONFIRMATION: { pillBg: '#E0E0E0', pillText: '#6B6B6B' },
+  CANCELED_BY_CLIENT_POST_CONFIRMATION: { pillBg: '#E0E0E0', pillText: '#6B6B6B' },
+  CANCELED_BY_PRO_POST_CONFIRMATION: { pillBg: '#E0E0E0', pillText: '#6B6B6B' },
 }

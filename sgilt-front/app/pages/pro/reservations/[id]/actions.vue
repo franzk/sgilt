@@ -47,7 +47,18 @@
       destructive
       max-width="480px"
       @confirm="confirmCancel"
-    />
+    >
+      <textarea
+        v-model="cancelReason"
+        class="confirm-reason"
+        :placeholder="$t('pro.actions.cancel-reservation.reason-placeholder')"
+        rows="3"
+      />
+      <label class="confirm-personal-toggle">
+        <input v-model="cancelIsPersonal" type="checkbox" />
+        <span>{{ $t('feed.add-note-dialog.private-toggle') }}</span>
+      </label>
+    </SgiltConfirmDialog>
   </div>
 </template>
 
@@ -66,16 +77,20 @@ const { reservation, cancelByPro } = useProReservationDetail(reservationId)
 const currentStatut = computed(() => reservation.value?.status ?? '')
 const loading = ref(false)
 const cancelOpen = ref(false)
+const cancelReason = ref('')
+const cancelIsPersonal = ref(false)
 
 async function confirmCancel() {
   if (loading.value) return
   loading.value = true
   try {
-    await cancelByPro()
+    await cancelByPro(cancelReason.value.trim() || undefined, cancelIsPersonal.value)
     navigateTo('/pro/reservations')
   } finally {
     loading.value = false
     cancelOpen.value = false
+    cancelReason.value = ''
+    cancelIsPersonal.value = false
   }
 }
 </script>

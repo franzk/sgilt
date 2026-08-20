@@ -340,7 +340,8 @@ public class EvenementService {
                          + counts.getOrDefault(ReservationStatus.REFUSED_POST_CONTACT, 0);
         int annulee      = counts.getOrDefault(ReservationStatus.CANCELED_BY_CLIENT_PRE_CONTACT, 0)
                          + counts.getOrDefault(ReservationStatus.CANCELED_BY_CLIENT_POST_CONTACT, 0)
-                         + counts.getOrDefault(ReservationStatus.CANCELED_POST_CONFIRMATION, 0);
+                         + counts.getOrDefault(ReservationStatus.CANCELED_BY_CLIENT_POST_CONFIRMATION, 0)
+                         + counts.getOrDefault(ReservationStatus.CANCELED_BY_PRO_POST_CONFIRMATION, 0);
         int realisee     = counts.getOrDefault(ReservationStatus.DONE, 0);
 
         return new EventCountsDto(computeMood(confirmed, inDiscussion, nouvelle),
