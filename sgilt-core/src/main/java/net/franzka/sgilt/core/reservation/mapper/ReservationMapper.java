@@ -26,7 +26,8 @@ public interface ReservationMapper {
     @ValueMapping(source = "REFUSED_POST_CONTACT",                   target = "refusee")
     @ValueMapping(source = "CANCELED_BY_CLIENT_PRE_CONTACT",         target = "annulee")
     @ValueMapping(source = "CANCELED_BY_CLIENT_POST_CONTACT",        target = "annulee")
-    @ValueMapping(source = "CANCELED_POST_CONFIRMATION",             target = "annulee")
+    @ValueMapping(source = "CANCELED_BY_CLIENT_POST_CONFIRMATION",   target = "annulee")
+    @ValueMapping(source = "CANCELED_BY_PRO_POST_CONFIRMATION",      target = "annulee")
     String mapStatus(ReservationStatus status);
 
     @Mapping(source = "prestataire.id",          target = "prestataireId")

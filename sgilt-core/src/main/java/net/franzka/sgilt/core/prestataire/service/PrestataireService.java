@@ -584,7 +584,8 @@ public class PrestataireService {
                         + counts.getOrDefault(ReservationStatus.REFUSED_POST_CONTACT, 0),
                 counts.getOrDefault(ReservationStatus.CANCELED_BY_CLIENT_PRE_CONTACT, 0)
                         + counts.getOrDefault(ReservationStatus.CANCELED_BY_CLIENT_POST_CONTACT, 0)
-                        + counts.getOrDefault(ReservationStatus.CANCELED_POST_CONFIRMATION, 0),
+                        + counts.getOrDefault(ReservationStatus.CANCELED_BY_CLIENT_POST_CONFIRMATION, 0)
+                        + counts.getOrDefault(ReservationStatus.CANCELED_BY_PRO_POST_CONFIRMATION, 0),
                 counts.getOrDefault(ReservationStatus.DONE, 0)
         );
     }

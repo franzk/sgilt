@@ -197,21 +197,26 @@ public class ReservationService {
     }
 
     /**
-     * Annule une réservation. Transitions valides :
+     * Annule une réservation, à l'initiative du client. Transitions valides :
      * - NEW → CANCELED_BY_CLIENT_PRE_CONTACT,
-     * - IN_DISCUSSION → CANCELED_BY_CLIENT_POST_CONTACT.
+     * - IN_DISCUSSION → CANCELED_BY_CLIENT_POST_CONTACT,
+     * - CONFIRMED → CANCELED_BY_CLIENT_POST_CONFIRMATION.
      * L'ownership doit être vérifié par l'appelant avant d'invoquer cette méthode.
      *
      * @param reservationId l'identifiant de la réservation
+     * @param reason        le motif de l'annulation, facultatif
+     * @param isPersonal    si {@code true}, le motif n'est visible que par le client (pas par le
+     *                      prestataire)
      * @throws ReservationNotFoundException si la réservation n'existe pas
      * @throws InvalidStateException        si le statut ne permet pas l'annulation
      */
-    public void cancel(UUID reservationId) {
+    public void cancel(UUID reservationId, String reason, boolean isPersonal) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(ReservationNotFoundException::new);
         ReservationStatus cancelled = switch (reservation.getStatus()) {
             case NEW           -> ReservationStatus.CANCELED_BY_CLIENT_PRE_CONTACT;
             case IN_DISCUSSION -> ReservationStatus.CANCELED_BY_CLIENT_POST_CONTACT;
+            case CONFIRMED     -> ReservationStatus.CANCELED_BY_CLIENT_POST_CONFIRMATION;
             default -> throw new InvalidStateException(
                     "La réservation ne peut pas être annulée depuis le statut " + reservation.getStatus());
         };
@@ -219,12 +224,13 @@ public class ReservationService {
         // save reservation
         reservationRepository.save(reservation);
 
-        // crée une note système pour alimenter le feed de la réservation, visible par tout le monde
+        // crée une note système pour alimenter le feed de la réservation — le motif peut être privé
         noteRepository.save(Note.builder()
                 .reservation(reservation)
                 .utilisateur(reservation.getUtilisateur())
                 .generatedKey("feed.system.cancelled")
-                .isPersonal(false)
+                .content(reason)
+                .isPersonal(isPersonal)
                 .build());
 
         applicationEventPublisher.publishEvent(
@@ -292,7 +298,8 @@ public class ReservationService {
     }
 
     /**
-     * Marque la réservation comme contactée — passe de NEW à IN_DISCUSSION.
+     * Marque la réservation comme contactée — passe de NEW à IN_DISCUSSION. Déclarée par le client
+     * (c'est lui qui pilote l'avancement de sa réservation, pas le prestataire).
      * L'ownership doit être vérifié par l'appelant avant d'invoquer cette méthode.
      *
      * @param reservationId l'identifiant de la réservation
@@ -313,16 +320,18 @@ public class ReservationService {
         // crée une note système pour alimenter le feed de la réservation, visible par tout le monde
         noteRepository.save(Note.builder()
                 .reservation(reservation)
-                .prestataire(reservation.getPrestataire())
+                .utilisateur(reservation.getUtilisateur())
                 .generatedKey("feed.system.contacted")
                 .isPersonal(false)
                 .build());
 
-        publishStatusChangedEvent(reservation);
+        applicationEventPublisher.publishEvent(
+                reservationEventMapper.toStatusChangedEventForPro(reservation, reservation.getStatus()));
     }
 
     /**
-     * Passe la réservation de IN_DISCUSSION à CONFIRMED.
+     * Passe la réservation de IN_DISCUSSION à CONFIRMED. Déclarée par le client (c'est lui qui
+     * confirme désormais) — le prestataire ne confirme plus explicitement sur la plateforme.
      * L'ownership doit être vérifié par l'appelant avant d'invoquer cette méthode.
      *
      * @param reservationId l'identifiant de la réservation
@@ -343,40 +352,47 @@ public class ReservationService {
         // crée une note système pour alimenter le feed de la réservation, visible par tout le monde
         noteRepository.save(Note.builder()
                 .reservation(reservation)
-                .prestataire(reservation.getPrestataire())
+                .utilisateur(reservation.getUtilisateur())
                 .generatedKey("feed.system.confirmed")
                 .isPersonal(false)
                 .build());
 
-        publishStatusChangedEvent(reservation);
+        applicationEventPublisher.publishEvent(
+                reservationEventMapper.toStatusChangedEventForPro(reservation, reservation.getStatus()));
     }
 
     /**
-     * Annule une réservation confirmée par le prestataire — passe de CONFIRMED à CANCELED_POST_CONFIRMATION.
+     * Annule une réservation confirmée par le prestataire — passe de CONFIRMED à
+     * CANCELED_BY_PRO_POST_CONFIRMATION.
      * L'ownership doit être vérifié par l'appelant avant d'invoquer cette méthode.
      *
      * @param reservationId l'identifiant de la réservation
+     * @param reason        le motif de l'annulation, facultatif
+     * @param isPersonal    si {@code true}, le motif n'est visible que par le prestataire (pas par
+     *                      le client)
      * @throws ReservationNotFoundException si la réservation n'existe pas
      * @throws InvalidStateException        si le statut courant n'est pas CONFIRMED
      */
-    public void cancelByPro(UUID reservationId) {
+    public void cancelByPro(UUID reservationId, String reason, boolean isPersonal) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(ReservationNotFoundException::new);
         if (reservation.getStatus() != ReservationStatus.CONFIRMED) {
             throw new InvalidStateException(
                     "La réservation ne peut pas être annulée par le prestataire depuis le statut " + reservation.getStatus());
         }
-        reservation.setStatus(ReservationStatus.CANCELED_POST_CONFIRMATION);
+        reservation.setStatus(ReservationStatus.CANCELED_BY_PRO_POST_CONFIRMATION);
         reservationRepository.save(reservation);
 
         noteRepository.save(Note.builder()
                 .reservation(reservation)
                 .prestataire(reservation.getPrestataire())
                 .generatedKey("feed.system.cancelled")
-                .isPersonal(false)
+                .content(reason)
+                .isPersonal(isPersonal)
                 .build());
 
-        publishStatusChangedEvent(reservation);
+        applicationEventPublisher.publishEvent(
+                reservationEventMapper.toStatusChangedEventForClient(reservation, reservation.getStatus()));
     }
 
     /**
@@ -410,10 +426,6 @@ public class ReservationService {
                 .isPersonal(false)
                 .build());
 
-        publishStatusChangedEvent(reservation);
-    }
-
-    private void publishStatusChangedEvent(Reservation reservation) {
         applicationEventPublisher.publishEvent(
                 reservationEventMapper.toStatusChangedEventForClient(reservation, reservation.getStatus()));
     }

@@ -48,8 +48,6 @@
             v-if="reservation.status === 'nouvelle' && !isMobile"
             layout="column"
             status="nouvelle"
-            :loading="ctaLoading"
-            @confirm="onMarkContacted"
             @refuse="openRefusalModal"
           />
 
@@ -85,25 +83,14 @@
                 :client-info="reservation.clientInfo"
                 :mailto-href="mailtoHref"
               />
-              <BookingStatusCta
-                status="nouvelle"
-                :loading="ctaLoading"
-                @confirm="onMarkContacted"
-                @refuse="openRefusalModal"
-              />
+              <BookingStatusCta status="nouvelle" @refuse="openRefusalModal" />
             </div>
           </template>
 
           <!-- en_discussion ────────────────────────────────────── -->
           <template v-else-if="reservation.status === 'en_discussion'">
             <div class="bento-card">
-              <BookingStatusCta
-                layout="row"
-                status="en_discussion"
-                :loading="ctaLoading"
-                @confirm="confirmer"
-                @refuse="openRefusalModal"
-              />
+              <BookingStatusCta layout="row" status="en_discussion" @refuse="openRefusalModal" />
             </div>
           </template>
 
@@ -215,8 +202,7 @@ const router = useRouter()
 const reservationId = String(route.params.id)
 
 // ── Data ──────────────────────────────────────────────────────────────────────
-const { reservation, loading, markContacted, confirm, refuse } =
-  useProReservationDetail(reservationId)
+const { reservation, loading, refuse } = useProReservationDetail(reservationId)
 const {
   feed,
   pending: feedPending,
@@ -282,31 +268,6 @@ async function onDeleteDocument(id: string) {
 const mailtoHref = computed(() =>
   reservation.value ? buildReservationMailto(reservation.value) : '#',
 )
-
-// ── CTA ───────────────────────────────────────────────────────────────────────
-const ctaLoading = ref(false)
-
-async function onMarkContacted() {
-  if (!reservation.value || ctaLoading.value) return
-  ctaLoading.value = true
-  try {
-    await markContacted()
-    await refreshFeed()
-  } finally {
-    ctaLoading.value = false
-  }
-}
-
-async function confirmer() {
-  if (!reservation.value || ctaLoading.value) return
-  ctaLoading.value = true
-  try {
-    await confirm()
-    await refreshFeed()
-  } finally {
-    ctaLoading.value = false
-  }
-}
 
 // ── Refus ─────────────────────────────────────────────────────────────────────
 const refusalModalOpen = ref(false)

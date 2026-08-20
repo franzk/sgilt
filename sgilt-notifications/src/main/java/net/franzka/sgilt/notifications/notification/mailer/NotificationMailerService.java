@@ -29,9 +29,10 @@ public class NotificationMailerService {
             Map.entry("notification.reservation.status.confirmed", MailType.RESERVATION_STATUS_CONFIRMED_EMAIL),
             Map.entry("notification.reservation.status.refused_pre_contact", MailType.RESERVATION_STATUS_REFUSED_PRE_CONTACT_EMAIL),
             Map.entry("notification.reservation.status.refused_post_contact", MailType.RESERVATION_STATUS_REFUSED_POST_CONTACT_EMAIL),
-            Map.entry("notification.reservation.status.canceled_post_confirmation", MailType.RESERVATION_STATUS_CANCELED_POST_CONFIRMATION_EMAIL),
+            Map.entry("notification.reservation.status.canceled_by_pro_post_confirmation", MailType.RESERVATION_STATUS_CANCELED_BY_PRO_POST_CONFIRMATION_EMAIL),
             Map.entry("notification.reservation.status.canceled_by_client_pre_contact", MailType.RESERVATION_STATUS_CANCELED_BY_CLIENT_PRE_CONTACT_EMAIL),
             Map.entry("notification.reservation.status.canceled_by_client_post_contact", MailType.RESERVATION_STATUS_CANCELED_BY_CLIENT_POST_CONTACT_EMAIL),
+            Map.entry("notification.reservation.status.canceled_by_client_post_confirmation", MailType.RESERVATION_STATUS_CANCELED_BY_CLIENT_POST_CONFIRMATION_EMAIL),
             Map.entry("notification.reservation.note_added", MailType.RESERVATION_NOTE_ADDED_EMAIL),
             Map.entry("notification.reservation.document_added", MailType.RESERVATION_DOCUMENT_ADDED_EMAIL)
     );

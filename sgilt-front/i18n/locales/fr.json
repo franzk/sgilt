@@ -637,10 +637,28 @@
     "cancel-dialog": {
       "title": "Annuler la demande",
       "body": "Êtes-vous sûr de vouloir annuler cette demande\u00a0?",
+      "title-confirmed": "Annuler la réservation",
+      "body-confirmed": "Êtes-vous sûr de vouloir annuler cette réservation ?",
       "confirm": "Oui, annuler",
-      "keep": "Non, garder"
+      "keep": "Non, garder",
+      "reason-placeholder": "Motif de l'annulation (facultatif)"
     },
-    "cancel-btn": "Annuler la demande"
+    "cancel-btn": "Annuler la demande",
+    "cancel-btn-confirmed": "Annuler la réservation",
+    "mark-contacted-dialog": {
+      "title": "Marquer comme contacté",
+      "body": "Confirmez-vous avoir été contacté·e par ce prestataire ?",
+      "confirm": "Oui, j'ai été contacté·e",
+      "cancel": "Pas encore"
+    },
+    "mark-contacted-btn": "J'ai été contacté·e",
+    "confirm-dialog": {
+      "title": "Confirmer la réservation",
+      "body": "Confirmez-vous cette réservation avec ce prestataire ?",
+      "confirm": "Oui, c'est confirmé",
+      "cancel": "Pas encore"
+    },
+    "confirm-btn": "Confirmer la réservation"
   },
   "client": {
     "reservation": {
@@ -675,8 +693,8 @@
       },
       "status": {
         "in_discussion": {
-          "title": "La discussion est lancée",
-          "body": "{actorName} vous a répondu au sujet de {eventTitle}."
+          "title": "Premier contact confirmé",
+          "body": "{actorName} confirme avoir été contacté(e) au sujet de {eventTitle}."
         },
         "confirmed": {
           "title": "C’est confirmé 🎉",
@@ -690,7 +708,7 @@
           "title": "La réservation ne se fera pas",
           "body": "Après discussion, {actorName} ne donnera pas suite pour {eventTitle}."
         },
-        "canceled_post_confirmation": {
+        "canceled_by_pro_post_confirmation": {
           "title": "La réservation est annulée",
           "body": "{actorName} a annulé la réservation pour {eventTitle}."
         },
@@ -699,6 +717,10 @@
           "body": "{actorName} a retiré sa demande pour {eventTitle}."
         },
         "canceled_by_client_post_contact": {
+          "title": "La réservation est annulée",
+          "body": "{actorName} a annulé sa réservation pour {eventTitle}."
+        },
+        "canceled_by_client_post_confirmation": {
           "title": "La réservation est annulée",
           "body": "{actorName} a annulé sa réservation pour {eventTitle}."
         }
@@ -831,7 +853,6 @@
           "action_requise": "ACTION REQUISE"
         },
         "contact-client": "Contacter le client",
-        "validate-request": "Valider la demande",
         "event-date-label": "Date de l'événement"
       }
     },
@@ -866,12 +887,13 @@
       "back": "‹ Retour",
       "cancel-reservation": {
         "label": "Annuler la réservation",
-        "desc-active": "Passe la demande en statut Annulée.",
+        "desc-active": "",
         "desc-inactive": "Cette demande ne peut plus être annulée.",
         "dialog-title": "Annuler la réservation",
         "dialog-body": "Êtes-vous sûr de vouloir annuler cette réservation ? Cette action est difficilement réversible.",
         "dialog-cancel": "Annuler",
-        "dialog-confirm": "Confirmer l'annulation"
+        "dialog-confirm": "Confirmer l'annulation",
+        "reason-placeholder": "Vous pouvez indiquer le motif de l'annulation (facultatif)"
       }
     }
   },
@@ -1091,7 +1113,8 @@
         "REFUSED_POST_CONTACT": "Refusée (après contact)",
         "CANCELED_BY_CLIENT_PRE_CONTACT": "Annulée par le client (avant contact)",
         "CANCELED_BY_CLIENT_POST_CONTACT": "Annulée par le client (après contact)",
-        "CANCELED_POST_CONFIRMATION": "Annulée après confirmation"
+        "CANCELED_BY_CLIENT_POST_CONFIRMATION": "Annulée par le client (après confirmation)",
+        "CANCELED_BY_PRO_POST_CONFIRMATION": "Annulée par le prestataire (après confirmation)"
       }
     },
     "onboarding-clients": {

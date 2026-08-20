@@ -144,8 +144,10 @@ export const CLIENT_STATUS_CONFIG: Record<
 }
 
 // ── Statuts qui nécessitent une action du prestataire ────────────────────────
+// Le prestataire doit encore effectuer le premier contact sur 'nouvelle'. Sur 'en_discussion', c'est
+// désormais au client de faire avancer le statut (contacté/confirmé) — plus d'action-bouton pro.
 
-export const STATUTS_AVEC_ACTION: ReservationStatut[] = ['nouvelle', 'en_discussion']
+export const STATUTS_AVEC_ACTION: ReservationStatut[] = ['nouvelle']
 
 // ── Helper — fond overlay semi-transparent pour bandeau cover ─────────────────
 

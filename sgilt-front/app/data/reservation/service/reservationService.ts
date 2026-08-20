@@ -2,13 +2,13 @@ import {
   getReservationMetaApi,
   cancelReservationApi,
   getActiveReservationsApi,
+  markContactedApi,
+  confirmReservationApi,
 } from '../api/clientReservationApi'
 import {
   getProReservationsApi,
   getProBoardCountsApi,
   getProReservationDetailApi,
-  markContactedApi,
-  confirmReservationApi,
   refuseReservationApi,
   cancelReservationByProApi,
 } from '../api/proReservationApi'
@@ -28,8 +28,12 @@ export async function fetchReservationMeta(reservationId: string): Promise<Reser
   return mapReservationMeta(await getReservationMetaApi(reservationId))
 }
 
-export async function cancelReservation(reservationId: string): Promise<void> {
-  await cancelReservationApi(reservationId)
+export async function cancelReservation(
+  reservationId: string,
+  reason?: string,
+  isPersonal?: boolean,
+): Promise<void> {
+  await cancelReservationApi(reservationId, reason, isPersonal)
 }
 
 export async function fetchProReservations(): Promise<ProReservationSummary[]> {
@@ -58,8 +62,12 @@ export async function refuseReservation(reservationId: string, reason: string): 
   await refuseReservationApi(reservationId, reason)
 }
 
-export async function cancelReservationByPro(reservationId: string): Promise<void> {
-  await cancelReservationByProApi(reservationId)
+export async function cancelReservationByPro(
+  reservationId: string,
+  reason?: string,
+  isPersonal?: boolean,
+): Promise<void> {
+  await cancelReservationByProApi(reservationId, reason, isPersonal)
 }
 
 export async function fetchActiveReservations(): Promise<ActiveReservations> {

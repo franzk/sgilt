@@ -17,14 +17,6 @@ export async function getProReservationDetailApi(
   return apiFetch<ProReservationDetailDto>(`/pro/reservations/${reservationId}`)
 }
 
-export async function markContactedApi(reservationId: string): Promise<void> {
-  await apiFetch(`/pro/reservations/${reservationId}/mark-contacted`, { method: 'POST' })
-}
-
-export async function confirmReservationApi(reservationId: string): Promise<void> {
-  await apiFetch(`/pro/reservations/${reservationId}/confirm`, { method: 'POST' })
-}
-
 export async function refuseReservationApi(reservationId: string, reason: string): Promise<void> {
   await apiFetch(`/pro/reservations/${reservationId}/refuse`, {
     method: 'POST',
@@ -32,6 +24,13 @@ export async function refuseReservationApi(reservationId: string, reason: string
   })
 }
 
-export async function cancelReservationByProApi(reservationId: string): Promise<void> {
-  await apiFetch(`/pro/reservations/${reservationId}/cancel`, { method: 'POST' })
+export async function cancelReservationByProApi(
+  reservationId: string,
+  reason?: string,
+  isPersonal?: boolean,
+): Promise<void> {
+  await apiFetch(`/pro/reservations/${reservationId}/cancel`, {
+    method: 'POST',
+    body: { reason: reason ?? null, isPersonal: isPersonal ?? false },
+  })
 }

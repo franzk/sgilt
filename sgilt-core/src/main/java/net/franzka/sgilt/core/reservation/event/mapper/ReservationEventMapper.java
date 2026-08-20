@@ -28,10 +28,11 @@ public interface ReservationEventMapper {
 
     /**
      * Construit l'évènement générique de changement de statut à destination du client, pour toute
-     * transition déclenchée par le prestataire (prise de contact, confirmation, refus, annulation
-     * post-confirmation). {@code status} est passé séparément — c'est le nouveau statut, déjà affecté
-     * à {@code reservation} par l'appelant au moment de l'appel. {@code Prestataire.name} est déjà un
-     * champ unique, mappable directement — contrairement à {@link #toStatusChangedEventForPro}.
+     * transition déclenchée par le prestataire (refus, annulation post-confirmation — le prestataire
+     * ne pilote plus la prise de contact ni la confirmation, désormais déclarées par le client).
+     * {@code status} est passé séparément — c'est le nouveau statut, déjà affecté à {@code reservation}
+     * par l'appelant au moment de l'appel. {@code Prestataire.name} est déjà un champ unique, mappable
+     * directement — contrairement à {@link #toStatusChangedEventForPro}.
      *
      * @param reservation la réservation dont le statut vient de changer
      * @param status      le nouveau statut
@@ -49,16 +50,15 @@ public interface ReservationEventMapper {
     ReservationStatusChangedEvent toStatusChangedEventForClient(Reservation reservation, ReservationStatus status);
 
     /**
-     * Construit l'évènement générique de changement de statut à destination du prestataire, pour
-     * l'annulation déclenchée par le client. {@code actorName} concatène prénom et nom du client —
-     * seule exception {@code expression} de ce mapper, pour une simple concaténation d'un champ,
-     * toujours dans le périmètre "construire l'évènement" (contrairement à
-     * {@code NotificationEventMapper}, où construire des params/href entiers en annotation n'aurait
-     * apporté aucun gain).
+     * Construit l'évènement générique de changement de statut à destination du prestataire, pour toute
+     * transition déclenchée par le client (prise de contact, confirmation, annulation — à tout stade).
+     * {@code actorName} concatène prénom et nom du client — seule exception {@code expression} de ce
+     * mapper, pour une simple concaténation d'un champ, toujours dans le périmètre "construire
+     * l'évènement" (contrairement à {@code NotificationEventMapper}, où construire des params/href
+     * entiers en annotation n'aurait apporté aucun gain).
      *
-     * @param reservation la réservation annulée par le client
-     * @param status      le nouveau statut ({@code CANCELED_BY_CLIENT_PRE_CONTACT} ou
-     *                    {@code CANCELED_BY_CLIENT_POST_CONTACT})
+     * @param reservation la réservation dont le statut vient de changer, à l'initiative du client
+     * @param status      le nouveau statut
      * @return l'évènement à publier
      */
     @Mapping(source = "reservation.id",                            target = "reservationId")

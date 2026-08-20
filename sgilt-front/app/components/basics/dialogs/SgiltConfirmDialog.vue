@@ -2,6 +2,7 @@
   <SgiltDialog v-model:open="open" :title="title ?? ''" :max-width="maxWidth">
     <div class="confirm-content">
       <p class="confirm-message">{{ message }}</p>
+      <slot />
       <div class="confirm-actions">
         <SgiltButton variant="secondary" @click="handleCancel">
           {{ cancelLabel ?? $t('common.cancel') }}
@@ -60,6 +61,39 @@ function handleCancel() {
   color: $text-secondary;
   margin: 0;
   line-height: 1.5;
+}
+
+:deep(.confirm-reason) {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  padding: $spacing-s $spacing-m;
+  border: 1px solid $divider-color;
+  border-radius: $radius-md;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  color: $text-primary;
+  background: #fff;
+  transition: border-color 150ms ease;
+  outline: none;
+
+  &::placeholder {
+    color: $text-secondary;
+  }
+
+  &:focus {
+    border-color: rgba(47, 42, 37, 0.4);
+  }
+}
+
+:deep(.confirm-personal-toggle) {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  color: $text-secondary;
+  cursor: pointer;
 }
 
 .confirm-actions {

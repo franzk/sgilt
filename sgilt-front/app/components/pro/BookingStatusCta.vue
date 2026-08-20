@@ -1,46 +1,25 @@
 <template>
   <div class="booking-cta" :class="layout === 'row' ? 'row' : ''">
-    <!-- nouvelle : Contact effectué + Refuser -->
-    <template v-if="status === 'nouvelle'">
-      <button class="btn confirm" type="button" :disabled="loading" @click="$emit('confirm')">
-        <CheckIcon class="icon" />
-        <span class="label">Premier contact effectué</span>
-      </button>
-      <button class="btn refuse" type="button" @click="$emit('refuse')">
-        <span class="label">Non, je refuse cette prestation</span>
-      </button>
-      <button class="refuse-link" type="button" @click="$emit('refuse')">
-        Non, je refuse cette prestation.
-      </button>
-    </template>
-
-    <!-- en_discussion : Confirmer + Refuser -->
-    <template v-else-if="status === 'en_discussion'">
-      <button class="btn confirm" type="button" :disabled="loading" @click="$emit('confirm')">
-        <CheckIcon class="icon" />
-        <span class="label">Confirmer la réservation</span>
-      </button>
-      <button class="btn refuse" type="button" @click="$emit('refuse')">
-        <span class="label">Non, je refuse cette prestation</span>
-      </button>
-      <button class="refuse-link" type="button" @click="$emit('refuse')">
-        Non, je refuse cette prestation.
-      </button>
-    </template>
+    <!-- Refuser — seule action pro restante sur nouvelle/en_discussion, l'avancement du statut
+    (contact effectué, confirmation) est désormais déclaré par le client -->
+    <button class="btn refuse" type="button" @click="$emit('refuse')">
+      <span class="label">Non, je refuse cette prestation</span>
+    </button>
+    <button class="refuse-link" type="button" @click="$emit('refuse')">
+      Non, je refuse cette prestation.
+    </button>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { ReservationStatus } from '~/types/event'
-import { CheckIcon, CloseIcon } from '@remixicons/vue/line'
 
 defineProps<{
   status: ReservationStatus
-  loading?: boolean
   layout?: 'row' | 'column'
 }>()
 
-defineEmits<{ confirm: []; refuse: [] }>()
+defineEmits<{ refuse: [] }>()
 </script>
 
 <style scoped lang="scss">
@@ -73,19 +52,6 @@ $desktop: $breakpoint-desktop;
     cursor: pointer;
     min-height: 40px;
 
-    &:disabled {
-      opacity: 0.5;
-      cursor: default;
-    }
-
-    &.confirm {
-      // background: #2e7d32;
-      background: linear-gradient(180deg, #3a8f3e 0%, #2e7d32 100%);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
-      color: #fff;
-      border: none;
-    }
-
     &.refuse {
       background: #fff;
       border: none;
@@ -97,19 +63,6 @@ $desktop: $breakpoint-desktop;
         text-transform: none;
       }
 
-      @media (max-width: #{$desktop - 1px}) {
-        display: none;
-      }
-    }
-  }
-
-  .icon {
-    width: 22px;
-    height: 22px;
-    flex-shrink: 0;
-
-    // Icône du bouton refuse — visible desktop uniquement
-    &.desktop {
       @media (max-width: #{$desktop - 1px}) {
         display: none;
       }
@@ -146,10 +99,6 @@ $desktop: $breakpoint-desktop;
   // ── Overrides en layout row (desktop) ────────────────────────────────────────
   &.row {
     @media (min-width: $desktop) {
-      .btn.confirm {
-        letter-spacing: 0.03em;
-      }
-
       .btn.refuse {
         transition:
           background 120ms ease,

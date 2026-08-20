@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.reservation.api.ClientReservationApi;
 import net.franzka.sgilt.core.reservation.dto.ActiveReservationsDto;
+import net.franzka.sgilt.core.reservation.dto.CancelReservationRequest;
 import net.franzka.sgilt.core.reservation.dto.ReservationMetaDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
@@ -55,11 +56,31 @@ public class ClientReservationController implements ClientReservationApi {
 
     @Override
     @Transactional
-    public ResponseEntity<Void> cancel(UUID reservationId) {
+    public ResponseEntity<Void> markContacted(UUID reservationId) {
+        UUID userId = currentUserService.getId();
+        log.info("POST /user/reservations/{}/mark-contacted", reservationId);
+        reservationService.verifyOwnershipByReservationId(reservationId, userId);
+        reservationService.markContacted(reservationId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<Void> confirm(UUID reservationId) {
+        UUID userId = currentUserService.getId();
+        log.info("POST /user/reservations/{}/confirm", reservationId);
+        reservationService.verifyOwnershipByReservationId(reservationId, userId);
+        reservationService.confirm(reservationId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<Void> cancel(UUID reservationId, CancelReservationRequest body) {
         UUID userId = currentUserService.getId();
         log.info("POST /user/reservations/{}/cancel", reservationId);
         reservationService.verifyOwnershipByReservationId(reservationId, userId);
-        reservationService.cancel(reservationId);
+        reservationService.cancel(reservationId, body.reason(), body.isPersonal());
         return ResponseEntity.noContent().build();
     }
 }
