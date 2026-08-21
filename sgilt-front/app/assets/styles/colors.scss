@@ -57,6 +57,19 @@ $shadow-m: rgba(47, 42, 37, 0.12);
 $shadow-l: rgba(47, 42, 37, 0.18);
 
 /* ========================
+   Types d'événement
+   (couleur associée à chaque type — écran "Qu'est-ce qu'on fête ?",
+   badges/covers événement ailleurs dans le projet)
+   ======================== */
+
+$event-mariage: #bf0034;
+$event-soiree-privee: #e84e5e;
+$event-anniversaire: #f97958;
+$event-fete-entreprise: #68af9b;
+$event-evenement-public: #199181;
+$event-autre: #d1c1bd; // #f97958 très désaturé, à confirmer
+
+/* ========================
    App section (partie authentifiée)
    ======================== */
 
