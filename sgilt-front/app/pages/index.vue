@@ -10,6 +10,7 @@
             }}<span class="title-mark">{{ $t('landing.search-banner.title-mark') }}</span></span
           >
         </p>
+        <p class="tagline">{{ $t('landing.search-banner.tagline-desktop') }}</p>
       </div>
 
       <div class="event-types">
@@ -85,6 +86,10 @@ $title-bold-line-height: 3rem;
 $title-bold-letter-spacing: 0.02em;
 $title-bold-margin-bottom: 0.875rem;
 
+$tagline-font-size: 1.05rem;
+$tagline-line-height: 1.5;
+$tagline-max-width: 26rem;
+
 $event-types-width: 100%;
 $event-types-max-width: 30rem;
 $event-type-grid-gap: $spacing-s;
@@ -110,12 +115,6 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     }
   }
 
-  @media (min-width: $breakpoint-desktop) {
-    justify-content: flex-start;
-    padding-top: 0;
-    color: #fff;
-  }
-
   // ── Photo de fond ──────────────────────────────────────────────────────────
   .photo-layer {
     position: absolute;
@@ -135,19 +134,7 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     pointer-events: none;
 
     @media (min-width: $breakpoint-desktop) {
-      inset: 0;
-      z-index: 0;
-      background-image: url('/images/hero-party-desktop.png');
-      -webkit-mask-image: none;
-      mask-image: none;
-      filter: brightness(1) contrast(1.03) saturate(1.06);
-
-      &::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-      }
+      inset: 60% 0 0 0;
     }
   }
 
@@ -163,37 +150,14 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     gap: $search-form-gap;
 
     @media (min-width: $breakpoint-desktop) {
-      min-height: 50vh;
-      padding-top: 6%;
-      padding-bottom: 3%;
-      justify-content: space-between;
-      border-radius: 0 0 10px 10px;
-      overflow: clip;
-
-      // Glassmorphism
-      background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.25) 0%,
-        rgba(255, 255, 255, 0.1) 100%
-      );
-      backdrop-filter: blur(3px) saturate(1.15);
-      -webkit-backdrop-filter: blur(3px) saturate(1.15);
-      border: 1px solid rgba(255, 255, 255, 0.42);
-      box-shadow:
-        0 10px 40px rgba(0, 0, 0, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.4);
-
-      &::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(
-          900px 220px at 50% 0%,
-          rgba($color-accent, 0.12),
-          transparent 60%
-        );
-        pointer-events: none;
-      }
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: $spacing-xxl;
+      width: 100%;
+      max-width: $container-max-width;
+      margin: 0 auto;
+      padding: $spacing-xxl $spacing-xl;
     }
   }
 
@@ -204,6 +168,10 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     flex-direction: column;
     align-items: center;
     gap: $spacing-l;
+
+    @media (min-width: $breakpoint-desktop) {
+      flex: 1 1 0;
+    }
   }
 
   // ── Hero (titre + tagline) ─────────────────────────────────────────────────
@@ -215,15 +183,8 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     align-items: center;
 
     @media (min-width: $breakpoint-desktop) {
-      transform: translateY(-0.5rem);
-      width: 100%;
-      color: #fff;
-      text-shadow:
-        0 2px 10px rgba(0, 0, 0, 0.35),
-        0 14px 40px rgba(0, 0, 0, 0.22);
-      padding: 0;
-      margin: 0;
-      gap: 0.6rem;
+      flex: 1 1 0;
+      gap: $spacing-m;
     }
   }
 
@@ -232,15 +193,6 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     flex-direction: column;
     align-items: center;
     color: $hero-color;
-
-    @media (min-width: $breakpoint-desktop) {
-      flex-direction: row;
-      color: inherit;
-      align-items: baseline;
-      gap: 0.8rem;
-      margin: 0;
-      text-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
-    }
   }
 
   .title-thin {
@@ -248,12 +200,6 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     font-size: $title-thin-font-size;
     line-height: $title-thin-line-height;
     font-family: 'Cormorant Garamond', serif;
-
-    @media (min-width: $breakpoint-desktop) {
-      font-size: 3.2rem;
-      line-height: 1.05;
-      color: $color-primary;
-    }
   }
 
   .title-bold {
@@ -265,20 +211,6 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     letter-spacing: $title-bold-letter-spacing;
     margin-bottom: $title-bold-margin-bottom;
     color: $color-accent;
-
-    @media (min-width: $breakpoint-desktop) {
-      display: inline;
-      font-weight: 800;
-      font-size: 4rem;
-      line-height: 1.05;
-      letter-spacing: 0.02rem;
-      margin-top: 0.2rem;
-      margin-bottom: 0;
-      color: #fff7dd; // $color-accent;
-      text-shadow:
-        0 0 12px rgba(255, 210, 0, 0.4),
-        0 8px 24px rgba(0, 0, 0, 0.49);
-    }
   }
 
   // Le "?" reprend le style du début de phrase, seul "FÊTE" garde la grosse typo accent
@@ -289,12 +221,18 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     font-family: 'Cormorant Garamond', serif;
     letter-spacing: normal;
     color: $hero-color;
+  }
+
+  .tagline {
+    display: none;
+    margin: 0;
+    color: $text-secondary;
 
     @media (min-width: $breakpoint-desktop) {
-      font-size: 3.2rem;
-      line-height: 1.05;
-      color: $color-primary;
-      text-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+      display: block;
+      font-size: $tagline-font-size;
+      line-height: $tagline-line-height;
+      max-width: $tagline-max-width;
     }
   }
 
@@ -306,6 +244,10 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     gap: $event-type-grid-gap;
     width: $event-types-width;
     max-width: $event-types-max-width;
+
+    @media (min-width: $breakpoint-desktop) {
+      max-width: none;
+    }
   }
 
   // ── Échappatoire ("voir les prestataires") ─────────────────────────────────
@@ -319,6 +261,17 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     box-shadow: 0 1px 4px rgba(47, 42, 37, 0.08);
     color: $text-secondary;
     font-size: $font-size-md;
+
+    @media (min-width: $breakpoint-desktop) {
+      padding: 0;
+      background: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      box-shadow: none;
+      border-radius: 0;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
   }
 
   // ── Background décoratif ───────────────────────────────────────────────────
