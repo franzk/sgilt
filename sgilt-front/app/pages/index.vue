@@ -95,16 +95,5 @@ $event-type-grid-gap: $spacing-s;
   box-shadow: 0 1px 4px rgba(47, 42, 37, 0.08);
   color: $text-secondary;
   font-size: $font-size-md;
-
-  @media (min-width: $breakpoint-desktop) {
-    padding: 0;
-    background: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    box-shadow: none;
-    border-radius: 0;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
 }
 </style>
