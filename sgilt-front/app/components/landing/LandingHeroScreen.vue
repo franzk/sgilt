@@ -136,6 +136,14 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
       max-width: $container-max-width;
       margin: 0 auto;
       padding: $spacing-xxl $spacing-xl;
+      // conditionne l'affichage à la taille de la page
+      flex: 1;
+    }
+
+    // permet de scroller la page pour un hauteur inférieure qui ne permet pas d'afficher tous les composants
+    @media (max-height: 530px) {
+      overflow-y: auto;
+      justify-content: flex-start;
     }
   }
 
@@ -149,6 +157,11 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
 
     @media (min-width: $breakpoint-desktop) {
       flex: 1 1 0;
+    }
+
+    // lorsqu'on permet le scroll pour une hauteur trop faible, on aligne le contenu au début
+    @media (min-width: $breakpoint-desktop) and (max-height: 530px) {
+      align-self: flex-start;
     }
   }
 
