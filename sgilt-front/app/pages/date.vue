@@ -2,10 +2,11 @@
   <LandingHeroScreen
     :title="$t('landing.date-banner.title')"
     :highlighted-subtext="$t('landing.date-banner.title-highlight')"
+    :subtitle="$t('landing.date-banner.tagline-desktop')"
   >
     <div class="date-content">
       <div class="date-picker-wrap">
-        <SgiltDatePicker v-model="date" inline />
+        <SgiltDatePicker v-model="date" inline fullwidth />
       </div>
 
       <div class="actions">
@@ -43,6 +44,23 @@ $content-max-width: 30rem;
 .date-picker-wrap {
   width: $content-width;
   max-width: $content-max-width;
+
+  @media (min-width: $breakpoint-desktop) {
+    max-width: none;
+  }
+
+  // Réglage propre à cette page : le calendrier respire plus à mesure que
+  // l'écran grandit. Le mode fullwidth lui-même (taille des cellules) est
+  // porté par SgiltDatePicker (prop `fullwidth`), réutilisable ailleurs.
+  :deep(.dp__theme_light) {
+    --dp-menu-padding: #{$spacing-m};
+  }
+
+  @media (min-width: $breakpoint-desktop) {
+    :deep(.dp__theme_light) {
+      --dp-menu-padding: #{$spacing-l};
+    }
+  }
 }
 
 // ── Actions ─────────────────────────────────────────────────────────────────
@@ -53,6 +71,10 @@ $content-max-width: 30rem;
   flex-direction: column;
   align-items: center;
   gap: $spacing-m;
+
+  @media (min-width: $breakpoint-desktop) {
+    max-width: none;
+  }
 }
 
 .cta-button {
