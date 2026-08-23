@@ -127,6 +127,18 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     min-height: 0;
     overflow: hidden;
 
+    // Mobile uniquement : overflow-auto pour permettre le scroll si la hauteur de l'écran est trop faible pour afficher tous les composants
+    @media (max-width: #{$breakpoint-desktop - 1px}) {
+      flex: 1;
+      overflow-y: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
     @media (min-width: $breakpoint-desktop) {
       flex-direction: row;
       align-items: center;
