@@ -1,10 +1,10 @@
 <template>
-  <div class="event-type-card" :class="type">
+  <button type="button" class="event-type-card" :class="type">
     <div class="circle">
       <component :is="icon" class="icon" />
     </div>
     <p class="label">{{ label }}</p>
-  </div>
+  </button>
 </template>
 
 <script setup lang="ts">
@@ -27,6 +27,10 @@ defineProps<{
   justify-content: center;
   gap: $spacing-xs;
   padding: $spacing-m $spacing-xs;
+  border: none;
+  background: none;
+  font: inherit;
+  cursor: pointer;
   border-radius: $radius-lg;
   box-shadow: 0 1px 4px rgba(47, 42, 37, 0.05);
 

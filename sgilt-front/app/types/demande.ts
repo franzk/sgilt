@@ -53,10 +53,11 @@ export interface DemandeState {
 export const ETAPES_COUNT = 6
 
 export const EVENT_TYPE_OPTIONS: DemandeOption[] = [
-  { value: 'anniversaire', label: 'Anniversaire', emoji: '🎂' },
   { value: 'mariage', label: 'Mariage', emoji: '💍' },
-  { value: 'soiree', label: 'Soirée privée', emoji: '🥂' },
-  { value: 'entreprise', label: "Fête d'entreprise", emoji: '🏢' },
+  { value: 'soiree_privee', label: 'Soirée privée', emoji: '🥂' },
+  { value: 'anniversaire', label: 'Anniversaire', emoji: '🎂' },
+  { value: 'fete_entreprise', label: "Fête d'entreprise", emoji: '🏢' },
+  { value: 'evenement_public', label: 'Événement public', emoji: '🎪' },
   { value: 'autre', label: 'Autre', emoji: '•••' },
 ]
 

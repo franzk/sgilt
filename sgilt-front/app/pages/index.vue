@@ -12,10 +12,13 @@
           :type="eventType.key"
           :label="eventType.label"
           :icon="eventType.icon"
+          @click="selectEventType(eventType.key)"
         />
       </div>
 
-      <p class="inspire-link">{{ $t('landing.search-banner.inspire-link') }}</p>
+      <button type="button" class="inspire-link" @click="browseToSearch">
+        {{ $t('landing.search-banner.inspire-link') }}
+      </button>
     </div>
   </LandingHeroScreen>
 </template>
@@ -48,10 +51,20 @@ useSeoMeta({
 })
 
 const { showOnboarding } = useSearchUi()
+const { state } = useDemande()
 
 onMounted(() => {
   showOnboarding.value = true
 })
+
+function selectEventType(key: string) {
+  state.eventType = key
+  navigateTo('/date')
+}
+
+function browseToSearch() {
+  navigateTo('/search')
+}
 </script>
 
 <style scoped lang="scss">
@@ -88,12 +101,15 @@ $event-type-grid-gap: $spacing-s;
 .inspire-link {
   margin: 0;
   padding: $spacing-xs $spacing-m;
+  border: none;
   background: rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   border-radius: 999px;
   box-shadow: 0 1px 4px rgba(47, 42, 37, 0.08);
   color: $text-secondary;
+  font: inherit;
   font-size: $font-size-md;
+  cursor: pointer;
 }
 </style>

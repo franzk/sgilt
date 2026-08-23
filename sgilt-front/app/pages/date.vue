@@ -10,8 +10,13 @@
       </div>
 
       <div class="actions">
-        <button class="cta-button" type="button">{{ $t('landing.date-banner.cta') }}</button>
-        <button class="skip-link" type="button">{{ $t('landing.date-banner.skip-link') }}</button>
+        <p v-if="dateError" class="date-error">{{ $t('landing.date-banner.date-error') }}</p>
+        <button class="cta-button" type="button" @click="confirmDate">
+          {{ $t('landing.date-banner.cta') }}
+        </button>
+        <button class="skip-link" type="button" @click="skipDate">
+          {{ $t('landing.date-banner.skip-link') }}
+        </button>
       </div>
     </div>
   </LandingHeroScreen>
@@ -20,10 +25,42 @@
 <script setup lang="ts">
 import LandingHeroScreen from '~/components/landing/LandingHeroScreen.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
+import { toISODate } from '~/utils/dateUtils'
 
 useHead({ title: 'C\'est pour quand ? - Sgilt' })
 
+const { state } = useDemande()
+const { showOnboarding, stateDate } = useSearchUi()
+
+onMounted(() => {
+  showOnboarding.value = true
+})
+
 const date = ref<Date>()
+const dateError = ref(false)
+
+function confirmDate() {
+  if (!date.value) {
+    dateError.value = true
+    return
+  }
+  state.date = date.value
+  navigateTo({ path: '/search', query: { date: toISODate(date.value) } })
+}
+
+function skipDate() {
+  // Sécurité : évite qu'une date choisie puis abandonnée (retour arrière,
+  // session précédente via le sessionStorage de useDemande) ne reste dans le
+  // state alors que l'utilisateur vient de dire explicitement qu'il ne la
+  // connaît pas encore. Deux states distinctes à vider : state.date
+  // (useDemande, sert au tunnel de contact) et stateDate (useSearchUi, cache
+  // qui fait vivre la date sur /search et les fiches prestataire au-delà de
+  // la query string — à ne vider que sur cette action explicite, jamais à
+  // chaque changement de route sous peine de casser ce report).
+  state.date = undefined
+  stateDate.value = undefined
+  navigateTo('/search')
+}
 </script>
 
 <style scoped lang="scss">
@@ -98,6 +135,13 @@ $content-max-width: 30rem;
   @media (min-width: $breakpoint-desktop) {
     max-width: none;
   }
+}
+
+.date-error {
+  margin: 0;
+  color: $state-error;
+  font-size: $font-size-sm;
+  text-align: center;
 }
 
 .cta-button {

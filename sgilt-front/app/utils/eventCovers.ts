@@ -8,6 +8,7 @@ export const BANK_IMAGE_PATHS: Record<string, string> = {
   anniversaire: 'bank/anniversaire.jpg',
   soiree_privee: 'bank/soiree_privee.jpg',
   fete_entreprise: 'bank/fete_entreprise.jpg',
+  evenement_public: 'bank/evenement_public.jpg',
   autre: 'bank/autre.jpg',
 }
 
