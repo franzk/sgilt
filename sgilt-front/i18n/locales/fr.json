@@ -52,14 +52,19 @@
   },
   "landing": {
     "search-banner": {
-      "title-part-1": "Qu'est-ce qu'on ",
-      "title-part-2": "FÊTE",
-      "title-mark": " ?",
+      "title": "Qu'est-ce qu'on FÊTE ?",
+      "title-highlight": "FÊTE",
       "tagline-new-event": "Et si on lançait votre prochain événement\u00a0?",
       "tagline-desktop": "Mariage, anniversaire, soirée entre amis, événement pro ou public... Quel que soit votre projet, Sgilt vous accompagne à chaque étape.",
 
 
       "inspire-link": "Laissez-vous inspirer →"
+    },
+    "date-banner": {
+      "title": "C'est pour QUAND ?",
+      "title-highlight": "QUAND",
+      "cta": "C'est parti",
+      "skip-link": "Je ne connais pas encore la date"
     },
     "categories-banner": {
       "title": "Découvrez les partenaires de votre évènement"
