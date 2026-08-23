@@ -72,7 +72,7 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
 .home {
   position: relative;
   width: 100%;
-  min-height: calc(100dvh - $app-header-height);
+  height: calc(100dvh - $app-header-height);
   overflow: clip;
   background: $background;
   padding-top: $padding-top;
@@ -120,6 +120,12 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     padding: $search-form-padding;
     justify-content: center;
     gap: $search-form-gap;
+    // .home a maintenant une height fixe (plus min-height) pour ne jamais
+    // dépasser la page — .search-form doit donc pouvoir se compresser au lieu
+    // de rester bloqué à la taille naturelle de son contenu (comportement par
+    // défaut d'un flex item, min-height:auto).
+    min-height: 0;
+    overflow: hidden;
 
     @media (min-width: $breakpoint-desktop) {
       flex-direction: row;
@@ -139,6 +145,7 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     display: flex;
     flex-direction: column;
     align-items: center;
+    min-height: 0;
 
     @media (min-width: $breakpoint-desktop) {
       flex: 1 1 0;
