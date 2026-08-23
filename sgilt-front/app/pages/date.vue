@@ -10,7 +10,7 @@
 
       <div class="actions">
         <button class="cta-button" type="button">{{ $t('landing.date-banner.cta') }}</button>
-        <p class="skip-link">{{ $t('landing.date-banner.skip-link') }}</p>
+        <button class="skip-link" type="button">{{ $t('landing.date-banner.skip-link') }}</button>
       </div>
     </div>
   </LandingHeroScreen>
@@ -68,10 +68,15 @@ $content-max-width: 30rem;
 }
 
 .skip-link {
+  width: 100%;
+  height: 3.25rem;
   margin: 0;
-  color: $text-secondary;
-  font-size: $font-size-md;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  border: 1px solid $divider-color;
+  border-radius: 999px;
+  background: $surface-white;
+  color: $text-primary;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
 }
 </style>
