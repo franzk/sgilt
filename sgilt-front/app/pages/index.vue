@@ -3,7 +3,6 @@
     :title="$t('landing.search-banner.title')"
     :highlighted-subtext="$t('landing.search-banner.title-highlight')"
     :subtitle="$t('landing.search-banner.tagline-desktop')"
-    layout="stacked"
   >
     <div class="event-types">
       <div class="event-type-grid">

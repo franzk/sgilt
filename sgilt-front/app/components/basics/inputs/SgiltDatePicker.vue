@@ -378,6 +378,10 @@ $menu-background: $surface-white;
   gap: 0.5rem;
   padding: 1rem;
   width: 100%;
+  // Remplit tout l'espace disponible dans le conteneur parent (utile pour le calendrier inline)
+  flex: 1;
+  height: 100%;
+  box-sizing: border-box;
 
   &__header {
     display: flex;
@@ -395,11 +399,9 @@ $menu-background: $surface-white;
   &__grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(5, 1fr);
     gap: 0.25rem;
+    flex: 1;
   }
-}
-
-.calendar-cell {
-  aspect-ratio: 1;
 }
 </style>

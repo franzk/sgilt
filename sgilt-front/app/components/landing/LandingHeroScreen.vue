@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <section class="search-form" :class="{ 'layout-stacked': layout === 'stacked' }">
+    <section class="search-form">
       <!-- title -->
       <div class="hero">
         <p class="title">
@@ -26,12 +26,6 @@ const props = defineProps<{
   title: string
   highlightedSubtext: string
   subtitle?: string
-  /**
-   * Disposition desktop : `split` (défaut) = titre à gauche / zone d'action à
-   * droite, deux colonnes (écran date). `stacked` = titre pleine largeur en
-   * première ligne, zone d'action pleine largeur en dessous (écran d'accueil).
-   */
-  layout?: 'split' | 'stacked'
 }>()
 
 // Sépare `title` autour de `highlightedSubtext` pour appliquer le style accent
@@ -70,7 +64,6 @@ $title-bold-margin-bottom: 0.875rem;
 
 $tagline-font-size: 1.05rem;
 $tagline-line-height: 1.5;
-$tagline-max-width: 26rem;
 
 $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
 
@@ -78,7 +71,9 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
 .home {
   position: relative;
   width: 100%;
-  height: calc(100dvh - $app-header-height);
+  // min-height (pas height) : la page grandit avec son contenu plutôt que
+  // d'être plafonnée à la hauteur du viewport — le scroll se fait au niveau de la page entière
+  min-height: calc(100dvh - $app-header-height);
   overflow: clip;
   background: $background;
   padding-top: $padding-top;
@@ -126,62 +121,26 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     padding: $search-form-padding;
     justify-content: center;
     gap: $search-form-gap;
-    // .home a maintenant une height fixe (plus min-height) pour ne jamais
-    // dépasser la page — .search-form doit donc pouvoir se compresser au lieu
-    // de rester bloqué à la taille naturelle de son contenu (comportement par
-    // défaut d'un flex item, min-height:auto).
     min-height: 0;
-    overflow: hidden;
 
     // Mobile uniquement
     @media (max-width: #{$breakpoint-desktop - 1px}) {
       flex: 0 70%;
       justify-content: space-around;
-      overflow: visible;
     }
 
-    // Propriétés communes aux deux dispositions desktop (split/stacked) —
-    // seuls flex-direction/gap changent selon le mode, voir plus bas.
+    // Desktop : titre en pleine largeur, zone d'action pleine largeur en-dessous
     @media (min-width: $breakpoint-desktop) {
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
+      flex-direction: column;
       width: 100%;
       max-width: $container-max-width;
       margin: 0 auto;
-      padding: $spacing-xxl $spacing-xl;
+      padding: $spacing-xl $spacing-xl $spacing-l;
+      gap: $spacing-l;
       // conditionne l'affichage à la taille de la page
       flex: 1;
-    }
-
-    // Split (défaut, écran date) : titre à gauche / zone d'action à droite.
-    &:not(.layout-stacked) {
-      @media (min-width: $breakpoint-desktop) {
-        flex-direction: row;
-        gap: $spacing-xxl;
-      }
-    }
-
-    // Stacked (écran d'accueil) : titre en pleine largeur, zone d'action
-    // pleine largeur en dessous — même empilement que mobile, juste avec les
-    // largeurs/espacements desktop ci-dessus. justify-content:flex-start (pas
-    // center comme le split) pour remonter tout le bloc le plus haut possible
-    // au lieu de le centrer dans l'espace disponible — l'objectif est de tenir
-    // au-dessus de la photo, pas de centrer verticalement.
-    &.layout-stacked {
-      @media (min-width: $breakpoint-desktop) {
-        flex-direction: column;
-        justify-content: flex-start;
-        padding-top: $spacing-l;
-        gap: $spacing-xl;
-      }
-    }
-
-    // Desktop uniquement : permet de scroller si la hauteur d'écran est trop
-    // faible pour afficher tous les composants. En mobile, overflow reste
-    // visible quelle que soit la hauteur (règle mobile ci-dessus).
-    @media (min-width: $breakpoint-desktop) and (max-height: 530px) {
-      overflow-y: auto;
-      justify-content: flex-start;
     }
   }
 
@@ -192,22 +151,6 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     flex-direction: column;
     align-items: center;
     min-height: 0;
-  }
-
-  // En split (écran date), .hero et .action-zone se partagent la largeur à
-  // égalité comme deux colonnes — pas de sens en stacked (écran d'accueil),
-  // où .action-zone occupe déjà toute la largeur en dessous du titre.
-  .search-form:not(.layout-stacked) .action-zone {
-    @media (min-width: $breakpoint-desktop) {
-      flex: 1 1 0;
-    }
-
-    // Uniquement en split : lorsqu'on permet le scroll pour une hauteur trop
-    // faible, on aligne le contenu au début. En stacked, flex-direction:column
-    // fait de align-self l'axe horizontal, pas vertical — pas ce qu'on veut ici.
-    @media (min-width: $breakpoint-desktop) and (max-height: 530px) {
-      align-self: flex-start;
-    }
   }
 
   // ── Hero (titre + sous-titre) ─────────────────────────────────────────────────
@@ -223,36 +166,17 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     }
   }
 
-  // Ne s'applique qu'en split — en stacked, .hero est déjà pleine largeur en
-  // première ligne, pas de colonne à partager avec .action-zone.
-  .search-form:not(.layout-stacked) .hero {
-    @media (min-width: $breakpoint-desktop) {
-      flex: 1 1 0;
-    }
-  }
-
   .title {
     display: flex;
     flex-direction: column;
     align-items: center;
     color: $hero-color;
-  }
 
-  // Stacked desktop uniquement : titre sur une seule ligne plutôt qu'empilé
-  // sur deux, pour remonter tout le bloc le plus haut possible au-dessus de
-  // la photo (voir justify-content:flex-start sur .search-form.layout-stacked
-  // plus haut).
-  .search-form.layout-stacked .title {
+    // Desktop : titre sur une seule ligne
     @media (min-width: $breakpoint-desktop) {
       flex-direction: row;
       align-items: baseline;
       gap: 0.5rem;
-    }
-  }
-
-  .search-form.layout-stacked .title-bold {
-    @media (min-width: $breakpoint-desktop) {
-      margin-bottom: 0;
     }
   }
 
@@ -272,6 +196,10 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     letter-spacing: $title-bold-letter-spacing;
     margin-bottom: $title-bold-margin-bottom;
     color: $color-accent;
+
+    @media (min-width: $breakpoint-desktop) {
+      margin-bottom: 0;
+    }
   }
 
   // Le "?" reprend le style du début de phrase, seul le mot accentué garde la grosse typo
@@ -289,20 +217,12 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     margin: 0;
     color: $text-secondary;
 
+    // Pas de max-width étroit : la tagline occupe la largeur disponible et
+    // wrap sur plusieurs lignes si l'écran est trop étroit
     @media (min-width: $breakpoint-desktop) {
       display: block;
       font-size: $tagline-font-size;
       line-height: $tagline-line-height;
-      max-width: $tagline-max-width;
-    }
-  }
-
-  // Stacked desktop : pas de max-width étroit comme le split, mais on accepte
-  // le wrap sur plusieurs lignes si l'écran est trop étroit (ex. 1024px en
-  // portrait tablette) — white-space:nowrap la faisait déborder à gauche et
-  // à droite au lieu de retourner à la ligne.
-  .search-form.layout-stacked .tagline {
-    @media (min-width: $breakpoint-desktop) {
       max-width: none;
     }
   }
