@@ -51,7 +51,7 @@ useSeoMeta({
 })
 
 const { showOnboarding } = useSearchUi()
-const { state } = useDemande()
+const { state, reset } = useDemande()
 
 onMounted(() => {
   showOnboarding.value = true
@@ -63,6 +63,7 @@ function selectEventType(key: string) {
 }
 
 function browseToSearch() {
+  reset()
   navigateTo('/search')
 }
 </script>
