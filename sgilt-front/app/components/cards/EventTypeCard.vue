@@ -28,11 +28,14 @@ defineProps<{
   gap: $spacing-xs;
   padding: $spacing-m $spacing-xs;
   border: none;
-  background: none;
   font: inherit;
   cursor: pointer;
   border-radius: $radius-lg;
   box-shadow: 0 1px 4px rgba(47, 42, 37, 0.05);
+
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 
   .circle {
     display: flex;

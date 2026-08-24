@@ -3,6 +3,7 @@
     :title="$t('landing.search-banner.title')"
     :highlighted-subtext="$t('landing.search-banner.title-highlight')"
     :subtitle="$t('landing.search-banner.tagline-desktop')"
+    layout="stacked"
   >
     <div class="event-types">
       <div class="event-type-grid">
@@ -92,7 +93,10 @@ $event-type-grid-gap: $spacing-s;
   width: $event-types-width;
   max-width: $event-types-max-width;
 
+  // Deuxième ligne du layout stacked : les 6 cartes alignées horizontalement
+  // plutôt que la grille 2 colonnes / 3 lignes du mobile.
   @media (min-width: $breakpoint-desktop) {
+    grid-template-columns: repeat(6, 1fr);
     max-width: none;
   }
 }

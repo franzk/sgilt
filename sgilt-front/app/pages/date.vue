@@ -11,12 +11,14 @@
 
       <div class="actions">
         <p v-if="dateError" class="date-error">{{ $t('landing.date-banner.date-error') }}</p>
-        <button class="cta-button" type="button" @click="confirmDate">
-          {{ $t('landing.date-banner.cta') }}
-        </button>
-        <button class="skip-link" type="button" @click="skipDate">
-          {{ $t('landing.date-banner.skip-link') }}
-        </button>
+        <div class="action-buttons">
+          <button class="cta-button" type="button" @click="confirmDate">
+            {{ $t('landing.date-banner.cta') }}
+          </button>
+          <button class="skip-link" type="button" @click="skipDate">
+            {{ $t('landing.date-banner.skip-link') }}
+          </button>
+        </div>
       </div>
     </div>
   </LandingHeroScreen>
@@ -134,6 +136,24 @@ $content-max-width: 30rem;
 
   @media (min-width: $breakpoint-desktop) {
     max-width: none;
+  }
+}
+
+.action-buttons {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-m;
+
+  @media (min-width: $breakpoint-desktop) {
+    flex-direction: row;
+
+    // width:100% (pensé pour l'empilement mobile) ferait sinon lutter les
+    // deux boutons pour toute la largeur de la ligne.
+    > * {
+      width: auto;
+      flex: 1;
+    }
   }
 }
 
