@@ -25,6 +25,7 @@ storage/bank/
   anniversaire.jpg    → GET /bank/anniversaire.jpg
   soiree_privee.jpg   → GET /bank/soiree_privee.jpg
   fete_entreprise.jpg → GET /bank/fete_entreprise.jpg
+  evenement_public.jpg → GET /bank/evenement_public.jpg
   autre.jpg           → GET /bank/autre.jpg
 ```
 

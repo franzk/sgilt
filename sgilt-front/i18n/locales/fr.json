@@ -506,6 +506,7 @@
         "anniversaire": "Anniversaire",
         "soiree_privee": "Soirée privée",
         "fete_entreprise": "Fête d'entreprise",
+        "evenement_public": "Événement public",
         "autre": "Autre"
       },
       "upload-button": "Importer ma propre photo"
