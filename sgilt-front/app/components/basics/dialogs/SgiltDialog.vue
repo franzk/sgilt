@@ -79,7 +79,6 @@ const { isMobile } = useDevice()
   align-items: center;
   justify-content: center;
   padding: $spacing-m;
-  // max-height: calc(100vh - $app-header-height);
 
   &.is-fullscreen {
     padding: 0;
@@ -92,6 +91,8 @@ const { isMobile } = useDevice()
     border-radius: $radius-lg;
     width: 100%;
     max-width: 480px;
+    // Garantit que la modale ne dépasse jamais le viewport quel que soit son contenu
+    max-height: calc(100dvh - #{$spacing-m} * 2);
 
     display: flex;
     flex-direction: column;
@@ -100,6 +101,7 @@ const { isMobile } = useDevice()
 
     &.fullscreen {
       height: 100dvh;
+      max-height: none;
       border-radius: 0;
       box-shadow: none;
     }
@@ -143,6 +145,7 @@ const { isMobile } = useDevice()
   }
 
   .body {
+    min-height: 0;
     overflow-y: auto;
     flex: 1;
     display: flex;

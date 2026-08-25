@@ -8,7 +8,10 @@
       :locale="fr"
       :formats="format"
       class="sgilt-date-picker"
-      :class="{ 'sgilt-date-picker--error': props.error }"
+      :class="{
+        'sgilt-date-picker--error': props.error,
+        'sgilt-date-picker--fullwidth': props.fullwidth,
+      }"
       :ui="uiConfig"
       :state="choiceState"
       :placeholder="placeholder"
@@ -81,6 +84,8 @@ const props = defineProps<{
   placeholder?: string
   inline?: boolean
   error?: boolean
+  /** Calendrier inline qui remplit son conteneur au lieu de garder sa taille intrinsèque fixe. */
+  fullwidth?: boolean
 }>()
 
 const getDayClass = (date: Date) => {
@@ -167,17 +172,10 @@ $cell-hover-color: rgba($color-accent, 0.14);
 $cell-border-radius: 0.5em;
 $cell-padding: 1.2rem;
 $cell-padding-small: 1rem;
+$cell-padding-fullwidth: 0.25rem;
 $menu-border-radius: 1.4rem;
-$menu-box-shadow:
-  0 0.25rem 0.5rem rgba(0, 0, 0, 0.1),
-  0 0.75rem 1.75rem rgba(0, 0, 0, 0.08);
-$menu-background:
-  radial-gradient(
-    1100px 520px at 50% -10%,
-    rgba($color-accent, 0.22) 0%,
-    rgba(255, 255, 255, 0) 55%
-  ),
-  linear-gradient(180deg, #fffdf6 0%, #ffffff 60%);
+$menu-box-shadow: 0 2px 8px $shadow-s;
+$menu-background: $surface-white;
 
 // ─── Composant ────────────────────────────────────────────────────────────────
 
@@ -190,6 +188,31 @@ $menu-background:
   width: 100%;
   * {
     font-size: inherit;
+  }
+}
+
+// ─── Mode fullwidth (calendrier inline qui remplit son conteneur) ─────────────
+// width:100% sur .dp__menu ne sert à rien : la lib le positionne en interne
+// (logique de popup réutilisée même en mode inline) et son width résout en
+// "auto" (shrink-to-fit) faute de containing block bien défini — c'est la
+// taille des cellules qui détermine la taille du calendrier, pas l'inverse.
+// Pour inverser cette dépendance sans halluciner une largeur en vw (qui
+// décrocherait dès que le conteneur est plafonné par un max-width), on fait
+// de .sgilt-date-picker un container de taille (container-type: inline-size)
+// — il a un width:100% explicite et non shrink-wrap (règle juste au-dessus),
+// donc pas de dépendance circulaire — puis on calcule chaque cellule en
+// unités cqw (% de CE conteneur), littéralement 100cqw / 7 colonnes.
+.sgilt-date-picker--fullwidth {
+  container-type: inline-size;
+
+  .dp__theme_light {
+    --dp-cell-padding: #{$cell-padding-fullwidth};
+  }
+
+  .dp__calendar_header_item,
+  .dp__cell_inner {
+    // Largeur pilotée par le conteneur réel (cqw)
+    width: calc((100cqw - 2 * var(--dp-menu-padding, 0px)) / 7);
   }
 }
 
@@ -284,7 +307,7 @@ $menu-background:
   &::after {
     content: '';
     position: absolute;
-    bottom: 0px;
+    bottom: 0;
     left: 50%;
     transform: translateX(calc(-50% + 1px));
     width: 5px;
@@ -355,6 +378,10 @@ $menu-background:
   gap: 0.5rem;
   padding: 1rem;
   width: 100%;
+  // Remplit tout l'espace disponible dans le conteneur parent (utile pour le calendrier inline)
+  flex: 1;
+  height: 100%;
+  box-sizing: border-box;
 
   &__header {
     display: flex;
@@ -372,11 +399,9 @@ $menu-background:
   &__grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(5, 1fr);
     gap: 0.25rem;
+    flex: 1;
   }
-}
-
-.calendar-cell {
-  aspect-ratio: 1;
 }
 </style>

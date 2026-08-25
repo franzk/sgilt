@@ -52,17 +52,21 @@
   },
   "landing": {
     "search-banner": {
-      "title-part-1": "Qu'est-ce qu'on ",
-      "title-part-2": "FÊTE",
-      "title-mark": " ?",
+      "title": "Qu'est-ce qu'on FÊTE ?",
+      "title-highlight": "FÊTE",
       "tagline-new-event": "Et si on lançait votre prochain événement\u00a0?",
-      "tagline-mobile": "Des prestataires en Alsace, à votre date.",
-      "tagline-desktop": "Trouvez les meilleurs prestataires pour votre événement en Alsace, à votre date.",
-      "your-event": "Votre événement",
-      "cta": "C'est parti !",
-      "or": "ou simplement",
-      "browse-cta": "Voir les prestataires",
-      "browse-cta-desktop": "voir tous les prestataires →"
+      "tagline-desktop": "Mariage, anniversaire, soirée entre amis, événement pro ou public... Quel que soit votre projet, Sgilt vous accompagne à chaque étape.",
+
+
+      "inspire-link": "Laissez-vous inspirer →"
+    },
+    "date-banner": {
+      "title": "C'est pour QUAND ?",
+      "title-highlight": "QUAND",
+      "tagline-desktop": "Choisissez la date de votre événement pour continuer l'organisation.",
+      "cta": "C'est parti",
+      "date-error": "Sélectionnez une date pour continuer, ou passez cette étape.",
+      "skip-link": "Passer"
     },
     "categories-banner": {
       "title": "Découvrez les partenaires de votre évènement"
@@ -502,6 +506,7 @@
         "anniversaire": "Anniversaire",
         "soiree_privee": "Soirée privée",
         "fete_entreprise": "Fête d'entreprise",
+        "evenement_public": "Événement public",
         "autre": "Autre"
       },
       "upload-button": "Importer ma propre photo"

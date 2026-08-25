@@ -41,7 +41,7 @@ const accountMenuOpen = ref(false)
 
 const { isAuthenticated, hasRole } = useKeycloak()
 
-const ROUTES_WITHOUT_SHADOW_MOBILE = ['/', '/search']
+const ROUTES_WITHOUT_SHADOW_MOBILE = ['/', '/date', '/search']
 const ROUTES_SHADOW_ON_SCROLL = ['/app', '/app/events', '/pro/reservations']
 const route = useRoute()
 const { isMobile } = useDevice()

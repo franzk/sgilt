@@ -1,5 +1,5 @@
 <template>
-  <SgiltDialog v-model:open="open" :title="$t('event.edit-dialog.title')" max-width="560px">
+  <SgiltDialog v-model:open="open" :title="$t('event.edit-dialog.title')" max-width="720px">
     <div class="form">
       <!-- Titre -->
       <div class="field">
@@ -202,11 +202,21 @@ $desktop: $breakpoint-desktop;
   flex-direction: column;
   gap: $spacing-l;
   padding: $spacing-m $spacing-l $spacing-l;
+  min-height: 0;
 
   .field {
     display: flex;
     flex-direction: column;
     gap: $spacing-xs;
+    flex-shrink: 0;
+
+    // Le champ contenant l'aperçu de couverture est le seul autorisé à
+    // rétrécir (et à grandir) : c'est lui qui absorbe l'espace vertical
+    // manquant pour éviter le scroll dans la modale.
+    &:has(.cover-preview) {
+      flex: 1 1 auto;
+      min-height: 0;
+    }
 
     .label {
       font-family: 'Inter', sans-serif;
@@ -215,6 +225,7 @@ $desktop: $breakpoint-desktop;
       letter-spacing: 0.04em;
       text-transform: uppercase;
       color: $text-secondary;
+      flex-shrink: 0;
     }
 
     .input {
@@ -242,9 +253,11 @@ $desktop: $breakpoint-desktop;
 
     .cover-grid {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(6, 1fr);
       gap: $spacing-xs;
       transition: opacity 150ms ease;
+
+      flex-shrink: 0;
 
       &.loading {
         opacity: 0.5;
@@ -252,12 +265,17 @@ $desktop: $breakpoint-desktop;
       }
 
       @media (min-width: $desktop) {
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(6, 1fr);
       }
 
       .cover-tile {
         position: relative;
-        aspect-ratio: 3/2;
+        // 2/1 plutôt que 3/2 : à largeur de tuile égale, une tuile moins
+        // haute — la grille passe de 5 à 6 colonnes ET la modale s'est
+        // élargie (560→720px), donc chaque tuile est mécaniquement plus
+        // large qu'avant ; sans réduire ce ratio, elle grossirait aussi en
+        // hauteur, poussant tout le reste du contenu vers le bas.
+        aspect-ratio: 2/1;
         border-radius: $radius-sm;
         background-size: cover;
         background-position: center;
@@ -319,6 +337,7 @@ $desktop: $breakpoint-desktop;
       font-size: 0.85rem;
       color: $text-secondary;
       cursor: pointer;
+      flex-shrink: 0;
       transition:
         border-color 150ms ease,
         color 150ms ease;
@@ -346,7 +365,10 @@ $desktop: $breakpoint-desktop;
     }
 
     .cover-preview {
-      width: 100%;
+      width: auto;
+      max-width: 100%;
+      flex: 1 1 auto;
+      min-height: 0;
       aspect-ratio: 16/9;
       border-radius: $radius-sm;
       background-size: cover;
