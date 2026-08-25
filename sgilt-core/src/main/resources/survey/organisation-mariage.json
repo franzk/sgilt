@@ -1,0 +1,167 @@
+{
+  "slug": "organisation-mariage",
+  "title": "Aidez-nous à mieux comprendre l'organisation de votre mariage",
+  "description": "5 minutes pour nous aider à mieux comprendre vos besoins et améliorer Sgilt.",
+  "questions": [
+    {
+      "id": "date_mariage",
+      "type": "single_choice",
+      "label": "Quand aura lieu votre mariage ?",
+      "required": true,
+      "options": [
+        { "value": "moins_3_mois", "label": "Moins de 3 mois" },
+        { "value": "3_6_mois", "label": "Dans 3 à 6 mois" },
+        { "value": "6_12_mois", "label": "Dans 6 à 12 mois" },
+        { "value": "plus_1_an", "label": "Dans plus d'un an" },
+        { "value": "non_fixee", "label": "Date pas encore fixée" }
+      ]
+    },
+    {
+      "id": "stade_organisation",
+      "type": "single_choice",
+      "label": "Où en êtes-vous dans l'organisation ?",
+      "required": true,
+      "options": [
+        { "value": "pas_commence", "label": "Pas encore vraiment commencé" },
+        { "value": "recherche_prestataires", "label": "Recherche de prestataires en cours" },
+        { "value": "prestataires_reserves", "label": "Prestataires en grande partie réservés" },
+        { "value": "avance", "label": "Organisation bien avancée" }
+      ]
+    },
+    {
+      "id": "nb_invites",
+      "type": "single_choice",
+      "label": "Combien d'invités prévoyez-vous environ ?",
+      "required": false,
+      "options": [
+        { "value": "moins_30", "label": "Moins de 30" },
+        { "value": "30_60", "label": "30 à 60" },
+        { "value": "60_100", "label": "60 à 100" },
+        { "value": "100_150", "label": "100 à 150" },
+        { "value": "plus_150", "label": "Plus de 150" },
+        { "value": "ne_sais_pas", "label": "Je ne sais pas encore" }
+      ]
+    },
+    {
+      "id": "avec_qui",
+      "type": "single_choice",
+      "label": "Avec qui organisez-vous principalement votre mariage ?",
+      "required": false,
+      "options": [
+        { "value": "seul", "label": "Seul(e)" },
+        { "value": "partenaire", "label": "Avec mon/ma partenaire" },
+        { "value": "famille_proches", "label": "Avec ma famille ou mes proches" },
+        { "value": "plusieurs", "label": "À plusieurs" },
+        { "value": "wedding_planner", "label": "Avec un wedding planner / professionnel" },
+        { "value": "autre", "label": "Autre", "allowFreeText": true }
+      ]
+    },
+    {
+      "id": "outils_utilises",
+      "type": "multi_choice",
+      "label": "Quels outils utilisez-vous aujourd'hui pour organiser votre mariage ?",
+      "required": false,
+      "options": [
+        { "value": "papier", "label": "Papier / carnet" },
+        { "value": "notes_telephone", "label": "Notes sur le téléphone" },
+        { "value": "whatsapp_messenger", "label": "WhatsApp / Messenger" },
+        { "value": "excel_sheets", "label": "Excel / Google Sheets" },
+        { "value": "google_docs_drive", "label": "Google Docs / Drive" },
+        { "value": "agenda", "label": "Agenda / calendrier" },
+        { "value": "trello_notion", "label": "Trello / Notion" },
+        { "value": "pinterest", "label": "Pinterest" },
+        { "value": "app_specialisee", "label": "Application spécialisée" },
+        { "value": "aucun_outil", "label": "Aucun outil particulier" },
+        { "value": "autre", "label": "Autre", "allowFreeText": true }
+      ]
+    },
+    {
+      "id": "stockage_infos",
+      "type": "multi_choice",
+      "label": "Où gardez-vous principalement les informations importantes liées au mariage ?",
+      "required": false,
+      "options": [
+        { "value": "meme_endroit", "label": "Tout est à peu près au même endroit" },
+        { "value": "plusieurs_apps_docs", "label": "Dans plusieurs applications ou documents" },
+        { "value": "messages_emails", "label": "Dans mes messages et emails" },
+        { "value": "papier", "label": "Sur papier" },
+        { "value": "dans_ma_tete", "label": "Principalement dans ma tête 😅" },
+        { "value": "autre", "label": "Autre", "allowFreeText": true }
+      ]
+    },
+    {
+      "id": "suivi_taches",
+      "type": "single_choice",
+      "label": "Comment suivez-vous ce qu'il vous reste à faire ?",
+      "required": false,
+      "options": [
+        { "value": "checklist_papier", "label": "Checklist papier" },
+        { "value": "notes", "label": "Notes" },
+        { "value": "tableur", "label": "Tableur" },
+        { "value": "app_dediee", "label": "Application / outil dédié" },
+        { "value": "agenda", "label": "Agenda" },
+        { "value": "au_fur_et_a_mesure", "label": "Je fais au fur et à mesure" },
+        { "value": "ne_suis_pas", "label": "Je ne suis pas vraiment ça" },
+        { "value": "autre", "label": "Autre", "allowFreeText": true }
+      ]
+    },
+    {
+      "id": "recherche_prestataires",
+      "type": "multi_choice",
+      "label": "Comment trouvez-vous vos prestataires ?",
+      "required": false,
+      "options": [
+        { "value": "recommandations_proches", "label": "Recommandations de proches" },
+        { "value": "groupes_facebook", "label": "Groupes Facebook" },
+        { "value": "instagram_tiktok", "label": "Instagram / TikTok" },
+        { "value": "google", "label": "Google" },
+        { "value": "sites_specialises", "label": "Sites spécialisés" },
+        { "value": "salons_mariage", "label": "Salons du mariage" },
+        { "value": "recommandations_prestataires", "label": "Recommandations d'autres prestataires" },
+        { "value": "autre", "label": "Autre", "allowFreeText": true }
+      ]
+    },
+    {
+      "id": "suivi_echanges",
+      "type": "multi_choice",
+      "label": "Comment gardez-vous une trace de vos échanges avec les prestataires ?",
+      "required": false,
+      "options": [
+        { "value": "emails", "label": "Emails" },
+        { "value": "whatsapp_messenger", "label": "WhatsApp / Messenger" },
+        { "value": "documents_dossiers", "label": "Documents ou dossiers" },
+        { "value": "tableur", "label": "Tableur" },
+        { "value": "papier", "label": "Papier" },
+        { "value": "pas_de_methode", "label": "Je n'ai pas vraiment de méthode" },
+        { "value": "autre", "label": "Autre", "allowFreeText": true }
+      ]
+    },
+    {
+      "id": "difficultes",
+      "type": "open_text",
+      "label": "Qu'est-ce qui vous pose le plus de difficultés ou vous agace le plus dans l'organisation ?",
+      "required": false,
+      "placeholder": "Réponse libre..."
+    },
+    {
+      "id": "amelioration",
+      "type": "open_text",
+      "label": "Si vous pouviez améliorer une seule chose dans votre façon de vous organiser, ce serait quoi ?",
+      "required": false,
+      "placeholder": "Exemple : un outil, une méthode, une aide extérieure..."
+    },
+    {
+      "id": "pas_de_solution",
+      "type": "open_text",
+      "label": "Y a-t-il quelque chose dans l'organisation de votre mariage pour lequel vous n'avez pas encore trouvé de bonne solution ?",
+      "required": false,
+      "placeholder": "Réponse libre..."
+    },
+    {
+      "id": "email_recontact",
+      "type": "email",
+      "label": "Acceptez-vous qu'on vous recontacte pour quelques questions complémentaires ?",
+      "required": false
+    }
+  ]
+}
