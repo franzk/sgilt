@@ -55,6 +55,16 @@
         <input v-model="form.email" type="email" :placeholder="$t('admin.prestataires.form.email')" />
       </div>
 
+      <label class="cle-en-main-toggle">
+        <input v-model="form.cleEnMain" type="checkbox" />
+        {{ $t('admin.prestataires.form.cle-en-main') }}
+      </label>
+      <p class="cle-en-main-hint">
+        {{ form.cleEnMain
+          ? $t('admin.prestataires.form.cle-en-main-hint-on')
+          : $t('admin.prestataires.form.cle-en-main-hint-off') }}
+      </p>
+
       <SgiltButton :loading="provisioning" :disabled="!isFormValid" @click="onProvision">
         {{ $t('admin.prestataires.form.submit') }}
       </SgiltButton>
@@ -127,6 +137,7 @@ const emptyForm = () => ({
   prestataireName: '',
   category: '',
   subcats: '',
+  cleEnMain: false,
 })
 
 const form = reactive(emptyForm())
@@ -214,6 +225,20 @@ onMounted(() => load())
       font-family: inherit;
       font-size: 0.9rem;
     }
+  }
+
+  .cle-en-main-toggle {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+
+  .cle-en-main-hint {
+    margin: 0;
+    font-size: 0.8rem;
+    color: $text-secondary;
   }
 
   .success {

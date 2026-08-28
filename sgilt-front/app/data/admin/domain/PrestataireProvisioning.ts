@@ -6,4 +6,5 @@ export interface PrestataireProvisioning {
   prestataireName: string
   category: string
   subcats: string
+  cleEnMain: boolean
 }

@@ -245,22 +245,26 @@ public class PrestataireService {
      * Seuls {@code slug}, {@code name}, {@code categoryKey} et {@code subcatKeys} sont renseignés —
      * tous les autres champs restent vides.
      *
-     * @param utilisateur l'utilisateur déjà créé et lié à ce prestataire
-     * @param slug        le slug public de la fiche
-     * @param name        le nom du prestataire
-     * @param categoryKey la clé de catégorie
-     * @param subcatKeys  les clés de sous-catégories (peut être vide).
+     * @param utilisateur   l'utilisateur déjà créé et lié à ce prestataire
+     * @param slug          le slug public de la fiche
+     * @param name          le nom du prestataire
+     * @param categoryKey   la clé de catégorie
+     * @param subcatKeys    les clés de sous-catégories (peut être vide).
+     * @param initialStatus le statut de départ de la fiche — {@link PrestataireStatus#DRAFT} pour le
+     *                      flow autonome, {@link PrestataireStatus#WAITING_FOR_CREATION_SERVICE} pour
+     *                      le flow clé-en-main
      * @return le prestataire créé et persisté
      */
     public Prestataire createPrestataire(
-            Utilisateur utilisateur, String slug, String name, String categoryKey, List<String> subcatKeys) {
+            Utilisateur utilisateur, String slug, String name, String categoryKey, List<String> subcatKeys,
+            PrestataireStatus initialStatus) {
         Prestataire prestataire = Prestataire.builder()
                 .utilisateur(utilisateur)
                 .slug(slug)
                 .name(name)
                 .categoryKey(categoryKey)
                 .subcatKeys(subcatKeys)
-                .status(PrestataireStatus.DRAFT)
+                .status(initialStatus)
                 .build();
 
         return prestataireRepository.save(prestataire);

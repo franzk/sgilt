@@ -36,6 +36,7 @@ export function mapProvisionRequest(provisioning: PrestataireProvisioning): Prov
     prestataireName: provisioning.prestataireName,
     category: provisioning.category,
     subcats: provisioning.subcats,
+    cleEnMain: provisioning.cleEnMain,
   }
 }
 

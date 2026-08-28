@@ -13,6 +13,7 @@ import net.franzka.sgilt.core.jwt.service.ActionLinkService;
 import net.franzka.sgilt.core.keycloak.KeycloakAdminService;
 import net.franzka.sgilt.core.onboarding.dto.OnboardingPendingDto;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
+import net.franzka.sgilt.core.prestataire.domain.PrestataireStatus;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireAdminListItemDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireOnboardingPendingDto;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
@@ -61,7 +62,8 @@ public class AdminController implements AdminApi {
      * utilisée juste après pour l'envoi du mail d'activation.
      *
      * @param response  la réponse à retourner au client
-     * @param actionUrl l'URL front créée (token signé inclus)
+     * @param actionUrl l'URL front créée (token signé inclus), ou {@code null} en mode clé-en-main
+     *                  (aucun token créé, aucun mail envoyé à ce stade)
      */
     private record ProvisioningResult(ProvisionPrestataireResponse response, String actionUrl) {}
 
@@ -99,13 +101,17 @@ public class AdminController implements AdminApi {
     /**
      * Provisionne un prestataire :
      * 1. création du compte Keycloak (rôle PRO, sans mot de passe utilisable)
-     * 2. BDD : Utilisateur + Prestataire (fiche vierge) + lien d'action en base dans une transaction courte.
-     * 3. envoi de l'email d'activation, une fois la transaction commitée.
+     * 2. BDD : Utilisateur + Prestataire (fiche vierge) dans une transaction courte.
+     * 3. si {@code !request.cleEnMain()} (flow autonome) : lien d'action + envoi de l'email d'activation,
+     * une fois la transaction commitée. Si {@code request.cleEnMain()} (flow clé-en-main), ni l'un ni
+     * l'autre — la fiche est créée avec le statut {@link PrestataireStatus#WAITING_FOR_CREATION_SERVICE},
+     * le token et le mail sont différés jusqu'à la publication (voir {@link PrestataireService#publish}).
      * Si la création DB échoue après que le compte KC a été créé, compense
      * en le supprimant pour ne jamais laisser de prestataire à moitié provisionné.
-     * Si l'envoi du mail échoue, rien n'est compensé (le compte KC, l'utilisateur, le prestataire
-     * et le token restent en l'état — un nouvel appel recréerait un conflit de slug/email), mais
-     * l'endpoint renvoie une erreur pour que l'appelant sache que le mail n'est pas parti.
+     * Si l'envoi du mail échoue (flow autonome uniquement), rien n'est compensé (le compte KC,
+     * l'utilisateur, le prestataire et le token restent en l'état — un nouvel appel recréerait un
+     * conflit de slug/email), mais l'endpoint renvoie une erreur pour que l'appelant sache que le
+     * mail n'est pas parti.
      * {@link TransactionTemplate} est utilisé plutôt que {@code @Transactional} : la frontière
      * transactionnelle doit démarrer précisément après l'appel Keycloak, dans la même méthode.
      *
@@ -115,7 +121,8 @@ public class AdminController implements AdminApi {
      */
     @Override
     public ResponseEntity<ProvisionPrestataireResponse> provisionPrestataire(ProvisionPrestataireRequest request) {
-        log.info("POST /admin/prestataires — slug={} email={}", request.slug(), request.email());
+        log.info("POST /admin/prestataires — slug={} email={} cleEnMain={}",
+                request.slug(), request.email(), request.cleEnMain());
 
         // 1. vérifications
         if (prestataireService.existsBySlug(request.slug())) {
@@ -136,18 +143,25 @@ public class AdminController implements AdminApi {
                                 request.firstName(), request.lastName(), request.email(), null
                         );
 
-                        // Prestataire
+                        // Prestataire — statut de départ selon le flow choisi
+                        PrestataireStatus initialStatus = request.cleEnMain()
+                                ? PrestataireStatus.WAITING_FOR_CREATION_SERVICE
+                                : PrestataireStatus.DRAFT;
                         Prestataire prestataire = prestataireService.createPrestataire(
                                 utilisateur,
                                 request.slug(),
                                 request.prestataireName(),
                                 request.category(),
-                                List.of(StringUtils.tokenizeToStringArray(request.subcats(), ","))
+                                List.of(StringUtils.tokenizeToStringArray(request.subcats(), ",")),
+                                initialStatus
                         );
 
-                        // Lien d'action (token + URL front) — le payload est propre à ce flow
-                        String actionUrl = actionLinkService.createLink(
-                                ActionType.PRESTATAIRE_ONBOARDING, Map.of("email", utilisateur.getEmail()));
+                        // Lien d'action (token + URL front) — uniquement pour le flow autonome ;
+                        // en clé-en-main, ni le token ni le mail ne sont créés avant la publication
+                        String actionUrl = request.cleEnMain()
+                                ? null
+                                : actionLinkService.createLink(
+                                        ActionType.PRESTATAIRE_ONBOARDING, Map.of("email", utilisateur.getEmail()));
 
                         ProvisionPrestataireResponse response =
                                 new ProvisionPrestataireResponse(
@@ -159,11 +173,13 @@ public class AdminController implements AdminApi {
 
             log.info("Provisionnement prestataire réussi — identifiants créés : {}", result.response());
 
-            // 4. envoi du mail d'activation, une fois la transaction commitée — pas de compensation si ça échoue
-            boolean mailSent = adminMailerService.sendPrestataireOnboardingEmail(
-                    request.email(), request.firstName(), result.actionUrl());
-            if (!mailSent) {
-                return ResponseEntity.internalServerError().build();
+            // 4. envoi du mail d'activation (flow autonome uniquement), une fois la transaction commitée
+            if (!request.cleEnMain()) {
+                boolean mailSent = adminMailerService.sendPrestataireOnboardingEmail(
+                        request.email(), request.firstName(), result.actionUrl());
+                if (!mailSent) {
+                    return ResponseEntity.internalServerError().build();
+                }
             }
 
             // l'endpoint retourne les identifiants créés, mais pas le token (transmis uniquement par email)

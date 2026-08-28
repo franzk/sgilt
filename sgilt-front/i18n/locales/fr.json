@@ -1070,6 +1070,7 @@
       "status": {
         "DRAFT": "Brouillon",
         "IN_REVIEW": "En revue",
+        "WAITING_FOR_CREATION_SERVICE": "En construction (clé en main)",
         "PUBLISHED": "Publié"
       },
       "form": {
@@ -1081,8 +1082,11 @@
         "first-name": "Prénom",
         "last-name": "Nom",
         "email": "Email",
+        "cle-en-main": "Mode clé en main (l'équipe construit la fiche)",
+        "cle-en-main-hint-on": "Aucun mail envoyé maintenant. Construisez la fiche en impersonation, puis publiez depuis le BO — le mail partira à ce moment-là.",
+        "cle-en-main-hint-off": "Mail d'activation envoyé immédiatement au prestataire.",
         "submit": "Créer",
-        "success": "Prestataire créé (slug : {slug}), email d'activation envoyé.",
+        "success": "Prestataire créé (slug : {slug}).",
         "error": "Échec de la création, vérifiez les champs (slug déjà pris ?)."
       },
       "reservations-empty": "0 réservation"

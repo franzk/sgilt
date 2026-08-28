@@ -6,4 +6,5 @@ export interface ProvisionPrestataireRequestDto {
   prestataireName: string
   category: string
   subcats: string
+  cleEnMain: boolean
 }

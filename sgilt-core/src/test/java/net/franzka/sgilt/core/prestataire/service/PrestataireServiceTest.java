@@ -256,13 +256,26 @@ class PrestataireServiceTest {
     class CreatePrestataire {
 
         @Test
-        void givenNewPrestataire_whenCreatePrestataire_thenStatusIsDraft() {
+        void givenSelfServiceFlow_whenCreatePrestataire_thenStatusIsDraft() {
             ArgumentCaptor<Prestataire> captor = ArgumentCaptor.forClass(Prestataire.class);
             when(prestataireRepository.save(captor.capture())).thenAnswer(invocation -> invocation.getArgument(0));
 
-            prestataireService.createPrestataire(utilisateur, SLUG, "Jean Photographe", "photo", List.of());
+            prestataireService.createPrestataire(
+                    utilisateur, SLUG, "Jean Photographe", "photo", List.of(), PrestataireStatus.DRAFT);
 
             assertThat(captor.getValue().getStatus()).isEqualTo(PrestataireStatus.DRAFT);
+        }
+
+        @Test
+        void givenCleEnMainFlow_whenCreatePrestataire_thenStatusIsWaitingForCreationService() {
+            ArgumentCaptor<Prestataire> captor = ArgumentCaptor.forClass(Prestataire.class);
+            when(prestataireRepository.save(captor.capture())).thenAnswer(invocation -> invocation.getArgument(0));
+
+            prestataireService.createPrestataire(
+                    utilisateur, SLUG, "Jean Photographe", "photo", List.of(),
+                    PrestataireStatus.WAITING_FOR_CREATION_SERVICE);
+
+            assertThat(captor.getValue().getStatus()).isEqualTo(PrestataireStatus.WAITING_FOR_CREATION_SERVICE);
         }
     }
 
