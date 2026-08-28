@@ -1,5 +1,5 @@
 <template>
-  <nav class="admin-nav" aria-label="Sections admin">
+  <nav class="admin-onboarding-tabs" aria-label="Sections onboarding">
     <NuxtLink
       v-for="tab in tabs"
       :key="tab.to"
@@ -16,36 +16,25 @@
 const { t } = useI18n()
 
 const tabs = computed(() => [
-  { to: '/admin', label: t('admin.nav.prestataires') },
-  { to: '/admin/onboarding', label: t('admin.nav.onboarding') },
-  { to: '/admin/reservations', label: t('admin.nav.reservations') },
+  { to: '/admin/onboarding', label: t('admin.onboarding-nav.pro') },
+  { to: '/admin/onboarding-clients', label: t('admin.onboarding-nav.clients') },
 ])
 </script>
 
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
-.admin-nav {
+.admin-onboarding-tabs {
   display: flex;
   gap: 0.3rem;
   width: 100%;
   padding: 0.3rem;
   background: $surface-soft;
   border-radius: 2rem;
-  overflow-x: auto;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  @media (min-width: $breakpoint-desktop) {
-    justify-content: center;
-  }
 }
 
 .tab {
-  flex-shrink: 0;
+  flex: 1;
   text-align: center;
   padding: 0.5rem 1rem;
   border-radius: 2rem;
@@ -53,10 +42,13 @@ const tabs = computed(() => [
   font-weight: 500;
   color: $text-secondary;
   text-decoration: none;
-  white-space: nowrap;
-  transition: background 150ms ease, color 150ms ease;
+  transition:
+    background 150ms ease,
+    color 150ms ease;
 
-  &:hover { color: $text-primary; }
+  &:hover {
+    color: $text-primary;
+  }
 
   &.active {
     background: $color-primary;

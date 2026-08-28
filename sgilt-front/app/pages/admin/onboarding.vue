@@ -4,6 +4,8 @@
       <h1>{{ $t('admin.onboarding.title') }}</h1>
     </div>
 
+    <AdminOnboardingTabs />
+
     <section class="list">
       <p v-if="loading">{{ $t('admin.onboarding.loading') }}</p>
       <p v-else-if="rows.length === 0" class="empty">{{ $t('admin.onboarding.empty') }}</p>
@@ -41,6 +43,7 @@
 <script setup lang="ts">
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
+import AdminOnboardingTabs from '~/components/admin/AdminOnboardingTabs.vue'
 import { formatDateTime } from '~/utils/dateUtils'
 
 definePageMeta({ layout: 'admin' })

@@ -1058,13 +1058,20 @@
   "admin": {
     "nav": {
       "prestataires": "Prestataires",
-      "onboarding": "Onboardings pro",
-      "onboarding-clients": "Onboardings clients",
+      "onboarding": "Onboardings",
       "reservations": "Réservations"
+    },
+    "onboarding-nav": {
+      "pro": "Pro",
+      "clients": "Clients"
     },
     "prestataires": {
       "title": "Prestataires",
       "loading": "Chargement…",
+      "tabs": {
+        "list": "Liste",
+        "create": "Créer un prestataire"
+      },
       "publish": "Publier",
       "send-to-review": "Renvoyer en revue",
       "status": {
