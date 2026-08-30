@@ -8,6 +8,7 @@
 
     <section class="list">
       <p v-if="loading">{{ $t('admin.prestataires.loading') }}</p>
+      <p v-if="publishError" class="error">{{ $t('admin.prestataires.publish-error') }}</p>
       <SgiltCard v-for="row in rows" :key="row.id" format="small" tag="div" :clickable="false">
         <template #avatar>
           <span class="avatar-initial">{{ row.name.charAt(0) }}</span>
@@ -25,7 +26,11 @@
           <PrestataireStatusBadge :status="row.status" />
         </div>
         <template #cta>
-          <SgiltButton v-if="row.status === 'IN_REVIEW'" variant="secondary" @click="publish(row.id)">
+          <SgiltButton
+            v-if="row.status === 'IN_REVIEW' || row.status === 'WAITING_FOR_CREATION_SERVICE'"
+            variant="secondary"
+            @click="publish(row.id)"
+          >
             {{ $t('admin.prestataires.publish') }}
           </SgiltButton>
           <SgiltButton v-if="row.status === 'PUBLISHED'" variant="secondary" @click="sendBackToReview(row.id)">
@@ -49,7 +54,7 @@ definePageMeta({ layout: 'admin' })
 
 const { t } = useI18n()
 
-const { rows, loading, load, publish, sendBackToReview } = useAdminPrestataires()
+const { rows, loading, load, publish, publishError, sendBackToReview } = useAdminPrestataires()
 
 const categories = APP_CATEGORIES.filter((c) => c.key !== 'all')
 
@@ -112,6 +117,12 @@ onMounted(() => load())
   display: flex;
   flex-direction: column;
   gap: $spacing-xs;
+
+  .error {
+    margin: 0;
+    font-size: 0.85rem;
+    color: $state-error;
+  }
 
   // Sur mobile, la cta (bouton publier/renvoyer en revue) passe sous le contenu
   // plutôt que de forcer la carte à dépasser la largeur de l'écran.

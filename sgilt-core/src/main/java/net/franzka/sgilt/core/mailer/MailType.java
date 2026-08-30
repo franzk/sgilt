@@ -29,5 +29,19 @@ public enum MailType {
      * Mail d'activation envoyé à un prestataire nouvellement provisionné par un admin,
      * l'invitant à définir son mot de passe.
      */
-    PRESTATAIRE_ONBOARDING_EMAIL
+    PRESTATAIRE_ONBOARDING_EMAIL,
+
+    /**
+     * Mail envoyé à un prestataire dont la fiche vient d'être publiée, quand son compte est déjà
+     * activé (flow autonome — a nécessairement déjà un mot de passe pour avoir pu soumettre sa
+     * fiche). Sans lien d'activation, contrairement à {@link #PRESTATAIRE_ONBOARDING_EMAIL}.
+     */
+    PRESTATAIRE_PUBLISHED_EMAIL,
+
+    /**
+     * Mail envoyé à un prestataire dont la fiche clé-en-main vient d'être publiée sans jamais
+     * avoir reçu de mail auparavant — met en avant la page déjà construite, avec le lien
+     * d'activation pour accéder à son espace.
+     */
+    PRESTATAIRE_PAGE_READY_EMAIL
 }

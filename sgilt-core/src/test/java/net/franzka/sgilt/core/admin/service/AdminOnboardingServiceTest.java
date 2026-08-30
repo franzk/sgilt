@@ -1,6 +1,5 @@
 package net.franzka.sgilt.core.admin.service;
 
-import net.franzka.sgilt.core.admin.mailer.AdminMailerService;
 import net.franzka.sgilt.core.jwt.domain.ActionToken;
 import net.franzka.sgilt.core.jwt.domain.ActionType;
 import net.franzka.sgilt.core.jwt.service.ActionLinkService;
@@ -45,9 +44,6 @@ class AdminOnboardingServiceTest {
 
     @Mock
     private PrestataireMapper prestataireMapper;
-
-    @Mock
-    private AdminMailerService adminMailerService;
 
     @Mock
     private OnboardingSessionService onboardingSessionService;
@@ -120,13 +116,12 @@ class AdminOnboardingServiceTest {
     class ResendOnboardingEmail {
 
         @Test
-        void givenPendingOnboarding_whenResendOnboardingEmail_thenRenewsLinkAndSendsMail() {
+        void givenPendingOnboarding_whenResendOnboardingEmail_thenRebuildsLinkAndDelegatesToPrestataireService() {
             ActionToken token = ActionToken.builder().id(UUID.randomUUID()).build();
             when(prestataireService.getById(prestataire.getId())).thenReturn(prestataire);
             when(actionTokenService.findPendingByEmail(ActionType.PRESTATAIRE_ONBOARDING, EMAIL)).thenReturn(token);
             when(actionLinkService.rebuildLink(token)).thenReturn("https://sgilt.fr/onboarding/verify?token=abc");
-            when(adminMailerService.sendPrestataireOnboardingEmail(
-                    EMAIL, FIRST_NAME, "https://sgilt.fr/onboarding/verify?token=abc"))
+            when(prestataireService.resendOnboardingEmail(prestataire, "https://sgilt.fr/onboarding/verify?token=abc"))
                     .thenReturn(true);
 
             boolean result = adminOnboardingService.resendOnboardingEmail(prestataire.getId());
@@ -135,13 +130,12 @@ class AdminOnboardingServiceTest {
         }
 
         @Test
-        void givenMailerFailure_whenResendOnboardingEmail_thenReturnsFalse() {
+        void givenDelegateFailure_whenResendOnboardingEmail_thenReturnsFalse() {
             ActionToken token = ActionToken.builder().id(UUID.randomUUID()).build();
             when(prestataireService.getById(prestataire.getId())).thenReturn(prestataire);
             when(actionTokenService.findPendingByEmail(ActionType.PRESTATAIRE_ONBOARDING, EMAIL)).thenReturn(token);
             when(actionLinkService.rebuildLink(token)).thenReturn("https://sgilt.fr/onboarding/verify?token=abc");
-            when(adminMailerService.sendPrestataireOnboardingEmail(
-                    EMAIL, FIRST_NAME, "https://sgilt.fr/onboarding/verify?token=abc"))
+            when(prestataireService.resendOnboardingEmail(prestataire, "https://sgilt.fr/onboarding/verify?token=abc"))
                     .thenReturn(false);
 
             assertThat(adminOnboardingService.resendOnboardingEmail(prestataire.getId())).isFalse();

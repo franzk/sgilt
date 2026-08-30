@@ -2,7 +2,6 @@ package net.franzka.sgilt.core.admin.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.franzka.sgilt.core.admin.mailer.AdminMailerService;
 import net.franzka.sgilt.core.jwt.domain.ActionToken;
 import net.franzka.sgilt.core.jwt.domain.ActionType;
 import net.franzka.sgilt.core.jwt.service.ActionLinkService;
@@ -33,7 +32,6 @@ public class AdminOnboardingService {
     private final ActionLinkService actionLinkService;
     private final PrestataireService prestataireService;
     private final PrestataireMapper prestataireMapper;
-    private final AdminMailerService adminMailerService;
     private final OnboardingSessionService onboardingSessionService;
     private final OnboardingMapper onboardingMapper;
 
@@ -52,6 +50,9 @@ public class AdminOnboardingService {
     /**
      * Renvoie le mail d'activation à un prestataire dont l'onboarding est en attente, en
      * réinitialisant la période de validité du lien.
+     * Un pending token peut exister sur une fiche déjà PUBLISHED (cas clé-en-main : le token n'est
+     * créé qu'à la publication, voir {@link PrestataireService#publish}) — dans ce cas le mail
+     * inclut aussi le lien vers la page, déjà en ligne.
      *
      * @param prestataireId identifiant du prestataire dont l'onboarding doit être relancé
      * @return {@code true} si l'envoi a réussi, {@code false} si l'appel au mailer a échoué
@@ -66,8 +67,7 @@ public class AdminOnboardingService {
         String actionUrl = actionLinkService.rebuildLink(actionToken);
 
         log.info("resendOnboardingEmail — relance de l'onboarding prestataire pour {}", utilisateur.getEmail());
-        return adminMailerService.sendPrestataireOnboardingEmail(
-                utilisateur.getEmail(), utilisateur.getFirstName(), actionUrl);
+        return prestataireService.resendOnboardingEmail(prestataire, actionUrl);
     }
 
     /**

@@ -1072,7 +1072,8 @@
         "list": "Liste",
         "create": "Créer un prestataire"
       },
-      "publish": "Publier",
+      "publish": "Publier et notifier",
+      "publish-error": "Échec de la publication ou de l'envoi du mail, réessayez.",
       "send-to-review": "Renvoyer en revue",
       "status": {
         "DRAFT": "Brouillon",
