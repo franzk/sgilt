@@ -5,6 +5,7 @@ import net.franzka.sgilt.core.jwt.domain.ActionToken;
 import net.franzka.sgilt.core.jwt.service.ActionTokenService;
 import net.franzka.sgilt.core.jwt.service.TokenJwtService;
 import net.franzka.sgilt.core.onboarding.domain.Onboarding;
+import net.franzka.sgilt.core.onboarding.domain.OnboardingFlow;
 import net.franzka.sgilt.core.onboarding.dto.SetPasswordTokenDto;
 import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
 import net.franzka.sgilt.core.onboarding.exception.TokenAlreadyUsedException;
@@ -93,11 +94,12 @@ class VerifyServiceTest {
         }
 
         @Test
-        void givenExpiredToken_whenVerify_thenPropagatesTokenExpiredExceptionWithoutFallback() {
+        void givenExpiredToken_whenVerify_thenPropagatesTokenExpiredExceptionTaggedClientWithoutFallback() {
             when(onboardingSessionService.checkToken(TOKEN)).thenThrow(new TokenExpiredException());
 
             assertThatExceptionOfType(TokenExpiredException.class)
-                    .isThrownBy(() -> verifyService.verify(TOKEN));
+                    .isThrownBy(() -> verifyService.verify(TOKEN))
+                    .extracting(TokenExpiredException::getFlow).isEqualTo(OnboardingFlow.CLIENT);
 
             verify(actionTokenService, never()).checkToken(any());
         }
@@ -188,12 +190,13 @@ class VerifyServiceTest {
         }
 
         @Test
-        void givenExpiredActionToken_whenVerify_thenPropagatesTokenExpiredException() {
+        void givenExpiredActionToken_whenVerify_thenPropagatesTokenExpiredExceptionTaggedPrestataire() {
             when(onboardingSessionService.checkToken(TOKEN)).thenThrow(new EntityNotFoundException());
             when(actionTokenService.checkToken(TOKEN)).thenThrow(new TokenExpiredException());
 
             assertThatExceptionOfType(TokenExpiredException.class)
-                    .isThrownBy(() -> verifyService.verify(TOKEN));
+                    .isThrownBy(() -> verifyService.verify(TOKEN))
+                    .extracting(TokenExpiredException::getFlow).isEqualTo(OnboardingFlow.PRESTATAIRE);
         }
 
         private ActionToken buildActionToken(UUID id) {

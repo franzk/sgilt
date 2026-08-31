@@ -7,7 +7,9 @@ import net.franzka.sgilt.core.jwt.domain.ActionToken;
 import net.franzka.sgilt.core.jwt.service.ActionTokenService;
 import net.franzka.sgilt.core.jwt.service.TokenJwtService;
 import net.franzka.sgilt.core.onboarding.domain.Onboarding;
+import net.franzka.sgilt.core.onboarding.domain.OnboardingFlow;
 import net.franzka.sgilt.core.onboarding.dto.SetPasswordTokenDto;
+import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -51,7 +53,12 @@ public class VerifyService {
     }
 
     private SetPasswordTokenDto verifyClientOnboarding(String token) {
-        Onboarding onboarding = onboardingSessionService.checkToken(token);
+        Onboarding onboarding;
+        try {
+            onboarding = onboardingSessionService.checkToken(token);
+        } catch (TokenExpiredException _) {
+            throw new TokenExpiredException(OnboardingFlow.CLIENT);
+        }
         onboardingSessionService.advanceToConfirmation(onboarding);
 
         Map<String, Object> claims = Map.of("onboardingId", onboarding.getId().toString());
@@ -60,7 +67,12 @@ public class VerifyService {
     }
 
     private SetPasswordTokenDto verifyPrestataireOnboarding(String token) {
-        ActionToken actionToken = actionTokenService.checkToken(token);
+        ActionToken actionToken;
+        try {
+            actionToken = actionTokenService.checkToken(token);
+        } catch (TokenExpiredException _) {
+            throw new TokenExpiredException(OnboardingFlow.PRESTATAIRE);
+        }
         String email = (String) actionTokenService.readPayload(actionToken).get("email");
 
         Map<String, Object> claims = Map.of("actionTokenId", actionToken.getId().toString());

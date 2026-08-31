@@ -989,6 +989,8 @@
       "invalid": "Ce lien est invalide.",
       "already-used": "Ce lien a déjà été utilisé. Si vous avez un compte, connectez-vous.",
       "expired": "Ce lien a expiré. Veuillez refaire une demande.",
+      "expired-prestataire": "Ce lien a expiré, mais vous pouvez toujours accéder à votre espace : connectez-vous ci-dessous, puis cliquez sur « mot de passe oublié ».",
+      "login-cta": "Se connecter",
       "server": "Une erreur est survenue. Veuillez réessayer."
     },
     "form": {

@@ -2,6 +2,7 @@ package net.franzka.sgilt.core.onboarding.handler;
 
 import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
+import net.franzka.sgilt.core.onboarding.dto.TokenExpiredResponseDto;
 import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
 import net.franzka.sgilt.core.onboarding.exception.TokenAlreadyUsedException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
@@ -15,8 +16,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class OnboardingExceptionHandler {
 
     @ExceptionHandler(TokenExpiredException.class)
-    public ResponseEntity<Void> handleTokenExpired(TokenExpiredException ex) {
-        return ResponseEntity.status(HttpStatus.GONE).build();
+    public ResponseEntity<TokenExpiredResponseDto> handleTokenExpired(TokenExpiredException ex) {
+        return ResponseEntity.status(HttpStatus.GONE).body(new TokenExpiredResponseDto(ex.getFlow()));
     }
 
     @ExceptionHandler(TokenAlreadyUsedException.class)

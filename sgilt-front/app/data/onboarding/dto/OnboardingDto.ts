@@ -3,6 +3,12 @@ export interface VerifyTokenResponseDto {
   setPasswordToken: string
 }
 
+export type OnboardingFlow = 'CLIENT' | 'PRESTATAIRE'
+
+export interface TokenExpiredResponseDto {
+  flow: OnboardingFlow | null
+}
+
 export interface ConfirmAccountRequestDto {
   setPasswordToken: string
   password: string
