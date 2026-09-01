@@ -9,27 +9,55 @@
 
 ---
 
-## Mode opératoire — provisionnement via l'API admin
+## Deux flows au choix
 
-Un seul appel API suffit : plus besoin de créer le compte Keycloak à la main.
+Depuis le 2026-09-02, la création se décline en deux flows, choisis via la case à cocher
+"clé en main" du formulaire (ou le champ `cleEnMain` de l'API) :
+
+| Flow | Quand l'utiliser | Ce que fait le prestataire |
+|---|---|---|
+| **Autonome** (par défaut) | Le prestataire va construire sa propre fiche | Reçoit le mail d'activation immédiatement, définit son mot de passe, remplit et soumet sa fiche |
+| **Clé en main** | L'équipe Sgilt construit la fiche à sa place (en impersonation) | Ne reçoit **aucun mail à la création** — seulement une fois la fiche publiée par l'admin, avec le lien vers sa page déjà en ligne **et** le lien d'activation |
+
+Le détail technique complet (statuts, notifications, dispatch) est dans
+`PRESTATAIRE_ONBOARDING_FLOW.md`.
+
+## Mode opératoire — écran admin
+
+Depuis **BO admin → Prestataires → Créer un prestataire** (`/admin/creer-prestataire`) :
+
+1. Remplir le formulaire : prénom, nom, email, nom du prestataire, slug, catégorie, sous-catégories.
+2. Cocher **"Clé en main"** si c'est l'équipe Sgilt qui construit la fiche — laisser décoché pour le
+   flow autonome (comportement historique).
+3. Valider. En cas de succès, le slug créé s'affiche ; en cas d'échec, un message d'erreur générique
+   (voir "Si ça échoue" ci-dessous pour le détail par cas).
+
+Pour relancer un mail d'activation resté sans clic (lien expiré ou non reçu), voir
+**BO admin → Onboarding → Prestataires** (`/admin/onboarding`) — fonctionne pour les
+deux flows, y compris une fiche clé-en-main déjà publiée.
+
+## Mode opératoire — via l'API admin directement
+
+Utile pour scripter une création en masse, ou déboguer. Équivalent à l'écran admin.
 
 ### `POST /api/v1/admin/prestataires`
 
 Gardé par `ROLE_ADMIN`. Body JSON :
 
-| Champ             | Description                                                             |
-|-------------------|-------------------------------------------------------------------------|
-| `email`           | email du prestataire (aussi utilisé comme username Keycloak)            |
-| `firstName`       | prénom                                                                  |
-| `lastName`        | nom                                                                     |
-| `slug`            | identifiant public de la fiche — doit être unique, fourni explicitement |
-| `prestataireName` | nom du prestataire                                                      |
-| `category`        | clé de catégorie (string libre)                                         |
-| `subcats`         | clés de sous-catégories séparées par des virgules (peut être vide)      |
+| Champ             | Description                                                                |
+|-------------------|------------------------------------------------------------------------------|
+| `email`           | email du prestataire (aussi utilisé comme username Keycloak)               |
+| `firstName`       | prénom                                                                     |
+| `lastName`        | nom                                                                        |
+| `slug`            | identifiant public de la fiche — doit être unique, fourni explicitement    |
+| `prestataireName` | nom du prestataire                                                         |
+| `category`        | clé de catégorie (string libre)                                            |
+| `subcats`         | clés de sous-catégories séparées par des virgules (peut être vide)         |
+| `cleEnMain`       | `true` pour le flow clé-en-main, `false` (ou absent) pour le flow autonome |
 
-Tous les champs sont requis sauf `subcats`. Un champ manquant → 400, rien n'est créé.
+Tous les champs sont requis sauf `subcats` et `cleEnMain`. Un champ manquant → 400, rien n'est créé.
 
-### Exemple
+### Exemple — flow autonome
 
 ```bash
 curl --request POST \
@@ -43,7 +71,8 @@ curl --request POST \
     "slug": "dj-max",
     "prestataireName": "DJ Max",
     "category": "music",
-    "subcats": "dj,mariage"
+    "subcats": "dj,mariage",
+    "cleEnMain": false
   }'
 ```
 
@@ -61,25 +90,43 @@ curl --request POST \
 
 ### Ce que l'appel déclenche automatiquement
 
+**Dans tous les cas** :
 1. Compte Keycloak créé (rôle `PRO`, **sans mot de passe utilisable** — connexion impossible tant
-   que le prestataire n'a pas suivi le lien reçu par email).
+   que le prestataire n'a pas suivi un lien d'activation).
 2. `Utilisateur` + `Prestataire` (fiche vierge : slug/nom/catégorie renseignés, le reste vide)
    créés en base et liés.
-3. Un token de confirmation créé, propre à ce flow.
-4. Un email d'activation envoyé automatiquement au prestataire.
+
+**Flow autonome** (`cleEnMain: false`) — en plus :
+3. Un token de confirmation créé.
+4. Un email d'activation envoyé immédiatement au prestataire.
 
 Le prestataire clique le lien reçu, définit son mot de passe, et arrive connecté directement sur
-sa fiche éditable `/pro/fiche-edition` — aucune action manuelle supplémentaire de ton côté.
+sa fiche éditable `/pro/fiche-edition`.
+
+**Flow clé-en-main** (`cleEnMain: true`) — en plus :
+3. La fiche reste au statut `WAITING_FOR_CREATION_SERVICE`, **aucun mail envoyé**.
+4. L'équipe Sgilt construit la fiche (en impersonation, hors scope de cet endpoint).
+5. À la publication (`POST /admin/prestataires/{id}/publish`), le token de confirmation est créé et
+   le mail d'activation part — avec en plus le lien vers la page, déjà visible publiquement.
 
 ### Si ça échoue
 
-| Cas                                               | Réponse | Ce qui a été écrit                                                                                                                                                       |
-|---------------------------------------------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Champ requis manquant                             | 400     | Rien                                                                                                                                                                     |
-| Slug déjà utilisé                                 | 400     | Rien                                                                                                                                                                     |
-| Email déjà présent dans Keycloak                  | 400     | Rien                                                                                                                                                                     |
-| Échec technique après création du compte Keycloak | 500     | Rien (compte Keycloak supprimé automatiquement)                                                                                                                          |
-| Échec de l'envoi du mail                          | 500     | **Le compte existe déjà** (Keycloak + base) mais le prestataire n'a pas reçu son lien — pas encore de bouton "renvoyer le lien", à traiter au cas par cas pour l'instant |
+| Cas                                                  | Réponse | Ce qui a été écrit                                                                                                                                              |
+|--------------------------------------------------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Champ requis manquant                                | 400     | Rien                                                                                                                                                              |
+| Slug déjà utilisé                                    | 400     | Rien                                                                                                                                                              |
+| Email déjà présent dans Keycloak                     | 400     | Rien                                                                                                                                                              |
+| Échec technique après création du compte Keycloak    | 500     | Rien (compte Keycloak supprimé automatiquement)                                                                                                                   |
+| Échec de la notification (flow autonome uniquement)  | 500     | **Le compte existe déjà** (Keycloak + base) mais le prestataire n'a pas reçu son lien — utiliser le bouton "renvoyer le lien" dans **Onboardings en attente**    |
+
+Pour le flow clé-en-main, aucune notification n'étant due à la création, cette dernière ligne ne
+s'applique pas ici — voir plutôt l'échec de publication ci-dessous.
+
+### Publier une fiche clé-en-main
+
+Une fois la fiche construite (hors scope de ce document), publier via
+`POST /admin/prestataires/{id}/publish`. Si l'envoi du mail échoue, la fiche reste `PUBLISHED`
+(pas de compensation) — utiliser le bouton "renvoyer le lien" dans **Onboardings en attente**.
 
 ---
 

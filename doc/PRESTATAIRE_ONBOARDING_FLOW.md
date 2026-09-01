@@ -6,22 +6,38 @@
 
 ## Vue d'ensemble
 
-Le flow est découpé en 3 phases, toutes implémentées dans `sgilt-core` :
+Depuis le 2026-09-02, il existe **deux flows de provisionnement**, distingués par le flag
+`cleEnMain` de la requête admin :
 
-| Phase                    | Déclencheur                                  | Composants principaux |
-|---------------------------|----------------------------------------------|------------------------|
-| 1. Provisionnement admin | `POST /api/v1/admin/prestataires` (ROLE_ADMIN) | `AdminController`, `KeycloakAdminService`, `PrestataireService`, `UtilisateurService`, `ActionLinkService` |
-| 2. Envoi du mail          | Fin de la phase 1, après commit DB            | `PrestataireMailerService`, `sgilt-mailer` |
-| 3. Vérification + set-password | Clic du prestataire sur le lien reçu    | `VerifyService`, `OnboardingService`, `ActionTokenService`, `KeycloakAdminService` |
+| Flow                      | `cleEnMain` | Qui construit la fiche                                                       | Statut initial                 | Premier mail envoyé                                                                                                                           |
+|---------------------------|-------------|------------------------------------------------------------------------------|--------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| **Autonome** (historique) | `false`     | Le prestataire lui-même, après avoir défini son mot de passe                 | `DRAFT`                        | Mail d'activation, immédiatement à la création                                                                                                |
+| **Clé en main** (nouveau) | `true`      | L'équipe Sgilt, en impersonation, avant que le prestataire n'existe pour lui | `WAITING_FOR_CREATION_SERVICE` | Rien à la création — le mail d'activation part seulement **à la publication** (`PrestataireService#publish`), une fois la fiche déjà en ligne |
 
-Le brief d'origine découpait ce travail en 4 étapes (provisionnement / set-password / mail /
+Le flow clé-en-main saute complètement `IN_REVIEW` : c'est l'admin qui publie lui-même la fiche
+qu'il vient de construire, sans qu'un prestataire distinct n'ait besoin de la soumettre.
+`Prestataire.flow` (enum `PrestataireFlow` : `CREATION_CLE_EN_MAIN` / `CREATION_AUTONOME` /
+`AUCUN` pour les fiches créées avant l'introduction du champ) trace ce choix et détermine quelle
+notification est due à la publication ou en cas de relance — voir Phase 4bis ci-dessous.
+
+Le flow est découpé en phases, toutes implémentées dans `sgilt-core` :
+
+| Phase                                      | Déclencheur                                           | Composants principaux                                                                                      |
+|--------------------------------------------|-------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
+| 1. Provisionnement admin                   | `POST /api/v1/admin/prestataires` (ROLE_ADMIN)        | `AdminController`, `KeycloakAdminService`, `PrestataireService`, `UtilisateurService`, `ActionLinkService` |
+| 2. Notification (flow autonome uniquement) | Fin de la phase 1, après commit DB                    | `PrestataireMailerService`, `sgilt-mailer`                                                                 |
+| 3. Vérification + set-password             | Clic du prestataire sur le lien reçu                  | `VerifyService`, `OnboardingService`, `ActionTokenService`, `KeycloakAdminService`                         |
+| 4. Publication                             | Action admin, `POST /admin/prestataires/{id}/publish` | `PrestataireService#publish`                                                                               |
+| 4bis. Notification de publication          | Fin de la phase 4, selon le flow d'origine            | `PrestataireMailerService`, `sgilt-mailer`                                                                 |
+
+Le brief d'origine découpait le flow autonome en 4 étapes (provisionnement / set-password / mail /
 verify). En pratique, l'étape "set-password" a été **absorbée** dans la phase 3 : il n'existe pas
 d'endpoint dédié à la définition du mot de passe — c'est le même `POST /onboarding/confirm-account`
 que celui déjà utilisé par le flux client, qui dispatch en interne selon le type de token.
 
 ---
 
-## Séquence complète
+## Séquence complète — flow autonome
 
 ```mermaid
 sequenceDiagram
@@ -81,6 +97,53 @@ sequenceDiagram
     Front->>Front: auth.global.ts redirige vers /pro (rôle PRO détecté)
 ```
 
+## Séquence complète — flow clé-en-main
+
+```mermaid
+sequenceDiagram
+    actor Admin
+    actor Prestataire
+    participant Back as sgilt-core
+    participant KC as Keycloak
+    participant Mailer as sgilt-mailer
+    participant DB as PostgreSQL
+    participant Front as sgilt-front
+
+    Admin->>Back: POST /api/v1/admin/prestataires (cleEnMain=true)
+    Back->>Back: vérifie l'unicité du slug
+    Back->>KC: crée le compte (rôle PRO, sans mot de passe)
+    KC-->>Back: userId KC
+
+    Back->>DB: [transaction courte] INSERT utilisateurs
+    Back->>DB: INSERT prestataires (status=WAITING_FOR_CREATION_SERVICE, flow=CREATION_CLE_EN_MAIN)
+    DB-->>Back: commit
+
+    Note over Back,Mailer: aucun mail envoyé ici — le prestataire n'a encore jamais interagi avec Sgilt
+
+    Back-->>Admin: 201 Created {prestataireId, utilisateurId, slug}
+
+    Note over Admin,DB: L'équipe Sgilt construit la fiche en impersonation (hors scope de ce flow),<br/>statut toujours WAITING_FOR_CREATION_SERVICE
+
+    Admin->>Back: POST /admin/prestataires/{id}/publish
+    Back->>DB: UPDATE prestataires SET status=PUBLISHED
+    Back->>Back: crée le lien d'action (ActionType.PRESTATAIRE_ONBOARDING)
+    Back->>Mailer: POST /api/v1/mail (PRESTATAIRE_PAGE_READY_EMAIL)
+    Mailer-->>Prestataire: email "Votre page Sgilt est prête" avec lien vers la page + lien d'activation
+
+    alt échec de l'envoi du mail
+        Back-->>Admin: 500 — fiche déjà PUBLISHED, aucune compensation
+    else succès
+        Back-->>Admin: 204 No Content
+    end
+
+    Prestataire->>Front: clique le lien d'activation reçu par email
+    Note over Prestataire,Front: identique à la phase 3 du flow autonome à partir d'ici<br/>(verify → set-password → magic-login → /pro)
+```
+
+Le mail de relance (`resend-onboarding-email`) suit la même branche que la publication : si
+`prestataire.flow == CREATION_CLE_EN_MAIN`, il inclut le lien vers la page déjà en ligne
+(`PRESTATAIRE_PAGE_READY_EMAIL`) plutôt que le simple mail d'activation.
+
 ---
 
 ## Phase 1 — Provisionnement admin
@@ -99,11 +162,14 @@ porté uniquement par les comptes admin dédiés).
    transactionnelle doit démarrer précisément après l'appel Keycloak, dans la même méthode) :
    - `Utilisateur` (email, prénom, nom)
    - `Prestataire` (fiche vierge : `slug`, `name`, `categoryKey`, `subcatKeys` seulement — tout le
-     reste vide, le front gère l'état "ghost")
-   - `ActionToken` (`type=PRESTATAIRE_ONBOARDING`, `payload={"email": ...}`)
+     reste vide, le front gère l'état "ghost") — selon `request.cleEnMain()`, déléguée à
+     `PrestataireService#createPrestataireCleEnMain` (statut `WAITING_FOR_CREATION_SERVICE`,
+     **pas** d'`ActionToken` créé ici) ou `#createPrestataireAutonome` (statut `DRAFT`, crée
+     immédiatement l'`ActionToken` et envoie le mail d'activation — voir phase 2)
 4. Si la transaction DB échoue après que le compte KC a été créé : **compensation** — suppression
    du compte KC (`deleteUser`). Aucun prestataire ne doit rester à moitié provisionné.
-5. Envoi du mail d'activation (phase 2), une fois la transaction commitée.
+5. Le controller ignore désormais quand et quel mail part : `PrestataireService.CreationResult`
+   porte juste `notificationDelivered`, que `AdminController` traduit en 500 si `false`.
 
 ### Le mécanisme `ActionToken`
 
@@ -133,21 +199,23 @@ flows (pas seulement l'onboarding prestataire) :
 | Slug déjà utilisé                          | 400     | non appelé  | rien écrit                    |
 | Email déjà présent dans Keycloak           | 400     | échoue      | rien écrit (KC tenté en premier) |
 | Échec DB après création du compte KC       | 500     | compensé (deleteUser) | rien ne reste          |
-| Échec de l'envoi du mail                   | 500     | reste       | reste (aucune compensation)   |
+| Échec de la notification (flow autonome uniquement — le flow clé-en-main n'en envoie pas ici) | 500 | reste | reste (aucune compensation) |
 
 Le dernier cas est **volontairement non compensé** : une fois la transaction DB commitée, tout
 recréer coûterait un nouveau conflit de slug/email pour un nouvel appel. En rattrapage, le
-back-office admin permet de renvoyer le mail (voir "Rattrapage : renvoi du mail" ci-dessous).
+back-office admin permet de renvoyer le mail (voir "Rattrapage : renvoi du mail" ci-dessous). Le
+même principe de non-compensation s'applique à un échec de notification en phase 4 (publication).
 
 ---
 
-## Phase 2 — Envoi du mail
+## Phase 2 — Envoi du mail (flow autonome uniquement)
 
 `PrestataireMailerService.sendPrestataireOnboardingEmail(prestataireEmail, firstName, actionUrl)` —
 appelé après le commit de la transaction (jamais avant, pour ne jamais notifier un prestataire
-dont les entités n'existent pas encore).
+dont les entités n'existent pas encore). **Ne s'exécute que pour le flow autonome** — le flow
+clé-en-main ne notifie personne à cette étape (voir "Vue d'ensemble" et Phase 4bis).
 
-- Nouveau `MailType.PRESTATAIRE_ONBOARDING_EMAIL`, dupliqué et synchronisé à la main entre
+- `MailType.PRESTATAIRE_ONBOARDING_EMAIL`, dupliqué et synchronisé à la main entre
   `sgilt-core` et `sgilt-mailer` (convention existante du projet — chaque `MailType` doit avoir un
   gabarit correspondant dans `sgilt-mailer/src/main/resources/mailtemplates/`, chargé au démarrage,
   échec rapide si absent).
@@ -168,7 +236,13 @@ cliqué, qu'il soit encore valide ou déjà expiré). Chaque ligne expose un bou
    (`ActionTokenService.renewExpiration`) — **le token n'est pas régénéré**, seul son
    `expiresAt` change : le lien renvoyé par mail est identique à celui déjà envoyé (même token
    HMAC, reconstruit via `VerificationTokenHmacService.buildToken`).
-3. Renvoie le mail via `PrestataireMailerService.sendPrestataireOnboardingEmail`, comme en phase 2.
+3. Renvoie le mail via `PrestataireService.resendOnboardingEmail`, qui redispatche selon
+   `prestataire.flow` — mail simple pour le flow autonome, `PRESTATAIRE_PAGE_READY_EMAIL` (avec
+   lien vers la page) pour le flow clé-en-main.
+
+Un pending token peut désormais exister sur une fiche déjà `PUBLISHED` : côté clé-en-main,
+l'`ActionToken` n'est créé qu'à la publication (phase 4), donc une fiche publiée dont le
+prestataire n'a toujours pas cliqué le lien reçu apparaît normalement dans cet écran.
 
 ---
 
@@ -238,6 +312,43 @@ passe, puis Keycloak poursuit son flow OIDC standard (redirect avec `code`). Cô
 `/pro` ou `/app` selon le rôle — **rien de spécifique au flow prestataire à coder côté front**,
 ce mécanisme était déjà entièrement générique.
 
+### Token expiré : distinction client / prestataire
+
+`VerifyService` capture désormais le `TokenExpiredException` levé par chacun des deux lookups et le
+relève avec un `OnboardingFlow` (`CLIENT` ou `PRESTATAIRE`) attaché — porté jusqu'au front par
+`TokenExpiredResponseDto`. Sur `/onboarding/verify.vue`, un token expiré affiche désormais un écran
+d'erreur avec un bouton "se connecter" (`useKeycloak().login()`) plutôt qu'un simple message texte,
+pertinent surtout côté prestataire : son compte KC existe déjà (créé sans mot de passe en phase 1),
+donc un lien expiré n'est pas forcément bloquant s'il a par ailleurs déjà un moyen de se connecter.
+
+---
+
+## Phase 4 — Publication
+
+**Endpoint** : `POST /admin/prestataires/{id}/publish`, action admin (`PrestataireService#publish`).
+
+- Statuts de départ acceptés : `IN_REVIEW` (flow autonome, le prestataire a soumis sa fiche) **ou**
+  `WAITING_FOR_CREATION_SERVICE` (flow clé-en-main, jamais soumise par un prestataire — c'est
+  l'admin qui juge la fiche prête). Tout autre statut de départ lève une
+  `PrestataireInvalidStateException`.
+- Dans tous les cas : `status → PUBLISHED`, puis notification (phase 4bis) selon `prestataire.flow`.
+- Retourne `false` si la notification a échoué ; `AdminController` traduit ça en `500` — la fiche
+  reste publiée, aucune compensation (même logique qu'en phase 1/2 : republier coûterait un nouveau
+  conflit d'état, mieux vaut relancer la notification que défaire la publication).
+
+## Phase 4bis — Notification de publication
+
+Selon `prestataire.flow`, `PrestataireService#publish` envoie l'un des deux mails suivants
+(jamais les deux) :
+
+| `flow`                  | Mail envoyé                    | Contenu                                                                 |
+|--------------------------|----------------------------------|----------------------------------------------------------------------------|
+| `CREATION_CLE_EN_MAIN`  | `PRESTATAIRE_PAGE_READY_EMAIL` | "Votre page Sgilt est prête" — lien vers la page **et** lien d'activation (le prestataire n'a jamais reçu de mail avant celui-ci) |
+| `CREATION_AUTONOME`     | `PRESTATAIRE_PUBLISHED_EMAIL`  | "Votre page Sgilt est en ligne" — simple notification, pas de lien d'activation (mot de passe déjà défini en phase 3) |
+
+Les deux `MailType` sont, comme en phase 2, dupliqués et synchronisés à la main entre `sgilt-core`
+et `sgilt-mailer` (gabarits dans `sgilt-mailer/src/main/resources/mailtemplates/`).
+
 ---
 
 ## Limitations connues / dette technique assumée
@@ -252,10 +363,19 @@ ce mécanisme était déjà entièrement générique.
 
 ## Pointeurs code
 
-- `sgilt-core/.../admin/controller/AdminController.java` — phase 1, écran BO onboarding en attente
-- `sgilt-core/.../prestataire/mailer/PrestataireMailerService.java` — phase 2
+- `sgilt-core/.../admin/controller/AdminController.java` — phase 1 (provisionnement), phase 4 (publish)
+- `sgilt-core/.../prestataire/service/PrestataireService.java` — `createPrestataireCleEnMain`,
+  `createPrestataireAutonome`, `publish`, `resendOnboardingEmail` : centralise le choix du flow et
+  de la notification associée
+- `sgilt-core/.../prestataire/domain/PrestataireFlow.java`, `PrestataireStatus.java` — `flow` et
+  `status` de la fiche
+- `sgilt-core/.../prestataire/mailer/PrestataireMailerService.java` — phase 2 et 4bis (les trois
+  mails : `sendPrestataireOnboardingEmail`, `sendPrestatairePageReadyEmail`,
+  `sendPrestatairePublishedEmail`)
 - `sgilt-core/.../admin/service/AdminOnboardingService.java` — rattrapage : liste + renvoi du mail
-- `sgilt-core/.../onboarding/service/VerifyService.java` — phase 3, dispatch verify
+- `sgilt-core/.../onboarding/service/VerifyService.java` — phase 3, dispatch verify, relève
+  `TokenExpiredException` avec l'`OnboardingFlow` concerné
+- `sgilt-core/.../onboarding/domain/OnboardingFlow.java` — `CLIENT` / `PRESTATAIRE`
 - `sgilt-core/.../onboarding/service/OnboardingService.java` — phase 3, dispatch confirm
 - `sgilt-core/.../jwt/` — `ActionToken`, `ActionType`, `ActionTokenService`, `ActionLinkService`,
   `VerificationTokenHmacService`, `JwtConfig`
@@ -263,4 +383,5 @@ ce mécanisme était déjà entièrement générique.
   `getUserIdByEmail`, `resetPassword`, `getMagicLoginUrl`
 - `sgilt-keycloak/spi/` — authenticator `magic-link`
 - `sgilt-front/app/pages/onboarding/verify.vue`, `sgilt-front/app/middleware/auth.global.ts`
+- `sgilt-front/app/pages/admin/creer-prestataire.vue` — formulaire admin, toggle clé-en-main/autonome
 - `sgilt-front/app/pages/admin/onboarding.vue` — écran BO des onboardings en attente (renvoi de mail)

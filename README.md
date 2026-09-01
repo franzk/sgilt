@@ -42,26 +42,35 @@ Built on a Docker-first, single-server architecture with Keycloak authentication
 
 👉 [deploy/docs/BACKUP.md](deploy/docs/BACKUP.md)
 
+### Cloudflare
+> R2 object storage buckets, custom domains, and image Transformations.
+
+👉 [deploy/docs/CLOUDFLARE.md](deploy/docs/CLOUDFLARE.md)
+
 ---
 
 ## Services overview
 
-| Service         | Technology    | Description                             |
-|-----------------|---------------|-----------------------------------------|
-| Frontend        | Nuxt 4 (SSR)  | Server-side rendered frontend           |
-| Gateway         | Spring Boot   | API Gateway (single entry point)        |
-| Business        | Spring Boot   | Business logic and data                 |
-| Keycloak        | Keycloak 26   | Identity & access management (OIDC)     |
-| PostgreSQL      | PostgreSQL 17 | Keycloak and business databases         |
-| SMTP Bridge     | Node.js       | SMTP to HTTP bridge for Keycloak emails |
-| Mailer          | Spring Boot   | Email delivery service                  |
-| Google Calendar | Spring Boot   | Google Calendar sync service            |
+| Service      | Technology    | Description                                                    |
+|--------------|---------------|------------------------------------------------------------------|
+| Frontend     | Nuxt 4 (SSR)  | Server-side rendered frontend                                  |
+| Gateway      | Spring Boot   | API Gateway (single entry point for Core and Notifications)    |
+| Core         | Spring Boot   | Business logic and data                                        |
+| Notifications| Spring Boot   | In-app + email notifications                                   |
+| Keycloak     | Keycloak 26   | Identity & access management (OIDC)                            |
+| PostgreSQL   | PostgreSQL 17 | Keycloak and Core databases                                    |
+| RabbitMQ     | RabbitMQ 4    | Message broker (mail sending, notifications)                   |
+| SMTP Bridge  | Node.js       | SMTP to HTTP bridge for Keycloak emails                        |
+| Mailer       | Spring Boot   | Email delivery service                                         |
+| R2 mock      | Node.js       | Local S3-compatible mock of Cloudflare R2 (dev only, not deployed) |
+
+Object storage (uploads, images) is Cloudflare R2 directly in staging/prod — see [deploy/docs/CLOUDFLARE.md](deploy/docs/CLOUDFLARE.md).
 
 ---
 
 ## Environments
 
-| Environment | Frontend                 | Auth                          |
-|-------------|--------------------------|-------------------------------|
-| Staging     | https://staging.sgilt.fr | https://auth-staging.sgilt.fr |
-| Production  | https://sgilt.alsace     | https://auth.sgilt.alsace     |
+| Environment | Frontend                 | Auth                          | API                           |
+|-------------|---------------------------|--------------------------------|--------------------------------|
+| Staging     | https://staging.sgilt.fr | https://auth-staging.sgilt.fr | https://api-staging.sgilt.fr  |
+| Production  | https://sgilt.alsace     | https://auth.sgilt.alsace     | https://api.sgilt.fr          |
