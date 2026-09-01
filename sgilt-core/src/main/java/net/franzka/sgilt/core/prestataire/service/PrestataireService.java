@@ -6,14 +6,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.franzka.sgilt.core.jwt.domain.ActionType;
+import net.franzka.sgilt.core.jwt.service.ActionLinkService;
 import net.franzka.sgilt.core.prestataire.domain.MediaType;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
+import net.franzka.sgilt.core.prestataire.domain.PrestataireFlow;
 import net.franzka.sgilt.core.prestataire.domain.PrestataireStatus;
 import net.franzka.sgilt.core.prestataire.dto.*;
 import net.franzka.sgilt.core.prestataire.exception.MediasInvalidException;
 import net.franzka.sgilt.core.prestataire.exception.PrestataireForbiddenException;
 import net.franzka.sgilt.core.prestataire.exception.PrestataireInvalidStateException;
 import net.franzka.sgilt.core.prestataire.exception.PrestataireNotFoundException;
+import net.franzka.sgilt.core.prestataire.mailer.PrestataireMailerService;
 import net.franzka.sgilt.core.prestataire.mapper.PrestataireMapper;
 import net.franzka.sgilt.core.prestataire.repository.PrestataireRepository;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
@@ -39,6 +43,8 @@ public class PrestataireService {
     private final PrestataireMapper prestataireMapper;
     private final FileStorageService fileStorageService;
     private final ReservationService reservationService;
+    private final ActionLinkService actionLinkService;
+    private final PrestataireMailerService prestataireMailerService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
@@ -161,20 +167,65 @@ public class PrestataireService {
     }
 
     /**
-     * Publie une fiche prestataire — passe de IN_REVIEW à PUBLISHED. Action admin.
+     * Publie une fiche prestataire — passe de IN_REVIEW ou WAITING_FOR_CREATION_SERVICE à
+     * PUBLISHED — et notifie le prestataire par mail :
+     * - lien d'activation si la fiche vient de
+     * {@link PrestataireStatus#WAITING_FOR_CREATION_SERVICE} (flow clé-en-main, jamais reçu de
+     * mail auparavant),
+     * - simple notification si elle vient de IN_REVIEW (flow autonome, mot de
+     * passe déjà existant).
+     * Le flow clé-en-main saute IN_REVIEW : l'admin y construit et publie
+     * lui-même la fiche, sans qu'un prestataire distinct n'ait besoin de la soumettre.
      *
      * @param id identifiant du prestataire à publier
+     * @return {@code true} si la notification a bien été délivrée
      * @throws EntityNotFoundException si aucun prestataire ne correspond
-     * @throws PrestataireInvalidStateException si le statut courant n'est pas IN_REVIEW
+     * @throws PrestataireInvalidStateException si le statut courant n'est ni IN_REVIEW ni WAITING_FOR_CREATION_SERVICE
      */
-    public void publish(UUID id) {
+    public boolean publish(UUID id) {
         Prestataire prestataire = getById(id);
-        if (prestataire.getStatus() != PrestataireStatus.IN_REVIEW) {
+        PrestataireStatus previousStatus = prestataire.getStatus();
+        if (previousStatus != PrestataireStatus.IN_REVIEW
+                && previousStatus != PrestataireStatus.WAITING_FOR_CREATION_SERVICE) {
             throw new PrestataireInvalidStateException(
-                    "La fiche ne peut pas être publiée depuis le statut " + prestataire.getStatus());
+                    "La fiche ne peut pas être publiée depuis le statut " + previousStatus);
         }
         prestataire.setStatus(PrestataireStatus.PUBLISHED);
         prestataireRepository.save(prestataire);
+
+        Utilisateur utilisateur = prestataire.getUtilisateur();
+        boolean delivered;
+        if (prestataire.getFlow() == PrestataireFlow.CREATION_CLE_EN_MAIN) {
+            String actionUrl = actionLinkService.createLink(
+                    ActionType.PRESTATAIRE_ONBOARDING, Map.of("email", utilisateur.getEmail()));
+            delivered = prestataireMailerService.sendPrestatairePageReadyEmail(
+                    utilisateur.getEmail(), utilisateur.getFirstName(), actionUrl, prestataire.getSlug());
+        } else {
+            delivered = prestataireMailerService.sendPrestatairePublishedEmail(
+                    utilisateur.getEmail(), utilisateur.getFirstName(), prestataire.getSlug());
+        }
+        return delivered;
+    }
+
+    /**
+     * Relance la notification d'onboarding d'une fiche dont le lien d'activation est en attente
+     * (déjà reconstruit par l'appelant, période de validité déjà réinitialisée). Le mail envoyé
+     * dépend du {@link PrestataireFlow flow} d'origine de la fiche : clé-en-main (voir
+     * {@link #publish}) inclut le lien vers la page déjà en ligne ; sinon c'est le simple mail
+     * d'activation.
+     *
+     * @param prestataire la fiche dont l'onboarding doit être relancé
+     * @param actionUrl   le lien d'action reconstruit à inclure dans le mail
+     * @return {@code true} si le mail a bien été délivré
+     */
+    public boolean resendOnboardingEmail(Prestataire prestataire, String actionUrl) {
+        Utilisateur utilisateur = prestataire.getUtilisateur();
+        if (PrestataireFlow.CREATION_CLE_EN_MAIN.equals(prestataire.getFlow())) {
+            return prestataireMailerService.sendPrestatairePageReadyEmail(
+                    utilisateur.getEmail(), utilisateur.getFirstName(), actionUrl, prestataire.getSlug());
+        }
+        return prestataireMailerService.sendPrestataireOnboardingEmail(
+                utilisateur.getEmail(), utilisateur.getFirstName(), actionUrl);
     }
 
     /**
@@ -241,26 +292,70 @@ public class PrestataireService {
     }
 
     /**
-     * Crée et persiste une fiche prestataire vierge.
-     * Seuls {@code slug}, {@code name}, {@code categoryKey} et {@code subcatKeys} sont renseignés —
-     * tous les autres champs restent vides.
+     * Résultat d'une création de fiche : la fiche créée et si la notification associée a bien été
+     * délivrée — {@code true} aussi si aucune notification n'était due à ce stade (flow
+     * clé-en-main, voir {@link #createPrestataireCleEnMain}).
+     *
+     * @param prestataire            la fiche créée et persistée
+     * @param notificationDelivered {@code true} si le mail a bien été envoyé, ou si aucun n'était dû
+     */
+    public record CreationResult(Prestataire prestataire, boolean notificationDelivered) {}
+
+    /**
+     * Crée une fiche prestataire vierge en flow clé-en-main — statut
+     * {@link PrestataireStatus#WAITING_FOR_CREATION_SERVICE}. Le prestataire n'a jamais interagi
+     * avec Sgilt à ce stade : aucune notification n'est envoyée, le mail (avec lien d'activation)
+     * part à la publication (voir {@link #publish}).
      *
      * @param utilisateur l'utilisateur déjà créé et lié à ce prestataire
      * @param slug        le slug public de la fiche
      * @param name        le nom du prestataire
      * @param categoryKey la clé de catégorie
-     * @param subcatKeys  les clés de sous-catégories (peut être vide).
-     * @return le prestataire créé et persisté
+     * @param subcatKeys  les clés de sous-catégories (peut être vide)
+     * @return la fiche créée ; la notification est toujours considérée comme délivrée (aucune n'est due)
      */
-    public Prestataire createPrestataire(
+    public CreationResult createPrestataireCleEnMain(
             Utilisateur utilisateur, String slug, String name, String categoryKey, List<String> subcatKeys) {
+        Prestataire prestataire = buildAndSave(
+                utilisateur, slug, name, categoryKey, subcatKeys,
+                PrestataireStatus.WAITING_FOR_CREATION_SERVICE, PrestataireFlow.CREATION_CLE_EN_MAIN);
+        return new CreationResult(prestataire, true);
+    }
+
+    /**
+     * Crée une fiche prestataire vierge en flow autonome — statut {@link PrestataireStatus#DRAFT}
+     * — et envoie immédiatement le mail d'activation (lien pour définir le mot de passe).
+     *
+     * @param utilisateur l'utilisateur déjà créé et lié à ce prestataire
+     * @param slug        le slug public de la fiche
+     * @param name        le nom du prestataire
+     * @param categoryKey la clé de catégorie
+     * @param subcatKeys  les clés de sous-catégories (peut être vide)
+     * @return la fiche créée et si le mail d'activation a bien été délivré
+     */
+    public CreationResult createPrestataireAutonome(
+            Utilisateur utilisateur, String slug, String name, String categoryKey, List<String> subcatKeys) {
+        Prestataire prestataire = buildAndSave(
+                utilisateur, slug, name, categoryKey, subcatKeys,
+                PrestataireStatus.DRAFT, PrestataireFlow.CREATION_AUTONOME);
+        String actionUrl = actionLinkService.createLink(
+                ActionType.PRESTATAIRE_ONBOARDING, Map.of("email", utilisateur.getEmail()));
+        boolean delivered = prestataireMailerService.sendPrestataireOnboardingEmail(
+                utilisateur.getEmail(), utilisateur.getFirstName(), actionUrl);
+        return new CreationResult(prestataire, delivered);
+    }
+
+    private Prestataire buildAndSave(
+            Utilisateur utilisateur, String slug, String name, String categoryKey, List<String> subcatKeys,
+            PrestataireStatus initialStatus, PrestataireFlow flow) {
         Prestataire prestataire = Prestataire.builder()
                 .utilisateur(utilisateur)
                 .slug(slug)
                 .name(name)
                 .categoryKey(categoryKey)
                 .subcatKeys(subcatKeys)
-                .status(PrestataireStatus.DRAFT)
+                .status(initialStatus)
+                .flow(flow)
                 .build();
 
         return prestataireRepository.save(prestataire);

@@ -15,6 +15,7 @@ const loading = ref(false)
 const provisioning = ref(false)
 const provisionError = ref(false)
 const lastProvisionedSlug = ref<string | null>(null)
+const publishError = ref(false)
 
 export function useAdminPrestataires() {
   async function load() {
@@ -27,8 +28,13 @@ export function useAdminPrestataires() {
   }
 
   async function publish(id: string): Promise<void> {
-    await publishPrestataire(id)
-    await load()
+    publishError.value = false
+    try {
+      await publishPrestataire(id)
+      await load()
+    } catch {
+      publishError.value = true
+    }
   }
 
   async function sendBackToReview(id: string): Promise<void> {
@@ -58,6 +64,7 @@ export function useAdminPrestataires() {
     loading,
     load,
     publish,
+    publishError,
     sendBackToReview,
     provision,
     provisioning,

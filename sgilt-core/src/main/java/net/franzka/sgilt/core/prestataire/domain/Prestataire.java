@@ -94,6 +94,11 @@ public class Prestataire {
     @Column(columnDefinition = "prestataire_status", nullable = false)
     private PrestataireStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(columnDefinition = "prestataire_flow", nullable = false)
+    private PrestataireFlow flow;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

@@ -4,8 +4,11 @@
       <h1>{{ $t('admin.prestataires.title') }}</h1>
     </div>
 
+    <AdminPrestataireTabs />
+
     <section class="list">
       <p v-if="loading">{{ $t('admin.prestataires.loading') }}</p>
+      <p v-if="publishError" class="error">{{ $t('admin.prestataires.publish-error') }}</p>
       <SgiltCard v-for="row in rows" :key="row.id" format="small" tag="div" :clickable="false">
         <template #avatar>
           <span class="avatar-initial">{{ row.name.charAt(0) }}</span>
@@ -23,7 +26,11 @@
           <PrestataireStatusBadge :status="row.status" />
         </div>
         <template #cta>
-          <SgiltButton v-if="row.status === 'IN_REVIEW'" variant="secondary" @click="publish(row.id)">
+          <SgiltButton
+            v-if="row.status === 'IN_REVIEW' || row.status === 'WAITING_FOR_CREATION_SERVICE'"
+            variant="secondary"
+            @click="publish(row.id)"
+          >
             {{ $t('admin.prestataires.publish') }}
           </SgiltButton>
           <SgiltButton v-if="row.status === 'PUBLISHED'" variant="secondary" @click="sendBackToReview(row.id)">
@@ -32,37 +39,6 @@
         </template>
       </SgiltCard>
     </section>
-
-    <section class="create-form">
-      <h2>{{ $t('admin.prestataires.form.title') }}</h2>
-
-      <div class="fields">
-        <input v-model="form.prestataireName" type="text" :placeholder="$t('admin.prestataires.form.prestataire-name')" />
-        <input v-model="form.slug" type="text" :placeholder="$t('admin.prestataires.form.slug')" />
-        <select v-model="form.category">
-          <option value="" disabled>{{ $t('admin.prestataires.form.category') }}</option>
-          <option v-for="category in categories" :key="category.key" :value="category.key">
-            {{ category.name }}
-          </option>
-        </select>
-        <select v-model="selectedSubcats" multiple :disabled="subcategories.length === 0">
-          <option v-for="subcategory in subcategories" :key="subcategory.key" :value="subcategory.key">
-            {{ subcategory.name }}
-          </option>
-        </select>
-        <input v-model="form.firstName" type="text" :placeholder="$t('admin.prestataires.form.first-name')" />
-        <input v-model="form.lastName" type="text" :placeholder="$t('admin.prestataires.form.last-name')" />
-        <input v-model="form.email" type="email" :placeholder="$t('admin.prestataires.form.email')" />
-      </div>
-
-      <SgiltButton :loading="provisioning" :disabled="!isFormValid" @click="onProvision">
-        {{ $t('admin.prestataires.form.submit') }}
-      </SgiltButton>
-      <p v-if="lastProvisionedSlug" class="success">
-        {{ $t('admin.prestataires.form.success', { slug: lastProvisionedSlug }) }}
-      </p>
-      <p v-if="provisionError" class="error">{{ $t('admin.prestataires.form.error') }}</p>
-    </section>
   </div>
 </template>
 
@@ -70,6 +46,7 @@
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
 import PrestataireStatusBadge from '~/components/admin/PrestataireStatusBadge.vue'
+import AdminPrestataireTabs from '~/components/admin/AdminPrestataireTabs.vue'
 import type { PrestataireAdminFormat, PrestataireReservationCounts } from '~/data/admin/domain/PrestataireAdminFormat'
 import type { ReservationStatus } from '~/data/reservation/domain/ReservationStatus'
 
@@ -77,17 +54,7 @@ definePageMeta({ layout: 'admin' })
 
 const { t } = useI18n()
 
-const {
-  rows,
-  loading,
-  load,
-  publish,
-  sendBackToReview,
-  provision,
-  provisioning,
-  provisionError,
-  lastProvisionedSlug,
-} = useAdminPrestataires()
+const { rows, loading, load, publish, publishError, sendBackToReview } = useAdminPrestataires()
 
 const categories = APP_CATEGORIES.filter((c) => c.key !== 'all')
 
@@ -119,53 +86,6 @@ function formatReservationCounts(counts: PrestataireReservationCounts): string {
   return parts.length > 0 ? parts.join(', ') : t('admin.prestataires.reservations-empty')
 }
 
-const emptyForm = () => ({
-  email: '',
-  firstName: '',
-  lastName: '',
-  slug: '',
-  prestataireName: '',
-  category: '',
-  subcats: '',
-})
-
-const form = reactive(emptyForm())
-
-const subcategories = computed(
-  () => categories.find((c) => c.key === form.category)?.subcategories.filter((s) => s.key) ?? [],
-)
-
-const selectedSubcats = ref<string[]>([])
-
-watch(selectedSubcats, (value) => {
-  form.subcats = value.join(',')
-})
-
-watch(
-  () => form.category,
-  () => {
-    selectedSubcats.value = []
-  },
-)
-
-const isFormValid = computed(
-  () =>
-    !!form.email &&
-    !!form.firstName &&
-    !!form.lastName &&
-    !!form.slug &&
-    !!form.prestataireName &&
-    !!form.category,
-)
-
-async function onProvision() {
-  const ok = await provision({ ...form })
-  if (ok) {
-    Object.assign(form, emptyForm())
-    selectedSubcats.value = []
-  }
-}
-
 onMounted(() => load())
 </script>
 
@@ -193,46 +113,16 @@ onMounted(() => load())
   }
 }
 
-.create-form {
+.list {
   display: flex;
   flex-direction: column;
-  gap: $spacing-s;
-  padding: $spacing-m;
-  border-radius: $radius-md;
-  background: $surface-soft;
-
-  .fields {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-xs;
-
-    input,
-    select {
-      padding: $spacing-xs $spacing-s;
-      border: 1px solid $divider-color;
-      border-radius: $radius-sm;
-      font-family: inherit;
-      font-size: 0.9rem;
-    }
-  }
-
-  .success {
-    margin: 0;
-    font-size: 0.85rem;
-    color: $state-success;
-  }
+  gap: $spacing-xs;
 
   .error {
     margin: 0;
     font-size: 0.85rem;
     color: $state-error;
   }
-}
-
-.list {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-xs;
 
   // Sur mobile, la cta (bouton publier/renvoyer en revue) passe sous le contenu
   // plutôt que de forcer la carte à dépasser la largeur de l'écran.

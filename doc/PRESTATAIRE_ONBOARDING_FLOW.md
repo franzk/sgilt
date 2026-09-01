@@ -11,7 +11,7 @@ Le flow est découpé en 3 phases, toutes implémentées dans `sgilt-core` :
 | Phase                    | Déclencheur                                  | Composants principaux |
 |---------------------------|----------------------------------------------|------------------------|
 | 1. Provisionnement admin | `POST /api/v1/admin/prestataires` (ROLE_ADMIN) | `AdminController`, `KeycloakAdminService`, `PrestataireService`, `UtilisateurService`, `ActionLinkService` |
-| 2. Envoi du mail          | Fin de la phase 1, après commit DB            | `AdminMailerService`, `sgilt-mailer` |
+| 2. Envoi du mail          | Fin de la phase 1, après commit DB            | `PrestataireMailerService`, `sgilt-mailer` |
 | 3. Vérification + set-password | Clic du prestataire sur le lien reçu    | `VerifyService`, `OnboardingService`, `ActionTokenService`, `KeycloakAdminService` |
 
 Le brief d'origine découpait ce travail en 4 étapes (provisionnement / set-password / mail /
@@ -143,7 +143,7 @@ back-office admin permet de renvoyer le mail (voir "Rattrapage : renvoi du mail"
 
 ## Phase 2 — Envoi du mail
 
-`AdminMailerService.sendPrestataireOnboardingEmail(prestataireEmail, firstName, actionUrl)` —
+`PrestataireMailerService.sendPrestataireOnboardingEmail(prestataireEmail, firstName, actionUrl)` —
 appelé après le commit de la transaction (jamais avant, pour ne jamais notifier un prestataire
 dont les entités n'existent pas encore).
 
@@ -168,7 +168,7 @@ cliqué, qu'il soit encore valide ou déjà expiré). Chaque ligne expose un bou
    (`ActionTokenService.renewExpiration`) — **le token n'est pas régénéré**, seul son
    `expiresAt` change : le lien renvoyé par mail est identique à celui déjà envoyé (même token
    HMAC, reconstruit via `VerificationTokenHmacService.buildToken`).
-3. Renvoie le mail via `AdminMailerService.sendPrestataireOnboardingEmail`, comme en phase 2.
+3. Renvoie le mail via `PrestataireMailerService.sendPrestataireOnboardingEmail`, comme en phase 2.
 
 ---
 
@@ -253,7 +253,7 @@ ce mécanisme était déjà entièrement générique.
 ## Pointeurs code
 
 - `sgilt-core/.../admin/controller/AdminController.java` — phase 1, écran BO onboarding en attente
-- `sgilt-core/.../admin/mailer/AdminMailerService.java` — phase 2
+- `sgilt-core/.../prestataire/mailer/PrestataireMailerService.java` — phase 2
 - `sgilt-core/.../admin/service/AdminOnboardingService.java` — rattrapage : liste + renvoi du mail
 - `sgilt-core/.../onboarding/service/VerifyService.java` — phase 3, dispatch verify
 - `sgilt-core/.../onboarding/service/OnboardingService.java` — phase 3, dispatch confirm

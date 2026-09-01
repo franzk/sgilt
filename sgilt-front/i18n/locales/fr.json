@@ -989,6 +989,8 @@
       "invalid": "Ce lien est invalide.",
       "already-used": "Ce lien a déjà été utilisé. Si vous avez un compte, connectez-vous.",
       "expired": "Ce lien a expiré. Veuillez refaire une demande.",
+      "expired-prestataire": "Ce lien a expiré, mais vous pouvez toujours accéder à votre espace : connectez-vous ci-dessous, puis cliquez sur « mot de passe oublié ».",
+      "login-cta": "Se connecter",
       "server": "Une erreur est survenue. Veuillez réessayer."
     },
     "form": {
@@ -1058,18 +1060,27 @@
   "admin": {
     "nav": {
       "prestataires": "Prestataires",
-      "onboarding": "Onboardings pro",
-      "onboarding-clients": "Onboardings clients",
+      "onboarding": "Onboardings",
       "reservations": "Réservations"
+    },
+    "onboarding-nav": {
+      "pro": "Pro",
+      "clients": "Clients"
     },
     "prestataires": {
       "title": "Prestataires",
       "loading": "Chargement…",
-      "publish": "Publier",
+      "tabs": {
+        "list": "Liste",
+        "create": "Créer un prestataire"
+      },
+      "publish": "Publier et notifier",
+      "publish-error": "Échec de la publication ou de l'envoi du mail, réessayez.",
       "send-to-review": "Renvoyer en revue",
       "status": {
         "DRAFT": "Brouillon",
         "IN_REVIEW": "En revue",
+        "WAITING_FOR_CREATION_SERVICE": "En construction (clé en main)",
         "PUBLISHED": "Publié"
       },
       "form": {
@@ -1081,8 +1092,11 @@
         "first-name": "Prénom",
         "last-name": "Nom",
         "email": "Email",
+        "cle-en-main": "Mode clé en main (l'équipe construit la fiche)",
+        "cle-en-main-hint-on": "Aucun mail envoyé maintenant. Construisez la fiche en impersonation, puis publiez depuis le BO — le mail partira à ce moment-là.",
+        "cle-en-main-hint-off": "Mail d'activation envoyé immédiatement au prestataire.",
         "submit": "Créer",
-        "success": "Prestataire créé (slug : {slug}), email d'activation envoyé.",
+        "success": "Prestataire créé (slug : {slug}).",
         "error": "Échec de la création, vérifiez les champs (slug déjà pris ?)."
       },
       "reservations-empty": "0 réservation"

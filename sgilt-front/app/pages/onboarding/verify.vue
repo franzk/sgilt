@@ -5,7 +5,15 @@
     </div>
 
     <div v-else-if="pageError" class="state-center">
-      <p class="state-text state-text--error">{{ pageError }}</p>
+      <div class="error-card">
+        <div class="error-card__icon-wrap">
+          <ErrorWarningIcon class="error-card__icon" />
+        </div>
+        <p class="error-card__message">{{ pageError.message }}</p>
+        <button v-if="pageError.showLoginButton" type="button" class="btn-login" @click="handleLogin">
+          {{ $t('confirmation.error.login-cta') }}
+        </button>
+      </div>
     </div>
 
     <template v-else>
@@ -143,13 +151,14 @@
 
 <script setup lang="ts">
 import { FetchError } from 'ofetch'
-import { CheckboxCircleIcon, UserIcon, EyeIcon, EyeOffIcon } from '@remixicons/vue/line'
+import { CheckboxCircleIcon, ErrorWarningIcon, UserIcon, EyeIcon, EyeOffIcon } from '@remixicons/vue/line'
 import { confirmOnboardingAccount } from '~/data/onboarding/api/onboardingApi'
-import type { VerifyTokenResponseDto } from '~/data/onboarding/dto/OnboardingDto'
+import type { TokenExpiredResponseDto, VerifyTokenResponseDto } from '~/data/onboarding/dto/OnboardingDto'
 import OnboardingSuccess from '~/assets/svg/OnboardingSuccess.vue'
 
 const route = useRoute()
 const { t } = useI18n()
+const { login } = useKeycloak()
 
 definePageMeta({ layout: 'app' })
 useHead(() => ({ title: t('confirmation.page-title') }))
@@ -167,14 +176,33 @@ const {
 const email = computed(() => data.value?.email ?? null)
 const setPasswordToken = computed(() => data.value?.setPasswordToken ?? null)
 
-const pageError = computed<string | null>(() => {
+interface VerifyErrorState {
+  message: string
+  showLoginButton: boolean
+}
+
+const pageError = computed<VerifyErrorState | null>(() => {
   if (!fetchError.value) return null
   const code = fetchError.value.statusCode
-  if (code === 400) return t('confirmation.error.invalid')
-  if (code === 403) return t('confirmation.error.already-used')
-  if (code === 410) return t('confirmation.error.expired')
-  return t('confirmation.error.server')
+  // 400 — signature HMAC invalide ou JWT malformé (lien altéré/tronqué)
+  if (code === 400) return { message: t('confirmation.error.invalid'), showLoginButton: false }
+  // 403 — session déjà consommée, flow client uniquement (le prestataire retombe en 404, jamais 403)
+  if (code === 403) return { message: t('confirmation.error.already-used'), showLoginButton: true }
+  if (code === 410) {
+    // 410 — session/token expiré
+    const flow = (fetchError.value.data as TokenExpiredResponseDto | undefined)?.flow
+    if (flow === 'PRESTATAIRE') {
+      return { message: t('confirmation.error.expired-prestataire'), showLoginButton: true }
+    }
+    return { message: t('confirmation.error.expired'), showLoginButton: false }
+  }
+  // autres codes (404 token inconnu des deux flows, 500...) — pas d'état dédié
+  return { message: t('confirmation.error.server'), showLoginButton: false }
 })
+
+function handleLogin(): void {
+  login({ redirectUri: window.location.origin + '/auth/redirect' })
+}
 
 const password = ref('')
 const passwordConfirm = ref('')
@@ -284,10 +312,55 @@ async function submit(): Promise<void> {
     font-size: $font-size-md;
     color: $text-secondary;
     text-align: center;
+  }
+}
 
-    &--error {
-      color: $state-error;
-    }
+.error-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-m;
+  max-width: 380px;
+  padding: $spacing-xl $spacing-l;
+  background: $surface-white;
+  border-radius: $radius-lg;
+  box-shadow: 0 4px 24px $shadow-m;
+  text-align: center;
+
+  &__icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba($state-error, 0.12);
+  }
+
+  &__icon {
+    width: 28px;
+    height: 28px;
+    color: $state-error;
+  }
+
+  &__message {
+    font-size: $font-size-md;
+    color: $text-primary;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .btn-login {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    font-family: inherit;
+    padding: $spacing-s $spacing-l;
+    background: $brand-primary;
+    color: $text-inverted;
+    border: none;
+    border-radius: $border-radius-xxl;
+    cursor: pointer;
+    letter-spacing: 0.01em;
   }
 }
 

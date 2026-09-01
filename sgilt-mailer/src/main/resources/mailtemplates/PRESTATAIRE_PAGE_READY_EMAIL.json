@@ -1,0 +1,6 @@
+{
+  "subjectTemplate": "Votre page Sgilt est prête ✨",
+  "htmlTemplate": "<p>Bonjour {firstName},</p>\n<p>Votre page Sgilt est prête : <a href=\"{pageUrl}\">{pageUrl}</a> !</p>\n<p>Connectez-vous à votre espace pour suivre vos réservations :</p>\n<p><a href=\"{actionUrl}\">Accéder à mon espace</a></p>\n<p>Ce lien expire dans 7 jours.</p>\n<p>À bientôt,</p>\n<p>L’équipe Sgilt.</p>\n",
+  "requiredVariables": ["firstName", "pageUrl", "actionUrl"],
+  "htmlSafeVariables": []
+}

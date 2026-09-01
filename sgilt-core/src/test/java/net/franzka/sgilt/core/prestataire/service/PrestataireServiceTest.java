@@ -1,12 +1,16 @@
 package net.franzka.sgilt.core.prestataire.service;
 
+import net.franzka.sgilt.core.jwt.domain.ActionType;
+import net.franzka.sgilt.core.jwt.service.ActionLinkService;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
+import net.franzka.sgilt.core.prestataire.domain.PrestataireFlow;
 import net.franzka.sgilt.core.prestataire.domain.PrestataireStatus;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireAdminListItemDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireDetailDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireReservationCountsDto;
 import net.franzka.sgilt.core.prestataire.exception.PrestataireInvalidStateException;
 import net.franzka.sgilt.core.prestataire.exception.PrestataireNotFoundException;
+import net.franzka.sgilt.core.prestataire.mailer.PrestataireMailerService;
 import net.franzka.sgilt.core.prestataire.mapper.PrestataireMapper;
 import net.franzka.sgilt.core.prestataire.repository.PrestataireRepository;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
@@ -50,12 +54,20 @@ class PrestataireServiceTest {
     @Mock
     private ReservationService reservationService;
 
+    @Mock
+    private ActionLinkService actionLinkService;
+
+    @Mock
+    private PrestataireMailerService prestataireMailerService;
+
     @InjectMocks
     private PrestataireService prestataireService;
 
     private static final String SLUG = "photographe-jean";
+    private static final String ACTION_URL = "https://sgilt.fr/onboarding/verify?token=abc";
 
-    private final Utilisateur utilisateur = Utilisateur.builder().id(UUID.randomUUID()).email("pro@sgilt.fr").build();
+    private final Utilisateur utilisateur = Utilisateur.builder()
+            .id(UUID.randomUUID()).email("pro@sgilt.fr").firstName("Jean").build();
 
     // -------------------------------------------------------------------------
     // getBySlug
@@ -253,16 +265,55 @@ class PrestataireServiceTest {
     // -------------------------------------------------------------------------
 
     @Nested
-    class CreatePrestataire {
+    class CreatePrestataireCleEnMain {
 
         @Test
-        void givenNewPrestataire_whenCreatePrestataire_thenStatusIsDraft() {
+        void givenCleEnMainFlow_whenCreatePrestataire_thenStatusIsWaitingForCreationServiceAndNoMailSent() {
             ArgumentCaptor<Prestataire> captor = ArgumentCaptor.forClass(Prestataire.class);
             when(prestataireRepository.save(captor.capture())).thenAnswer(invocation -> invocation.getArgument(0));
 
-            prestataireService.createPrestataire(utilisateur, SLUG, "Jean Photographe", "photo", List.of());
+            PrestataireService.CreationResult result = prestataireService.createPrestataireCleEnMain(
+                    utilisateur, SLUG, "Jean Photographe", "photo", List.of());
+
+            assertThat(captor.getValue().getStatus()).isEqualTo(PrestataireStatus.WAITING_FOR_CREATION_SERVICE);
+            assertThat(captor.getValue().getFlow()).isEqualTo(PrestataireFlow.CREATION_CLE_EN_MAIN);
+            assertThat(result.notificationDelivered()).isTrue();
+            verify(prestataireMailerService, never()).sendPrestataireOnboardingEmail(any(), any(), any());
+        }
+    }
+
+    @Nested
+    class CreatePrestataireAutonome {
+
+        @Test
+        void givenAutonomeFlow_whenCreatePrestataire_thenStatusIsDraftAndOnboardingMailSent() {
+            ArgumentCaptor<Prestataire> captor = ArgumentCaptor.forClass(Prestataire.class);
+            when(prestataireRepository.save(captor.capture())).thenAnswer(invocation -> invocation.getArgument(0));
+            when(actionLinkService.createLink(ActionType.PRESTATAIRE_ONBOARDING, Map.of("email", utilisateur.getEmail())))
+                    .thenReturn(ACTION_URL);
+            when(prestataireMailerService.sendPrestataireOnboardingEmail(utilisateur.getEmail(), "Jean", ACTION_URL))
+                    .thenReturn(true);
+
+            PrestataireService.CreationResult result = prestataireService.createPrestataireAutonome(
+                    utilisateur, SLUG, "Jean Photographe", "photo", List.of());
 
             assertThat(captor.getValue().getStatus()).isEqualTo(PrestataireStatus.DRAFT);
+            assertThat(captor.getValue().getFlow()).isEqualTo(PrestataireFlow.CREATION_AUTONOME);
+            assertThat(result.notificationDelivered()).isTrue();
+        }
+
+        @Test
+        void givenMailerFailure_whenCreatePrestataire_thenNotificationDeliveredIsFalse() {
+            when(prestataireRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+            when(actionLinkService.createLink(ActionType.PRESTATAIRE_ONBOARDING, Map.of("email", utilisateur.getEmail())))
+                    .thenReturn(ACTION_URL);
+            when(prestataireMailerService.sendPrestataireOnboardingEmail(utilisateur.getEmail(), "Jean", ACTION_URL))
+                    .thenReturn(false);
+
+            PrestataireService.CreationResult result = prestataireService.createPrestataireAutonome(
+                    utilisateur, SLUG, "Jean Photographe", "photo", List.of());
+
+            assertThat(result.notificationDelivered()).isFalse();
         }
     }
 
@@ -274,14 +325,48 @@ class PrestataireServiceTest {
     class Publish {
 
         @Test
-        void givenInReviewPrestataire_whenPublish_thenStatusBecomesPublished() {
-            Prestataire prestataire = prestataireWith(PrestataireStatus.IN_REVIEW);
+        void givenInReviewPrestataire_whenPublish_thenStatusBecomesPublishedAndSendsPublishedEmail() {
+            Prestataire prestataire = prestataireWith(PrestataireStatus.IN_REVIEW, PrestataireFlow.CREATION_AUTONOME);
             when(prestataireRepository.findById(prestataire.getId())).thenReturn(Optional.of(prestataire));
+            when(prestataireMailerService.sendPrestatairePublishedEmail(utilisateur.getEmail(), "Jean", SLUG))
+                    .thenReturn(true);
 
-            prestataireService.publish(prestataire.getId());
+            boolean delivered = prestataireService.publish(prestataire.getId());
 
             assertThat(prestataire.getStatus()).isEqualTo(PrestataireStatus.PUBLISHED);
+            assertThat(delivered).isTrue();
             verify(prestataireRepository).save(prestataire);
+            verify(prestataireMailerService, never()).sendPrestatairePageReadyEmail(any(), any(), any(), any());
+        }
+
+        @Test
+        void givenWaitingForCreationServicePrestataire_whenPublish_thenStatusBecomesPublishedAndSendsPageReadyEmail() {
+            Prestataire prestataire = prestataireWith(
+                    PrestataireStatus.WAITING_FOR_CREATION_SERVICE, PrestataireFlow.CREATION_CLE_EN_MAIN);
+            when(prestataireRepository.findById(prestataire.getId())).thenReturn(Optional.of(prestataire));
+            when(actionLinkService.createLink(ActionType.PRESTATAIRE_ONBOARDING, Map.of("email", utilisateur.getEmail())))
+                    .thenReturn(ACTION_URL);
+            when(prestataireMailerService.sendPrestatairePageReadyEmail(utilisateur.getEmail(), "Jean", ACTION_URL, SLUG))
+                    .thenReturn(true);
+
+            boolean delivered = prestataireService.publish(prestataire.getId());
+
+            assertThat(prestataire.getStatus()).isEqualTo(PrestataireStatus.PUBLISHED);
+            assertThat(delivered).isTrue();
+            verify(prestataireRepository).save(prestataire);
+            verify(prestataireMailerService, never()).sendPrestatairePublishedEmail(any(), any(), any());
+        }
+
+        @Test
+        void givenMailerFailure_whenPublish_thenNotificationDeliveredIsFalse() {
+            Prestataire prestataire = prestataireWith(PrestataireStatus.IN_REVIEW, PrestataireFlow.CREATION_AUTONOME);
+            when(prestataireRepository.findById(prestataire.getId())).thenReturn(Optional.of(prestataire));
+            when(prestataireMailerService.sendPrestatairePublishedEmail(utilisateur.getEmail(), "Jean", SLUG))
+                    .thenReturn(false);
+
+            boolean delivered = prestataireService.publish(prestataire.getId());
+
+            assertThat(delivered).isFalse();
         }
 
         @Test
@@ -302,6 +387,40 @@ class PrestataireServiceTest {
             assertThatThrownBy(() -> prestataireService.publish(prestataire.getId()))
                     .isInstanceOf(PrestataireInvalidStateException.class);
             verify(prestataireRepository, never()).save(any());
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // resendOnboardingEmail
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ResendOnboardingEmail {
+
+        @Test
+        void givenAutonomeFlow_whenResendOnboardingEmail_thenSendsOnboardingEmail() {
+            Prestataire prestataire = prestataireWith(PrestataireStatus.DRAFT, PrestataireFlow.CREATION_AUTONOME);
+
+            when(prestataireMailerService.sendPrestataireOnboardingEmail(utilisateur.getEmail(), "Jean", ACTION_URL))
+                    .thenReturn(true);
+
+            boolean delivered = prestataireService.resendOnboardingEmail(prestataire, ACTION_URL);
+
+            assertThat(delivered).isTrue();
+            verify(prestataireMailerService, never()).sendPrestatairePageReadyEmail(any(), any(), any(), any());
+        }
+
+        @Test
+        void givenCleEnMainFlow_whenResendOnboardingEmail_thenSendsPageReadyEmail() {
+            Prestataire prestataire = prestataireWith(PrestataireStatus.PUBLISHED, PrestataireFlow.CREATION_CLE_EN_MAIN);
+
+            when(prestataireMailerService.sendPrestatairePageReadyEmail(utilisateur.getEmail(), "Jean", ACTION_URL, SLUG))
+                    .thenReturn(true);
+
+            boolean delivered = prestataireService.resendOnboardingEmail(prestataire, ACTION_URL);
+
+            assertThat(delivered).isTrue();
+            verify(prestataireMailerService, never()).sendPrestataireOnboardingEmail(any(), any(), any());
         }
     }
 
@@ -402,6 +521,16 @@ class PrestataireServiceTest {
                 .utilisateur(utilisateur)
                 .slug(SLUG)
                 .status(status)
+                .build();
+    }
+
+    private Prestataire prestataireWith(PrestataireStatus status, PrestataireFlow flow) {
+        return Prestataire.builder()
+                .id(UUID.randomUUID())
+                .utilisateur(utilisateur)
+                .slug(SLUG)
+                .status(status)
+                .flow(flow)
                 .build();
     }
 

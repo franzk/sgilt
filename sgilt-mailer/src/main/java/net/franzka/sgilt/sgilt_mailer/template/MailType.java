@@ -31,6 +31,20 @@ public enum MailType {
     PRESTATAIRE_ONBOARDING_EMAIL,
 
     /**
+     * Mail envoyé à un prestataire dont la fiche vient d'être publiée, quand son compte est déjà
+     * activé (flow autonome). Sans lien d'activation, contrairement à
+     * {@link #PRESTATAIRE_ONBOARDING_EMAIL}.
+     */
+    PRESTATAIRE_PUBLISHED_EMAIL,
+
+    /**
+     * Mail envoyé à un prestataire dont la fiche clé-en-main vient d'être publiée sans jamais
+     * avoir reçu de mail auparavant — met en avant la page déjà construite, avec le lien
+     * d'activation pour accéder à son espace.
+     */
+    PRESTATAIRE_PAGE_READY_EMAIL,
+
+    /**
      * Mail déjà entièrement rendu par l'appelant (sujet + HTML fournis tels quels dans le
      * contexte), sans passer par un gabarit métier. Utilisé exclusivement par
      * {@code sgilt-smtp-bridge} pour relayer les mails envoyés nativement par Keycloak
