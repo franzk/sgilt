@@ -2,6 +2,8 @@ package net.franzka.sgilt.core.utilisateur.service;
 
 import net.bytebuddy.utility.RandomString;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
+import net.franzka.sgilt.core.utilisateur.dto.UtilisateurEditDto;
+import net.franzka.sgilt.core.utilisateur.dto.UtilisateurUpdateDto;
 import net.franzka.sgilt.core.utilisateur.exception.UtilisateurAlreadyExistException;
 import net.franzka.sgilt.core.utilisateur.repository.UtilisateurRepository;
 import org.junit.jupiter.api.Nested;
@@ -15,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import net.franzka.sgilt.core.utilisateur.dto.UtilisateurProfileDto;
 import net.franzka.sgilt.core.utilisateur.exception.UtilisateurNotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -167,5 +170,82 @@ class UtilisateurServiceTest {
             assertThatExceptionOfType(UtilisateurNotFoundException.class)
                     .isThrownBy(() -> utilisateurService.getProfile(EMAIL));
         }
+    }
+
+    // -------------------------------------------------------------------------
+    // acceptCgu
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class AcceptCgu {
+
+        @Test
+        void givenUtilisateur_whenAcceptCgu_thenSetsVersionAndTimestampAndSaves() {
+            Utilisateur utilisateur = Utilisateur.builder().email(EMAIL).build();
+
+            utilisateurService.acceptCgu(utilisateur);
+
+            assertThat(utilisateur.getCguVersionAccepted()).isEqualTo("2026-06");
+            assertThat(utilisateur.getCguAcceptedAt()).isCloseTo(LocalDateTime.now(), within3Seconds());
+            verify(utilisateurRepository).save(utilisateur);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // getEditProfile
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetEditProfile {
+
+        @Test
+        void givenUtilisateur_whenGetEditProfile_thenReturnsEditableFields() {
+            Utilisateur utilisateur = Utilisateur.builder()
+                    .firstName(FIRST_NAME).lastName(LAST_NAME).phone(TELEPHONE).email(EMAIL).build();
+
+            UtilisateurEditDto dto = utilisateurService.getEditProfile(utilisateur);
+
+            assertThat(dto).isEqualTo(new UtilisateurEditDto(FIRST_NAME, LAST_NAME, TELEPHONE, EMAIL));
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // updateProfile
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class UpdateProfile {
+
+        @Test
+        void givenAllFieldsSet_whenUpdateProfile_thenUpdatesAndSaves() {
+            Utilisateur utilisateur = Utilisateur.builder()
+                    .firstName("Ancien").lastName("Nom").phone("0000000000").email(EMAIL).build();
+            UtilisateurUpdateDto dto = new UtilisateurUpdateDto(FIRST_NAME, LAST_NAME, TELEPHONE);
+
+            utilisateurService.updateProfile(utilisateur, dto);
+
+            assertThat(utilisateur.getFirstName()).isEqualTo(FIRST_NAME);
+            assertThat(utilisateur.getLastName()).isEqualTo(LAST_NAME);
+            assertThat(utilisateur.getPhone()).isEqualTo(TELEPHONE);
+            verify(utilisateurRepository).save(utilisateur);
+        }
+
+        @Test
+        void givenAllFieldsNull_whenUpdateProfile_thenLeavesFieldsUnchangedButSaves() {
+            Utilisateur utilisateur = Utilisateur.builder()
+                    .firstName("Ancien").lastName("Nom").phone("0000000000").email(EMAIL).build();
+            UtilisateurUpdateDto dto = new UtilisateurUpdateDto(null, null, null);
+
+            utilisateurService.updateProfile(utilisateur, dto);
+
+            assertThat(utilisateur.getFirstName()).isEqualTo("Ancien");
+            assertThat(utilisateur.getLastName()).isEqualTo("Nom");
+            assertThat(utilisateur.getPhone()).isEqualTo("0000000000");
+            verify(utilisateurRepository).save(utilisateur);
+        }
+    }
+
+    private org.assertj.core.data.TemporalUnitOffset within3Seconds() {
+        return org.assertj.core.api.Assertions.within(3, java.time.temporal.ChronoUnit.SECONDS);
     }
 }

@@ -117,6 +117,33 @@ class VerificationTokenHmacServiceTest {
     }
 
     // -------------------------------------------------------------------------
+    // generate
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class Generate {
+
+        @Test
+        void whenGenerate_thenFullTokenStartsWithPayloadFollowedBySeparator() {
+            when(confirmationTokenProperties.confirmationSecret()).thenReturn(SECRET);
+
+            VerificationTokenHmacService.GeneratedToken generated = verificationTokenHmacService.generate();
+
+            assertThat(generated.fullToken()).startsWith(generated.payload() + "-");
+            assertThat(generated.payload()).hasSize(22);
+        }
+
+        @Test
+        void whenGenerate_thenPayloadIsVerifiableFromFullToken() {
+            when(confirmationTokenProperties.confirmationSecret()).thenReturn(SECRET);
+
+            VerificationTokenHmacService.GeneratedToken generated = verificationTokenHmacService.generate();
+
+            assertThat(verificationTokenHmacService.verify(generated.fullToken())).isEqualTo(generated.payload());
+        }
+    }
+
+    // -------------------------------------------------------------------------
     // verify
     // -------------------------------------------------------------------------
 

@@ -5,6 +5,8 @@ import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
 import net.franzka.sgilt.core.jwt.domain.ActionToken;
 import net.franzka.sgilt.core.jwt.domain.ActionType;
 import net.franzka.sgilt.core.jwt.repository.ActionTokenRepository;
+import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
+import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,17 +14,21 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -66,6 +72,103 @@ class ActionTokenServiceTest {
 
             assertThat(captor.getValue().getExpiresAt())
                     .isCloseTo(LocalDateTime.now().plusHours(168), within3Seconds());
+        }
+
+        @Test
+        void givenPayloadSerializationFails_whenCreateToken_thenThrowsIllegalStateException() {
+            when(verificationTokenHmacService.generate())
+                    .thenReturn(new VerificationTokenHmacService.GeneratedToken("payload", "payload-signature"));
+            when(objectMapper.writeValueAsString(any())).thenThrow(mock(JacksonException.class));
+
+            assertThatThrownBy(() -> actionTokenService.createToken(ActionType.PRESTATAIRE_ONBOARDING, Map.of("email", EMAIL)))
+                    .isInstanceOf(IllegalStateException.class);
+            verify(actionTokenRepository, never()).save(any());
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // checkToken
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class CheckToken {
+
+        @Test
+        void givenValidNonExpiredToken_whenCheckToken_thenReturnsToken() {
+            ActionToken token = tokenFor(EMAIL);
+            when(verificationTokenHmacService.verify("payload-signature")).thenReturn(token.getHmacPayload());
+            when(actionTokenRepository.findByHmacPayload(token.getHmacPayload())).thenReturn(Optional.of(token));
+
+            assertThat(actionTokenService.checkToken("payload-signature")).isEqualTo(token);
+        }
+
+        @Test
+        void givenInvalidHmacSignature_whenCheckToken_thenThrowsInvalidToken() {
+            when(verificationTokenHmacService.verify("bad-signature")).thenThrow(new InvalidTokenException());
+
+            assertThatThrownBy(() -> actionTokenService.checkToken("bad-signature"))
+                    .isInstanceOf(InvalidTokenException.class);
+        }
+
+        @Test
+        void givenNoTokenForPayload_whenCheckToken_thenThrowsNotFound() {
+            when(verificationTokenHmacService.verify("payload-signature")).thenReturn("unknown-payload");
+            when(actionTokenRepository.findByHmacPayload("unknown-payload")).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> actionTokenService.checkToken("payload-signature"))
+                    .isInstanceOf(EntityNotFoundException.class);
+        }
+
+        @Test
+        void givenExpiredToken_whenCheckToken_thenThrowsTokenExpired() {
+            ActionToken token = tokenFor(EMAIL);
+            token.setExpiresAt(LocalDateTime.now().minusHours(1));
+            when(verificationTokenHmacService.verify("payload-signature")).thenReturn(token.getHmacPayload());
+            when(actionTokenRepository.findByHmacPayload(token.getHmacPayload())).thenReturn(Optional.of(token));
+
+            assertThatThrownBy(() -> actionTokenService.checkToken("payload-signature"))
+                    .isInstanceOf(TokenExpiredException.class);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // findById
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class FindById {
+
+        @Test
+        void givenExistingId_whenFindById_thenReturnsToken() {
+            ActionToken token = tokenFor(EMAIL);
+            when(actionTokenRepository.findById(token.getId())).thenReturn(Optional.of(token));
+
+            assertThat(actionTokenService.findById(token.getId())).isEqualTo(token);
+        }
+
+        @Test
+        void givenUnknownId_whenFindById_thenThrowsNotFound() {
+            UUID id = UUID.randomUUID();
+            when(actionTokenRepository.findById(id)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> actionTokenService.findById(id)).isInstanceOf(EntityNotFoundException.class);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // consume
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class Consume {
+
+        @Test
+        void givenToken_whenConsume_thenDeletesIt() {
+            ActionToken token = tokenFor(EMAIL);
+
+            actionTokenService.consume(token);
+
+            verify(actionTokenRepository).delete(token);
         }
     }
 
