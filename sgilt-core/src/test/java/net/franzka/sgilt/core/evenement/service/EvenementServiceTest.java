@@ -353,6 +353,90 @@ class EvenementServiceTest {
         }
 
         @Test
+        void givenTitleChanged_whenPatchEvent_thenModificationLoggedAndEntityUpdated() {
+            Evenement event = ownerEvent(b -> b.title("Ancien titre"));
+            EventPatchDto patch = new EventPatchDto("Nouveau titre", null, null, null, null, null, null, null, null);
+
+            whenEventFound(event);
+
+            evenementService.patchEvent(EVENT_ID, USER_ID, patch);
+
+            assertThat(captureModifications(event))
+                    .containsExactly(new ModificationChamp("titre", "Ancien titre", "Nouveau titre"));
+            assertThat(event.getTitle()).isEqualTo("Nouveau titre");
+        }
+
+        @Test
+        void givenEventTypeChanged_whenPatchEvent_thenModificationLoggedAndEntityUpdated() {
+            Evenement event = ownerEvent(b -> b.eventType("Mariage"));
+            EventPatchDto patch = new EventPatchDto(null, null, null, "Anniversaire", null, null, null, null, null);
+
+            whenEventFound(event);
+
+            evenementService.patchEvent(EVENT_ID, USER_ID, patch);
+
+            assertThat(captureModifications(event))
+                    .containsExactly(new ModificationChamp("eventType", "Mariage", "Anniversaire"));
+            assertThat(event.getEventType()).isEqualTo("Anniversaire");
+        }
+
+        @Test
+        void givenAmbianceChanged_whenPatchEvent_thenModificationLoggedAndEntityUpdated() {
+            Evenement event = ownerEvent(b -> b.ambiance("Champetre"));
+            EventPatchDto patch = new EventPatchDto(null, null, null, null, "Chic", null, null, null, null);
+
+            whenEventFound(event);
+
+            evenementService.patchEvent(EVENT_ID, USER_ID, patch);
+
+            assertThat(captureModifications(event))
+                    .containsExactly(new ModificationChamp("ambiance", "Champetre", "Chic"));
+            assertThat(event.getAmbiance()).isEqualTo("Chic");
+        }
+
+        @Test
+        void givenNbInvitesChanged_whenPatchEvent_thenModificationLoggedAndEntityUpdated() {
+            Evenement event = ownerEvent(b -> b.nbInvites("50"));
+            EventPatchDto patch = new EventPatchDto(null, null, null, null, null, null, "80", null, null);
+
+            whenEventFound(event);
+
+            evenementService.patchEvent(EVENT_ID, USER_ID, patch);
+
+            assertThat(captureModifications(event))
+                    .containsExactly(new ModificationChamp("nbInvites", "50", "80"));
+            assertThat(event.getNbInvites()).isEqualTo("80");
+        }
+
+        @Test
+        void givenDescriptionChanged_whenPatchEvent_thenModificationLoggedAndEntityUpdated() {
+            Evenement event = ownerEvent(b -> b.description("Ancienne description"));
+            EventPatchDto patch = new EventPatchDto(null, null, null, null, null, null, null, "Nouvelle description", null);
+
+            whenEventFound(event);
+
+            evenementService.patchEvent(EVENT_ID, USER_ID, patch);
+
+            assertThat(captureModifications(event))
+                    .containsExactly(new ModificationChamp("description", "Ancienne description", "Nouvelle description"));
+            assertThat(event.getDescription()).isEqualTo("Nouvelle description");
+        }
+
+        @Test
+        void givenMomentCleChanged_whenPatchEvent_thenModificationLoggedAndEntityUpdated() {
+            Evenement event = ownerEvent(b -> b.momentCle("Vin d'honneur"));
+            EventPatchDto patch = new EventPatchDto(null, null, null, null, null, null, null, null, "Ouverture du bal");
+
+            whenEventFound(event);
+
+            evenementService.patchEvent(EVENT_ID, USER_ID, patch);
+
+            assertThat(captureModifications(event))
+                    .containsExactly(new ModificationChamp("momentCle", "Vin d'honneur", "Ouverture du bal"));
+            assertThat(event.getMomentCle()).isEqualTo("Ouverture du bal");
+        }
+
+        @Test
         void givenSharedNoteChangedWithBlank_whenPatchEvent_thenLoggedAsBlankNotNull() {
             // sharedNote n'est pas soumis à blankToNull : "" reste "" dans le log
             Evenement event = ownerEvent(b -> b.notePartagee(null));
