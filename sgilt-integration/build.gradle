@@ -1,0 +1,43 @@
+plugins {
+	id 'java'
+}
+
+group = 'net.franzka.sgilt'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(25)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	testImplementation platform('org.testcontainers:testcontainers-bom:1.21.4')
+	testImplementation 'org.testcontainers:junit-jupiter:1.21.4'
+	testImplementation 'org.testcontainers:postgresql:1.21.4'
+	testImplementation 'org.testcontainers:rabbitmq:1.21.4'
+	testImplementation 'com.github.dasniko:testcontainers-keycloak:3.7.0'
+
+	testImplementation 'io.karatelabs:karate-junit5:1.5.1'
+
+	testRuntimeOnly 'org.postgresql:postgresql:42.7.4'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+sourceSets {
+	test {
+		resources {
+			srcDir 'src/test/java'
+			exclude '**/*.java'
+		}
+	}
+}
+
+test {
+	useJUnitPlatform()
+	systemProperty 'karate.output.dir', "${buildDir}/karate-reports"
+}
