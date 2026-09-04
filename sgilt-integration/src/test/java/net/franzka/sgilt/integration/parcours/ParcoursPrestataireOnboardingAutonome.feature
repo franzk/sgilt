@@ -1,4 +1,4 @@
-Feature: Parcours prestataire — provisionnement admin, activation, édition et publication de la fiche
+Feature: Parcours prestataire (flow autonome) — provisionnement, activation, édition et publication
 
   Un admin provisionne un prestataire (flow autonome). Le prestataire active son compte via le mail
   reçu, édite sa fiche encore en brouillon, la soumet pour revue. L'admin la publie, puis la renvoie
