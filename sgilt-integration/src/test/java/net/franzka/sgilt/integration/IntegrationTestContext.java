@@ -10,12 +10,11 @@ import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.time.Duration;
+import java.util.Base64;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Base des tests d'intégration boîte noire : démarre Postgres, RabbitMQ et Keycloak (Testcontainers),
@@ -28,12 +27,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Tag("integration")
 public abstract class IntegrationTestContext {
 
-    private static final String TEST_PASSWORD = "Test1234!";
+    protected static final String TEST_PASSWORD = "Test1234!";
     private static final String DB_NAME = "sgilt";
     private static final String DB_USER = "sgilt";
     private static final String DB_PASSWORD = "sgilt";
     private static final String REALM = "sgilt";
     private static final String SGILT_CORE_IMAGE = "sgilt-core:integration-test";
+    private static final String SGILT_NOTIFICATIONS_IMAGE = "sgilt-notifications:integration-test";
+    protected static final String CONFIRMATION_SECRET = "integration-test-confirmation-secret";
     private static final AtomicBoolean PROVISIONED = new AtomicBoolean(false);
 
     static final Network network = Network.newNetwork();
@@ -42,6 +43,8 @@ public abstract class IntegrationTestContext {
     static final RabbitMQContainer rabbitmq;
     static final KeycloakContainer keycloak;
     static final GenericContainer<?> sgiltCore;
+    static final GenericContainer<?> sgiltNotifications;
+    protected static final Fixtures fixtures;
 
     static {
         postgres = new PostgreSQLContainer<>("postgres:17")
@@ -51,6 +54,7 @@ public abstract class IntegrationTestContext {
                 .withUsername(DB_USER)
                 .withPassword(DB_PASSWORD);
         postgres.start();
+        fixtures = new Fixtures(postgres.getJdbcUrl(), DB_USER, DB_PASSWORD);
 
         rabbitmq = new RabbitMQContainer("rabbitmq:4-management-alpine")
                 .withNetwork(network)
@@ -73,7 +77,7 @@ public abstract class IntegrationTestContext {
 
         String keycloakExternalUrl = "http://host.docker.internal:" + keycloak.getMappedPort(8080);
 
-        buildSgiltCoreImage();
+        buildImage(SGILT_CORE_IMAGE, "../sgilt-core");
 
         sgiltCore = new GenericContainer<>(SGILT_CORE_IMAGE)
                 .withLogConsumer(frame -> System.out.print("[sgilt-core] " + frame.getUtf8String()))
@@ -89,7 +93,7 @@ public abstract class IntegrationTestContext {
                 .withEnv("KEYCLOAK_ISSUER", keycloakExternalUrl + "/realms/" + REALM)
                 .withEnv("KC_ADMIN_URL", keycloakExternalUrl)
                 .withEnv("KC_ADMIN_CLIENT_SECRET", "dev-admin-secret")
-                .withEnv("CONFIRMATION_TOKEN_SECRET", "integration-test-confirmation-secret")
+                .withEnv("CONFIRMATION_TOKEN_SECRET", CONFIRMATION_SECRET)
                 .withEnv("OPENAI_API_KEY", "unused-in-integration-tests")
                 // Wait.forHttp() sur un endpoint réel s'est révélé peu fiable ici : la toute première
                 // requête HTTP initialise le DispatcherServlet à la volée, et ce délai suffit parfois à
@@ -98,28 +102,50 @@ public abstract class IntegrationTestContext {
                 .waitingFor(Wait.forLogMessage(".*Started SgiltCoreApplication.*\\n", 1))
                 .withStartupTimeout(Duration.ofMinutes(3));
         sgiltCore.start();
+
+        // sgilt-notifications consomme les évènements de domaine publiés par sgilt-core sur l'exchange
+        // topic partagé "domain-events" (RabbitMQ) et partage la même base Postgres (son propre schéma
+        // Flyway "sgilt-notifications") — aucun nouveau conteneur DB nécessaire, juste ce 2e conteneur
+        // applicatif sur le même réseau.
+        buildImage(SGILT_NOTIFICATIONS_IMAGE, "../sgilt-notifications");
+
+        sgiltNotifications = new GenericContainer<>(SGILT_NOTIFICATIONS_IMAGE)
+                .withLogConsumer(frame -> System.out.print("[sgilt-notifications] " + frame.getUtf8String()))
+                .withNetwork(network)
+                .withExposedPorts(5031)
+                .withEnv("DB_URL", "jdbc:postgresql://db:5432/" + DB_NAME)
+                .withEnv("DB_USERNAME", DB_USER)
+                .withEnv("DB_PASSWORD", DB_PASSWORD)
+                .withEnv("RABBITMQ_HOST", "rabbitmq")
+                .withEnv("RABBITMQ_PORT", "5672")
+                .withEnv("RABBITMQ_USERNAME", rabbitmq.getAdminUsername())
+                .withEnv("RABBITMQ_PASSWORD", rabbitmq.getAdminPassword())
+                .withEnv("KEYCLOAK_ISSUER", keycloakExternalUrl + "/realms/" + REALM)
+                .waitingFor(Wait.forLogMessage(".*Started SgiltNotificationsApplication.*\\n", 1))
+                .withStartupTimeout(Duration.ofMinutes(3));
+        sgiltNotifications.start();
     }
 
     /**
-     * Build l'image {@code sgilt-core} via le CLI {@code docker build} (BuildKit) plutôt que
+     * Build une image via le CLI {@code docker build} (BuildKit) plutôt que
      * {@link org.testcontainers.images.builder.ImageFromDockerfile}, qui passe par l'ancienne API de
      * build du démon Docker : celle-ci rejette la ligne {@code COPY --from=build /app/build/libs/*.jar
-     * ./app.jar} du {@code Dockerfile} dès que le plugin Gradle Spring Boot produit aussi le jar "plain"
-     * en plus du jar exécutable (2 fichiers matchés par le glob vers une destination non-répertoire).
-     * Vérifié : {@code docker build} (BuildKit, celui utilisé par {@code deploy.yml}) construit cette
-     * même image sans erreur — c'est une limite de l'ancienne API, pas un bug du Dockerfile de prod.
+     * ./app.jar} des Dockerfiles Spring Boot dès que le plugin Gradle produit aussi le jar "plain" en
+     * plus du jar exécutable (2 fichiers matchés par le glob vers une destination non-répertoire).
+     * Vérifié : {@code docker build} (BuildKit, celui utilisé par {@code deploy.yml}) construit ces
+     * mêmes images sans erreur — c'est une limite de l'ancienne API, pas un bug des Dockerfiles de prod.
      */
-    private static void buildSgiltCoreImage() {
+    private static void buildImage(String tag, String contextPath) {
         try {
-            Process process = new ProcessBuilder("docker", "build", "-t", SGILT_CORE_IMAGE, "../sgilt-core")
+            Process process = new ProcessBuilder("docker", "build", "-t", tag, contextPath)
                     .inheritIO()
                     .start();
             int exitCode = process.waitFor();
             if (exitCode != 0) {
-                throw new IllegalStateException("docker build sgilt-core failed with exit code " + exitCode);
+                throw new IllegalStateException("docker build " + tag + " failed with exit code " + exitCode);
             }
         } catch (IOException | InterruptedException e) {
-            throw new IllegalStateException("Failed to build sgilt-core Docker image", e);
+            throw new IllegalStateException("Failed to build Docker image " + tag, e);
         }
     }
 
@@ -138,42 +164,70 @@ public abstract class IntegrationTestContext {
             return;
         }
         System.setProperty("karate.baseUrl", "http://" + sgiltCore.getHost() + ":" + sgiltCore.getMappedPort(5027));
+        System.setProperty("karate.notificationsBaseUrl",
+                "http://" + sgiltNotifications.getHost() + ":" + sgiltNotifications.getMappedPort(5031));
 
         KeycloakTestClient keycloakClient = new KeycloakTestClient(keycloak.getAuthServerUrl(), REALM);
 
         provisionUser(keycloakClient, "user-test@sgilt.test", "karate.token.user");
+        UUID prestataireUtilisateurId = provisionUser(keycloakClient, "prestataire-test@sgilt.test", "karate.token.prestataire");
         provisionUser(keycloakClient, "pro-test@sgilt.test", "karate.token.pro");
         provisionUser(keycloakClient, "admin-test@sgilt.test", "karate.token.admin");
 
         System.setProperty("karate.token.orphan", keycloakClient.fetchUserToken("orphan-test@sgilt.test", TEST_PASSWORD));
+
+        // Prestataire publié partagé entre les parcours qui ont besoin de cibler une fiche existante
+        // (onboarding client, recherche publique, édition de fiche...).
+        UUID prestataireId = fixtures.insertPrestataire(prestataireUtilisateurId, "Studio Test", "studio-test");
+        System.setProperty("karate.fixture.prestataireId", prestataireId.toString());
+
+        // URL complète (vhost déjà encodé en %2F) : évite que le `path()` de Karate ré-encode le
+        // "/" du vhost par défaut en %252F.
+        String mailSendQueueUrl = "http://" + rabbitmq.getHost() + ":" + rabbitmq.getMappedPort(15672)
+                + "/api/queues/%2F/mail.send/get";
+        System.setProperty("karate.mailSendQueueUrl", mailSendQueueUrl);
+        String basicAuth = Base64.getEncoder().encodeToString(
+                (rabbitmq.getAdminUsername() + ":" + rabbitmq.getAdminPassword()).getBytes(StandardCharsets.UTF_8));
+        System.setProperty("karate.mailQueueAuth", "Basic " + basicAuth);
     }
 
     /**
      * Prénom/nom ne sont pas re-déclarés ici : ils sont extraits du JWT lui-même (claims {@code
      * given_name}/{@code family_name}), Keycloak les ayant déjà lus depuis le realm import — évite de
      * dupliquer la même identité à deux endroits (JSON réaliste + code Java).
+     *
+     * @return l'UUID {@code Utilisateur} créé, pour lier d'autres fixtures (ex. un Prestataire)
      */
-    private static void provisionUser(KeycloakTestClient keycloakClient, String email, String tokenSystemProperty) {
+    private static UUID provisionUser(KeycloakTestClient keycloakClient, String email, String tokenSystemProperty) {
         String token = keycloakClient.fetchUserToken(email, TEST_PASSWORD);
         KeycloakTestClient.TokenIdentity identity = KeycloakTestClient.decodeIdentity(token);
-        insertUtilisateur(identity.firstName(), identity.lastName(), identity.email());
+        UUID utilisateurId = fixtures.insertUtilisateur(identity.firstName(), identity.lastName(), identity.email());
         System.setProperty(tokenSystemProperty, token);
+        return utilisateurId;
     }
 
-    private static void insertUtilisateur(String firstName, String lastName, String email) {
-        String url = postgres.getJdbcUrl();
-        try (Connection connection = DriverManager.getConnection(url, DB_USER, DB_PASSWORD);
-             PreparedStatement statement = connection.prepareStatement("""
-                     INSERT INTO utilisateurs (id, first_name, last_name, email, status, created_at)
-                     VALUES (?, ?, ?, ?, 'ACTIVE', now())
-                     """)) {
-            statement.setObject(1, UUID.randomUUID());
-            statement.setString(2, firstName);
-            statement.setString(3, lastName);
-            statement.setString(4, email);
-            statement.executeUpdate();
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to insert Utilisateur row for " + email, e);
-        }
+    /**
+     * Reconstruit le token de confirmation {@code payload-signature} envoyé par email lors d'un
+     * onboarding — voir {@link ConfirmationToken}. Appelé depuis les {@code .feature} via l'interop
+     * Java de Karate (pas de MailHog dans ce module : le payload est lu en base, la signature HMAC
+     * est déterministe avec le secret partagé configuré sur {@code sgiltCore}).
+     */
+    public static String buildConfirmationTokenForEmail(String email) {
+        String payload = fixtures.getOnboardingHmacPayloadByEmail(email);
+        return ConfirmationToken.build(payload, CONFIRMATION_SECRET);
+    }
+
+    /**
+     * Construit un token valide (signature correcte) pour un payload arbitraire — utile pour tester
+     * le cas "token bien formé mais session introuvable" (404), distinct d'un token à la signature
+     * invalide (400).
+     */
+    public static String buildConfirmationTokenForPayload(String payload) {
+        return ConfirmationToken.build(payload, CONFIRMATION_SECRET);
+    }
+
+    /** Récupère un JWT réel pour un user créé en cours de scénario (ex. via le flow onboarding). */
+    public static String fetchTokenForUser(String email, String password) {
+        return new KeycloakTestClient(keycloak.getAuthServerUrl(), REALM).fetchUserToken(email, password);
     }
 }

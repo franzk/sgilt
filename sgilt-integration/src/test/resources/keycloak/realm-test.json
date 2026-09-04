@@ -564,6 +564,18 @@
         {"type": "password", "value": "Test1234!", "temporary": false}
       ],
       "realmRoles": ["USER"]
+    },
+    {
+      "username": "prestataire-test@sgilt.test",
+      "email": "prestataire-test@sgilt.test",
+      "firstName": "Priscille",
+      "lastName": "Prestataire",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {"type": "password", "value": "Test1234!", "temporary": false}
+      ],
+      "realmRoles": ["PRO"]
     }
   ],
   "scopeMappings": [
