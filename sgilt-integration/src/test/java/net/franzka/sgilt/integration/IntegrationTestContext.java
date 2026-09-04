@@ -218,6 +218,16 @@ public abstract class IntegrationTestContext {
     }
 
     /**
+     * Reconstruit le token d'action envoyé par email lors de l'onboarding prestataire (admin →
+     * activation) — {@code ActionToken} partage le même mécanisme HMAC que {@code Onboarding}
+     * (voir {@link Fixtures#getActionTokenHmacPayloadByEmail}), juste une table différente.
+     */
+    public static String buildActionTokenForEmail(String email) {
+        String payload = fixtures.getActionTokenHmacPayloadByEmail(email);
+        return ConfirmationToken.build(payload, CONFIRMATION_SECRET);
+    }
+
+    /**
      * Construit un token valide (signature correcte) pour un payload arbitraire — utile pour tester
      * le cas "token bien formé mais session introuvable" (404), distinct d'un token à la signature
      * invalide (400).

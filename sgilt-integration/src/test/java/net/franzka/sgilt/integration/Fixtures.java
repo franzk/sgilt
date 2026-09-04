@@ -75,6 +75,20 @@ public final class Fixtures {
         update("UPDATE onboarding SET expires_at = now() - interval '1 hour' WHERE email = ?", email);
     }
 
+    /**
+     * Payload HMAC du dernier {@code ActionToken} (flow onboarding prestataire) créé pour cet email
+     * — même mécanisme HMAC que {@link #getOnboardingHmacPayloadByEmail}, table différente (l'email
+     * est dans le jsonb {@code payload}, pas une colonne dédiée).
+     */
+    public String getActionTokenHmacPayloadByEmail(String email) {
+        return query("""
+                SELECT hmac_payload FROM action_tokens
+                WHERE payload ->> 'email' = ? ORDER BY created_at DESC LIMIT 1
+                """,
+                statement -> statement.setString(1, email),
+                rs -> rs.getString("hmac_payload"));
+    }
+
     private void update(String sql, Object... params) {
         try (Connection connection = DriverManager.getConnection(jdbcUrl, user, password);
              PreparedStatement statement = connection.prepareStatement(sql)) {

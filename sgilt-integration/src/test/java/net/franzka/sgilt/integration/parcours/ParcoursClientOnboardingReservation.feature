@@ -28,14 +28,16 @@ Feature: Parcours client — de la demande d'onboarding au cycle de vie complet 
     Then status 202
     And match response.email == clientEmail
 
-    # Conséquence : le mail de vérification a bien été mis en file d'attente pour sgilt-mailer
+    # Conséquence : le mail de vérification a bien été mis en file d'attente pour sgilt-mailer.
+    # La queue mail.send est partagée avec sgilt-notifications (autre producteur, ex. notifications
+    # de réservation) : on vide un lot et on cherche le message attendu, sans supposer sa position.
     Given url mailSendQueueUrl
     And header Authorization = mailQueueAuth
-    And request { count: 1, ackmode: 'ack_requeue_false', encoding: 'auto' }
+    And request { count: 20, ackmode: 'ack_requeue_false', encoding: 'auto' }
     When method POST
     Then status 200
-    And match response[0].payload contains 'VERIFICATION_EMAIL'
-    And match response[0].payload contains clientEmail
+    * def verificationMail = response.find(m => m.payload.includes('VERIFICATION_EMAIL') && m.payload.includes(clientEmail))
+    And match verificationMail != null
 
     # ── 2. Le client se ravise et resoumet une demande au même prestataire ───────────────────────
     # capture du token de la 1ère session avant qu'elle soit annulée par la resoumission
@@ -55,10 +57,11 @@ Feature: Parcours client — de la demande d'onboarding au cycle de vie complet 
     # le mail de vérification de cette 2e session est mis en file à son tour
     Given url mailSendQueueUrl
     And header Authorization = mailQueueAuth
-    And request { count: 1, ackmode: 'ack_requeue_false', encoding: 'auto' }
+    And request { count: 20, ackmode: 'ack_requeue_false', encoding: 'auto' }
     When method POST
     Then status 200
-    And match response[0].payload contains 'VERIFICATION_EMAIL'
+    * def secondVerificationMail = response.find(m => m.payload.includes('VERIFICATION_EMAIL') && m.payload.includes(clientEmail))
+    And match secondVerificationMail != null
 
     # Conséquence réelle : le token de la 1ère session (désormais annulée par la resoumission) est
     # refusé — 403, la session n'est plus utilisable même si le lien email est encore dans une boîte mail
@@ -100,11 +103,11 @@ Feature: Parcours client — de la demande d'onboarding au cycle de vie complet 
     # Conséquence : le mail de bienvenue a bien été mis en file
     Given url mailSendQueueUrl
     And header Authorization = mailQueueAuth
-    And request { count: 1, ackmode: 'ack_requeue_false', encoding: 'auto' }
+    And request { count: 20, ackmode: 'ack_requeue_false', encoding: 'auto' }
     When method POST
     Then status 200
-    And match response[0].payload contains 'WELCOME_EMAIL'
-    And match response[0].payload contains clientEmail
+    * def welcomeMail = response.find(m => m.payload.includes('WELCOME_EMAIL') && m.payload.includes(clientEmail))
+    And match welcomeMail != null
 
     # Rejouer la confirmation avec le même setPasswordToken échoue : la session a été consommée
     Given url baseUrl
