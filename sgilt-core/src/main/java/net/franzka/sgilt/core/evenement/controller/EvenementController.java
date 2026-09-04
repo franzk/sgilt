@@ -81,6 +81,7 @@ public class EvenementController implements EvenementApi {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_PRO')")
     public ResponseEntity<Page<JournalEvenementDto>> getJournal(UUID eventId, int page) {
         UUID userId = currentUserService.getId();
         log.info("GET /events/{}/journal", eventId);

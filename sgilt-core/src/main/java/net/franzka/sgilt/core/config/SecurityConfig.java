@@ -26,6 +26,7 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/v1/user/events/*/journal").hasAnyAuthority("ROLE_USER", "ROLE_PRO")
                 .requestMatchers("/api/v1/user/**").hasAuthority("ROLE_USER")
                 .requestMatchers("/api/v1/pro/**").hasAuthority("ROLE_PRO")
                 .requestMatchers("/api/v1/users/me/edit").hasAnyAuthority("ROLE_USER", "ROLE_PRO", "ROLE_ADMIN")
