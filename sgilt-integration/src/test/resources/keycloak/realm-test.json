@@ -576,6 +576,18 @@
         {"type": "password", "value": "Test1234!", "temporary": false}
       ],
       "realmRoles": ["PRO"]
+    },
+    {
+      "username": "user2-test@sgilt.test",
+      "email": "user2-test@sgilt.test",
+      "firstName": "Ursula",
+      "lastName": "Deuxieme",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {"type": "password", "value": "Test1234!", "temporary": false}
+      ],
+      "realmRoles": ["USER"]
     }
   ],
   "scopeMappings": [

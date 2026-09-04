@@ -170,6 +170,7 @@ public abstract class IntegrationTestContext {
         KeycloakTestClient keycloakClient = new KeycloakTestClient(keycloak.getAuthServerUrl(), REALM);
 
         provisionUser(keycloakClient, "user-test@sgilt.test", "karate.token.user");
+        provisionUser(keycloakClient, "user2-test@sgilt.test", "karate.token.user2");
         UUID prestataireUtilisateurId = provisionUser(keycloakClient, "prestataire-test@sgilt.test", "karate.token.prestataire");
         provisionUser(keycloakClient, "pro-test@sgilt.test", "karate.token.pro");
         provisionUser(keycloakClient, "admin-test@sgilt.test", "karate.token.admin");
@@ -178,8 +179,15 @@ public abstract class IntegrationTestContext {
 
         // Prestataire publié partagé entre les parcours qui ont besoin de cibler une fiche existante
         // (onboarding client, recherche publique, édition de fiche...).
-        UUID prestataireId = fixtures.insertPrestataire(prestataireUtilisateurId, "Studio Test", "studio-test");
+        UUID prestataireId = fixtures.insertPrestataire(prestataireUtilisateurId, "Studio Test", "studio-test", "photographe");
         System.setProperty("karate.fixture.prestataireId", prestataireId.toString());
+
+        // 2e prestataire publié — pour les parcours qui ont besoin de cibler deux prestataires
+        // distincts (ex. un événement avec plusieurs réservations). Lié à un utilisateur DB
+        // sans compte Keycloak : personne ne se connecte en tant que ce prestataire dans ces parcours.
+        UUID secondProUtilisateurId = fixtures.insertUtilisateur("Dan", "DJ", "dj-fixture@sgilt.test");
+        UUID prestataireId2 = fixtures.insertPrestataire(secondProUtilisateurId, "DJ Test", "dj-test", "dj");
+        System.setProperty("karate.fixture.prestataireId2", prestataireId2.toString());
 
         // URL complète (vhost déjà encodé en %2F) : évite que le `path()` de Karate ré-encode le
         // "/" du vhost par défaut en %252F.
