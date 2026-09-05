@@ -75,6 +75,68 @@
       "title": "La sélection du moment"
     }
   },
+  "landing-page": {
+    "cta": "Créer mon événement",
+    "hero": {
+      "title": "Qu'est-ce qu'on FÊTE ?",
+      "title-highlight": "FÊTE",
+      "subtitle-line-1": "Des moments à organiser, des gens à réunir.",
+      "subtitle-line-2": "Sgilt vous aide à donner forme à votre événement et à trouver les bons prestataires en Alsace."
+    },
+    "idea": {
+      "title": "Tout commence par une idée.",
+      "line-mariage": "Un mariage qui se prépare depuis des mois.",
+      "line-anniversaire": "Un anniversaire qu'on veut marquer.",
+      "line-soiree": "Une soirée avec ceux qu'on aime.",
+      "line-pro": "Un événement professionnel qui mérite mieux qu'une salle et trois plateaux de petits fours.",
+      "conclusion": "Quel que soit le prétexte, Sgilt vous aide à passer de l'idée à quelque chose de concret."
+    },
+    "start": {
+      "title": "Commencer, c'est déjà avancer.",
+      "lede": "Vous n'avez pas besoin d'avoir toutes les réponses.",
+      "description": "Une date encore incertaine, un lieu à trouver, une idée à préciser ou simplement l'envie de réunir du monde : Sgilt vous aide à poser les premières bases de votre événement.",
+      "hint": "Quelques questions suffisent pour commencer à y voir plus clair."
+    },
+    "providers": {
+      "title": "Trouvez les personnes qui vont lui donner vie.",
+      "lede": "Un bon événement tient souvent à quelques rencontres.",
+      "line-lieu": "Un lieu où l'on se projette.",
+      "line-traiteur": "Un traiteur qui comprend l'ambiance.",
+      "line-photographe": "Un photographe dont on aime le regard.",
+      "line-musiciens": "Des musiciens capables de faire oublier l'heure.",
+      "conclusion": "Sgilt rassemble des prestataires en Alsace pour vous aider à trouver ceux qui correspondent à votre événement.",
+      "cta": "Découvrir les prestataires"
+    },
+    "local": {
+      "title": "Des professionnels d'ici.",
+      "paragraph-1": "Sgilt se construit en Alsace, avec des lieux, des artistes et des professionnels qui y travaillent vraiment.",
+      "paragraph-2": "Pas besoin de parcourir des centaines de résultats à l'autre bout de la France.",
+      "closing-line": "Vous cherchez ici. Ils sont ici.",
+      "photo-domaine-alt": "Un domaine alsacien",
+      "photo-musique-alt": "Un groupe de musique",
+      "photo-prestation-alt": "Une prestation Sgilt"
+    },
+    "occasions": {
+      "title": "Parce qu'il n'y a pas qu'une façon de faire la fête.",
+      "line-oui": "Pour dire oui.",
+      "line-bougie": "Pour souffler une bougie de plus.",
+      "line-entreprise": "Pour réunir toute l'équipe ailleurs qu'autour de la machine à café.",
+      "line-revoir": "Pour revoir tout le monde.",
+      "line-jeudi": "Ou simplement parce que jeudi semblait être une excellente raison."
+    },
+    "closing": {
+      "title": "Vous avez déjà commencé.",
+      "line-1": "Une idée suffit.",
+      "line-2": "Le reste se construit petit à petit.",
+      "question": "Alors, qu'est-ce qu'on fête ?"
+    },
+    "footer": {
+      "tagline": "Organiser un événement en Alsace.",
+      "link-providers": "Prestataires",
+      "link-pro": "Pour les professionnels",
+      "link-login": "Connexion"
+    }
+  },
   "search": {
     "results-count": "{count} prestataires correspondent à votre recherche.",
     "results-count-with-dispo": "{count} prestataires sont disponibles à votre date.",
