@@ -12,6 +12,20 @@
         <button type="button" @click="handleLogin">{{ $t('landing-page.footer.link-login') }}</button>
       </nav>
 
+      <!-- Masqués tant que les comptes Sgilt sur ces réseaux n'existent pas — repasser
+           SOCIAL_LINKS_READY à true une fois les vraies URLs connues. -->
+      <div v-if="SOCIAL_LINKS_READY" class="social" aria-label="Réseaux sociaux">
+        <a href="#" :aria-label="$t('landing-page.footer.social-instagram')"
+          ><InstagramIcon class="icon"
+        /></a>
+        <a href="#" :aria-label="$t('landing-page.footer.social-facebook')"
+          ><FacebookIcon class="icon"
+        /></a>
+        <a href="#" :aria-label="$t('landing-page.footer.social-linkedin')"
+          ><LinkedinIcon class="icon"
+        /></a>
+      </div>
+
       <nav class="legal" aria-label="Mentions légales">
         <NuxtLink to="/m/cgu">{{ $t('profile.menu.terms') }}</NuxtLink>
         <NuxtLink to="/m/confidentialite">{{ $t('profile.menu.privacy') }}</NuxtLink>
@@ -22,7 +36,10 @@
 </template>
 
 <script setup lang="ts">
+import { InstagramIcon, FacebookIcon, LinkedinIcon } from '@remixicons/vue/line'
 import { useKeycloak } from '~/composables/useKeycloak'
+
+const SOCIAL_LINKS_READY = false
 
 const { login } = useKeycloak()
 
@@ -99,6 +116,30 @@ function handleLogin() {
   .legal a {
     color: rgba(255, 255, 255, 0.5);
     font-size: $font-size-xs;
+  }
+
+  .social {
+    display: flex;
+    gap: $spacing-m;
+
+    a {
+      display: flex;
+      color: $text-inverted;
+
+      &:hover {
+        color: $brand-accent;
+      }
+
+      &:focus-visible {
+        outline: 2px solid $brand-accent;
+        outline-offset: 2px;
+      }
+    }
+
+    .icon {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
   }
 }
 </style>

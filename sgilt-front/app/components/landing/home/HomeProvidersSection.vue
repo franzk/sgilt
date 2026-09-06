@@ -1,17 +1,23 @@
 <template>
   <section class="home-providers">
     <div class="wrap">
-      <h2 class="title">{{ $t('landing-page.providers.title') }}</h2>
-      <p class="lede">{{ $t('landing-page.providers.lede') }}</p>
+      <div class="intro">
+        <h2 class="title">{{ $t('landing-page.providers.title') }}</h2>
+        <p class="lede">{{ $t('landing-page.providers.lede') }}</p>
 
-      <p class="lines">
-        {{ $t('landing-page.providers.line-lieu') }}<br />
-        {{ $t('landing-page.providers.line-traiteur') }}<br />
-        {{ $t('landing-page.providers.line-photographe') }}<br />
-        {{ $t('landing-page.providers.line-musiciens') }}
-      </p>
+        <p class="lines">
+          {{ $t('landing-page.providers.line-lieu') }}
+          {{ $t('landing-page.providers.line-traiteur') }}
+          {{ $t('landing-page.providers.line-photographe') }}
+          {{ $t('landing-page.providers.line-musiciens') }}
+        </p>
 
-      <p class="conclusion">{{ $t('landing-page.providers.conclusion') }}</p>
+        <p class="conclusion">{{ $t('landing-page.providers.conclusion') }}</p>
+
+        <NuxtLink to="/search" class="cta">
+          {{ $t('landing-page.providers.cta') }} <span aria-hidden="true">→</span>
+        </NuxtLink>
+      </div>
 
       <div v-if="loading || providers.length > 0" class="cards">
         <template v-if="loading">
@@ -21,10 +27,6 @@
           <PrestataireCard v-for="provider in providers" :key="provider.id" :provider="provider" />
         </template>
       </div>
-
-      <NuxtLink to="/search" class="cta">
-        {{ $t('landing-page.providers.cta') }}
-      </NuxtLink>
     </div>
   </section>
 </template>
@@ -68,9 +70,27 @@ onMounted(async () => {
     padding: 0 $section-padding-x;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: $spacing-m;
+    gap: $spacing-xl;
+
+    @media (min-width: $breakpoint-desktop) {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: $spacing-xxl;
+    }
+  }
+
+  .intro {
+    max-width: 56ch;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-s;
+
+    @media (min-width: $breakpoint-desktop) {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
   }
 
   .title {
@@ -79,7 +99,6 @@ onMounted(async () => {
     font-weight: $font-weight-medium;
     font-size: clamp(1.8rem, 4vw, 2.5rem);
     color: $text-primary;
-    max-width: 24ch;
   }
 
   .lede {
@@ -89,37 +108,19 @@ onMounted(async () => {
     font-size: $font-size-lg;
   }
 
-  .lines {
+  .lines,
+  .conclusion {
     margin: 0;
     color: $text-secondary;
     font-size: $font-size-md;
     line-height: $line-height-relaxed;
   }
 
-  .conclusion {
-    margin: 0 0 $spacing-m;
-    max-width: 52ch;
-    color: $text-secondary;
-    font-size: $font-size-md;
-    line-height: $line-height-relaxed;
-  }
-
-  .cards {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: $spacing-m;
-    margin-bottom: $spacing-l;
-
-    @media (min-width: $breakpoint-desktop) {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
   .cta {
+    margin-top: $spacing-s;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
+    gap: 0.4em;
     padding: $spacing-m $spacing-xl;
     border-radius: 9999px;
     background: $brand-primary;
@@ -133,12 +134,28 @@ onMounted(async () => {
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 12px 28px $shadow-m;
+      box-shadow: 0 6px 16px $shadow-m;
     }
 
     &:focus-visible {
       outline: 3px solid $brand-accent;
       outline-offset: 4px;
+    }
+  }
+
+  .cards {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $spacing-m;
+
+    // Cartes volontairement compactes — largeur fixe plutôt que 1fr, pour que
+    // les 3 tiennent sur une seule ligne à côté du texte plutôt qu'en dessous.
+    @media (min-width: $breakpoint-desktop) {
+      flex-shrink: 0;
+      width: auto;
+      grid-template-columns: repeat(3, 160px);
+      justify-content: start;
     }
   }
 }

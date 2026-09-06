@@ -5,7 +5,6 @@
     <HomeStartSection />
     <HomeProvidersSection />
     <HomeLocalSection />
-    <HomeOccasionsSection />
     <HomeClosingSection />
     <HomeFooter />
   </div>
@@ -17,7 +16,6 @@ import HomeIdeaSection from '~/components/landing/home/HomeIdeaSection.vue'
 import HomeStartSection from '~/components/landing/home/HomeStartSection.vue'
 import HomeProvidersSection from '~/components/landing/home/HomeProvidersSection.vue'
 import HomeLocalSection from '~/components/landing/home/HomeLocalSection.vue'
-import HomeOccasionsSection from '~/components/landing/home/HomeOccasionsSection.vue'
 import HomeClosingSection from '~/components/landing/home/HomeClosingSection.vue'
 import HomeFooter from '~/components/landing/home/HomeFooter.vue'
 

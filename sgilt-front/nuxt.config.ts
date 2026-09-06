@@ -159,10 +159,11 @@ export default defineNuxtConfig({
   googleFonts: {
     families: {
       'Cormorant Garamond': {
-        wght: [300, 400, 500],
+        wght: [300, 400, 500, 700],
         ital: [400],
       },
       Inter: [400, 500, 600, 900],
+      Caveat: [500, 600],
     },
   },
 
