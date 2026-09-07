@@ -12,18 +12,24 @@
     <ol class="steps">
       <li class="step">
         <div class="marker"><FileList3Icon class="icon" /></div>
-        <h3>{{ $t('landing-page.start.step-1-title') }}</h3>
-        <p>{{ $t('landing-page.start.step-1-description') }}</p>
+        <div class="step-text">
+          <h3>{{ $t('landing-page.start.step-1-title') }}</h3>
+          <p>{{ $t('landing-page.start.step-1-description') }}</p>
+        </div>
       </li>
       <li class="step">
         <div class="marker"><CalendarEventIcon class="icon" /></div>
-        <h3>{{ $t('landing-page.start.step-2-title') }}</h3>
-        <p>{{ $t('landing-page.start.step-2-description') }}</p>
+        <div class="step-text">
+          <h3>{{ $t('landing-page.start.step-2-title') }}</h3>
+          <p>{{ $t('landing-page.start.step-2-description') }}</p>
+        </div>
       </li>
       <li class="step">
         <div class="marker"><CheckboxCircleIcon class="icon" /></div>
-        <h3>{{ $t('landing-page.start.step-3-title') }}</h3>
-        <p>{{ $t('landing-page.start.step-3-description') }}</p>
+        <div class="step-text">
+          <h3>{{ $t('landing-page.start.step-3-title') }}</h3>
+          <p>{{ $t('landing-page.start.step-3-description') }}</p>
+        </div>
       </li>
     </ol>
   </section>
@@ -41,7 +47,7 @@ import HomeCtaButton from './HomeCtaButton.vue'
   display: grid;
   grid-template-columns: 1fr;
   gap: $spacing-xxl;
-  padding: $spacing-xxxl $section-padding-x;
+  padding: $spacing-m $section-padding-x $spacing-xxxl;
   background: $surface-soft;
 
   @media (min-width: $breakpoint-desktop) {
@@ -49,6 +55,7 @@ import HomeCtaButton from './HomeCtaButton.vue'
     max-width: $container-max-width;
     margin: 0 auto;
     align-items: center;
+    padding: $spacing-xxxl $section-padding-x;
   }
 
   .text {
@@ -99,22 +106,42 @@ import HomeCtaButton from './HomeCtaButton.vue'
 
   .step {
     position: relative;
-    text-align: center;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: $spacing-xs;
+    align-items: flex-start;
+    text-align: left;
+    gap: $spacing-m;
 
-    // Ligne pointillée reliant les étapes (desktop uniquement)
+    // Ligne pointillée verticale entre les repères, mobile (marqueur + texte
+    // en ligne) — devient horizontale sur desktop (steps côte à côte).
+    &:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 4.5rem;
+      bottom: calc(-1 * #{$spacing-xl});
+      left: 2.25rem;
+      border-left: 2px dashed $divider-color;
+    }
+
     @media (min-width: $breakpoint-desktop) {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: $spacing-xs;
+
       &:not(:last-child)::after {
-        content: '';
-        position: absolute;
         top: 2.25rem;
+        bottom: auto;
         left: calc(50% + 3rem);
         width: calc(100% - 6rem);
+        border-left: none;
         border-top: 2px dashed $divider-color;
       }
+    }
+
+    .step-text {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-xs;
     }
 
     h3 {

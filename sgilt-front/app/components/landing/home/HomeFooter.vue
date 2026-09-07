@@ -52,7 +52,7 @@ function handleLogin() {
 @use '@/assets/styles/base' as *;
 
 .home-footer {
-  padding: $spacing-xxl 0;
+  padding: $spacing-xl 0;
   background: $brand-primary;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 

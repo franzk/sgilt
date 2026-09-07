@@ -23,8 +23,12 @@ import HomeCtaButton from './HomeCtaButton.vue'
 @use '@/assets/styles/base' as *;
 
 .home-closing {
-  padding: $spacing-xxxl 0;
+  padding: $spacing-xl 0 $spacing-xl;
   background: $brand-primary;
+
+  @media (min-width: $breakpoint-desktop) {
+    padding: $spacing-xxxl 0;
+  }
 
   .wrap {
     max-width: 640px;

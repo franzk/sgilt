@@ -16,17 +16,20 @@
       <HomeCtaButton />
 
       <p class="tagline-mini">
-        <SparklingIcon class="icon" />
+        <MapPin2Icon class="icon" />
         {{ $t('landing-page.hero.tagline-mini') }}
       </p>
     </div>
 
-    <div class="photo" role="img" :aria-label="$t('landing-page.hero.photo-caption')"></div>
+    <div class="photo" role="img" :aria-label="$t('landing-page.hero.photo-caption')">
+      <div class="photo-top-fade" aria-hidden="true"></div>
+      <div class="photo-bottom-fade" aria-hidden="true"></div>
+    </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { SparklingIcon } from '@remixicons/vue/line'
+import { MapPin2Icon } from '@remixicons/vue/line'
 import HomeCtaButton from './HomeCtaButton.vue'
 
 const { t } = useI18n()
@@ -66,7 +69,7 @@ const titleParts = computed(() => {
     align-items: flex-start;
     justify-content: center;
     gap: $spacing-m;
-    padding: $spacing-xxl $section-padding-x;
+    padding: $spacing-xxl $section-padding-x 0;
 
     @media (min-width: $breakpoint-desktop) {
       padding: $spacing-xxxl;
@@ -136,12 +139,15 @@ const titleParts = computed(() => {
   // ── Photo ─────────────────────────────────────────────────────────────────
   .photo {
     position: relative;
-    min-height: 16rem;
+    min-height: 32rem;
     background-image: url('/images/hero-party.png');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: 10% center;
     filter: saturate(1.3) brightness(1.02);
+    // Pas de découpe sur la photo elle-même en mobile — haut et bas sont gérés
+    // par .photo-top-fade / .photo-bottom-fade, des formes semi-transparentes
+    // posées par-dessus qui laissent deviner la photo au lieu de la découper.
 
     @media (min-width: $breakpoint-desktop) {
       background-image: url('/images/hero-party-desktop.png');
@@ -151,5 +157,38 @@ const titleParts = computed(() => {
     }
   }
 
+  // Forme semi-transparente (couleur de fond de la section) posée sur le haut
+  // de la photo, bord oblique — laisse deviner la photo dessous au lieu de la
+  // découper. Mobile uniquement, le desktop garde sa découpe latérale.
+  .photo-top-fade {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5rem;
+    background: rgba($surface-soft, 0.9);
+    clip-path: polygon(0 0, 100% 0, 100% 20%, 0 100%);
+
+    @media (min-width: $breakpoint-desktop) {
+      display: none;
+    }
+  }
+
+  // Même principe, miroir vertical, pour le bas de la photo — couleur de la
+  // section suivante ($surface-white), pas celle du hero ($surface-soft) :
+  // les deux sections n'ont pas le même fond.
+  .photo-bottom-fade {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 5rem;
+    background: rgba($surface-white, 0.9);
+    clip-path: polygon(0 80%, 100% 0, 100% 100%, 0 100%);
+
+    @media (min-width: $breakpoint-desktop) {
+      display: none;
+    }
+  }
 }
 </style>

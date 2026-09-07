@@ -1,8 +1,10 @@
 <template>
   <section class="home-idea">
     <div class="text">
-      <p class="eyebrow">{{ $t('landing-page.idea.eyebrow') }}</p>
-      <h2 class="title">{{ $t('landing-page.idea.title') }}</h2>
+      <h2 class="title">
+        {{ $t('landing-page.idea.eyebrow') }}<br />
+        {{ $t('landing-page.idea.title') }}
+      </h2>
 
       <p class="lines">
         {{ $t('landing-page.idea.line-mariage') }}<br />
@@ -40,7 +42,7 @@ import { SparklingIcon } from '@remixicons/vue/line'
   display: grid;
   grid-template-columns: 1fr;
   gap: $spacing-xl;
-  padding: $spacing-xxxl $section-padding-x;
+  padding: $spacing-m $section-padding-x $spacing-xxxl;
   align-items: center;
 
   @media (min-width: $breakpoint-desktop) {
@@ -48,19 +50,11 @@ import { SparklingIcon } from '@remixicons/vue/line'
     max-width: $container-max-width;
     margin: 0 auto;
     gap: $spacing-xxxl;
+    padding: $spacing-xxxl $section-padding-x;
   }
 
   .text {
     max-width: 52ch;
-  }
-
-  .eyebrow {
-    margin: 0 0 $spacing-xs;
-    color: $text-secondary;
-    font-size: $font-size-xs;
-    font-weight: $font-weight-semibold;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
   }
 
   .title {
@@ -78,10 +72,10 @@ import { SparklingIcon } from '@remixicons/vue/line'
     line-height: $line-height-relaxed;
   }
 
-  .conclusion {
+  p.conclusion {
     margin: 0;
     color: $text-primary;
-    font-weight: $font-weight-semibold;
+    font-weight: 600;
     font-size: $font-size-lg;
     line-height: $line-height-relaxed;
   }
@@ -116,14 +110,14 @@ import { SparklingIcon } from '@remixicons/vue/line'
 
     &--top {
       top: -2rem;
-      left: -3rem;
+      left: -2rem;
       width: 8rem;
       height: 8rem;
     }
 
     &--bottom {
       bottom: -2.5rem;
-      right: -3rem;
+      right: -1.5rem;
       width: 6.5rem;
       height: 6rem;
     }
@@ -131,7 +125,7 @@ import { SparklingIcon } from '@remixicons/vue/line'
 
   .polaroid {
     position: absolute;
-    width: 48%;
+    width: 46%;
     aspect-ratio: 4 / 5;
     padding: $spacing-xs $spacing-xs $spacing-m;
     background: $surface-white;
@@ -161,7 +155,7 @@ import { SparklingIcon } from '@remixicons/vue/line'
     &--front {
       bottom: 0;
       right: 0;
-      width: 62%;
+      width: 60%;
       aspect-ratio: 5 / 4;
       transform: rotate(4deg);
     }

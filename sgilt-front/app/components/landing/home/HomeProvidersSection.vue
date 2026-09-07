@@ -14,7 +14,8 @@
 
         <p class="conclusion">{{ $t('landing-page.providers.conclusion') }}</p>
 
-        <NuxtLink to="/search" class="cta">
+        <!-- Desktop uniquement : sur mobile le même CTA réapparaît sous les cartes. -->
+        <NuxtLink to="/search" class="cta cta--desktop">
           {{ $t('landing-page.providers.cta') }} <span aria-hidden="true">→</span>
         </NuxtLink>
       </div>
@@ -27,6 +28,10 @@
           <PrestataireCard v-for="provider in providers" :key="provider.id" :provider="provider" />
         </template>
       </div>
+
+      <NuxtLink to="/search" class="cta cta--mobile">
+        {{ $t('landing-page.providers.cta') }} <span aria-hidden="true">→</span>
+      </NuxtLink>
     </div>
   </section>
 </template>
@@ -62,7 +67,11 @@ onMounted(async () => {
 @use '@/assets/styles/base' as *;
 
 .home-providers {
-  padding: $spacing-xxxl 0;
+  padding: $spacing-m 0 $spacing-l;
+
+  @media (min-width: $breakpoint-desktop) {
+    padding: $spacing-xxxl 0;
+  }
 
   .wrap {
     max-width: $container-max-width;
@@ -141,13 +150,47 @@ onMounted(async () => {
       outline: 3px solid $brand-accent;
       outline-offset: 4px;
     }
+
+    // Mobile : le CTA vit sous les cartes, pas dans .intro. Desktop : l'inverse.
+    &--desktop {
+      display: none;
+    }
+
+    // Enfant direct de .wrap (flex column) en mobile : sans ça il s'étire en
+    // pleine largeur au lieu de garder sa taille naturelle de pilule. Marge
+    // négative pour absorber le gap de .wrap au-dessus (espacement voulu minimal).
+    &--mobile {
+      align-self: flex-start;
+      margin-top: calc(-1 * #{$spacing-l});
+    }
+
+    @media (min-width: $breakpoint-desktop) {
+      &--desktop {
+        display: inline-flex;
+      }
+
+      &--mobile {
+        display: none;
+      }
+    }
   }
 
   .cards {
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr;
+    // Même logique que la grille de /search (SgiltSearchResults) : 2 colonnes
+    // par défaut en mobile, plutôt qu'empilées sur une colonne.
+    grid-template-columns: repeat(2, 1fr);
     gap: $spacing-m;
+
+    // 2 prestataires affichés sur mobile, le 3e n'apparaît qu'à partir du
+    // desktop — display:none scopé en max-width plutôt qu'un display:block en
+    // contrepartie, pour ne pas écraser le display:flex propre à PrestataireCard.
+    @media (max-width: #{$breakpoint-desktop - 1px}) {
+      > :nth-child(3) {
+        display: none;
+      }
+    }
 
     // Cartes volontairement compactes — largeur fixe plutôt que 1fr, pour que
     // les 3 tiennent sur une seule ligne à côté du texte plutôt qu'en dessous.
