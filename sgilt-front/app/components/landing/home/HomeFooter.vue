@@ -8,7 +8,7 @@
 
       <nav class="links" aria-label="Pied de page">
         <NuxtLink to="/search">{{ $t('landing-page.footer.link-providers') }}</NuxtLink>
-        <NuxtLink to="/m/comment-ca-marche">{{ $t('landing-page.footer.link-pro') }}</NuxtLink>
+        <NuxtLink to="/m/pour-les-professionnels">{{ $t('landing-page.footer.link-pro') }}</NuxtLink>
         <button type="button" @click="handleLogin">{{ $t('landing-page.footer.link-login') }}</button>
       </nav>
 

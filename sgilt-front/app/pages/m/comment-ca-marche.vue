@@ -56,19 +56,6 @@
         </button>
       </p>
     </div>
-
-    <section class="provider">
-      <div class="wrap">
-        <h2>{{ $t('how-it-works.page.provider-title') }}</h2>
-        <p>{{ $t('how-it-works.page.provider-question') }}</p>
-        <i18n-t keypath="how-it-works.page.provider-instructions" tag="p" scope="global">
-          <template #email>
-            <a href="mailto:contact@sgilt.alsace">contact@sgilt.alsace</a>
-          </template>
-        </i18n-t>
-        <p class="callback">{{ $t('how-it-works.page.provider-callback') }}</p>
-      </div>
-    </section>
   </div>
 </template>
 
@@ -258,46 +245,6 @@ function handleLogin() {
       outline: 2px solid $brand-primary;
       outline-offset: 2px;
     }
-  }
-}
-
-// ── Vous êtes prestataire ? ──────────────────────────────────────────────────────
-
-.provider {
-  border-top: $border-width-s solid $divider-color;
-  padding: $spacing-xxl 0 $spacing-xxxl;
-
-  h2 {
-    margin: 0 0 $spacing-m;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: $font-size-xl;
-    font-weight: $font-weight-medium;
-    color: $text-primary;
-  }
-
-  p {
-    max-width: 58ch;
-    margin: 0 0 $spacing-s;
-    font-size: $font-size-md;
-    line-height: $line-height-relaxed;
-    color: $text-secondary;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  .callback {
-    margin-top: $spacing-m;
-    font-size: $font-size-sm;
-    color: $text-secondary;
-    opacity: 0.8;
-  }
-
-  a {
-    color: $text-primary;
-    text-decoration: underline;
-    text-underline-offset: 0.25em;
   }
 }
 </style>

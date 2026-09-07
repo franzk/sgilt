@@ -878,11 +878,25 @@
       "step-3-description": "Votre espace est créé automatiquement pour suivre vos demandes, gérer vos réservations et organiser un ou plusieurs événements.",
       "cta": "Voir les prestataires",
       "already-account": "Vous avez déjà un compte ?",
-      "login": "Se connecter",
-      "provider-title": "Vous êtes prestataire ?",
-      "provider-question": "Vous souhaitez présenter votre activité sur Sgilt ?",
-      "provider-instructions": "Envoyez-nous quelques mots sur vos prestations, votre zone d'intervention et un lien vers votre site ou vos réseaux à {email}.",
-      "provider-callback": "Nous vous recontacterons après avoir découvert votre activité."
+      "login": "Se connecter"
+    }
+  },
+  "pro-landing": {
+    "page": {
+      "eyebrow": "Pour les professionnels",
+      "title": "Vous êtes prestataire ?",
+      "lede": "Vous souhaitez présenter votre activité sur Sgilt ?",
+      "benefit-1-title": "Visible auprès des bonnes personnes",
+      "benefit-1-description": "Votre fiche est mise en avant auprès de porteurs de projet en Alsace qui cherchent activement un prestataire comme vous.",
+      "benefit-2-title": "Pas d'inscription compliquée",
+      "benefit-2-description": "Rien à remplir à l'avance : un email suffit pour démarrer, on s'occupe du reste avec vous.",
+      "benefit-3-title": "Une fiche qui vous ressemble",
+      "benefit-3-description": "Vos prestations, votre zone d'intervention, votre univers — présentés simplement, sans jargon.",
+      "how-title": "Comment ça se passe ?",
+      "how-instructions": "Envoyez-nous quelques mots sur vos prestations, votre zone d'intervention et un lien vers votre site ou vos réseaux à {email}.",
+      "how-callback": "Nous vous recontacterons après avoir découvert votre activité.",
+      "already-account": "Vous avez déjà un compte ?",
+      "login": "Se connecter"
     }
   },
   "pro": {

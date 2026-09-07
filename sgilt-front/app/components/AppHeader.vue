@@ -9,7 +9,7 @@
 
       <nav v-if="isPublicRoute" class="public-nav" aria-label="Navigation">
         <NuxtLink to="/search">{{ $t('landing-page.footer.link-providers') }}</NuxtLink>
-        <NuxtLink to="/m/comment-ca-marche">{{ $t('landing-page.footer.link-pro') }}</NuxtLink>
+        <NuxtLink to="/m/pour-les-professionnels">{{ $t('landing-page.footer.link-pro') }}</NuxtLink>
       </nav>
     </div>
 
