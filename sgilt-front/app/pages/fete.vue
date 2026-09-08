@@ -14,9 +14,10 @@
           v-for="eventType in eventTypes"
           :key="eventType.key"
           :label="eventType.label"
+          :tagline="eventType.tagline"
           :image="eventType.image"
           :selected="selectedType === eventType.key"
-          @select="selectedType = eventType.key"
+          @select="selectType(eventType.key)"
         />
       </div>
 
@@ -41,6 +42,7 @@ useHead({ title: "Que fête-t-on ? - Sgilt" })
 
 const { t } = useI18n()
 const { state } = useDemande()
+const { isDesktop } = useDevice()
 
 // Ordre d'affichage de la maquette (mariage/anniversaire d'abord).
 const DISPLAY_ORDER = [
@@ -65,6 +67,7 @@ const eventTypes = computed(() =>
   DISPLAY_ORDER.map((key) => ({
     key,
     label: t(`event-picker.types.${key}.label`),
+    tagline: t(`event-picker.types.${key}.tagline`),
     image: IMAGES[key],
   })),
 )
@@ -75,6 +78,13 @@ function confirmSelection() {
   if (!selectedType.value) return
   state.eventType = selectedType.value
   navigateTo('/date')
+}
+
+// Desktop : les tuiles vont directement à l'écran suivant au clic (pas
+// d'étape de confirmation, contrairement au mobile qui affiche un CTA).
+function selectType(key: string) {
+  selectedType.value = key
+  if (isDesktop.value) confirmSelection()
 }
 </script>
 
@@ -133,19 +143,22 @@ function confirmSelection() {
   }
 }
 
-// Grille simple : 2 colonnes de largeur égale, pleine largeur (3 rangées
-// automatiques). La hauteur de chaque carte vient de son aspect-ratio
-// (voir EventTypeCard.vue), pas d'une hauteur de rangée imposée.
+// Mobile : 2 colonnes (3 rangées automatiques), cartes carrées (aspect-ratio,
+// voir EventTypeCard.vue). Desktop : 3 colonnes (2 rangées), tuiles
+// horizontales — la hauteur vient du contenu, pas d'un aspect-ratio.
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: $spacing-xs;
 
   @media (min-width: $breakpoint-desktop) {
+    grid-template-columns: repeat(3, 1fr);
     gap: $spacing-l;
   }
 }
 
+// Desktop : les tuiles naviguent directement au clic (voir selectType dans
+// le script), donc pas d'étape de confirmation à afficher.
 .bottom {
   display: flex;
   flex-direction: column;
@@ -154,7 +167,7 @@ function confirmSelection() {
   padding-bottom: $spacing-s;
 
   @media (min-width: $breakpoint-desktop) {
-    padding-bottom: $spacing-m;
+    display: none;
   }
 }
 

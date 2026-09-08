@@ -6,21 +6,27 @@
     :aria-pressed="selected"
     @click="$emit('select')"
   >
-    <div class="illustration" :style="{ backgroundImage: `url(${image})` }">
-      <div v-if="selected" class="check-badge" aria-hidden="true">
-        <CheckIcon class="icon" />
-      </div>
+    <div v-if="selected" class="check-badge" aria-hidden="true">
+      <CheckIcon class="icon" />
     </div>
 
-    <p class="name">{{ label }}</p>
+    <div class="illustration" :style="{ backgroundImage: `url(${image})` }" />
+
+    <div class="text">
+      <p class="name">{{ label }}</p>
+      <p class="tagline">{{ tagline }}</p>
+    </div>
+
+    <ArrowRightSIcon class="chevron" aria-hidden="true" />
   </button>
 </template>
 
 <script setup lang="ts">
-import { CheckIcon } from '@remixicons/vue/line'
+import { CheckIcon, ArrowRightSIcon } from '@remixicons/vue/line'
 
 defineProps<{
   label: string
+  tagline: string
   image: string
   selected?: boolean
 }>()
@@ -98,11 +104,15 @@ defineEmits<{ select: [] }>()
     }
   }
 
+  .text {
+    flex-shrink: 0;
+    margin-top: $spacing-xs;
+  }
+
   // Hauteur fixe et prévisible (une seule ligne, taille fixe — pas de clamp
   // lié au viewport) : l'espace restant pour .illustration doit être stable.
   .name {
-    flex-shrink: 0;
-    margin: $spacing-xs 0 0;
+    margin: 0;
     font-family: 'Cormorant Garamond', serif;
     font-weight: $font-weight-medium;
     font-size: $font-size-md;
@@ -111,6 +121,66 @@ defineEmits<{ select: [] }>()
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  // Masquée sur mobile (carte carrée, un seul libellé) — visible seulement
+  // dans la tuile horizontale desktop.
+  .tagline {
+    display: none;
+    margin: 0;
+  }
+
+  // Chevron desktop uniquement (le clic navigue directement, voir fete.vue).
+  .chevron {
+    display: none;
+  }
+
+  // Desktop : tuile horizontale (icône à gauche, libellé + tagline à droite)
+  // — plus d'aspect-ratio ni de largeur plafonnée, la hauteur vient du contenu.
+  @media (min-width: $breakpoint-desktop) {
+    width: 100%;
+    max-width: none;
+    aspect-ratio: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: $spacing-m;
+    padding: $spacing-m $spacing-l;
+    text-align: left;
+
+    .illustration {
+      flex: 0 0 auto;
+      width: 3.5rem;
+      height: 3.5rem;
+      padding: 0;
+    }
+
+    .text {
+      flex: 1;
+      min-width: 0;
+      margin-top: 0;
+    }
+
+    .name {
+      font-size: $font-size-lg;
+    }
+
+    .tagline {
+      display: block;
+      margin-top: $spacing-xxs;
+      color: $text-secondary;
+      font-size: $font-size-sm;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .chevron {
+      display: block;
+      flex-shrink: 0;
+      width: 1.25rem;
+      height: 1.25rem;
+      color: $text-secondary;
+    }
   }
 }
 </style>
