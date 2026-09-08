@@ -1,87 +1,116 @@
 <template>
-  <button type="button" class="event-type-card" :class="type">
-    <div class="circle">
-      <component :is="icon" class="icon" />
+  <button
+    type="button"
+    class="event-type-card"
+    :class="{ selected }"
+    :aria-pressed="selected"
+    @click="$emit('select')"
+  >
+    <div class="illustration" :style="{ backgroundImage: `url(${image})` }">
+      <div v-if="selected" class="check-badge" aria-hidden="true">
+        <CheckIcon class="icon" />
+      </div>
     </div>
-    <p class="label">{{ label }}</p>
+
+    <p class="name">{{ label }}</p>
   </button>
 </template>
 
 <script setup lang="ts">
-import type { Component } from 'vue'
+import { CheckIcon } from '@remixicons/vue/line'
 
 defineProps<{
-  type: string
   label: string
-  icon: Component
+  image: string
+  selected?: boolean
 }>()
+
+defineEmits<{ select: [] }>()
 </script>
 
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
 .event-type-card {
+  position: relative;
+  // Largeur = la colonne de la grille, plafonnée pour ne pas grossir démesurément
+  // sur des colonnes larges (peu de colonnes / grand écran) — centrée si la
+  // colonne est plus large que ça. Hauteur dérivée via aspect-ratio.
+  width: 100%;
+  max-width: 9rem;
+  margin: 0 auto;
+  aspect-ratio: 1 / 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: $spacing-xs;
-  padding: $spacing-m $spacing-xs;
-  border: none;
+  padding: $spacing-xs;
+  border: 2px solid transparent;
+  border-radius: $radius-xl;
+  background: $surface-white;
+  box-shadow: 0 2px 8px rgba(47, 42, 37, 0.06);
   font: inherit;
+  text-align: center;
   cursor: pointer;
-  border-radius: $radius-lg;
-  box-shadow: 0 1px 4px rgba(47, 42, 37, 0.05);
+  overflow: hidden;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
 
-  background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  &.selected {
+    border-color: $brand-accent;
+    box-shadow: 0 4px 14px rgba($brand-accent, 0.3);
+  }
 
-  .circle {
+  &:focus-visible {
+    outline: 3px solid $brand-accent;
+    outline-offset: 2px;
+  }
+
+  // L'illustration remplit tout l'espace laissé libre par le texte (hauteur
+  // fixe, une ligne) — pas de recadrage (contain), pas de pourcentage arbitraire.
+  .illustration {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    padding: $spacing-m;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-origin: content-box;
+  }
+
+  .check-badge {
+    position: absolute;
+    top: $spacing-xs;
+    right: $spacing-xs;
+    z-index: 2;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    color: $text-inverted;
+    background: $brand-accent;
+    color: $brand-primary;
 
     .icon {
-      width: 1.125rem;
-      height: 1.125rem;
+      width: 1rem;
+      height: 1rem;
     }
   }
 
-  .label {
-    margin: 0;
-    font-size: $font-size-sm;
+  // Hauteur fixe et prévisible (une seule ligne, taille fixe — pas de clamp
+  // lié au viewport) : l'espace restant pour .illustration doit être stable.
+  .name {
+    flex-shrink: 0;
+    margin: $spacing-xs 0 0;
+    font-family: 'Cormorant Garamond', serif;
     font-weight: $font-weight-medium;
+    font-size: $font-size-md;
+    line-height: $line-height-tight;
     color: $text-primary;
-    text-align: center;
-  }
-
-  &.mariage .circle {
-    background: $event-mariage;
-  }
-
-  &.anniversaire .circle {
-    background: $event-anniversaire;
-  }
-
-  &.soiree_privee .circle {
-    background: $event-soiree-privee;
-  }
-
-  &.fete_entreprise .circle {
-    background: $event-fete-entreprise;
-  }
-
-  &.evenement_public .circle {
-    background: $event-evenement-public;
-  }
-
-  &.autre .circle {
-    background: $event-autre;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 </style>
