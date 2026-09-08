@@ -4,8 +4,11 @@
       <div class="header">
         <p class="eyebrow">{{ $t('event-picker.eyebrow') }}</p>
         <h1 class="title">
-          {{ $t('event-picker.title') }}
-          <SparklingIcon class="sparkle" aria-hidden="true" />
+          <span class="title-thin">{{ titleParts.prefix }}</span>
+          <span class="title-bold"
+            >{{ $t('event-picker.title-highlight')
+            }}<span class="title-mark">{{ titleParts.suffix }}</span></span
+          >
         </h1>
       </div>
 
@@ -35,10 +38,10 @@
 </template>
 
 <script setup lang="ts">
-import { SparklingIcon, LockIcon } from '@remixicons/vue/line'
+import { LockIcon } from '@remixicons/vue/line'
 import EventTypeCard from '~/components/cards/EventTypeCard.vue'
 
-useHead({ title: "Que fête-t-on ? - Sgilt" })
+useHead({ title: "Qu'est-ce qu'on fête ? - Sgilt" })
 
 const { t } = useI18n()
 const { state } = useDemande()
@@ -62,6 +65,19 @@ const IMAGES: Record<string, string> = {
   evenement_public: '/images/sgilt-evenement-public.png',
   autre: '/images/sgilt-autre.png',
 }
+
+// Sépare le titre autour du mot accentué pour appliquer le style accent à ce
+// seul segment (même logique que HomeHeroSection.vue).
+const titleParts = computed(() => {
+  const title = t('event-picker.title')
+  const highlight = t('event-picker.title-highlight')
+  const idx = title.indexOf(highlight)
+  if (idx === -1) return { prefix: title, suffix: '' }
+  return {
+    prefix: title.slice(0, idx),
+    suffix: title.slice(idx + highlight.length),
+  }
+})
 
 const eventTypes = computed(() =>
   DISPLAY_ORDER.map((key) => ({
@@ -101,8 +117,13 @@ function selectType(key: string) {
 .header {
   padding: $spacing-s 0;
 
+  // .title est un bloc flex (voir plus bas) : text-align ne le centrerait pas,
+  // il faut du flex centering (comme .hero dans LandingHeroScreen.vue).
   @media (min-width: $breakpoint-desktop) {
     padding: $spacing-m 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
   }
 }
@@ -116,30 +137,50 @@ function selectType(key: string) {
   text-transform: uppercase;
 }
 
+// Copié tel quel de LandingHeroScreen.vue (même traitement que "QUAND" sur
+// /date) : empilé sur 2 lignes en mobile, sur une ligne en desktop ; thin/mark
+// en serif, bold en sans-serif (hérite de $font-family-base, pas de
+// Cormorant Garamond dessus — c'est ce qui fait ressortir le mot).
 .title {
   margin: 0 0 $spacing-s;
-  display: inline-flex;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: $spacing-xs;
-  font-family: 'Cormorant Garamond', serif;
-  font-weight: $font-weight-bold;
-  font-size: clamp(1.8rem, 6vw, 2.5rem);
   color: $brand-primary;
 
-  .sparkle {
-    width: 1.25rem;
-    height: 1.25rem;
-    color: $brand-accent;
-    flex-shrink: 0;
+  @media (min-width: $breakpoint-desktop) {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.5rem;
   }
 
-  @media (min-width: $breakpoint-desktop) {
-    font-size: 3.2rem;
+  .title-thin,
+  .title-mark {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 2.5rem;
+    line-height: 2.75rem;
+  }
 
-    .sparkle {
-      width: 1.75rem;
-      height: 1.75rem;
+  .title-bold {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 900;
+    font-size: 3.2rem;
+    line-height: 3rem;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.875rem;
+    color: $brand-accent;
+
+    @media (min-width: $breakpoint-desktop) {
+      margin-bottom: 0;
     }
+  }
+
+  .title-mark {
+    margin-left: 0.08em;
+    letter-spacing: normal;
+    color: $brand-primary;
   }
 }
 
@@ -154,6 +195,7 @@ function selectType(key: string) {
   @media (min-width: $breakpoint-desktop) {
     grid-template-columns: repeat(3, 1fr);
     gap: $spacing-l;
+    margin-top: $spacing-xl;
   }
 }
 

@@ -52,7 +52,8 @@
   },
   "event-picker": {
     "eyebrow": "Votre événement",
-    "title": "Que fête-t-on\u00a0?",
+    "title": "Qu'est-ce qu'on FÊTE\u00a0?",
+    "title-highlight": "FÊTE",
     "subtitle": "Choisissez le type d'événement qui vous ressemble.",
     "hint": "Vous pourrez préciser vos besoins ensuite.",
     "cta": "Continuer",
