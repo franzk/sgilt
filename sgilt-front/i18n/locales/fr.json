@@ -72,6 +72,7 @@
   },
   "landing": {
     "date-banner": {
+      "eyebrow": "Votre événement",
       "title": "C'est pour QUAND ?",
       "title-highlight": "QUAND",
       "tagline-desktop": "Choisissez la date de votre événement pour continuer l'organisation.",

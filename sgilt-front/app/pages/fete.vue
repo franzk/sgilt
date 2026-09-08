@@ -2,14 +2,11 @@
   <div class="event-picker">
     <div class="wrap">
       <div class="header">
-        <p class="eyebrow">{{ $t('event-picker.eyebrow') }}</p>
-        <h1 class="title">
-          <span class="title-thin">{{ titleParts.prefix }}</span>
-          <span class="title-bold"
-            >{{ $t('event-picker.title-highlight')
-            }}<span class="title-mark">{{ titleParts.suffix }}</span></span
-          >
-        </h1>
+        <PageHeroTitle
+          :eyebrow="$t('event-picker.eyebrow')"
+          :title="$t('event-picker.title')"
+          :highlight="$t('event-picker.title-highlight')"
+        />
       </div>
 
       <div class="grid">
@@ -40,6 +37,7 @@
 <script setup lang="ts">
 import { LockIcon } from '@remixicons/vue/line'
 import EventTypeCard from '~/components/cards/EventTypeCard.vue'
+import PageHeroTitle from '~/components/landing/PageHeroTitle.vue'
 
 useHead({ title: "Qu'est-ce qu'on fête ? - Sgilt" })
 
@@ -65,19 +63,6 @@ const IMAGES: Record<string, string> = {
   evenement_public: '/images/sgilt-evenement-public.png',
   autre: '/images/sgilt-autre.png',
 }
-
-// Sépare le titre autour du mot accentué pour appliquer le style accent à ce
-// seul segment (même logique que HomeHeroSection.vue).
-const titleParts = computed(() => {
-  const title = t('event-picker.title')
-  const highlight = t('event-picker.title-highlight')
-  const idx = title.indexOf(highlight)
-  if (idx === -1) return { prefix: title, suffix: '' }
-  return {
-    prefix: title.slice(0, idx),
-    suffix: title.slice(idx + highlight.length),
-  }
-})
 
 const eventTypes = computed(() =>
   DISPLAY_ORDER.map((key) => ({
@@ -125,62 +110,6 @@ function selectType(key: string) {
     flex-direction: column;
     align-items: center;
     text-align: center;
-  }
-}
-
-.eyebrow {
-  margin: 0 0 $spacing-xs;
-  color: $text-secondary;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-// Copié tel quel de LandingHeroScreen.vue (même traitement que "QUAND" sur
-// /date) : empilé sur 2 lignes en mobile, sur une ligne en desktop ; thin/mark
-// en serif, bold en sans-serif (hérite de $font-family-base, pas de
-// Cormorant Garamond dessus — c'est ce qui fait ressortir le mot).
-.title {
-  margin: 0 0 $spacing-s;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: $brand-primary;
-
-  @media (min-width: $breakpoint-desktop) {
-    flex-direction: row;
-    align-items: baseline;
-    gap: 0.5rem;
-  }
-
-  .title-thin,
-  .title-mark {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 600;
-    font-size: 2.5rem;
-    line-height: 2.75rem;
-  }
-
-  .title-bold {
-    display: inline-flex;
-    align-items: center;
-    font-weight: 900;
-    font-size: 3.2rem;
-    line-height: 3rem;
-    letter-spacing: 0.02em;
-    margin-bottom: 0.875rem;
-    color: $brand-accent;
-
-    @media (min-width: $breakpoint-desktop) {
-      margin-bottom: 0;
-    }
-  }
-
-  .title-mark {
-    margin-left: 0.08em;
-    letter-spacing: normal;
-    color: $brand-primary;
   }
 }
 

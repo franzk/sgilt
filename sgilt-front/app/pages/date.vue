@@ -1,5 +1,6 @@
 <template>
   <LandingHeroScreen
+    :eyebrow="$t('landing.date-banner.eyebrow')"
     :title="$t('landing.date-banner.title')"
     :highlighted-subtext="$t('landing.date-banner.title-highlight')"
     :subtitle="$t('landing.date-banner.tagline-desktop')"
