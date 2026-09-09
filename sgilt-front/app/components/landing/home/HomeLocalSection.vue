@@ -157,6 +157,8 @@ import { MapPin2Icon, LeafIcon, HeartsIcon } from '@remixicons/vue/line'
     }
 
     li {
+      flex: 1;
+      min-width: 0;
       display: flex;
       flex-direction: column;
       align-items: center;

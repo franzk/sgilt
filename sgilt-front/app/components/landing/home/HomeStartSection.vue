@@ -163,6 +163,7 @@ import HomeCtaButton from './HomeCtaButton.vue'
   .marker {
     position: relative;
     z-index: 1;
+    flex-shrink: 0;
     width: 4.5rem;
     height: 4.5rem;
     border-radius: 50%;
