@@ -4,6 +4,7 @@ import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.domain.PrestataireStatus;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -84,31 +85,56 @@ public interface PrestataireRepository extends JpaRepository<Prestataire, UUID> 
     Optional<Prestataire> findByIdAndStatusAndDeletedAtIsNull(UUID id, PrestataireStatus status);
 
     /**
-     * Retourne tous les prestataires actifs dans un statut donné.
+     * Retourne tous les prestataires actifs dans un statut donné, triés par ordre d'affichage
+     * (voir {@link Prestataire#getDisplayOrder()}).
      *
      * @param status le statut requis
      * @return prestataires correspondants
      */
-    List<Prestataire> findByStatusAndDeletedAtIsNull(PrestataireStatus status);
+    List<Prestataire> findByStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(PrestataireStatus status);
 
     /**
-     * Retourne les prestataires actifs d'une catégorie, restreints à un statut donné.
+     * Retourne les prestataires actifs d'une catégorie, restreints à un statut donné, triés par
+     * ordre d'affichage (voir {@link Prestataire#getDisplayOrder()}).
      *
      * @param categoryKey clé de catégorie ('musique', 'restauration'…)
      * @param status      le statut requis
      * @return prestataires correspondants
      */
-    List<Prestataire> findByCategoryKeyAndStatusAndDeletedAtIsNull(String categoryKey, PrestataireStatus status);
+    List<Prestataire> findByCategoryKeyAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(String categoryKey, PrestataireStatus status);
 
     /**
      * Retourne les prestataires actifs ayant au moins une des sous-catégories données, restreints à
-     * un statut donné.
+     * un statut donné, triés par ordre d'affichage (voir {@link Prestataire#getDisplayOrder()}).
      *
      * @param subcatKeys clés de sous-catégories ('dj', 'pop-rock'…)
      * @param status     le statut requis
      * @return prestataires correspondants
      */
-    List<Prestataire> findBySubcatKeysInAndStatusAndDeletedAtIsNull(Collection<String> subcatKeys, PrestataireStatus status);
+    List<Prestataire> findBySubcatKeysInAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(Collection<String> subcatKeys, PrestataireStatus status);
+
+    /**
+     * Réattribue en une seule opération de masse un rang d'affichage aléatoire unique à tous les
+     * prestataires actifs, et remet à {@code null} celui des prestataires supprimés (soft delete)
+     * entre-temps — pour qu'une fiche supprimée ne garde jamais indéfiniment un rang obsolète.
+     * Le partitionnement sur {@code deleted_at IS NULL} sépare les deux populations : la fenêtre
+     * {@code ROW_NUMBER} ne numérote que parmi les actifs, et sa valeur est ignorée (mise à
+     * {@code null}) pour les supprimés.
+     * SQL natif, exceptionnellement : mise à jour de masse sur toute la table, non exprimable par
+     * une opération sur entité individuelle ni par une derived query.
+     */
+    @Modifying
+    @Query(value = """
+            UPDATE prestataires p
+            SET display_order = CASE WHEN sub.deleted_at IS NULL THEN sub.rn ELSE NULL END
+            FROM (
+                SELECT id, deleted_at,
+                       ROW_NUMBER() OVER (PARTITION BY (deleted_at IS NULL) ORDER BY random()) AS rn
+                FROM prestataires
+            ) sub
+            WHERE p.id = sub.id
+            """, nativeQuery = true)
+    void shuffleDisplayOrder();
 
     /**
      * Recherche le prestataire actif dont l'utilisateur lié a l'email donné.
