@@ -1,18 +1,12 @@
 <template>
   <section class="home-local">
-    <div class="photo" role="img" :aria-label="$t('landing-page.local.photo-alt')">
-      <!-- Mobile uniquement : le texte s'affiche en surimpression sur la photo
-           plutôt qu'en dessous (voir .text-content pour la version desktop). -->
-      <div class="photo-overlay">
-        <h2 class="title">{{ $t('landing-page.local.title') }}</h2>
-        <p>{{ $t('landing-page.local.paragraph-1') }}</p>
-        <p>{{ $t('landing-page.local.paragraph-2') }}</p>
-        <p class="closing-line">{{ $t('landing-page.local.closing-line') }}</p>
-      </div>
-    </div>
+    <div class="photo" role="img" :aria-label="$t('landing-page.local.photo-alt')"></div>
 
     <div class="text">
-      <div class="text-content">
+      <!-- Bloc unique, repositionné en CSS selon le breakpoint plutôt que
+           dupliqué : overlay absolu sur .photo en mobile, panneau texte
+           normal à côté de la photo en desktop (voir .content). -->
+      <div class="content">
         <h2 class="title">{{ $t('landing-page.local.title') }}</h2>
         <p>{{ $t('landing-page.local.paragraph-1') }}</p>
         <p>{{ $t('landing-page.local.paragraph-2') }}</p>
@@ -54,6 +48,7 @@ import { MapPin2Icon, LeafIcon, HeartsIcon } from '@remixicons/vue/line'
 @use '@/assets/styles/base' as *;
 
 .home-local {
+  position: relative; // bloc de contention pour l'overlay absolu de .content en mobile
   display: grid;
   grid-template-columns: 1fr;
 
@@ -76,11 +71,28 @@ import { MapPin2Icon, LeafIcon, HeartsIcon } from '@remixicons/vue/line'
     }
   }
 
-  // Mobile uniquement : texte en surimpression sur la photo, scrim sombre pour
-  // la lisibilité — voir .text-content pour l'équivalent desktop (à côté, pas dessus).
-  .photo-overlay {
+  .text {
+    padding: $spacing-m $section-padding-x $spacing-xxl;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    @media (min-width: $breakpoint-desktop) {
+      padding: $spacing-xxxl;
+    }
+  }
+
+  // Mobile : overlay absolu recouvrant .photo (scrim sombre + texte inversé
+  // pour la lisibilité) — la hauteur doit matcher le min-height de .photo
+  // pour le recouvrir entièrement. Desktop : redevient un bloc normal dans
+  // le panneau texte, à côté de la photo plutôt que dessus.
+  .content {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    min-height: 24rem;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -99,35 +111,23 @@ import { MapPin2Icon, LeafIcon, HeartsIcon } from '@remixicons/vue/line'
     }
 
     @media (min-width: $breakpoint-desktop) {
-      display: none;
-    }
-  }
-
-  .text {
-    padding: $spacing-m $section-padding-x $spacing-xxl;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-
-    @media (min-width: $breakpoint-desktop) {
-      padding: $spacing-xxxl;
-    }
-  }
-
-  // Desktop uniquement : texte dans le panneau à côté de la photo, pas dessus.
-  .text-content {
-    display: none;
-
-    @media (min-width: $breakpoint-desktop) {
+      position: static;
+      min-height: 0;
       display: block;
-    }
+      padding: 0;
+      background: none;
 
-    p {
-      margin: 0 0 $spacing-s;
-      max-width: 48ch;
-      color: $text-secondary;
-      font-size: $font-size-md;
-      line-height: $line-height-relaxed;
+      .title {
+        color: $text-primary;
+      }
+
+      p {
+        margin: 0 0 $spacing-s;
+        max-width: 48ch;
+        color: $text-secondary;
+        font-size: $font-size-md;
+        line-height: $line-height-relaxed;
+      }
     }
   }
 
