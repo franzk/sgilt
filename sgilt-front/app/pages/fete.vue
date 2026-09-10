@@ -135,6 +135,7 @@ function selectType(key: string) {
   flex-direction: column;
   align-items: center;
   gap: $spacing-s;
+  margin-top: $spacing-m;
   padding-bottom: $spacing-s;
 
   @media (min-width: $breakpoint-desktop) {
@@ -145,7 +146,7 @@ function selectType(key: string) {
 .cta {
   width: 100%;
   max-width: 24rem;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.4em;
@@ -154,21 +155,22 @@ function selectType(key: string) {
   border-radius: 9999px;
   background: $brand-accent;
   color: $brand-primary;
-  font-size: $font-size-lg;
+  font-size: $font-size-md;
   font-weight: $font-weight-bold;
   cursor: pointer;
+  box-shadow: 0 4px 10px rgba($brand-primary, 0.18);
   transition:
     transform 160ms ease,
     box-shadow 160ms ease;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba($brand-primary, 0.2);
+    box-shadow: 0 6px 16px rgba($brand-primary, 0.22);
   }
 
   &:focus-visible {
     outline: 3px solid $brand-primary;
-    outline-offset: 3px;
+    outline-offset: 4px;
   }
 
   @media (min-width: $breakpoint-desktop) {
