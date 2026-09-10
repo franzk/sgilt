@@ -3,12 +3,7 @@
     <section class="search-form">
       <!-- title -->
       <div class="hero">
-        <p class="title">
-          <span class="title-thin">{{ titleParts.prefix }}</span>
-          <span class="title-bold"
-            >{{ highlightedSubtext }}<span class="title-mark">{{ titleParts.suffix }}</span></span
-          >
-        </p>
+        <PageHeroTitle :eyebrow="eyebrow" :title="title" :highlight="highlightedSubtext" />
         <p v-if="subtitle" class="tagline">{{ subtitle }}</p>
       </div>
 
@@ -16,29 +11,19 @@
         <slot />
       </div>
     </section>
-    <section class="photo-layer" aria-hidden="true"></section>
     <div class="app-background"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+import PageHeroTitle from './PageHeroTitle.vue'
+
+defineProps<{
   title: string
   highlightedSubtext: string
   subtitle?: string
+  eyebrow?: string
 }>()
-
-// Sépare `title` autour de `highlightedSubtext` pour appliquer le style accent
-// à ce seul segment — si la sous-chaîne n'est pas trouvée, tout part en style
-// "thin" plutôt que de planter.
-const titleParts = computed(() => {
-  const idx = props.title.indexOf(props.highlightedSubtext)
-  if (idx === -1) return { prefix: props.title, suffix: '' }
-  return {
-    prefix: props.title.slice(0, idx),
-    suffix: props.title.slice(idx + props.highlightedSubtext.length),
-  }
-})
 </script>
 
 <style scoped lang="scss">
@@ -46,26 +31,11 @@ const titleParts = computed(() => {
 
 // ─── Tokens locaux ────────────────────────────────────────────────────────────
 $background: white;
-$padding-top: 0.75rem;
-$hero-color: #000000;
 
-$search-form-padding: $spacing-l $spacing-m 0;
 $search-form-gap: clamp(0.5rem, 1.5vh, 1.5rem);
-
-$title-thin-font-weight: 600;
-$title-thin-font-size: 2.5rem;
-$title-thin-line-height: 2.75rem;
-
-$title-bold-font-weight: 900;
-$title-bold-font-size: 3.2rem;
-$title-bold-line-height: 3rem;
-$title-bold-letter-spacing: 0.02em;
-$title-bold-margin-bottom: 0.875rem;
 
 $tagline-font-size: 1.05rem;
 $tagline-line-height: 1.5;
-
-$photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
 
 // ─── Composant ────────────────────────────────────────────────────────────────
 .home {
@@ -76,7 +46,6 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
   min-height: calc(100dvh - $app-header-height);
   overflow: clip;
   background: $background;
-  padding-top: $padding-top;
 
   display: flex;
   flex-direction: column;
@@ -88,29 +57,6 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     }
   }
 
-  // ── Photo de fond ──────────────────────────────────────────────────────────
-  .photo-layer {
-    position: absolute;
-    inset: 70% 0 0 0;
-    z-index: 1;
-    filter: $photo-filter;
-    background-image: url('/images/hero-party-desktop.png');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: 50% 30%;
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 100%);
-    mask-image: linear-gradient(to bottom, transparent 0%, #000 28%, #000 100%);
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-    -webkit-mask-size: 100% 100%;
-    mask-size: 100% 100%;
-    pointer-events: none;
-
-    @media (min-width: $breakpoint-desktop) {
-      inset: 40% 0 0 0;
-    }
-  }
-
   // ── Zone de recherche ──────────────────────────────────────────────────────
   .search-form {
     z-index: 2;
@@ -118,7 +64,10 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: $search-form-padding;
+    // Même padding que .wrap + .header dans fete.vue (côtés $section-padding-x,
+    // haut $spacing-s) pour garder le même emplacement à l'écran entre les deux
+    // pages du tunnel.
+    padding: $spacing-s $section-padding-x 0;
     justify-content: center;
     gap: $search-form-gap;
     min-height: 0;
@@ -137,7 +86,7 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
       width: 100%;
       max-width: $container-max-width;
       margin: 0 auto;
-      padding: $spacing-xl $spacing-xl $spacing-l;
+      padding: $spacing-m $section-padding-x $spacing-l;
       gap: $spacing-l;
       // conditionne l'affichage à la taille de la page
       flex: 1;
@@ -166,51 +115,8 @@ $photo-filter: brightness(1.03) contrast(1.03) saturate(1.06);
     }
   }
 
-  .title {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: $hero-color;
-
-    // Desktop : titre sur une seule ligne
-    @media (min-width: $breakpoint-desktop) {
-      flex-direction: row;
-      align-items: baseline;
-      gap: 0.5rem;
-    }
-  }
-
-  .title-thin {
-    font-weight: $title-thin-font-weight;
-    font-size: $title-thin-font-size;
-    line-height: $title-thin-line-height;
-    font-family: 'Cormorant Garamond', serif;
-  }
-
-  .title-bold {
-    display: inline-flex;
-    align-items: center;
-    font-weight: $title-bold-font-weight;
-    font-size: $title-bold-font-size;
-    line-height: $title-bold-line-height;
-    letter-spacing: $title-bold-letter-spacing;
-    margin-bottom: $title-bold-margin-bottom;
-    color: $color-accent;
-
-    @media (min-width: $breakpoint-desktop) {
-      margin-bottom: 0;
-    }
-  }
-
-  // Le "?" reprend le style du début de phrase, seul le mot accentué garde la grosse typo
-  .title-mark {
-    font-weight: $title-thin-font-weight;
-    font-size: $title-thin-font-size;
-    line-height: $title-thin-line-height;
-    font-family: 'Cormorant Garamond', serif;
-    letter-spacing: normal;
-    color: $hero-color;
-  }
+  // Eyebrow + titre : voir PageHeroTitle.vue (composant partagé avec
+  // fete.vue, pour garantir le même gabarit entre les deux écrans du tunnel).
 
   .tagline {
     display: none;

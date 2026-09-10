@@ -243,34 +243,49 @@ class PrestataireServiceTest {
 
         @Test
         void givenNoFilters_whenSearch_thenQueriesOnlyPublishedStatus() {
-            when(prestataireRepository.findByStatusAndDeletedAtIsNull(PrestataireStatus.PUBLISHED)).thenReturn(List.of());
+            when(prestataireRepository.findByStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(PrestataireStatus.PUBLISHED)).thenReturn(List.of());
 
             prestataireService.search(null, null);
 
-            verify(prestataireRepository, atLeastOnce()).findByStatusAndDeletedAtIsNull(PrestataireStatus.PUBLISHED);
+            verify(prestataireRepository, atLeastOnce()).findByStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(PrestataireStatus.PUBLISHED);
         }
 
         @Test
         void givenCategoryFilter_whenSearch_thenQueriesCategoryWithPublishedStatus() {
-            when(prestataireRepository.findByStatusAndDeletedAtIsNull(PrestataireStatus.PUBLISHED)).thenReturn(List.of());
-            when(prestataireRepository.findByCategoryKeyAndStatusAndDeletedAtIsNull("musique", PrestataireStatus.PUBLISHED))
+            when(prestataireRepository.findByStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(PrestataireStatus.PUBLISHED)).thenReturn(List.of());
+            when(prestataireRepository.findByCategoryKeyAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc("musique", PrestataireStatus.PUBLISHED))
                     .thenReturn(List.of());
 
             prestataireService.search("musique", null);
 
-            verify(prestataireRepository).findByCategoryKeyAndStatusAndDeletedAtIsNull("musique", PrestataireStatus.PUBLISHED);
+            verify(prestataireRepository).findByCategoryKeyAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc("musique", PrestataireStatus.PUBLISHED);
         }
 
         @Test
         void givenSubcatFilter_whenSearch_thenQueriesSubcatsWithPublishedStatus() {
             List<String> subcats = List.of("dj");
-            when(prestataireRepository.findByStatusAndDeletedAtIsNull(PrestataireStatus.PUBLISHED)).thenReturn(List.of());
-            when(prestataireRepository.findBySubcatKeysInAndStatusAndDeletedAtIsNull(subcats, PrestataireStatus.PUBLISHED))
+            when(prestataireRepository.findByStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(PrestataireStatus.PUBLISHED)).thenReturn(List.of());
+            when(prestataireRepository.findBySubcatKeysInAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(subcats, PrestataireStatus.PUBLISHED))
                     .thenReturn(List.of());
 
             prestataireService.search(null, subcats);
 
-            verify(prestataireRepository).findBySubcatKeysInAndStatusAndDeletedAtIsNull(subcats, PrestataireStatus.PUBLISHED);
+            verify(prestataireRepository).findBySubcatKeysInAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(subcats, PrestataireStatus.PUBLISHED);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // shuffleDisplayOrder
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ShuffleDisplayOrder {
+
+        @Test
+        void givenScheduledRun_whenShuffleDisplayOrder_thenDelegatesToBulkRepositoryUpdate() {
+            prestataireService.shuffleDisplayOrder();
+
+            verify(prestataireRepository).shuffleDisplayOrder();
         }
     }
 
@@ -876,7 +891,7 @@ class PrestataireServiceTest {
             Prestataire photo1 = Prestataire.builder().id(UUID.randomUUID()).categoryKey("photo").subcatKeys(List.of()).build();
             Prestataire photo2 = Prestataire.builder().id(UUID.randomUUID()).categoryKey("photo").subcatKeys(List.of()).build();
             Prestataire musique = Prestataire.builder().id(UUID.randomUUID()).categoryKey("musique").subcatKeys(List.of()).build();
-            when(prestataireRepository.findByStatusAndDeletedAtIsNull(PrestataireStatus.PUBLISHED))
+            when(prestataireRepository.findByStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(PrestataireStatus.PUBLISHED))
                     .thenReturn(List.of(photo1, photo2, musique));
 
             var result = prestataireService.search(null, null);
@@ -890,8 +905,8 @@ class PrestataireServiceTest {
             List<String> subcats = List.of("dj");
             Prestataire dj = Prestataire.builder().id(UUID.randomUUID())
                     .categoryKey("musique").subcatKeys(List.of("dj", "orchestre")).build();
-            when(prestataireRepository.findByStatusAndDeletedAtIsNull(PrestataireStatus.PUBLISHED)).thenReturn(List.of(dj));
-            when(prestataireRepository.findBySubcatKeysInAndStatusAndDeletedAtIsNull(subcats, PrestataireStatus.PUBLISHED))
+            when(prestataireRepository.findByStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(PrestataireStatus.PUBLISHED)).thenReturn(List.of(dj));
+            when(prestataireRepository.findBySubcatKeysInAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(subcats, PrestataireStatus.PUBLISHED))
                     .thenReturn(List.of(dj));
 
             var result = prestataireService.search(null, subcats);

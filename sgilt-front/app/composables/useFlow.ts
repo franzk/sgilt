@@ -71,7 +71,7 @@ export function useFlow() {
     'new-event': {
       start: () => {
         // Redirige vers la recherche pour choisir un prestataire
-        navigateTo('/')
+        navigateTo('/fete')
       },
       abort: () => {
         useSearchUi().dateModel.value = undefined

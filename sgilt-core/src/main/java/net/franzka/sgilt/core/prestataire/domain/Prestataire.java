@@ -104,6 +104,15 @@ public class Prestataire {
 
     private LocalDateTime deletedAt;
 
+    /**
+     * Rang d'affichage aléatoire, réattribué en masse toutes les 30 minutes (voir
+     * {@link net.franzka.sgilt.core.prestataire.service.PrestataireService#shuffleDisplayOrder()}).
+     * Dernière clé de tri de toute recherche/liste de prestataires — {@code null} le temps qu'un
+     * prestataire nouvellement publié soit inclus dans la prochaine réattribution.
+     */
+    @Column(name = "display_order")
+    private Integer displayOrder;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();

@@ -91,6 +91,18 @@ export default defineNuxtConfig({
       },
     },
 
+    // Tunnel de réservation (fête -> date -> recherche) = utilitaire, pas indexé
+    '/fete': {
+      headers: {
+        'X-Robots-Tag': 'noindex, nofollow',
+      },
+    },
+    '/date': {
+      headers: {
+        'X-Robots-Tag': 'noindex, nofollow',
+      },
+    },
+
     // /m seul = route parente technique, pas de contenu propre
     '/m': {
       redirect: { to: '/', statusCode: 301 },
@@ -159,10 +171,11 @@ export default defineNuxtConfig({
   googleFonts: {
     families: {
       'Cormorant Garamond': {
-        wght: [300, 400, 500],
+        wght: [300, 400, 500, 700],
         ital: [400],
       },
       Inter: [400, 500, 600, 900],
+      Caveat: [500, 600],
     },
   },
 

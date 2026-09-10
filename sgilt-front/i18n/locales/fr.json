@@ -50,17 +50,29 @@
       "description": "Immortalisez chaque instant avec des clichés inoubliables."
     }
   },
+  "event-picker": {
+    "eyebrow": "Votre événement",
+    "title": "Qu'est-ce qu'on FÊTE\u00a0?",
+    "title-highlight": "FÊTE",
+    "subtitle": "Choisissez le type d'événement qui vous ressemble.",
+    "hint": "Vous pourrez préciser vos besoins ensuite.",
+    "cta": "Continuer",
+    "reassurance": "Aucun engagement, vous gardez le contrôle.",
+    "note": "Des événements qui vous ressemblent",
+    "location-line-1": "En Alsace",
+    "location-line-2": "et au-delà",
+    "types": {
+      "mariage": { "label": "Mariage", "tagline": "Le grand oui" },
+      "anniversaire": { "label": "Anniversaire", "tagline": "Un an de plus à célébrer" },
+      "soiree_privee": { "label": "Soirée privée", "tagline": "Entre amis ou en famille" },
+      "fete_entreprise": { "label": "Fête d'entreprise", "tagline": "Vos équipes à l'honneur" },
+      "evenement_public": { "label": "Événement public", "tagline": "Ouvert à tous" },
+      "autre": { "label": "Autre", "tagline": "Dites-nous en plus" }
+    }
+  },
   "landing": {
-    "search-banner": {
-      "title": "Qu'est-ce qu'on FÊTE ?",
-      "title-highlight": "FÊTE",
-      "tagline-new-event": "Et si on lançait votre prochain événement\u00a0?",
-      "tagline-desktop": "Mariage, anniversaire, soirée entre amis, événement pro ou public... Quel que soit votre projet, Sgilt vous accompagne à chaque étape.",
-
-
-      "inspire-link": "Laissez-vous inspirer →"
-    },
     "date-banner": {
+      "eyebrow": "Votre événement",
       "title": "C'est pour QUAND ?",
       "title-highlight": "QUAND",
       "tagline-desktop": "Choisissez la date de votre événement pour continuer l'organisation.",
@@ -73,6 +85,76 @@
     },
     "partners-section": {
       "title": "La sélection du moment"
+    }
+  },
+  "landing-page": {
+    "cta": "Créer mon événement",
+    "hero": {
+      "title": "Qu'est-ce qu'on FÊTE ?",
+      "title-highlight": "FÊTE",
+      "subtitle-line-1": "Des moments à organiser, des gens à réunir.",
+      "subtitle-line-2": "Sgilt vous aide à donner forme à votre événement et à trouver les bons prestataires en Alsace.",
+      "tagline-mini": "En Alsace, pour tous vos événements",
+      "photo-caption": "Les beaux moments sont encore plus beaux à plusieurs"
+    },
+    "idea": {
+      "eyebrow": "Tout commence",
+      "title": "par une idée.",
+      "line-mariage": "Un mariage qui se prépare depuis des mois.",
+      "line-anniversaire": "Un anniversaire qu'on veut marquer.",
+      "line-soiree": "Une soirée avec ceux qu'on aime.",
+      "line-pro": "Un événement professionnel qui mérite mieux qu'une salle et trois plateaux de petits fours.",
+      "conclusion": "Quel que soit le prétexte, Sgilt vous aide à passer de l'idée à quelque chose de concret."
+    },
+    "start": {
+      "title": "Commencer, c'est déjà avancer.",
+      "lede": "Vous n'avez pas besoin d'avoir toutes les réponses.",
+      "description": "Une date encore incertaine, un lieu à trouver, une idée à préciser ou simplement l'envie de réunir du monde : Sgilt vous aide à poser les premières bases de votre événement.",
+      "hint": "Quelques questions suffisent pour commencer à y voir plus clair.",
+      "step-1-title": "Vous nous dites ce que vous préparez",
+      "step-1-description": "Mariage, anniversaire, soirée privée, fête d'entreprise, événement public...",
+      "step-2-title": "Vous posez les premières bases",
+      "step-2-description": "Date, lieu, nombre d'invités et quelques informations sur votre projet.",
+      "step-3-title": "Vous avancez à votre rythme",
+      "step-3-description": "Votre événement est créé. Vous pouvez le retrouver et le compléter plus tard."
+    },
+    "providers": {
+      "title": "Trouvez les personnes qui vont lui donner vie.",
+      "lede": "Un bon événement tient souvent à quelques rencontres.",
+      "line-lieu": "Un lieu où l'on se projette.",
+      "line-traiteur": "Un traiteur qui comprend l'ambiance.",
+      "line-photographe": "Un photographe dont on aime le regard.",
+      "line-musiciens": "Des musiciens capables de faire oublier l'heure.",
+      "conclusion": "Sgilt rassemble des prestataires en Alsace pour vous aider à trouver ceux qui correspondent à votre événement.",
+      "cta": "Découvrir les prestataires"
+    },
+    "local": {
+      "title": "Des professionnels d'ici.",
+      "paragraph-1": "Sgilt se construit en Alsace, avec des lieux, des artistes et des professionnels qui y travaillent vraiment.",
+      "paragraph-2": "Pas besoin de parcourir des centaines de résultats à l'autre bout de la France.",
+      "closing-line": "Vous cherchez ici. Ils sont ici.",
+      "photo-alt": "Un paysage viticole alsacien",
+      "feature-local-label": "Local",
+      "feature-local-description": "Des prestataires en Alsace",
+      "feature-authentique-label": "Authentique",
+      "feature-authentique-description": "Des expériences vraies et locales",
+      "feature-humain-label": "Humain",
+      "feature-humain-description": "Des rencontres qui font la différence"
+    },
+    "closing": {
+      "title": "Vous avez déjà commencé.",
+      "line-1": "Une idée suffit.",
+      "line-2": "Le reste se construit petit à petit.",
+      "question": "Alors, qu'est-ce qu'on fête ?"
+    },
+    "footer": {
+      "tagline": "Organiser un événement en Alsace.",
+      "link-providers": "Prestataires",
+      "link-pro": "Pour les professionnels",
+      "link-login": "Connexion",
+      "social-instagram": "Sgilt sur Instagram",
+      "social-facebook": "Sgilt sur Facebook",
+      "social-linkedin": "Sgilt sur LinkedIn"
     }
   },
   "search": {
@@ -808,11 +890,25 @@
       "step-3-description": "Votre espace est créé automatiquement pour suivre vos demandes, gérer vos réservations et organiser un ou plusieurs événements.",
       "cta": "Voir les prestataires",
       "already-account": "Vous avez déjà un compte ?",
-      "login": "Se connecter",
-      "provider-title": "Vous êtes prestataire ?",
-      "provider-question": "Vous souhaitez présenter votre activité sur Sgilt ?",
-      "provider-instructions": "Envoyez-nous quelques mots sur vos prestations, votre zone d'intervention et un lien vers votre site ou vos réseaux à {email}.",
-      "provider-callback": "Nous vous recontacterons après avoir découvert votre activité."
+      "login": "Se connecter"
+    }
+  },
+  "pro-landing": {
+    "page": {
+      "eyebrow": "Pour les professionnels",
+      "title": "Vous êtes prestataire ?",
+      "lede": "Vous souhaitez présenter votre activité sur Sgilt ?",
+      "benefit-1-title": "Visible auprès des bonnes personnes",
+      "benefit-1-description": "Votre fiche est mise en avant auprès de porteurs de projet en Alsace qui cherchent activement un prestataire comme vous.",
+      "benefit-2-title": "Pas d'inscription compliquée",
+      "benefit-2-description": "Rien à remplir à l'avance : un email suffit pour démarrer, on s'occupe du reste avec vous.",
+      "benefit-3-title": "Une fiche qui vous ressemble",
+      "benefit-3-description": "Vos prestations, votre zone d'intervention, votre univers — présentés simplement, sans jargon.",
+      "how-title": "Comment ça se passe ?",
+      "how-instructions": "Envoyez-nous quelques mots sur vos prestations, votre zone d'intervention et un lien vers votre site ou vos réseaux à {email}.",
+      "how-callback": "Nous vous recontacterons après avoir découvert votre activité.",
+      "already-account": "Vous avez déjà un compte ?",
+      "login": "Se connecter"
     }
   },
   "pro": {

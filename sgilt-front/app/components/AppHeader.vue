@@ -1,30 +1,43 @@
 <template>
   <header class="app-header" :class="{ 'no-shadow': hideShadow }">
-    <h1 class="logo" tabindex="0">
-      <NuxtLink :to="logoLink">
-        <img src="/sgilt-logo.svg" alt="SGILT" />
+    <div class="left-cluster">
+      <h1 class="logo" tabindex="0">
+        <NuxtLink :to="logoLink">
+          <img src="/sgilt-logo.svg" alt="SGILT" />
+        </NuxtLink>
+      </h1>
+
+      <nav v-if="isPublicRoute" class="public-nav" aria-label="Navigation">
+        <NuxtLink to="/search">{{ $t('landing-page.footer.link-providers') }}</NuxtLink>
+        <NuxtLink to="/m/pour-les-professionnels">{{ $t('landing-page.footer.link-pro') }}</NuxtLink>
+      </nav>
+    </div>
+
+    <div class="right-cluster">
+      <NuxtLink v-if="isPublicRoute" to="/fete" class="create-event-button">
+        {{ $t('landing-page.cta') }}
       </NuxtLink>
-    </h1>
 
-    <div class="quick-actions">
-      <NotificationBell v-if="mounted && isAuthenticated" />
+      <div class="quick-actions">
+        <NotificationBell v-if="mounted && isAuthenticated" />
 
-      <button
-        ref="accountMenuAnchorRef"
-        class="action-button"
-        type="button"
-        aria-label="Menu compte"
-        @click="accountMenuOpen = !accountMenuOpen"
-      >
-        <UserAvatar v-if="mounted && isAuthenticated" :size="2.25" />
-        <UserIcon v-else />
-      </button>
+        <button
+          ref="accountMenuAnchorRef"
+          class="action-button"
+          type="button"
+          aria-label="Menu compte"
+          @click="accountMenuOpen = !accountMenuOpen"
+        >
+          <UserAvatar v-if="mounted && isAuthenticated" :size="2.25" />
+          <UserIcon v-else />
+        </button>
 
-      <AccountMenuPopin
-        :open="accountMenuOpen"
-        :anchor-el="accountMenuAnchorRef"
-        @close="accountMenuOpen = false"
-      />
+        <AccountMenuPopin
+          :open="accountMenuOpen"
+          :anchor-el="accountMenuAnchorRef"
+          @close="accountMenuOpen = false"
+        />
+      </div>
     </div>
   </header>
 </template>
@@ -41,10 +54,17 @@ const accountMenuOpen = ref(false)
 
 const { isAuthenticated, hasRole } = useKeycloak()
 
-const ROUTES_WITHOUT_SHADOW_MOBILE = ['/', '/date', '/search']
+const ROUTES_WITHOUT_SHADOW_MOBILE = ['/fete', '/date', '/search']
 const ROUTES_SHADOW_ON_SCROLL = ['/app', '/app/events', '/pro/reservations']
+// Espaces authentifiés dédiés (chacun a son propre header/nav) : tout le reste
+// (landing, /fete, /date, /search, /m/**, fiches prestataire) est public.
+const PRIVATE_ROUTE_PREFIXES = ['/app', '/pro', '/admin', '/account', '/onboarding', '/auth']
 const route = useRoute()
 const { isMobile } = useDevice()
+
+const isPublicRoute = computed(
+  () => !PRIVATE_ROUTE_PREFIXES.some((prefix) => route.path.startsWith(prefix)),
+)
 
 const mounted = ref(false)
 const scrolled = ref(false)
@@ -115,12 +135,71 @@ const hideShadow = computed(() => {
   }
 }
 
+.left-cluster {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xl;
+}
+
 .logo {
   margin: 0;
+  line-height: 0;
+
+  a {
+    display: block;
+  }
 
   img {
     height: 2rem;
     display: block;
+    // Le SVG inclut une petite forme décorative au-dessus du mot "SGILT" : centrer
+    // l'image entière laisse le texte visuellement plus bas que le reste du header.
+    // Léger décalage vers le haut pour recaler le texte, pas l'image, sur l'axe commun.
+    transform: translateY(-2px);
+  }
+}
+
+.right-cluster {
+  display: flex;
+  align-items: center;
+  gap: $spacing-l;
+}
+
+.public-nav {
+  display: none;
+  gap: $spacing-l;
+
+  a {
+    color: $text-secondary;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    text-decoration: none;
+
+    &:hover {
+      color: $text-primary;
+    }
+  }
+
+  @media (min-width: $breakpoint-desktop) {
+    display: flex;
+  }
+}
+
+.create-event-button {
+  display: none;
+  border: none;
+  border-radius: 9999px;
+  padding: $spacing-xs $spacing-m;
+  background: $brand-accent;
+  color: $brand-primary;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  white-space: nowrap;
+
+  @media (min-width: $breakpoint-desktop) {
+    display: inline-flex;
+    align-items: center;
   }
 }
 

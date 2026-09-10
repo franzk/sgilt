@@ -25,11 +25,14 @@ import net.franzka.sgilt.core.reservation.service.ReservationService;
 import net.franzka.sgilt.core.storage.FileStorageException;
 import net.franzka.sgilt.core.storage.FileStorageService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Service métier pour l'entité {@link Prestataire}.
@@ -141,7 +144,7 @@ public class PrestataireService {
      * @return réponse avec résultats, compteurs catégorie et compteurs sous-catégorie
      */
     public PrestataireSearchResponseDto search(String categoryKey, List<String> subcatKeys) {
-        List<Prestataire> all = prestataireRepository.findByStatusAndDeletedAtIsNull(PrestataireStatus.PUBLISHED);
+        List<Prestataire> all = prestataireRepository.findByStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(PrestataireStatus.PUBLISHED);
 
         List<Prestataire> filtered = resolveFiltered(categoryKey, subcatKeys);
         String activeCategoryKey = resolveActiveCategoryKey(categoryKey, subcatKeys, filtered);
@@ -151,6 +154,21 @@ public class PrestataireService {
                 buildCategoryCounts(all),
                 buildSubcatCounts(all, activeCategoryKey)
         );
+    }
+
+    /**
+     * Réattribue un rang d'affichage aléatoire à tous les prestataires actifs — fait tourner
+     * l'ordre des résultats de recherche et de la landing page sans qu'il ne change à chaque
+     * requête. Remet aussi à {@code null}, dans la même opération, le rang des fiches supprimées
+     * entre-temps, pour qu'une fiche supprimée ne garde jamais indéfiniment un rang obsolète.
+     * Déclenché toutes les 30 minutes, sans contrôleur associé : {@code @Transactional} est donc
+     * posé ici (exception au placement habituel sur les controllers), la mise à jour de masse en
+     * base l'exigeant.
+     */
+    @Transactional
+    @Scheduled(fixedRate = 30, timeUnit = TimeUnit.MINUTES)
+    public void shuffleDisplayOrder() {
+        prestataireRepository.shuffleDisplayOrder();
     }
 
     /**
@@ -587,12 +605,12 @@ public class PrestataireService {
 
     private List<Prestataire> resolveFiltered(String categoryKey, List<String> subcatKeys) {
         if (subcatKeys != null && !subcatKeys.isEmpty()) {
-            return prestataireRepository.findBySubcatKeysInAndStatusAndDeletedAtIsNull(subcatKeys, PrestataireStatus.PUBLISHED);
+            return prestataireRepository.findBySubcatKeysInAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(subcatKeys, PrestataireStatus.PUBLISHED);
         }
         if (categoryKey != null) {
-            return prestataireRepository.findByCategoryKeyAndStatusAndDeletedAtIsNull(categoryKey, PrestataireStatus.PUBLISHED);
+            return prestataireRepository.findByCategoryKeyAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(categoryKey, PrestataireStatus.PUBLISHED);
         }
-        return prestataireRepository.findByStatusAndDeletedAtIsNull(PrestataireStatus.PUBLISHED);
+        return prestataireRepository.findByStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(PrestataireStatus.PUBLISHED);
     }
 
     private String resolveActiveCategoryKey(String categoryKey, List<String> subcatKeys, List<Prestataire> filtered) {
