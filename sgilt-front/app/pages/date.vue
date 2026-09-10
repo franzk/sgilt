@@ -146,13 +146,30 @@ $content-max-width: 30rem;
 .cta-button {
   width: 100%;
   height: 3.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: none;
-  border-radius: 999px;
-  background: $color-accent;
-  color: #000000;
-  font-size: 1.125rem;
-  font-weight: 700;
+  border-radius: 9999px;
+  background: $brand-accent;
+  color: $brand-primary;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
   cursor: pointer;
+  box-shadow: 0 4px 10px rgba($brand-primary, 0.18);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba($brand-primary, 0.22);
+  }
+
+  &:focus-visible {
+    outline: 3px solid $brand-primary;
+    outline-offset: 4px;
+  }
 }
 
 .skip-link {

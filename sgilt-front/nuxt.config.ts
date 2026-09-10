@@ -91,6 +91,18 @@ export default defineNuxtConfig({
       },
     },
 
+    // Tunnel de réservation (fête -> date -> recherche) = utilitaire, pas indexé
+    '/fete': {
+      headers: {
+        'X-Robots-Tag': 'noindex, nofollow',
+      },
+    },
+    '/date': {
+      headers: {
+        'X-Robots-Tag': 'noindex, nofollow',
+      },
+    },
+
     // /m seul = route parente technique, pas de contenu propre
     '/m': {
       redirect: { to: '/', statusCode: 301 },
