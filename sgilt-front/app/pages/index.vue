@@ -32,13 +32,13 @@ useSeoMeta({
   ogDescription:
     'Trouvez les bons prestataires, échangez avec eux et suivez vos réservations au même endroit.',
 
-  ogImage: 'https://sgilt.alsace/images/sgilt-social.png',
+  ogImage: 'https://sgilt.alsace/images/sgilt-social.jpeg',
 
   twitterCard: 'summary_large_image',
   twitterTitle: 'Organisez votre événement en Alsace avec Sgilt',
   twitterDescription:
     'Trouvez les bons prestataires et suivez vos réservations au même endroit.',
-  twitterImage: 'https://sgilt.alsace/images/sgilt-social.png',
+  twitterImage: 'https://sgilt.alsace/images/sgilt-social.jpeg',
 })
 </script>
 
