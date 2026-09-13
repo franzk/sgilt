@@ -70,6 +70,29 @@
       "autre": { "label": "Autre", "tagline": "Dites-nous en plus" }
     }
   },
+  "commencer-picker": {
+    "title": "Vous avez l'idée,",
+    "title-highlight": "On vous aide à construire la suite.",
+    "photo-alt": {
+      "mariage": "Un dîner en plein air, à la tombée du jour"
+    },
+    "search-cta": {
+      "label": "Je cherche un prestataire",
+      "subtitle": "Je sais déjà ce qu'il me faut."
+    },
+    "guided-cta": {
+      "label": "Je commence mon organisation avec Sgilt",
+      "subtitle": "J'avance étape par étape."
+    },
+    "paragraphs": {
+      "mariage": "Votre grand jour est encore loin, ou l'organisation a déjà bien commencé ? Sgilt vous aide à y voir clair, avancer étape par étape et trouver les bons prestataires quand vous en avez besoin.",
+      "anniversaire": "Une grande fête, un dîner entre proches ou une surprise mémorable ? Sgilt vous aide à organiser votre anniversaire, poser les bonnes bases et trouver tout ce qu'il vous faut pour en faire un vrai moment à part.",
+      "soiree_privee": "Vous savez déjà qui inviter, ou tout reste encore à imaginer ? Sgilt vous aide à construire votre soirée, penser aux détails qui comptent et trouver les bonnes personnes pour lui donner vie.",
+      "fete_entreprise": "Un moment pour réunir l'équipe, célébrer ou simplement sortir du cadre ? Sgilt vous aide à structurer votre événement, avancer sans rien oublier et trouver les prestataires adaptés à votre projet.",
+      "evenement_public": "Concert, festival, rendez-vous associatif ou événement local : Sgilt vous aide à donner forme à votre projet, organiser les prochaines étapes et réunir les bons partenaires pour le faire vivre.",
+      "autre": "Même si votre événement ne rentre dans aucune case, Sgilt vous aide à poser les bases, avancer étape par étape et rassembler tout ce qu'il vous faut au même endroit."
+    }
+  },
   "landing": {
     "date-banner": {
       "eyebrow": "Votre événement",

@@ -15,7 +15,7 @@
           :key="eventType.key"
           :label="eventType.label"
           :tagline="eventType.tagline"
-          :image="eventType.image"
+          :image="eventType.image ?? ''"
           :selected="selectedType === eventType.key"
           @select="selectType(eventType.key)"
         />
@@ -38,6 +38,7 @@
 import { LockIcon } from '@remixicons/vue/line'
 import EventTypeCard from '~/components/cards/EventTypeCard.vue'
 import PageHeroTitle from '~/components/landing/PageHeroTitle.vue'
+import { EVENT_TYPE_IMAGES } from '~/utils/eventTypes'
 
 useHead({ title: "Qu'est-ce qu'on fête ? - Sgilt" })
 
@@ -55,21 +56,12 @@ const DISPLAY_ORDER = [
   'autre',
 ]
 
-const IMAGES: Record<string, string> = {
-  mariage: '/images/sgilt-mariage.png',
-  anniversaire: '/images/sgilt-anniversaire.png',
-  soiree_privee: '/images/sgilt-soiree-privee.png',
-  fete_entreprise: '/images/sgilt-soiree-entreprise.png',
-  evenement_public: '/images/sgilt-evenement-public.png',
-  autre: '/images/sgilt-autre.png',
-}
-
 const eventTypes = computed(() =>
   DISPLAY_ORDER.map((key) => ({
     key,
     label: t(`event-picker.types.${key}.label`),
     tagline: t(`event-picker.types.${key}.tagline`),
-    image: IMAGES[key],
+    image: EVENT_TYPE_IMAGES[key],
   })),
 )
 

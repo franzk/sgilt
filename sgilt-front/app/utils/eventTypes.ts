@@ -34,3 +34,27 @@ export const EVENT_TYPE_CATALOG: EventTypeMeta[] = [
   { key: 'evenement_public', label: 'Événement public', icon: markRaw(TentIcon) },
   { key: 'autre', label: 'Autre', icon: markRaw(SparklingIcon) },
 ]
+
+/**
+ * Illustrations utilisées à l'écran "Qu'est-ce qu'on fête ?" (fete.vue) — mêmes
+ * clés que EVENT_TYPE_CATALOG. Extrait ici pour être réutilisé tel quel par
+ * l'écran de choix de démarche qui suit (continuité visuelle entre les deux
+ * écrans, cf. brief).
+ */
+export const EVENT_TYPE_IMAGES: Record<string, string> = {
+  mariage: '/images/sgilt-mariage.png',
+  anniversaire: '/images/sgilt-anniversaire.png',
+  soiree_privee: '/images/sgilt-soiree-privee.png',
+  fete_entreprise: '/images/sgilt-soiree-entreprise.png',
+  evenement_public: '/images/sgilt-evenement-public.png',
+  autre: '/images/sgilt-autre.png',
+}
+
+/**
+ * Photos de couverture par type d'événement, écran "commencer" (commencer.vue).
+ * Partielle par construction : un type sans entrée ici n'affiche simplement
+ * pas de photo, en attendant que les autres visuels soient fournis.
+ */
+export const EVENT_TYPE_COVERS: Record<string, string> = {
+  mariage: '/images/commencer/mariage.jpg',
+}

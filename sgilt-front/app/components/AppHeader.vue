@@ -54,10 +54,10 @@ const accountMenuOpen = ref(false)
 
 const { isAuthenticated, hasRole } = useKeycloak()
 
-const ROUTES_WITHOUT_SHADOW_MOBILE = ['/fete', '/date', '/search']
+const ROUTES_WITHOUT_SHADOW_MOBILE = ['/fete', '/date', '/commencer', '/search']
 const ROUTES_SHADOW_ON_SCROLL = ['/app', '/app/events', '/pro/reservations']
 // Espaces authentifiés dédiés (chacun a son propre header/nav) : tout le reste
-// (landing, /fete, /date, /search, /m/**, fiches prestataire) est public.
+// (landing, /fete, /date, /commencer, /search, /m/**, fiches prestataire) est public.
 const PRIVATE_ROUTE_PREFIXES = ['/app', '/pro', '/admin', '/account', '/onboarding', '/auth']
 const route = useRoute()
 const { isMobile } = useDevice()
