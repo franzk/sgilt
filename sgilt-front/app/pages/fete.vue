@@ -3,20 +3,20 @@
     <div class="wrap">
       <div class="header">
         <PageHeroTitle
-          :eyebrow="$t('event-picker.eyebrow')"
-          :title="$t('event-picker.title')"
-          :highlight="$t('event-picker.title-highlight')"
+            :eyebrow="$t('event-picker.eyebrow')"
+            :title="$t('event-picker.title')"
+            :highlight="$t('event-picker.title-highlight')"
         />
       </div>
 
       <div class="grid">
         <EventTypeCard
-          v-for="eventType in eventTypes"
-          :key="eventType.key"
-          :label="eventType.label"
-          :tagline="eventType.tagline"
-          :image="eventType.image"
-          @select="selectType(eventType.key)"
+            v-for="eventType in eventTypes"
+            :key="eventType.key"
+            :label="eventType.label"
+            :tagline="eventType.tagline"
+            :image="eventType.image"
+            @select="selectType(eventType.key)"
         />
       </div>
     </div>
@@ -52,12 +52,12 @@ const IMAGES: Record<string, string> = {
 }
 
 const eventTypes = computed(() =>
-  DISPLAY_ORDER.map((key) => ({
-    key,
-    label: t(`event-picker.types.${key}.label`),
-    tagline: t(`event-picker.types.${key}.tagline`),
-    image: IMAGES[key] ?? '',
-  })),
+    DISPLAY_ORDER.map((key) => ({
+      key,
+      label: t(`event-picker.types.${key}.label`),
+      tagline: t(`event-picker.types.${key}.tagline`),
+      image: IMAGES[key] ?? '',
+    })),
 )
 
 // Le clic sur une tuile valide directement le choix et enchaîne sur l'écran suivant

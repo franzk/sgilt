@@ -106,7 +106,7 @@ let _stopPersistWatcher: (() => void) | null = null
 // Appelé au boot du module, puis après chaque reset().
 function _startPersistWatcher() {
   _stopPersistWatcher = watch(
-    [etapeActuelle, () => toRaw(state)],
+    [etapeActuelle, state],
     () => writeStorage(toRaw(state), etapeActuelle.value),
     { deep: true },
   )

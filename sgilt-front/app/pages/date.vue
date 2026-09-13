@@ -28,7 +28,6 @@
 <script setup lang="ts">
 import LandingHeroScreen from '~/components/landing/LandingHeroScreen.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
-import { toISODate } from '~/utils/dateUtils'
 
 useHead({ title: 'C\'est pour quand ? - Sgilt' })
 
@@ -48,7 +47,7 @@ function confirmDate() {
     return
   }
   state.date = date.value
-  navigateTo({ path: '/search', query: { date: toISODate(date.value) } })
+  navigateTo('/commencer')
 }
 
 function skipDate() {
@@ -62,7 +61,7 @@ function skipDate() {
   // chaque changement de route sous peine de casser ce report).
   state.date = undefined
   stateDate.value = undefined
-  navigateTo('/search')
+  navigateTo('/commencer')
 }
 </script>
 

@@ -91,13 +91,19 @@ export default defineNuxtConfig({
       },
     },
 
-    // Tunnel de réservation (fête -> date -> recherche) = utilitaire, pas indexé
+    // Tunnel de réservation (fête -> date -> commencer -> recherche) = utilitaire, pas indexé
     '/fete': {
       headers: {
         'X-Robots-Tag': 'noindex, nofollow',
       },
     },
     '/date': {
+      headers: {
+        'X-Robots-Tag': 'noindex, nofollow',
+      },
+    },
+    '/commencer': {
+      ssr: false,
       headers: {
         'X-Robots-Tag': 'noindex, nofollow',
       },
