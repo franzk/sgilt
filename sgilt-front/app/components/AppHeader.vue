@@ -21,6 +21,15 @@
       <div class="quick-actions">
         <NotificationBell v-if="mounted && isAuthenticated" />
 
+        <NuxtLink
+          v-if="isPublicRoute"
+          to="/search"
+          class="action-button search-button"
+          aria-label="Rechercher un prestataire"
+        >
+          <SearchIcon />
+        </NuxtLink>
+
         <button
           ref="accountMenuAnchorRef"
           class="action-button"
@@ -46,7 +55,7 @@
 import AccountMenuPopin from '~/components/profile/AccountMenuPopin.vue'
 import NotificationBell from '~/components/notifications/NotificationBell.vue'
 import UserAvatar from '~/components/basics/UserAvatar.vue'
-import { UserIcon } from '@remixicons/vue/line'
+import { SearchIcon, UserIcon } from '@remixicons/vue/line'
 import { checkCurrentFicheIsEmpty } from '~/data/prestataire/usePrestataire'
 
 const accountMenuAnchorRef = ref<HTMLElement | null>(null)
@@ -229,5 +238,12 @@ const hideShadow = computed(() => {
   border: none;
   border-radius: 50%;
   overflow: hidden;
+}
+
+.search-button {
+  // Le lien "Prestataires" du .public-nav couvre déjà ce besoin à partir du desktop.
+  @media (min-width: $breakpoint-desktop) {
+    display: none;
+  }
 }
 </style>
