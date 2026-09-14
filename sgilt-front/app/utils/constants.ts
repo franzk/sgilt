@@ -47,6 +47,7 @@ export const APP_CATEGORIES: Category[] = [
     subcategories: [
       { key: 'Décoration', name: 'Décoration', categoryKey: 'services' },
       { key: 'lieu', name: 'Lieu', categoryKey: 'services' },
+      { key: 'animation', name: 'Animation', categoryKey: 'services' },
     ],
   },
 ]
