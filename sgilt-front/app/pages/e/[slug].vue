@@ -1,28 +1,19 @@
 <template>
   <div class="ticket-event-page">
-    <section class="hero">
-      <img class="photo" :src="event.heroImage" :alt="event.title" />
-      <div class="overlay" aria-hidden="true" />
-      <div class="hero-inner">
-        <p class="tag">{{ event.tag }}</p>
-        <h1 class="title">{{ event.title }}</h1>
-        <p class="subtitle">{{ event.subtitle }}</p>
+    <SgiltHero
+      :medias="eventMedias"
+      :tag="event.tag"
+      :title="event.title"
+      show-share
+      :share-text="shareText"
+    >
+      <template #subtitle>
+        <p>{{ event.subtitle }}</p>
+      </template>
+    </SgiltHero>
 
-        <!-- Desktop : la ligne infos vit dans le bandeau photo (cf. maquette desktop) -->
-        <div class="info-row desktop">
-          <div v-for="item in INFO_ITEMS" :key="item.main" class="info-item">
-            <component :is="item.icon" class="icon" />
-            <div class="text">
-              <p class="main">{{ item.main }}</p>
-              <p class="sub">{{ item.sub }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Mobile : la ligne infos vit sous la photo, dans le corps blanc (cf. maquette mobile) -->
-    <div class="info-row mobile">
+    <!-- Sous la photo, dans le corps blanc — à toutes les tailles d'écran -->
+    <div class="info-row">
       <div v-for="item in INFO_ITEMS" :key="item.main" class="info-item">
         <component :is="item.icon" class="icon" />
         <div class="text">
@@ -116,6 +107,7 @@
 
 <script setup lang="ts">
 import { markRaw, type Component } from 'vue'
+import SgiltHero, { type HeroMedia } from '~/components/basics/media/SgiltHero.vue'
 import {
   CalendarEventIcon,
   MapPin2Icon,
@@ -144,21 +136,27 @@ const event = {
   tag: 'Édition du 12 mars',
   title: 'Les Jeudis du Taennel',
   subtitle: "Concert & bar éphémère au cœur du vignoble d'Obernai",
-  heroImage: '/images/taennel.png',
+  // Clé R2 (sgilt-r2-mock/storage/bank/taennel.png) — comme un vrai media prestataire/événement,
+  // pas un asset public Nuxt.
+  heroImage: 'bank/taennel.png',
   dateLabel: 'Jeudi 12 mars 2026',
   timeLabel: 'À partir de 19h30',
-  venue: 'Domaine du Taennel',
-  city: 'Obernai (67)',
-  accessLabel: 'Dès 16 ans',
+  venue: 'Le Taennel',
+  city: 'Scherwiller (67)',
+  accessLabel: 'Tout public',
   accessSublabel: 'Places debout',
   sectionTitle: 'Une soirée musicale et conviviale',
   description:
-    "Chaque jeudi, la cour du Taennel se transforme en scène à ciel ouvert. Concert acoustique, bar à vin nature et food-truck sur place. Une soirée conviviale pour démarrer le week-end en avance, en plein cœur d'Obernai.",
+    "Le jeudi, le Taennel se transforme en scène à ciel ouvert. Concert acoustique, bar à vin nature et food-truck sur place. Une soirée conviviale pour démarrer le week-end en avance, en plein cœur du vignoble.",
   unitPrice: 12,
   available: true,
 }
 
+const eventMedias: HeroMedia[] = [{ type: 'IMAGE', ref: event.heroImage, position: 0 }]
+
 useHead({ title: `${event.title} · Sgilt` })
+
+const shareText = computed(() => t('ticketing.event.share-text', { name: event.title }))
 
 interface EventInfoItem {
   icon: Component
@@ -213,7 +211,8 @@ function onBuyClick(): void {
     return
   }
   purchaseError.value = null
-  navigateTo(`/e/${slug}/commande`)
+  console.log(`Achat de ${quantity.value} billet(s) pour l'événement "${event.title}" (slug=${slug})`)
+  // navigateTo(`/e/${slug}/commande`)
 }
 </script>
 
@@ -239,88 +238,25 @@ function onBuyClick(): void {
   width: 100%;
 }
 
-// ─── Hero (plein bord, photo pleine largeur) ─────────────────────────────────────
-.hero {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  overflow: hidden;
-
-  @media (min-width: $breakpoint-desktop) {
-    aspect-ratio: auto;
-    height: 60vh;
-    min-height: 420px;
-    max-height: 620px;
-  }
-
-  .photo {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-  }
-
-  .overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      to bottom,
-      transparent 30%,
-      rgba(0, 0, 0, 0.25) 60%,
-      rgba(0, 0, 0, 0.75) 100%
-    );
-  }
-
-  .hero-inner {
-    @extend %container-x;
-    position: absolute;
-    bottom: $spacing-l;
-    left: 0;
-    right: 0;
-    color: $text-inverted;
-    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
-
-    @media (min-width: $breakpoint-desktop) {
-      bottom: $spacing-xl;
-    }
-  }
-
-  .tag {
-    font-size: 0.8rem;
-    font-weight: $font-weight-semibold;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    opacity: 0.9;
-    margin: 0 0 0.4rem;
-  }
-
-  .title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    font-weight: 700;
-    line-height: 1.1;
-    margin: 0 0 0.5rem;
-  }
-
-  .subtitle {
-    font-size: $font-size-md;
-    font-weight: $font-weight-regular;
-    opacity: 0.92;
-    margin: 0;
-
-    @media (min-width: $breakpoint-desktop) {
-      font-size: $font-size-lg;
-      max-width: 32rem;
-    }
-  }
-}
+// Le hero (photo + dégradé + tag/titre/sous-titre) vient entièrement de SgiltHero, partagé avec
+// PrestataireHero.vue — même taille (aspect-ratio 3/2 mobile, 55vh desktop), même typographie.
 
 // ─── Ligne infos (date / lieu / condition d'accès) ───────────────────────────────
-// Deux rendus du même contenu : sous la photo en mobile (texte sombre), dans le bandeau
-// photo en desktop (texte clair) — cf. maquettes mobile et desktop.
+// Toujours sous la photo, dans le corps blanc — colonne en mobile, ligne en desktop.
 .info-row {
+  @extend %container-x;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-m;
+  padding-top: $spacing-l;
+  padding-bottom: $spacing-l;
+  border-bottom: 1px solid $divider-color;
+
+  @media (min-width: $breakpoint-desktop) {
+    flex-direction: row;
+    gap: $spacing-xl;
+  }
+
   .info-item {
     display: flex;
     align-items: center;
@@ -331,6 +267,7 @@ function onBuyClick(): void {
     flex-shrink: 0;
     width: 1.25rem;
     height: 1.25rem;
+    color: $text-secondary;
   }
 
   .text {
@@ -342,55 +279,13 @@ function onBuyClick(): void {
     margin: 0;
     font-size: $font-size-sm;
     font-weight: $font-weight-semibold;
+    color: $text-primary;
   }
 
   .sub {
     margin: 0;
     font-size: $font-size-xs;
-  }
-
-  &.mobile {
-    @extend %container-x;
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-m;
-    padding-top: $spacing-l;
-    padding-bottom: $spacing-l;
-    border-bottom: 1px solid $divider-color;
-
-    .icon {
-      color: $text-secondary;
-    }
-    .main {
-      color: $text-primary;
-    }
-    .sub {
-      color: $text-secondary;
-    }
-
-    @media (min-width: $breakpoint-desktop) {
-      display: none;
-    }
-  }
-
-  &.desktop {
-    display: none;
-
-    @media (min-width: $breakpoint-desktop) {
-      display: flex;
-      gap: $spacing-xl;
-      margin-top: $spacing-l;
-
-      .icon {
-        color: rgba(255, 255, 255, 0.9);
-      }
-      .main {
-        color: $text-inverted;
-      }
-      .sub {
-        color: rgba(255, 255, 255, 0.75);
-      }
-    }
+    color: $text-secondary;
   }
 }
 

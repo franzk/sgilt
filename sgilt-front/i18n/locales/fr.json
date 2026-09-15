@@ -1256,7 +1256,8 @@
       "total-label": "Total",
       "cta": "Acheter mes billets",
       "sold-out-error": "Cet événement est complet, aucun billet ne peut être acheté.",
-      "reassurance": "Paiement sécurisé par"
+      "reassurance": "Paiement sécurisé par",
+      "share-text": "Découvrez {name} sur Sgilt"
     }
   }
 }
