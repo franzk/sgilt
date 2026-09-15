@@ -1,0 +1,695 @@
+<template>
+  <div class="ticket-event-page">
+    <section class="hero">
+      <img class="photo" :src="event.heroImage" :alt="event.title" />
+      <div class="overlay" aria-hidden="true" />
+      <div class="hero-inner">
+        <p class="tag">{{ event.tag }}</p>
+        <h1 class="title">{{ event.title }}</h1>
+        <p class="subtitle">{{ event.subtitle }}</p>
+
+        <!-- Desktop : la ligne infos vit dans le bandeau photo (cf. maquette desktop) -->
+        <div class="info-row desktop">
+          <div v-for="item in INFO_ITEMS" :key="item.main" class="info-item">
+            <component :is="item.icon" class="icon" />
+            <div class="text">
+              <p class="main">{{ item.main }}</p>
+              <p class="sub">{{ item.sub }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mobile : la ligne infos vit sous la photo, dans le corps blanc (cf. maquette mobile) -->
+    <div class="info-row mobile">
+      <div v-for="item in INFO_ITEMS" :key="item.main" class="info-item">
+        <component :is="item.icon" class="icon" />
+        <div class="text">
+          <p class="main">{{ item.main }}</p>
+          <p class="sub">{{ item.sub }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <div class="content-col">
+        <h2 class="section-title">{{ event.sectionTitle }}</h2>
+
+        <section class="description">
+          <p>{{ event.description }}</p>
+        </section>
+
+        <section class="pictos">
+          <div v-for="picto in PICTOS" :key="picto.label" class="picto">
+            <component :is="picto.icon" class="icon" />
+            <p class="label">{{ picto.label }}</p>
+            <p class="sublabel">{{ picto.sublabel }}</p>
+          </div>
+        </section>
+      </div>
+
+      <aside class="sidebar">
+        <section class="pricing">
+          <div class="price-row">
+            <div class="price">
+              <span class="amount">{{ unitPriceLabel }}</span>
+              <span class="unit">{{ $t('ticketing.event.per-ticket') }}</span>
+            </div>
+            <span class="availability-badge" :class="{ unavailable: !event.available }">
+              <span class="dot" aria-hidden="true" />
+              {{
+                event.available
+                  ? $t('ticketing.event.available')
+                  : $t('ticketing.event.unavailable')
+              }}
+            </span>
+          </div>
+
+          <div class="quantity-row">
+            <span class="label">{{ $t('ticketing.event.quantity-label') }}</span>
+            <div class="stepper">
+              <button
+                type="button"
+                class="step-btn"
+                :aria-label="$t('ticketing.event.decrement-aria')"
+                @click="decrement"
+              >
+                <SubtractIcon />
+              </button>
+              <span class="value">{{ quantity }}</span>
+              <button
+                type="button"
+                class="step-btn"
+                :aria-label="$t('ticketing.event.increment-aria')"
+                @click="increment"
+              >
+                <AddIcon />
+              </button>
+            </div>
+          </div>
+
+          <div class="total-row">
+            <span class="label">{{ $t('ticketing.event.total-label') }}</span>
+            <span class="value">{{ totalLabel }}</span>
+          </div>
+
+          <button type="button" class="cta" @click="onBuyClick">
+            <TicketIcon class="icon" />
+            {{ $t('ticketing.event.cta') }}
+            <ArrowRightSIcon class="chevron" aria-hidden="true" />
+          </button>
+
+          <Transition name="fade">
+            <p v-if="purchaseError" class="purchase-error">{{ purchaseError }}</p>
+          </Transition>
+
+          <p class="reassurance">
+            <LockIcon class="icon" aria-hidden="true" />
+            {{ $t('ticketing.event.reassurance') }} <span class="brand">Sgilt</span>
+          </p>
+        </section>
+      </aside>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { markRaw, type Component } from 'vue'
+import {
+  CalendarEventIcon,
+  MapPin2Icon,
+  GroupIcon,
+  MusicIcon,
+  GobletIcon,
+  LeafIcon,
+  TeamIcon,
+  TicketIcon,
+  ArrowRightSIcon,
+  LockIcon,
+  AddIcon,
+  SubtractIcon,
+} from '@remixicons/vue/line'
+
+const { t } = useI18n()
+const route = useRoute()
+const slug = route.params.slug as string
+
+/**
+ * Données de démonstration en dur pour ce brief — le vrai contenu (titre, date, lieu, tarif,
+ * pictogrammes) viendra du modèle Outil/Billetterie, pas encore construit. Le slug de route
+ * n'est pas encore résolu contre un événement réel.
+ */
+const event = {
+  tag: 'Édition du 12 mars',
+  title: 'Les Jeudis du Taennel',
+  subtitle: "Concert & bar éphémère au cœur du vignoble d'Obernai",
+  heroImage: '/images/taennel.png',
+  dateLabel: 'Jeudi 12 mars 2026',
+  timeLabel: 'À partir de 19h30',
+  venue: 'Domaine du Taennel',
+  city: 'Obernai (67)',
+  accessLabel: 'Dès 16 ans',
+  accessSublabel: 'Places debout',
+  sectionTitle: 'Une soirée musicale et conviviale',
+  description:
+    "Chaque jeudi, la cour du Taennel se transforme en scène à ciel ouvert. Concert acoustique, bar à vin nature et food-truck sur place. Une soirée conviviale pour démarrer le week-end en avance, en plein cœur d'Obernai.",
+  unitPrice: 12,
+  available: true,
+}
+
+useHead({ title: `${event.title} · Sgilt` })
+
+interface EventInfoItem {
+  icon: Component
+  main: string
+  sub: string
+}
+
+const INFO_ITEMS: EventInfoItem[] = [
+  { icon: markRaw(CalendarEventIcon), main: event.dateLabel, sub: event.timeLabel },
+  { icon: markRaw(MapPin2Icon), main: event.venue, sub: event.city },
+  { icon: markRaw(GroupIcon), main: event.accessLabel, sub: event.accessSublabel },
+]
+
+interface EventPicto {
+  icon: Component
+  label: string
+  sublabel: string
+}
+
+const PICTOS: EventPicto[] = [
+  { icon: markRaw(MusicIcon), label: 'Concert live', sublabel: 'À partir de 20h' },
+  { icon: markRaw(GobletIcon), label: 'Vins & restauration', sublabel: 'Sur place' },
+  { icon: markRaw(LeafIcon), label: 'Cadre unique', sublabel: 'Au cœur du vignoble' },
+  { icon: markRaw(TeamIcon), label: 'Ambiance conviviale', sublabel: 'Locale et authentique' },
+]
+
+// ── Sélecteur de quantité ─────────────────────────────────────────────────────
+const MIN_QUANTITY = 1
+const MAX_QUANTITY = 10
+
+const quantity = ref(MIN_QUANTITY)
+
+function decrement(): void {
+  quantity.value = Math.max(MIN_QUANTITY, quantity.value - 1)
+}
+
+function increment(): void {
+  quantity.value = Math.min(MAX_QUANTITY, quantity.value + 1)
+}
+
+const unitPriceLabel = computed(() => `${event.unitPrice} €`)
+const totalLabel = computed(() => `${event.unitPrice * quantity.value} €`)
+
+// ── Achat ─────────────────────────────────────────────────────────────────────
+// Le bouton reste toujours cliquable (jamais `disabled`) : une indisponibilité se traduit par
+// une erreur explicite au clic plutôt qu'un blocage silencieux.
+const purchaseError = ref<string | null>(null)
+
+function onBuyClick(): void {
+  if (!event.available) {
+    purchaseError.value = t('ticketing.event.sold-out-error')
+    return
+  }
+  purchaseError.value = null
+  navigateTo(`/e/${slug}/commande`)
+}
+</script>
+
+<style scoped lang="scss">
+@use '@/assets/styles/base' as *;
+
+// Colonne de contenu centrée, utilisée pour aligner le texte du hero et la mise en page
+// deux-colonnes desktop sur le même repère horizontal (photo du hero en plein bord, elle).
+%container-x {
+  width: 100%;
+  max-width: $container-max-width;
+  margin: 0 auto;
+  padding: 0 $spacing-m;
+
+  @media (min-width: $breakpoint-desktop) {
+    padding: 0 $section-padding-x;
+  }
+}
+
+.ticket-event-page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+// ─── Hero (plein bord, photo pleine largeur) ─────────────────────────────────────
+.hero {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+
+  @media (min-width: $breakpoint-desktop) {
+    aspect-ratio: auto;
+    height: 60vh;
+    min-height: 420px;
+    max-height: 620px;
+  }
+
+  .photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 30%,
+      rgba(0, 0, 0, 0.25) 60%,
+      rgba(0, 0, 0, 0.75) 100%
+    );
+  }
+
+  .hero-inner {
+    @extend %container-x;
+    position: absolute;
+    bottom: $spacing-l;
+    left: 0;
+    right: 0;
+    color: $text-inverted;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+
+    @media (min-width: $breakpoint-desktop) {
+      bottom: $spacing-xl;
+    }
+  }
+
+  .tag {
+    font-size: 0.8rem;
+    font-weight: $font-weight-semibold;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.9;
+    margin: 0 0 0.4rem;
+  }
+
+  .title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 0 0 0.5rem;
+  }
+
+  .subtitle {
+    font-size: $font-size-md;
+    font-weight: $font-weight-regular;
+    opacity: 0.92;
+    margin: 0;
+
+    @media (min-width: $breakpoint-desktop) {
+      font-size: $font-size-lg;
+      max-width: 32rem;
+    }
+  }
+}
+
+// ─── Ligne infos (date / lieu / condition d'accès) ───────────────────────────────
+// Deux rendus du même contenu : sous la photo en mobile (texte sombre), dans le bandeau
+// photo en desktop (texte clair) — cf. maquettes mobile et desktop.
+.info-row {
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: $spacing-s;
+  }
+
+  .icon {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .main {
+    margin: 0;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+  }
+
+  .sub {
+    margin: 0;
+    font-size: $font-size-xs;
+  }
+
+  &.mobile {
+    @extend %container-x;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-m;
+    padding-top: $spacing-l;
+    padding-bottom: $spacing-l;
+    border-bottom: 1px solid $divider-color;
+
+    .icon {
+      color: $text-secondary;
+    }
+    .main {
+      color: $text-primary;
+    }
+    .sub {
+      color: $text-secondary;
+    }
+
+    @media (min-width: $breakpoint-desktop) {
+      display: none;
+    }
+  }
+
+  &.desktop {
+    display: none;
+
+    @media (min-width: $breakpoint-desktop) {
+      display: flex;
+      gap: $spacing-xl;
+      margin-top: $spacing-l;
+
+      .icon {
+        color: rgba(255, 255, 255, 0.9);
+      }
+      .main {
+        color: $text-inverted;
+      }
+      .sub {
+        color: rgba(255, 255, 255, 0.75);
+      }
+    }
+  }
+}
+
+// ─── Mise en page desktop : contenu + carte tarif en colonne ────────────────────
+.layout {
+  @extend %container-x;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-l;
+  padding-top: $spacing-l;
+  padding-bottom: $spacing-xxl;
+
+  @media (min-width: $breakpoint-desktop) {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    align-items: start;
+    gap: $spacing-xxl;
+    padding-top: $spacing-xxl;
+  }
+}
+
+.content-col {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-l;
+}
+
+// ─── Titre de section (desktop uniquement, absent de la maquette mobile) ────────
+.section-title {
+  display: none;
+
+  @media (min-width: $breakpoint-desktop) {
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: $font-size-2xl;
+    font-weight: 700;
+    color: $text-primary;
+    margin: 0;
+  }
+}
+
+// ─── Description ────────────────────────────────────────────────────────────────
+.description {
+  p {
+    margin: 0;
+    font-size: $font-size-md;
+    line-height: $line-height-relaxed;
+    color: $text-primary;
+  }
+}
+
+// ─── Pictogrammes ───────────────────────────────────────────────────────────────
+.pictos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-l $spacing-m;
+  padding-bottom: $spacing-l;
+  border-bottom: 1px solid $divider-color;
+
+  @media (min-width: $breakpoint-desktop) {
+    grid-template-columns: repeat(4, 1fr);
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .picto {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+
+  .icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    // Palette pictogrammes : vert, distinct de l'accent doré réservé au CTA/marque.
+    // Cf. brief — à confirmer/ajuster une fois intégré en conditions réelles.
+    color: $state-success;
+  }
+
+  .label {
+    margin: 0;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+  }
+
+  .sublabel {
+    margin: 0;
+    font-size: $font-size-xs;
+    color: $text-secondary;
+  }
+}
+
+// ─── Carte tarif (sidebar desktop) ────────────────────────────────────────────
+.sidebar {
+  @media (min-width: $breakpoint-desktop) {
+    margin-top: -$spacing-xl;
+    background: $surface-white;
+    border-radius: $radius-lg;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    padding: $spacing-l;
+  }
+}
+
+.pricing {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-m;
+}
+
+.price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-s;
+}
+
+.price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+
+  .amount {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+  }
+
+  .unit {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+  }
+}
+
+.availability-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 2rem;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  white-space: nowrap;
+  background: rgba($state-available, 0.1);
+  color: $state-available;
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+
+  &.unavailable {
+    background: rgba($state-danger, 0.1);
+    color: $state-danger;
+  }
+}
+
+.quantity-row,
+.total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .label {
+    font-size: $font-size-md;
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+  }
+}
+
+.total-row {
+  padding-top: $spacing-m;
+  border-top: 1px solid $divider-color;
+
+  .value {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+  }
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: $spacing-m;
+}
+
+.step-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: none;
+  border-radius: 50%;
+  background: $surface-soft;
+  color: $text-primary;
+  cursor: pointer;
+  transition: background 150ms ease;
+
+  &:hover {
+    background: $brand-subtle;
+  }
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.stepper .value {
+  min-width: 1.5rem;
+  text-align: center;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $text-primary;
+}
+
+// ─── CTA ────────────────────────────────────────────────────────────────────────
+.cta {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  height: 3.25rem;
+  border: none;
+  border-radius: 9999px;
+  background: $brand-accent;
+  color: $brand-primary;
+  font-family: inherit;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba($brand-primary, 0.18);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba($brand-primary, 0.22);
+  }
+
+  &:focus-visible {
+    outline: 3px solid $brand-primary;
+    outline-offset: 4px;
+  }
+
+  .icon {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .chevron {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+}
+
+.purchase-error {
+  margin: -$spacing-xs 0 0;
+  font-size: $font-size-sm;
+  color: $state-error;
+  text-align: center;
+}
+
+.reassurance {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  color: $text-secondary;
+  font-size: $font-size-xs;
+
+  .icon {
+    width: 0.9rem;
+    height: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .brand {
+    text-decoration: underline;
+    font-weight: $font-weight-medium;
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 200ms ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
