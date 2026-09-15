@@ -12,13 +12,36 @@
       </template>
     </SgiltHero>
 
-    <!-- Sous la photo, dans le corps blanc — à toutes les tailles d'écran -->
-    <div class="info-row">
-      <div v-for="item in INFO_ITEMS" :key="item.main" class="info-item">
-        <component :is="item.icon" class="icon" />
+    <!-- Mobile : carte qui empiète sur le bas de la photo — date + lieu uniquement. -->
+    <div class="info-card">
+      <div class="info-card-item">
+        <span class="badge"><CalendarEventIcon /></span>
         <div class="text">
-          <p class="main">{{ item.main }}</p>
-          <p class="sub">{{ item.sub }}</p>
+          <p class="main">{{ event.dateLabel }}</p>
+          <p class="sub">{{ event.timeLabel }}</p>
+        </div>
+      </div>
+      <div class="info-card-item">
+        <span class="badge"><MapPin2Icon /></span>
+        <p class="venue">{{ event.venue }} · {{ event.city }}</p>
+        <ArrowRightSIcon class="chevron" aria-hidden="true" />
+      </div>
+    </div>
+
+    <!-- Desktop : ligne classique sous la photo — date et lieu alignés. -->
+    <div class="info-row">
+      <div class="info-item">
+        <CalendarEventIcon class="icon" />
+        <div class="text">
+          <p class="main">{{ event.dateLabel }}</p>
+          <p class="sub">{{ event.timeLabel }}</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <MapPin2Icon class="icon" />
+        <div class="text">
+          <p class="main">{{ event.venue }}</p>
+          <p class="sub">{{ event.city }}</p>
         </div>
       </div>
     </div>
@@ -111,7 +134,6 @@ import SgiltHero, { type HeroMedia } from '~/components/basics/media/SgiltHero.v
 import {
   CalendarEventIcon,
   MapPin2Icon,
-  GroupIcon,
   MusicIcon,
   GobletIcon,
   LeafIcon,
@@ -135,7 +157,7 @@ const slug = route.params.slug as string
 const event = {
   tag: 'Édition du 12 mars',
   title: 'Les Jeudis du Taennel',
-  subtitle: "Concert & bar éphémère au cœur du vignoble d'Obernai",
+  subtitle: "Concert & bar éphémère au cœur du vignoble",
   // Clé R2 (sgilt-r2-mock/storage/bank/taennel.png) — comme un vrai media prestataire/événement,
   // pas un asset public Nuxt.
   heroImage: 'bank/taennel.png',
@@ -143,11 +165,9 @@ const event = {
   timeLabel: 'À partir de 19h30',
   venue: 'Le Taennel',
   city: 'Scherwiller (67)',
-  accessLabel: 'Tout public',
-  accessSublabel: 'Places debout',
   sectionTitle: 'Une soirée musicale et conviviale',
   description:
-    "Le jeudi, le Taennel se transforme en scène à ciel ouvert. Concert acoustique, bar à vin nature et food-truck sur place. Une soirée conviviale pour démarrer le week-end en avance, en plein cœur du vignoble.",
+    "Le jeudi, le Taennel se transforme : concert acoustique, bar à vin nature et food-truck sur place. Une soirée conviviale pour démarrer le week-end en avance, en plein cœur du vignoble.",
   unitPrice: 12,
   available: true,
 }
@@ -157,18 +177,6 @@ const eventMedias: HeroMedia[] = [{ type: 'IMAGE', ref: event.heroImage, positio
 useHead({ title: `${event.title} · Sgilt` })
 
 const shareText = computed(() => t('ticketing.event.share-text', { name: event.title }))
-
-interface EventInfoItem {
-  icon: Component
-  main: string
-  sub: string
-}
-
-const INFO_ITEMS: EventInfoItem[] = [
-  { icon: markRaw(CalendarEventIcon), main: event.dateLabel, sub: event.timeLabel },
-  { icon: markRaw(MapPin2Icon), main: event.venue, sub: event.city },
-  { icon: markRaw(GroupIcon), main: event.accessLabel, sub: event.accessSublabel },
-]
 
 interface EventPicto {
   icon: Component
@@ -241,20 +249,96 @@ function onBuyClick(): void {
 // Le hero (photo + dégradé + tag/titre/sous-titre) vient entièrement de SgiltHero, partagé avec
 // PrestataireHero.vue — même taille (aspect-ratio 3/2 mobile, 55vh desktop), même typographie.
 
-// ─── Ligne infos (date / lieu / condition d'accès) ───────────────────────────────
-// Toujours sous la photo, dans le corps blanc — colonne en mobile, ligne en desktop.
+// ─── Carte infos mobile (empiète sur le bas du hero) ─────────────────────────────
+.info-card {
+  position: relative;
+  z-index: 1;
+  margin: -1rem $spacing-m 0;
+  padding: 0 $spacing-m;
+  background: $surface-white;
+  border-radius: $radius-lg;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  @media (min-width: $breakpoint-desktop) {
+    display: none;
+  }
+
+  .info-card-item {
+    display: flex;
+    align-items: center;
+    gap: $spacing-s;
+    padding: $spacing-m 0;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid $divider-color;
+    }
+  }
+
+  .badge {
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba($state-success, 0.12);
+    color: $state-success;
+
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+
+  .text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .main {
+    margin: 0;
+    font-size: $font-size-md;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+  }
+
+  .sub {
+    margin: 0;
+    font-size: $font-size-sm;
+    color: $text-secondary;
+  }
+
+  .venue {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    font-size: $font-size-md;
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+  }
+
+  .chevron {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: $text-secondary;
+  }
+}
+
+// ─── Ligne infos desktop (date / lieu / condition d'accès) ───────────────────────
 .info-row {
   @extend %container-x;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-m;
+  display: none;
+  gap: $spacing-xl;
   padding-top: $spacing-l;
   padding-bottom: $spacing-l;
   border-bottom: 1px solid $divider-color;
 
   @media (min-width: $breakpoint-desktop) {
+    display: flex;
     flex-direction: row;
-    gap: $spacing-xl;
   }
 
   .info-item {
