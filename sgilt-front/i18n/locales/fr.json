@@ -1244,5 +1244,20 @@
         "PENDING_CONFIRMATION": "Lien ouvert, mot de passe non défini"
       }
     }
+  },
+  "ticketing": {
+    "event": {
+      "per-ticket": "par place",
+      "available": "Places disponibles",
+      "unavailable": "Complet",
+      "quantity-label": "Nombre de places",
+      "decrement-aria": "Retirer une place",
+      "increment-aria": "Ajouter une place",
+      "total-label": "Total",
+      "cta": "Acheter mes billets",
+      "sold-out-error": "Cet événement est complet, aucun billet ne peut être acheté.",
+      "reassurance": "Paiement sécurisé par",
+      "share-text": "Découvrez {name} sur Sgilt"
+    }
   }
 }

@@ -19,6 +19,25 @@ const resolvedSrc = computed(() =>
 
 const isLoaded = ref(false)
 const hasError = ref(false)
+const imgRef = ref<HTMLImageElement | null>(null)
+
+/**
+ * SSR : le HTML de l'<img> (avec son src) part déjà rendu depuis le serveur. Si le navigateur a
+ * fini de le charger avant que l'hydratation Vue n'attache les écouteurs @load/@error (cas typique
+ * d'un asset local/déjà en cache, quasi instantané), ces événements ne se déclenchent jamais et le
+ * skeleton reste affiché indéfiniment — on rattrape donc l'état déjà résolu via `img.complete`.
+ */
+function syncAlreadyLoaded() {
+  const el = imgRef.value
+  if (!el?.complete) return
+  if (el.naturalWidth === 0) {
+    hasError.value = true
+  } else {
+    isLoaded.value = true
+  }
+}
+
+onMounted(syncAlreadyLoaded)
 
 // On réinitialise si la source change (ex: navigation)
 watch(
@@ -26,6 +45,7 @@ watch(
   () => {
     isLoaded.value = false
     hasError.value = false
+    nextTick(syncAlreadyLoaded)
   },
 )
 </script>
@@ -39,6 +59,7 @@ watch(
     </div>
 
     <img
+      ref="imgRef"
       v-show="!hasError"
       :src="resolvedSrc"
       :alt="alt"
