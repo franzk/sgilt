@@ -176,6 +176,12 @@ const eventMedias: HeroMedia[] = [{ type: 'IMAGE', ref: event.heroImage, positio
 
 useHead({ title: `${event.title} · Sgilt` })
 
+const { toUrl } = useImageUrl()
+useSeoMeta({
+  ogTitle: `${event.title} · Sgilt`,
+  ogImage: toUrl(event.heroImage),
+})
+
 const shareText = computed(() => t('ticketing.event.share-text', { name: event.title }))
 
 interface EventPicto {
