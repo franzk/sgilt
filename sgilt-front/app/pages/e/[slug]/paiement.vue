@@ -98,6 +98,7 @@ function onPay(): void {
   }
   payError.value = null
   console.log(`Paiement de ${totalLabel.value} pour "${event.title}" (slug=${slug})`)
+  navigateTo(`/e/${slug}/confirmation?qty=${quantity}`)
 }
 </script>
 

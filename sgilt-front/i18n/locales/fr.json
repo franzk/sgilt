@@ -1295,6 +1295,19 @@
       "security-notice": "Avec Lemonway, vos paiements sont sécurisés et conformes aux réglementations européennes.",
       "cta": "Payer {amount}",
       "reassurance": "Votre paiement sera sécurisé et traité par Lemonway, établissement de paiement agréé en Europe."
+    },
+    "confirmation": {
+      "title": "C'est confirmé !",
+      "subtitle": "Vos billets ont bien été réservés et vous allez recevoir un e-mail avec tous les détails.",
+      "tickets-title": "Vos billets",
+      "confirmed-badge": "Confirmé",
+      "quantity-label": "Nombre de billets",
+      "unit-price-label": "Prix unitaire",
+      "email-notice-title": "Vos billets sont envoyés par e-mail",
+      "view-tickets": "Voir mes billets",
+      "add-to-calendar": "Ajouter à mon calendrier",
+      "practical-info-title": "Informations pratiques",
+      "back-to-event": "Retour à l'événement"
     }
   }
 }
