@@ -1257,7 +1257,31 @@
       "cta": "Acheter mes billets",
       "sold-out-error": "Cet événement est complet, aucun billet ne peut être acheté.",
       "reassurance": "Paiement sécurisé par",
-      "share-text": "Découvrez {name} sur Sgilt"
+      "share-text": "Découvrez {name} sur Sgilt",
+      "time-label": "À partir de {time}"
+    },
+    "order": {
+      "back": "Retour",
+      "title": "Vos billets",
+      "secure-payment": "Paiement sécurisé",
+      "quantity-label": "Nombre de billets",
+      "info-title": "Vos informations",
+      "info-subtitle": "Pour recevoir vos billets et les informations pratiques",
+      "last-name": "Nom",
+      "first-name": "Prénom",
+      "email": "Adresse e-mail",
+      "email-notice-title": "Vos billets vous seront envoyés par e-mail",
+      "email-notice-sub": "Pensez à vérifier vos spams.",
+      "important-info-title": "Informations importantes",
+      "cgv-accept": "J'accepte les",
+      "cgv-link": "conditions générales de vente",
+      "submit": "Procéder au paiement",
+      "question": "Une question ?",
+      "contact-us": "Contactez-nous",
+      "error-required": "Ce champ est requis.",
+      "error-email": "Adresse e-mail invalide.",
+      "error-cgv": "Vous devez accepter les conditions générales de vente.",
+      "error-form": "Merci de corriger les champs en erreur avant de continuer."
     }
   }
 }

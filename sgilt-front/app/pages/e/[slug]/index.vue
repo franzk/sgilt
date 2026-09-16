@@ -18,7 +18,7 @@
         <span class="badge"><CalendarEventIcon /></span>
         <div class="text">
           <p class="main">{{ event.dateLabel }}</p>
-          <p class="sub">{{ event.timeLabel }}</p>
+          <p class="sub">{{ timeLabel }}</p>
         </div>
       </div>
       <div class="info-card-item">
@@ -34,7 +34,7 @@
         <CalendarEventIcon class="icon" />
         <div class="text">
           <p class="main">{{ event.dateLabel }}</p>
-          <p class="sub">{{ event.timeLabel }}</p>
+          <p class="sub">{{ timeLabel }}</p>
         </div>
       </div>
       <div class="info-item">
@@ -70,13 +70,9 @@
               <span class="amount">{{ unitPriceLabel }}</span>
               <span class="unit">{{ $t('ticketing.event.per-ticket') }}</span>
             </div>
-            <span class="availability-badge" :class="{ unavailable: !event.available }">
+            <span class="availability-badge" :class="{ unavailable: !isAvailable }">
               <span class="dot" aria-hidden="true" />
-              {{
-                event.available
-                  ? $t('ticketing.event.available')
-                  : $t('ticketing.event.unavailable')
-              }}
+              {{ isAvailable ? $t('ticketing.event.available') : $t('ticketing.event.unavailable') }}
             </span>
           </div>
 
@@ -144,33 +140,14 @@ import {
   AddIcon,
   SubtractIcon,
 } from '@remixicons/vue/line'
+import { mockEvent } from '~/data/ticketing/mockEvent'
 
 const { t } = useI18n()
 const route = useRoute()
 const slug = route.params.slug as string
 
-/**
- * Données de démonstration en dur pour ce brief — le vrai contenu (titre, date, lieu, tarif,
- * pictogrammes) viendra du modèle Outil/Billetterie, pas encore construit. Le slug de route
- * n'est pas encore résolu contre un événement réel.
- */
-const event = {
-  tag: 'Édition du 12 mars',
-  title: 'Les Jeudis du Taennel',
-  subtitle: "Concert & bar éphémère au cœur du vignoble",
-  // Clé R2 (sgilt-r2-mock/storage/bank/taennel.png) — comme un vrai media prestataire/événement,
-  // pas un asset public Nuxt.
-  heroImage: 'bank/taennel.png',
-  dateLabel: 'Jeudi 12 mars 2026',
-  timeLabel: 'À partir de 19h30',
-  venue: 'Le Taennel',
-  city: 'Scherwiller (67)',
-  sectionTitle: 'Une soirée musicale et conviviale',
-  description:
-    "Le jeudi, le Taennel se transforme : concert acoustique, bar à vin nature et food-truck sur place. Une soirée conviviale pour démarrer le week-end en avance, en plein cœur du vignoble.",
-  unitPrice: 12,
-  available: true,
-}
+const event = mockEvent
+const timeLabel = computed(() => t('ticketing.event.time-label', { time: event.time }))
 
 const eventMedias: HeroMedia[] = [{ type: 'IMAGE', ref: event.heroImage, position: 0 }]
 
@@ -199,8 +176,8 @@ const PICTOS: EventPicto[] = [
 
 // ── Sélecteur de quantité ─────────────────────────────────────────────────────
 const MIN_QUANTITY = 1
-const MAX_QUANTITY = 10
 
+const isAvailable = computed(() => event.remainingTickets > 0)
 const quantity = ref(MIN_QUANTITY)
 
 function decrement(): void {
@@ -208,7 +185,7 @@ function decrement(): void {
 }
 
 function increment(): void {
-  quantity.value = Math.min(MAX_QUANTITY, quantity.value + 1)
+  quantity.value = Math.min(event.remainingTickets, quantity.value + 1)
 }
 
 const unitPriceLabel = computed(() => `${event.unitPrice} €`)
@@ -220,13 +197,12 @@ const totalLabel = computed(() => `${event.unitPrice * quantity.value} €`)
 const purchaseError = ref<string | null>(null)
 
 function onBuyClick(): void {
-  if (!event.available) {
+  if (!isAvailable.value) {
     purchaseError.value = t('ticketing.event.sold-out-error')
     return
   }
   purchaseError.value = null
-  console.log(`Achat de ${quantity.value} billet(s) pour l'événement "${event.title}" (slug=${slug})`)
-  // navigateTo(`/e/${slug}/commande`)
+  navigateTo(`/e/${slug}/commande?qty=${quantity.value}`)
 }
 </script>
 
