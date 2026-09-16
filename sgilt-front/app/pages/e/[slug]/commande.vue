@@ -1,36 +1,8 @@
 <template>
   <div class="order-page">
-    <header class="order-header">
-      <button type="button" class="back-btn" @click="router.back()">
-        <ArrowLeftSIcon class="icon" />
-        {{ $t('ticketing.order.back') }}
-      </button>
-      <h1 class="title">{{ $t('ticketing.order.title') }}</h1>
-      <span class="secure-badge">
-        <LockIcon class="icon" />
-        {{ $t('ticketing.order.secure-payment') }}
-      </span>
-    </header>
+    <TicketingOrderHeader :title="$t('ticketing.order.title')" />
 
-    <section class="recap-card">
-      <SgiltImage class="thumb" :src="event.heroImage" :alt="event.title" />
-      <div class="info">
-        <p class="event-title">{{ event.title }}</p>
-        <p class="event-subtitle">{{ event.subtitle }}</p>
-        <div class="meta-row">
-          <CalendarEventIcon class="icon" />
-          <span>{{ event.dateLabel }} · {{ event.time }}</span>
-        </div>
-        <div class="meta-row">
-          <MapPin2Icon class="icon" />
-          <span>{{ event.venue }} · {{ event.city }}</span>
-        </div>
-        <div class="meta-row">
-          <TeamIcon class="icon" />
-          <span>{{ event.audienceLabel }}</span>
-        </div>
-      </div>
-    </section>
+    <TicketingEventRecap :event="event" />
 
     <section class="quantity-section">
       <div class="quantity-header">
@@ -132,17 +104,7 @@
         </div>
       </div>
 
-      <label class="cgv-row">
-        <input v-model="form.acceptCgv" type="checkbox" class="cgv-checkbox" />
-        <span class="cgv-label">
-          {{ $t('ticketing.order.cgv-accept') }}
-          <NuxtLink to="/m/cgu" target="_blank" class="cgv-link" @click.stop>{{
-            $t('ticketing.order.cgv-link')
-          }}</NuxtLink>
-          <span class="required">*</span>
-        </span>
-      </label>
-      <p v-if="errors.cgv" class="field-error">{{ errors.cgv }}</p>
+      <TicketingCgvCheckbox v-model="form.acceptCgv" :error="errors.cgv" />
 
       <button type="button" class="submit-cta" @click="onSubmit">
         <LockIcon class="icon" />
@@ -163,23 +125,13 @@
 </template>
 
 <script setup lang="ts">
-import SgiltImage from '~/components/basics/media/SgiltImage.vue'
-import {
-  CalendarEventIcon,
-  MapPin2Icon,
-  TeamIcon,
-  TicketIcon,
-  InformationIcon,
-  ArrowLeftSIcon,
-  ArrowRightSIcon,
-  LockIcon,
-  AddIcon,
-  SubtractIcon,
-} from '@remixicons/vue/line'
+import TicketingOrderHeader from '~/components/ticketing/TicketingOrderHeader.vue'
+import TicketingEventRecap from '~/components/ticketing/TicketingEventRecap.vue'
+import TicketingCgvCheckbox from '~/components/ticketing/TicketingCgvCheckbox.vue'
+import { TicketIcon, InformationIcon, ArrowRightSIcon, LockIcon, AddIcon, SubtractIcon } from '@remixicons/vue/line'
 import { mockEvent } from '~/data/ticketing/mockEvent'
 
 const { t } = useI18n()
-const router = useRouter()
 const route = useRoute()
 const slug = route.params.slug as string
 
@@ -248,6 +200,7 @@ function onSubmit(): void {
   console.log(`Commande de ${quantity.value} billet(s) pour "${event.title}" (slug=${slug})`, {
     ...form,
   })
+  navigateTo(`/e/${slug}/paiement?qty=${quantity.value}`)
 }
 </script>
 
@@ -263,110 +216,6 @@ function onSubmit(): void {
   display: flex;
   flex-direction: column;
   gap: $spacing-l;
-}
-
-// ─── Header ───────────────────────────────────────────────────────────────────
-.order-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: $spacing-s;
-
-  .back-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.2rem;
-    padding: 0;
-    border: none;
-    background: none;
-    font-family: inherit;
-    font-size: $font-size-sm;
-    font-weight: $font-weight-semibold;
-    color: $text-primary;
-    cursor: pointer;
-    flex-shrink: 0;
-
-    .icon {
-      width: 1.25rem;
-      height: 1.25rem;
-    }
-  }
-
-  .title {
-    margin: 0;
-    font-size: $font-size-md;
-    font-weight: $font-weight-bold;
-    color: $text-primary;
-    text-align: center;
-  }
-
-  .secure-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    flex-shrink: 0;
-    font-size: $font-size-xs;
-    color: $text-secondary;
-    white-space: nowrap;
-
-    .icon {
-      width: 0.9rem;
-      height: 0.9rem;
-    }
-  }
-}
-
-// ─── Récap événement ─────────────────────────────────────────────────────────
-.recap-card {
-  display: flex;
-  gap: $spacing-m;
-  padding: $spacing-m;
-  background: $surface-soft;
-  border-radius: $radius-lg;
-
-  .thumb {
-    flex-shrink: 0;
-    width: 5rem;
-    height: 5rem;
-    border-radius: $radius-md;
-    overflow: hidden;
-  }
-
-  .info {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-  }
-
-  .event-title {
-    margin: 0;
-    font-size: $font-size-lg;
-    font-weight: $font-weight-bold;
-    color: $text-primary;
-  }
-
-  .event-subtitle {
-    margin: 0 0 0.2rem;
-    font-size: $font-size-sm;
-    color: $text-secondary;
-  }
-
-  .meta-row {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: $font-size-sm;
-    color: $text-primary;
-
-    .icon {
-      flex-shrink: 0;
-      width: 1rem;
-      height: 1rem;
-      color: $text-secondary;
-    }
-  }
 }
 
 // ─── Quantité + total ───────────────────────────────────────────────────────
@@ -600,64 +449,6 @@ function onSubmit(): void {
     font-size: $font-size-sm;
     color: $text-secondary;
   }
-}
-
-// ─── CGV ─────────────────────────────────────────────────────────────────────
-.cgv-row {
-  display: flex;
-  align-items: flex-start;
-  gap: $spacing-s;
-  cursor: pointer;
-}
-
-.cgv-checkbox {
-  flex-shrink: 0;
-  appearance: none;
-  display: grid;
-  place-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
-  margin: 0;
-  border: 1.5px solid $divider-color;
-  border-radius: $radius-sm;
-  background: $surface-white;
-  cursor: pointer;
-  transition:
-    background 150ms ease,
-    border-color 150ms ease;
-
-  &::after {
-    content: '';
-    width: 0.4rem;
-    height: 0.75rem;
-    border: solid $brand-primary;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg) translate(-1px, -2px);
-    opacity: 0;
-  }
-
-  &:checked {
-    background: $brand-accent;
-    border-color: $brand-accent;
-
-    &::after {
-      opacity: 1;
-    }
-  }
-}
-
-.cgv-label {
-  font-size: $font-size-sm;
-  color: $text-primary;
-
-  .required {
-    color: $state-error;
-  }
-}
-
-.cgv-link {
-  color: $text-primary;
-  text-decoration: underline;
 }
 
 // ─── CTA ─────────────────────────────────────────────────────────────────────
