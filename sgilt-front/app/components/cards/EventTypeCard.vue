@@ -44,7 +44,14 @@ defineEmits<{ select: [] }>()
   overflow: hidden;
   transition:
     border-color 160ms ease,
-    box-shadow 160ms ease;
+    box-shadow 160ms ease,
+    transform 100ms ease;
+
+  // Retour tactile immédiat au clic (pas d'état "selected" persistant :
+  // la navigation suit tout de suite, voir fete.vue).
+  &:active {
+    transform: scale(0.96);
+  }
 
   &:focus-visible {
     outline: 3px solid $brand-accent;
