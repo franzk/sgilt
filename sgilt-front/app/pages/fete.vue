@@ -16,26 +16,14 @@
           :label="eventType.label"
           :tagline="eventType.tagline"
           :image="eventType.image"
-          :selected="selectedType === eventType.key"
           @select="selectType(eventType.key)"
         />
-      </div>
-
-      <div v-if="selectedType" class="bottom">
-        <button type="button" class="cta" @click="confirmSelection">
-          {{ $t('event-picker.cta') }} <span aria-hidden="true">→</span>
-        </button>
-        <p class="reassurance">
-          <LockIcon class="icon" aria-hidden="true" />
-          {{ $t('event-picker.reassurance') }}
-        </p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { LockIcon } from '@remixicons/vue/line'
 import EventTypeCard from '~/components/cards/EventTypeCard.vue'
 import PageHeroTitle from '~/components/landing/PageHeroTitle.vue'
 
@@ -43,7 +31,6 @@ useHead({ title: "Qu'est-ce qu'on fête ? - Sgilt" })
 
 const { t } = useI18n()
 const { state } = useDemande()
-const { isDesktop } = useDevice()
 
 // Ordre d'affichage de la maquette (mariage/anniversaire d'abord).
 const DISPLAY_ORDER = [
@@ -69,23 +56,15 @@ const eventTypes = computed(() =>
     key,
     label: t(`event-picker.types.${key}.label`),
     tagline: t(`event-picker.types.${key}.tagline`),
-    image: IMAGES[key],
+    image: IMAGES[key] ?? '',
   })),
 )
 
-const selectedType = ref<string | null>(null)
-
-function confirmSelection() {
-  if (!selectedType.value) return
-  state.eventType = selectedType.value
-  navigateTo('/date')
-}
-
-// Desktop : les tuiles vont directement à l'écran suivant au clic (pas
-// d'étape de confirmation, contrairement au mobile qui affiche un CTA).
+// Le clic sur une tuile valide directement le choix et enchaîne sur l'écran suivant
+// (pas d'étape de confirmation intermédiaire).
 function selectType(key: string) {
-  selectedType.value = key
-  if (isDesktop.value) confirmSelection()
+  state.eventType = key
+  navigateTo('/date')
 }
 </script>
 
@@ -95,7 +74,7 @@ function selectType(key: string) {
 .wrap {
   max-width: $container-max-width;
   margin: 0 auto;
-  padding: 0 $section-padding-x;
+  padding: 0 $section-padding-x $spacing-s;
   width: 100%;
 }
 
@@ -125,72 +104,6 @@ function selectType(key: string) {
     grid-template-columns: repeat(3, 1fr);
     gap: $spacing-l;
     margin-top: $spacing-xl;
-  }
-}
-
-// Desktop : les tuiles naviguent directement au clic (voir selectType dans
-// le script), donc pas d'étape de confirmation à afficher.
-.bottom {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: $spacing-s;
-  margin-top: $spacing-m;
-  padding-bottom: $spacing-s;
-
-  @media (min-width: $breakpoint-desktop) {
-    display: none;
-  }
-}
-
-.cta {
-  width: 100%;
-  max-width: 24rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4em;
-  height: 3.25rem;
-  border: none;
-  border-radius: 9999px;
-  background: $brand-accent;
-  color: $brand-primary;
-  font-size: $font-size-md;
-  font-weight: $font-weight-bold;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba($brand-primary, 0.18);
-  transition:
-    transform 160ms ease,
-    box-shadow 160ms ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba($brand-primary, 0.22);
-  }
-
-  &:focus-visible {
-    outline: 3px solid $brand-primary;
-    outline-offset: 4px;
-  }
-
-  @media (min-width: $breakpoint-desktop) {
-    width: auto;
-    padding: 0 $spacing-xxl;
-  }
-}
-
-.reassurance {
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: $spacing-xs;
-  color: $text-secondary;
-  font-size: $font-size-xs;
-
-  .icon {
-    width: 0.9rem;
-    height: 0.9rem;
-    flex-shrink: 0;
   }
 }
 </style>
