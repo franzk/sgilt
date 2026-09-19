@@ -33,22 +33,21 @@ export const APP_CATEGORIES: Category[] = [
     ],
   },
   {
-    key: 'lieu',
-    name: 'Lieu',
-    subcategories: [{ key: 'salle', name: 'Salle', categoryKey: 'lieu' }],
+    key: 'photo',
+    name: 'Photo',
+    subcategories: [
+      { key: 'photographe', name: 'Photographe', categoryKey: 'photo' },
+      { key: '', name: 'Vidéo', categoryKey: 'photo' },
+      { key: 'photobooth', name: 'Photobooth', categoryKey: 'photo' },
+    ],
   },
   {
     key: 'services',
     name: 'Services',
     subcategories: [
-      { key: 'decoration', name: 'Décoration', categoryKey: 'services' },
+      { key: 'Décoration', name: 'Décoration', categoryKey: 'services' },
+      { key: 'lieu', name: 'Lieu', categoryKey: 'services' },
       { key: 'animation', name: 'Animation', categoryKey: 'services' },
-      { key: 'photographe', name: 'Photographe', categoryKey: 'services' },
-      { key: 'video', name: 'Vidéo', categoryKey: 'services' },
-      { key: 'photobooth', name: 'Photobooth', categoryKey: 'services' },
-      { key: 'communication', name: 'Communication', categoryKey: 'services' },
-      { key: 'location-voiture', name: 'Location de voiture', categoryKey: 'services' },
-      { key: 'agence-evenementielle', name: 'Agence événementielle', categoryKey: 'services' },
     ],
   },
 ]
