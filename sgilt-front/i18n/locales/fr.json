@@ -91,6 +91,52 @@
       "autre": "Même si votre événement ne rentre dans aucune case, Sgilt vous aide à poser les bases, avancer étape par étape et rassembler tout ce qu'il vous faut au même endroit."
     }
   },
+  "organisation": {
+    "back": "Retour",
+    "progress-label": "Progression",
+    "skip-tunnel": "Accéder directement à votre événement",
+    "skip-question": "Je ne sais pas encore",
+    "steps": {
+      "ambiance": {
+        "eyebrow": "Ambiance",
+        "title": "Quelle ambiance souhaitez-vous créer ?",
+        "subtitle": "",
+        "autre-placeholder": "Décrivez l'ambiance souhaitée…"
+      },
+      "moment-cle": {
+        "eyebrow": "Moment clé",
+        "title": "Quel serait le moment parfait de cet événement ?",
+        "title-soiree": "Quel serait le moment parfait de cette soirée ?",
+        "subtitle": "",
+        "autre-placeholder": "Décrivez le moment parfait…"
+      },
+      "lieu": {
+        "eyebrow": "Lieu",
+        "title": "Où aura lieu l'événement ?",
+        "subtitle": "Vous pouvez indiquer une ville, un lieu précis ou laisser cette information vide pour l'instant.",
+        "field-city": "Ville",
+        "field-venue": "Lieu",
+        "optional": "(facultatif)",
+        "city-placeholder": "Ex. Strasbourg, Colmar, ...",
+        "venue-placeholder": "Salle, domaine, adresse...",
+        "cta": "Continuer"
+      },
+      "invites": {
+        "eyebrow": "Nombre d'invités",
+        "title": "Vous serez combien environ ?",
+        "subtitle": "Une estimation suffit, vous pourrez la modifier plus tard.",
+        "cta": "Continuer"
+      },
+      "petit-plus": {
+        "eyebrow": "Petit plus",
+        "title": "Vous voulez nous en dire un peu plus ?",
+        "subtitle": "Racontez-nous ce qui rend votre événement unique. (C'est facultatif !)",
+        "placeholder": "Ex. thème, style, envies particulières, ce qui compte pour vous...",
+        "cta": "Accéder à mon événement"
+      }
+    },
+    "autre-validate": "Valider"
+  },
   "landing": {
     "date-banner": {
       "eyebrow": "Votre événement",

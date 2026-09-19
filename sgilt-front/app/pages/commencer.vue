@@ -84,9 +84,7 @@ function goToSearch() {
 }
 
 function startGuidedOrganisation() {
-  // TODO(brief séparé) : destination du parcours guidé "organisation avec
-  // Sgilt" pas encore définie (accueil/board privé) — volontairement un no-op
-  // documenté plutôt qu'un lien mort silencieux, en attendant ce brief.
+  navigateTo({ path: '/organisation', query: { step: 1 } })
 }
 </script>
 

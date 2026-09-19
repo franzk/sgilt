@@ -76,3 +76,14 @@ export const MOMENT_CLE_OPTIONS: DemandeOption[] = [
   { value: 'tard', label: 'Soirée qui finit très tard…', emoji: '🌙' },
   { value: 'autre', label: 'Autre', emoji: '•••' },
 ]
+
+// Tranches proposées par le stepper d'organisation. Le libellé est stocké tel quel
+// dans `nbInvites` (chaîne libre côté back, affichée telle quelle sur le board).
+export const NB_INVITES_OPTIONS: string[] = [
+  'Moins de 20',
+  '20 – 50',
+  '50 – 100',
+  '100 – 200',
+  '200 – 500',
+  'Plus de 500',
+]
