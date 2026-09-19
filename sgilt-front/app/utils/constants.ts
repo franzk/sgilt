@@ -8,7 +8,7 @@ export type Category = {
 }
 
 export type SubCategory = {
-  key: string // identifiant partagé front/back/DB ('dj', 'pop-rock'… — vide si pas en DB)
+  key: string // identifiant partagé front/back/DB ('dj', 'pop-rock'…)
   name: string
   categoryKey: string
 }
@@ -33,21 +33,19 @@ export const APP_CATEGORIES: Category[] = [
     ],
   },
   {
-    key: 'photo',
-    name: 'Photo',
-    subcategories: [
-      { key: 'photographe', name: 'Photographe', categoryKey: 'photo' },
-      { key: '', name: 'Vidéo', categoryKey: 'photo' },
-      { key: 'photobooth', name: 'Photobooth', categoryKey: 'photo' },
-    ],
+    key: 'lieu',
+    name: 'Lieu',
+    subcategories: [{ key: 'salle', name: 'Salle', categoryKey: 'lieu' }],
   },
   {
     key: 'services',
     name: 'Services',
     subcategories: [
-      { key: 'Décoration', name: 'Décoration', categoryKey: 'services' },
-      { key: 'lieu', name: 'Lieu', categoryKey: 'services' },
+      { key: 'decoration', name: 'Décoration', categoryKey: 'services' },
       { key: 'animation', name: 'Animation', categoryKey: 'services' },
+      { key: 'photographe', name: 'Photographe', categoryKey: 'services' },
+      { key: 'video', name: 'Vidéo', categoryKey: 'services' },
+      { key: 'photobooth', name: 'Photobooth', categoryKey: 'services' },
     ],
   },
 ]
