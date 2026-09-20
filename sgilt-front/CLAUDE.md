@@ -11,7 +11,7 @@
 interface Prestataire {
   id: string
   nom: string
-  categorie: 'musique' | 'restauration' | 'photo' | 'services'
+  categorie: 'musique' | 'restauration' | 'lieu' | 'services'
   disponible: boolean
 }
 
