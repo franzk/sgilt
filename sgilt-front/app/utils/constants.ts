@@ -47,6 +47,7 @@ export const APP_CATEGORIES: Category[] = [
       { key: 'video', name: 'Vidéo', categoryKey: 'services' },
       { key: 'photobooth', name: 'Photobooth', categoryKey: 'services' },
       { key: 'communication', name: 'Communication', categoryKey: 'services' },
+      { key: 'location-voiture', name: 'Location de voiture', categoryKey: 'services' },
     ],
   },
 ]
