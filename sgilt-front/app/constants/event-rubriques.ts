@@ -2,7 +2,6 @@
 // Preset mocké en dur côté front (pas de backend à ce stade). Ordre = ordre d'affichage.
 
 export const RUBRIQUE_KEYS = [
-  'invites',
   'lieu',
   'restauration',
   'musique-animation',

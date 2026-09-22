@@ -145,9 +145,8 @@
   },
   "evenement": {
     "page-title": "Votre organisation - Sgilt",
-    "default-title": "Votre mariage",
     "rubriques-title": "Votre organisation",
-    "nav-label": "Navigation de l'événement",
+    "settings-aria": "Paramètres de l'événement",
     "banner": {
       "label": "Événement en cours de création",
       "board": "Voir mon événement",
@@ -162,12 +161,12 @@
       }
     },
     "rubriques": {
-      "invites": "Invités",
       "lieu": "Lieu",
       "restauration": "Restauration",
       "musique-animation": "Musique / Animation",
       "decoration": "Décoration",
-      "hebergement": "Hébergement"
+      "hebergement": "Hébergement",
+      "item-count": "{n} élément | {n} éléments"
     }
   },
   "landing": {

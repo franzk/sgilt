@@ -5,6 +5,7 @@ import {
   type RubriqueKey,
 } from '~/constants/event-rubriques'
 import { toISODate } from '~/utils/dateUtils'
+import { EVENT_TYPE_DEFAULT_TITLES } from '~/utils/eventTypes'
 import {
   AMBIANCE_OPTIONS,
   EVENT_TYPE_OPTIONS,
@@ -184,12 +185,15 @@ export function useLocalEvent() {
     if (localEvent.eventType === eventType) return
     reset()
     localEvent.eventType = eventType
+    localEvent.title = EVENT_TYPE_DEFAULT_TITLES[eventType] ?? EVENT_TYPE_DEFAULT_TITLES.autre!
   }
 
   // Seul le preset Mariage existe pour l'instant. N'injecte que ce qui manque :
-  // un événement déjà initialisé (rubriques présentes) n'est jamais écrasé.
-  function initMariage(defaultTitle: string) {
-    if (!localEvent.title) localEvent.title = defaultTitle
+  // un événement déjà initialisé (rubriques présentes) n'est jamais écrasé. Le titre par
+  // défaut est déjà posé par start() — ce repli ne joue que pour un accès direct à /evenement
+  // sans être passé par /fete.
+  function initMariage() {
+    if (!localEvent.title) localEvent.title = EVENT_TYPE_DEFAULT_TITLES.mariage!
     if (localEvent.rubriques.length === 0) {
       localEvent.rubriques = MARIAGE_RUBRIQUES.map((rubrique) => ({ ...rubrique }))
     }

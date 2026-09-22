@@ -189,7 +189,6 @@ export default defineNuxtConfig({
         ital: [400],
       },
       Inter: [400, 500, 600, 900],
-      Caveat: [500, 600],
     },
   },
 
