@@ -1,7 +1,7 @@
 <template>
   <div class="evenement">
     <!-- ── Couverture ─────────────────────────────────────────────────────────── -->
-    <div class="cover" :style="{ backgroundImage: `url(${coverImage})` }">
+    <div ref="coverRef" class="cover" :style="{ backgroundImage: `url(${coverImage})` }">
       <div class="overlay" />
       <button
         class="settings-btn"
@@ -70,6 +70,26 @@ const coverImage = computed(() =>
 )
 
 const tagline = computed(() => EVENT_TYPE_TAGLINES[localEvent.eventType ?? ''])
+
+// ── Parallax ───────────────────────────────────────────────────────────────────
+const coverRef = ref<HTMLElement | null>(null)
+let rafId: number | null = null
+
+function onScroll() {
+  if (rafId !== null) return
+  rafId = requestAnimationFrame(() => {
+    if (coverRef.value) {
+      coverRef.value.style.backgroundPositionY = `calc(50% + ${window.scrollY * 0.4}px)`
+    }
+    rafId = null
+  })
+}
+
+onMounted(() => window.addEventListener('scroll', onScroll, { passive: true }))
+onUnmounted(() => {
+  window.removeEventListener('scroll', onScroll)
+  if (rafId !== null) cancelAnimationFrame(rafId)
+})
 
 function onRubriqueClick() {
   // Fiche détail rubrique : brief séparé, à venir.
