@@ -91,7 +91,7 @@ function onSettingsClick() {
   flex-direction: column;
   gap: $spacing-l;
   padding: 0 $spacing-m $spacing-l;
-  background-color: $brand-background-alt;
+  background-color: $surface-white;
 
   @media (min-width: $breakpoint-desktop) {
     width: 100%;
@@ -226,7 +226,11 @@ function onSettingsClick() {
     .list {
       display: flex;
       flex-direction: column;
-      gap: $spacing-s;
+      margin: 0 (-$spacing-m);
+
+      @media (min-width: $breakpoint-desktop) {
+        margin: 0;
+      }
     }
   }
 }

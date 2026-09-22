@@ -6,7 +6,7 @@
     <span class="text">
       <span class="name">{{ $t(`evenement.rubriques.${rubrique.key}`) }}</span>
       <span class="count">
-        {{ t('evenement.rubriques.item-count', rubrique.itemCount, { n: rubrique.itemCount }) }}
+        {{ t('evenement.rubriques.item-count', { n: rubrique.itemCount }, rubrique.itemCount) }}
       </span>
     </span>
     <ArrowRightSIcon class="chevron" aria-hidden="true" />
@@ -19,7 +19,6 @@ import {
   ArrowRightSIcon,
   Building2Icon,
   FlowerIcon,
-  GroupIcon,
   HotelBedIcon,
   Music2Icon,
   RestaurantIcon,
@@ -33,7 +32,6 @@ const props = defineProps<{
 const { t } = useI18n()
 
 const ICONS_MAP: Record<RubriqueKey, Component> = {
-  invites: markRaw(GroupIcon),
   lieu: markRaw(Building2Icon),
   restauration: markRaw(RestaurantIcon),
   'musique-animation': markRaw(Music2Icon),
@@ -44,7 +42,6 @@ const ICONS_MAP: Record<RubriqueKey, Component> = {
 // Une couleur d'accent par rubrique — sert uniquement à les distinguer visuellement dans la
 // liste, pas des tokens de design partagés (usage local à ce composant).
 const ACCENT_MAP: Record<RubriqueKey, string> = {
-  invites: '#c96a4e',
   lieu: '#a3334a',
   restauration: '#d68c00',
   'musique-animation': '#b0447e',
@@ -66,14 +63,16 @@ const accentColor = computed(() => ACCENT_MAP[props.rubrique.key])
   width: 100%;
   padding: $spacing-m;
   border: none;
-  border-radius: $radius-lg;
   background: $surface-white;
-  box-shadow: 0 0.125rem 0.75rem rgba(47, 42, 37, 0.06);
   font-family: 'Inter', sans-serif;
   text-align: left;
   color: $brand-primary;
   cursor: pointer;
   transition: background 120ms ease;
+
+  & + & {
+    border-top: 1px solid $divider-color;
+  }
 
   &:active {
     background: $surface-soft;
