@@ -110,12 +110,14 @@ function onSettingsClick() {
     background-position: center;
     align-items: flex-end;
     padding: $spacing-m;
-
     @media (min-width: $breakpoint-desktop) {
       height: 33vh;
-      margin: 0;
+      width: 100vw;
+      left: 50%;
+      right: 50%;
+      margin-left: -50vw;
+      margin-right: -50vw;
       padding: $spacing-l $spacing-xl;
-      border-radius: $radius-lg;
     }
 
     .overlay {
@@ -123,10 +125,6 @@ function onSettingsClick() {
       inset: 0;
       background: linear-gradient(to bottom, rgba(47, 42, 37, 0.1), rgba(47, 42, 37, 0.65));
       pointer-events: none;
-
-      @media (min-width: $breakpoint-desktop) {
-        border-radius: inherit;
-      }
     }
 
     .settings-btn {
