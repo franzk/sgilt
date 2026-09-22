@@ -4,9 +4,9 @@
       v-for="tranche in NB_INVITES_OPTIONS"
       :key="tranche"
       class="tranche"
-      :class="{ selected: state.nbInvites === tranche }"
+      :class="{ selected: localEvent.nbInvites === tranche }"
       type="button"
-      :aria-pressed="state.nbInvites === tranche"
+      :aria-pressed="localEvent.nbInvites === tranche"
       @click="toggle(tranche)"
     >
       {{ tranche }}
@@ -16,13 +16,13 @@
 
 <script setup lang="ts">
 import { NB_INVITES_OPTIONS } from '~/types/demande'
-import { useDemande } from '~/composables/useDemande'
+import { useLocalEvent } from '~/composables/useLocalEvent'
 
-const { state } = useDemande()
+const { localEvent } = useLocalEvent()
 
 // Re-cliquer la tranche déjà choisie la désélectionne.
 function toggle(tranche: string) {
-  state.nbInvites = state.nbInvites === tranche ? '' : tranche
+  localEvent.nbInvites = localEvent.nbInvites === tranche ? '' : tranche
 }
 </script>
 

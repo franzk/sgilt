@@ -31,21 +31,21 @@
             <OrganisationChoiceStep
               v-if="step === 1"
               :options="AMBIANCE_OPTIONS"
-              :model-value="state.ambiance"
-              :autre-value="state.ambianceAutre"
+              :model-value="localEvent.ambiance"
+              :autre-value="localEvent.ambianceAutre"
               :autre-placeholder="$t('organisation.steps.ambiance.autre-placeholder')"
-              @update:model-value="state.ambiance = $event"
-              @update:autre-value="state.ambianceAutre = $event"
+              @update:model-value="localEvent.ambiance = $event"
+              @update:autre-value="localEvent.ambianceAutre = $event"
               @next="next"
             />
             <OrganisationChoiceStep
               v-else-if="step === 2"
               :options="MOMENT_CLE_OPTIONS"
-              :model-value="state.momentCle"
-              :autre-value="state.momentCleAutre"
+              :model-value="localEvent.momentCle"
+              :autre-value="localEvent.momentCleAutre"
               :autre-placeholder="$t('organisation.steps.moment-cle.autre-placeholder')"
-              @update:model-value="state.momentCle = $event"
-              @update:autre-value="state.momentCleAutre = $event"
+              @update:model-value="localEvent.momentCle = $event"
+              @update:autre-value="localEvent.momentCleAutre = $event"
               @next="next"
             />
             <OrganisationLieuStep v-else-if="step === 3" />
@@ -81,11 +81,11 @@ const FIRST_STEP_WITH_CTA = 3
 
 const route = useRoute()
 const { t } = useI18n()
-const { state } = useDemande()
+const { localEvent } = useLocalEvent()
 
 // Accès sans type choisi (arrivée directe sur l'URL) : renvoie au choix du type.
 onMounted(() => {
-  if (!state.eventType) {
+  if (!localEvent.eventType) {
     navigateTo('/fete')
   }
 })
@@ -99,7 +99,7 @@ const step = computed(() => {
 const stepKey = computed(() => STEP_KEYS[step.value - 1] ?? STEP_KEYS[0])
 
 const title = computed(() =>
-  stepKey.value === 'moment-cle' && state.eventType === 'soiree_privee'
+  stepKey.value === 'moment-cle' && localEvent.eventType === 'soiree_privee'
     ? t('organisation.steps.moment-cle.title-soiree')
     : t(`organisation.steps.${stepKey.value}.title`),
 )
@@ -135,19 +135,19 @@ function onCta() {
 function skipQuestion() {
   switch (step.value) {
     case 1:
-      state.ambiance = null
-      state.ambianceAutre = ''
+      localEvent.ambiance = null
+      localEvent.ambianceAutre = ''
       break
     case 2:
-      state.momentCle = null
-      state.momentCleAutre = ''
+      localEvent.momentCle = null
+      localEvent.momentCleAutre = ''
       break
     case 3:
-      state.ville = ''
-      state.lieu = ''
+      localEvent.ville = ''
+      localEvent.lieu = ''
       break
     case 4:
-      state.nbInvites = ''
+      localEvent.nbInvites = ''
       break
   }
   next()
@@ -155,9 +155,9 @@ function skipQuestion() {
 
 // Sortie du stepper (CTA final ou skip de tunnel) avec les valeurs déjà renseignées.
 function finish() {
-  // TODO(brief séparé) : destination finale (vue d'ensemble de l'événement) pas encore
-  // livrée, et création réelle de l'événement hors scope de ce brief.
-  console.log('stay tuned')
+  // TODO(brief séparé) : création réelle de l'événement en base pas encore livrée,
+  // la vue d'ensemble travaille sur un état purement local.
+  navigateTo('/evenement')
 }
 </script>
 
@@ -167,7 +167,7 @@ function finish() {
 .organisation {
   display: flex;
   justify-content: center;
-  min-height: calc(100dvh - $app-header-height);
+  min-height: $viewport-below-header;
   background: $surface-white;
 
   .column {

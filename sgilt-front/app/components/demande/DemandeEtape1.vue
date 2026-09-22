@@ -4,11 +4,11 @@
 
     <DemandeOptionSelect
       :options="EVENT_TYPE_OPTIONS"
-      :model-value="state.eventType"
-      :autre-value="state.eventTypeAutre"
+      :model-value="localEvent.eventType"
+      :autre-value="localEvent.eventTypeAutre"
       autre-placeholder="Quel événement préparez-vous&nbsp;?"
-      @update:model-value="state.eventType = $event"
-      @update:autre-value="state.eventTypeAutre = $event"
+      @update:model-value="localEvent.eventType = $event"
+      @update:autre-value="localEvent.eventTypeAutre = $event"
       @change="next"
     />
 
@@ -19,8 +19,10 @@
 <script setup lang="ts">
 import { EVENT_TYPE_OPTIONS } from '~/types/demande'
 import { useDemande } from '~/composables/useDemande'
+import { useLocalEvent } from '~/composables/useLocalEvent'
 
-const { state, next } = useDemande()
+const { next } = useDemande()
+const { localEvent } = useLocalEvent()
 </script>
 
 <style scoped lang="scss">

@@ -109,6 +109,14 @@ export default defineNuxtConfig({
       },
     },
 
+    // Vue d'ensemble de l'événement (flow public) = SPA, état en localStorage, pas de SEO
+    '/evenement': {
+      ssr: false,
+      headers: {
+        'X-Robots-Tag': 'noindex, nofollow',
+      },
+    },
+
     // /m seul = route parente technique, pas de contenu propre
     '/m': {
       redirect: { to: '/', statusCode: 301 },

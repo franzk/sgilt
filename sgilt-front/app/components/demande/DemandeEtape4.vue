@@ -4,7 +4,7 @@
     <p class="subtitle">{{ $t('tunnel.etape4.subtitle-before') }}</p>
 
     <textarea
-      v-model="state.description"
+      v-model="localEvent.description"
       class="description-textarea"
       :placeholder="placeholderText"
       rows="6"
@@ -22,8 +22,10 @@
 <script setup lang="ts">
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import { useDemande } from '~/composables/useDemande'
+import { useLocalEvent } from '~/composables/useLocalEvent'
 
-const { state, next } = useDemande()
+const { next } = useDemande()
+const { localEvent } = useLocalEvent()
 const { isDesktop } = useDevice()
 
 const { t } = useI18n()

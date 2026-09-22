@@ -76,7 +76,7 @@ const closeMobile = () => {
 .mobile-tunnel {
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - $app-header-height);
+  height: $viewport-below-header;
 }
 
 .mobile-body {

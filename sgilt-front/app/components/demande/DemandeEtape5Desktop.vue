@@ -1,7 +1,7 @@
 <template>
   <div class="etape">
     <h2 class="question">Votre événement en pratique</h2>
-    <DemandeEtape5Fields :state="state" :ville-error="villeError" />
+    <DemandeEtape5Fields :state="localEvent" :ville-error="villeError" />
     <SgiltButton class="button" @click="handleContinue">
       {{ $t('tunnel.footer.continue') }}
     </SgiltButton>
@@ -12,21 +12,23 @@
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import DemandeEtape5Fields from '~/components/demande/DemandeEtape5Fields.vue'
 import { useDemande } from '~/composables/useDemande'
+import { useLocalEvent } from '~/composables/useLocalEvent'
 
 const { t } = useI18n()
-const { state, next } = useDemande()
+const { next } = useDemande()
+const { localEvent } = useLocalEvent()
 
 const villeError = ref<string | null>(null)
 
 watch(
-  () => state.ville,
+  () => localEvent.ville,
   () => {
     villeError.value = null
   },
 )
 
 function handleContinue() {
-  if (!state.ville.trim()) {
+  if (!localEvent.ville.trim()) {
     villeError.value = t('tunnel.etape5.error-ville')
     return
   }

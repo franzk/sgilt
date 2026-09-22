@@ -58,21 +58,20 @@ import { SearchIcon, TaskIcon, ArrowRightSIcon, SparklingIcon } from '@remixicon
 import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
 import PhotoCurveClipPath from '~/components/commencer/PhotoCurveClipPath.vue'
 import { EVENT_TYPE_IMAGES, EVENT_TYPE_COVERS } from '~/utils/eventTypes'
-import { toISODate } from '~/utils/dateUtils'
 
 useHead({ title: "Vous avez l'idée - Sgilt" })
 
 const { t } = useI18n()
-const { state } = useDemande()
+const { localEvent } = useLocalEvent()
 
 // Accès sans type choisi (arrivée directe sur l'URL) : renvoie au choix du type.
 onMounted(() => {
-  if (!state.eventType) {
+  if (!localEvent.eventType) {
     navigateTo('/fete')
   }
 })
 
-const eventTypeKey = computed(() => state.eventType ?? 'autre')
+const eventTypeKey = computed(() => localEvent.eventType ?? 'autre')
 const eventTypeImage = computed(() => EVENT_TYPE_IMAGES[eventTypeKey.value])
 const eventTypeLabel = computed(() => t(`event-picker.types.${eventTypeKey.value}.label`))
 const paragraph = computed(() => t(`commencer-picker.paragraphs.${eventTypeKey.value}`))
@@ -80,10 +79,12 @@ const coverImage = computed(() => EVENT_TYPE_COVERS[eventTypeKey.value])
 const photoAlt = computed(() => t(`commencer-picker.photo-alt.${eventTypeKey.value}`))
 
 function goToSearch() {
-  navigateTo({ path: '/search', query: state.date ? { date: toISODate(state.date) } : {} })
+  navigateTo('/search')
 }
 
 function startGuidedOrganisation() {
+  // Passe la partie publique en mode événement (affichage du bandeau).
+  localEvent.organisationStarted = true
   navigateTo({ path: '/organisation', query: { step: 1 } })
 }
 </script>
@@ -99,7 +100,7 @@ function startGuidedOrganisation() {
     display: grid;
     grid-template-columns: 1fr 1fr;
     // height (pas min-height) + overflow: hidden : la page ne doit jamais scroller
-    height: calc(100dvh - $app-header-height);
+    height: $viewport-below-header;
     overflow: hidden;
   }
 }

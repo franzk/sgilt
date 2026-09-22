@@ -20,17 +20,29 @@
         />
       </div>
     </div>
+
+    <SgiltConfirmDialog
+      v-model:open="changeTypeDialogOpen"
+      :title="$t('event-picker.change-type-dialog.title')"
+      :message="$t('event-picker.change-type-dialog.message')"
+      :confirm-label="$t('event-picker.change-type-dialog.confirm')"
+      :cancel-label="$t('event-picker.change-type-dialog.cancel')"
+      destructive
+      max-width="400px"
+      @confirm="confirmTypeChange"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import EventTypeCard from '~/components/cards/EventTypeCard.vue'
 import PageHeroTitle from '~/components/landing/PageHeroTitle.vue'
+import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 
 useHead({ title: "Qu'est-ce qu'on fête ? - Sgilt" })
 
 const { t } = useI18n()
-const { state } = useDemande()
+const { localEvent, start } = useLocalEvent()
 
 // Ordre d'affichage de la maquette (mariage/anniversaire d'abord).
 const DISPLAY_ORDER = [
@@ -60,10 +72,28 @@ const eventTypes = computed(() =>
     })),
 )
 
-// Le clic sur une tuile valide directement le choix et enchaîne sur l'écran suivant
-// (pas d'étape de confirmation intermédiaire).
+// Le clic sur une tuile valide directement le choix et enchaîne sur l'écran suivant, sauf si
+// un autre type effacerait un événement déjà en mode événement : on demande alors confirmation.
+// Avant le mode événement, l'événement ne contient presque rien, on n'interrompt pas.
+const changeTypeDialogOpen = ref(false)
+const pendingType = ref<string | null>(null)
+
 function selectType(key: string) {
-  state.eventType = key
+  const wouldEraseEvent = localEvent.organisationStarted && localEvent.eventType !== key
+  if (wouldEraseEvent) {
+    pendingType.value = key
+    changeTypeDialogOpen.value = true
+    return
+  }
+  chooseType(key)
+}
+
+function confirmTypeChange() {
+  if (pendingType.value) chooseType(pendingType.value)
+}
+
+function chooseType(key: string) {
+  start(key)
   navigateTo('/date')
 }
 </script>

@@ -59,6 +59,12 @@
     "note": "Des événements qui vous ressemblent",
     "location-line-1": "En Alsace",
     "location-line-2": "et au-delà",
+    "change-type-dialog": {
+      "title": "Changer de type d'événement ?",
+      "message": "Changer de type d'événement va effacer votre événement en cours (date, réponses, organisation).",
+      "confirm": "Effacer et continuer",
+      "cancel": "Garder mon événement"
+    },
     "types": {
       "mariage": { "label": "Mariage", "tagline": "Le grand oui" },
       "anniversaire": { "label": "Anniversaire", "tagline": "Un an de plus à célébrer" },
@@ -136,6 +142,33 @@
       }
     },
     "autre-validate": "Valider"
+  },
+  "evenement": {
+    "page-title": "Votre organisation - Sgilt",
+    "default-title": "Votre mariage",
+    "rubriques-title": "Votre organisation",
+    "nav-label": "Navigation de l'événement",
+    "banner": {
+      "label": "Événement en cours de création",
+      "board": "Voir mon événement",
+      "date-placeholder": "Date à définir",
+      "save": "Enregistrer",
+      "reset": "Effacer mon événement",
+      "reset-dialog": {
+        "title": "Effacer votre événement ?",
+        "message": "Les informations saisies et votre organisation seront supprimées de cet appareil. Cette action est définitive.",
+        "confirm": "Effacer",
+        "cancel": "Garder"
+      }
+    },
+    "rubriques": {
+      "invites": "Invités",
+      "lieu": "Lieu",
+      "restauration": "Restauration",
+      "musique-animation": "Musique / Animation",
+      "decoration": "Décoration",
+      "hebergement": "Hébergement"
+    }
   },
   "landing": {
     "date-banner": {
@@ -225,19 +258,13 @@
     }
   },
   "search": {
-    "results-count": "{count} prestataires correspondent à votre recherche.",
-    "results-count-with-dispo": "{count} prestataires sont disponibles à votre date.",
-    "vibe-text": "Votre événement prend forme."
+    "results-count": "{count} prestataires correspondent à votre recherche."
   },
   "provider": {
     "not-found": "Ce prestataire est introuvable.",
     "back-to-search": "← Retour à la recherche",
     "details": {
       "verify-date": "Choisir une date",
-      "availability": {
-        "available": "Disponible à cette date",
-        "unavailable": "Non disponible à cette date"
-      },
       "rates": "Tarifs",
       "send-request": "Envoyer une demande",
       "date-required": "Veuillez sélectionner une date",
@@ -323,11 +350,6 @@
         "manual-description": "Vous préférez partir d’une page blanche ? Construisez votre profil librement, section après section.",
         "applying": "Voir le résultat…"
       }
-    },
-    "availability": {
-      "available": "🟢 Disponible",
-      "option": "🟠 Sous option",
-      "booked": "🔴 Réservé"
     },
     "editable": {
       "baseline": {
@@ -1100,6 +1122,7 @@
   "nav": {
     "home": "Accueil",
     "events": "Événements",
+    "prestataires": "Prestataires",
     "notifications": "Notifications",
     "profile": "Profil"
   },

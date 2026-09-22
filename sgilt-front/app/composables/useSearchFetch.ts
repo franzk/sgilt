@@ -4,7 +4,7 @@ import { searchPrestataires } from '~/data/prestataire/service/prestataireServic
 import type { PrestataireCardDetail } from '~/data/prestataire/domain/PrestataireCardDetail'
 
 export function useSearchFetch() {
-  const { date, categoryKey, currentSubcats } = useSearchUi()
+  const { categoryKey, currentSubcats } = useSearchUi()
 
   const loading = ref(false)
   const results = ref<PrestataireCardDetail[]>([])
@@ -17,7 +17,6 @@ export function useSearchFetch() {
     error.value = null
     try {
       const data = await searchPrestataires({
-        date: date.value,
         categoryKey: categoryKey.value,
         subcatKeys: currentSubcats.value,
       })
@@ -34,7 +33,7 @@ export function useSearchFetch() {
 
   const fetchThrottled = useThrottleFn(fetchNow, 300)
 
-  watch([date, categoryKey, currentSubcats], () => fetchThrottled(), { immediate: true })
+  watch([categoryKey, currentSubcats], () => fetchThrottled(), { immediate: true })
 
   return {
     loading,

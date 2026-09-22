@@ -1,22 +1,22 @@
 <template>
   <div class="petit-plus-step">
     <textarea
-      v-model="state.description"
+      v-model="localEvent.description"
       class="textarea"
       rows="5"
       :maxlength="DESCRIPTION_MAX_LENGTH"
       :placeholder="$t('organisation.steps.petit-plus.placeholder')"
     />
-    <span class="counter">{{ state.description.length }}/{{ DESCRIPTION_MAX_LENGTH }}</span>
+    <span class="counter">{{ localEvent.description.length }}/{{ DESCRIPTION_MAX_LENGTH }}</span>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useDemande } from '~/composables/useDemande'
+import { useLocalEvent } from '~/composables/useLocalEvent'
 
 const DESCRIPTION_MAX_LENGTH = 500
 
-const { state } = useDemande()
+const { localEvent } = useLocalEvent()
 </script>
 
 <style scoped lang="scss">

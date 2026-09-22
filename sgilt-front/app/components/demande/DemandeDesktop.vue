@@ -21,7 +21,7 @@
           <img class="presta-img" :src="resolvedImage" :alt="props.prestataireName" />
           <div class="presta-info">
             <span class="presta-name">{{ props.prestataireName }}</span>
-            <span v-if="state.date" class="presta-date">{{ formatDate(state.date) }}</span>
+            <span v-if="localEvent.date" class="presta-date">{{ formatDate(localEvent.date) }}</span>
           </div>
         </SgiltContentCard>
 
@@ -117,6 +117,7 @@ import DemandeEtape6 from '~/components/demande/DemandeEtape6.vue'
 import DemandeFinalisation from '~/components/demande/DemandeFinalisation.vue'
 import SgiltContentCard from '~/components/basics/cards/SgiltContentCard.vue'
 import { useDemande } from '~/composables/useDemande'
+import { useLocalEvent } from '~/composables/useLocalEvent'
 import { useImageUrl } from '~/composables/useImageUrl'
 
 const props = defineProps<{ slug: string; prestataireName: string; prestataireImage: string }>()
@@ -127,19 +128,16 @@ const resolvedImage = computed(() => toUrl(props.prestataireImage))
 const router = useRouter()
 const { t } = useI18n()
 
+const { etapeActuelle, submitted, goTo, reset } = useDemande()
 const {
-  etapeActuelle,
-  submitted,
-  state,
-  goTo,
-  reset,
+  localEvent,
   eventTypeLabel,
   eventTypeEmoji,
   ambianceLabel,
   ambianceEmoji,
   momentCleLabel,
   momentCleEmoji,
-} = useDemande()
+} = useLocalEvent()
 
 const blockRefs = ref<HTMLElement[]>([])
 const showCancelDialog = ref(false)
@@ -189,11 +187,11 @@ function stepDoneSummary(n: number): string {
     case 3:
       return momentCleLabel.value ? `${momentCleEmoji.value} ${momentCleLabel.value}` : ''
     case 4:
-      return state.description
-        ? state.description.slice(0, 60) + (state.description.length > 60 ? '…' : '')
+      return localEvent.description
+        ? localEvent.description.slice(0, 60) + (localEvent.description.length > 60 ? '…' : '')
         : ''
     case 5: {
-      const parts = [state.ville, state.lieu, state.nbInvites ?? ''].filter(Boolean)
+      const parts = [localEvent.ville, localEvent.lieu, localEvent.nbInvites ?? ''].filter(Boolean)
       return parts.join(' · ')
     }
     default:
@@ -207,7 +205,7 @@ function stepDoneSummary(n: number): string {
 
 // ─── Layout ───────────────────────────────────────────────────────────────────
 .demande-desktop {
-  min-height: calc(100dvh - $app-header-height);
+  min-height: $viewport-below-header;
   display: grid;
   grid-template-columns: 1fr 320px;
 

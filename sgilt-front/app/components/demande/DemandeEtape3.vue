@@ -4,11 +4,11 @@
 
     <DemandeOptionSelect
       :options="MOMENT_CLE_OPTIONS"
-      :model-value="state.momentCle"
-      :autre-value="state.momentCleAutre"
+      :model-value="localEvent.momentCle"
+      :autre-value="localEvent.momentCleAutre"
       autre-placeholder="Décrivez le moment clé…"
-      @update:model-value="state.momentCle = $event"
-      @update:autre-value="state.momentCleAutre = $event"
+      @update:model-value="localEvent.momentCle = $event"
+      @update:autre-value="localEvent.momentCleAutre = $event"
       @change="next"
     />
   </div>
@@ -17,8 +17,10 @@
 <script setup lang="ts">
 import { MOMENT_CLE_OPTIONS } from '~/types/demande'
 import { useDemande } from '~/composables/useDemande'
+import { useLocalEvent } from '~/composables/useLocalEvent'
 
-const { state, next } = useDemande()
+const { next } = useDemande()
+const { localEvent } = useLocalEvent()
 </script>
 
 <style scoped lang="scss">

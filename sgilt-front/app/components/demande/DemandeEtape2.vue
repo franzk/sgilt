@@ -4,11 +4,11 @@
 
     <DemandeOptionSelect
       :options="AMBIANCE_OPTIONS"
-      :model-value="state.ambiance"
-      :autre-value="state.ambianceAutre"
+      :model-value="localEvent.ambiance"
+      :autre-value="localEvent.ambianceAutre"
       autre-placeholder="Décrivez l'ambiance souhaitée…"
-      @update:model-value="state.ambiance = $event"
-      @update:autre-value="state.ambianceAutre = $event"
+      @update:model-value="localEvent.ambiance = $event"
+      @update:autre-value="localEvent.ambianceAutre = $event"
       @change="next"
     />
   </div>
@@ -17,8 +17,10 @@
 <script setup lang="ts">
 import { AMBIANCE_OPTIONS } from '~/types/demande'
 import { useDemande } from '~/composables/useDemande'
+import { useLocalEvent } from '~/composables/useLocalEvent'
 
-const { state, next } = useDemande()
+const { next } = useDemande()
+const { localEvent } = useLocalEvent()
 </script>
 
 <style scoped lang="scss">

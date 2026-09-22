@@ -13,8 +13,12 @@ export type SubCategory = {
   categoryKey: string
 }
 
+// Clé de la catégorie « Tous » : aucun filtre. Partagée avec le back (countsByCategory).
+// Ne pas déduire cette clé de la position dans APP_CATEGORIES.
+export const ALL_CATEGORY_KEY = 'all'
+
 export const APP_CATEGORIES: Category[] = [
-  { key: 'all', name: 'Tous', subcategories: [] },
+  { key: ALL_CATEGORY_KEY, name: 'Tous', subcategories: [] },
   {
     key: 'musique',
     name: 'Musique',

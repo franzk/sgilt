@@ -31,18 +31,6 @@ export interface DemandeState {
   prestataireName: string
   prestataireImage: string
   prestataireSlug: string
-  eventType: string | null
-  eventTypeAutre: string
-  ambiance: string | null
-  ambianceAutre: string
-  momentCle: string | null
-  momentCleAutre: string
-  description: string
-  date: Date | undefined
-  ville: string
-  nbInvites: string
-  lieuDefini: boolean
-  lieu: string
   prenom: string
   nom: string
   email: string
