@@ -38,7 +38,7 @@
           v-for="rubrique in localEvent.rubriques"
           :key="rubrique.key"
           :rubrique="rubrique"
-          @click="onRubriqueClick"
+          @click="navigateTo(`/evenement/${rubrique.key}`)"
         />
       </div>
     </section>
@@ -90,11 +90,6 @@ onUnmounted(() => {
   window.removeEventListener('scroll', onScroll)
   if (rafId !== null) cancelAnimationFrame(rafId)
 })
-
-function onRubriqueClick() {
-  // Fiche détail rubrique : brief séparé, à venir.
-  console.log('stay tuned')
-}
 
 function onSettingsClick() {
   navigateTo('/evenement/parametres')

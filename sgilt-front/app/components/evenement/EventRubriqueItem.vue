@@ -1,12 +1,12 @@
 <template>
   <button class="rubrique-item" type="button">
     <span class="icon-wrap" :style="{ background: accentColor }" aria-hidden="true">
-      <component :is="ICONS_MAP[rubrique.key]" class="icon" />
+      <component :is="RUBRIQUE_ICONS[rubrique.key]" class="icon" />
     </span>
     <span class="text">
       <span class="name">{{ $t(`evenement.rubriques.${rubrique.key}`) }}</span>
       <span class="count">
-        {{ t('evenement.rubriques.item-count', { n: rubrique.itemCount }, rubrique.itemCount) }}
+        {{ t('evenement.rubriques.reservation-count', { n: count }, count) }}
       </span>
     </span>
     <ArrowRightSIcon class="chevron" aria-hidden="true" />
@@ -14,16 +14,8 @@
 </template>
 
 <script setup lang="ts">
-import { markRaw, type Component } from 'vue'
-import {
-  ArrowRightSIcon,
-  Building2Icon,
-  FlowerIcon,
-  HotelBedIcon,
-  Music2Icon,
-  RestaurantIcon,
-} from '@remixicons/vue/line'
-import type { EventRubrique, RubriqueKey } from '~/constants/event-rubriques'
+import { ArrowRightSIcon } from '@remixicons/vue/line'
+import { RUBRIQUE_ACCENTS, RUBRIQUE_ICONS, type EventRubrique } from '~/constants/event-rubriques'
 
 const props = defineProps<{
   rubrique: EventRubrique
@@ -31,25 +23,8 @@ const props = defineProps<{
 
 const { t } = useI18n()
 
-const ICONS_MAP: Record<RubriqueKey, Component> = {
-  lieu: markRaw(Building2Icon),
-  restauration: markRaw(RestaurantIcon),
-  'musique-animation': markRaw(Music2Icon),
-  decoration: markRaw(FlowerIcon),
-  hebergement: markRaw(HotelBedIcon),
-}
-
-// Une couleur d'accent par rubrique — sert uniquement à les distinguer visuellement dans la
-// liste, pas des tokens de design partagés (usage local à ce composant).
-const ACCENT_MAP: Record<RubriqueKey, string> = {
-  lieu: '#a3334a',
-  restauration: '#d68c00',
-  'musique-animation': '#b0447e',
-  decoration: '#5a8f6b',
-  hebergement: '#2f6f73',
-}
-
-const accentColor = computed(() => ACCENT_MAP[props.rubrique.key])
+const accentColor = computed(() => RUBRIQUE_ACCENTS[props.rubrique.key])
+const count = computed(() => props.rubrique.reservations.length)
 </script>
 
 <style scoped lang="scss">

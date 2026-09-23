@@ -1,8 +1,11 @@
 import {
   MARIAGE_RUBRIQUES,
   RUBRIQUE_KEYS,
+  RUBRIQUE_RESERVATION_STATUSES,
   type EventRubrique,
   type RubriqueKey,
+  type RubriqueReservation,
+  type RubriqueReservationStatus,
 } from '~/constants/event-rubriques'
 import { toISODate } from '~/utils/dateUtils'
 import { EVENT_TYPE_DEFAULT_TITLES } from '~/utils/eventTypes'
@@ -23,7 +26,7 @@ import {
 // Ne contient aucune donnée de contact (prénom, nom, email, téléphone) : elles restent
 // dans useDemande, qui est le brouillon d'une demande à un prestataire.
 const LOCAL_EVENT_STORAGE_KEY = 'sgilt:evenement'
-const LOCAL_EVENT_VERSION = 1
+const LOCAL_EVENT_VERSION = 2
 // Durée glissante : renouvelée à chaque modification. Passé ce délai, l'événement est effacé.
 const LOCAL_EVENT_TTL_MS = 30 * 24 * 60 * 60 * 1000
 
@@ -78,12 +81,29 @@ function parseISODate(value: unknown): Date | undefined {
   return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
 }
 
-function isRubrique(value: unknown): value is EventRubrique {
+function isReservation(value: unknown): value is RubriqueReservation {
   if (typeof value !== 'object' || value === null) return false
-  const { key, itemCount } = value as Record<string, unknown>
+  const { prestataireSlug, prestataireName, prestataireImage, status, sentAt } = value as Record<
+    string,
+    unknown
+  >
   return (
-    RUBRIQUE_KEYS.includes(key as RubriqueKey) && typeof itemCount === 'number' && itemCount >= 0
+    typeof prestataireSlug === 'string' &&
+    typeof prestataireName === 'string' &&
+    typeof prestataireImage === 'string' &&
+    RUBRIQUE_RESERVATION_STATUSES.includes(status as RubriqueReservationStatus) &&
+    parseISODate(sentAt) !== undefined
   )
+}
+
+function deserializeRubrique(value: unknown): EventRubrique | null {
+  if (typeof value !== 'object' || value === null) return null
+  const { key, reservations } = value as Record<string, unknown>
+  if (!RUBRIQUE_KEYS.includes(key as RubriqueKey)) return null
+  return {
+    key: key as RubriqueKey, // garanti par le includes ci-dessus
+    reservations: Array.isArray(reservations) ? reservations.filter(isReservation) : [],
+  }
 }
 
 const asString = (value: unknown): string => (typeof value === 'string' ? value : '')
@@ -104,7 +124,11 @@ function deserialize(raw: Record<string, unknown>): LocalEvent {
     momentCle: asStringOrNull(raw.momentCle),
     momentCleAutre: asString(raw.momentCleAutre),
     description: asString(raw.description),
-    rubriques: Array.isArray(raw.rubriques) ? raw.rubriques.filter(isRubrique) : [],
+    rubriques: Array.isArray(raw.rubriques)
+      ? raw.rubriques
+          .map(deserializeRubrique)
+          .filter((rubrique): rubrique is EventRubrique => rubrique !== null)
+      : [],
     organisationStarted: asBoolean(raw.organisationStarted),
   }
 }
@@ -195,7 +219,10 @@ export function useLocalEvent() {
   function initMariage() {
     if (!localEvent.title) localEvent.title = EVENT_TYPE_DEFAULT_TITLES.mariage!
     if (localEvent.rubriques.length === 0) {
-      localEvent.rubriques = MARIAGE_RUBRIQUES.map((rubrique) => ({ ...rubrique }))
+      localEvent.rubriques = MARIAGE_RUBRIQUES.map((rubrique) => ({
+        ...rubrique,
+        reservations: [],
+      }))
     }
   }
 
