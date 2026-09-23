@@ -22,7 +22,7 @@
         <button
           v-else
           class="option"
-          :class="{ selected: modelValue === option.value, autre: option.value === AUTRE_VALUE }"
+          :class="{ selected: choice === option.value, autre: option.value === AUTRE_VALUE }"
           type="button"
           @click="option.value === AUTRE_VALUE ? openAutre() : choose(option.value)"
         >
@@ -39,44 +39,43 @@ import type { DemandeOption } from '~/types/demande'
 
 const AUTRE_VALUE = 'autre'
 
-const props = defineProps<{
+defineProps<{
   options: DemandeOption[]
-  modelValue: string | null
-  autreValue: string
   autrePlaceholder: string
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', v: string | null): void
-  (e: 'update:autreValue', v: string): void
   (e: 'next'): void
 }>()
 
+const choice = defineModel<string | null>({ required: true })
+const autreValue = defineModel<string>('autreValue', { required: true })
+
 // Le texte "Autre" est un brouillon local : il n'entre dans le state qu'à la
 // validation, pour qu'une saisie abandonnée ne soit pas comptée comme réponse.
-const autreOpen = ref(props.modelValue === AUTRE_VALUE)
-const autreDraft = ref(props.autreValue)
+const autreOpen = ref(choice.value === AUTRE_VALUE)
+const autreDraft = ref(autreValue.value)
 const root = ref<HTMLElement | null>(null)
 
 function choose(value: string) {
-  emit('update:modelValue', value)
-  emit('update:autreValue', '')
+  choice.value = value
+  autreValue.value = ''
   emit('next')
 }
 
 // Ouvrir "Autre" désélectionne la carte précédemment choisie : le state suit ce
 // qui est affiché, donc un skip de tunnel à ce stade ne garde pas l'ancien choix.
 function openAutre() {
-  emit('update:modelValue', null)
-  emit('update:autreValue', '')
+  choice.value = null
+  autreValue.value = ''
   autreOpen.value = true
   nextTick(() => root.value?.querySelector<HTMLInputElement>('.autre-field')?.focus())
 }
 
 // "Autre" validé avec un texte vide reste un choix à part entière.
 function validateAutre() {
-  emit('update:modelValue', AUTRE_VALUE)
-  emit('update:autreValue', autreDraft.value.trim())
+  choice.value = AUTRE_VALUE
+  autreValue.value = autreDraft.value.trim()
   emit('next')
 }
 </script>

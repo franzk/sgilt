@@ -30,27 +30,27 @@
           <div class="body">
             <OrganisationChoiceStep
               v-if="step === 1"
+              v-model="localEvent.ambiance"
+              v-model:autre-value="localEvent.ambianceAutre"
               :options="AMBIANCE_OPTIONS"
-              :model-value="localEvent.ambiance"
-              :autre-value="localEvent.ambianceAutre"
               :autre-placeholder="$t('organisation.steps.ambiance.autre-placeholder')"
-              @update:model-value="localEvent.ambiance = $event"
-              @update:autre-value="localEvent.ambianceAutre = $event"
               @next="next"
             />
             <OrganisationChoiceStep
               v-else-if="step === 2"
+              v-model="localEvent.momentCle"
+              v-model:autre-value="localEvent.momentCleAutre"
               :options="MOMENT_CLE_OPTIONS"
-              :model-value="localEvent.momentCle"
-              :autre-value="localEvent.momentCleAutre"
               :autre-placeholder="$t('organisation.steps.moment-cle.autre-placeholder')"
-              @update:model-value="localEvent.momentCle = $event"
-              @update:autre-value="localEvent.momentCleAutre = $event"
               @next="next"
             />
-            <OrganisationLieuStep v-else-if="step === 3" />
-            <OrganisationInvitesStep v-else-if="step === 4" />
-            <OrganisationPetitPlusStep v-else />
+            <OrganisationLieuStep
+              v-else-if="step === 3"
+              v-model:ville="localEvent.ville"
+              v-model:lieu="localEvent.lieu"
+            />
+            <OrganisationInvitesStep v-else-if="step === 4" v-model="localEvent.nbInvites" />
+            <OrganisationPetitPlusStep v-else v-model="localEvent.description" />
           </div>
 
           <button v-if="hasCta" class="cta" type="button" @click="onCta">

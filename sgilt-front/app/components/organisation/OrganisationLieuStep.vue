@@ -8,7 +8,7 @@
       <span class="field">
         <MapPin2Icon class="icon" aria-hidden="true" />
         <input
-          v-model="localEvent.ville"
+          v-model="ville"
           class="input"
           type="text"
           name="city"
@@ -26,7 +26,7 @@
       <span class="field">
         <MapPin2Icon class="icon" aria-hidden="true" />
         <input
-          v-model="localEvent.lieu"
+          v-model="lieu"
           class="input"
           type="text"
           name="venue"
@@ -39,9 +39,9 @@
 
 <script setup lang="ts">
 import { MapPin2Icon } from '@remixicons/vue/line'
-import { useLocalEvent } from '~/composables/useLocalEvent'
 
-const { localEvent } = useLocalEvent()
+const ville = defineModel<string>('ville', { required: true })
+const lieu = defineModel<string>('lieu', { required: true })
 </script>
 
 <style scoped lang="scss">

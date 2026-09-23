@@ -147,6 +147,13 @@
     "page-title": "Votre organisation - Sgilt",
     "rubriques-title": "Votre organisation",
     "settings-aria": "Paramètres de l'événement",
+    "settings": {
+      "page-title": "Paramètres de l'événement - Sgilt",
+      "back": "Retour à mon événement",
+      "field-title": "Nom de l'événement",
+      "title-placeholder": "Ex. Le mariage de Julie & Thomas",
+      "title-required": "Donnez un nom à votre événement."
+    },
     "banner": {
       "label": "Événement en cours de création",
       "board": "Voir mon événement",

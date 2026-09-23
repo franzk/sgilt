@@ -97,8 +97,7 @@ function onRubriqueClick() {
 }
 
 function onSettingsClick() {
-  // Paramétrage de l'événement (titre, date, ville, invités) : brief séparé, à venir.
-  console.log('stay tuned')
+  navigateTo('/evenement/parametres')
 }
 </script>
 
