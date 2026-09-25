@@ -49,6 +49,23 @@ export interface LocalEvent {
   organisationStarted: boolean
 }
 
+// Informations de l'événement modifiables par l'utilisateur (paramètres, récap de demande).
+export type EventInfoFields = Pick<
+  LocalEvent,
+  | 'title'
+  | 'eventType'
+  | 'eventTypeAutre'
+  | 'date'
+  | 'ville'
+  | 'lieu'
+  | 'nbInvites'
+  | 'ambiance'
+  | 'ambianceAutre'
+  | 'momentCle'
+  | 'momentCleAutre'
+  | 'description'
+>
+
 function defaultLocalEvent(): LocalEvent {
   return {
     eventType: null,
@@ -184,7 +201,11 @@ if (import.meta.client) {
 
 // ── Libellés des choix (type, ambiance, moment clé) ───────────────────────────
 
-function choiceLabel(options: DemandeOption[], value: string | null, autre: string): string | null {
+export function choiceLabel(
+  options: DemandeOption[],
+  value: string | null,
+  autre: string,
+): string | null {
   if (!value) return null
   if (value === 'autre') return autre || 'Autre'
   return options.find((option) => option.value === value)?.label ?? null

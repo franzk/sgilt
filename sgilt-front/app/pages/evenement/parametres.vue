@@ -6,59 +6,8 @@
         {{ $t('evenement.settings.back') }}
       </button>
 
-      <!-- ── Nom ──────────────────────────────────────────────────────────────── -->
-      <section class="section">
-        <label class="section-title" for="event-title">
-          {{ $t('evenement.settings.field-title') }}
-        </label>
-        <input
-          id="event-title"
-          ref="titleInput"
-          v-model="draft.title"
-          class="title-input"
-          :class="{ invalid: titleError }"
-          type="text"
-          :placeholder="$t('evenement.settings.title-placeholder')"
-          @input="titleError = false"
-        />
-        <p v-if="titleError" class="error">{{ $t('evenement.settings.title-required') }}</p>
-      </section>
-
-      <!-- ── Champs du tunnel /organisation ───────────────────────────────────── -->
-      <section class="section">
-        <h2 class="section-title">{{ $t('organisation.steps.ambiance.eyebrow') }}</h2>
-        <OrganisationChoiceStep
-          v-model="draft.ambiance"
-          v-model:autre-value="draft.ambianceAutre"
-          :options="AMBIANCE_OPTIONS"
-          :autre-placeholder="$t('organisation.steps.ambiance.autre-placeholder')"
-        />
-      </section>
-
-      <section class="section">
-        <h2 class="section-title">{{ $t('organisation.steps.moment-cle.eyebrow') }}</h2>
-        <OrganisationChoiceStep
-          v-model="draft.momentCle"
-          v-model:autre-value="draft.momentCleAutre"
-          :options="MOMENT_CLE_OPTIONS"
-          :autre-placeholder="$t('organisation.steps.moment-cle.autre-placeholder')"
-        />
-      </section>
-
-      <section class="section">
-        <h2 class="section-title">{{ $t('organisation.steps.lieu.eyebrow') }}</h2>
-        <OrganisationLieuStep v-model:ville="draft.ville" v-model:lieu="draft.lieu" />
-      </section>
-
-      <section class="section">
-        <h2 class="section-title">{{ $t('organisation.steps.invites.eyebrow') }}</h2>
-        <OrganisationInvitesStep v-model="draft.nbInvites" />
-      </section>
-
-      <section class="section">
-        <h2 class="section-title">{{ $t('organisation.steps.petit-plus.eyebrow') }}</h2>
-        <OrganisationPetitPlusStep v-model="draft.description" />
-      </section>
+      <!-- Les panneaux alimentent le brouillon ; l'événement n'est modifié qu'à l'enregistrement. -->
+      <EventInfoCards :event="draft" with-title @update="Object.assign(draft, $event)" />
 
       <!-- ── Actions ──────────────────────────────────────────────────────────── -->
       <div class="actions">
@@ -74,7 +23,8 @@
 <script setup lang="ts">
 import { ArrowLeftIcon } from '@remixicons/vue/line'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
-import { AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/demande'
+import EventInfoCards from '~/components/evenement/EventInfoCards.vue'
+import type { EventInfoFields } from '~/composables/useLocalEvent'
 
 definePageMeta({ layout: 'evenement' })
 
@@ -86,36 +36,30 @@ const { localEvent } = useLocalEvent()
 // ── Brouillon ─────────────────────────────────────────────────────────────────
 // Les modifications ne touchent localEvent qu'à l'enregistrement : annuler ou quitter
 // la page les abandonne.
-const draft = reactive({
+const draft = reactive<EventInfoFields>({
   title: localEvent.title,
+  eventType: localEvent.eventType,
+  eventTypeAutre: localEvent.eventTypeAutre,
+  date: localEvent.date,
+  ville: localEvent.ville,
+  lieu: localEvent.lieu,
+  nbInvites: localEvent.nbInvites,
   ambiance: localEvent.ambiance,
   ambianceAutre: localEvent.ambianceAutre,
   momentCle: localEvent.momentCle,
   momentCleAutre: localEvent.momentCleAutre,
-  ville: localEvent.ville,
-  lieu: localEvent.lieu,
-  nbInvites: localEvent.nbInvites,
   description: localEvent.description,
 })
 
 // ── Actions ───────────────────────────────────────────────────────────────────
-const titleError = ref(false)
-const titleInput = ref<HTMLInputElement | null>(null)
-
 function backToBoard() {
   navigateTo('/evenement')
 }
 
+// Aucune information obligatoire ici : le nom ne peut pas être vidé (refusé dans son panneau),
+// date, type et ville ne sont exigés qu'à l'envoi d'une demande.
 function save() {
-  const title = draft.title.trim()
-  if (!title) {
-    titleError.value = true
-    // Le champ est en haut du formulaire, loin du bouton : on le ramène à l'écran.
-    titleInput.value?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    titleInput.value?.focus({ preventScroll: true })
-    return
-  }
-  Object.assign(localEvent, { ...draft, title })
+  Object.assign(localEvent, draft)
   backToBoard()
 }
 </script>
@@ -153,54 +97,6 @@ function save() {
       .icon {
         width: 1.125rem;
         height: 1.125rem;
-      }
-    }
-
-    .section {
-      display: flex;
-      flex-direction: column;
-      gap: $spacing-s;
-
-      .section-title {
-        margin: 0;
-        color: $text-primary;
-        font-size: $font-size-xs;
-        font-weight: $font-weight-semibold;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-      }
-
-      .title-input {
-        height: 3.25rem;
-        padding: 0 $spacing-m;
-        border: 1.5px solid $divider-color;
-        border-radius: $radius-lg;
-        background: $surface-white;
-        color: $brand-primary;
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 1.25rem;
-        font-weight: 600;
-        outline: none;
-        transition: border-color 180ms ease;
-
-        &:focus {
-          border-color: $brand-accent;
-        }
-
-        &.invalid {
-          border-color: $state-error;
-        }
-
-        &::placeholder {
-          color: $text-secondary;
-          opacity: 0.6;
-        }
-      }
-
-      .error {
-        margin: 0;
-        color: $state-error;
-        font-size: $font-size-xs;
       }
     }
 

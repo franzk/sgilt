@@ -149,10 +149,7 @@
     "settings-aria": "Paramètres de l'événement",
     "settings": {
       "page-title": "Paramètres de l'événement - Sgilt",
-      "back": "Retour à mon événement",
-      "field-title": "Nom de l'événement",
-      "title-placeholder": "Ex. Le mariage de Julie & Thomas",
-      "title-required": "Donnez un nom à votre événement."
+      "back": "Retour à mon événement"
     },
     "banner": {
       "label": "Événement en cours de création",
@@ -475,27 +472,32 @@
       }
     }
   },
+  "event-info": {
+    "fields": {
+      "title": "Nom de l'événement",
+      "event-type": "Type d'événement",
+      "date": "Date",
+      "lieu": "Lieu",
+      "nb-invites": "Nombre d'invités",
+      "ambiance": "Ambiance",
+      "moment-cle": "Moment clé",
+      "description": "Description"
+    },
+    "nb-invites-value": "{value} personnes",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "required": "À renseigner pour continuer",
+    "title-placeholder": "Ex. Le mariage de Julie & Thomas",
+    "title-required": "Donnez un nom à votre événement.",
+    "event-type-autre-placeholder": "Quel événement préparez-vous ?",
+    "validate": "Valider"
+  },
   "tunnel": {
     "recap-evenement": {
       "back": "Retour",
       "request-to": "Demande à {name}",
       "title": "Vérifiez les informations de votre événement",
       "subtitle": "Ces informations seront transmises à {name} pour l'aider à vous faire une réponse adaptée.",
-      "fields": {
-        "event-type": "Type d'événement",
-        "date": "Date",
-        "lieu": "Lieu",
-        "nb-invites": "Nombre d'invités",
-        "ambiance": "Ambiance",
-        "moment-cle": "Moment clé",
-        "description": "Description"
-      },
-      "nb-invites-value": "{value} personnes",
-      "edit": "Modifier",
-      "add": "Ajouter",
-      "required": "À renseigner pour continuer",
-      "event-type-autre-placeholder": "Quel événement préparez-vous ?",
-      "validate": "Valider",
       "tip-title": "Plus vous donnez de détails, meilleure sera la réponse",
       "tip-text": "Ces informations peuvent être modifiées à tout moment dans votre événement.",
       "continue": "Continuer"
