@@ -57,7 +57,6 @@ export function mapPrestataireDetail(dto: PrestataireDetailDto): PrestataireDeta
     testimonials: dto.testimonials ?? [],
     details: dto.details ?? [],
     faq: dto.faq ?? [],
-    unavailableDates: [],
     status: dto.status,
   }
 }

@@ -65,15 +65,11 @@ const { currentFlow } = useFlow()
 const disableDatePicker = computed(() => currentFlow.value === 'add-prestataire')
 
 const showFinalisation = ref(false)
-const { dateModel } = useSearchUi()
-
 function onSelect(p: PrestataireDetail) {
   if (currentFlow.value === 'add-prestataire') {
     showFinalisation.value = true
     return
   }
-
-  useDemande().initDemande(p.id, p.name, heroRef(p.medias) ?? '', p.slug, dateModel.value)
 
   navigateTo(`/${p.slug}/demande`)
 }

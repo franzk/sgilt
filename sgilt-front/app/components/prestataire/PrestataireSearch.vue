@@ -1,10 +1,6 @@
 <template>
   <div class="search-page">
     <section ref="headerRef" class="search-header">
-      <div v-if="showDateFilter" class="date-filter">
-        <SgiltDateFilter v-model="dateModel" />
-      </div>
-
       <SgiltCategoryFilter v-model="categoryKey" />
 
       <SgiltSubCategoryFilter
@@ -15,10 +11,7 @@
         @toggle="toggleSubcat"
       />
 
-      <div v-else class="results-meta" :class="{ 'is-onboarding': showOnboarding }">
-        <Transition name="vibe-collapse">
-          <h2 v-if="showOnboarding" class="vibe-text">{{ $t('search.vibe-text') }}</h2>
-        </Transition>
+      <div v-else class="results-meta">
         <div class="count">
           <span v-if="!loading && !error">
             {{ $t('search.results-count', { count: results.length }) }}
@@ -43,7 +36,6 @@
 </template>
 
 <script setup lang="ts">
-import SgiltDateFilter from '~/components/composed/SgiltDateFilter.vue'
 import Sk from '~/components/basics/Sk.vue'
 import SgiltCategoryFilter from '~/components/composed/SgiltCategoryFilter.vue'
 import SgiltSubCategoryFilter from '~/components/composed/SgiltSubCategoryFilter.vue'
@@ -52,20 +44,15 @@ import type { PrestataireCardDetail } from '~/data/prestataire/domain/Prestatair
 
 const props = defineProps<{
   selectable?: boolean
-  showDateFilter?: boolean
 }>()
 
 defineEmits<{ select: [provider: PrestataireCardDetail] }>()
 
 // ── Search state ──────────────────────────────────────────────────────────────
-const { dateModel, categoryKey, showOnboarding, currentSubcats, toggleSubcat } = useSearchUi()
+const { categoryKey, currentSubcats, toggleSubcat } = useSearchUi()
 const { results, loading, subcatCounts, error } = useSearchFetch()
 
-const isAllCategories = computed(() => categoryKey.value === APP_CATEGORIES[0]?.key)
-
-watch(categoryKey, () => {
-  showOnboarding.value = false
-})
+const isAllCategories = computed(() => categoryKey.value === ALL_CATEGORY_KEY)
 
 // ── Header height dynamique ───────────────────────────────────────────────────
 const headerRef = ref<HTMLElement | null>(null)
@@ -110,28 +97,14 @@ onMounted(() => {
   background-color: #fff;
 }
 
-.date-filter {
-  width: 100%;
-  max-width: 32rem;
-}
-
 .results-meta {
+  width: 100%;
   max-width: 1400px;
   padding: 1rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: start;
   justify-content: center;
-
-  &:not(:has(.vibe-text)) {
-    width: 100%;
-    align-items: start;
-  }
-
-  .vibe-text {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.6rem;
-  }
 
   .count {
     font-size: 1rem;
@@ -150,24 +123,5 @@ onMounted(() => {
     margin: 0;
     padding: 0;
   }
-}
-
-.vibe-collapse-enter-active,
-.vibe-collapse-leave-active {
-  transition:
-    opacity 320ms cubic-bezier(0.4, 0, 0.2, 1),
-    transform 320ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.vibe-collapse-enter-from,
-.vibe-collapse-leave-to {
-  opacity: 0;
-  transform: translateY(-6px);
-}
-
-.vibe-collapse-enter-to,
-.vibe-collapse-leave-from {
-  opacity: 1;
-  transform: translateY(0);
 }
 </style>

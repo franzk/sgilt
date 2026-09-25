@@ -67,6 +67,20 @@ a {
 }
 
 $app-header-height: 3.3rem;
+// Bandeaux fixés sous le header (AppBanner : ContextBanner, EvenementBanner).
+$banner-h: 3rem;
+
+// Hauteur d'écran disponible sous le header, bandeau éventuel déduit. Le bandeau n'existe que
+// pour certains visiteurs : sa hauteur passe par --banner-offset, posée par les layouts
+// (mixin below-banner) et à 0 sans bandeau.
+$viewport-below-header: calc(100dvh - $app-header-height - var(--banner-offset, 0rem));
+
+// À appliquer au conteneur de contenu d'un layout quand un bandeau est affiché : décale le contenu
+// sous le header et le bandeau, et expose --banner-offset aux pages (voir $viewport-below-header).
+@mixin below-banner {
+  --banner-offset: #{$banner-h};
+  padding-top: calc(#{$app-header-height} + #{$banner-h});
+}
 
 $breakpoint-desktop: 850px;
 

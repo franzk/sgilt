@@ -59,6 +59,12 @@
     "note": "Des événements qui vous ressemblent",
     "location-line-1": "En Alsace",
     "location-line-2": "et au-delà",
+    "change-type-dialog": {
+      "title": "Changer de type d'événement ?",
+      "message": "Changer de type d'événement va effacer votre événement en cours (date, réponses, organisation).",
+      "confirm": "Effacer et continuer",
+      "cancel": "Garder mon événement"
+    },
     "types": {
       "mariage": { "label": "Mariage", "tagline": "Le grand oui" },
       "anniversaire": { "label": "Anniversaire", "tagline": "Un an de plus à célébrer" },
@@ -66,6 +72,145 @@
       "fete_entreprise": { "label": "Fête d'entreprise", "tagline": "Vos équipes à l'honneur" },
       "evenement_public": { "label": "Événement public", "tagline": "Ouvert à tous" },
       "autre": { "label": "Autre", "tagline": "Dites-nous en plus" }
+    }
+  },
+  "commencer-picker": {
+    "title": "Vous avez l'idée,",
+    "title-highlight": "On vous aide à construire la suite.",
+    "photo-alt": {
+      "mariage": "Un dîner en plein air, à la tombée du jour"
+    },
+    "search-cta": {
+      "label": "Je cherche un prestataire",
+      "subtitle": "Je sais déjà ce qu'il me faut."
+    },
+    "guided-cta": {
+      "label": "Je commence mon organisation avec Sgilt",
+      "subtitle": "J'avance étape par étape."
+    },
+    "paragraphs": {
+      "mariage": "Votre grand jour est encore loin, ou l'organisation a déjà bien commencé ? Sgilt vous aide à y voir clair, avancer étape par étape et trouver les bons prestataires quand vous en avez besoin.",
+      "anniversaire": "Une grande fête, un dîner entre proches ou une surprise mémorable ? Sgilt vous aide à organiser votre anniversaire, poser les bonnes bases et trouver tout ce qu'il vous faut pour en faire un vrai moment à part.",
+      "soiree_privee": "Vous savez déjà qui inviter, ou tout reste encore à imaginer ? Sgilt vous aide à construire votre soirée, penser aux détails qui comptent et trouver les bonnes personnes pour lui donner vie.",
+      "fete_entreprise": "Un moment pour réunir l'équipe, célébrer ou simplement sortir du cadre ? Sgilt vous aide à structurer votre événement, avancer sans rien oublier et trouver les prestataires adaptés à votre projet.",
+      "evenement_public": "Concert, festival, rendez-vous associatif ou événement local : Sgilt vous aide à donner forme à votre projet, organiser les prochaines étapes et réunir les bons partenaires pour le faire vivre.",
+      "autre": "Même si votre événement ne rentre dans aucune case, Sgilt vous aide à poser les bases, avancer étape par étape et rassembler tout ce qu'il vous faut au même endroit."
+    }
+  },
+  "organisation": {
+    "back": "Retour",
+    "progress-label": "Progression",
+    "skip-tunnel": "Accéder directement à votre événement",
+    "skip-question": "Je ne sais pas encore",
+    "steps": {
+      "ambiance": {
+        "eyebrow": "Ambiance",
+        "title": "Quelle ambiance souhaitez-vous créer ?",
+        "subtitle": "",
+        "autre-placeholder": "Décrivez l'ambiance souhaitée…"
+      },
+      "moment-cle": {
+        "eyebrow": "Moment clé",
+        "title": "Quel serait le moment parfait de cet événement ?",
+        "title-soiree": "Quel serait le moment parfait de cette soirée ?",
+        "subtitle": "",
+        "autre-placeholder": "Décrivez le moment parfait…"
+      },
+      "lieu": {
+        "eyebrow": "Lieu",
+        "title": "Où aura lieu l'événement ?",
+        "subtitle": "Vous pouvez indiquer une ville, un lieu précis ou laisser cette information vide pour l'instant.",
+        "field-city": "Ville",
+        "field-venue": "Lieu",
+        "optional": "(facultatif)",
+        "city-placeholder": "Ex. Strasbourg, Colmar, ...",
+        "venue-placeholder": "Salle, domaine, adresse...",
+        "cta": "Continuer"
+      },
+      "invites": {
+        "eyebrow": "Nombre d'invités",
+        "title": "Vous serez combien environ ?",
+        "subtitle": "Une estimation suffit, vous pourrez la modifier plus tard.",
+        "cta": "Continuer"
+      },
+      "petit-plus": {
+        "eyebrow": "Petit plus",
+        "title": "Vous voulez nous en dire un peu plus ?",
+        "subtitle": "Racontez-nous ce qui rend votre événement unique. (C'est facultatif !)",
+        "placeholder": "Ex. thème, style, envies particulières, ce qui compte pour vous...",
+        "cta": "Accéder à mon événement"
+      }
+    },
+    "autre-validate": "Valider"
+  },
+  "evenement": {
+    "page-title": "Votre organisation - Sgilt",
+    "rubriques-title": "Votre organisation",
+    "settings-aria": "Paramètres de l'événement",
+    "settings": {
+      "page-title": "Paramètres de l'événement - Sgilt",
+      "back": "Retour à mon événement"
+    },
+    "banner": {
+      "label": "Événement en cours de création",
+      "board": "Voir mon événement",
+      "date-placeholder": "Date à définir",
+      "save": "Enregistrer",
+      "reset": "Effacer mon événement",
+      "reset-dialog": {
+        "title": "Effacer votre événement ?",
+        "message": "Les informations saisies et votre organisation seront supprimées de cet appareil. Cette action est définitive.",
+        "confirm": "Effacer",
+        "cancel": "Garder"
+      }
+    },
+    "rubriques": {
+      "lieu": "Lieu",
+      "restauration": "Restauration",
+      "musique-animation": "Musique / Animation",
+      "decoration": "Décoration",
+      "hebergement": "Hébergement",
+      "reservation-count": "{n} réservation | {n} réservations"
+    },
+    "rubrique": {
+      "page-title": "{rubrique} - Sgilt",
+      "back-aria": "Retour à mon événement",
+      "search": "Rechercher dans Sgilt",
+      "reservations-title": "Mes réservations",
+      "add": "Ajouter",
+      "empty": "Aucune réservation pour le moment.",
+      "inspirations-title": "Nos inspirations",
+      "see-more": "Voir plus",
+      "status": {
+        "en_attente_verification": "En attente de vérification"
+      },
+      "content": {
+        "lieu": {
+          "tagline": "Domaine, salle, extérieur… Trouvez le lieu qui vous ressemble.",
+          "already": "J'ai déjà mon lieu",
+          "tip": "Le lieu est souvent le premier choix : il débloque le reste de l'organisation."
+        },
+        "restauration": {
+          "tagline": "Traiteur, food truck, cocktail… Régalez vos invités.",
+          "already": "J'ai déjà mon traiteur",
+          "tip": "Les traiteurs les plus demandés se réservent longtemps à l'avance : ne tardez pas trop."
+        },
+        "musique-animation": {
+          "tagline": "DJ, musiciens, animations… Donnez le rythme à votre fête.",
+          "already": "J'ai déjà mon animation",
+          "tip": "Partagez vos incontournables (et vos interdits !) avec votre DJ ou vos musiciens."
+        },
+        "decoration": {
+          "tagline": "Fleurs, lumières, mobilier… Créez une ambiance à votre image.",
+          "already": "J'ai déjà ma décoration",
+          "tip": "Choisissez votre lieu avant la décoration : c'est lui qui guide les couleurs et le style."
+        },
+        "hebergement": {
+          "tagline": "Gîtes, hôtels, chambres d'hôtes… Gardez vos invités près de vous.",
+          "already": "J'ai déjà mon hébergement",
+          "tip": "Réservez des chambres tôt près du lieu : vos invités venus de loin vous remercieront."
+        }
+      }
     }
   },
   "landing": {
@@ -156,19 +301,13 @@
     }
   },
   "search": {
-    "results-count": "{count} prestataires correspondent à votre recherche.",
-    "results-count-with-dispo": "{count} prestataires sont disponibles à votre date.",
-    "vibe-text": "Votre événement prend forme."
+    "results-count": "{count} prestataires correspondent à votre recherche."
   },
   "provider": {
     "not-found": "Ce prestataire est introuvable.",
     "back-to-search": "← Retour à la recherche",
     "details": {
       "verify-date": "Choisir une date",
-      "availability": {
-        "available": "Disponible à cette date",
-        "unavailable": "Non disponible à cette date"
-      },
       "rates": "Tarifs",
       "send-request": "Envoyer une demande",
       "date-required": "Veuillez sélectionner une date",
@@ -255,11 +394,6 @@
         "applying": "Voir le résultat…"
       }
     },
-    "availability": {
-      "available": "🟢 Disponible",
-      "option": "🟠 Sous option",
-      "booked": "🔴 Réservé"
-    },
     "editable": {
       "baseline": {
         "ghost": "Cliquez ici pour ajouter votre accroche",
@@ -338,7 +472,36 @@
       }
     }
   },
+  "event-info": {
+    "fields": {
+      "title": "Nom de l'événement",
+      "event-type": "Type d'événement",
+      "date": "Date",
+      "lieu": "Lieu",
+      "nb-invites": "Nombre d'invités",
+      "ambiance": "Ambiance",
+      "moment-cle": "Moment clé",
+      "description": "Description"
+    },
+    "nb-invites-value": "{value} personnes",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "required": "À renseigner pour continuer",
+    "title-placeholder": "Ex. Le mariage de Julie & Thomas",
+    "title-required": "Donnez un nom à votre événement.",
+    "event-type-autre-placeholder": "Quel événement préparez-vous ?",
+    "validate": "Valider"
+  },
   "tunnel": {
+    "recap-evenement": {
+      "back": "Retour",
+      "request-to": "Demande à {name}",
+      "title": "Vérifiez les informations de votre événement",
+      "subtitle": "Ces informations seront transmises à {name} pour l'aider à vous faire une réponse adaptée.",
+      "tip-title": "Plus vous donnez de détails, meilleure sera la réponse",
+      "tip-text": "Ces informations peuvent être modifiées à tout moment dans votre événement.",
+      "continue": "Continuer"
+    },
     "bottom-sheet": {
       "title": "Envoyer une demande",
       "description": "Remplissez les étapes pour contacter ce prestataire."
@@ -1031,6 +1194,7 @@
   "nav": {
     "home": "Accueil",
     "events": "Événements",
+    "prestataires": "Prestataires",
     "notifications": "Notifications",
     "profile": "Profil"
   },

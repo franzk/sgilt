@@ -31,18 +31,6 @@ export interface DemandeState {
   prestataireName: string
   prestataireImage: string
   prestataireSlug: string
-  eventType: string | null
-  eventTypeAutre: string
-  ambiance: string | null
-  ambianceAutre: string
-  momentCle: string | null
-  momentCleAutre: string
-  description: string
-  date: Date | undefined
-  ville: string
-  nbInvites: string
-  lieuDefini: boolean
-  lieu: string
   prenom: string
   nom: string
   email: string
@@ -75,4 +63,15 @@ export const MOMENT_CLE_OPTIONS: DemandeOption[] = [
   { value: 'surprise', label: 'Moment surprise', emoji: '🎁' },
   { value: 'tard', label: 'Soirée qui finit très tard…', emoji: '🌙' },
   { value: 'autre', label: 'Autre', emoji: '•••' },
+]
+
+// Tranches proposées par le stepper d'organisation. Le libellé est stocké tel quel
+// dans `nbInvites` (chaîne libre côté back, affichée telle quelle sur le board).
+export const NB_INVITES_OPTIONS: string[] = [
+  'Moins de 20',
+  '20 – 50',
+  '50 – 100',
+  '100 – 200',
+  '200 – 500',
+  'Plus de 500',
 ]

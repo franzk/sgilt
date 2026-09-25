@@ -1,15 +1,15 @@
 <template>
   <div class="etape">
     <h2 class="question">{{ $t('tunnel.etape5.question') }}</h2>
-    <DemandeEtape5Fields :state="state" mobile />
+    <DemandeEtape5Fields :state="localEvent" mobile />
     <DemandeRecap />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useDemande } from '~/composables/useDemande'
+import { useLocalEvent } from '~/composables/useLocalEvent'
 
-const { state } = useDemande()
+const { localEvent } = useLocalEvent()
 </script>
 
 <style scoped lang="scss">

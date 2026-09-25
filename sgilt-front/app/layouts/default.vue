@@ -3,7 +3,8 @@
   <ClientOnly>
     <ContextBanner v-if="showContextBanner" />
   </ClientOnly>
-  <section class="default-content" :class="{ 'has-banner': showContextBanner }">
+  <EvenementBanner v-if="eventBannerVisible" />
+  <section class="default-content" :class="{ 'has-banner': hasBanner }">
     <slot />
   </section>
 </template>
@@ -11,8 +12,11 @@
 <script setup lang="ts">
 import AppHeader from '~/components/AppHeader.vue'
 import ContextBanner from '~/components/app/ContextBanner.vue'
+import EvenementBanner from '~/components/evenement/EvenementBanner.vue'
 
 const { showContextBanner } = useFlow()
+const { visible: eventBannerVisible } = useEvenementBanner()
+const hasBanner = computed(() => showContextBanner.value || eventBannerVisible.value)
 </script>
 
 <style lang="scss">
@@ -24,8 +28,9 @@ const { showContextBanner } = useFlow()
   display: flex;
   flex-direction: column;
 
+  // below-banner expose aussi --banner-offset (éléments sticky : voir PrestataireDetails).
   &.has-banner {
-    padding-top: calc(#{$app-header-height} + 44px);
+    @include below-banner;
   }
 }
 </style>

@@ -6,8 +6,15 @@
   </div>
 
   <template v-else-if="prestataire">
+    <!-- Visiteur non connecté sur mobile : récap modifiable de l'événement (desktop à venir). -->
+    <DemandeRecapEvenement
+      v-if="isMobile && isPublicVisitor"
+      :prestataire-name="prestataire.name"
+      :prestataire-image="heroRef(prestataire.medias) ?? ''"
+      :slug="slug"
+    />
     <DemandeDesktop
-      v-if="!isMobile"
+      v-else-if="!isMobile"
       :slug="slug"
       :prestataire-name="prestataire.name"
       :prestataire-image="heroRef(prestataire.medias) ?? ''"
@@ -29,29 +36,43 @@
 <script setup lang="ts">
 import DemandeDesktop from '~/components/demande/DemandeDesktop.vue'
 import DemandeMobile from '~/components/demande/DemandeMobile.vue'
+import DemandeRecapEvenement from '~/components/demande/DemandeRecapEvenement.vue'
 import { useDemande } from '~/composables/useDemande'
 import { usePrestataire } from '~/data/prestataire/usePrestataire'
 
 const route = useRoute()
 const slug = route.params.slug as string
 
+const { etapeActuelle, goTo, initDemande } = useDemande()
 const { prestataire, loading } = usePrestataire(slug)
+
+// Le prestataire visé vient de la route : la page le charge, la demande n'en garde qu'une référence.
+watch(
+  prestataire,
+  (p) => {
+    if (p) initDemande(p.id, p.name, heroRef(p.medias) ?? '', p.slug)
+  },
+  { immediate: true },
+)
 
 const { isMobile } = useDevice()
 
 useHead({ title: 'Votre demande' })
 
-const { etapeActuelle, state, goTo } = useDemande()
+const { localEvent } = useLocalEvent()
 const { currentFlow } = useFlow()
 const { isAuthenticated } = useKeycloak()
+
+// Les flows connectés (new-event, add-prestataire) gardent le tunnel pas-à-pas.
+const isPublicVisitor = computed(() => !isAuthenticated.value && currentFlow.value === null)
 
 const noFlowWarning = ref(false)
 
 onMounted(() => {
   if (currentFlow.value === null) {
     if (!isAuthenticated.value) {
-      if (state.prestataireSlug !== slug || !state.date) {
-        // Si l'utilisateur n'est pas authentifié et qu'il n'y a pas de prestataire ou de date dans le store,
+      if (!localEvent.date) {
+        // Si l'utilisateur n'est pas authentifié et que l'événement n'a pas de date,
         // on le redirige vers la page du prestataire pour qu'il puisse initier une demande
         navigateTo(`/${slug}`)
         return
@@ -63,7 +84,11 @@ onMounted(() => {
     }
   }
 
-  if (etapeActuelle.value === 1 && state.eventType && state.eventType.toUpperCase() !== 'AUTRE') {
+  if (
+    etapeActuelle.value === 1 &&
+    localEvent.eventType &&
+    localEvent.eventType.toUpperCase() !== 'AUTRE'
+  ) {
     // on saute l'étape de sélection du type d'événement si elle a déjà été saisie au début du parcours
     // et qu'elle n'est pas "Autre"
     goTo(2)

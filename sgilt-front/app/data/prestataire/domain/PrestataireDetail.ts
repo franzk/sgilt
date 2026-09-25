@@ -25,7 +25,6 @@ export interface PrestataireDetail {
   offerings: string[]
   identity: { quote: string | null; bio: string | null }
   budget: string | null
-  unavailableDates: string[]
   testimonials: Testimonial[]
   details: DetailItem[]
   faq: FaqItem[]
