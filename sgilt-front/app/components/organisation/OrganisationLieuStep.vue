@@ -3,7 +3,9 @@
     <label class="field-group">
       <span class="field-label">
         {{ $t('organisation.steps.lieu.field-city') }}
-        <span class="optional">{{ $t('organisation.steps.lieu.optional') }}</span>
+        <span v-if="!cityRequired" class="optional">
+          {{ $t('organisation.steps.lieu.optional') }}
+        </span>
       </span>
       <span class="field">
         <MapPin2Icon class="icon" aria-hidden="true" />
@@ -39,6 +41,11 @@
 
 <script setup lang="ts">
 import { MapPin2Icon } from '@remixicons/vue/line'
+
+defineProps<{
+  // Ville obligatoire (récap de demande) : la mention « facultatif » disparaît.
+  cityRequired?: boolean
+}>()
 
 const ville = defineModel<string>('ville', { required: true })
 const lieu = defineModel<string>('lieu', { required: true })

@@ -6,8 +6,15 @@
   </div>
 
   <template v-else-if="prestataire">
+    <!-- Visiteur non connecté sur mobile : récap modifiable de l'événement (desktop à venir). -->
+    <DemandeRecapEvenement
+      v-if="isMobile && isPublicVisitor"
+      :prestataire-name="prestataire.name"
+      :prestataire-image="heroRef(prestataire.medias) ?? ''"
+      :slug="slug"
+    />
     <DemandeDesktop
-      v-if="!isMobile"
+      v-else-if="!isMobile"
       :slug="slug"
       :prestataire-name="prestataire.name"
       :prestataire-image="heroRef(prestataire.medias) ?? ''"
@@ -29,6 +36,7 @@
 <script setup lang="ts">
 import DemandeDesktop from '~/components/demande/DemandeDesktop.vue'
 import DemandeMobile from '~/components/demande/DemandeMobile.vue'
+import DemandeRecapEvenement from '~/components/demande/DemandeRecapEvenement.vue'
 import { useDemande } from '~/composables/useDemande'
 import { usePrestataire } from '~/data/prestataire/usePrestataire'
 
@@ -54,6 +62,9 @@ useHead({ title: 'Votre demande' })
 const { localEvent } = useLocalEvent()
 const { currentFlow } = useFlow()
 const { isAuthenticated } = useKeycloak()
+
+// Les flows connectés (new-event, add-prestataire) gardent le tunnel pas-à-pas.
+const isPublicVisitor = computed(() => !isAuthenticated.value && currentFlow.value === null)
 
 const noFlowWarning = ref(false)
 

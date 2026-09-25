@@ -24,6 +24,21 @@ export function formatDate(d: Date | string | null | undefined): string {
 }
 
 /**
+ * Formate une date en français avec le jour de la semaine. Ex : "Samedi 12 juin 2027"
+ * Accepte Date, ISO string, null ou undefined. Retourne '' si absent.
+ */
+export function formatDateWithWeekday(d: Date | string | null | undefined): string {
+  if (!d) return ''
+  const formatted = new Date(d).toLocaleDateString('fr-FR', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1)
+}
+
+/**
  * Formate une date en français, mois abrégé. Ex : "14 sept. 2026"
  * Accepte Date, ISO string, null ou undefined. Retourne '' si absent.
  */
