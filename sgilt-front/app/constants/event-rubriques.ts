@@ -66,7 +66,7 @@ export const RUBRIQUE_ACCENTS: Record<RubriqueKey, string> = {
   hebergement: '#2f6f73',
 }
 
-// Photos de couverture de la fiche rubrique. Partielle par construction, comme
-// EVENT_TYPE_COVERS : une rubrique sans entrée retombe sur la couverture de l'événement,
-// en attendant que les visuels soient fournis.
+// Photos de couverture de la fiche rubrique : chemins d'images de la banque (servies via
+// useImageUrl, comme BANK_IMAGE_PATHS). Partielle par construction : une rubrique sans entrée
+// retombe sur la couverture de l'événement, en attendant que les visuels soient fournis.
 export const RUBRIQUE_COVERS: Partial<Record<RubriqueKey, string>> = {}

@@ -72,7 +72,7 @@ import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import type { EventDetail } from '~/data/evenement/domain/EventDetail'
 import type { EventPatch } from '~/data/evenement/domain/EventPatch'
-import { BANK_IMAGE_PATHS, resolveEventCover } from '~/utils/eventCovers'
+import { BANK_IMAGE_PATHS, defaultCoverPath } from '~/utils/eventCovers'
 import { uploadEventCover, selectEventCover } from '~/data/evenement/service/evenementService'
 import { ImageAddIcon } from '@remixicons/vue/line'
 
@@ -124,7 +124,7 @@ function resetDraft() {
     localPreviewUrl = null
   }
   draft.title = props.event.title
-  draft.coverDisplayUrl = resolveEventCover(props.event, toUrl)
+  draft.coverDisplayUrl = toUrl(props.event.coverImage || defaultCoverPath(props.event.eventType))
   draft.pendingFile = null
   draft.pendingBankImagePath = null
   const bankEntry = Object.entries(BANK_IMAGE_PATHS).find(

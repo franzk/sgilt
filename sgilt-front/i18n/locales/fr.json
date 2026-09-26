@@ -493,9 +493,34 @@
     "validate": "Valider"
   },
   "tunnel": {
-    "recap-evenement": {
+    "demande-header": {
       "back": "Retour",
-      "request-to": "Demande à {name}",
+      "request-to": "Demande à {name}"
+    },
+    "coordonnees": {
+      "title": "Envoyer votre demande",
+      "subtitle": "Vos coordonnées et un message seront transmis directement à {name}.",
+      "invites-value": "{value} personnes",
+      "contact-title": "Vos coordonnées",
+      "contact-subtitle": "Elles seront transmises au prestataire avec votre demande.",
+      "field-prenom": "Prénom",
+      "prenom-placeholder": "Votre prénom",
+      "field-nom": "Nom",
+      "nom-placeholder": "Votre nom",
+      "field-email": "Adresse e-mail",
+      "email-placeholder": "{'votre@email.fr'}",
+      "field-phone": "Téléphone",
+      "phone-placeholder": "06 12 34 56 78",
+      "message-title": "Votre message",
+      "message-subtitle": "Précisez ici votre besoin, vos questions ou ce que vous attendez de {name}.",
+      "message-placeholder": "Ex. : type de menu, contraintes alimentaires, horaires, options souhaitées…",
+      "submit": "Envoyer ma demande",
+      "back-to-recap": "Vérifier les informations de l'événement",
+      "error-required": "Ce champ est obligatoire",
+      "error-email": "Adresse e-mail invalide",
+      "error-phone": "Format invalide (ex : 06 12 34 56 78)"
+    },
+    "recap-evenement": {
       "title": "Vérifiez les informations de votre événement",
       "subtitle": "Ces informations seront transmises à {name} pour l'aider à vous faire une réponse adaptée.",
       "tip-title": "Plus vous donnez de détails, meilleure sera la réponse",

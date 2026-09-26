@@ -107,6 +107,7 @@
 <script setup lang="ts">
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import { useDemande } from '~/composables/useDemande'
+import { validateEmail, validatePhone } from '~/utils/contactValidation'
 
 defineProps<{ showRecap?: boolean }>()
 
@@ -120,15 +121,6 @@ const isNewEventFlow = computed(() => currentFlow.value === 'new-event')
 // ── Validation ────────────────────────────────────────────────────────────────
 
 const touched = reactive({ prenom: false, nom: false, email: false, telephone: false })
-
-function validateEmail(v: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())
-}
-
-function validatePhone(v: string): boolean {
-  const digits = v.replace(/[\s\-.()\/+]/g, '')
-  return /^\d{7,15}$/.test(digits)
-}
 
 const errors = computed(() => ({
   prenom: touched.prenom && !state.prenom.trim() ? t('tunnel.etape6.error-required') : null,

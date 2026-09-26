@@ -6,13 +6,24 @@
   </div>
 
   <template v-else-if="prestataire">
-    <!-- Visiteur non connecté sur mobile : récap modifiable de l'événement (desktop à venir). -->
-    <DemandeRecapEvenement
-      v-if="isMobile && isPublicVisitor"
-      :prestataire-name="prestataire.name"
-      :prestataire-image="heroRef(prestataire.medias) ?? ''"
-      :slug="slug"
-    />
+    <!-- Visiteur non connecté sur mobile : récap de l'événement puis coordonnées (desktop à venir). -->
+    <template v-if="isMobile && isPublicVisitor">
+      <DemandeCoordonnees
+        v-if="publicStep === 'coordonnees'"
+        :prestataire-name="prestataire.name"
+        :prestataire-image="heroRef(prestataire.medias) ?? ''"
+        :prestataire-category="prestataire.category"
+        :prestataire-subcats="prestataire.subcats"
+        @back="goToPublicStep(null)"
+      />
+      <DemandeRecapEvenement
+        v-else
+        :prestataire-name="prestataire.name"
+        :prestataire-image="heroRef(prestataire.medias) ?? ''"
+        :slug="slug"
+        @continue="goToPublicStep('coordonnees')"
+      />
+    </template>
     <DemandeDesktop
       v-else-if="!isMobile"
       :slug="slug"
@@ -36,6 +47,7 @@
 <script setup lang="ts">
 import DemandeDesktop from '~/components/demande/DemandeDesktop.vue'
 import DemandeMobile from '~/components/demande/DemandeMobile.vue'
+import DemandeCoordonnees from '~/components/demande/DemandeCoordonnees.vue'
 import DemandeRecapEvenement from '~/components/demande/DemandeRecapEvenement.vue'
 import { useDemande } from '~/composables/useDemande'
 import { usePrestataire } from '~/data/prestataire/usePrestataire'
@@ -65,6 +77,15 @@ const { isAuthenticated } = useKeycloak()
 
 // Les flows connectés (new-event, add-prestataire) gardent le tunnel pas-à-pas.
 const isPublicVisitor = computed(() => !isAuthenticated.value && currentFlow.value === null)
+
+// Écran courant du parcours public dans l'URL (?etape=) : retour navigateur et refresh
+// fonctionnent sans état supplémentaire. Absent ou inconnu = récap de l'événement.
+const publicStep = computed(() => (route.query.etape === 'coordonnees' ? 'coordonnees' : null))
+
+async function goToPublicStep(step: 'coordonnees' | null) {
+  await navigateTo({ path: route.path, query: step ? { etape: step } : {} })
+  window.scrollTo({ top: 0 })
+}
 
 const noFlowWarning = ref(false)
 

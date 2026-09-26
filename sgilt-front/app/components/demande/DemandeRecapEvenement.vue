@@ -1,25 +1,12 @@
 <template>
   <div class="recap-evenement">
     <div class="column">
-      <!-- ── En-tête ─────────────────────────────────────────────────────────── -->
-      <div class="top-row">
-        <button class="back" type="button" @click="navigateTo(`/${slug}`)">
-          <ArrowLeftIcon class="icon" aria-hidden="true" />
-          {{ $t('tunnel.recap-evenement.back') }}
-        </button>
-        <span class="prestataire">
-          <span class="prestataire-name">
-            {{ $t('tunnel.recap-evenement.request-to', { name: prestataireName }) }}
-          </span>
-          <SgiltImage
-            class="prestataire-avatar"
-            :src="prestataireImage"
-            :alt="prestataireName"
-            width="96"
-            height="96"
-          />
-        </span>
-      </div>
+      <DemandeHeader
+        class="header"
+        :prestataire-name="prestataireName"
+        :prestataire-image="prestataireImage"
+        @back="navigateTo(`/${slug}`)"
+      />
 
       <h1 class="title">{{ $t('tunnel.recap-evenement.title') }}</h1>
       <p class="subtitle">
@@ -53,8 +40,8 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowLeftIcon, ArrowRightIcon, LightbulbIcon } from '@remixicons/vue/line'
-import SgiltImage from '~/components/basics/media/SgiltImage.vue'
+import { ArrowRightIcon, LightbulbIcon } from '@remixicons/vue/line'
+import DemandeHeader from '~/components/demande/DemandeHeader.vue'
 import EventInfoCards from '~/components/evenement/EventInfoCards.vue'
 
 defineProps<{
@@ -63,14 +50,16 @@ defineProps<{
   slug: string
 }>()
 
+const emit = defineEmits<{
+  continue: []
+}>()
+
 const { localEvent } = useLocalEvent()
 
 const infoCards = useTemplateRef<InstanceType<typeof EventInfoCards>>('infoCards')
 
 function onContinue() {
-  if (!infoCards.value?.validate()) return
-  // Écran 2 (coordonnées + validation) : maquette à venir.
-  console.log('stay tuned')
+  if (infoCards.value?.validate()) emit('continue')
 }
 </script>
 
@@ -90,53 +79,8 @@ function onContinue() {
     max-width: 30rem;
     padding: $spacing-m $section-padding-x $spacing-xl;
 
-    .top-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: $spacing-m;
+    .header {
       margin-bottom: $spacing-l;
-
-      .back {
-        display: inline-flex;
-        align-items: center;
-        gap: $spacing-xxs;
-        padding: 0;
-        border: none;
-        background: none;
-        color: $text-primary;
-        font-family: inherit;
-        font-size: $font-size-sm;
-        cursor: pointer;
-
-        .icon {
-          width: 1.125rem;
-          height: 1.125rem;
-        }
-      }
-
-      .prestataire {
-        display: flex;
-        align-items: center;
-        gap: $spacing-xs;
-        min-width: 0;
-
-        .prestataire-name {
-          overflow: hidden;
-          color: $text-secondary;
-          font-size: $font-size-xs;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-
-        .prestataire-avatar {
-          flex-shrink: 0;
-          width: 2.5rem;
-          height: 2.5rem;
-          border-radius: 50%;
-          overflow: hidden;
-        }
-      }
     }
 
     .title {

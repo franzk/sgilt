@@ -100,7 +100,7 @@ import {
 import type { PrestataireCardDetail } from '~/data/prestataire/domain/PrestataireCardDetail'
 import { searchPrestataires } from '~/data/prestataire/service/prestataireService'
 import { ALL_CATEGORY_KEY } from '~/utils/constants'
-import { resolveEventCover } from '~/utils/eventCovers'
+import { defaultCoverPath } from '~/utils/eventCovers'
 
 definePageMeta({ layout: 'evenement' })
 
@@ -133,14 +133,12 @@ const reservations = computed(
 )
 
 // ── Couverture ───────────────────────────────────────────────────────────────
-// Visuel propre à la rubrique s'il existe, sinon celui de l'événement.
+// Visuel propre à la rubrique ; repli provisoire sur la couverture par défaut de l'événement
+// tant que toutes les rubriques n'ont pas leur image.
 const { toUrl } = useImageUrl()
 const coverImage = computed(() => {
   const rubriqueCover = rubriqueKey.value ? RUBRIQUE_COVERS[rubriqueKey.value] : undefined
-  return (
-    rubriqueCover ??
-    resolveEventCover({ coverImage: null, eventType: localEvent.eventType ?? undefined }, toUrl)
-  )
+  return toUrl(rubriqueCover || defaultCoverPath(localEvent.eventType))
 })
 
 // ── Inspirations ─────────────────────────────────────────────────────────────

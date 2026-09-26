@@ -49,7 +49,7 @@
 import { CalendarEventIcon, GroupIcon, MapPin2Icon, SettingsIcon } from '@remixicons/vue/line'
 import EventRubriqueItem from '~/components/evenement/EventRubriqueItem.vue'
 import { formatDate } from '~/utils/dateUtils'
-import { resolveEventCover } from '~/utils/eventCovers'
+import { defaultCoverPath } from '~/utils/eventCovers'
 import { EVENT_TYPE_TAGLINES } from '~/utils/eventTypes'
 
 definePageMeta({ layout: 'evenement' })
@@ -65,9 +65,7 @@ initMariage()
 // ── Couverture ───────────────────────────────────────────────────────────────
 // Même banque d'images que l'event board /app (fallback par type, jusqu'à 'autre').
 const { toUrl } = useImageUrl()
-const coverImage = computed(() =>
-  resolveEventCover({ coverImage: null, eventType: localEvent.eventType ?? undefined }, toUrl),
-)
+const coverImage = computed(() => toUrl(defaultCoverPath(localEvent.eventType)))
 
 const tagline = computed(() => EVENT_TYPE_TAGLINES[localEvent.eventType ?? ''])
 

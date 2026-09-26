@@ -126,7 +126,7 @@ import EventBlock from '~/components/app/EventBlock.vue'
 import EventEditDialog from '~/components/app/EventEditDialog.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import Sk from '~/components/basics/Sk.vue'
-import { resolveEventCover } from '~/utils/eventCovers'
+import { defaultCoverPath } from '~/utils/eventCovers'
 import type { EventPatch } from '~/data/evenement/domain/EventPatch'
 import type { EventDetail } from '~/data/evenement/domain/EventDetail'
 import type { ReservationStatus, ClientContactInfo } from '~/types/event'
@@ -151,7 +151,9 @@ const { reservations, pending: reservationsPending } = useEventReservations(even
 
 // ── Cover image ────────────────────────────────────────────────────────────────
 const { toUrl } = useImageUrl()
-const coverImage = computed(() => (event.value ? resolveEventCover(event.value, toUrl) : ''))
+const coverImage = computed(() =>
+  event.value ? toUrl(event.value.coverImage || defaultCoverPath(event.value.eventType)) : '',
+)
 
 // ── Parallax ───────────────────────────────────────────────────────────────────
 const bannerRef = ref<HTMLElement | null>(null)

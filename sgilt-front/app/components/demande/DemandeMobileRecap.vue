@@ -206,6 +206,7 @@
 
 <script setup lang="ts">
 import SgiltBottomSheet from '~/components/basics/sheets/SgiltBottomSheet.vue'
+import { validateEmail, validatePhone } from '~/utils/contactValidation'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 import SgiltContentCard from '~/components/basics/cards/SgiltContentCard.vue'
@@ -233,16 +234,6 @@ const {
   momentCleEmoji,
 } = useLocalEvent()
 
-// ── Validators ────────────────────────────────────────────────────────────────
-
-function validateEmail(v: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())
-}
-function validatePhone(v: string): boolean {
-  const digits = v.replace(/[\s\-.()\/+]/g, '')
-  return /^\d{7,15}$/.test(digits)
-}
-
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type IndividualFieldKey =
@@ -254,7 +245,9 @@ type IndividualFieldKey =
 type GroupKey = 'detailsPratiques' | 'coordonnees'
 type EditType = 'eventType' | 'ambiance' | 'momentCle' | 'textarea'
 
-interface SubField {
+// Alias `type` et non `interface` : seul un alias est assignable aux types à signature d'index
+// de SgiltDemandeFieldGroup (SubField, GroupItem).
+type SubField = {
   key: string
   label: string
   name?: string
@@ -279,7 +272,7 @@ interface RecapIndividualItem {
   value: string | null
 }
 
-interface RecapGroupItem {
+type RecapGroupItem = {
   type: 'group'
   key: GroupKey
   label: string
