@@ -6,15 +6,14 @@
   </div>
 
   <template v-else-if="prestataire">
-    <!-- Visiteur non connecté sur mobile : récap de l'événement puis coordonnées (desktop à venir). -->
+    <!-- Visiteur non connecté sur mobile : récap de l'événement puis coordonnées ; la
+         confirmation d'envoi est sur /demande-envoyee (desktop à venir). -->
     <template v-if="isMobile && isPublicVisitor">
       <DemandeCoordonnees
-        v-if="publicStep === 'coordonnees'"
-        :prestataire-name="prestataire.name"
-        :prestataire-image="heroRef(prestataire.medias) ?? ''"
-        :prestataire-category="prestataire.category"
-        :prestataire-subcats="prestataire.subcats"
-        @back="goToPublicStep(null)"
+        v-if="publicStep === 'coordonnees' && summary"
+        :summary="summary"
+        @back="goToPublicStep('recap')"
+        @sent="onSent"
       />
       <DemandeRecapEvenement
         v-else
@@ -51,11 +50,13 @@ import DemandeCoordonnees from '~/components/demande/DemandeCoordonnees.vue'
 import DemandeRecapEvenement from '~/components/demande/DemandeRecapEvenement.vue'
 import { useDemande } from '~/composables/useDemande'
 import { usePrestataire } from '~/data/prestataire/usePrestataire'
+import type { DemandeSummary } from '~/types/demande'
+import { APP_CATEGORIES } from '~/utils/constants'
 
 const route = useRoute()
 const slug = route.params.slug as string
 
-const { etapeActuelle, goTo, initDemande } = useDemande()
+const { state, confirmation, etapeActuelle, goTo, initDemande, reset: resetDemande } = useDemande()
 const { prestataire, loading } = usePrestataire(slug)
 
 // Le prestataire visé vient de la route : la page le charge, la demande n'en garde qu'une référence.
@@ -71,7 +72,7 @@ const { isMobile } = useDevice()
 
 useHead({ title: 'Votre demande' })
 
-const { localEvent } = useLocalEvent()
+const { localEvent, eventTypeLabel, reset: resetLocalEvent } = useLocalEvent()
 const { currentFlow } = useFlow()
 const { isAuthenticated } = useKeycloak()
 
@@ -80,11 +81,50 @@ const isPublicVisitor = computed(() => !isAuthenticated.value && currentFlow.val
 
 // Écran courant du parcours public dans l'URL (?etape=) : retour navigateur et refresh
 // fonctionnent sans état supplémentaire. Absent ou inconnu = récap de l'événement.
-const publicStep = computed(() => (route.query.etape === 'coordonnees' ? 'coordonnees' : null))
+type PublicStep = 'recap' | 'coordonnees'
+const publicStep = computed<PublicStep>(() =>
+  route.query.etape === 'coordonnees' ? 'coordonnees' : 'recap',
+)
 
-async function goToPublicStep(step: 'coordonnees' | null) {
-  await navigateTo({ path: route.path, query: step ? { etape: step } : {} })
+// Le récap est l'écran par défaut : il n'a pas de paramètre dans l'URL.
+async function goToPublicStep(step: PublicStep) {
+  await navigateTo({ path: route.path, query: step === 'recap' ? {} : { etape: step } })
   window.scrollTo({ top: 0 })
+}
+
+// Synthèse prestataire + événement des écrans coordonnées et confirmation.
+const summary = computed<DemandeSummary | null>(() => {
+  const p = prestataire.value
+  if (!p) return null
+  // « Restauration · Traiteur » : catégorie puis libellés des sous-catégories.
+  const subcatNames = APP_CATEGORIES.flatMap((category) => category.subcategories)
+    .filter((subcat) => p.subcats.includes(subcat.key))
+    .map((subcat) => subcat.name)
+  return {
+    prestataireName: p.name,
+    prestataireImage: heroRef(p.medias) ?? '',
+    prestataireCategoryLine: [p.category, ...subcatNames].join(' · '),
+    evenement: {
+      eventTypeLabel: eventTypeLabel.value,
+      date: localEvent.date,
+      nbInvites: localEvent.nbInvites,
+      ville: localEvent.ville,
+    },
+  }
+})
+
+// Demande envoyée : le parcours public de cet événement est terminé, la suite passe par le
+// lien du mail. La confirmation garde une copie figée, l'événement local et la demande
+// (coordonnées comprises) sont vidés. `replace` : le retour arrière ne ramène pas au formulaire.
+function onSent() {
+  if (!summary.value) return
+  confirmation.value = {
+    summary: { ...summary.value, evenement: { ...summary.value.evenement } },
+    email: state.email.trim(),
+  }
+  resetLocalEvent()
+  resetDemande()
+  navigateTo('/demande-envoyee', { replace: true })
 }
 
 const noFlowWarning = ref(false)

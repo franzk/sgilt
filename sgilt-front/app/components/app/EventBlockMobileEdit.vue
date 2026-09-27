@@ -164,7 +164,7 @@
 import type { EventDetail } from '~/data/evenement/domain/EventDetail'
 import type { ClientContactInfo } from '~/data/reservation/domain/ClientContactInfo'
 import type { EventPatchRequestDto } from '~/data/evenement/dto/EventDetailDto'
-import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/demande'
+import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/evenement'
 
 const props = defineProps<{
   event: EventDetail

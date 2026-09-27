@@ -1,5 +1,5 @@
 <template>
-  <div class="demande-option-select">
+  <div class="evenement-option-select">
     <Transition name="fade-down">
       <div
         v-if="modelValue === 'autre'"
@@ -35,11 +35,11 @@
 </template>
 
 <script setup lang="ts">
-import type { DemandeOption } from '~/types/demande'
+import type { EvenementOption } from '~/types/evenement'
 import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 
 defineProps<{
-  options: DemandeOption[]
+  options: EvenementOption[]
   modelValue: string | null
   autreValue: string
   autrePlaceholder?: string
@@ -69,7 +69,7 @@ function select(value: string) {
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
-.demande-option-select {
+.evenement-option-select {
   display: flex;
   flex-direction: column;
   gap: $spacing-s;
@@ -137,9 +137,6 @@ function select(value: string) {
 .autre-input-container {
   display: grid;
   padding: $spacing-xs;
-  // align-items: center;
-  // justify-content: center;
-  // overflow: hidden;
 
   .autre-input {
     display: flex;

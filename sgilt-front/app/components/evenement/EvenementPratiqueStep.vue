@@ -1,7 +1,7 @@
 <template>
   <div class="etape">
     <h2 class="question">Votre événement en pratique</h2>
-    <DemandeEtape5Fields :state="localEvent" :ville-error="villeError" />
+    <EvenementPratiqueFields :state="localEvent" :ville-error="villeError" />
     <SgiltButton class="button" @click="handleContinue">
       {{ $t('tunnel.footer.continue') }}
     </SgiltButton>
@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
-import DemandeEtape5Fields from '~/components/demande/DemandeEtape5Fields.vue'
+import EvenementPratiqueFields from '~/components/evenement/EvenementPratiqueFields.vue'
 import { useDemande } from '~/composables/useDemande'
 import { useLocalEvent } from '~/composables/useLocalEvent'
 

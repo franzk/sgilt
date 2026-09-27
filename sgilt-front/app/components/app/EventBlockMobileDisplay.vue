@@ -128,7 +128,7 @@
 <script setup lang="ts">
 import type { EventDetail } from '~/data/evenement/domain/EventDetail'
 import type { ClientContactInfo } from '~/data/reservation/domain/ClientContactInfo'
-import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/demande'
+import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/evenement'
 import { FileCopyIcon, CheckIcon, EditIcon } from '@remixicons/vue/line'
 
 const props = defineProps<{

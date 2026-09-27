@@ -13,8 +13,9 @@ import {
   AMBIANCE_OPTIONS,
   EVENT_TYPE_OPTIONS,
   MOMENT_CLE_OPTIONS,
-  type DemandeOption,
-} from '~/types/demande'
+  type EvenementOption,
+  type EvenementRequest,
+} from '~/types/evenement'
 
 // Événement du parcours public (route /) : source de vérité unique tant qu'il n'est pas
 // matérialisé en base, comme un panier d'e-boutique. Aucun appel réseau.
@@ -202,7 +203,7 @@ if (import.meta.client) {
 // ── Libellés des choix (type, ambiance, moment clé) ───────────────────────────
 
 export function choiceLabel(
-  options: DemandeOption[],
+  options: EvenementOption[],
   value: string | null,
   autre: string,
 ): string | null {
@@ -211,7 +212,7 @@ export function choiceLabel(
   return options.find((option) => option.value === value)?.label ?? null
 }
 
-function choiceEmoji(options: DemandeOption[], value: string | null): string {
+function choiceEmoji(options: EvenementOption[], value: string | null): string {
   if (!value) return ''
   return options.find((option) => option.value === value)?.emoji ?? '•••'
 }
@@ -247,6 +248,23 @@ export function useLocalEvent() {
     }
   }
 
+  // Champs de l'événement tels qu'envoyés au serveur : choix « autre » remplacés par le texte
+  // saisi, date au format ISO, champs vides à null.
+  function toEvenementRequest(): EvenementRequest {
+    const resolveAutre = (value: string | null, autre: string) =>
+      value === 'autre' ? autre || null : value
+    return {
+      eventType: resolveAutre(localEvent.eventType, localEvent.eventTypeAutre),
+      ambiance: resolveAutre(localEvent.ambiance, localEvent.ambianceAutre),
+      momentCle: resolveAutre(localEvent.momentCle, localEvent.momentCleAutre),
+      description: localEvent.description || null,
+      date: localEvent.date ? toISODate(localEvent.date) : null,
+      ville: localEvent.ville || null,
+      nbInvites: localEvent.nbInvites || null,
+      lieu: localEvent.lieu || null,
+    }
+  }
+
   const eventTypeLabel = computed(() =>
     choiceLabel(EVENT_TYPE_OPTIONS, localEvent.eventType, localEvent.eventTypeAutre),
   )
@@ -265,6 +283,7 @@ export function useLocalEvent() {
     start,
     reset,
     initMariage,
+    toEvenementRequest,
     eventTypeLabel,
     eventTypeEmoji,
     ambianceLabel,

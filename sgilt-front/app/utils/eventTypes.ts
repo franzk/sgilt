@@ -19,7 +19,7 @@ export interface EventTypeMeta {
 /**
  * Catalogue des types d'événement (écran "Qu'est-ce qu'on fête ?").
  * `key` reprend les slugs déjà utilisés pour les vrais événements (voir BANK_IMAGE_PATHS
- * dans constants.ts) — pas les slugs de EVENT_TYPE_OPTIONS (types/demande.ts), propres au
+ * dans constants.ts) — pas les slugs de EVENT_TYPE_OPTIONS (types/evenement.ts), propres au
  * tunnel de demande prestataire.
  *
  * Ordre calé sur la teinte de $event-* (colors.scss), pas sur l'ordre alphabétique/métier :

@@ -116,7 +116,7 @@
     <!-- ── Sheet individuelle (options + textarea) ────────────────────────────── -->
     <SgiltBottomSheet v-model:open="sheetOpen" :title="activeIndividualItem?.label ?? ''">
       <div v-if="activeField === 'eventType'" class="sheet-option-body">
-        <DemandeOptionSelect
+        <EvenementOptionSelect
           :options="EVENT_TYPE_OPTIONS"
           :model-value="localEvent.eventType"
           :autre-value="localEvent.eventTypeAutre"
@@ -127,7 +127,7 @@
         />
       </div>
       <div v-else-if="activeField === 'ambiance'" class="sheet-option-body">
-        <DemandeOptionSelect
+        <EvenementOptionSelect
           :options="AMBIANCE_OPTIONS"
           :model-value="localEvent.ambiance"
           :autre-value="localEvent.ambianceAutre"
@@ -138,7 +138,7 @@
         />
       </div>
       <div v-else-if="activeField === 'momentCle'" class="sheet-option-body">
-        <DemandeOptionSelect
+        <EvenementOptionSelect
           :options="MOMENT_CLE_OPTIONS"
           :model-value="localEvent.momentCle"
           :autre-value="localEvent.momentCleAutre"
@@ -211,11 +211,11 @@ import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 import SgiltContentCard from '~/components/basics/cards/SgiltContentCard.vue'
 import SgiltDemandeFieldGroup from '~/components/basics/SgiltDemandeFieldGroup.vue'
-import DemandeOptionSelect from '~/components/demande/DemandeOptionSelect.vue'
+import EvenementOptionSelect from '~/components/evenement/EvenementOptionSelect.vue'
 import { useDemande } from '~/composables/useDemande'
 import { useLocalEvent } from '~/composables/useLocalEvent'
 import { useImageUrl } from '~/composables/useImageUrl'
-import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/demande'
+import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/evenement'
 
 defineEmits<{ cancel: [] }>()
 

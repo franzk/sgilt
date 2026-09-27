@@ -3,49 +3,17 @@
     <div class="column">
       <DemandeHeader
         class="header"
-        :prestataire-name="prestataireName"
-        :prestataire-image="prestataireImage"
+        :prestataire-name="summary.prestataireName"
+        :prestataire-image="summary.prestataireImage"
         @back="$emit('back')"
       />
 
       <h1 class="title">{{ $t('tunnel.coordonnees.title') }}</h1>
       <p class="subtitle">
-        {{ $t('tunnel.coordonnees.subtitle', { name: prestataireName }) }}
+        {{ $t('tunnel.coordonnees.subtitle', { name: summary.prestataireName }) }}
       </p>
 
-      <!-- ── Synthèse prestataire + événement ────────────────────────────────── -->
-      <div class="summary">
-        <div class="summary-prestataire">
-          <SgiltImage
-            class="summary-avatar"
-            :src="prestataireImage"
-            :alt="prestataireName"
-            width="128"
-            height="128"
-          />
-          <span class="summary-text">
-            <span class="summary-name">{{ prestataireName }}</span>
-            <span class="summary-category">{{ categoryLine }}</span>
-          </span>
-        </div>
-        <div class="summary-event">
-          <span class="summary-info">
-            <CalendarEventIcon class="icon" aria-hidden="true" />
-            <span class="info-lines">
-              <span v-if="eventTypeLabel">{{ eventTypeLabel }}</span>
-              <span>{{ formatDate(localEvent.date) }}</span>
-            </span>
-          </span>
-          <span v-if="localEvent.nbInvites" class="summary-info">
-            <GroupIcon class="icon" aria-hidden="true" />
-            {{ $t('tunnel.coordonnees.invites-value', { value: localEvent.nbInvites }) }}
-          </span>
-          <span class="summary-info">
-            <MapPin2Icon class="icon" aria-hidden="true" />
-            {{ localEvent.ville }}
-          </span>
-        </div>
-      </div>
+      <DemandeSummaryCard class="summary" :summary="summary" />
 
       <!-- ── Vos coordonnées ─────────────────────────────────────────────────── -->
       <section class="section">
@@ -135,7 +103,7 @@
       <section class="section">
         <h2 class="section-title">{{ $t('tunnel.coordonnees.message-title') }}</h2>
         <p class="section-subtitle">
-          {{ $t('tunnel.coordonnees.message-subtitle', { name: prestataireName }) }}
+          {{ $t('tunnel.coordonnees.message-subtitle', { name: summary.prestataireName }) }}
         </p>
         <span class="message-field">
           <Chat3Icon class="icon" aria-hidden="true" />
@@ -169,49 +137,32 @@
 <script setup lang="ts">
 import {
   ArrowLeftIcon,
-  CalendarEventIcon,
   Chat3Icon,
-  GroupIcon,
   MailIcon,
-  MapPin2Icon,
   PhoneIcon,
   SendPlaneIcon,
   UserIcon,
 } from '@remixicons/vue/line'
-import SgiltImage from '~/components/basics/media/SgiltImage.vue'
 import DemandeHeader from '~/components/demande/DemandeHeader.vue'
+import DemandeSummaryCard from '~/components/demande/DemandeSummaryCard.vue'
 import { useDemande } from '~/composables/useDemande'
-import { APP_CATEGORIES } from '~/utils/constants'
+import type { DemandeSummary } from '~/types/demande'
 import { validateEmail, validatePhone } from '~/utils/contactValidation'
-import { formatDate } from '~/utils/dateUtils'
 
 // Même limite que la validation back (InitOnboardingRequest.prestataireMessage).
 const MESSAGE_MAX_LENGTH = 1000
 
-const props = defineProps<{
-  prestataireName: string
-  prestataireImage: string
-  // Libellé de la catégorie du prestataire et clés de ses sous-catégories.
-  prestataireCategory: string
-  prestataireSubcats: string[]
+defineProps<{
+  summary: DemandeSummary
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   back: []
+  sent: []
 }>()
 
 const { t } = useI18n()
 const { state } = useDemande()
-const { localEvent, eventTypeLabel } = useLocalEvent()
-
-// ── Synthèse ──────────────────────────────────────────────────────────────────
-// « Restauration · Traiteur » : catégorie puis libellés des sous-catégories.
-const categoryLine = computed(() => {
-  const subcatNames = APP_CATEGORIES.flatMap((category) => category.subcategories)
-    .filter((subcat) => props.prestataireSubcats.includes(subcat.key))
-    .map((subcat) => subcat.name)
-  return [props.prestataireCategory, ...subcatNames].join(' · ')
-})
 
 // ── Validation ────────────────────────────────────────────────────────────────
 // Erreurs affichées au clic sur « Envoyer », puis mises à jour en direct.
@@ -258,8 +209,9 @@ function onSubmit() {
     input?.focus({ preventScroll: true })
     return
   }
-  // Envoi : brancher sur le modèle jeton + synchronisation (chantier back à venir).
+  // Envoi simulé : l'appel réel (POST /onboarding) remplacera ce log.
   console.log('stay tuned')
+  emit('sent')
 }
 </script>
 
@@ -299,76 +251,8 @@ function onSubmit() {
       line-height: $line-height-normal;
     }
 
-    // ── Synthèse ───────────────────────────────────────────────────────────────
     .summary {
-      display: flex;
-      flex-direction: column;
-      gap: $spacing-s;
       margin-top: $spacing-l;
-      padding: $spacing-m;
-      border-radius: $radius-lg;
-      background: $surface-soft;
-
-      .summary-prestataire {
-        display: flex;
-        align-items: center;
-        gap: $spacing-s;
-        padding-bottom: $spacing-s;
-        border-bottom: 1px solid $divider-color;
-
-        .summary-avatar {
-          flex-shrink: 0;
-          width: 3.5rem;
-          height: 3.5rem;
-          border-radius: 50%;
-          overflow: hidden;
-        }
-
-        .summary-text {
-          display: flex;
-          flex-direction: column;
-          gap: 0.125rem;
-          min-width: 0;
-
-          .summary-name {
-            color: $text-primary;
-            font-size: $font-size-md;
-            font-weight: $font-weight-bold;
-          }
-
-          .summary-category {
-            color: $text-secondary;
-            font-size: $font-size-xs;
-          }
-        }
-      }
-
-      .summary-event {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: $spacing-s;
-
-        .summary-info {
-          display: inline-flex;
-          align-items: center;
-          gap: $spacing-xs;
-          color: $text-primary;
-          font-size: $font-size-xs;
-
-          .icon {
-            flex-shrink: 0;
-            width: 1.375rem;
-            height: 1.375rem;
-          }
-
-          .info-lines {
-            display: flex;
-            flex-direction: column;
-          }
-        }
-      }
     }
 
     // ── Sections ───────────────────────────────────────────────────────────────

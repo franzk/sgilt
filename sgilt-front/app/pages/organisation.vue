@@ -70,7 +70,7 @@
 
 <script setup lang="ts">
 import { ArrowLeftIcon, ArrowRightIcon, ArrowRightSIcon } from '@remixicons/vue/line'
-import { AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/demande'
+import { AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/evenement'
 
 useHead({ title: 'Votre événement - Sgilt' })
 

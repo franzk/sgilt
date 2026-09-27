@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { NB_INVITES_OPTIONS } from '~/types/demande'
+import { NB_INVITES_OPTIONS } from '~/types/evenement'
 
 const nbInvites = defineModel<string>({ required: true })
 

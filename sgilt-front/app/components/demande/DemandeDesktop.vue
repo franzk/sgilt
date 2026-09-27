@@ -75,12 +75,12 @@
 
             <Transition name="accordion-body">
               <div v-if="n === etapeActuelle" class="body">
-                <DemandeEtape1 v-if="n === 1" />
-                <DemandeEtape2 v-else-if="n === 2" />
-                <DemandeEtape3 v-else-if="n === 3" />
-                <DemandeEtape4 v-else-if="n === 4" />
-                <DemandeEtape5Desktop v-else-if="n === 5" />
-                <DemandeEtape6 v-else-if="n === 6" />
+                <EvenementTypeStep v-if="n === 1" />
+                <EvenementAmbianceStep v-else-if="n === 2" />
+                <EvenementMomentCleStep v-else-if="n === 3" />
+                <EvenementDescriptionStep v-else-if="n === 4" />
+                <EvenementPratiqueStep v-else-if="n === 5" />
+                <DemandeContactStep v-else-if="n === 6" />
               </div>
             </Transition>
           </div>
@@ -108,12 +108,12 @@
 import DemandeRecap from '~/components/demande/DemandeRecap.vue'
 import DemandeCommentCaMarche from '~/components/demande/DemandeCommentCaMarche.vue'
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
-import DemandeEtape1 from '~/components/demande/DemandeEtape1.vue'
-import DemandeEtape2 from '~/components/demande/DemandeEtape2.vue'
-import DemandeEtape3 from '~/components/demande/DemandeEtape3.vue'
-import DemandeEtape4 from '~/components/demande/DemandeEtape4.vue'
-import DemandeEtape5Desktop from '~/components/demande/DemandeEtape5Desktop.vue'
-import DemandeEtape6 from '~/components/demande/DemandeEtape6.vue'
+import EvenementTypeStep from '~/components/evenement/EvenementTypeStep.vue'
+import EvenementAmbianceStep from '~/components/evenement/EvenementAmbianceStep.vue'
+import EvenementMomentCleStep from '~/components/evenement/EvenementMomentCleStep.vue'
+import EvenementDescriptionStep from '~/components/evenement/EvenementDescriptionStep.vue'
+import EvenementPratiqueStep from '~/components/evenement/EvenementPratiqueStep.vue'
+import DemandeContactStep from '~/components/demande/DemandeContactStep.vue'
 import DemandeFinalisation from '~/components/demande/DemandeFinalisation.vue'
 import SgiltContentCard from '~/components/basics/cards/SgiltContentCard.vue'
 import { useDemande } from '~/composables/useDemande'

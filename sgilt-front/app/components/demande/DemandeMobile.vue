@@ -19,10 +19,10 @@
       <div ref="bodyRef" class="mobile-body">
         <Transition :name="direction === 'forward' ? 'slide-forward' : 'slide-back'" mode="out-in">
           <div :key="etapeActuelle">
-            <DemandeEtape1 v-if="etapeActuelle === 1" />
-            <DemandeEtape2 v-else-if="etapeActuelle === 2" />
-            <DemandeEtape3 v-else-if="etapeActuelle === 3" />
-            <DemandeEtape4 v-else-if="etapeActuelle === 4" />
+            <EvenementTypeStep v-if="etapeActuelle === 1" />
+            <EvenementAmbianceStep v-else-if="etapeActuelle === 2" />
+            <EvenementMomentCleStep v-else-if="etapeActuelle === 3" />
+            <EvenementDescriptionStep v-else-if="etapeActuelle === 4" />
           </div>
         </Transition>
       </div>
@@ -38,10 +38,10 @@
 </template>
 
 <script setup lang="ts">
-import DemandeEtape1 from '~/components/demande/DemandeEtape1.vue'
-import DemandeEtape2 from '~/components/demande/DemandeEtape2.vue'
-import DemandeEtape3 from '~/components/demande/DemandeEtape3.vue'
-import DemandeEtape4 from '~/components/demande/DemandeEtape4.vue'
+import EvenementTypeStep from '~/components/evenement/EvenementTypeStep.vue'
+import EvenementAmbianceStep from '~/components/evenement/EvenementAmbianceStep.vue'
+import EvenementMomentCleStep from '~/components/evenement/EvenementMomentCleStep.vue'
+import EvenementDescriptionStep from '~/components/evenement/EvenementDescriptionStep.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import DemandeFinalisation from '~/components/demande/DemandeFinalisation.vue'
 import DemandeSheetHeader from '~/components/demande/DemandeSheetHeader.vue'

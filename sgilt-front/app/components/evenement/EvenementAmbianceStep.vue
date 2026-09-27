@@ -2,7 +2,7 @@
   <div class="etape">
     <h2 class="etape__question">{{ $t('tunnel.etape2.question') }}</h2>
 
-    <DemandeOptionSelect
+    <EvenementOptionSelect
       :options="AMBIANCE_OPTIONS"
       :model-value="localEvent.ambiance"
       :autre-value="localEvent.ambianceAutre"
@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { AMBIANCE_OPTIONS } from '~/types/demande'
+import { AMBIANCE_OPTIONS } from '~/types/evenement'
 import { useDemande } from '~/composables/useDemande'
 import { useLocalEvent } from '~/composables/useLocalEvent'
 

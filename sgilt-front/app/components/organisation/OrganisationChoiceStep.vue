@@ -35,12 +35,12 @@
 </template>
 
 <script setup lang="ts">
-import type { DemandeOption } from '~/types/demande'
+import type { EvenementOption } from '~/types/evenement'
 
 const AUTRE_VALUE = 'autre'
 
 defineProps<{
-  options: DemandeOption[]
+  options: EvenementOption[]
   autrePlaceholder: string
 }>()
 

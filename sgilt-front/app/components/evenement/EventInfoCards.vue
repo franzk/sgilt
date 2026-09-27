@@ -111,7 +111,7 @@ import {
 import SgiltBottomSheet from '~/components/basics/sheets/SgiltBottomSheet.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
 import { choiceLabel, type EventInfoFields } from '~/composables/useLocalEvent'
-import { AMBIANCE_OPTIONS, EVENT_TYPE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/demande'
+import { AMBIANCE_OPTIONS, EVENT_TYPE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/evenement'
 import { formatDateWithWeekday } from '~/utils/dateUtils'
 import { EVENT_TYPE_CATALOG } from '~/utils/eventTypes'
 

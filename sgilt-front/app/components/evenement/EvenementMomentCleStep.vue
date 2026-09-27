@@ -2,7 +2,7 @@
   <div class="etape">
     <h2 class="etape__question">{{ $t('tunnel.etape3.question') }}</h2>
 
-    <DemandeOptionSelect
+    <EvenementOptionSelect
       :options="MOMENT_CLE_OPTIONS"
       :model-value="localEvent.momentCle"
       :autre-value="localEvent.momentCleAutre"
@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { MOMENT_CLE_OPTIONS } from '~/types/demande'
+import { MOMENT_CLE_OPTIONS } from '~/types/evenement'
 import { useDemande } from '~/composables/useDemande'
 import { useLocalEvent } from '~/composables/useLocalEvent'
 

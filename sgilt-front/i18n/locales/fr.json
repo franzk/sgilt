@@ -497,10 +497,21 @@
       "back": "Retour",
       "request-to": "Demande à {name}"
     },
+    "summary": {
+      "invites-value": "{value} personnes"
+    },
+    "envoyee": {
+      "page-title": "Demande envoyée - Sgilt",
+      "title": "Plus qu'une étape !",
+      "text": "Cliquez sur le lien reçu par e-mail pour confirmer votre demande.",
+      "text-then": "Elle sera ensuite transmise à {name}.",
+      "email-sent-to": "E-mail envoyé à",
+      "request-sent-to": "Votre demande sera envoyée à",
+      "home": "Retour à l'accueil"
+    },
     "coordonnees": {
       "title": "Envoyer votre demande",
       "subtitle": "Vos coordonnées et un message seront transmis directement à {name}.",
-      "invites-value": "{value} personnes",
       "contact-title": "Vos coordonnées",
       "contact-subtitle": "Elles seront transmises au prestataire avec votre demande.",
       "field-prenom": "Prénom",

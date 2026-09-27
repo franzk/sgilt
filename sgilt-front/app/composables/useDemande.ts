@@ -1,7 +1,11 @@
-import type { DemandeRequest, OnboardingDemandeRequest, DemandeState } from '~/types/demande'
+import type {
+  DemandeConfirmation,
+  DemandeRequest,
+  OnboardingDemandeRequest,
+  DemandeState,
+} from '~/types/demande'
 import { submitOnboarding } from '~/data/onboarding/api/onboardingApi'
 import { createEventApi } from '~/data/evenement/api/evenementApi'
-import { toISODate } from '~/utils/dateUtils'
 
 // Demande envoyée à un prestataire : le prestataire visé, les coordonnées de la personne et
 // son message. L'événement n'est pas ici : il vit dans useLocalEvent (source de vérité),
@@ -34,6 +38,9 @@ const submitted = ref(false)
 const submitting = ref(false)
 const submitError = ref<string | null>(null)
 const state = reactive<DemandeState>(defaultDemandeState())
+// Confirmation de la dernière demande envoyée (écran /demande-envoyee). Hors de reset() : la
+// demande est vidée à l'envoi, la confirmation doit lui survivre. Perdue au rafraîchissement.
+const confirmation = ref<DemandeConfirmation | null>(null)
 
 // ── Composable ────────────────────────────────────────────────────────────────
 
@@ -77,41 +84,27 @@ export function useDemande() {
     submitting.value = true
     submitError.value = null
     try {
-      const { localEvent, reset: resetLocalEvent } = useLocalEvent()
-
-      const resolvedEventType =
-        localEvent.eventType === 'autre' ? localEvent.eventTypeAutre || null : localEvent.eventType
-      const resolvedAmbiance =
-        localEvent.ambiance === 'autre' ? localEvent.ambianceAutre || null : localEvent.ambiance
-      const resolvedMomentCle =
-        localEvent.momentCle === 'autre' ? localEvent.momentCleAutre || null : localEvent.momentCle
+      const { toEvenementRequest, reset: resetLocalEvent } = useLocalEvent()
 
       if (!state.prestataireId) {
         submitError.value = 'Prestataire manquant'
         return
       }
 
-      const eventBody: DemandeRequest = {
+      const demandeBody: DemandeRequest = {
+        ...toEvenementRequest(),
         prestataireId: state.prestataireId,
-        eventType: resolvedEventType,
-        ambiance: resolvedAmbiance,
-        momentCle: resolvedMomentCle,
-        description: localEvent.description || null,
-        date: localEvent.date ? toISODate(localEvent.date) : null,
-        ville: localEvent.ville || null,
-        nbInvites: localEvent.nbInvites || null,
-        lieu: localEvent.lieu || null,
         prestataireMessage: state.prestataireMessage || null,
       }
 
       if (useFlow().currentFlow.value === 'new-event') {
-        const { eventId } = await createEventApi(eventBody)
+        const { eventId } = await createEventApi(demandeBody)
         resetLocalEvent() // matérialisé en base : le serveur devient la vérité
         submitted.value = true
         useFlow().flowPayload.value = { id: eventId }
       } else {
         const onboardingBody: OnboardingDemandeRequest = {
-          ...eventBody,
+          ...demandeBody,
           firstName: state.prenom,
           lastName: state.nom,
           email: state.email,
@@ -136,6 +129,7 @@ export function useDemande() {
     submitting,
     submitError,
     state,
+    confirmation,
     initDemande,
     next,
     back,
