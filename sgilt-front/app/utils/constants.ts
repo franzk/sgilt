@@ -30,6 +30,7 @@ export const APP_CATEGORIES: Category[] = [
     subcategories: [
       { key: 'traiteur', name: 'Traiteur', categoryKey: 'restauration' },
       { key: 'food-truck', name: 'Food Truck', categoryKey: 'restauration' },
+      { key: 'boissons', name: 'Boissons', categoryKey: 'restauration' },
     ],
   },
   {
