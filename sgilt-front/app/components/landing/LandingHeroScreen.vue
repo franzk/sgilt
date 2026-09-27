@@ -43,7 +43,7 @@ $tagline-line-height: 1.5;
   width: 100%;
   // min-height (pas height) : la page grandit avec son contenu plutôt que
   // d'être plafonnée à la hauteur du viewport — le scroll se fait au niveau de la page entière
-  min-height: calc(100dvh - $app-header-height);
+  min-height: $viewport-below-header;
   overflow: clip;
   background: $background;
 

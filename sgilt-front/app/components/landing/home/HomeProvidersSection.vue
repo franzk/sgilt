@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import PrestataireCard from '~/components/cards/PrestataireCard.vue'
 import { searchPrestataires } from '~/data/prestataire/service/prestataireService'
-import { APP_CATEGORIES } from '~/utils/constants'
+import { ALL_CATEGORY_KEY } from '~/utils/constants'
 import type { PrestataireCardDetail } from '~/data/prestataire/domain/PrestataireCardDetail'
 
 const DISPLAY_COUNT = 3
@@ -50,8 +50,7 @@ const loading = ref(true)
 onMounted(async () => {
   try {
     const { results } = await searchPrestataires({
-      date: '',
-      categoryKey: APP_CATEGORIES[0]?.key ?? 'all',
+      categoryKey: ALL_CATEGORY_KEY,
       subcatKeys: [],
     })
     providers.value = results.slice(0, DISPLAY_COUNT)

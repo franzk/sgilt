@@ -6,8 +6,25 @@
   </div>
 
   <template v-else-if="prestataire">
+    <!-- Visiteur non connecté sur mobile : récap de l'événement puis coordonnées ; la
+         confirmation d'envoi est sur /demande-envoyee (desktop à venir). -->
+    <template v-if="isMobile && isPublicVisitor">
+      <DemandeCoordonnees
+        v-if="publicStep === 'coordonnees' && summary"
+        :summary="summary"
+        @back="goToPublicStep('recap')"
+        @sent="onSent"
+      />
+      <DemandeRecapEvenement
+        v-else
+        :prestataire-name="prestataire.name"
+        :prestataire-image="heroRef(prestataire.medias) ?? ''"
+        :slug="slug"
+        @continue="goToPublicStep('coordonnees')"
+      />
+    </template>
     <DemandeDesktop
-      v-if="!isMobile"
+      v-else-if="!isMobile"
       :slug="slug"
       :prestataire-name="prestataire.name"
       :prestataire-image="heroRef(prestataire.medias) ?? ''"
@@ -29,29 +46,94 @@
 <script setup lang="ts">
 import DemandeDesktop from '~/components/demande/DemandeDesktop.vue'
 import DemandeMobile from '~/components/demande/DemandeMobile.vue'
+import DemandeCoordonnees from '~/components/demande/DemandeCoordonnees.vue'
+import DemandeRecapEvenement from '~/components/demande/DemandeRecapEvenement.vue'
 import { useDemande } from '~/composables/useDemande'
 import { usePrestataire } from '~/data/prestataire/usePrestataire'
+import type { DemandeSummary } from '~/types/demande'
+import { APP_CATEGORIES } from '~/utils/constants'
 
 const route = useRoute()
 const slug = route.params.slug as string
 
+const { state, confirmation, etapeActuelle, goTo, initDemande, reset: resetDemande } = useDemande()
 const { prestataire, loading } = usePrestataire(slug)
+
+// Le prestataire visé vient de la route : la page le charge, la demande n'en garde qu'une référence.
+watch(
+  prestataire,
+  (p) => {
+    if (p) initDemande(p.id, p.name, heroRef(p.medias) ?? '', p.slug)
+  },
+  { immediate: true },
+)
 
 const { isMobile } = useDevice()
 
 useHead({ title: 'Votre demande' })
 
-const { etapeActuelle, state, goTo } = useDemande()
+const { localEvent, eventTypeLabel, reset: resetLocalEvent } = useLocalEvent()
 const { currentFlow } = useFlow()
 const { isAuthenticated } = useKeycloak()
+
+// Les flows connectés (new-event, add-prestataire) gardent le tunnel pas-à-pas.
+const isPublicVisitor = computed(() => !isAuthenticated.value && currentFlow.value === null)
+
+// Écran courant du parcours public dans l'URL (?etape=) : retour navigateur et refresh
+// fonctionnent sans état supplémentaire. Absent ou inconnu = récap de l'événement.
+type PublicStep = 'recap' | 'coordonnees'
+const publicStep = computed<PublicStep>(() =>
+  route.query.etape === 'coordonnees' ? 'coordonnees' : 'recap',
+)
+
+// Le récap est l'écran par défaut : il n'a pas de paramètre dans l'URL.
+async function goToPublicStep(step: PublicStep) {
+  await navigateTo({ path: route.path, query: step === 'recap' ? {} : { etape: step } })
+  window.scrollTo({ top: 0 })
+}
+
+// Synthèse prestataire + événement des écrans coordonnées et confirmation.
+const summary = computed<DemandeSummary | null>(() => {
+  const p = prestataire.value
+  if (!p) return null
+  // « Restauration · Traiteur » : catégorie puis libellés des sous-catégories.
+  const subcatNames = APP_CATEGORIES.flatMap((category) => category.subcategories)
+    .filter((subcat) => p.subcats.includes(subcat.key))
+    .map((subcat) => subcat.name)
+  return {
+    prestataireName: p.name,
+    prestataireImage: heroRef(p.medias) ?? '',
+    prestataireCategoryLine: [p.category, ...subcatNames].join(' · '),
+    evenement: {
+      eventTypeLabel: eventTypeLabel.value,
+      date: localEvent.date,
+      nbInvites: localEvent.nbInvites,
+      ville: localEvent.ville,
+    },
+  }
+})
+
+// Demande envoyée : le parcours public de cet événement est terminé, la suite passe par le
+// lien du mail. La confirmation garde une copie figée, l'événement local et la demande
+// (coordonnées comprises) sont vidés. `replace` : le retour arrière ne ramène pas au formulaire.
+function onSent() {
+  if (!summary.value) return
+  confirmation.value = {
+    summary: { ...summary.value, evenement: { ...summary.value.evenement } },
+    email: state.email.trim(),
+  }
+  resetLocalEvent()
+  resetDemande()
+  navigateTo('/demande-envoyee', { replace: true })
+}
 
 const noFlowWarning = ref(false)
 
 onMounted(() => {
   if (currentFlow.value === null) {
     if (!isAuthenticated.value) {
-      if (state.prestataireSlug !== slug || !state.date) {
-        // Si l'utilisateur n'est pas authentifié et qu'il n'y a pas de prestataire ou de date dans le store,
+      if (!localEvent.date) {
+        // Si l'utilisateur n'est pas authentifié et que l'événement n'a pas de date,
         // on le redirige vers la page du prestataire pour qu'il puisse initier une demande
         navigateTo(`/${slug}`)
         return
@@ -63,7 +145,11 @@ onMounted(() => {
     }
   }
 
-  if (etapeActuelle.value === 1 && state.eventType && state.eventType.toUpperCase() !== 'AUTRE') {
+  if (
+    etapeActuelle.value === 1 &&
+    localEvent.eventType &&
+    localEvent.eventType.toUpperCase() !== 'AUTRE'
+  ) {
     // on saute l'étape de sélection du type d'événement si elle a déjà été saisie au début du parcours
     // et qu'elle n'est pas "Autre"
     goTo(2)

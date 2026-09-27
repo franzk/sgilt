@@ -43,6 +43,7 @@
 
 <script setup lang="ts">
 import { useDemande } from '~/composables/useDemande'
+import { useLocalEvent } from '~/composables/useLocalEvent'
 import { useImageUrl } from '~/composables/useImageUrl'
 
 const props = defineProps<{
@@ -52,23 +53,24 @@ const props = defineProps<{
 
 const { toUrl } = useImageUrl()
 
+const { state } = useDemande()
 const {
-  state,
+  localEvent,
   eventTypeLabel,
   eventTypeEmoji,
   ambianceLabel,
   ambianceEmoji,
   momentCleLabel,
   momentCleEmoji,
-} = useDemande()
+} = useLocalEvent()
 
 const hasContent = computed(
   () => !!eventTypeLabel.value || !!ambianceLabel.value || !!momentCleLabel.value,
 )
 
 const parsedDate = computed(() => {
-  if (!state.date) return null
-  const d = new Date(state.date)
+  if (!localEvent.date) return null
+  const d = new Date(localEvent.date)
   return {
     day: d.getDate(),
     month: d.toLocaleDateString('fr-FR', { month: 'long' }),
@@ -92,9 +94,9 @@ const visibleItems = computed(() => {
       emoji: momentCleEmoji.value || '⭐',
       text: momentCleLabel.value,
     })
-  if (state.ville) items.push({ key: 'ville', emoji: '📍', text: state.ville })
-  if (state.lieuDefini && state.lieu) items.push({ key: 'lieu', emoji: '🏛️', text: state.lieu })
-  if (state.nbInvites) items.push({ key: 'nbInvites', emoji: '👥', text: state.nbInvites })
+  if (localEvent.ville) items.push({ key: 'ville', emoji: '📍', text: localEvent.ville })
+  if (localEvent.lieu) items.push({ key: 'lieu', emoji: '🏛️', text: localEvent.lieu })
+  if (localEvent.nbInvites) items.push({ key: 'nbInvites', emoji: '👥', text: localEvent.nbInvites })
   if (props.fullDetails && state.email) items.push({ key: 'email', emoji: '📧', text: state.email })
   if (props.fullDetails && state.prestataireMessage)
     items.push({ key: 'message', emoji: '💬', text: state.prestataireMessage })

@@ -21,7 +21,7 @@
           <img class="presta-img" :src="resolvedImage" :alt="props.prestataireName" />
           <div class="presta-info">
             <span class="presta-name">{{ props.prestataireName }}</span>
-            <span v-if="state.date" class="presta-date">{{ formatDate(state.date) }}</span>
+            <span v-if="localEvent.date" class="presta-date">{{ formatDate(localEvent.date) }}</span>
           </div>
         </SgiltContentCard>
 
@@ -75,12 +75,12 @@
 
             <Transition name="accordion-body">
               <div v-if="n === etapeActuelle" class="body">
-                <DemandeEtape1 v-if="n === 1" />
-                <DemandeEtape2 v-else-if="n === 2" />
-                <DemandeEtape3 v-else-if="n === 3" />
-                <DemandeEtape4 v-else-if="n === 4" />
-                <DemandeEtape5Desktop v-else-if="n === 5" />
-                <DemandeEtape6 v-else-if="n === 6" />
+                <EvenementTypeStep v-if="n === 1" />
+                <EvenementAmbianceStep v-else-if="n === 2" />
+                <EvenementMomentCleStep v-else-if="n === 3" />
+                <EvenementDescriptionStep v-else-if="n === 4" />
+                <EvenementPratiqueStep v-else-if="n === 5" />
+                <DemandeContactStep v-else-if="n === 6" />
               </div>
             </Transition>
           </div>
@@ -108,15 +108,16 @@
 import DemandeRecap from '~/components/demande/DemandeRecap.vue'
 import DemandeCommentCaMarche from '~/components/demande/DemandeCommentCaMarche.vue'
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
-import DemandeEtape1 from '~/components/demande/DemandeEtape1.vue'
-import DemandeEtape2 from '~/components/demande/DemandeEtape2.vue'
-import DemandeEtape3 from '~/components/demande/DemandeEtape3.vue'
-import DemandeEtape4 from '~/components/demande/DemandeEtape4.vue'
-import DemandeEtape5Desktop from '~/components/demande/DemandeEtape5Desktop.vue'
-import DemandeEtape6 from '~/components/demande/DemandeEtape6.vue'
+import EvenementTypeStep from '~/components/evenement/EvenementTypeStep.vue'
+import EvenementAmbianceStep from '~/components/evenement/EvenementAmbianceStep.vue'
+import EvenementMomentCleStep from '~/components/evenement/EvenementMomentCleStep.vue'
+import EvenementDescriptionStep from '~/components/evenement/EvenementDescriptionStep.vue'
+import EvenementPratiqueStep from '~/components/evenement/EvenementPratiqueStep.vue'
+import DemandeContactStep from '~/components/demande/DemandeContactStep.vue'
 import DemandeFinalisation from '~/components/demande/DemandeFinalisation.vue'
 import SgiltContentCard from '~/components/basics/cards/SgiltContentCard.vue'
 import { useDemande } from '~/composables/useDemande'
+import { useLocalEvent } from '~/composables/useLocalEvent'
 import { useImageUrl } from '~/composables/useImageUrl'
 
 const props = defineProps<{ slug: string; prestataireName: string; prestataireImage: string }>()
@@ -127,19 +128,16 @@ const resolvedImage = computed(() => toUrl(props.prestataireImage))
 const router = useRouter()
 const { t } = useI18n()
 
+const { etapeActuelle, submitted, goTo, reset } = useDemande()
 const {
-  etapeActuelle,
-  submitted,
-  state,
-  goTo,
-  reset,
+  localEvent,
   eventTypeLabel,
   eventTypeEmoji,
   ambianceLabel,
   ambianceEmoji,
   momentCleLabel,
   momentCleEmoji,
-} = useDemande()
+} = useLocalEvent()
 
 const blockRefs = ref<HTMLElement[]>([])
 const showCancelDialog = ref(false)
@@ -189,11 +187,11 @@ function stepDoneSummary(n: number): string {
     case 3:
       return momentCleLabel.value ? `${momentCleEmoji.value} ${momentCleLabel.value}` : ''
     case 4:
-      return state.description
-        ? state.description.slice(0, 60) + (state.description.length > 60 ? '…' : '')
+      return localEvent.description
+        ? localEvent.description.slice(0, 60) + (localEvent.description.length > 60 ? '…' : '')
         : ''
     case 5: {
-      const parts = [state.ville, state.lieu, state.nbInvites ?? ''].filter(Boolean)
+      const parts = [localEvent.ville, localEvent.lieu, localEvent.nbInvites ?? ''].filter(Boolean)
       return parts.join(' · ')
     }
     default:
@@ -207,7 +205,7 @@ function stepDoneSummary(n: number): string {
 
 // ─── Layout ───────────────────────────────────────────────────────────────────
 .demande-desktop {
-  min-height: calc(100dvh - $app-header-height);
+  min-height: $viewport-below-header;
   display: grid;
   grid-template-columns: 1fr 320px;
 

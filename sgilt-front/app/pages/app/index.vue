@@ -19,7 +19,7 @@
       <!-- Desktop uniquement : compte + bouton créer -->
       <div class="home-page__header-actions">
         <p class="home-page__events-count">
-          {{ t('home.events-count', events.length, { n: events.length }) }}
+          {{ t('home.events-count', { n: events.length }, events.length) }}
         </p>
         <button
           class="home-page__create-btn"
@@ -65,7 +65,7 @@
             {{
               pendingExpanded
                 ? t('home.reduce')
-                : t('home.show-more', hiddenCount, { n: hiddenCount })
+                : t('home.show-more', { n: hiddenCount }, hiddenCount)
             }}
           </button>
         </template>
@@ -226,9 +226,9 @@ const otherEvents = computed(() =>
 function reservationSummary(event: EventSummary): string {
   const parts: string[] = []
   if (event.confirmedCount)
-    parts.push(`✓ ${t('events.confirmed', event.confirmedCount, { n: event.confirmedCount })}`)
+    parts.push(`✓ ${t('events.confirmed', { n: event.confirmedCount }, event.confirmedCount)}`)
   if (event.inDiscussionCount)
-    parts.push(t('events.in-progress', event.inDiscussionCount, { n: event.inDiscussionCount }))
+    parts.push(t('events.in-progress', { n: event.inDiscussionCount }, event.inDiscussionCount))
   return parts.join(' · ') || '—'
 }
 </script>

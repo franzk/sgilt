@@ -1,18 +1,15 @@
 // app/types/demande.ts
 
-export interface DemandeRequest {
+import type { EvenementRequest } from '~/types/evenement'
+
+// Demande à un prestataire : le prestataire visé, le message qui lui est adressé et l'événement
+// concerné. Le payload reste plat : les champs de l'événement sont au même niveau.
+export interface DemandeRequest extends EvenementRequest {
   prestataireId: string
-  eventType: string | null
-  ambiance: string | null
-  momentCle: string | null
-  description: string | null
-  date: string | null
-  ville: string | null
-  nbInvites: string | null
-  lieu: string | null
   prestataireMessage: string | null
 }
 
+// Demande d'un visiteur sans compte : les coordonnées s'ajoutent à la demande.
 export interface OnboardingDemandeRequest extends DemandeRequest {
   firstName: string
   lastName: string
@@ -20,10 +17,29 @@ export interface OnboardingDemandeRequest extends DemandeRequest {
   telephone: string | null
 }
 
-export interface DemandeOption {
-  value: string
-  label: string
-  emoji: string
+// Résumé de l'événement concerné par une demande.
+export interface EvenementSummary {
+  eventTypeLabel: string | null
+  date: Date | undefined
+  nbInvites: string
+  ville: string
+}
+
+// Synthèse d'une demande (prestataire + événement) affichée avant et après l'envoi. Valeurs
+// déjà résolues : après l'envoi, l'événement local est vidé, l'écran de confirmation
+// travaille sur une copie figée.
+export interface DemandeSummary {
+  prestataireName: string
+  prestataireImage: string
+  // Ex. « Restauration · Traiteur ».
+  prestataireCategoryLine: string
+  evenement: EvenementSummary
+}
+
+// Ce qu'affiche l'écran de confirmation après l'envoi (copie figée, en mémoire seulement).
+export interface DemandeConfirmation {
+  summary: DemandeSummary
+  email: string
 }
 
 export interface DemandeState {
@@ -31,18 +47,6 @@ export interface DemandeState {
   prestataireName: string
   prestataireImage: string
   prestataireSlug: string
-  eventType: string | null
-  eventTypeAutre: string
-  ambiance: string | null
-  ambianceAutre: string
-  momentCle: string | null
-  momentCleAutre: string
-  description: string
-  date: Date | undefined
-  ville: string
-  nbInvites: string
-  lieuDefini: boolean
-  lieu: string
   prenom: string
   nom: string
   email: string
@@ -51,28 +55,3 @@ export interface DemandeState {
 }
 
 export const ETAPES_COUNT = 6
-
-export const EVENT_TYPE_OPTIONS: DemandeOption[] = [
-  { value: 'mariage', label: 'Mariage', emoji: '💍' },
-  { value: 'soiree_privee', label: 'Soirée privée', emoji: '🥂' },
-  { value: 'anniversaire', label: 'Anniversaire', emoji: '🎂' },
-  { value: 'fete_entreprise', label: "Fête d'entreprise", emoji: '🏢' },
-  { value: 'evenement_public', label: 'Événement public', emoji: '🎪' },
-  { value: 'autre', label: 'Autre', emoji: '•••' },
-]
-
-export const AMBIANCE_OPTIONS: DemandeOption[] = [
-  { value: 'festif', label: 'Festif et dansant', emoji: '🎉' },
-  { value: 'chic', label: 'Chic et élégant', emoji: '✨' },
-  { value: 'convivial', label: 'Convivial et détendu', emoji: '🤝' },
-  { value: 'surprise', label: 'Surprise', emoji: '🎁' },
-  { value: 'autre', label: 'Autre', emoji: '•••' },
-]
-
-export const MOMENT_CLE_OPTIONS: DemandeOption[] = [
-  { value: 'danse', label: 'Tout le monde sur la piste de danse', emoji: '💃' },
-  { value: 'buffet', label: "Ambiance autour d'un buffet", emoji: '🍽️' },
-  { value: 'surprise', label: 'Moment surprise', emoji: '🎁' },
-  { value: 'tard', label: 'Soirée qui finit très tard…', emoji: '🌙' },
-  { value: 'autre', label: 'Autre', emoji: '•••' },
-]

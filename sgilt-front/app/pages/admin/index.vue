@@ -56,7 +56,7 @@ const { t } = useI18n()
 
 const { rows, loading, load, publish, publishError, sendBackToReview } = useAdminPrestataires()
 
-const categories = APP_CATEGORIES.filter((c) => c.key !== 'all')
+const categories = APP_CATEGORIES.filter((c) => c.key !== ALL_CATEGORY_KEY)
 
 const RESERVATION_COUNT_FIELDS: { status: ReservationStatus; field: keyof PrestataireReservationCounts }[] = [
   { status: 'nouvelle', field: 'nouvelleCount' },

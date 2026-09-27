@@ -191,7 +191,7 @@ import BookingContactActions from '~/components/pro/BookingContactActions.vue'
 import BookingStatusCta from '~/components/pro/BookingStatusCta.vue'
 import EventBlock from '~/components/app/EventBlock.vue'
 import BookingCriticalActions from '~/components/pro/BookingCriticalActions.vue'
-import { resolveEventCover } from '~/utils/eventCovers'
+import { defaultCoverPath } from '~/utils/eventCovers'
 import { buildReservationMailto } from '~/utils/reservationMailto'
 import { getStatusOverlayStyle } from '~/constants/reservation-status'
 
@@ -217,13 +217,8 @@ const { toUrl } = useImageUrl()
 
 const coverImage = computed(() => {
   if (!reservation.value?.event) return ''
-  return resolveEventCover(
-    {
-      coverImage: reservation.value.event.coverImage ?? null,
-      eventType: reservation.value.event.eventType,
-    },
-    toUrl,
-  )
+  const { coverImage, eventType } = reservation.value.event
+  return toUrl(coverImage || defaultCoverPath(eventType))
 })
 
 // ── Parallax ───────────────────────────────────────────────────────────────────

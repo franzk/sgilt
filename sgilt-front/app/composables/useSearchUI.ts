@@ -1,12 +1,11 @@
 // app/composables/useSearchUI.ts
-import { APP_CATEGORIES } from '~/utils/constants'
-import { toISODate } from '~/utils/dateUtils'
+import { ALL_CATEGORY_KEY } from '~/utils/constants'
 
 export function useSearchUi() {
   const route = useRoute()
   const router = useRouter()
 
-  const defaultCategoryKey = APP_CATEGORIES[0]?.key ?? 'all'
+  const defaultCategoryKey = ALL_CATEGORY_KEY
 
   // --- HELPERS POUR L'URL ---
 
@@ -17,31 +16,6 @@ export function useSearchUi() {
     }
     router.replace({ query: { ...route.query, ...patch } })
   }
-
-  // --- DATE ---
-
-  const date = computed({
-    get: () => (route.query.date as string) || '',
-    set: (val) => updateQuery({ date: val }),
-  })
-
-  const stateDate = useState<Date | undefined>('search:date', () => undefined)
-
-  watch(
-    date,
-    (val) => {
-      if (val) stateDate.value = new Date(val)
-    },
-    { immediate: true },
-  )
-
-  const dateModel = computed({
-    get: () => (date.value ? new Date(date.value) : stateDate.value),
-    set: (value: Date | undefined) => {
-      date.value = value ? toISODate(value) : ''
-      stateDate.value = value
-    },
-  })
 
   // --- CATEGORIE ---
   // Stockée par clé dans l'URL (ex: ?cat=musique)
@@ -70,16 +44,8 @@ export function useSearchUi() {
     updateQuery({ subcats: current.length > 0 ? current.join(',') : undefined })
   }
 
-  // --- ONBOARDING ---
-
-  const showOnboarding = useState<boolean>('search:showOnboarding', () => false)
-
   return {
-    date,
-    dateModel,
-    stateDate,
     categoryKey,
-    showOnboarding,
     currentSubcats,
     toggleSubcat,
     resetSubcats: () => updateQuery({ subcats: undefined }),

@@ -3,7 +3,7 @@
     <div class="field-group">
       <label class="field-label">{{ $t('tunnel.etape5.field-city') }}</label>
       <input
-        v-model="state.ville"
+        v-model="localEvent.ville"
         class="field-input"
         :class="{ 'field-input--error': props.villeError }"
         type="text"
@@ -18,7 +18,7 @@
     <div class="field-group">
       <label class="field-label">{{ $t('tunnel.etape5.field-venue') }}</label>
       <input
-        v-model="state.lieu"
+        v-model="localEvent.lieu"
         class="field-input"
         type="text"
         name="venue"
@@ -30,7 +30,7 @@
     <div class="field-group">
       <label class="field-label">{{ $t('tunnel.etape5.field-guests') }}</label>
       <input
-        v-model="state.nbInvites"
+        v-model="localEvent.nbInvites"
         class="field-input"
         type="text"
         name="guest-count"
@@ -43,11 +43,11 @@
 </template>
 
 <script setup lang="ts">
-import type { DemandeState } from '~/types/demande'
+import type { LocalEvent } from '~/composables/useLocalEvent'
 import { scrollInputIntoView } from '~/utils/scrollInputIntoView'
 
 const props = defineProps<{
-  state: DemandeState
+  state: LocalEvent
   mobile?: boolean
   villeError?: string | null
 }>()

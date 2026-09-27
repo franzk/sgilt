@@ -15,7 +15,7 @@
         <img class="presta-img" :src="toUrl(state.prestataireImage)" :alt="state.prestataireName" />
         <div class="presta-info">
           <span class="presta-name">{{ state.prestataireName }}</span>
-          <span v-if="state.date" class="presta-date">{{ formatDate(state.date) }}</span>
+          <span v-if="localEvent.date" class="presta-date">{{ formatDate(localEvent.date) }}</span>
         </div>
       </SgiltContentCard>
 
@@ -116,35 +116,35 @@
     <!-- ── Sheet individuelle (options + textarea) ────────────────────────────── -->
     <SgiltBottomSheet v-model:open="sheetOpen" :title="activeIndividualItem?.label ?? ''">
       <div v-if="activeField === 'eventType'" class="sheet-option-body">
-        <DemandeOptionSelect
+        <EvenementOptionSelect
           :options="EVENT_TYPE_OPTIONS"
-          :model-value="state.eventType"
-          :autre-value="state.eventTypeAutre"
+          :model-value="localEvent.eventType"
+          :autre-value="localEvent.eventTypeAutre"
           autre-placeholder="Quel événement préparez-vous ?"
-          @update:model-value="state.eventType = $event"
-          @update:autre-value="state.eventTypeAutre = $event"
+          @update:model-value="localEvent.eventType = $event"
+          @update:autre-value="localEvent.eventTypeAutre = $event"
           @change="sheetOpen = false"
         />
       </div>
       <div v-else-if="activeField === 'ambiance'" class="sheet-option-body">
-        <DemandeOptionSelect
+        <EvenementOptionSelect
           :options="AMBIANCE_OPTIONS"
-          :model-value="state.ambiance"
-          :autre-value="state.ambianceAutre"
+          :model-value="localEvent.ambiance"
+          :autre-value="localEvent.ambianceAutre"
           autre-placeholder="Décrivez l'ambiance souhaitée…"
-          @update:model-value="state.ambiance = $event"
-          @update:autre-value="state.ambianceAutre = $event"
+          @update:model-value="localEvent.ambiance = $event"
+          @update:autre-value="localEvent.ambianceAutre = $event"
           @change="sheetOpen = false"
         />
       </div>
       <div v-else-if="activeField === 'momentCle'" class="sheet-option-body">
-        <DemandeOptionSelect
+        <EvenementOptionSelect
           :options="MOMENT_CLE_OPTIONS"
-          :model-value="state.momentCle"
-          :autre-value="state.momentCleAutre"
+          :model-value="localEvent.momentCle"
+          :autre-value="localEvent.momentCleAutre"
           autre-placeholder="Décrivez le moment clé…"
-          @update:model-value="state.momentCle = $event"
-          @update:autre-value="state.momentCleAutre = $event"
+          @update:model-value="localEvent.momentCle = $event"
+          @update:autre-value="localEvent.momentCleAutre = $event"
           @change="sheetOpen = false"
         />
       </div>
@@ -206,14 +206,16 @@
 
 <script setup lang="ts">
 import SgiltBottomSheet from '~/components/basics/sheets/SgiltBottomSheet.vue'
+import { validateEmail, validatePhone } from '~/utils/contactValidation'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 import SgiltContentCard from '~/components/basics/cards/SgiltContentCard.vue'
 import SgiltDemandeFieldGroup from '~/components/basics/SgiltDemandeFieldGroup.vue'
-import DemandeOptionSelect from '~/components/demande/DemandeOptionSelect.vue'
+import EvenementOptionSelect from '~/components/evenement/EvenementOptionSelect.vue'
 import { useDemande } from '~/composables/useDemande'
+import { useLocalEvent } from '~/composables/useLocalEvent'
 import { useImageUrl } from '~/composables/useImageUrl'
-import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/demande'
+import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/evenement'
 
 defineEmits<{ cancel: [] }>()
 
@@ -221,28 +223,16 @@ const { t } = useI18n()
 const isNewEventFlow = computed(() => useFlow().currentFlow.value === 'new-event')
 const { toUrl } = useImageUrl()
 
+const { state, submit, submitting, submitError } = useDemande()
 const {
-  state,
-  submit,
-  submitting,
-  submitError,
+  localEvent,
   eventTypeLabel,
   eventTypeEmoji,
   ambianceLabel,
   ambianceEmoji,
   momentCleLabel,
   momentCleEmoji,
-} = useDemande()
-
-// ── Validators ────────────────────────────────────────────────────────────────
-
-function validateEmail(v: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())
-}
-function validatePhone(v: string): boolean {
-  const digits = v.replace(/[\s\-.()\/+]/g, '')
-  return /^\d{7,15}$/.test(digits)
-}
+} = useLocalEvent()
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -255,7 +245,9 @@ type IndividualFieldKey =
 type GroupKey = 'detailsPratiques' | 'coordonnees'
 type EditType = 'eventType' | 'ambiance' | 'momentCle' | 'textarea'
 
-interface SubField {
+// Alias `type` et non `interface` : seul un alias est assignable aux types à signature d'index
+// de SgiltDemandeFieldGroup (SubField, GroupItem).
+type SubField = {
   key: string
   label: string
   name?: string
@@ -280,7 +272,7 @@ interface RecapIndividualItem {
   value: string | null
 }
 
-interface RecapGroupItem {
+type RecapGroupItem = {
   type: 'group'
   key: GroupKey
   label: string
@@ -379,8 +371,8 @@ const items = computed((): RecapItem[] => [
         name: 'city',
         placeholder: t('tunnel.etape5.city-placeholder'),
         required: true,
-        value: state.ville || null,
-        isMissing: !state.ville.trim(),
+        value: localEvent.ville || null,
+        isMissing: !localEvent.ville.trim(),
         type: 'text',
         autocomplete: 'address-level2',
         enterkeyhint: 'next',
@@ -390,7 +382,7 @@ const items = computed((): RecapItem[] => [
         label: t('tunnel.recap-mobile.items.lieu'),
         name: 'venue',
         required: false,
-        value: state.lieuDefini && state.lieu ? state.lieu : null,
+        value: localEvent.lieu || null,
         isMissing: false,
         type: 'text',
         autocomplete: 'on',
@@ -402,7 +394,7 @@ const items = computed((): RecapItem[] => [
         name: 'guest-count',
         required: false,
         placeholder: t('tunnel.etape5.guests-placeholder'),
-        value: state.nbInvites || null,
+        value: localEvent.nbInvites || null,
         isMissing: false,
         type: 'text',
         autocomplete: 'on',
@@ -455,7 +447,7 @@ const items = computed((): RecapItem[] => [
     required: false,
     editType: 'textarea',
     placeholder: t('tunnel.etape4.placeholder'),
-    value: state.description || null,
+    value: localEvent.description || null,
   },
 ])
 
@@ -492,7 +484,7 @@ const individualFieldModel = computed<string>({
   get: () => {
     switch (activeField.value) {
       case 'description':
-        return state.description
+        return localEvent.description
       case 'prestataireMessage':
         return state.prestataireMessage ?? ''
       default:
@@ -502,7 +494,7 @@ const individualFieldModel = computed<string>({
   set: (v) => {
     switch (activeField.value) {
       case 'description':
-        state.description = v
+        localEvent.description = v
         break
       case 'prestataireMessage':
         state.prestataireMessage = v
@@ -563,14 +555,13 @@ const detailsPratiquesItem = computed<RecapGroupItem | undefined>({
     for (const sf of updated.subFields) {
       switch (sf.key) {
         case 'ville':
-          state.ville = sf.value ?? ''
+          localEvent.ville = sf.value ?? ''
           break
         case 'lieu':
-          state.lieu = sf.value ?? ''
-          state.lieuDefini = !!sf.value
+          localEvent.lieu = sf.value ?? ''
           break
         case 'nbInvites':
-          state.nbInvites = sf.value ?? ''
+          localEvent.nbInvites = sf.value ?? ''
           break
       }
     }
@@ -614,13 +605,13 @@ const REQUIRED_FIELDS = computed((): AnyFieldKey[] => [
 function isFieldValid(key: AnyFieldKey): boolean {
   switch (key) {
     case 'eventType':
-      return !!state.eventType
+      return !!localEvent.eventType
     case 'ambiance':
-      return !!state.ambiance
+      return !!localEvent.ambiance
     case 'momentCle':
-      return !!state.momentCle
+      return !!localEvent.momentCle
     case 'ville':
-      return !!state.ville.trim()
+      return !!localEvent.ville.trim()
     case 'prenom':
       return !!state.prenom.trim()
     case 'nom':

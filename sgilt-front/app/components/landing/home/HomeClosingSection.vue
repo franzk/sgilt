@@ -3,7 +3,7 @@
     <div class="wrap">
       <h2 class="title">{{ $t('landing-page.closing.title') }}</h2>
 
-      <p class="lines script">
+      <p class="lines">
         {{ $t('landing-page.closing.line-1') }}<br />
         {{ $t('landing-page.closing.line-2') }}
       </p>
@@ -51,13 +51,8 @@ import HomeCtaButton from './HomeCtaButton.vue'
 
   .lines {
     margin: 0;
-    color: rgba(255, 255, 255, 0.75);
-    font-size: $font-size-md;
-    line-height: $line-height-relaxed;
-  }
-
-  .script {
-    font-family: 'Caveat', cursive;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
     font-size: clamp(1.4rem, 2.5vw, 1.8rem);
     line-height: 1.3;
     color: rgba(255, 255, 255, 0.85);

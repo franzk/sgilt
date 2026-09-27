@@ -57,7 +57,7 @@ definePageMeta({ layout: 'admin' })
 
 const { provision, provisioning, provisionError, lastProvisionedSlug } = useAdminPrestataires()
 
-const categories = APP_CATEGORIES.filter((c) => c.key !== 'all')
+const categories = APP_CATEGORIES.filter((c) => c.key !== ALL_CATEGORY_KEY)
 
 const emptyForm = () => ({
   email: '',

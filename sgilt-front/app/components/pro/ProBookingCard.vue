@@ -68,7 +68,7 @@ import BadgeableComponent from '~/components/basics/BadgeableComponent.vue'
 import Sk from '~/components/basics/Sk.vue'
 import type { ProReservationSummary } from '~/types/event'
 import { STATUTS_AVEC_ACTION } from '~/constants/reservation-status'
-import { resolveEventCover } from '~/utils/eventCovers'
+import { defaultCoverPath } from '~/utils/eventCovers'
 import { CalendarEventIcon, PhoneIcon } from '@remixicons/vue/line'
 
 const props = defineProps<{
@@ -83,10 +83,7 @@ const { toUrl } = useImageUrl()
 
 const resolvedImage = computed(() => {
   if (!props.reservation) return ''
-  return resolveEventCover(
-    { coverImage: props.reservation.image ?? null, eventType: props.reservation.eventType },
-    toUrl,
-  )
+  return toUrl(props.reservation.image || defaultCoverPath(props.reservation.eventType))
 })
 
 const needsAction = computed(() =>

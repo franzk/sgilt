@@ -74,32 +74,25 @@ export function useFlow() {
         navigateTo('/fete')
       },
       abort: () => {
-        useSearchUi().dateModel.value = undefined
         navigateTo('/app')
       },
       success: () => {
         const eventId = flowPayload.value?.id
-        useSearchUi().dateModel.value = undefined
         navigateTo(eventId ? `/app/events/${eventId}` : '/app/events')
       },
     },
 
     'add-prestataire': {
       start: () => {
-        // Pré-remplit la date de recherche depuis le contexte de l'événement
-        const date = flowPayload.value?.date
-        useSearchUi().dateModel.value = date ? new Date(date) : undefined
         navigateTo('/search')
       },
       abort: () => {
         const eventId = flowPayload.value?.id
-        useSearchUi().dateModel.value = undefined
         navigateTo(`/app/events/${eventId}`)
       },
       success: () => {
         // Retour à l'EventBoard une fois la demande envoyée
         const eventId = flowPayload.value?.id
-        useSearchUi().dateModel.value = undefined
         navigateTo(`/app/events/${eventId}`)
       },
     },

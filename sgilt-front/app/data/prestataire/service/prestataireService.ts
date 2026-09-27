@@ -15,13 +15,13 @@ import type { PrestataireSearchResponse } from '../domain/PrestataireSearchRespo
 import type { PrestataireDetail } from '../domain/PrestataireDetail'
 import type { PrestataireFieldEntry, PrestataireUpdatePayload } from '../dto/PrestataireUpdatePayload'
 import type { Media } from '../domain/Media'
+import { ALL_CATEGORY_KEY } from '~/utils/constants'
 
 export async function searchPrestataires(params: {
-  date: string
   categoryKey: string
   subcatKeys: string[]
 }): Promise<PrestataireSearchResponse> {
-  const isAll = params.categoryKey === 'all' || !params.categoryKey
+  const isAll = params.categoryKey === ALL_CATEGORY_KEY || !params.categoryKey
   const activeSubcats = params.subcatKeys.filter(Boolean)
 
   const query: { categoryKey?: string; subcatKey?: string[] } = {}
