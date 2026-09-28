@@ -22,7 +22,7 @@ export function mapPrestataireAdminFormat(dto: PrestataireAdminListItemDto): Pre
     status: dto.status,
     email: dto.email,
     categoryKey: dto.categoryKey,
-    subcatKeys: dto.subcatKeys,
+    subcatKey: dto.subcatKey,
     reservationCounts: dto.reservationCounts,
   }
 }
@@ -35,7 +35,7 @@ export function mapProvisionRequest(provisioning: PrestataireProvisioning): Prov
     slug: provisioning.slug,
     prestataireName: provisioning.prestataireName,
     category: provisioning.category,
-    subcats: provisioning.subcats,
+    subcat: provisioning.subcat,
     cleEnMain: provisioning.cleEnMain,
   }
 }

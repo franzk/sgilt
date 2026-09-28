@@ -5,6 +5,6 @@ export interface PrestataireProvisioning {
   slug: string
   prestataireName: string
   category: string
-  subcats: string
+  subcat: string
   cleEnMain: boolean
 }

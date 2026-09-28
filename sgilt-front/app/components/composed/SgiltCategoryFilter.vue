@@ -1,16 +1,26 @@
 <script setup lang="ts">
-import { APP_CATEGORIES } from '~/utils/constants'
+import { ALL_CATEGORY_KEY } from '~/utils/constants'
 import SgiltCategoryIcon from '~/components/basics/icons/SgiltCategoryIcon.vue'
+import { useCategories } from '~/data/prestataire/useCategories'
 
 const modelValue = defineModel<string>() // La clé de la catégorie active
 
 const emit = defineEmits(['update:modelValue'])
+
+const { t } = useI18n()
+const { categories } = useCategories()
+
+// « Tous » n'est pas une catégorie du référentiel : c'est l'absence de filtre, toujours en tête.
+const filterOptions = computed(() => [
+  { key: ALL_CATEGORY_KEY, name: t('search.all-categories') },
+  ...categories.value,
+])
 </script>
 
 <template>
   <nav class="category-filter">
     <button
-      v-for="cat in APP_CATEGORIES"
+      v-for="cat in filterOptions"
       :key="cat.key"
       class="category-btn"
       :class="{ active: cat.key === modelValue }"

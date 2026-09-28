@@ -1,15 +1,13 @@
 /**
  * Mapper — conversions entre DTOs, domain et payloads du domaine prestataire
  */
+import type { CategoryDto } from '../dto/CategoryDto'
 import type { PrestataireCardDto } from '../dto/PrestataireCardDto'
 import type { PrestataireDetailDto } from '../dto/PrestataireDetailDto'
+import type { Category } from '../domain/Category'
 import type { PrestataireCardDetail } from '../domain/PrestataireCardDetail'
 import type { PrestataireDetail } from '../domain/PrestataireDetail'
 import { heroRef } from '~/utils/mediaUtils'
-
-function categoryName(key: string): string {
-  return APP_CATEGORIES.find((c) => c.key === key)?.name ?? key
-}
 
 export function mapPrestataireCard(dto: PrestataireCardDto): PrestataireCardDetail {
   return {
@@ -19,7 +17,6 @@ export function mapPrestataireCard(dto: PrestataireCardDto): PrestataireCardDeta
     image: dto.heroImage,
     slug: dto.slug,
     categoryKey: dto.categoryKey,
-    categoryName: categoryName(dto.categoryKey),
   }
 }
 
@@ -32,7 +29,6 @@ export function mapPrestataireDetailToCard(prestataire: PrestataireDetail): Pres
     image: heroRef(prestataire.medias) ?? '',
     slug: prestataire.slug,
     categoryKey: prestataire.categoryKey,
-    categoryName: prestataire.category,
   }
 }
 
@@ -46,8 +42,7 @@ export function mapPrestataireDetail(dto: PrestataireDetailDto): PrestataireDeta
     metaTitle: dto.metaTitle,
     metaDescription: dto.metaDescription,
     categoryKey: dto.categoryKey,
-    category: categoryName(dto.categoryKey),
-    subcats: dto.subcatKeys,
+    subcatKey: dto.subcatKey,
     avatar: dto.avatar,
     medias: dto.medias ?? [],
     badges: dto.badges ?? [],
@@ -58,5 +53,17 @@ export function mapPrestataireDetail(dto: PrestataireDetailDto): PrestataireDeta
     details: dto.details ?? [],
     faq: dto.faq ?? [],
     status: dto.status,
+  }
+}
+
+export function mapCategory(dto: CategoryDto): Category {
+  return {
+    key: dto.key,
+    name: dto.name,
+    subcategories: dto.subcategories.map((subcategory) => ({
+      key: subcategory.key,
+      name: subcategory.name,
+      categoryKey: subcategory.categoryKey,
+    })),
   }
 }

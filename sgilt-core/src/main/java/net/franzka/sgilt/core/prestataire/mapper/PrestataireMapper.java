@@ -93,7 +93,7 @@ public abstract class PrestataireMapper {
     @Mapping(target = "slug",        ignore = true)
     @Mapping(target = "utilisateur", ignore = true)
     @Mapping(target = "categoryKey", ignore = true)
-    @Mapping(target = "subcatKeys",  ignore = true)
+    @Mapping(target = "subcatKey",   ignore = true)
     @Mapping(target = "avatar",      ignore = true)
     @Mapping(target = "medias",      ignore = true)
     @Mapping(target = "status",      ignore = true)

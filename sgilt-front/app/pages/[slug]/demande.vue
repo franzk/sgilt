@@ -51,7 +51,6 @@ import DemandeRecapEvenement from '~/components/demande/DemandeRecapEvenement.vu
 import { useDemande } from '~/composables/useDemande'
 import { usePrestataire } from '~/data/prestataire/usePrestataire'
 import type { DemandeSummary } from '~/types/demande'
-import { APP_CATEGORIES } from '~/utils/constants'
 
 const route = useRoute()
 const slug = route.params.slug as string
@@ -73,6 +72,7 @@ const { isMobile } = useDevice()
 useHead({ title: 'Votre demande' })
 
 const { localEvent, eventTypeLabel, reset: resetLocalEvent } = useLocalEvent()
+const { categoryName, subcategoryName } = useCategories()
 const { currentFlow } = useFlow()
 const { isAuthenticated } = useKeycloak()
 
@@ -96,14 +96,11 @@ async function goToPublicStep(step: PublicStep) {
 const summary = computed<DemandeSummary | null>(() => {
   const p = prestataire.value
   if (!p) return null
-  // « Restauration · Traiteur » : catégorie puis libellés des sous-catégories.
-  const subcatNames = APP_CATEGORIES.flatMap((category) => category.subcategories)
-    .filter((subcat) => p.subcats.includes(subcat.key))
-    .map((subcat) => subcat.name)
   return {
     prestataireName: p.name,
     prestataireImage: heroRef(p.medias) ?? '',
-    prestataireCategoryLine: [p.category, ...subcatNames].join(' · '),
+    // « Restauration · Traiteur » : catégorie puis sous-catégorie.
+    prestataireCategoryLine: [categoryName(p.categoryKey), subcategoryName(p.subcatKey)].join(' · '),
     evenement: {
       eventTypeLabel: eventTypeLabel.value,
       date: localEvent.date,

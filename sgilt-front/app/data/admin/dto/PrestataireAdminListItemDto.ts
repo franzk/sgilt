@@ -16,6 +16,6 @@ export interface PrestataireAdminListItemDto {
   status: PrestataireStatus
   email: string
   categoryKey: string
-  subcatKeys: string[]
+  subcatKey: string
   reservationCounts: PrestataireReservationCountsDto
 }

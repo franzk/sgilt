@@ -7,7 +7,6 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -39,13 +38,9 @@ public class Prestataire {
     @Column(name = "category_key", nullable = false)
     private String categoryKey;
 
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(
-            name = "prestataires_sous_categories",
-            joinColumns = @JoinColumn(name = "prestataire_id")
-    )
+    /** Clé de la sous-catégorie, qui appartient toujours à {@link #categoryKey} (FK composite). */
     @Column(name = "subcat_key", nullable = false)
-    private List<String> subcatKeys;
+    private String subcatKey;
 
     private String baseline;
 

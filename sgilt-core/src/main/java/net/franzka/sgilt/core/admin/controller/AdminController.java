@@ -22,7 +22,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -111,13 +110,11 @@ public class AdminController implements AdminApi {
                                 request.firstName(), request.lastName(), request.email(), null
                         );
 
-                        List<String> subcatKeys = List.of(StringUtils.tokenizeToStringArray(request.subcats(), ","));
-
                         return request.cleEnMain()
                                 ? prestataireService.createPrestataireCleEnMain(
-                                        utilisateur, request.slug(), request.prestataireName(), request.category(), subcatKeys)
+                                        utilisateur, request.slug(), request.prestataireName(), request.category(), request.subcat())
                                 : prestataireService.createPrestataireAutonome(
-                                        utilisateur, request.slug(), request.prestataireName(), request.category(), subcatKeys);
+                                        utilisateur, request.slug(), request.prestataireName(), request.category(), request.subcat());
                     });
 
             ProvisionPrestataireResponse response = new ProvisionPrestataireResponse(

@@ -5,11 +5,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.prestataire.api.PrestataireApi;
 import net.franzka.sgilt.core.prestataire.domain.Engagement;
+import net.franzka.sgilt.core.prestataire.dto.CategorieDto;
 import net.franzka.sgilt.core.prestataire.dto.MediaUploadDto;
 import net.franzka.sgilt.core.prestataire.dto.MediasPutRequest;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireDetailDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireSearchResponseDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireUpdateDto;
+import net.franzka.sgilt.core.prestataire.service.CategorieService;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
 import net.franzka.sgilt.core.security.CurrentUserService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
@@ -32,6 +34,7 @@ import java.util.UUID;
 public class PrestataireController implements PrestataireApi {
 
     private final PrestataireService prestataireService;
+    private final CategorieService categorieService;
     private final CurrentUserService currentUserService;
 
     /**
@@ -75,6 +78,18 @@ public class PrestataireController implements PrestataireApi {
                         .map(Enum::name)
                         .toList()
         );
+    }
+
+    /**
+     * Retourne le référentiel des catégories et sous-catégories prestataire, trié.
+     *
+     * @return les catégories, chacune avec ses sous-catégories
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<List<CategorieDto>> getCategories() {
+        log.info("GET /prestataires/categories");
+        return ResponseEntity.ok(categorieService.getCategories());
     }
 
     /**

@@ -15,6 +15,7 @@ const props = defineProps<{
 }>()
 
 const { prestataire, saveField } = usePrestataire()
+const { categoryName } = useCategories()
 const isEdit = computed(() => props.displayMode === 'edit')
 /** Bouton back masqué sur les 3 onglets de page-edition (edit/preview/IA), visible uniquement sur la fiche publique. */
 const showBack = computed(() => props.displayMode === 'display')
@@ -130,7 +131,7 @@ async function share() {
         <div class="overlay" aria-hidden="true" />
 
         <div class="content">
-          <p class="category">{{ prestataire?.category }}</p>
+          <p class="category">{{ categoryName(prestataire?.categoryKey) }}</p>
           <h1 class="name">{{ prestataire?.name }}</h1>
           <EditableText
             as="p"
@@ -163,7 +164,7 @@ async function share() {
           />
           <div class="overlay" aria-hidden="true" />
           <div class="content">
-            <p class="category">{{ prestataire?.category }}</p>
+            <p class="category">{{ categoryName(prestataire?.categoryKey) }}</p>
             <h1 class="name">{{ prestataire?.name }}</h1>
             <EditableText
               as="p"
@@ -196,7 +197,7 @@ async function share() {
     <!-- ── État sans média : pas de placeholder d'image, hero réduit au texte ── -->
     <div v-else class="empty-hero">
       <div class="content">
-        <p class="category">{{ prestataire?.category }}</p>
+        <p class="category">{{ categoryName(prestataire?.categoryKey) }}</p>
         <h1 class="name">{{ prestataire?.name }}</h1>
         <EditableText
           as="p"

@@ -36,12 +36,12 @@ public final class Fixtures {
     }
 
     /** Prestataire publié par défaut — visible en recherche publique et ciblable par un onboarding. */
-    public UUID insertPrestataire(UUID utilisateurId, String name, String slug, String categoryKey) {
+    public UUID insertPrestataire(UUID utilisateurId, String name, String slug, String categoryKey, String subcatKey) {
         UUID id = UUID.randomUUID();
         update("""
-                INSERT INTO prestataires (id, utilisateur_id, name, slug, category_key, status, flow, created_at)
-                VALUES (?, ?, ?, ?, ?, 'PUBLISHED', 'AUCUN', now())
-                """, id, utilisateurId, name, slug, categoryKey);
+                INSERT INTO prestataires (id, utilisateur_id, name, slug, category_key, subcat_key, status, flow, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, 'PUBLISHED', 'AUCUN', now())
+                """, id, utilisateurId, name, slug, categoryKey, subcatKey);
         return id;
     }
 

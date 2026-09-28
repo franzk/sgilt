@@ -329,13 +329,13 @@ public class PrestataireService {
      * @param slug        le slug public de la fiche
      * @param name        le nom du prestataire
      * @param categoryKey la clé de catégorie
-     * @param subcatKeys  les clés de sous-catégories (peut être vide)
+     * @param subcatKey   la clé de sous-catégorie, qui appartient à la catégorie
      * @return la fiche créée ; la notification est toujours considérée comme délivrée (aucune n'est due)
      */
     public CreationResult createPrestataireCleEnMain(
-            Utilisateur utilisateur, String slug, String name, String categoryKey, List<String> subcatKeys) {
+            Utilisateur utilisateur, String slug, String name, String categoryKey, String subcatKey) {
         Prestataire prestataire = buildAndSave(
-                utilisateur, slug, name, categoryKey, subcatKeys,
+                utilisateur, slug, name, categoryKey, subcatKey,
                 PrestataireStatus.WAITING_FOR_CREATION_SERVICE, PrestataireFlow.CREATION_CLE_EN_MAIN);
         return new CreationResult(prestataire, true);
     }
@@ -348,13 +348,13 @@ public class PrestataireService {
      * @param slug        le slug public de la fiche
      * @param name        le nom du prestataire
      * @param categoryKey la clé de catégorie
-     * @param subcatKeys  les clés de sous-catégories (peut être vide)
+     * @param subcatKey   la clé de sous-catégorie, qui appartient à la catégorie
      * @return la fiche créée et si le mail d'activation a bien été délivré
      */
     public CreationResult createPrestataireAutonome(
-            Utilisateur utilisateur, String slug, String name, String categoryKey, List<String> subcatKeys) {
+            Utilisateur utilisateur, String slug, String name, String categoryKey, String subcatKey) {
         Prestataire prestataire = buildAndSave(
-                utilisateur, slug, name, categoryKey, subcatKeys,
+                utilisateur, slug, name, categoryKey, subcatKey,
                 PrestataireStatus.DRAFT, PrestataireFlow.CREATION_AUTONOME);
         String actionUrl = actionLinkService.createLink(
                 ActionType.PRESTATAIRE_ONBOARDING, Map.of("email", utilisateur.getEmail()));
@@ -364,14 +364,14 @@ public class PrestataireService {
     }
 
     private Prestataire buildAndSave(
-            Utilisateur utilisateur, String slug, String name, String categoryKey, List<String> subcatKeys,
+            Utilisateur utilisateur, String slug, String name, String categoryKey, String subcatKey,
             PrestataireStatus initialStatus, PrestataireFlow flow) {
         Prestataire prestataire = Prestataire.builder()
                 .utilisateur(utilisateur)
                 .slug(slug)
                 .name(name)
                 .categoryKey(categoryKey)
-                .subcatKeys(subcatKeys)
+                .subcatKey(subcatKey)
                 .status(initialStatus)
                 .flow(flow)
                 .build();
@@ -605,7 +605,7 @@ public class PrestataireService {
 
     private List<Prestataire> resolveFiltered(String categoryKey, List<String> subcatKeys) {
         if (subcatKeys != null && !subcatKeys.isEmpty()) {
-            return prestataireRepository.findBySubcatKeysInAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(subcatKeys, PrestataireStatus.PUBLISHED);
+            return prestataireRepository.findBySubcatKeyInAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(subcatKeys, PrestataireStatus.PUBLISHED);
         }
         if (categoryKey != null) {
             return prestataireRepository.findByCategoryKeyAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(categoryKey, PrestataireStatus.PUBLISHED);
@@ -676,7 +676,7 @@ public class PrestataireService {
         Map<String, Long> counts = new HashMap<>();
         all.stream()
                 .filter(p -> activeCategoryKey.equals(p.getCategoryKey()))
-                .forEach(p -> p.getSubcatKeys().forEach(key -> counts.merge(key, 1L, Long::sum)));
+                .forEach(p -> counts.merge(p.getSubcatKey(), 1L, Long::sum));
         return counts;
     }
 

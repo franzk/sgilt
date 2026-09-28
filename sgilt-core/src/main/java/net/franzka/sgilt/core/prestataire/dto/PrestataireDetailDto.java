@@ -18,7 +18,7 @@ public record PrestataireDetailDto(
         String metaTitle,
         String metaDescription,
         String categoryKey,
-        List<String> subcatKeys,
+        String subcatKey,
         List<MediaDto> medias,
         List<Engagement> badges,
         List<String> offerings,

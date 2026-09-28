@@ -17,8 +17,7 @@ export interface PrestataireDetail {
   slug: string
   baseline: string
   categoryKey: string
-  category: string
-  subcats: string[]
+  subcatKey: string
   avatar: string | null
   medias: Media[]
   badges: EngagementKey[]

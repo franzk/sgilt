@@ -18,8 +18,7 @@
             <p class="name">{{ row.name }}</p>
             <p class="email">{{ row.email }}</p>
             <p class="meta">
-              {{ categoryName(row.categoryKey) }}
-              <span v-if="subcatNames(row)"> · {{ subcatNames(row) }}</span>
+              {{ categoryName(row.categoryKey) }} · {{ subcategoryName(row.subcatKey) }}
             </p>
             <p class="reservations">{{ formatReservationCounts(row.reservationCounts) }}</p>
           </div>
@@ -47,7 +46,7 @@ import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
 import PrestataireStatusBadge from '~/components/admin/PrestataireStatusBadge.vue'
 import AdminPrestataireTabs from '~/components/admin/AdminPrestataireTabs.vue'
-import type { PrestataireAdminFormat, PrestataireReservationCounts } from '~/data/admin/domain/PrestataireAdminFormat'
+import type { PrestataireReservationCounts } from '~/data/admin/domain/PrestataireAdminFormat'
 import type { ReservationStatus } from '~/data/reservation/domain/ReservationStatus'
 
 definePageMeta({ layout: 'admin' })
@@ -56,7 +55,7 @@ const { t } = useI18n()
 
 const { rows, loading, load, publish, publishError, sendBackToReview } = useAdminPrestataires()
 
-const categories = APP_CATEGORIES.filter((c) => c.key !== ALL_CATEGORY_KEY)
+const { categoryName, subcategoryName } = useCategories()
 
 const RESERVATION_COUNT_FIELDS: { status: ReservationStatus; field: keyof PrestataireReservationCounts }[] = [
   { status: 'nouvelle', field: 'nouvelleCount' },
@@ -67,21 +66,12 @@ const RESERVATION_COUNT_FIELDS: { status: ReservationStatus; field: keyof Presta
   { status: 'realisee', field: 'realiseeCount' },
 ]
 
-function categoryName(categoryKey: string): string {
-  return categories.find((c) => c.key === categoryKey)?.name ?? categoryKey
-}
-
-function subcatNames(row: PrestataireAdminFormat): string {
-  const category = categories.find((c) => c.key === row.categoryKey)
-  return row.subcatKeys
-    .map((key) => category?.subcategories.find((s) => s.key === key)?.name)
-    .filter((name): name is string => !!name)
-    .join(', ')
-}
-
 function formatReservationCounts(counts: PrestataireReservationCounts): string {
   const parts = RESERVATION_COUNT_FIELDS.filter(({ field }) => counts[field] > 0).map(
-    ({ status, field }) => `${t(`reservation.statut.${status}`)} (${counts[field]})`,
+    ({ status, field }) => {
+      const label = t(`reservation.statut.${status}`)
+      return `${label} (${counts[field]})`
+    },
   )
   return parts.length > 0 ? parts.join(', ') : t('admin.prestataires.reservations-empty')
 }

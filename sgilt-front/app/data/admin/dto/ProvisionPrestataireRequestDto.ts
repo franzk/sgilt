@@ -5,6 +5,6 @@ export interface ProvisionPrestataireRequestDto {
   slug: string
   prestataireName: string
   category: string
-  subcats: string
+  subcat: string
   cleEnMain: boolean
 }

@@ -12,6 +12,8 @@ const props = defineProps<{
 }>()
 const emit = defineEmits<{ select: [provider: PrestataireCardDetail] }>()
 
+const { categoryName } = useCategories()
+
 const imageLoaded = ref(false)
 
 function handleClick() {
@@ -32,7 +34,7 @@ function handleClick() {
         <SgiltImage :src="provider?.image" :alt="provider?.name" width="400" height="360" />
         <div class="category-tag">
           <span><SgiltCategoryIcon :categoryKey="provider?.categoryKey" class="inner-icon" /></span>
-          <span class="category-name">{{ provider?.categoryName }}</span>
+          <span class="category-name">{{ categoryName(provider?.categoryKey) }}</span>
         </div>
       </template>
 

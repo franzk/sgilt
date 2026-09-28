@@ -2,6 +2,7 @@
  * Couche service — orchestration des appels API prestataire
  */
 import {
+  getCategoriesApi,
   searchPrestatairesApi,
   getPrestataireBySlugApi,
   getMaFicheApi,
@@ -10,7 +11,8 @@ import {
   uploadPrestataireMediaApi,
   submitPrestataireApi,
 } from '../api/prestataireApi'
-import { mapPrestataireCard, mapPrestataireDetail } from '../mapper/prestataireMapper'
+import { mapCategory, mapPrestataireCard, mapPrestataireDetail } from '../mapper/prestataireMapper'
+import type { Category } from '../domain/Category'
 import type { PrestataireSearchResponse } from '../domain/PrestataireSearchResponse'
 import type { PrestataireDetail } from '../domain/PrestataireDetail'
 import type { PrestataireFieldEntry, PrestataireUpdatePayload } from '../dto/PrestataireUpdatePayload'
@@ -38,6 +40,10 @@ export async function searchPrestataires(params: {
     countsByCategory: dto.countsByCategory,
     subcatCounts: dto.subcatCounts,
   }
+}
+
+export async function fetchCategories(): Promise<Category[]> {
+  return (await getCategoriesApi()).map(mapCategory)
 }
 
 export async function fetchPrestataireBySlug(slug: string): Promise<PrestataireDetail | null> {

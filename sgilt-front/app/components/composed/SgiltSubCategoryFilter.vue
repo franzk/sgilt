@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { APP_CATEGORIES } from '~/utils/constants'
+import { useCategories } from '~/data/prestataire/useCategories'
 
 const props = defineProps<{
   categoryKey: string
@@ -9,8 +9,10 @@ const props = defineProps<{
 
 const emit = defineEmits(['toggle'])
 
+const { categories } = useCategories()
+
 const subcategories = computed(() => {
-  const cat = APP_CATEGORIES.find((c) => c.key === props.categoryKey)
+  const cat = categories.value.find((c) => c.key === props.categoryKey)
   return cat?.subcategories.filter((s) => s.key && props.counts[s.key]) ?? []
 })
 </script>

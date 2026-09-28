@@ -222,7 +222,7 @@ class FicheIaApplyServiceTest {
     private static PrestataireDetailDto dummyDetailDto() {
         return new PrestataireDetailDto(
                 UUID.randomUUID().toString(), "Jean Photographe", "photographe-jean", null, null, null, null, null, "photo",
-                List.of(), List.of(), List.of(), List.of(), null, null, List.of(), List.of(), List.of(),
+                "photographe", List.of(), List.of(), List.of(), null, null, List.of(), List.of(), List.of(),
                 PrestataireStatus.PUBLISHED
         );
     }

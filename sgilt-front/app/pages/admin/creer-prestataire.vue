@@ -18,7 +18,8 @@
             {{ category.name }}
           </option>
         </select>
-        <select v-model="selectedSubcats" multiple :disabled="subcategories.length === 0">
+        <select v-model="form.subcat" :disabled="subcategories.length === 0">
+          <option value="" disabled>{{ $t('admin.prestataires.form.subcategory') }}</option>
           <option v-for="subcategory in subcategories" :key="subcategory.key" :value="subcategory.key">
             {{ subcategory.name }}
           </option>
@@ -57,7 +58,7 @@ definePageMeta({ layout: 'admin' })
 
 const { provision, provisioning, provisionError, lastProvisionedSlug } = useAdminPrestataires()
 
-const categories = APP_CATEGORIES.filter((c) => c.key !== ALL_CATEGORY_KEY)
+const { categories } = useCategories()
 
 const emptyForm = () => ({
   email: '',
@@ -66,26 +67,21 @@ const emptyForm = () => ({
   slug: '',
   prestataireName: '',
   category: '',
-  subcats: '',
+  subcat: '',
   cleEnMain: false,
 })
 
 const form = reactive(emptyForm())
 
 const subcategories = computed(
-  () => categories.find((c) => c.key === form.category)?.subcategories.filter((s) => s.key) ?? [],
+  () => categories.value.find((c) => c.key === form.category)?.subcategories ?? [],
 )
 
-const selectedSubcats = ref<string[]>([])
-
-watch(selectedSubcats, (value) => {
-  form.subcats = value.join(',')
-})
-
+// La sous-catégorie appartient toujours à la catégorie choisie : elle est vidée au changement.
 watch(
   () => form.category,
   () => {
-    selectedSubcats.value = []
+    form.subcat = ''
   },
 )
 
@@ -96,14 +92,14 @@ const isFormValid = computed(
     !!form.lastName &&
     !!form.slug &&
     !!form.prestataireName &&
-    !!form.category,
+    !!form.category &&
+    !!form.subcat,
 )
 
 async function onProvision() {
   const ok = await provision({ ...form })
   if (ok) {
     Object.assign(form, emptyForm())
-    selectedSubcats.value = []
   }
 }
 </script>

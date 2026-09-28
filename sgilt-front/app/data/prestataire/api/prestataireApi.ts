@@ -2,6 +2,7 @@
  * Couche API — appels HTTP bruts vers /prestataires, sans logique métier
  */
 import { apiFetch } from '~/composables/useApi'
+import type { CategoryDto } from '../dto/CategoryDto'
 import type { PrestataireDetailDto } from '../dto/PrestataireDetailDto'
 import type { PrestataireSearchResponseDto } from '../dto/PrestataireSearchResponseDto'
 import type { PrestataireUpdatePayload } from '../dto/PrestataireUpdatePayload'
@@ -20,6 +21,10 @@ export async function getPrestataireBySlugApi(slug: string): Promise<Prestataire
 
 export async function getEngagementKeysApi(): Promise<string[]> {
   return apiFetch<string[]>('/prestataires/engagements')
+}
+
+export async function getCategoriesApi(): Promise<CategoryDto[]> {
+  return apiFetch<CategoryDto[]>('/prestataires/categories')
 }
 
 export async function patchPrestataireApi(

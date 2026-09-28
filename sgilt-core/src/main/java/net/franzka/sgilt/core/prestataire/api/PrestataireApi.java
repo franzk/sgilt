@@ -1,5 +1,6 @@
 package net.franzka.sgilt.core.prestataire.api;
 
+import net.franzka.sgilt.core.prestataire.dto.CategorieDto;
 import net.franzka.sgilt.core.prestataire.dto.MediaUploadDto;
 import net.franzka.sgilt.core.prestataire.dto.MediasPutRequest;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireDetailDto;
@@ -26,6 +27,9 @@ public interface PrestataireApi {
 
     @GetMapping("/engagements")
     ResponseEntity<List<String>> getEngagementKeys();
+
+    @GetMapping("/categories")
+    ResponseEntity<List<CategorieDto>> getCategories();
 
     @GetMapping("/ma-fiche")
     ResponseEntity<PrestataireDetailDto> getMaFiche();

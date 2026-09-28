@@ -33,7 +33,9 @@ export function useSearchFetch() {
 
   const fetchThrottled = useThrottleFn(fetchNow, 300)
 
-  watch([categoryKey, currentSubcats], () => fetchThrottled(), { immediate: true })
+  // Recherche côté client uniquement : les résultats sont dynamiques, jamais rendus en SSR.
+  onMounted(() => fetchNow())
+  watch([categoryKey, currentSubcats], () => fetchThrottled())
 
   return {
     loading,

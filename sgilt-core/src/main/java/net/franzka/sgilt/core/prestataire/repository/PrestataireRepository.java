@@ -104,14 +104,14 @@ public interface PrestataireRepository extends JpaRepository<Prestataire, UUID> 
     List<Prestataire> findByCategoryKeyAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(String categoryKey, PrestataireStatus status);
 
     /**
-     * Retourne les prestataires actifs ayant au moins une des sous-catégories données, restreints à
+     * Retourne les prestataires actifs dont la sous-catégorie est l'une de celles données, restreints à
      * un statut donné, triés par ordre d'affichage (voir {@link Prestataire#getDisplayOrder()}).
      *
      * @param subcatKeys clés de sous-catégories ('dj', 'pop-rock'…)
      * @param status     le statut requis
      * @return prestataires correspondants
      */
-    List<Prestataire> findBySubcatKeysInAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(Collection<String> subcatKeys, PrestataireStatus status);
+    List<Prestataire> findBySubcatKeyInAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(Collection<String> subcatKeys, PrestataireStatus status);
 
     /**
      * Réattribue en une seule opération de masse un rang d'affichage aléatoire unique à tous les

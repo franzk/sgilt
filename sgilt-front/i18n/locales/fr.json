@@ -301,7 +301,8 @@
     }
   },
   "search": {
-    "results-count": "{count} prestataires correspondent à votre recherche."
+    "results-count": "{count} prestataires correspondent à votre recherche.",
+    "all-categories": "Tous"
   },
   "provider": {
     "not-found": "Ce prestataire est introuvable.",
@@ -1382,7 +1383,7 @@
         "prestataire-name": "Nom du prestataire",
         "slug": "Slug",
         "category": "Catégorie",
-        "subcats": "Sous-catégories",
+        "subcategory": "Sous-catégorie",
         "first-name": "Prénom",
         "last-name": "Nom",
         "email": "Email",

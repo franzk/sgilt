@@ -17,7 +17,10 @@ const ICONS_MAP: Record<string, any> = {
   services: markRaw(StarIcon),
 }
 
-const activeIcon = computed(() => ICONS_MAP[props.categoryKey ?? ALL_CATEGORY_KEY])
+// Le référentiel vient de la base : une catégorie ajoutée sans icône dédiée prend l'icône par défaut.
+const activeIcon = computed(
+  () => ICONS_MAP[props.categoryKey ?? ALL_CATEGORY_KEY] ?? ICONS_MAP[ALL_CATEGORY_KEY],
+)
 </script>
 
 <template>

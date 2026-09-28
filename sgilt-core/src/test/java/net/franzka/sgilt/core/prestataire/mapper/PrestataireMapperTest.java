@@ -75,14 +75,14 @@ class PrestataireMapperTest {
             Prestataire prestataire = Prestataire.builder()
                     .id(UUID.randomUUID()).name("Studio Fleur").slug("studio-fleur")
                     .status(PrestataireStatus.PUBLISHED).categoryKey("photo")
-                    .subcatKeys(List.of("mariage")).utilisateur(utilisateur).build();
+                    .subcatKey("mariage").utilisateur(utilisateur).build();
             PrestataireReservationCountsDto counts = new PrestataireReservationCountsDto(1, 0, 0, 0, 0, 0);
 
             PrestataireAdminListItemDto dto = mapper.toAdminListItemDto(prestataire, counts);
 
             assertThat(dto).isEqualTo(new PrestataireAdminListItemDto(
                     prestataire.getId(), "Studio Fleur", "studio-fleur", PrestataireStatus.PUBLISHED,
-                    "pro@sgilt.fr", "photo", List.of("mariage"), counts));
+                    "pro@sgilt.fr", "photo", "mariage", counts));
         }
 
         @Test
@@ -131,7 +131,7 @@ class PrestataireMapperTest {
                     .id(UUID.randomUUID()).name("Studio Fleur").slug("studio-fleur")
                     .baseline("Baseline").avatar("avatar.jpg").shortDescription("Résumé")
                     .metaTitle("Titre").metaDescription("Description").categoryKey("photo")
-                    .subcatKeys(List.of("mariage"))
+                    .subcatKey("mariage")
                     .medias("[{\"type\":\"IMAGE\",\"ref\":\"hero.jpg\",\"position\":0}]")
                     .badges("[\"REPONSE_48H\"]")
                     .offerings("[\"Offre A\"]")
