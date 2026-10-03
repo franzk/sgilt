@@ -57,8 +57,9 @@ export async function selectEventCoverApi(
   })
 }
 
+// Création par demande unique (fiche d'un prestataire) : le back construit l'événement complet.
 export async function createEventApi(body: DemandeRequest): Promise<{ eventId: string }> {
-  return apiFetch<{ eventId: string }>('/user/events', { method: 'POST', body })
+  return apiFetch<{ eventId: string }>('/user/events/demande', { method: 'POST', body })
 }
 
 export async function addReservationApi(

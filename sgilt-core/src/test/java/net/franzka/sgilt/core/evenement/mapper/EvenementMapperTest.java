@@ -1,9 +1,14 @@
 package net.franzka.sgilt.core.evenement.mapper;
 
 import net.franzka.sgilt.core.evenement.domain.Evenement;
+import net.franzka.sgilt.core.evenement.domain.EvenementRubrique;
+import net.franzka.sgilt.core.evenement.domain.EvenementStatus;
 import net.franzka.sgilt.core.evenement.dto.ClientInfoDto;
-import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
+import net.franzka.sgilt.core.evenement.dto.DemandeInitieeDto;
+import net.franzka.sgilt.core.evenement.dto.EvenementDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
+import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
+import net.franzka.sgilt.core.evenement.dto.RubriqueDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.junit.jupiter.api.Nested;
@@ -11,6 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -93,6 +99,41 @@ class EvenementMapperTest {
             EventDetailDto dto = mapper.toDetailDto(evenement, "serein", null);
 
             assertThat(dto.lastUpdateDate()).isNull();
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // toEvenement
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ToEvenement {
+
+        @Test
+        void givenEvenementDto_whenToEvenement_thenMapsDataStatusOwnerAndRubriqueKeys() {
+            Utilisateur utilisateur = Utilisateur.builder().id(UUID.randomUUID()).build();
+            EvenementDto evenementDto = new EvenementDto("mariage", "chic", "danse", "Description",
+                    LocalDate.of(2027, 6, 12), "Lyon", "80", "Domaine", List.of(
+                            new RubriqueDto("lieu", List.of()),
+                            new RubriqueDto("autre", List.of(new DemandeInitieeDto(UUID.randomUUID(), "Bonjour")))));
+
+            Evenement evenement = mapper.toEvenement(evenementDto, utilisateur);
+
+            assertThat(evenement.getUtilisateur()).isSameAs(utilisateur);
+            assertThat(evenement.getStatus()).isEqualTo(EvenementStatus.ACTIVE);
+            assertThat(evenement.getEventType()).isEqualTo("mariage");
+            assertThat(evenement.getDate()).isEqualTo(LocalDate.of(2027, 6, 12));
+            assertThat(evenement.getLieu()).isEqualTo("Domaine");
+            assertThat(evenement.getRubriques())
+                    .containsExactly(new EvenementRubrique("lieu"), new EvenementRubrique("autre"));
+        }
+
+        @Test
+        void givenNoRubriques_whenToEvenement_thenRubriquesAreEmpty() {
+            EvenementDto evenementDto = new EvenementDto(
+                    "mariage", null, null, null, null, null, null, null, null);
+
+            assertThat(mapper.toEvenement(evenementDto, Utilisateur.builder().build()).getRubriques()).isEmpty();
         }
     }
 }

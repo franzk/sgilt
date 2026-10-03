@@ -3,12 +3,13 @@ package net.franzka.sgilt.core.evenement.controller;
 import net.franzka.sgilt.core.evenement.dto.AddReservationRequest;
 import net.franzka.sgilt.core.evenement.dto.CoverSelectDto;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
-import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
+import net.franzka.sgilt.core.evenement.dto.CreateEventInConnectedFlowDemandeRequest;
 import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
+import net.franzka.sgilt.core.evenement.dto.EvenementDto;
+import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
 import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
 import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
 import net.franzka.sgilt.core.evenement.dto.EventPatchDto;
-import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
 import net.franzka.sgilt.core.evenement.dto.JournalEvenementDto;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.evenement.service.JournalEvenementService;
@@ -60,13 +61,26 @@ class EvenementControllerTest {
     class CreateEvent {
 
         @Test
-        void givenValidRequest_whenCreateEvent_thenReturns201() {
+        void givenCompleteEvent_whenCreateEvent_thenReturns201() {
             when(currentUserService.get()).thenReturn(utilisateur);
-            CreateEventRequest body = mock(CreateEventRequest.class);
+            EvenementDto body = mock(EvenementDto.class);
             CreateEventResponse response = new CreateEventResponse(eventId);
             when(evenementService.createEvent(utilisateur, body)).thenReturn(response);
 
             ResponseEntity<CreateEventResponse> result = controller.createEvent(body);
+
+            assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+            assertThat(result.getBody()).isEqualTo(response);
+        }
+
+        @Test
+        void givenSingleDemande_whenCreateEventDemande_thenReturns201() {
+            when(currentUserService.get()).thenReturn(utilisateur);
+            CreateEventInConnectedFlowDemandeRequest body = mock(CreateEventInConnectedFlowDemandeRequest.class);
+            CreateEventResponse response = new CreateEventResponse(eventId);
+            when(evenementService.createEventFromDemande(utilisateur, body)).thenReturn(response);
+
+            ResponseEntity<CreateEventResponse> result = controller.createEventDemande(body);
 
             assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
             assertThat(result.getBody()).isEqualTo(response);

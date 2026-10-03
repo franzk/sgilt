@@ -126,6 +126,7 @@
         <SendPlaneIcon class="icon" aria-hidden="true" />
         {{ $t('tunnel.coordonnees.submit') }}
       </button>
+      <p v-if="submitError" class="submit-error">{{ submitError }}</p>
       <button class="cta secondary" type="button" @click="$emit('back')">
         <ArrowLeftIcon class="icon" aria-hidden="true" />
         {{ $t('tunnel.coordonnees.back-to-recap') }}
@@ -158,11 +159,11 @@ defineProps<{
 
 const emit = defineEmits<{
   back: []
-  sent: []
+  send: []
 }>()
 
 const { t } = useI18n()
-const { state } = useDemande()
+const { state, submitting, submitError } = useDemande()
 
 // ── Validation ────────────────────────────────────────────────────────────────
 // Erreurs affichées au clic sur « Envoyer », puis mises à jour en direct.
@@ -200,7 +201,9 @@ const inputs = {
   telephone: useTemplateRef<HTMLInputElement>('telephoneInput'),
 }
 
+// Coordonnées valides : la page envoie la demande (POST /onboarding/demande).
 function onSubmit() {
+  if (submitting.value) return
   submitAttempted.value = true
   const firstError = CONTACT_FIELDS.find((field) => errors.value[field])
   if (firstError) {
@@ -209,14 +212,18 @@ function onSubmit() {
     input?.focus({ preventScroll: true })
     return
   }
-  // Envoi simulé : l'appel réel (POST /onboarding) remplacera ce log.
-  console.log('stay tuned')
-  emit('sent')
+  emit('send')
 }
 </script>
 
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
+
+.submit-error {
+  font-size: 0.85rem;
+  color: $state-error;
+  margin: 0;
+}
 
 .coordonnees {
   display: flex;

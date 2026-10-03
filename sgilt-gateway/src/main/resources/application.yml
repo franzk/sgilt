@@ -28,6 +28,11 @@ spring:
               predicates:
                 - Path=/api/v1/prestataires/**
 
+            - id: templates-public
+              uri: ${BACK_URL:http://localhost:5027}
+              predicates:
+                - Path=/api/v1/templates/**
+
             - id: users-private
               uri: ${BACK_URL:http://localhost:5027}
               predicates:

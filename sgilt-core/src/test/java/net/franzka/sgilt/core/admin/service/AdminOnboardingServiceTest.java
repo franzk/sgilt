@@ -6,6 +6,7 @@ import net.franzka.sgilt.core.jwt.service.ActionLinkService;
 import net.franzka.sgilt.core.jwt.service.ActionTokenService;
 import net.franzka.sgilt.core.onboarding.domain.Onboarding;
 import net.franzka.sgilt.core.onboarding.domain.OnboardingState;
+import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
 import net.franzka.sgilt.core.onboarding.dto.OnboardingPendingDto;
 import net.franzka.sgilt.core.onboarding.mapper.OnboardingMapper;
 import net.franzka.sgilt.core.onboarding.service.OnboardingSessionService;
@@ -22,12 +23,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -156,11 +159,13 @@ class AdminOnboardingServiceTest {
                     .email("client@example.com")
                     .state(OnboardingState.OPEN)
                     .build();
+            InitOnboardingRequest content = mock(InitOnboardingRequest.class);
             OnboardingPendingDto dto = new OnboardingPendingDto(
-                    onboarding.getId(), "client@example.com", "Jean Photographe",
+                    onboarding.getId(), "client@example.com", "mariage", LocalDate.of(2027, 6, 12), 1,
                     OnboardingState.OPEN, LocalDateTime.now(), LocalDateTime.now().plusHours(24));
-            when(onboardingSessionService.listPending()).thenReturn(List.of(onboarding));
-            when(onboardingMapper.toPendingDto(onboarding)).thenReturn(dto);
+            when(onboardingSessionService.listPending())
+                    .thenReturn(List.of(new OnboardingSessionService.PendingOnboarding(onboarding, content)));
+            when(onboardingMapper.toPendingDto(onboarding, content)).thenReturn(dto);
 
             List<OnboardingPendingDto> result = adminOnboardingService.listPendingUserOnboardings();
 

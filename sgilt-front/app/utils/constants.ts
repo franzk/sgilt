@@ -1,7 +1,7 @@
 // app/utils/constants.ts
 
 // ______________ Catégories et sous-catégories ______________
-// Le référentiel est servi par le back (voir useCategories).
+// Les catégories sont servies par le back (voir useCategories).
 
 // Clé de la catégorie « Tous » : aucun filtre. Partagée avec le back (countsByCategory).
 export const ALL_CATEGORY_KEY = 'all'

@@ -50,6 +50,14 @@ class InitOnboardingRateLimitFilterTest {
         }
 
         @Test
+        void givenPostToInitOnboardingDemande_whenShouldNotFilter_thenReturnsFalse() {
+            when(request.getMethod()).thenReturn("POST");
+            when(request.getRequestURI()).thenReturn(LIMITED_PATH + "/demande");
+
+            assertThat(filter.shouldNotFilter(request)).isFalse();
+        }
+
+        @Test
         void givenGetToVerifyEndpoint_whenShouldNotFilter_thenReturnsTrue() {
             // le court-circuit du && sur la méthode HTTP évite même de lire l'URI
             when(request.getMethod()).thenReturn("GET");

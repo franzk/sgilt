@@ -4,14 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.evenement.api.EvenementApi;
 import net.franzka.sgilt.core.evenement.dto.AddReservationRequest;
-import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
-import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
 import net.franzka.sgilt.core.evenement.dto.CoverSelectDto;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
+import net.franzka.sgilt.core.evenement.dto.CreateEventInConnectedFlowDemandeRequest;
+import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
+import net.franzka.sgilt.core.evenement.dto.EvenementDto;
+import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
 import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
 import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
 import net.franzka.sgilt.core.evenement.dto.EventPatchDto;
-import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
 import net.franzka.sgilt.core.evenement.dto.JournalEvenementDto;
 import org.springframework.web.multipart.MultipartFile;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
@@ -40,11 +41,18 @@ public class EvenementController implements EvenementApi {
 
     @Override
     @Transactional
-    public ResponseEntity<CreateEventResponse> createEvent(CreateEventRequest body) {
+    public ResponseEntity<CreateEventResponse> createEvent(EvenementDto body) {
         Utilisateur utilisateur = currentUserService.get();
         log.info("POST /events");
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(evenementService.createEvent(utilisateur, body));
+        return ResponseEntity.status(HttpStatus.CREATED).body(evenementService.createEvent(utilisateur, body));
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<CreateEventResponse> createEventDemande(CreateEventInConnectedFlowDemandeRequest body) {
+        Utilisateur utilisateur = currentUserService.get();
+        log.info("POST /events/demande — prestataireId={}", body.prestataireId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(evenementService.createEventFromDemande(utilisateur, body));
     }
 
     @Override

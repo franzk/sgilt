@@ -2,25 +2,28 @@ package net.franzka.sgilt.core.evenement.service;
 
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
-import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
+import net.franzka.sgilt.core.evenement.dto.CreateEventInConnectedFlowDemandeRequest;
 import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
+import net.franzka.sgilt.core.evenement.dto.DemandeInitieeDto;
+import net.franzka.sgilt.core.evenement.dto.EvenementDto;
+import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
 import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
 import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
 import net.franzka.sgilt.core.evenement.dto.EventPatchDto;
-import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
 import net.franzka.sgilt.core.evenement.dto.ModificationChamp;
+import net.franzka.sgilt.core.evenement.dto.RubriqueDto;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotAllowedException;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotFoundException;
 import net.franzka.sgilt.core.evenement.mapper.EvenementMapper;
 import net.franzka.sgilt.core.evenement.repository.EvenementRepository;
-import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
-import net.franzka.sgilt.core.storage.FileStorageException;
-import net.franzka.sgilt.core.storage.FileStorageService;
 import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
+import net.franzka.sgilt.core.storage.FileStorageException;
+import net.franzka.sgilt.core.storage.FileStorageService;
+import net.franzka.sgilt.core.template.service.TemplateService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -56,6 +59,7 @@ class EvenementServiceTest {
     @Mock private EvenementMapper         evenementMapper;
     @Mock private JournalEvenementService journalEvenementService;
     @Mock private FileStorageService      fileStorageService;
+    @Mock private TemplateService         templateService;
 
     @InjectMocks
     private EvenementService evenementService;
@@ -484,57 +488,6 @@ class EvenementServiceTest {
         }
     }
 
-    // ── CreateEvent ───────────────────────────────────────────────────────────
-
-    @Nested
-    class CreateEvent {
-
-        @Test
-        void givenValidRequest_whenCreateEvent_thenSavesEventAndCreatesReservation() {
-            Utilisateur utilisateur = mock(Utilisateur.class);
-            UUID prestataireId = UUID.randomUUID();
-            LocalDate date = LocalDate.of(2027, 6, 15);
-            CreateEventRequest request = new CreateEventRequest(
-                    prestataireId, "Mariage", "Champetre", "Vin d'honneur", "Description",
-                    date, "Lyon", "80", "Domaine des fleurs", "Bonjour");
-            Prestataire prestataire = mock(Prestataire.class);
-            when(evenementRepository.save(any())).thenAnswer(invocation -> {
-                Evenement e = invocation.getArgument(0);
-                e.setId(EVENT_ID);
-                return e;
-            });
-            when(prestataireService.getById(prestataireId)).thenReturn(prestataire);
-
-            CreateEventResponse response = evenementService.createEvent(utilisateur, request);
-
-            assertThat(response.eventId()).isEqualTo(EVENT_ID);
-            ArgumentCaptor<Evenement> captor = ArgumentCaptor.forClass(Evenement.class);
-            verify(evenementRepository).save(captor.capture());
-            Evenement saved = captor.getValue();
-            assertThat(saved.getUtilisateur()).isEqualTo(utilisateur);
-            assertThat(saved.getLieu()).isEqualTo("Domaine des fleurs");
-            assertThat(saved.getVille()).isEqualTo("Lyon");
-            assertThat(saved.getNbInvites()).isEqualTo("80");
-            verify(reservationService).create(saved, prestataire, utilisateur, date, "Bonjour");
-        }
-
-        @Test
-        void givenNoDate_whenCreateEvent_thenTitleDefaultsToGenericName() {
-            Utilisateur utilisateur = mock(Utilisateur.class);
-            UUID prestataireId = UUID.randomUUID();
-            CreateEventRequest request = new CreateEventRequest(
-                    prestataireId, null, null, null, null, null, null, null, null, null);
-            when(evenementRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
-            when(prestataireService.getById(prestataireId)).thenReturn(mock(Prestataire.class));
-
-            evenementService.createEvent(utilisateur, request);
-
-            ArgumentCaptor<Evenement> captor = ArgumentCaptor.forClass(Evenement.class);
-            verify(evenementRepository).save(captor.capture());
-            assertThat(captor.getValue().getTitle()).isEqualTo("Mon événement");
-        }
-    }
-
     // ── AddReservation ────────────────────────────────────────────────────────
 
     @Nested
@@ -569,31 +522,80 @@ class EvenementServiceTest {
         }
     }
 
-    // ── CreateFromFormData ────────────────────────────────────────────────────
+    // ── CreateEventFromDemande ────────────────────────────────────────────────
 
     @Nested
-    class CreateFromFormData {
+    class CreateEventFromDemande {
 
         @Test
-        void givenFormData_whenCreateFromFormData_thenSavesActiveEvent() {
+        void givenSingleDemande_whenCreateEventFromDemande_thenCreatesTheEventWithTheTemplateRubriques() {
+            UUID prestataireId = UUID.randomUUID();
+            LocalDate date = LocalDate.of(2027, 6, 12);
+            DemandeInitieeDto demande = new DemandeInitieeDto(prestataireId, "Bonjour");
+            List<RubriqueDto> rubriques = List.of(
+                    new RubriqueDto("lieu", List.of()),
+                    new RubriqueDto("musique-animation", List.of(demande)));
             Utilisateur utilisateur = mock(Utilisateur.class);
-            LocalDate date = LocalDate.of(2027, 3, 1);
-            InitOnboardingRequest formData = new InitOnboardingRequest(
-                    "Jean", "Dupont", "jean@sgilt.fr", UUID.randomUUID(), "Mariage", "Champetre",
-                    "Vin d'honneur", "Description", date, "Lyon", "80", "Domaine des fleurs",
-                    "0102030405", "Bonjour");
-            Evenement saved = Evenement.builder().id(EVENT_ID).build();
-            when(evenementRepository.save(any())).thenReturn(saved);
+            EvenementDto expected = new EvenementDto(
+                    "mariage", null, null, null, date, "Lyon", null, null, rubriques);
+            when(templateService.rubriquesWithDemande("mariage", demande)).thenReturn(rubriques);
+            when(evenementMapper.toEvenement(expected, utilisateur)).thenReturn(Evenement.builder().build());
+            when(evenementRepository.save(any())).thenAnswer(invocation -> {
+                Evenement e = invocation.getArgument(0);
+                e.setId(EVENT_ID);
+                return e;
+            });
 
-            Evenement result = evenementService.createFromFormData(utilisateur, formData);
+            CreateEventResponse response = evenementService.createEventFromDemande(utilisateur,
+                    new CreateEventInConnectedFlowDemandeRequest(prestataireId, "mariage", null, null, null, date, "Lyon", null, null, "Bonjour"));
 
-            assertThat(result).isEqualTo(saved);
-            ArgumentCaptor<Evenement> captor = ArgumentCaptor.forClass(Evenement.class);
-            verify(evenementRepository).save(captor.capture());
-            Evenement toSave = captor.getValue();
-            assertThat(toSave.getUtilisateur()).isEqualTo(utilisateur);
-            assertThat(toSave.getStatus()).isEqualTo(net.franzka.sgilt.core.evenement.domain.EvenementStatus.ACTIVE);
-            assertThat(toSave.getVille()).isEqualTo("Lyon");
+            assertThat(response.eventId()).isEqualTo(EVENT_ID);
+            verify(evenementMapper).toEvenement(expected, utilisateur);
+        }
+    }
+
+    // ── CreateFromDto ─────────────────────────────────────────────────────────
+
+    @Nested
+    class CreateFromDto {
+
+        @Test
+        void givenEvenementDto_whenCreateFromDto_thenSavesTheMappedEventWithItsDefaultTitle() {
+            Utilisateur utilisateur = mock(Utilisateur.class);
+            EvenementDto evenementDto = new EvenementDto(
+                    "mariage", null, null, null, null, "Lyon", null, null, List.of());
+            Evenement mapped = Evenement.builder().ville("Lyon").build();
+            when(evenementMapper.toEvenement(evenementDto, utilisateur)).thenReturn(mapped);
+            when(evenementRepository.save(mapped)).thenReturn(mapped);
+
+            Evenement result = evenementService.createFromDto(utilisateur, evenementDto);
+
+            assertThat(result).isSameAs(mapped);
+            assertThat(result.getTitle()).isEqualTo("Mon événement");
+        }
+
+        @Test
+        void givenDemandesInSeveralRubriques_whenCreateFromDto_thenCreatesOneReservationPerDemande() {
+            Utilisateur utilisateur = mock(Utilisateur.class);
+            LocalDate date = LocalDate.of(2027, 6, 12);
+            UUID djId = UUID.randomUUID();
+            UUID traiteurId = UUID.randomUUID();
+            Prestataire dj = mock(Prestataire.class);
+            Prestataire traiteur = mock(Prestataire.class);
+            EvenementDto evenementDto = new EvenementDto("mariage", null, null, null, date, "Lyon", null, null,
+                    List.of(new RubriqueDto("restauration", List.of(new DemandeInitieeDto(traiteurId, "Pour 80 ?"))),
+                            new RubriqueDto("musique-animation", List.of(new DemandeInitieeDto(djId, "La soirée ?"))),
+                            new RubriqueDto("lieu", List.of())));
+            Evenement saved = Evenement.builder().id(EVENT_ID).utilisateur(utilisateur).date(date).build();
+            when(evenementMapper.toEvenement(evenementDto, utilisateur)).thenReturn(saved);
+            when(evenementRepository.save(saved)).thenReturn(saved);
+            when(prestataireService.getById(djId)).thenReturn(dj);
+            when(prestataireService.getById(traiteurId)).thenReturn(traiteur);
+
+            evenementService.createFromDto(utilisateur, evenementDto);
+
+            verify(reservationService).create(saved, traiteur, utilisateur, date, "Pour 80 ?");
+            verify(reservationService).create(saved, dj, utilisateur, date, "La soirée ?");
         }
     }
 

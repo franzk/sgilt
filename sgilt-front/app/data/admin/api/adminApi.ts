@@ -9,6 +9,13 @@ import type { ProvisionPrestataireResponseDto } from '../dto/ProvisionPrestatair
 import type { AdminReservationListItemDto } from '../dto/AdminReservationListItemDto'
 import type { AdminReservationStatus } from '../domain/AdminReservationStatus'
 import type { OnboardingPendingDto } from '../dto/OnboardingPendingDto'
+import type {
+  CategorieAdminDto,
+  SousCategorieAdminDto,
+  SousCategorieCreateRequestDto,
+  SousCategorieUpdateRequestDto,
+} from '../dto/CategorieAdminDto'
+import type { MoveDirection } from '../domain/CategorieAdmin'
 
 /**
  * Liste tous les prestataires actifs avec leur statut, pour le back-office admin.
@@ -81,4 +88,45 @@ export async function listAdminReservationsApi(
  */
 export async function listPendingUserOnboardingsApi(): Promise<OnboardingPendingDto[]> {
   return apiFetch<OnboardingPendingDto[]>('/admin/onboarding-pending')
+}
+
+/**
+ * Liste les catégories et leurs sous-catégories, avec le nombre de prestataires de chacune.
+ */
+export async function listCategoriesAdminApi(): Promise<CategorieAdminDto[]> {
+  return apiFetch<CategorieAdminDto[]>('/admin/categories')
+}
+
+/**
+ * Crée une sous-catégorie, en dernière position de sa catégorie, et la renvoie.
+ */
+export async function createSousCategorieApi(body: SousCategorieCreateRequestDto): Promise<SousCategorieAdminDto> {
+  return apiFetch<SousCategorieAdminDto>('/admin/sous-categories', { method: 'POST', body })
+}
+
+/**
+ * Modifie le libellé et la catégorie d'une sous-catégorie, et la renvoie.
+ */
+export async function updateSousCategorieApi(
+  key: string,
+  body: SousCategorieUpdateRequestDto,
+): Promise<SousCategorieAdminDto> {
+  return apiFetch<SousCategorieAdminDto>(`/admin/sous-categories/${key}`, { method: 'PATCH', body })
+}
+
+/**
+ * Déplace une sous-catégorie d'un rang dans l'ordre de sa catégorie, et la renvoie.
+ */
+export async function moveSousCategorieApi(key: string, direction: MoveDirection): Promise<SousCategorieAdminDto> {
+  return apiFetch<SousCategorieAdminDto>(`/admin/sous-categories/${key}/move`, {
+    method: 'POST',
+    query: { direction },
+  })
+}
+
+/**
+ * Supprime une sous-catégorie qu'aucun prestataire n'utilise.
+ */
+export async function deleteSousCategorieApi(key: string): Promise<void> {
+  return apiFetch<void>(`/admin/sous-categories/${key}`, { method: 'DELETE' })
 }

@@ -11,7 +11,7 @@ Feature: Parcours réservation — le client annule sa propre demande
   Scenario: Le client annule sa demande avant tout contact — NEW -> CANCELED_BY_CLIENT_PRE_CONTACT
 
     # ── 1. Le client crée un événement ciblant le prestataire ────────────────────────────────────
-    Given path '/api/v1/user/events'
+    Given path '/api/v1/user/events/demande'
     And header Authorization = 'Bearer ' + tokenUser
     And request { prestataireId: '#(prestataireId)', eventType: 'Anniversaire', date: '2027-11-15', ville: 'Bordeaux' }
     When method POST
@@ -70,7 +70,7 @@ Feature: Parcours réservation — le client annule sa propre demande
     Then status 409
 
     # Un autre client (pas propriétaire de l'événement) ne peut pas annuler à sa place
-    Given path '/api/v1/user/events'
+    Given path '/api/v1/user/events/demande'
     And header Authorization = 'Bearer ' + tokenUser
     And request { prestataireId: '#(prestataireId)', eventType: 'Anniversaire', date: '2027-11-16', ville: 'Bordeaux' }
     When method POST

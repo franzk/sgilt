@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Controller HTTP du process d'onboarding :
- * <li> Prise en charge de la demande initiale (après soumission du formulaire de demande initiale)</li>
- * <li> Confirmation finale et création du compte client</li>
+ * Controller HTTP de l'onboarding : un visiteur crée un événement et, au passage, son compte.
+ * <li> Ouverture de la session à l'envoi de l'événement (construit par le visiteur, ou né d'une
+ * demande à un prestataire)</li>
+ * <li> Vérification de l'email, puis confirmation finale : création du compte, de l'événement et
+ * de ses réservations</li>
  */
 @RestController
 @RequiredArgsConstructor
@@ -26,12 +28,10 @@ public class OnboardingController implements OnboardingApi {
     private final VerifyService verifyService;
 
     /**
-     * ETAPE 1 : initialisation de l'onboarding.
-     * Traite la demande initiale du tunnel :
-     * stocke les données envoyées par l'utilisateur
-     * et envoie le mail de vérification.
+     * ETAPE 1 : initialisation de l'onboarding à partir d'un événement complet.
+     * Stocke l'événement et les coordonnées, et envoie le mail de vérification.
      *
-     * @param request les données de la demande de réservation
+     * @param request les coordonnées et l'événement complet
      * @return 202 Accepted avec l'email en réponse
      */
     @Override
@@ -39,8 +39,24 @@ public class OnboardingController implements OnboardingApi {
     public ResponseEntity<InitOnboardingResponse> initOnboarding(
             @RequestBody @Valid InitOnboardingRequest request
     ) {
-        log.info("POST /onboarding — email={} prestataireId={}", request.email(), request.prestataireId());
+        log.info("POST /onboarding — email={}", request.email());
         return ResponseEntity.accepted().body(onboardingService.initOnboardingSession(request));
+    }
+
+    /**
+     * ETAPE 1 bis : initialisation de l'onboarding par demande unique (fiche d'un prestataire).
+     * Le back construit l'événement complet, le stocke et envoie le mail de vérification.
+     *
+     * @param request les champs du tunnel de demande
+     * @return 202 Accepted avec l'email en réponse
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<InitOnboardingResponse> initOnboardingDemande(
+            @RequestBody @Valid InitOnboardingDemandeRequest request
+    ) {
+        log.info("POST /onboarding/demande — email={} prestataireId={}", request.email(), request.prestataireId());
+        return ResponseEntity.accepted().body(onboardingService.initOnboardingDemande(request));
     }
 
     /**
@@ -62,7 +78,7 @@ public class OnboardingController implements OnboardingApi {
      * ETAPE 3 : confirmation du compte.
      * - valide le JWT set-password,
      * - crée l'utilisateur dans Keycloak
-     * - crée l'utilisateur, l'événement, la réservation dans la base de données
+     * - crée l'utilisateur, l'événement et ses réservations dans la base de données
      * - envoie le mail de bienvenue
      * - renvoie les tokens Keycloak pour que le front puisse être immédiatement connecté
      *

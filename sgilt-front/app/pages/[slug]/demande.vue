@@ -13,7 +13,7 @@
         v-if="publicStep === 'coordonnees' && summary"
         :summary="summary"
         @back="goToPublicStep('recap')"
-        @sent="onSent"
+        @send="onSend"
       />
       <DemandeRecapEvenement
         v-else
@@ -55,7 +55,16 @@ import type { DemandeSummary } from '~/types/demande'
 const route = useRoute()
 const slug = route.params.slug as string
 
-const { state, confirmation, etapeActuelle, goTo, initDemande, reset: resetDemande } = useDemande()
+const {
+  state,
+  confirmation,
+  etapeActuelle,
+  submitted,
+  goTo,
+  initDemande,
+  submit,
+  reset: resetDemande,
+} = useDemande()
 const { prestataire, loading } = usePrestataire(slug)
 
 // Le prestataire visé vient de la route : la page le charge, la demande n'en garde qu'une référence.
@@ -71,7 +80,7 @@ const { isMobile } = useDevice()
 
 useHead({ title: 'Votre demande' })
 
-const { localEvent, eventTypeLabel, reset: resetLocalEvent } = useLocalEvent()
+const { localEvent, eventTypeLabel } = useLocalEvent()
 const { categoryName, subcategoryName } = useCategories()
 const { currentFlow } = useFlow()
 const { isAuthenticated } = useKeycloak()
@@ -110,16 +119,19 @@ const summary = computed<DemandeSummary | null>(() => {
   }
 })
 
-// Demande envoyée : le parcours public de cet événement est terminé, la suite passe par le
-// lien du mail. La confirmation garde une copie figée, l'événement local et la demande
-// (coordonnées comprises) sont vidés. `replace` : le retour arrière ne ramène pas au formulaire.
-function onSent() {
+// Envoi de la demande : le parcours public de cet événement est terminé, la suite passe par le
+// lien du mail. La confirmation est figée avant l'envoi, car submit() vide l'événement local en
+// cas de succès ; la demande (coordonnées comprises) est vidée ensuite. En cas d'échec, l'erreur
+// s'affiche sous le bouton. `replace` : le retour arrière ne ramène pas au formulaire.
+async function onSend() {
   if (!summary.value) return
-  confirmation.value = {
+  const sentConfirmation = {
     summary: { ...summary.value, evenement: { ...summary.value.evenement } },
     email: state.email.trim(),
   }
-  resetLocalEvent()
+  await submit()
+  if (!submitted.value) return
+  confirmation.value = sentConfirmation
   resetDemande()
   navigateTo('/demande-envoyee', { replace: true })
 }

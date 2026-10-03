@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Entité JPA représentant une sous-catégorie du référentiel prestataire ('dj', 'traiteur'…).
- * Le référentiel est alimenté par SQL, jamais modifié par l'application.
+ * Entité JPA représentant une sous-catégorie de prestataire ('dj', 'traiteur'…).
+ * Les sous-catégories sont administrées depuis le back-office.
  */
 @Entity
 @Table(name = "sous_categories")

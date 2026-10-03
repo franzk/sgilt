@@ -15,13 +15,15 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Rate limiter à fenêtre fixe, scopé à {@code POST /api/v1/onboarding} (init-onboarding)
- * uniquement — pas les autres routes du préfixe {@code /api/v1/onboarding/**} (verify,
- * confirm-account).
+ * Rate limiter à fenêtre fixe, scopé aux deux entrées d'init-onboarding — {@code POST
+ * /api/v1/onboarding} (événement complet) et {@code POST /api/v1/onboarding/demande} (demande
+ * unique), qui partagent le même compteur — et pas aux autres routes du préfixe
+ * {@code /api/v1/onboarding/**} (verify, confirm-account).
  * Rejette en {@code 429} avant tout appel au routing vers sgilt-core : en cas de dépassement,
  * aucune requête n'atteint le backend, donc aucun effet de bord (ligne DB, envoi d'email).
  */
@@ -29,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class InitOnboardingRateLimitFilter extends OncePerRequestFilter {
 
-    private static final String LIMITED_PATH = "/api/v1/onboarding";
+    private static final Set<String> LIMITED_PATHS = Set.of("/api/v1/onboarding", "/api/v1/onboarding/demande");
     private static final int MAX_REQUESTS_PER_WINDOW = 5;
     private static final Duration WINDOW_DURATION = Duration.ofMinutes(10);
 
@@ -39,7 +41,7 @@ public class InitOnboardingRateLimitFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return !("POST".equalsIgnoreCase(request.getMethod()) && LIMITED_PATH.equals(request.getRequestURI()));
+        return !("POST".equalsIgnoreCase(request.getMethod()) && LIMITED_PATHS.contains(request.getRequestURI()));
     }
 
     @Override

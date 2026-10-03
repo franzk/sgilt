@@ -14,8 +14,8 @@
     <div class="content">
       <!-- ── Présentation ───────────────────────────────────────────────────────── -->
       <section class="intro">
-        <span class="badge" :style="{ color: RUBRIQUE_ACCENTS[rubriqueKey] }" aria-hidden="true">
-          <component :is="RUBRIQUE_ICONS[rubriqueKey]" class="icon" />
+        <span class="badge" :style="{ color: rubriqueAccent(rubriqueKey) }" aria-hidden="true">
+          <component :is="rubriqueIcon(rubriqueKey)" class="icon" />
         </span>
         <h1 class="name">{{ name }}</h1>
         <p class="tagline">{{ $t(`evenement.rubrique.content.${rubriqueKey}.tagline`) }}</p>
@@ -91,12 +91,7 @@ import {
 } from '@remixicons/vue/line'
 import PrestataireCard from '~/components/cards/PrestataireCard.vue'
 import RubriqueReservationItem from '~/components/evenement/RubriqueReservationItem.vue'
-import {
-  RUBRIQUE_ACCENTS,
-  RUBRIQUE_COVERS,
-  RUBRIQUE_ICONS,
-  RUBRIQUE_KEYS,
-} from '~/constants/event-rubriques'
+import { RUBRIQUE_COVERS, rubriqueAccent, rubriqueIcon } from '~/constants/event-rubriques'
 import type { PrestataireCardDetail } from '~/data/prestataire/domain/PrestataireCardDetail'
 import { searchPrestataires } from '~/data/prestataire/service/prestataireService'
 import { ALL_CATEGORY_KEY } from '~/utils/constants'
@@ -111,10 +106,10 @@ const { t } = useI18n()
 const { localEvent } = useLocalEvent()
 
 // ── Rubrique ─────────────────────────────────────────────────────────────────
-// Clé inconnue (URL tapée à la main) : retour à l'event board.
+// Clé absente des rubriques de l'événement (URL tapée à la main) : retour à l'event board.
 const rubriqueKey = computed(() => {
   const raw = route.params.rubrique
-  return RUBRIQUE_KEYS.find((key) => key === raw) ?? null
+  return localEvent.rubriques.find((rubrique) => rubrique.key === raw)?.key ?? null
 })
 
 if (!rubriqueKey.value) {

@@ -1,7 +1,9 @@
 package net.franzka.sgilt.core.onboarding.controller;
 
+import net.franzka.sgilt.core.evenement.dto.EvenementDto;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountRequest;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountResponse;
+import net.franzka.sgilt.core.onboarding.dto.InitOnboardingDemandeRequest;
 import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
 import net.franzka.sgilt.core.onboarding.dto.InitOnboardingResponse;
 import net.franzka.sgilt.core.onboarding.dto.SetPasswordTokenDto;
@@ -17,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,15 +45,30 @@ class OnboardingControllerTest {
     class InitOnboarding {
 
         @Test
-        void givenValidRequest_whenInitOnboarding_thenReturns202WithEmail() {
+        void givenCompleteEvent_whenInitOnboarding_thenReturns202WithEmail() {
             InitOnboardingRequest request = new InitOnboardingRequest(
-                    "Jean", "Dupont", "jean@sgilt.fr", UUID.randomUUID(), "Mariage", "Champetre",
-                    "Vin d'honneur", "Description", LocalDate.of(2027, 6, 15), "Lyon", "80",
-                    "Domaine des fleurs", "0102030405", "Bonjour");
+                    "Jean", "Dupont", "jean@sgilt.fr", "0102030405",
+                    new EvenementDto("mariage", null, null, null, LocalDate.of(2027, 6, 15),
+                            "Lyon", null, null, List.of()));
             InitOnboardingResponse response = new InitOnboardingResponse("jean@sgilt.fr");
             when(onboardingService.initOnboardingSession(request)).thenReturn(response);
 
             ResponseEntity<InitOnboardingResponse> result = controller.initOnboarding(request);
+
+            assertThat(result.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
+            assertThat(result.getBody()).isEqualTo(response);
+        }
+
+        @Test
+        void givenSingleDemande_whenInitOnboardingDemande_thenReturns202WithEmail() {
+            InitOnboardingDemandeRequest request = new InitOnboardingDemandeRequest(
+                    "Jean", "Dupont", "jean@sgilt.fr", UUID.randomUUID(), "Mariage", "Champetre",
+                    "Vin d'honneur", "Description", LocalDate.of(2027, 6, 15), "Lyon", "80",
+                    "Domaine des fleurs", "0102030405", "Bonjour");
+            InitOnboardingResponse response = new InitOnboardingResponse("jean@sgilt.fr");
+            when(onboardingService.initOnboardingDemande(request)).thenReturn(response);
+
+            ResponseEntity<InitOnboardingResponse> result = controller.initOnboardingDemande(request);
 
             assertThat(result.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
             assertThat(result.getBody()).isEqualTo(response);

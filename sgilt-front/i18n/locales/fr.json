@@ -1353,10 +1353,33 @@
     "ECORESPONSABLE": { "label": "Éco", "description": "Éco-responsable" }
   },
   "admin": {
+    "sous-categories": {
+      "title": "Sous-catégories",
+      "loading": "Chargement…",
+      "key": "Clé (ex. photo-video)",
+      "key-hint": "La clé n’est plus modifiable après la création : elle est utilisée par les prestataires et les URLs de recherche.",
+      "name": "Libellé",
+      "category": "Catégorie",
+      "prestataire-count": "aucun prestataire | {n} prestataire | {n} prestataires",
+      "move-up": "Monter",
+      "move-down": "Descendre",
+      "save": "Enregistrer",
+      "delete": "Supprimer",
+      "create-title": "Nouvelle sous-catégorie",
+      "create": "Créer",
+      "errors": {
+        "KEY_ALREADY_EXISTS": "Cette clé de sous-catégorie existe déjà.",
+        "SOUS_CATEGORIE_IN_USE": "Suppression impossible : cette sous-catégorie est utilisée par des prestataires.",
+        "INCOMPLETE": "Renseignez tous les champs.",
+        "INVALID_KEY": "La clé ne peut contenir que des minuscules, des chiffres et des tirets (ex. photo-video).",
+        "TECHNICAL": "Une erreur est survenue. Réessayez."
+      }
+    },
     "nav": {
       "prestataires": "Prestataires",
       "onboarding": "Onboardings",
-      "reservations": "Réservations"
+      "reservations": "Réservations",
+      "sous-categories": "Sous-catégories"
     },
     "onboarding-nav": {
       "pro": "Pro",
@@ -1435,7 +1458,7 @@
       "title": "Onboardings clients en attente",
       "loading": "Chargement…",
       "empty": "Aucun onboarding client en attente.",
-      "target": "Vers {name}",
+      "demandes": "aucune demande | {n} demande | {n} demandes",
       "sent-at": "Envoyé le {date}",
       "expires-at": "expire le {date}",
       "state": {

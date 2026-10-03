@@ -10,7 +10,7 @@ const emit = defineEmits(['update:modelValue'])
 const { t } = useI18n()
 const { categories } = useCategories()
 
-// « Tous » n'est pas une catégorie du référentiel : c'est l'absence de filtre, toujours en tête.
+// « Tous » n'est pas une catégorie : c'est l'absence de filtre, toujours en tête.
 const filterOptions = computed(() => [
   { key: ALL_CATEGORY_KEY, name: t('search.all-categories') },
   ...categories.value,

@@ -81,7 +81,7 @@ public class PrestataireController implements PrestataireApi {
     }
 
     /**
-     * Retourne le référentiel des catégories et sous-catégories prestataire, trié.
+     * Retourne les catégories et sous-catégories prestataire, triées. Public.
      *
      * @return les catégories, chacune avec ses sous-catégories
      */

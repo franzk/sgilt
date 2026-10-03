@@ -10,6 +10,11 @@ import {
   resendOnboardingEmailApi,
   listAdminReservationsApi,
   listPendingUserOnboardingsApi,
+  listCategoriesAdminApi,
+  createSousCategorieApi,
+  updateSousCategorieApi,
+  moveSousCategorieApi,
+  deleteSousCategorieApi,
 } from '../api/adminApi'
 import {
   mapPrestataireAdminFormat,
@@ -18,6 +23,8 @@ import {
   mapPrestataireOnboardingPending,
   mapAdminReservationListItem,
   mapOnboardingPending,
+  mapCategorieAdmin,
+  mapSousCategorieAdmin,
 } from '../mapper/adminMapper'
 import type { PrestataireAdminFormat } from '../domain/PrestataireAdminFormat'
 import type { PrestataireOnboardingPending } from '../domain/PrestataireOnboardingPending'
@@ -26,6 +33,8 @@ import type { ProvisionResult } from '../domain/ProvisionResult'
 import type { AdminReservationListItem } from '../domain/AdminReservationListItem'
 import type { AdminReservationStatus } from '../domain/AdminReservationStatus'
 import type { OnboardingPending } from '../domain/OnboardingPending'
+import type { CategorieAdmin, MoveDirection, SousCategorieAdmin } from '../domain/CategorieAdmin'
+import { FetchError } from 'ofetch'
 
 /**
  * Récupère tous les prestataires actifs avec leur statut, pour le back-office admin.
@@ -97,4 +106,44 @@ export async function fetchAdminReservations(status?: AdminReservationStatus): P
 export async function fetchPendingUserOnboardings(): Promise<OnboardingPending[]> {
   const dtos = await listPendingUserOnboardingsApi()
   return dtos.map(mapOnboardingPending)
+}
+
+/**
+ * Récupère les catégories et leurs sous-catégories pour le back-office.
+ */
+export async function fetchCategoriesAdmin(): Promise<CategorieAdmin[]> {
+  return (await listCategoriesAdminApi()).map(mapCategorieAdmin)
+}
+
+export async function createSousCategorie(
+  key: string,
+  name: string,
+  categoryKey: string,
+): Promise<SousCategorieAdmin> {
+  return mapSousCategorieAdmin(await createSousCategorieApi({ key, name, categoryKey }))
+}
+
+export async function updateSousCategorie(
+  key: string,
+  name: string,
+  categoryKey: string,
+): Promise<SousCategorieAdmin> {
+  return mapSousCategorieAdmin(await updateSousCategorieApi(key, { name, categoryKey }))
+}
+
+export async function moveSousCategorie(key: string, direction: MoveDirection): Promise<SousCategorieAdmin> {
+  return mapSousCategorieAdmin(await moveSousCategorieApi(key, direction))
+}
+
+export async function deleteSousCategorie(key: string): Promise<void> {
+  await deleteSousCategorieApi(key)
+}
+
+/**
+ * Motif d'échec d'une opération sur les sous-catégories (suffixe de la clé i18n
+ * admin.sous-categories.errors.*). Le back répond 400 sans corps : un 400 est le refus métier de
+ * l'opération (`refusal`), toute autre erreur est TECHNICAL.
+ */
+export function toSousCategorieFailure(error: unknown, refusal: string): string {
+  return error instanceof FetchError && error.statusCode === 400 ? refusal : 'TECHNICAL'
 }

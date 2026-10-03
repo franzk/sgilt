@@ -15,7 +15,7 @@ Feature: Parcours client — de la demande d'onboarding au cycle de vie complet 
   Scenario: Onboarding, cycle de vie de la réservation et ses conséquences réelles
 
     # ── 1. Demande initiale de réservation à un prestataire publié ──────────────────────────────
-    Given path '/api/v1/onboarding'
+    Given path '/api/v1/onboarding/demande'
     And request
       """
       {
@@ -44,7 +44,7 @@ Feature: Parcours client — de la demande d'onboarding au cycle de vie complet 
     * def firstSessionToken = Java.type('net.franzka.sgilt.integration.IntegrationTestContext').buildConfirmationTokenForEmail(clientEmail)
 
     Given url baseUrl
-    And path '/api/v1/onboarding'
+    And path '/api/v1/onboarding/demande'
     And request
       """
       {

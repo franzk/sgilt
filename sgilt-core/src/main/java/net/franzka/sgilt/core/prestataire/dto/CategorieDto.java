@@ -3,7 +3,7 @@ package net.franzka.sgilt.core.prestataire.dto;
 import java.util.List;
 
 /**
- * DTO d'une catégorie du référentiel prestataire, avec ses sous-catégories triées.
+ * DTO d'une catégorie de prestataire, avec ses sous-catégories triées.
  */
 public record CategorieDto(
         String key,

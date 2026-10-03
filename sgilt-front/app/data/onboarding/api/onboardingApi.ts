@@ -6,8 +6,9 @@ import type {
   VerifyTokenResponseDto,
 } from '../dto/OnboardingDto'
 
+// Onboarding par demande unique (fiche d'un prestataire) : le back construit l'événement complet.
 export async function submitOnboarding(body: OnboardingDemandeRequest): Promise<void> {
-  await apiFetch('/onboarding', { method: 'POST', body })
+  await apiFetch('/onboarding/demande', { method: 'POST', body })
 }
 
 export async function verifyOnboardingToken(token: string): Promise<VerifyTokenResponseDto> {

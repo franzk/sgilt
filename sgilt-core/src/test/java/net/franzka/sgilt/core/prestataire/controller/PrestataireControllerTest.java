@@ -65,22 +65,6 @@ class PrestataireControllerTest {
     }
 
     // -------------------------------------------------------------------------
-    // getCategories
-    // -------------------------------------------------------------------------
-
-    @Nested
-    class GetCategories {
-
-        @Test
-        void givenReferential_whenGetCategories_thenDelegatesToService() {
-            List<CategorieDto> categories = List.of(new CategorieDto("musique", "Musique", List.of()));
-            when(categorieService.getCategories()).thenReturn(categories);
-
-            assertThat(controller.getCategories().getBody()).isEqualTo(categories);
-        }
-    }
-
-    // -------------------------------------------------------------------------
     // getBySlug
     // -------------------------------------------------------------------------
 
@@ -110,6 +94,22 @@ class PrestataireControllerTest {
             assertThat(keys).containsExactlyInAnyOrder(
                     "REPONSE_48H", "ADAPTABLE", "ACCOMPAGNEMENT", "EQUIPE", "INTERLOCUTEUR_UNIQUE", "ECORESPONSABLE");
             assertThat(keys).hasSize(Engagement.values().length);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // getCategories
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetCategories {
+
+        @Test
+        void givenCategories_whenGetCategories_thenDelegatesToService() {
+            List<CategorieDto> categories = List.of(new CategorieDto("musique", "Musique", List.of()));
+            when(categorieService.getCategories()).thenReturn(categories);
+
+            assertThat(controller.getCategories().getBody()).isEqualTo(categories);
         }
     }
 

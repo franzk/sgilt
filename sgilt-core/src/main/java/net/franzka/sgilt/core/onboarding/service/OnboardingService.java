@@ -4,8 +4,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.franzka.sgilt.core.evenement.domain.Evenement;
-import net.franzka.sgilt.core.evenement.service.EvenementService;
+import net.franzka.sgilt.core.evenement.dto.DemandeInitieeDto;
+import net.franzka.sgilt.core.evenement.dto.EvenementDto;
+import net.franzka.sgilt.core.evenement.dto.RubriqueDto;
 import net.franzka.sgilt.core.jwt.domain.ActionToken;
 import net.franzka.sgilt.core.jwt.service.ActionTokenService;
 import net.franzka.sgilt.core.jwt.service.TokenJwtService;
@@ -13,18 +14,18 @@ import net.franzka.sgilt.core.keycloak.KeycloakAdminService;
 import net.franzka.sgilt.core.onboarding.domain.Onboarding;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountRequest;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountResponse;
+import net.franzka.sgilt.core.onboarding.dto.InitOnboardingDemandeRequest;
 import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
 import net.franzka.sgilt.core.onboarding.dto.InitOnboardingResponse;
 import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.mailer.OnboardingMailerService;
-import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
-import net.franzka.sgilt.core.reservation.service.ReservationService;
-import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
+import net.franzka.sgilt.core.template.service.TemplateService;
 import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -32,8 +33,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class OnboardingService {
 
-    private final EvenementService evenementService;
-    private final ReservationService reservationService;
     private final PrestataireService prestataireService;
     private final OnboardingSessionService onboardingSessionService;
     private final TokenJwtService setPasswordTokenJwtService;
@@ -41,33 +40,76 @@ public class OnboardingService {
     private final UtilisateurService utilisateurService;
     private final KeycloakAdminService keycloakAdminService;
     private final ActionTokenService actionTokenService;
+    private final TemplateService templateService;
 
     /**
-     * Traite une demande initiale de réservation.
-     * Si l'email est déjà associé à un compte existant, envoie une alerte de sécurité et retourne.
-     * Sinon, annule les sessions OPEN existantes, crée une nouvelle session d'onboarding
-     * et envoie le mail de vérification.
+     * Un visiteur envoie l'événement qu'il a construit : vérifie que les prestataires de ses
+     * demandes initiées sont publiés, puis ouvre la session.
      *
-     * @param request les données saisies dans le tunnel
+     * @param request les coordonnées et l'événement complet
      * @return l'email encapsulé dans la réponse
      */
     public InitOnboardingResponse initOnboardingSession(InitOnboardingRequest request) {
-
         if (utilisateurService.existsByEmail(request.email())) {
-            log.info("createDemandeReservation — email déjà connu, envoi alerte sécurité : {}", request.email());
-            onboardingMailerService.sendSecurityAlertEmail(request.email());
+            alertExistingAccount(request.email());
+            // Réponse identique à celle d'un nouvel email : l'appelant ne doit pas pouvoir déduire de la
+            // réponse qu'un compte existe pour cet email (énumération de comptes). Seul le propriétaire
+            // de l'adresse fait la différence, par le mail qu'il reçoit.
             return new InitOnboardingResponse(request.email());
         }
 
-        log.info("createDemandeReservation — nouvel email, création de la session : {}", request.email());
+        RubriqueDto.demandesInitiees(request.evenement().rubriques())
+                .forEach(demande -> prestataireService.ensurePublished(demande.prestataireId()));
+        return startSession(request);
+    }
+
+    /**
+     * Un visiteur passe par la fiche d'un prestataire : c'est aussi la création d'un événement,
+     * construit ici (rubriques du template du type, demande rangée dans la sienne), puis la
+     * session est ouverte.
+     *
+     * @param request les champs du tunnel de demande
+     * @return l'email encapsulé dans la réponse
+     */
+    public InitOnboardingResponse initOnboardingDemande(InitOnboardingDemandeRequest request) {
+        if (utilisateurService.existsByEmail(request.email())) {
+            alertExistingAccount(request.email());
+            // Réponse identique à celle d'un nouvel email : l'appelant ne doit pas pouvoir déduire de la
+            // réponse qu'un compte existe pour cet email (énumération de comptes). Seul le propriétaire
+            // de l'adresse fait la différence, par le mail qu'il reçoit.
+            return new InitOnboardingResponse(request.email());
+        }
+
+        // Vérification de la validité du prestataire
+        prestataireService.ensurePublished(request.prestataireId()); // lève PrestataireNotFoundException si le prestataire n'existe pas ou n'est pas publié
+
+        // Construction d'un événement à partir du type d'événement
+        // avec les rubriques du template et la demande initiée rangée dans sa rubrique
+        List<RubriqueDto> rubriques = templateService.rubriquesWithDemande(
+                request.eventType(), new DemandeInitieeDto(request.prestataireId(), request.prestataireMessage()));
+        EvenementDto evenement = new EvenementDto(
+                request.eventType(), request.ambiance(), request.momentCle(), request.description(),
+                request.date(), request.ville(), request.nbInvites(), request.lieu(), rubriques);
+
+        return startSession(new InitOnboardingRequest(
+                request.firstName(), request.lastName(), request.email(), request.telephone(), evenement));
+    }
+
+    // Email déjà associé à un compte : prévient son propriétaire par une alerte de sécurité.
+    private void alertExistingAccount(String email) {
+        log.info("initOnboarding — email déjà connu, envoi alerte sécurité : {}", email);
+        onboardingMailerService.sendSecurityAlertEmail(email);
+    }
+
+    // Annule les sessions OPEN de l'email, crée la nouvelle session et envoie le mail de vérification.
+    private InitOnboardingResponse startSession(InitOnboardingRequest request) {
+        log.info("initOnboarding — nouvel email, ouverture de la session de création d'événement : {}", request.email());
         onboardingSessionService.cancelExistingForEmail(request.email());
 
-        Prestataire prestataire = prestataireService.getPublishedById(request.prestataireId());
-
         OnboardingSessionService.InitiationResult result =
-                onboardingSessionService.initiate(request.email(), prestataire, request);
+                onboardingSessionService.initiate(request.email(), request);
 
-        log.info("createDemandeReservation — session {} créée, envoi mail confirmation à {}",
+        log.info("initOnboarding — session {} créée, envoi mail confirmation à {}",
                 result.onboarding().getId(), request.email());
         onboardingMailerService.sendVerificationEmail(request.email(), result.hmacToken());
 
@@ -115,7 +157,7 @@ public class OnboardingService {
 
     /**
      * Confirme l'onboarding d'un client : consomme la session d'onboarding, crée le compte
-     * Keycloak, crée l'utilisateur, l'événement et la réservation, puis retourne les tokens Keycloak.
+     * Keycloak, crée l'utilisateur et son événement (avec ses réservations), puis retourne les tokens Keycloak.
      *
      * @param claims   les claims du JWT set-password, déjà décodé par {@link #confirmOnboarding}
      * @param password le mot de passe choisi par le client
@@ -126,16 +168,13 @@ public class OnboardingService {
         String email = claims.getSubject();
 
         Onboarding onboarding = onboardingSessionService.findById(onboardingId);
-        OnboardingSessionService.OnboardingContent content = onboardingSessionService.consume(onboarding);
-
-        InitOnboardingRequest formData = content.formData();
-        Prestataire prestataire = content.prestataire();
+        InitOnboardingRequest formData = onboardingSessionService.consume(onboarding);
 
         log.info("confirmAccount — création compte Keycloak pour {}", email);
         keycloakAdminService.createClientUser(email, formData.firstName(), formData.lastName(), password);
 
-        // création de l'utilisateur, de la réservation et de l'événement
-        UUID eventId = onboardingSessionService.createEntities(formData, prestataire, email);
+        // création de l'utilisateur, de l'événement et des réservations initiées
+        UUID eventId = onboardingSessionService.createEntities(formData, email);
 
         log.info("confirmAccount — compte créé, envoi mail bienvenue à {}", email);
         onboardingMailerService.sendWelcomeEmail(email);

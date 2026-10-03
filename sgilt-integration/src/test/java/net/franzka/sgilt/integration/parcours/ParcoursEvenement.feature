@@ -12,7 +12,7 @@ Feature: Parcours événement — création, ajout de prestataires, édition, jo
   Scenario: Création, ajout d'un second prestataire, édition et consultation
 
     # ── 1. Le client crée un événement ciblant le premier prestataire ────────────────────────────
-    Given path '/api/v1/user/events'
+    Given path '/api/v1/user/events/demande'
     And header Authorization = 'Bearer ' + tokenUser
     And request
       """

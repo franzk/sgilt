@@ -78,7 +78,7 @@ public class AdminOnboardingService {
      */
     public List<OnboardingPendingDto> listPendingUserOnboardings() {
         return onboardingSessionService.listPending().stream()
-                .map(onboardingMapper::toPendingDto)
+                .map(pending -> onboardingMapper.toPendingDto(pending.onboarding(), pending.content()))
                 .toList();
     }
 

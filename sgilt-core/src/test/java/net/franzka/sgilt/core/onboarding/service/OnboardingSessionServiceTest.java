@@ -5,6 +5,9 @@ import tools.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
+import net.franzka.sgilt.core.evenement.dto.DemandeInitieeDto;
+import net.franzka.sgilt.core.evenement.dto.EvenementDto;
+import net.franzka.sgilt.core.evenement.dto.RubriqueDto;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.jwt.service.VerificationTokenHmacService;
 import net.franzka.sgilt.core.onboarding.domain.Onboarding;
@@ -14,8 +17,6 @@ import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
 import net.franzka.sgilt.core.onboarding.exception.TokenAlreadyUsedException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.repository.OnboardingRepository;
-import net.franzka.sgilt.core.prestataire.domain.Prestataire;
-import net.franzka.sgilt.core.reservation.service.ReservationService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
 import org.junit.jupiter.api.Nested;
@@ -35,7 +36,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,13 +48,15 @@ class OnboardingSessionServiceTest {
     private static final String LASTNAME         = "Dupont";
     private static final String TELEPHONE        = "0612345678";
     private static final int    EXPIRATION_HOURS = 24;
+    private static final LocalDate DATE          = LocalDate.of(2025, 6, 15);
+    private static final UUID   DJ_ID            = UUID.randomUUID();
+    private static final UUID   TRAITEUR_ID      = UUID.randomUUID();
 
     @Mock private OnboardingRepository onboardingRepository;
     @Mock private VerificationTokenHmacService verificationTokenHmacService;
     @Mock private ConfirmationTokenProperties confirmationTokenProperties;
     @Mock private UtilisateurService utilisateurService;
     @Mock private EvenementService evenementService;
-    @Mock private ReservationService reservationService;
     @Mock private ObjectMapper objectMapper;
 
     @InjectMocks
@@ -75,7 +77,7 @@ class OnboardingSessionServiceTest {
             when(objectMapper.writeValueAsString(any())).thenReturn("{}");
 
             OnboardingSessionService.InitiationResult result =
-                    onboardingSessionService.initiate(EMAIL, buildPrestataire(), buildRequest());
+                    onboardingSessionService.initiate(EMAIL, buildRequest());
 
             assertThat(result.hmacToken()).isEqualTo(TOKEN);
         }
@@ -87,7 +89,7 @@ class OnboardingSessionServiceTest {
             when(confirmationTokenProperties.confirmationExpirationHours()).thenReturn(EXPIRATION_HOURS);
             when(objectMapper.writeValueAsString(any())).thenReturn("{}");
 
-            onboardingSessionService.initiate(EMAIL, buildPrestataire(), buildRequest());
+            onboardingSessionService.initiate(EMAIL, buildRequest());
 
             ArgumentCaptor<Onboarding> captor = ArgumentCaptor.forClass(Onboarding.class);
             verify(onboardingRepository).save(captor.capture());
@@ -95,19 +97,16 @@ class OnboardingSessionServiceTest {
         }
 
         @Test
-        void givenValidRequest_whenInitiate_thenSavesOnboardingWithEmailAndPrestataire() throws JacksonException {
+        void givenValidRequest_whenInitiate_thenSavesOnboardingWithEmail() throws JacksonException {
             when(verificationTokenHmacService.generate())
                     .thenReturn(new VerificationTokenHmacService.GeneratedToken(PAYLOAD, TOKEN));
             when(confirmationTokenProperties.confirmationExpirationHours()).thenReturn(EXPIRATION_HOURS);
             when(objectMapper.writeValueAsString(any())).thenReturn("{}");
-            Prestataire prestataire = buildPrestataire();
-
-            onboardingSessionService.initiate(EMAIL, prestataire, buildRequest());
+            onboardingSessionService.initiate(EMAIL, buildRequest());
 
             ArgumentCaptor<Onboarding> captor = ArgumentCaptor.forClass(Onboarding.class);
             verify(onboardingRepository).save(captor.capture());
             assertThat(captor.getValue().getEmail()).isEqualTo(EMAIL);
-            assertThat(captor.getValue().getPrestataire()).isSameAs(prestataire);
         }
 
         @Test
@@ -118,7 +117,7 @@ class OnboardingSessionServiceTest {
             when(objectMapper.writeValueAsString(any())).thenReturn("{}");
 
             LocalDateTime before = LocalDateTime.now();
-            onboardingSessionService.initiate(EMAIL, buildPrestataire(), buildRequest());
+            onboardingSessionService.initiate(EMAIL, buildRequest());
             LocalDateTime after = LocalDateTime.now();
 
             ArgumentCaptor<Onboarding> captor = ArgumentCaptor.forClass(Onboarding.class);
@@ -135,7 +134,7 @@ class OnboardingSessionServiceTest {
             when(objectMapper.writeValueAsString(any())).thenThrow(mock(JacksonException.class));
 
             assertThatExceptionOfType(RuntimeException.class)
-                    .isThrownBy(() -> onboardingSessionService.initiate(EMAIL, buildPrestataire(), buildRequest()));
+                    .isThrownBy(() -> onboardingSessionService.initiate(EMAIL, buildRequest()));
         }
     }
 
@@ -337,16 +336,20 @@ class OnboardingSessionServiceTest {
     class ListPending {
 
         @Test
-        void givenPendingSessions_whenListPending_thenReturnsThemOrderedByCreatedAtDesc() {
-            Onboarding open = Onboarding.builder().state(OnboardingState.OPEN).build();
-            Onboarding pendingConfirmation = Onboarding.builder().state(OnboardingState.PENDING_CONFIRMATION).build();
+        void givenPendingSessions_whenListPending_thenReturnsThemWithTheirEventInOrder() throws JacksonException {
+            Onboarding open = Onboarding.builder().state(OnboardingState.OPEN).data("{open}").build();
+            Onboarding pendingConfirmation = Onboarding.builder().state(OnboardingState.PENDING_CONFIRMATION).data("{pending}").build();
+            InitOnboardingRequest openContent = buildRequest();
+            InitOnboardingRequest pendingContent = buildRequest();
             when(onboardingRepository.findByStateInOrderByCreatedAtDesc(
                     List.of(OnboardingState.OPEN, OnboardingState.PENDING_CONFIRMATION)))
                     .thenReturn(List.of(pendingConfirmation, open));
+            when(objectMapper.readValue("{open}", InitOnboardingRequest.class)).thenReturn(openContent);
+            when(objectMapper.readValue("{pending}", InitOnboardingRequest.class)).thenReturn(pendingContent);
 
-            List<Onboarding> result = onboardingSessionService.listPending();
-
-            assertThat(result).containsExactly(pendingConfirmation, open);
+            assertThat(onboardingSessionService.listPending()).containsExactly(
+                    new OnboardingSessionService.PendingOnboarding(pendingConfirmation, pendingContent),
+                    new OnboardingSessionService.PendingOnboarding(open, openContent));
         }
 
         @Test
@@ -396,13 +399,8 @@ class OnboardingSessionServiceTest {
 
         @Test
         void givenOnboarding_whenConsume_thenDeletesOnboarding() throws JacksonException {
-            Prestataire prestataire = buildPrestataire();
-            InitOnboardingRequest formData = buildRequest();
-            Onboarding onboarding = Onboarding.builder()
-                    .data("{}")
-                    .prestataire(prestataire)
-                    .build();
-            when(objectMapper.readValue("{}", InitOnboardingRequest.class)).thenReturn(formData);
+            Onboarding onboarding = Onboarding.builder().data("{}").build();
+            when(objectMapper.readValue("{}", InitOnboardingRequest.class)).thenReturn(buildRequest());
 
             onboardingSessionService.consume(onboarding);
 
@@ -410,27 +408,17 @@ class OnboardingSessionServiceTest {
         }
 
         @Test
-        void givenOnboarding_whenConsume_thenReturnsFormDataAndPrestataire() throws JacksonException {
-            Prestataire prestataire = buildPrestataire();
+        void givenOnboarding_whenConsume_thenReturnsTheStoredEvent() throws JacksonException {
             InitOnboardingRequest formData = buildRequest();
-            Onboarding onboarding = Onboarding.builder()
-                    .data("{}")
-                    .prestataire(prestataire)
-                    .build();
+            Onboarding onboarding = Onboarding.builder().data("{}").build();
             when(objectMapper.readValue("{}", InitOnboardingRequest.class)).thenReturn(formData);
 
-            OnboardingSessionService.OnboardingContent result = onboardingSessionService.consume(onboarding);
-
-            assertThat(result.formData()).isSameAs(formData);
-            assertThat(result.prestataire()).isSameAs(prestataire);
+            assertThat(onboardingSessionService.consume(onboarding)).isSameAs(formData);
         }
 
         @Test
         void givenDeserializationFailure_whenConsume_thenThrowsRuntimeException() throws JacksonException {
-            Onboarding onboarding = Onboarding.builder()
-                    .data("{}")
-                    .prestataire(buildPrestataire())
-                    .build();
+            Onboarding onboarding = Onboarding.builder().data("{}").build();
             when(objectMapper.readValue("{}", InitOnboardingRequest.class)).thenThrow(mock(JacksonException.class));
 
             assertThatExceptionOfType(RuntimeException.class)
@@ -447,45 +435,33 @@ class OnboardingSessionServiceTest {
 
         @Test
         void givenFormData_whenCreateEntities_thenCreatesUtilisateur() {
-            InitOnboardingRequest formData = buildRequest();
-            Prestataire prestataire = buildPrestataire();
-            when(utilisateurService.createUtilisateur(any(), any(), any(), any()))
-                    .thenReturn(Utilisateur.builder().build());
-            when(evenementService.createFromFormData(any(), any()))
-                    .thenReturn(Evenement.builder().id(UUID.randomUUID()).build());
+            when(utilisateurService.createUtilisateur(any(), any(), any(), any())).thenReturn(Utilisateur.builder().build());
+            when(evenementService.createFromDto(any(), any())).thenReturn(Evenement.builder().id(UUID.randomUUID()).build());
 
-            onboardingSessionService.createEntities(formData, prestataire, EMAIL);
+            onboardingSessionService.createEntities(buildRequest(), EMAIL);
 
             verify(utilisateurService).createUtilisateur(FIRSTNAME, LASTNAME, EMAIL, TELEPHONE);
         }
 
         @Test
-        void givenFormData_whenCreateEntities_thenCreatesEvenementForUtilisateur() {
+        void givenFormData_whenCreateEntities_thenCreatesTheEventFromItsDto() {
             InitOnboardingRequest formData = buildRequest();
-            Prestataire prestataire = buildPrestataire();
             Utilisateur utilisateur = Utilisateur.builder().build();
             when(utilisateurService.createUtilisateur(any(), any(), any(), any())).thenReturn(utilisateur);
-            when(evenementService.createFromFormData(any(), any())).thenReturn(Evenement.builder().build());
+            when(evenementService.createFromDto(any(), any())).thenReturn(Evenement.builder().build());
 
-            onboardingSessionService.createEntities(formData, prestataire, EMAIL);
+            onboardingSessionService.createEntities(formData, EMAIL);
 
-            verify(evenementService).createFromFormData(utilisateur, formData);
+            verify(evenementService).createFromDto(utilisateur, formData.evenement());
         }
 
         @Test
-        void givenFormData_whenCreateEntities_thenCreatesReservation() {
-            InitOnboardingRequest formData = buildRequest();
-            Prestataire prestataire = buildPrestataire();
-            Utilisateur utilisateur = Utilisateur.builder().build();
-            Evenement evenement = Evenement.builder().build();
-            when(utilisateurService.createUtilisateur(any(), any(), any(), any())).thenReturn(utilisateur);
-            when(evenementService.createFromFormData(any(), any())).thenReturn(evenement);
+        void givenFormData_whenCreateEntities_thenReturnsTheCreatedEventId() {
+            UUID eventId = UUID.randomUUID();
+            when(utilisateurService.createUtilisateur(any(), any(), any(), any())).thenReturn(Utilisateur.builder().build());
+            when(evenementService.createFromDto(any(), any())).thenReturn(Evenement.builder().id(eventId).build());
 
-            onboardingSessionService.createEntities(formData, prestataire, EMAIL);
-
-            verify(reservationService).create(
-                    eq(evenement), eq(prestataire), eq(utilisateur),
-                    eq(formData.date()), eq(formData.prestataireMessage()));
+            assertThat(onboardingSessionService.createEntities(buildRequest(), EMAIL)).isEqualTo(eventId);
         }
     }
 
@@ -493,14 +469,14 @@ class OnboardingSessionServiceTest {
     // helpers
     // -------------------------------------------------------------------------
 
-    private Prestataire buildPrestataire() {
-        return Prestataire.builder().id(UUID.randomUUID()).build();
-    }
-
+    // Événement avec une demande au DJ (musique-animation) et une au traiteur (restauration).
     private InitOnboardingRequest buildRequest() {
-        return new InitOnboardingRequest(
-                FIRSTNAME, LASTNAME, EMAIL, UUID.randomUUID(),
-                "anniversaire", null, null, null, LocalDate.of(2025, 6, 15),
-                null, null, null, TELEPHONE, null);
+        return new InitOnboardingRequest(FIRSTNAME, LASTNAME, EMAIL, TELEPHONE,
+                new EvenementDto("mariage", null, null, null, DATE, null, null, null, List.of(
+                        new RubriqueDto("restauration",
+                                List.of(new DemandeInitieeDto(TRAITEUR_ID, "Pour 80 personnes ?"))),
+                        new RubriqueDto("musique-animation",
+                                List.of(new DemandeInitieeDto(DJ_ID, "Pour la soirée ?"))),
+                        new RubriqueDto("lieu", List.of()))));
     }
 }

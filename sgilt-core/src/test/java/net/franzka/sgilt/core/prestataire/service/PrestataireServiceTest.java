@@ -44,6 +44,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -114,31 +115,31 @@ class PrestataireServiceTest {
     }
 
     // -------------------------------------------------------------------------
-    // getPublishedById
+    // ensurePublished
     // -------------------------------------------------------------------------
 
     @Nested
-    class GetPublishedById {
+    class EnsurePublished {
 
         @Test
-        void givenPublishedPrestataire_whenGetPublishedById_thenReturnsPrestataire() {
-            Prestataire prestataire = prestataireWith(PrestataireStatus.PUBLISHED);
-            when(prestataireRepository.findByIdAndStatusAndDeletedAtIsNull(prestataire.getId(), PrestataireStatus.PUBLISHED))
-                    .thenReturn(Optional.of(prestataire));
+        void givenPublishedPrestataire_whenEnsurePublished_thenDoesNotThrow() {
+            UUID id = UUID.randomUUID();
+            when(prestataireRepository.existsByIdAndStatusAndDeletedAtIsNull(id, PrestataireStatus.PUBLISHED))
+                    .thenReturn(true);
 
-            assertThat(prestataireService.getPublishedById(prestataire.getId())).isEqualTo(prestataire);
+            assertThatCode(() -> prestataireService.ensurePublished(id)).doesNotThrowAnyException();
         }
 
         @Test
-        void givenNoPublishedPrestataireForId_whenGetPublishedById_thenThrowsNotFound() {
+        void givenNoPublishedPrestataireForId_whenEnsurePublished_thenThrowsNotFound() {
             // la requête filtre déjà par statut PUBLISHED et deletedAt IS NULL : id inconnu,
-            // non publié (DRAFT/IN_REVIEW) et soft-deleted produisent tous Optional.empty() ici —
+            // non publié (DRAFT/IN_REVIEW) et soft-deleted produisent tous false ici —
             // même exception dans les 3 cas, pour ne pas exposer la distinction à l'appelant
             UUID id = UUID.randomUUID();
-            when(prestataireRepository.findByIdAndStatusAndDeletedAtIsNull(id, PrestataireStatus.PUBLISHED))
-                    .thenReturn(Optional.empty());
+            when(prestataireRepository.existsByIdAndStatusAndDeletedAtIsNull(id, PrestataireStatus.PUBLISHED))
+                    .thenReturn(false);
 
-            assertThatThrownBy(() -> prestataireService.getPublishedById(id))
+            assertThatThrownBy(() -> prestataireService.ensurePublished(id))
                     .isInstanceOf(PrestataireNotFoundException.class);
         }
     }
@@ -605,6 +606,21 @@ class PrestataireServiceTest {
             assertThatThrownBy(() -> prestataireService.update(prestataire.getId(), patch, other))
                     .isInstanceOf(PrestataireForbiddenException.class);
             verify(prestataireRepository, never()).save(any());
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // countUsingSubcategory
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class CountUsingSubcategory {
+
+        @Test
+        void givenPrestatairesInSubcategory_whenCountUsingSubcategory_thenReturnsRepositoryCount() {
+            when(prestataireRepository.countBySubcatKey("dj")).thenReturn(2L);
+
+            assertThat(prestataireService.countUsingSubcategory("dj")).isEqualTo(2L);
         }
     }
 

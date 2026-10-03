@@ -1,14 +1,16 @@
 package net.franzka.sgilt.core.evenement.api;
 
+import jakarta.validation.Valid;
 import net.franzka.sgilt.core.evenement.dto.AddReservationRequest;
-import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
-import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
 import net.franzka.sgilt.core.evenement.dto.CoverSelectDto;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
+import net.franzka.sgilt.core.evenement.dto.CreateEventInConnectedFlowDemandeRequest;
+import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
+import net.franzka.sgilt.core.evenement.dto.EvenementDto;
+import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
 import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
 import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
 import net.franzka.sgilt.core.evenement.dto.EventPatchDto;
-import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
 import net.franzka.sgilt.core.evenement.dto.JournalEvenementDto;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -30,7 +32,10 @@ import java.util.UUID;
 public interface EvenementApi {
 
     @PostMapping
-    ResponseEntity<CreateEventResponse> createEvent(@RequestBody CreateEventRequest body);
+    ResponseEntity<CreateEventResponse> createEvent(@RequestBody @Valid EvenementDto body);
+
+    @PostMapping("/demande")
+    ResponseEntity<CreateEventResponse> createEventDemande(@RequestBody @Valid CreateEventInConnectedFlowDemandeRequest body);
 
     @GetMapping
     ResponseEntity<List<EvenementSummaryDto>> getMyEvents();

@@ -2,26 +2,28 @@ package net.franzka.sgilt.core.evenement.service;
 
 import lombok.RequiredArgsConstructor;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
-import net.franzka.sgilt.core.evenement.domain.EvenementStatus;
-import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
-import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
+import net.franzka.sgilt.core.evenement.dto.CreateEventInConnectedFlowDemandeRequest;
+import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
+import net.franzka.sgilt.core.evenement.dto.DemandeInitieeDto;
+import net.franzka.sgilt.core.evenement.dto.EvenementDto;
+import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
 import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
 import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
 import net.franzka.sgilt.core.evenement.dto.EventPatchDto;
-import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
 import net.franzka.sgilt.core.evenement.dto.ModificationChamp;
+import net.franzka.sgilt.core.evenement.dto.RubriqueDto;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotAllowedException;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotFoundException;
 import net.franzka.sgilt.core.evenement.mapper.EvenementMapper;
 import net.franzka.sgilt.core.evenement.repository.EvenementRepository;
-import net.franzka.sgilt.core.storage.FileStorageException;
-import net.franzka.sgilt.core.storage.FileStorageService;
-import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
-import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
+import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
+import net.franzka.sgilt.core.storage.FileStorageException;
+import net.franzka.sgilt.core.storage.FileStorageService;
+import net.franzka.sgilt.core.template.service.TemplateService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,6 +56,7 @@ public class EvenementService {
     private final EvenementMapper evenementMapper;
     private final JournalEvenementService journalEvenementService;
     private final FileStorageService fileStorageService;
+    private final TemplateService templateService;
 
     /**
      * Retourne la liste des événements de l'utilisateur identifié par son id.
@@ -97,33 +100,6 @@ public class EvenementService {
     }
 
     /**
-     * Crée un nouvel événement et sa réservation initiale pour un utilisateur authentifié.
-     *
-     * @param utilisateur l'utilisateur connecté (propriétaire de l'événement)
-     * @param request     les données de l'événement et de la réservation
-     * @return l'identifiant du nouvel événement
-     */
-    public CreateEventResponse createEvent(Utilisateur utilisateur, CreateEventRequest request) {
-        Evenement evenement = Evenement.builder()
-                .utilisateur(utilisateur)
-                .title(defaultName(request.date()))
-                .date(request.date())
-                .status(EvenementStatus.ACTIVE)
-                .lieu(request.lieu())
-                .ville(request.ville())
-                .nbInvites(request.nbInvites())
-                .eventType(request.eventType())
-                .ambiance(request.ambiance())
-                .momentCle(request.momentCle())
-                .description(request.description())
-                .build();
-        evenement = evenementRepository.save(evenement);
-        Prestataire prestataire = prestataireService.getById(request.prestataireId());
-        reservationService.create(evenement, prestataire, utilisateur, request.date(), request.prestataireMessage());
-        return new CreateEventResponse(evenement.getId());
-    }
-
-    /**
      * Vérifie que l'utilisateur est bien le propriétaire de l'événement.
      *
      * @param eventId       l'identifiant de l'événement
@@ -152,27 +128,63 @@ public class EvenementService {
     }
 
     /**
-     * Crée et persiste un événement en statut ACTIVE pour l'utilisateur donné.
+     * Crée un événement complet pour un utilisateur authentifié.
+     *
+     * @param utilisateur l'utilisateur connecté (propriétaire de l'événement)
+     * @param evenement   l'événement : données, rubriques et demandes initiées
+     * @return l'identifiant du nouvel événement
+     */
+    public CreateEventResponse createEvent(Utilisateur utilisateur, EvenementDto evenement) {
+        return new CreateEventResponse(createFromDto(utilisateur, evenement).getId());
+    }
+
+    /**
+     * Crée un événement à partir d'une demande unique (fiche d'un prestataire) pour un utilisateur
+     * authentifié : rubriques du template de son type, demande rangée dans la sienne.
+     *
+     * @param utilisateur l'utilisateur connecté (propriétaire de l'événement)
+     * @param request     les champs du tunnel de demande
+     * @return l'identifiant du nouvel événement
+     */
+    public CreateEventResponse createEventFromDemande(Utilisateur utilisateur, CreateEventInConnectedFlowDemandeRequest request) {
+        List<RubriqueDto> rubriques = templateService.rubriquesWithDemande(
+                request.eventType(), new DemandeInitieeDto(request.prestataireId(), request.prestataireMessage()));
+        EvenementDto evenement = new EvenementDto(
+                request.eventType(), request.ambiance(), request.momentCle(), request.description(), request.date(),
+                request.ville(), request.nbInvites(), request.lieu(), rubriques);
+        return createEvent(utilisateur, evenement);
+    }
+
+    /**
+     * Crée en statut ACTIVE un événement complet (données et rubriques), puis une réservation
+     * pour chaque demande initiée rangée dans ses rubriques. Seules les clés des rubriques sont
+     * enregistrées sur l'événement : les demandes deviennent des réservations.
      *
      * @param utilisateur l'utilisateur propriétaire de l'événement
-     * @param formData    les données saisies dans le tunnel d'onboarding
+     * @param evenement   l'événement : données, rubriques et demandes initiées
      * @return l'événement sauvegardé
      */
-    public Evenement createFromFormData(Utilisateur utilisateur, InitOnboardingRequest formData) {
-        Evenement evenement = Evenement.builder()
-                .utilisateur(utilisateur)
-                .title(defaultName(formData.date()))
-                .date(formData.date())
-                .status(EvenementStatus.ACTIVE)
-                .lieu(formData.lieu())
-                .ville(formData.ville())
-                .nbInvites(formData.nbInvites())
-                .eventType(formData.eventType())
-                .ambiance(formData.ambiance())
-                .momentCle(formData.momentCle())
-                .description(formData.description())
-                .build();
-        return evenementRepository.save(evenement);
+    public Evenement createFromDto(Utilisateur utilisateur, EvenementDto evenement) {
+        Evenement created = evenementMapper.toEvenement(evenement, utilisateur);
+        created.setTitle(defaultName(evenement.date()));
+        created = evenementRepository.save(created);
+
+        createReservationsFromDemandesInitiees(created, evenement.rubriques());
+        return created;
+    }
+
+    /**
+     * Crée une réservation pour chaque demande initiée rangée dans les rubriques d'un événement
+     * qui vient d'être créé, au nom de son propriétaire et pour sa date.
+     *
+     * @param evenement l'événement créé
+     * @param rubriques ses rubriques telles que transmises, avec leurs demandes initiées
+     */
+    private void createReservationsFromDemandesInitiees(Evenement evenement, List<RubriqueDto> rubriques) {
+        RubriqueDto.demandesInitiees(rubriques)
+                .forEach(demande -> reservationService.create(evenement,
+                        prestataireService.getById(demande.prestataireId()),
+                        evenement.getUtilisateur(), evenement.getDate(), demande.message()));
     }
 
     /**

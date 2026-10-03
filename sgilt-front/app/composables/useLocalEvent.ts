@@ -1,12 +1,10 @@
 import {
-  MARIAGE_RUBRIQUES,
-  RUBRIQUE_KEYS,
   RUBRIQUE_RESERVATION_STATUSES,
   type EventRubrique,
-  type RubriqueKey,
   type RubriqueReservation,
   type RubriqueReservationStatus,
 } from '~/constants/event-rubriques'
+import { fetchNewEventRubriques } from '~/data/template/service/templateService'
 import { toISODate } from '~/utils/dateUtils'
 import { EVENT_TYPE_DEFAULT_TITLES } from '~/utils/eventTypes'
 import {
@@ -117,9 +115,9 @@ function isReservation(value: unknown): value is RubriqueReservation {
 function deserializeRubrique(value: unknown): EventRubrique | null {
   if (typeof value !== 'object' || value === null) return null
   const { key, reservations } = value as Record<string, unknown>
-  if (!RUBRIQUE_KEYS.includes(key as RubriqueKey)) return null
+  if (typeof key !== 'string' || !key) return null
   return {
-    key: key as RubriqueKey, // garanti par le includes ci-dessus
+    key,
     reservations: Array.isArray(reservations) ? reservations.filter(isReservation) : [],
   }
 }
@@ -234,17 +232,15 @@ export function useLocalEvent() {
     localEvent.title = EVENT_TYPE_DEFAULT_TITLES[eventType] ?? EVENT_TYPE_DEFAULT_TITLES.autre!
   }
 
-  // Seul le preset Mariage existe pour l'instant. N'injecte que ce qui manque :
-  // un événement déjà initialisé (rubriques présentes) n'est jamais écrasé. Le titre par
-  // défaut est déjà posé par start() — ce repli ne joue que pour un accès direct à /evenement
-  // sans être passé par /fete.
-  function initMariage() {
-    if (!localEvent.title) localEvent.title = EVENT_TYPE_DEFAULT_TITLES.mariage!
-    if (localEvent.rubriques.length === 0) {
-      localEvent.rubriques = MARIAGE_RUBRIQUES.map((rubrique) => ({
-        ...rubrique,
-        reservations: [],
-      }))
+  // Rubriques du template du type d'événement, demandées au back (qui porte les règles). N'injecte
+  // que ce qui manque : un événement déjà initialisé (rubriques présentes) n'est jamais écrasé.
+  async function initRubriques() {
+    if (!localEvent.eventType || localEvent.rubriques.length > 0) return
+    try {
+      const rubriques = await fetchNewEventRubriques(localEvent.eventType)
+      if (localEvent.rubriques.length === 0) localEvent.rubriques = rubriques
+    } catch (e) {
+      console.error('[evenement] Échec du chargement des rubriques du template :', e)
     }
   }
 
@@ -282,7 +278,7 @@ export function useLocalEvent() {
     localEvent,
     start,
     reset,
-    initMariage,
+    initRubriques,
     toEvenementRequest,
     eventTypeLabel,
     eventTypeEmoji,

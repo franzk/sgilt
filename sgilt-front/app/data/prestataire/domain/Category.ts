@@ -1,5 +1,5 @@
 /**
- * Domaine — référentiel des catégories et sous-catégories prestataire, servi par le back.
+ * Domaine — catégories et sous-catégories de prestataire, servies par le back.
  * Les clés sont partagées front/back/DB ('musique', 'dj'…).
  */
 export interface SubCategory {

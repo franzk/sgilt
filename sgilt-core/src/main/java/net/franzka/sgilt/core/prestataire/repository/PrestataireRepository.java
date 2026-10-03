@@ -37,6 +37,15 @@ public interface PrestataireRepository extends JpaRepository<Prestataire, UUID> 
     boolean existsBySlug(String slug);
 
     /**
+     * Compte les prestataires d'une sous-catégorie, supprimés compris : leur ligne en base
+     * référence toujours la sous-catégorie.
+     *
+     * @param subcatKey la clé de la sous-catégorie
+     * @return le nombre de prestataires
+     */
+    long countBySubcatKey(String subcatKey);
+
+    /**
      * Retourne tous les prestataires actifs confirmés (onboarding terminé), tous statuts de fiche
      * confondus — exclut ceux ayant encore un {@code ActionToken} de type
      * {@code PRESTATAIRE_ONBOARDING} en attente.
@@ -76,13 +85,13 @@ public interface PrestataireRepository extends JpaRepository<Prestataire, UUID> 
     Optional<Prestataire> findBySlugAndStatusAndDeletedAtIsNull(String slug, PrestataireStatus status);
 
     /**
-     * Recherche un prestataire actif par son identifiant, restreint à un statut donné.
+     * Indique si un prestataire actif (non supprimé) existe pour cet identifiant et ce statut.
      *
      * @param id     l'identifiant du prestataire
      * @param status le statut requis
-     * @return le prestataire correspondant, ou vide
+     * @return {@code true} si un tel prestataire existe
      */
-    Optional<Prestataire> findByIdAndStatusAndDeletedAtIsNull(UUID id, PrestataireStatus status);
+    boolean existsByIdAndStatusAndDeletedAtIsNull(UUID id, PrestataireStatus status);
 
     /**
      * Retourne tous les prestataires actifs dans un statut donné, triés par ordre d'affichage

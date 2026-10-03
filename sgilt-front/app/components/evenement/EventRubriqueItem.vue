@@ -1,7 +1,7 @@
 <template>
   <button class="rubrique-item" type="button">
     <span class="icon-wrap" :style="{ background: accentColor }" aria-hidden="true">
-      <component :is="RUBRIQUE_ICONS[rubrique.key]" class="icon" />
+      <component :is="rubriqueIcon(rubrique.key)" class="icon" />
     </span>
     <span class="text">
       <span class="name">{{ $t(`evenement.rubriques.${rubrique.key}`) }}</span>
@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { ArrowRightSIcon } from '@remixicons/vue/line'
-import { RUBRIQUE_ACCENTS, RUBRIQUE_ICONS, type EventRubrique } from '~/constants/event-rubriques'
+import { rubriqueAccent, rubriqueIcon, type EventRubrique } from '~/constants/event-rubriques'
 
 const props = defineProps<{
   rubrique: EventRubrique
@@ -23,7 +23,7 @@ const props = defineProps<{
 
 const { t } = useI18n()
 
-const accentColor = computed(() => RUBRIQUE_ACCENTS[props.rubrique.key])
+const accentColor = computed(() => rubriqueAccent(props.rubrique.key))
 const count = computed(() => props.rubrique.reservations.length)
 </script>
 

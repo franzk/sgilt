@@ -13,6 +13,8 @@ import type { AdminReservationListItemDto } from '../dto/AdminReservationListIte
 import type { AdminReservationListItem } from '../domain/AdminReservationListItem'
 import type { OnboardingPendingDto } from '../dto/OnboardingPendingDto'
 import type { OnboardingPending } from '../domain/OnboardingPending'
+import type { CategorieAdminDto, SousCategorieAdminDto } from '../dto/CategorieAdminDto'
+import type { CategorieAdmin, SousCategorieAdmin } from '../domain/CategorieAdmin'
 
 export function mapPrestataireAdminFormat(dto: PrestataireAdminListItemDto): PrestataireAdminFormat {
   return {
@@ -76,9 +78,28 @@ export function mapOnboardingPending(dto: OnboardingPendingDto): OnboardingPendi
   return {
     id: dto.id,
     email: dto.email,
-    prestataireName: dto.prestataireName,
+    eventType: dto.eventType,
+    eventDate: dto.eventDate,
+    demandeCount: dto.demandeCount,
     state: dto.state,
     createdAt: dto.createdAt,
     expiresAt: dto.expiresAt,
+  }
+}
+
+export function mapSousCategorieAdmin(dto: SousCategorieAdminDto): SousCategorieAdmin {
+  return {
+    key: dto.key,
+    name: dto.name,
+    categoryKey: dto.categoryKey,
+    prestataireCount: dto.prestataireCount,
+  }
+}
+
+export function mapCategorieAdmin(dto: CategorieAdminDto): CategorieAdmin {
+  return {
+    key: dto.key,
+    name: dto.name,
+    subcategories: dto.subcategories.map(mapSousCategorieAdmin),
   }
 }

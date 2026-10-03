@@ -10,8 +10,8 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * Entité JPA représentant une catégorie du référentiel prestataire ('musique', 'lieu'…).
- * Le référentiel est alimenté par SQL, jamais modifié par l'application.
+ * Entité JPA représentant une catégorie de prestataire ('musique', 'lieu'…).
+ * Les catégories sont alimentées par SQL, jamais modifiées par l'application.
  */
 @Entity
 @Table(name = "categories")
