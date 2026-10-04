@@ -50,6 +50,7 @@ export const APP_CATEGORIES: Category[] = [
       { key: 'communication', name: 'Communication', categoryKey: 'services' },
       { key: 'location-voiture', name: 'Location de voiture', categoryKey: 'services' },
       { key: 'agence-evenementielle', name: 'Agence événementielle', categoryKey: 'services' },
+      { key: 'coiffure', name: 'Coiffure', categoryKey: 'services' },
     ],
   },
 ]
