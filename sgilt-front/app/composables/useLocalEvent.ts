@@ -1,9 +1,4 @@
-import {
-  RUBRIQUE_RESERVATION_STATUSES,
-  type EventRubrique,
-  type RubriqueReservation,
-  type RubriqueReservationStatus,
-} from '~/constants/event-rubriques'
+import type { EventRubrique } from '~/data/evenement/domain/EventRubrique'
 import { fetchNewEventRubriques } from '~/data/template/service/templateService'
 import { toISODate } from '~/utils/dateUtils'
 import { EVENT_TYPE_DEFAULT_TITLES } from '~/utils/eventTypes'
@@ -18,7 +13,7 @@ import {
 // Événement du parcours public (route /) : source de vérité unique tant qu'il n'est pas
 // matérialisé en base, comme un panier d'e-boutique. Aucun appel réseau.
 //
-// Les noms de champs sont ceux de EventDetail (domaine de l'événement en base) : les écrans
+// Les noms de champs sont ceux de EventMeta (domaine de l'événement en base) : les écrans
 // qui manipulent cet état ne dépendent que de ce composable et de ces noms, pour pouvoir
 // être branchés sur la base (route /app) sans être réécrits.
 //
@@ -97,29 +92,13 @@ function parseISODate(value: unknown): Date | undefined {
   return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
 }
 
-function isReservation(value: unknown): value is RubriqueReservation {
-  if (typeof value !== 'object' || value === null) return false
-  const { prestataireSlug, prestataireName, prestataireImage, status, sentAt } = value as Record<
-    string,
-    unknown
-  >
-  return (
-    typeof prestataireSlug === 'string' &&
-    typeof prestataireName === 'string' &&
-    typeof prestataireImage === 'string' &&
-    RUBRIQUE_RESERVATION_STATUSES.includes(status as RubriqueReservationStatus) &&
-    parseISODate(sentAt) !== undefined
-  )
-}
-
+// L'événement local n'a jamais de réservation (le parcours public s'arrête à l'envoi de la
+// demande) : seule la clé de chaque rubrique est relue.
 function deserializeRubrique(value: unknown): EventRubrique | null {
   if (typeof value !== 'object' || value === null) return null
-  const { key, reservations } = value as Record<string, unknown>
+  const { key } = value as Record<string, unknown>
   if (typeof key !== 'string' || !key) return null
-  return {
-    key,
-    reservations: Array.isArray(reservations) ? reservations.filter(isReservation) : [],
-  }
+  return { key, reservations: [] }
 }
 
 const asString = (value: unknown): string => (typeof value === 'string' ? value : '')

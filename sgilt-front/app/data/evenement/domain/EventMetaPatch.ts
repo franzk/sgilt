@@ -1,11 +1,11 @@
 /**
  * Domaine — champs modifiables d'un événement (requêtes PATCH)
  */
-import type { EventDetail } from './EventDetail'
+import type { EventMeta } from './EventMeta'
 
-export type EventPatch = Partial<
+export type EventMetaPatch = Partial<
   Pick<
-    EventDetail,
+    EventMeta,
     | 'title'
     | 'coverImage'
     | 'eventType'

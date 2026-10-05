@@ -161,13 +161,13 @@
 </template>
 
 <script setup lang="ts">
-import type { EventDetail } from '~/data/evenement/domain/EventDetail'
+import type { EventMeta } from '~/data/evenement/domain/EventMeta'
 import type { ClientContactInfo } from '~/data/reservation/domain/ClientContactInfo'
-import type { EventPatchRequestDto } from '~/data/evenement/dto/EventDetailDto'
+import type { EventMetaPatchRequestDto } from '~/data/evenement/dto/EventMetaPatchRequestDto'
 import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/evenement'
 
 const props = defineProps<{
-  event: EventDetail
+  event: EventMeta
   clientInfo: ClientContactInfo
   variant: 'client' | 'pro'
   saving: boolean
@@ -175,7 +175,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  save: [payload: { eventPatch: EventPatchRequestDto; clientPatch: Partial<ClientContactInfo> }]
+  save: [payload: { eventPatch: EventMetaPatchRequestDto; clientPatch: Partial<ClientContactInfo> }]
   cancel: [isDirty: boolean]
   openJournal: []
 }>()

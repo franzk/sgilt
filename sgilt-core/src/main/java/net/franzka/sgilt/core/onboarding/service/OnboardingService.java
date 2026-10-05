@@ -85,7 +85,7 @@ public class OnboardingService {
 
         // Construction d'un événement à partir du type d'événement
         // avec les rubriques du template et la demande initiée rangée dans sa rubrique
-        List<RubriqueDto> rubriques = templateService.rubriquesWithDemande(
+        List<RubriqueDto> rubriques = templateService.getEventRubriqueFromDemande(
                 request.eventType(), new DemandeInitieeDto(request.prestataireId(), request.prestataireMessage()));
         EvenementDto evenement = new EvenementDto(
                 request.eventType(), request.ambiance(), request.momentCle(), request.description(),

@@ -13,27 +13,6 @@ import {
 // Clé explicite ('musique-animation'), qui sert aussi de clé i18n du libellé.
 export type RubriqueKey = string
 
-// ── Réservations d'une rubrique ───────────────────────────────────────────────
-// Demande envoyée à un prestataire avant vérification de l'email : elle n'existe pas encore
-// en base, ce statut est propre à l'événement local (ce n'est pas un ReservationStatus).
-export const RUBRIQUE_RESERVATION_STATUSES = ['en_attente_verification'] as const
-
-export type RubriqueReservationStatus = (typeof RUBRIQUE_RESERVATION_STATUSES)[number]
-
-export interface RubriqueReservation {
-  prestataireSlug: string
-  prestataireName: string
-  prestataireImage: string
-  status: RubriqueReservationStatus
-  // Date d'envoi, au format 'YYYY-MM-DD'.
-  sentAt: string
-}
-
-export interface EventRubrique {
-  key: RubriqueKey
-  reservations: RubriqueReservation[]
-}
-
 // ── Présentation ──────────────────────────────────────────────────────────────
 // Visuels associés aux clés connues ; une rubrique ajoutée au template sans visuel dédié prend
 // ceux par défaut.

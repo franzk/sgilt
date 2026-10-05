@@ -109,20 +109,20 @@ import EventBlockMobileDisplay from '~/components/app/EventBlockMobileDisplay.vu
 import EventBlockMobileEdit from '~/components/app/EventBlockMobileEdit.vue'
 import { patchEventApi } from '~/data/evenement/api/evenementApi'
 import { fetchEventJournal } from '~/data/evenement/service/evenementService'
-import type { EventDetail } from '~/data/evenement/domain/EventDetail'
+import type { EventMeta } from '~/data/evenement/domain/EventMeta'
 import type { JournalEntry } from '~/data/evenement/domain/JournalEntry'
 import type { ClientContactInfo } from '~/data/reservation/domain/ClientContactInfo'
-import type { EventPatchRequestDto } from '~/data/evenement/dto/EventDetailDto'
+import type { EventMetaPatchRequestDto } from '~/data/evenement/dto/EventMetaPatchRequestDto'
 import { CalendarEventIcon, MapPin2Icon, GroupIcon } from '@remixicons/vue/line'
 
 const props = defineProps<{
-  event: EventDetail
+  event: EventMeta
   clientInfo: ClientContactInfo
   variant?: 'client' | 'pro'
 }>()
 
 const emit = defineEmits<{
-  updated: [patch: Partial<EventDetail>]
+  updated: [patch: Partial<EventMeta>]
   updatedClientInfo: [patch: Partial<ClientContactInfo>]
 }>()
 
@@ -186,7 +186,7 @@ function confirmAbandon() {
 }
 
 async function onSave(payload: {
-  eventPatch: EventPatchRequestDto
+  eventPatch: EventMetaPatchRequestDto
   clientPatch: Partial<ClientContactInfo>
 }) {
   saving.value = true

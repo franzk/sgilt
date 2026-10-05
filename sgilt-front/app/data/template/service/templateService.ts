@@ -3,7 +3,7 @@
  */
 import { getNewEventRubriquesApi } from '../api/templateApi'
 import { mapRubrique } from '../mapper/templateMapper'
-import type { EventRubrique } from '~/constants/event-rubriques'
+import type { EventRubrique } from '~/data/evenement/domain/EventRubrique'
 
 /**
  * Rubriques d'un nouvel événement du type donné, dans l'ordre d'affichage.

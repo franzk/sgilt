@@ -1,7 +1,7 @@
 /**
- * DTO — contrat de réponse de l'API GET /events/:id
+ * DTO — métadonnées d'un événement (partie meta de GET /events/:id, réponse de PATCH /events/:id)
  */
-export interface EventDetailDto {
+export interface EventMetaDto {
   id: string
   title: string
   date?: string
@@ -22,19 +22,4 @@ export interface EventDetailDto {
     phone?: string | null
     email: string
   }
-}
-
-/**
- * DTO — corps de la requête PATCH /events/:id
- */
-export interface EventPatchRequestDto {
-  title?: string
-  lieu?: string
-  sharedNote?: string
-  eventType?: string
-  ambiance?: string
-  ville?: string
-  nbInvites?: string
-  description?: string
-  momentCle?: string
 }

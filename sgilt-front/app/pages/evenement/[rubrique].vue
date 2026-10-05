@@ -44,14 +44,8 @@
             <AddIcon class="icon" aria-hidden="true" />
           </NuxtLink>
         </div>
-        <div v-if="reservations.length > 0" class="list">
-          <RubriqueReservationItem
-            v-for="reservation in reservations"
-            :key="reservation.prestataireSlug"
-            :reservation="reservation"
-          />
-        </div>
-        <p v-else class="empty">{{ $t('evenement.rubrique.empty') }}</p>
+        <!-- L'événement local n'a jamais de réservation : le parcours public s'arrête à la demande. -->
+        <p class="empty">{{ $t('evenement.rubrique.empty') }}</p>
       </section>
 
       <!-- ── Nos inspirations ─────────────────────────────────────────────────── -->
@@ -90,7 +84,6 @@ import {
   SearchIcon,
 } from '@remixicons/vue/line'
 import PrestataireCard from '~/components/cards/PrestataireCard.vue'
-import RubriqueReservationItem from '~/components/evenement/RubriqueReservationItem.vue'
 import { RUBRIQUE_COVERS, rubriqueAccent, rubriqueIcon } from '~/constants/event-rubriques'
 import type { PrestataireCardDetail } from '~/data/prestataire/domain/PrestataireCardDetail'
 import { searchPrestataires } from '~/data/prestataire/service/prestataireService'
@@ -121,11 +114,6 @@ const name = computed(() =>
 )
 
 useHead(() => ({ title: t('evenement.rubrique.page-title', { rubrique: name.value }) }))
-
-const reservations = computed(
-  () =>
-    localEvent.rubriques.find((rubrique) => rubrique.key === rubriqueKey.value)?.reservations ?? [],
-)
 
 // ── Couverture ───────────────────────────────────────────────────────────────
 // Visuel propre à la rubrique ; repli provisoire sur la couverture par défaut de l'événement
@@ -364,12 +352,6 @@ function onAlreadyClick() {
           width: 1.125rem;
           height: 1.125rem;
         }
-      }
-
-      .list {
-        display: flex;
-        flex-direction: column;
-        gap: $spacing-s;
       }
 
       .empty {

@@ -78,7 +78,7 @@ public abstract class PrestataireMapper {
     @Mapping(target = "testimonials", source = "testimonials", qualifiedByName = "parseTestimonialList")
     @Mapping(target = "details",      source = "details",      qualifiedByName = "parseDetailList")
     @Mapping(target = "faq",          source = "faq",          qualifiedByName = "parseFaqList")
-    public abstract PrestataireDetailDto toDetailDto(Prestataire prestataire);
+    public abstract PrestataireDetailDto toMetaDto(Prestataire prestataire);
 
     /**
      * Applique les champs non-null du DTO sur l'entité chargée.

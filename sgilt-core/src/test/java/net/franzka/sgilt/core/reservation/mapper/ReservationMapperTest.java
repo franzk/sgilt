@@ -30,7 +30,8 @@ class ReservationMapperTest {
             .id(UUID.randomUUID()).email("presta@sgilt.fr").build();
     private final Prestataire prestataire = Prestataire.builder()
             .id(UUID.randomUUID()).utilisateur(prestataireUtilisateur)
-            .name("Studio Fleur").slug("studio-fleur").categoryKey("photo").avatar("avatar.jpg").build();
+            .name("Studio Fleur").slug("studio-fleur").categoryKey("photo").subcatKey("photographe")
+            .avatar("avatar.jpg").build();
     private final Utilisateur client = Utilisateur.builder()
             .firstName("Sophie").lastName("Leroy").email("sophie@sgilt.fr").phone("0102030405").build();
     private final Evenement evenement = Evenement.builder()
@@ -109,7 +110,7 @@ class ReservationMapperTest {
             ReservationSummaryDto dto = mapper.toSummaryDto(reservation);
 
             assertThat(dto).isEqualTo(new ReservationSummaryDto(
-                    reservationId, prestataire.getId(), "Studio Fleur", "avatar.jpg", "photo", "confirmee", 0));
+                    reservationId, prestataire.getId(), "Studio Fleur", "avatar.jpg", "photo", "photographe", "confirmee", 0));
         }
     }
 

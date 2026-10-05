@@ -1,111 +1,134 @@
 <template>
-  <div class="event-board">
-    <!-- ── Bandeau couverture ──────────────────────────────────────────────────── -->
-    <div
-      v-if="!metaPending && event"
-      ref="bannerRef"
-      class="cover-banner"
-      :style="{ backgroundImage: `url(${coverImage})` }"
-    >
-      <div class="overlay" />
-      <div class="title-row">
-        <span class="title">{{ event.title }}</span>
-        <button
-          class="edit-mobile"
-          type="button"
-          :aria-label="$t('event.board.edit-event-aria')"
-          @click="openEditDialog"
-        >
-          <EditIcon class="edit-mobile-icon" />
-        </button>
-      </div>
-      <button class="edit-img" type="button" @click="openEditDialog">
-        {{ $t('event.board.edit-title-image') }}
-      </button>
-    </div>
-    <Sk v-else class="cover-banner-skeleton" light />
+  <div class="event-page">
+    <!-- ── Mobile : même board que le parcours public ─────────────────────────── -->
+    <template v-if="isMobile">
+      <EventBoard
+        v-if="!metaPending && event"
+        class="mobile-board"
+        :event-meta="event"
+        :rubriques="rubriques"
+        :cover-image="coverImage"
+        @settings="openEditDialog"
+        @rubrique="(rubriqueKey) => navigateTo(`/app/events/${eventId}/${rubriqueKey}`)"
+      >
+        <div class="sticky-cta">
+          <SgiltButton @click="startAddPrestataireFlow">
+            {{ $t('events.add-provider') }}
+          </SgiltButton>
+        </div>
+      </EventBoard>
+      <Sk v-else class="cover-banner-skeleton" light />
+    </template>
 
-    <!-- ── Widget ─────────────────────────────────────────────────────────────── -->
-    <div class="event-widget">
-      <!-- Mood phrase — attend les counts -->
-      <p v-if="!countsPending && counts" class="phrase">
-        {{ $t(`event.widget.mood.${counts.mood}`) }}
-      </p>
-      <Sk v-else class="widget-mood-skeleton" aria-hidden="true" />
-
-      <!-- Countdown — attend les meta -->
-      <p v-if="!metaPending && event" class="subtitle">
-        <template v-if="daysUntilEvent !== null && daysUntilEvent >= 0"
-          >J-{{ daysUntilEvent }} :
-        </template>
-        {{ $t('event.widget.countdown.' + event.countdown) }}
-      </p>
-      <Sk v-else class="widget-countdown-skeleton" aria-hidden="true" />
-
-      <!-- Pills + action — attendent les counts -->
-      <div class="pills">
-        <template v-if="!countsPending && counts">
-          <span
-            v-for="pill in statusPills"
-            :key="pill.status"
-            class="status-pill"
-            :style="{
-              background: CLIENT_STATUS_CONFIG[pill.status].bgColor,
-              color: CLIENT_STATUS_CONFIG[pill.status].color,
-            }"
+    <!-- ── Desktop ─────────────────────────────────────────────────────────────── -->
+    <div v-else class="event-board">
+      <!-- ── Bandeau couverture ──────────────────────────────────────────────────── -->
+      <div
+        v-if="!metaPending && event"
+        ref="bannerRef"
+        class="cover-banner"
+        :style="{ backgroundImage: `url(${coverImage})` }"
+      >
+        <div class="overlay" />
+        <div class="title-row">
+          <span class="title">{{ event.title }}</span>
+          <button
+            class="edit-mobile"
+            type="button"
+            :aria-label="$t('event.board.edit-event-aria')"
+            @click="openEditDialog"
           >
-            <span class="icon" aria-hidden="true">{{ pill.icon }}</span>
-            <span class="count">{{ pill.count }}</span>
-            <span class="label">{{ t(`client.reservation.statut.${pill.status}`) }}</span>
-          </span>
-        </template>
-        <template v-else>
-          <Sk v-for="i in 2" :key="i" class="skeleton-pill" />
-        </template>
-        <button class="add-prestataire-btn" type="button" @click="startAddPrestataireFlow">
-          {{ $t('events.add-provider') }}
+            <EditIcon class="edit-mobile-icon" />
+          </button>
+        </div>
+        <button class="edit-img" type="button" @click="openEditDialog">
+          {{ $t('event.board.edit-title-image') }}
         </button>
       </div>
+      <Sk v-else class="cover-banner-skeleton" light />
 
-      <!-- Sticky CTA mobile -->
-      <div class="sticky-cta">
-        <SgiltButton @click="startAddPrestataireFlow">
-          {{ $t('events.add-provider') }}
-        </SgiltButton>
-      </div>
-    </div>
+      <!-- ── Widget ─────────────────────────────────────────────────────────────── -->
+      <div class="event-widget">
+        <!-- Mood phrase — attend les counts -->
+        <p v-if="!countsPending && counts" class="phrase">
+          {{ $t(`event.widget.mood.${counts.mood}`) }}
+        </p>
+        <Sk v-else class="widget-mood-skeleton" aria-hidden="true" />
 
-    <!-- ── Contenu ────────────────────────────────────────────────────────────── -->
-    <div class="board-content">
-      <!-- Bloc événement — attend les meta -->
-      <div class="event-block-wrap">
-        <EventBlock
-          v-if="!metaPending && event && clientInfo"
-          variant="client"
-          :event="event"
-          :client-info="clientInfo"
-          @updated="onEventUpdated"
-          @updated-client-info="onClientInfoUpdated"
-        />
-        <Sk v-else class="skeleton-card" />
-      </div>
+        <!-- Countdown — attend les meta -->
+        <p v-if="!metaPending && event" class="subtitle">
+          <template v-if="daysUntilEvent !== null && daysUntilEvent >= 0"
+            >J-{{ daysUntilEvent }} :
+          </template>
+          {{ $t('event.widget.countdown.' + event.countdown) }}
+        </p>
+        <Sk v-else class="widget-countdown-skeleton" aria-hidden="true" />
 
-      <!-- Réservations — attendent les reservations -->
-      <section class="reservations">
-        <div class="grid">
-          <template v-if="!reservationsPending">
-            <ReservationCard
-              v-for="r in sortedReservations"
-              :key="r.id"
-              :reservation="r"
-              @click="navigateTo(`/app/events/${eventId}/reservations/${r.id}`)"
-            />
+        <!-- Pills + action — attendent les counts -->
+        <div class="pills">
+          <template v-if="!countsPending && counts">
+            <span
+              v-for="pill in statusPills"
+              :key="pill.status"
+              class="status-pill"
+              :style="{
+                background: CLIENT_STATUS_CONFIG[pill.status].bgColor,
+                color: CLIENT_STATUS_CONFIG[pill.status].color,
+              }"
+            >
+              <span class="icon" aria-hidden="true">{{ pill.icon }}</span>
+              <span class="count">{{ pill.count }}</span>
+              <span class="label">{{ t(`client.reservation.statut.${pill.status}`) }}</span>
+            </span>
           </template>
           <template v-else>
-            <Sk v-for="i in 3" :key="i" class="skeleton-card" />
+            <Sk v-for="i in 2" :key="i" class="skeleton-pill" />
           </template>
+          <button class="add-prestataire-btn" type="button" @click="startAddPrestataireFlow">
+            {{ $t('events.add-provider') }}
+          </button>
         </div>
-      </section>
+
+        <!-- Sticky CTA mobile -->
+        <div class="sticky-cta">
+          <SgiltButton @click="startAddPrestataireFlow">
+            {{ $t('events.add-provider') }}
+          </SgiltButton>
+        </div>
+      </div>
+
+      <!-- ── Contenu ────────────────────────────────────────────────────────────── -->
+      <div class="board-content">
+        <!-- Bloc événement — attend les meta -->
+        <div class="event-block-wrap">
+          <EventBlock
+            v-if="!metaPending && event && clientInfo"
+            variant="client"
+            :event="event"
+            :client-info="clientInfo"
+            @updated="onEventUpdated"
+            @updated-client-info="onClientInfoUpdated"
+          />
+          <Sk v-else class="skeleton-card" />
+        </div>
+
+        <!-- Réservations — attendent les reservations -->
+        <section class="reservations">
+          <div class="grid">
+            <template v-if="!reservationsPending">
+              <ReservationCard
+                v-for="r in sortedReservations"
+                :key="r.id"
+                :reservation="r"
+                @click="navigateTo(`/app/events/${eventId}/reservations/${r.id}`)"
+              />
+            </template>
+            <template v-else>
+              <Sk v-for="i in 3" :key="i" class="skeleton-card" />
+            </template>
+          </div>
+        </section>
+      </div>
     </div>
 
     <!-- ── Dialog modification titre + couverture ────────────────────────────── -->
@@ -126,13 +149,14 @@ import EventBlock from '~/components/app/EventBlock.vue'
 import EventEditDialog from '~/components/app/EventEditDialog.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import Sk from '~/components/basics/Sk.vue'
+import EventBoard from '~/components/evenement/EventBoard.vue'
 import { defaultCoverPath } from '~/utils/eventCovers'
-import type { EventPatch } from '~/data/evenement/domain/EventPatch'
-import type { EventDetail } from '~/data/evenement/domain/EventDetail'
+import type { EventMetaPatch } from '~/data/evenement/domain/EventMetaPatch'
+import type { EventMeta } from '~/data/evenement/domain/EventMeta'
 import type { ReservationStatus, ClientContactInfo } from '~/types/event'
 import { CLIENT_STATUS_CONFIG, RESERVATION_STATUS_ORDER } from '~/constants/reservation-status'
 import { EditIcon } from '@remixicons/vue/line'
-import { useEventDetail, useEventCounts, useEventReservations } from '~/data/evenement/useEvenement'
+import { useEvent, useEventCounts, useEventReservations } from '~/data/evenement/useEvenement'
 import { patchEvent } from '~/data/evenement/service/evenementService'
 
 definePageMeta({ layout: 'app' })
@@ -142,7 +166,9 @@ const route = useRoute()
 const eventId = route.params.eventId as string
 
 // ── 3 appels parallèles ───────────────────────────────────────────────────────
-const { event, clientInfo, pending: metaPending } = useEventDetail(eventId)
+const { event, clientInfo, rubriques, pending: metaPending } = useEvent(eventId)
+
+const { isMobile } = useDevice()
 
 useHead(computed(() => ({ title: event.value?.title ?? '' })))
 
@@ -186,7 +212,7 @@ const daysUntilEvent = computed(() => {
 })
 
 // ── Édition ───────────────────────────────────────────────────────────────────
-function onEventUpdated(patch: EventPatch) {
+function onEventUpdated(patch: EventMetaPatch) {
   if (event.value) Object.assign(event.value, patch)
 }
 
@@ -199,13 +225,13 @@ function openEditDialog() {
   editDialogOpen.value = true
 }
 
-async function onEditSave(patch: EventPatch) {
+async function onEditSave(patch: EventMetaPatch) {
   if (!event.value) return
   event.value = await patchEvent(eventId, patch)
 }
 
 function onCoverUpdated(imagePath: string) {
-  if (event.value) (event.value as EventDetail).coverImage = imagePath
+  if (event.value) (event.value as EventMeta).coverImage = imagePath
 }
 
 // ── Pills statuts depuis les counts ───────────────────────────────────────────
@@ -283,6 +309,17 @@ const startAddPrestataireFlow = () => {
 @use '@/assets/styles/base' as *;
 
 $desktop: $breakpoint-desktop;
+
+// Le CTA fixe en bas d'écran ne doit pas masquer la dernière rubrique.
+.mobile-board {
+  padding-bottom: 6rem;
+}
+
+.event-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
 
 .event-board {
   min-height: 100%;

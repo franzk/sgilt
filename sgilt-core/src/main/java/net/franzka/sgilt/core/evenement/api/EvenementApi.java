@@ -9,8 +9,9 @@ import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
 import net.franzka.sgilt.core.evenement.dto.EvenementDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
 import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
-import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
-import net.franzka.sgilt.core.evenement.dto.EventPatchDto;
+import net.franzka.sgilt.core.evenement.dto.EventDto;
+import net.franzka.sgilt.core.evenement.dto.EventMetaDto;
+import net.franzka.sgilt.core.evenement.dto.EventMetaPatchDto;
 import net.franzka.sgilt.core.evenement.dto.JournalEvenementDto;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -41,10 +42,10 @@ public interface EvenementApi {
     ResponseEntity<List<EvenementSummaryDto>> getMyEvents();
 
     @GetMapping("/{eventId}")
-    ResponseEntity<EventDetailDto> getEventDetail(@PathVariable UUID eventId);
+    ResponseEntity<EventDto> getEvent(@PathVariable UUID eventId);
 
     @PatchMapping("/{eventId}")
-    ResponseEntity<EventDetailDto> patchEvent(@PathVariable UUID eventId, @RequestBody EventPatchDto patch);
+    ResponseEntity<EventMetaDto> patchEvent(@PathVariable UUID eventId, @RequestBody EventMetaPatchDto patch);
 
     @GetMapping("/{eventId}/counts")
     ResponseEntity<EventCountsDto> getEventCounts(@PathVariable UUID eventId);

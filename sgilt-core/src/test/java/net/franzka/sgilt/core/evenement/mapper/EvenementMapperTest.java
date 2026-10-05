@@ -7,7 +7,7 @@ import net.franzka.sgilt.core.evenement.dto.ClientInfoDto;
 import net.franzka.sgilt.core.evenement.dto.DemandeInitieeDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
-import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
+import net.franzka.sgilt.core.evenement.dto.EventMetaDto;
 import net.franzka.sgilt.core.evenement.dto.RubriqueDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
@@ -66,14 +66,14 @@ class EvenementMapperTest {
     }
 
     // -------------------------------------------------------------------------
-    // toDetailDto
+    // toMetaDto
     // -------------------------------------------------------------------------
 
     @Nested
-    class ToDetailDto {
+    class ToMetaDto {
 
         @Test
-        void givenEvenementCountdownAndLastUpdate_whenToDetailDto_thenMapsAllFields() {
+        void givenEvenementCountdownAndLastUpdate_whenToMetaDto_thenMapsAllFields() {
             Utilisateur utilisateur = Utilisateur.builder()
                     .firstName("Sophie").lastName("Leroy").phone("0102030405").email("sophie@sgilt.fr").build();
             Evenement evenement = Evenement.builder()
@@ -83,9 +83,9 @@ class EvenementMapperTest {
                     .description("Description").momentCle("Vin d'honneur").utilisateur(utilisateur).build();
             LocalDateTime lastUpdate = LocalDateTime.of(2027, 5, 1, 10, 0);
 
-            EventDetailDto dto = mapper.toDetailDto(evenement, "imminent", lastUpdate);
+            EventMetaDto dto = mapper.toMetaDto(evenement, "imminent", lastUpdate);
 
-            assertThat(dto).isEqualTo(new EventDetailDto(
+            assertThat(dto).isEqualTo(new EventMetaDto(
                     evenement.getId(), "Anniversaire de Paul", LocalDate.of(2027, 6, 15), "Anniversaire",
                     "Champetre", "Lyon", "Domaine des fleurs", "80", "cover.jpg", "Note partagee",
                     "Description", "Vin d'honneur", "imminent", lastUpdate,
@@ -93,10 +93,10 @@ class EvenementMapperTest {
         }
 
         @Test
-        void givenNoLastUpdateDate_whenToDetailDto_thenLastUpdateDateIsNull() {
+        void givenNoLastUpdateDate_whenToMetaDto_thenLastUpdateDateIsNull() {
             Evenement evenement = Evenement.builder().id(UUID.randomUUID()).title("Anniversaire").build();
 
-            EventDetailDto dto = mapper.toDetailDto(evenement, "serein", null);
+            EventMetaDto dto = mapper.toMetaDto(evenement, "serein", null);
 
             assertThat(dto.lastUpdateDate()).isNull();
         }

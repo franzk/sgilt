@@ -7,7 +7,7 @@ import type { ProReservationSummary } from '../domain/ProReservationSummary'
 import type { ProReservationDetail } from '../domain/ProReservationDetail'
 import type { ActiveReservations, ActiveReservationItem } from '../domain/ActiveReservation'
 import type { ReservationStatus } from '../domain/ReservationStatus'
-import type { EventDetail } from '~/data/evenement/domain/EventDetail'
+import type { EventMeta } from '~/data/evenement/domain/EventMeta'
 import type { ClientContactInfo } from '../domain/ClientContactInfo'
 
 export function mapReservationMeta(dto: ReservationMetaDto): ReservationMeta {
@@ -37,7 +37,7 @@ export function mapProReservationSummary(dto: ProReservationSummaryDto): ProRese
 function mapProReservationDetailEvent(
   reservationId: string,
   dto: ProReservationDetailDto,
-): EventDetail {
+): EventMeta {
   return {
     id: reservationId,
     title: dto.evenementTitre,
@@ -46,9 +46,6 @@ function mapProReservationDetailEvent(
     ville: dto.evenementVille ?? undefined,
     coverImage: dto.evenementImagePath ?? null,
     sharedNote: '',
-    reservations: [],
-    journal: [],
-    mood: 'defaut',
     countdown: 'serein',
   }
 }

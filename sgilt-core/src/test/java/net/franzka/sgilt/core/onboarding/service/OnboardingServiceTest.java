@@ -117,7 +117,7 @@ class OnboardingServiceTest {
 
             onboardingService.initOnboardingDemande(buildDemande());
 
-            verify(templateService).rubriquesWithDemande(EVENT_TYPE, new DemandeInitieeDto(PRESTATAIRE_ID, MESSAGE));
+            verify(templateService).getEventRubriqueFromDemande(EVENT_TYPE, new DemandeInitieeDto(PRESTATAIRE_ID, MESSAGE));
         }
 
         @Test
@@ -131,7 +131,7 @@ class OnboardingServiceTest {
 
         private void stubHappyPath() {
             when(utilisateurService.existsByEmail(EMAIL)).thenReturn(false);
-            when(templateService.rubriquesWithDemande(EVENT_TYPE, new DemandeInitieeDto(PRESTATAIRE_ID, MESSAGE)))
+            when(templateService.getEventRubriqueFromDemande(EVENT_TYPE, new DemandeInitieeDto(PRESTATAIRE_ID, MESSAGE)))
                     .thenReturn(RUBRIQUES);
             when(onboardingSessionService.initiate(eq(EMAIL), any()))
                     .thenReturn(new OnboardingSessionService.InitiationResult(Onboarding.builder().email(EMAIL).build(), "hmac.token"));

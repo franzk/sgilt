@@ -5,7 +5,7 @@ import net.franzka.sgilt.core.evenement.domain.EvenementRubrique;
 import net.franzka.sgilt.core.evenement.dto.ClientInfoDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
-import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
+import net.franzka.sgilt.core.evenement.dto.EventMetaDto;
 import net.franzka.sgilt.core.evenement.dto.RubriqueDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
@@ -36,7 +36,7 @@ public interface EvenementMapper {
     @Mapping(source = "evenement.imagePath",    target = "imagePath")
     @Mapping(source = "countdown",              target = "countdown")
     @Mapping(source = "lastUpdateDate",         target = "lastUpdateDate")
-    EventDetailDto toDetailDto(Evenement evenement, String countdown, LocalDateTime lastUpdateDate);
+    EventMetaDto toMetaDto(Evenement evenement, String countdown, LocalDateTime lastUpdateDate);
 
     /**
      * Mappe un événement complet (pas encore créé) vers l'entité, en statut ACTIVE, avec les

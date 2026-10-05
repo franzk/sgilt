@@ -97,7 +97,7 @@ class PrestataireServiceTest {
             PrestataireDetailDto dto = dummyDetailDto();
             when(prestataireRepository.findBySlugAndStatusAndDeletedAtIsNull(SLUG, PrestataireStatus.PUBLISHED))
                     .thenReturn(Optional.of(prestataire));
-            when(prestataireMapper.toDetailDto(prestataire)).thenReturn(dto);
+            when(prestataireMapper.toMetaDto(prestataire)).thenReturn(dto);
 
             PrestataireDetailDto result = prestataireService.getBySlug(SLUG);
 
@@ -156,7 +156,7 @@ class PrestataireServiceTest {
             Prestataire prestataire = prestataireWith(PrestataireStatus.DRAFT);
             PrestataireDetailDto dto = dummyDetailDto();
             when(prestataireRepository.findByUtilisateurAndDeletedAtIsNull(utilisateur)).thenReturn(Optional.of(prestataire));
-            when(prestataireMapper.toDetailDto(prestataire)).thenReturn(dto);
+            when(prestataireMapper.toMetaDto(prestataire)).thenReturn(dto);
 
             assertThat(prestataireService.getByUtilisateurOwner(utilisateur)).isEqualTo(dto);
         }
@@ -751,7 +751,7 @@ class PrestataireServiceTest {
             PrestataireDetailDto dto = dummyDetailDto();
             when(prestataireRepository.findByUtilisateurAndDeletedAtIsNull(utilisateur)).thenReturn(Optional.of(prestataire));
             when(prestataireRepository.save(prestataire)).thenReturn(prestataire);
-            when(prestataireMapper.toDetailDto(prestataire)).thenReturn(dto);
+            when(prestataireMapper.toMetaDto(prestataire)).thenReturn(dto);
 
             PrestataireDetailDto result = prestataireService.updateMedias(utilisateur, medias);
 
@@ -790,7 +790,7 @@ class PrestataireServiceTest {
             prestataire = prestataireWith(PrestataireStatus.DRAFT);
             dto = dummyDetailDto();
             lenient().when(prestataireRepository.save(prestataire)).thenReturn(prestataire);
-            lenient().when(prestataireMapper.toDetailDto(prestataire)).thenReturn(dto);
+            lenient().when(prestataireMapper.toMetaDto(prestataire)).thenReturn(dto);
         }
 
         @Test

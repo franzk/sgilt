@@ -2,12 +2,14 @@
  * Mapper — conversions DTO → domaine pour le module evenement
  */
 import type { EvenementSummaryDto } from '../dto/EvenementSummaryDto'
-import type { EventDetailDto } from '../dto/EventDetailDto'
+import type { EventMetaDto } from '../dto/EventMetaDto'
+import type { EventRubriqueDto } from '../dto/EventRubriqueDto'
 import type { EventCountsDto } from '../dto/EventCountsDto'
 import type { EventReservationSummaryDto } from '../dto/EventReservationSummaryDto'
 import type { JournalEvenementDto } from '../dto/JournalEvenementDto'
 import type { EventSummary } from '../domain/EventSummary'
-import type { EventDetail } from '../domain/EventDetail'
+import type { EventMeta } from '../domain/EventMeta'
+import type { EventRubrique } from '../domain/EventRubrique'
 import type { EventCounts } from '../domain/EventCounts'
 import type { JournalEntry } from '../domain/JournalEntry'
 import type { ClientContactInfo } from '~/data/reservation/domain/ClientContactInfo'
@@ -27,8 +29,8 @@ export function mapEvenementSummary(dto: EvenementSummaryDto): EventSummary {
   }
 }
 
-export function mapEventDetail(dto: EventDetailDto): {
-  event: EventDetail
+export function mapEventMeta(dto: EventMetaDto): {
+  event: EventMeta
   clientInfo: ClientContactInfo
 } {
   return {
@@ -47,9 +49,6 @@ export function mapEventDetail(dto: EventDetailDto): {
       sharedNote: dto.sharedNote,
       countdown: dto.countdown,
       lastUpdateDate: dto.lastUpdateDate ? new Date(dto.lastUpdateDate) : null,
-      mood: 'defaut',
-      reservations: [],
-      journal: [],
     },
     clientInfo: {
       firstName: dto.clientInfo.firstName,
@@ -94,5 +93,12 @@ export function mapEventReservation(dto: EventReservationSummaryDto): Reservatio
     category: dto.category,
     status: dto.status as ReservationStatus,
     unreadNotesCount: dto.unreadNotesCount,
+  }
+}
+
+export function mapEventRubrique(dto: EventRubriqueDto): EventRubrique {
+  return {
+    key: dto.key,
+    reservations: dto.reservations.map(mapEventReservation),
   }
 }

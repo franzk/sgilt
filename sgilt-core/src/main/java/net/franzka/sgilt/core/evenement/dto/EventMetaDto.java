@@ -4,7 +4,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record EventDetailDto(
+/**
+ * Métadonnées d'un événement pour l'EventBoard : ses données, son compte à rebours, sa dernière
+ * modification et les coordonnées de son propriétaire.
+ */
+public record EventMetaDto(
         UUID id,
         String title,
         LocalDate date,

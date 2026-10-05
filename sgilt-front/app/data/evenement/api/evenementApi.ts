@@ -4,7 +4,9 @@
 import { apiFetch } from '~/composables/useApi'
 import type { DemandeRequest } from '~/types/demande'
 import type { EvenementSummaryDto } from '../dto/EvenementSummaryDto'
-import type { EventDetailDto, EventPatchRequestDto } from '../dto/EventDetailDto'
+import type { EventDto } from '../dto/EventDto'
+import type { EventMetaDto } from '../dto/EventMetaDto'
+import type { EventMetaPatchRequestDto } from '../dto/EventMetaPatchRequestDto'
 import type { EventCountsDto } from '../dto/EventCountsDto'
 import type { JournalEvenementPageDto } from '../dto/JournalEvenementDto'
 
@@ -16,15 +18,15 @@ export async function getEvenementsApi(): Promise<EvenementSummaryDto[]> {
   return apiFetch<EvenementSummaryDto[]>('/user/events')
 }
 
-export async function getEventDetailApi(eventId: string): Promise<EventDetailDto> {
-  return apiFetch<EventDetailDto>(`/user/events/${eventId}`)
+export async function getEventApi(eventId: string): Promise<EventDto> {
+  return apiFetch<EventDto>(`/user/events/${eventId}`)
 }
 
 export async function patchEventApi(
   eventId: string,
-  patch: EventPatchRequestDto,
-): Promise<EventDetailDto> {
-  return apiFetch<EventDetailDto>(`/user/events/${eventId}`, { method: 'PATCH', body: patch })
+  patch: EventMetaPatchRequestDto,
+): Promise<EventMetaDto> {
+  return apiFetch<EventMetaDto>(`/user/events/${eventId}`, { method: 'PATCH', body: patch })
 }
 
 export async function getEventCountsApi(eventId: string): Promise<EventCountsDto> {

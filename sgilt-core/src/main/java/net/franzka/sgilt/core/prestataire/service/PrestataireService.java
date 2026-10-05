@@ -75,7 +75,7 @@ public class PrestataireService {
     public PrestataireDetailDto getBySlug(String slug) {
         Prestataire p = prestataireRepository.findBySlugAndStatusAndDeletedAtIsNull(slug, PrestataireStatus.PUBLISHED)
                 .orElseThrow(() -> new PrestataireNotFoundException(slug));
-        return prestataireMapper.toDetailDto(p);
+        return prestataireMapper.toMetaDto(p);
     }
 
     /**
@@ -100,7 +100,7 @@ public class PrestataireService {
      * @throws PrestataireNotFoundException si aucun prestataire n'est lié à cet utilisateur
      */
     public PrestataireDetailDto getByUtilisateurOwner(Utilisateur utilisateur) {
-        return prestataireMapper.toDetailDto(findPrestataire(utilisateur));
+        return prestataireMapper.toMetaDto(findPrestataire(utilisateur));
     }
 
     /**
@@ -458,7 +458,7 @@ public class PrestataireService {
             throw new IllegalStateException("Échec de sérialisation des médias", e);
         }
 
-        return prestataireMapper.toDetailDto(prestataireRepository.save(prestataire));
+        return prestataireMapper.toMetaDto(prestataireRepository.save(prestataire));
     }
 
     // ── Application de contenu généré (ex. génération IA) ─────────────────────
@@ -645,7 +645,7 @@ public class PrestataireService {
     // ── JSONB pour l'application de contenu généré ─────────────────────────────
 
     private PrestataireDetailDto saveAndMap(Prestataire prestataire) {
-        return prestataireMapper.toDetailDto(prestataireRepository.save(prestataire));
+        return prestataireMapper.toMetaDto(prestataireRepository.save(prestataire));
     }
 
     private <T> List<T> concat(List<T> existing, List<T> toAppend) {

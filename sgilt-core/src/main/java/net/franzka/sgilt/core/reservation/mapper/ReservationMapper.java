@@ -34,6 +34,7 @@ public interface ReservationMapper {
     @Mapping(source = "prestataire.name",        target = "prestataireName")
     @Mapping(source = "prestataire",             target = "prestatairePhoto", qualifiedByName = "resolveAvatar")
     @Mapping(source = "prestataire.categoryKey", target = "category")
+    @Mapping(source = "prestataire.subcatKey",   target = "subcatKey")
     @Mapping(target = "unreadNotesCount",        constant = "0")
     ReservationSummaryDto toSummaryDto(Reservation reservation);
 

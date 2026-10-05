@@ -1,6 +1,7 @@
 package net.franzka.sgilt.core.evenement.service;
 
 import net.franzka.sgilt.core.evenement.domain.Evenement;
+import net.franzka.sgilt.core.evenement.domain.EvenementRubrique;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
 import net.franzka.sgilt.core.evenement.dto.CreateEventInConnectedFlowDemandeRequest;
 import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
@@ -8,8 +9,10 @@ import net.franzka.sgilt.core.evenement.dto.DemandeInitieeDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
 import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
-import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
-import net.franzka.sgilt.core.evenement.dto.EventPatchDto;
+import net.franzka.sgilt.core.evenement.dto.EventDto;
+import net.franzka.sgilt.core.evenement.dto.EventMetaDto;
+import net.franzka.sgilt.core.evenement.dto.EventMetaPatchDto;
+import net.franzka.sgilt.core.evenement.dto.EventRubriqueDto;
 import net.franzka.sgilt.core.evenement.dto.ModificationChamp;
 import net.franzka.sgilt.core.evenement.dto.RubriqueDto;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotAllowedException;
@@ -20,6 +23,7 @@ import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
+import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
 import net.franzka.sgilt.core.storage.FileStorageException;
 import net.franzka.sgilt.core.storage.FileStorageService;
@@ -27,6 +31,8 @@ import net.franzka.sgilt.core.template.service.TemplateService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
@@ -37,6 +43,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -70,14 +77,14 @@ class EvenementServiceTest {
         Utilisateur owner = mock(Utilisateur.class);
         when(owner.getId()).thenReturn(USER_ID);
         return configure.apply(
-                Evenement.builder().id(EVENT_ID).utilisateur(owner).date(LocalDate.now())
+                Evenement.builder().id(EVENT_ID).utilisateur(owner).date(LocalDate.now()).rubriques(List.of())
         ).build();
     }
 
     private void whenEventFound(Evenement event) {
         when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
         when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
-        when(evenementMapper.toDetailDto(any(), any(), any())).thenReturn(mock(EventDetailDto.class));
+        when(evenementMapper.toMetaDto(any(), any(), any())).thenReturn(mock(EventMetaDto.class));
     }
 
     @SuppressWarnings("unchecked")
@@ -88,8 +95,8 @@ class EvenementServiceTest {
         return captor.getValue();
     }
 
-    private EventPatchDto emptyPatch() {
-        return new EventPatchDto(null, null, null, null, null, null, null, null, null);
+    private EventMetaPatchDto emptyPatch() {
+        return new EventMetaPatchDto(null, null, null, null, null, null, null, null, null);
     }
 
     // ── GetUserEvents ────────────────────────────────────────────────────────────
@@ -137,34 +144,64 @@ class EvenementServiceTest {
         }
     }
 
-    // ── GetEventDetail ────────────────────────────────────────────────────────────
+    // ── GetEvent ────────────────────────────────────────────────────────────
 
     @Nested
-    class GetEventDetail {
+    class GetEvent {
 
         @Test
-        void givenNoJournalEntry_whenGetEventDetail_thenMapperCalledWithNullLastUpdateDate() {
+        void givenNoJournalEntry_whenGetEvent_thenMapperCalledWithNullLastUpdateDate() {
             Evenement event = ownerEvent(b -> b);
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
             when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
-            when(evenementMapper.toDetailDto(any(), any(), any())).thenReturn(mock(EventDetailDto.class));
+            when(evenementMapper.toMetaDto(any(), any(), any())).thenReturn(mock(EventMetaDto.class));
 
-            evenementService.getEventDetail(EVENT_ID, USER_ID);
+            evenementService.getEvent(EVENT_ID, USER_ID);
 
-            verify(evenementMapper).toDetailDto(eq(event), any(), isNull());
+            verify(evenementMapper).toMetaDto(eq(event), any(), isNull());
         }
 
         @Test
-        void givenJournalEntry_whenGetEventDetail_thenMapperCalledWithLastUpdateDate() {
+        void givenJournalEntry_whenGetEvent_thenMapperCalledWithLastUpdateDate() {
             LocalDateTime lastUpdate = LocalDateTime.of(2026, 5, 12, 10, 0);
             Evenement event = ownerEvent(b -> b);
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
             when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.of(lastUpdate));
-            when(evenementMapper.toDetailDto(any(), any(), any())).thenReturn(mock(EventDetailDto.class));
+            when(evenementMapper.toMetaDto(any(), any(), any())).thenReturn(mock(EventMetaDto.class));
 
-            evenementService.getEventDetail(EVENT_ID, USER_ID);
+            evenementService.getEvent(EVENT_ID, USER_ID);
 
-            verify(evenementMapper).toDetailDto(eq(event), any(), eq(lastUpdate));
+            verify(evenementMapper).toMetaDto(eq(event), any(), eq(lastUpdate));
+        }
+
+        @Test
+        void givenReservations_whenGetEvent_thenReturnsTheMetaAndTheRubriquesPlacedByTheTemplate() {
+            Evenement event = ownerEvent(b -> b.eventType("mariage").rubriques(List.of(
+                    new EvenementRubrique("lieu"), new EvenementRubrique("musique-animation"))));
+            EventMetaDto meta = mock(EventMetaDto.class);
+            ReservationSummaryDto dj = summary("dj");
+            Map<String, List<ReservationSummaryDto>> placed = new LinkedHashMap<>();
+            placed.put("lieu", List.of());
+            placed.put("musique-animation", List.of(dj));
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
+            when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
+            when(evenementMapper.toMetaDto(any(), any(), any())).thenReturn(meta);
+            when(reservationService.getReservationSummaries(EVENT_ID)).thenReturn(List.of(dj));
+            when(templateService.placeInRubriques(eq("mariage"), eq(List.of("lieu", "musique-animation")),
+                    eq(List.of(dj)), any())).thenReturn(placed);
+
+            EventDto detail = evenementService.getEvent(EVENT_ID, USER_ID);
+
+            assertThat(detail.meta()).isSameAs(meta);
+            assertThat(detail.rubriques()).containsExactly(
+                    new EventRubriqueDto("lieu", List.of()),
+                    new EventRubriqueDto("musique-animation", List.of(dj)));
+        }
+
+        // Résumé d'une réservation dont le prestataire a la sous-catégorie donnée.
+        private ReservationSummaryDto summary(String subcatKey) {
+            return new ReservationSummaryDto(UUID.randomUUID(), UUID.randomUUID(), "Presta " + subcatKey,
+                    null, "categorie", subcatKey, "nouvelle", 0);
         }
     }
 
@@ -293,7 +330,7 @@ class EvenementServiceTest {
         @Test
         void givenFieldChanged_whenPatchEvent_thenModificationLogged() {
             Evenement event = ownerEvent(b -> b.lieu("Paris"));
-            EventPatchDto patch = new EventPatchDto(null, "Lyon", null, null, null, null, null, null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, "Lyon", null, null, null, null, null, null, null);
 
             whenEventFound(event);
 
@@ -306,7 +343,7 @@ class EvenementServiceTest {
         @Test
         void givenFieldUnchanged_whenPatchEvent_thenFieldNotLogged() {
             Evenement event = ownerEvent(b -> b.lieu("Paris"));
-            EventPatchDto patch = new EventPatchDto(null, "Paris", null, null, null, null, null, null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, "Paris", null, null, null, null, null, null, null);
 
             whenEventFound(event);
 
@@ -318,7 +355,7 @@ class EvenementServiceTest {
         @Test
         void givenNullPatchField_whenPatchEvent_thenFieldNotLogged() {
             Evenement event = ownerEvent(b -> b.lieu("Paris"));
-            EventPatchDto patch = new EventPatchDto(null, null, null, null, null, null, null, null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, null, null, null, null, null, null, null, null);
 
             whenEventFound(event);
 
@@ -331,7 +368,7 @@ class EvenementServiceTest {
         void givenBlankLieu_whenPatchEvent_thenLoggedAsNull() {
             // blankToNull("") = null : un blank est loggué comme null
             Evenement event = ownerEvent(b -> b.lieu("Paris"));
-            EventPatchDto patch = new EventPatchDto(null, "", null, null, null, null, null, null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, "", null, null, null, null, null, null, null);
 
             whenEventFound(event);
 
@@ -344,7 +381,7 @@ class EvenementServiceTest {
         @Test
         void givenMultipleFieldsChanged_whenPatchEvent_thenAllLogged() {
             Evenement event = ownerEvent(b -> b.lieu("Paris").ville("Paris"));
-            EventPatchDto patch = new EventPatchDto(null, "Lyon", null, null, null, "Bordeaux", null, null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, "Lyon", null, null, null, "Bordeaux", null, null, null);
 
             whenEventFound(event);
 
@@ -359,7 +396,7 @@ class EvenementServiceTest {
         @Test
         void givenTitleChanged_whenPatchEvent_thenModificationLoggedAndEntityUpdated() {
             Evenement event = ownerEvent(b -> b.title("Ancien titre"));
-            EventPatchDto patch = new EventPatchDto("Nouveau titre", null, null, null, null, null, null, null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto("Nouveau titre", null, null, null, null, null, null, null, null);
 
             whenEventFound(event);
 
@@ -373,7 +410,7 @@ class EvenementServiceTest {
         @Test
         void givenEventTypeChanged_whenPatchEvent_thenModificationLoggedAndEntityUpdated() {
             Evenement event = ownerEvent(b -> b.eventType("Mariage"));
-            EventPatchDto patch = new EventPatchDto(null, null, null, "Anniversaire", null, null, null, null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, null, null, "Anniversaire", null, null, null, null, null);
 
             whenEventFound(event);
 
@@ -387,7 +424,7 @@ class EvenementServiceTest {
         @Test
         void givenAmbianceChanged_whenPatchEvent_thenModificationLoggedAndEntityUpdated() {
             Evenement event = ownerEvent(b -> b.ambiance("Champetre"));
-            EventPatchDto patch = new EventPatchDto(null, null, null, null, "Chic", null, null, null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, null, null, null, "Chic", null, null, null, null);
 
             whenEventFound(event);
 
@@ -401,7 +438,7 @@ class EvenementServiceTest {
         @Test
         void givenNbInvitesChanged_whenPatchEvent_thenModificationLoggedAndEntityUpdated() {
             Evenement event = ownerEvent(b -> b.nbInvites("50"));
-            EventPatchDto patch = new EventPatchDto(null, null, null, null, null, null, "80", null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, null, null, null, null, null, "80", null, null);
 
             whenEventFound(event);
 
@@ -415,7 +452,7 @@ class EvenementServiceTest {
         @Test
         void givenDescriptionChanged_whenPatchEvent_thenModificationLoggedAndEntityUpdated() {
             Evenement event = ownerEvent(b -> b.description("Ancienne description"));
-            EventPatchDto patch = new EventPatchDto(null, null, null, null, null, null, null, "Nouvelle description", null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, null, null, null, null, null, null, "Nouvelle description", null);
 
             whenEventFound(event);
 
@@ -429,7 +466,7 @@ class EvenementServiceTest {
         @Test
         void givenMomentCleChanged_whenPatchEvent_thenModificationLoggedAndEntityUpdated() {
             Evenement event = ownerEvent(b -> b.momentCle("Vin d'honneur"));
-            EventPatchDto patch = new EventPatchDto(null, null, null, null, null, null, null, null, "Ouverture du bal");
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, null, null, null, null, null, null, null, "Ouverture du bal");
 
             whenEventFound(event);
 
@@ -444,7 +481,7 @@ class EvenementServiceTest {
         void givenSharedNoteChangedWithBlank_whenPatchEvent_thenLoggedAsBlankNotNull() {
             // sharedNote n'est pas soumis à blankToNull : "" reste "" dans le log
             Evenement event = ownerEvent(b -> b.notePartagee(null));
-            EventPatchDto patch = new EventPatchDto(null, null, "", null, null, null, null, null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, null, "", null, null, null, null, null, null);
 
             whenEventFound(event);
 
@@ -457,7 +494,7 @@ class EvenementServiceTest {
         @Test
         void givenNothingChanged_whenPatchEvent_thenSaveCalledWithEmptyList() {
             Evenement event = ownerEvent(b -> b.lieu("Paris").ville("Lyon"));
-            EventPatchDto patch = new EventPatchDto(null, "Paris", null, null, null, "Lyon", null, null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, "Paris", null, null, null, "Lyon", null, null, null);
 
             whenEventFound(event);
 
@@ -538,7 +575,7 @@ class EvenementServiceTest {
             Utilisateur utilisateur = mock(Utilisateur.class);
             EvenementDto expected = new EvenementDto(
                     "mariage", null, null, null, date, "Lyon", null, null, rubriques);
-            when(templateService.rubriquesWithDemande("mariage", demande)).thenReturn(rubriques);
+            when(templateService.getEventRubriqueFromDemande("mariage", demande)).thenReturn(rubriques);
             when(evenementMapper.toEvenement(expected, utilisateur)).thenReturn(Evenement.builder().build());
             when(evenementRepository.save(any())).thenAnswer(invocation -> {
                 Evenement e = invocation.getArgument(0);
@@ -771,59 +808,42 @@ class EvenementServiceTest {
         }
     }
 
-    // ── Countdown (via GetEventDetail, computeCountdown est privé) ───────────
+    // ── Countdown (via GetEvent, computeCountdown est privé) ───────────
 
     @Nested
     class Countdown {
 
         @Test
-        void givenNoDate_whenGetEventDetail_thenCountdownIsSerein() {
+        void givenNoDate_whenGetEvent_thenCountdownIsSerein() {
             Evenement event = ownerEvent(b -> b.date(null));
             whenEventFound(event);
 
-            evenementService.getEventDetail(EVENT_ID, USER_ID);
+            evenementService.getEvent(EVENT_ID, USER_ID);
 
-            verify(evenementMapper).toDetailDto(eq(event), eq("serein"), any());
+            verify(evenementMapper).toMetaDto(eq(event), eq("serein"), any());
         }
 
         @Test
-        void givenPastDate_whenGetEventDetail_thenCountdownIsPast() {
+        void givenPastDate_whenGetEvent_thenCountdownIsPast() {
             Evenement event = ownerEvent(b -> b.date(LocalDate.now().minusDays(1)));
             whenEventFound(event);
 
-            evenementService.getEventDetail(EVENT_ID, USER_ID);
+            evenementService.getEvent(EVENT_ID, USER_ID);
 
-            verify(evenementMapper).toDetailDto(eq(event), eq("past"), any());
+            verify(evenementMapper).toMetaDto(eq(event), eq("past"), any());
         }
 
-        @Test
-        void givenDateWithin30Days_whenGetEventDetail_thenCountdownIsImminent() {
-            Evenement event = ownerEvent(b -> b.date(LocalDate.now().plusDays(10)));
+        // Jours avant l'événement → compte à rebours : moins de 30 jours imminent, moins de 90
+        // jours proche, au-delà serein.
+        @ParameterizedTest
+        @CsvSource({ "10, imminent", "60, proche", "200, serein" })
+        void givenFutureDate_whenGetEvent_thenCountdownDependsOnDaysLeft(int daysLeft, String countdown) {
+            Evenement event = ownerEvent(b -> b.date(LocalDate.now().plusDays(daysLeft)));
             whenEventFound(event);
 
-            evenementService.getEventDetail(EVENT_ID, USER_ID);
+            evenementService.getEvent(EVENT_ID, USER_ID);
 
-            verify(evenementMapper).toDetailDto(eq(event), eq("imminent"), any());
-        }
-
-        @Test
-        void givenDateWithin90Days_whenGetEventDetail_thenCountdownIsProche() {
-            Evenement event = ownerEvent(b -> b.date(LocalDate.now().plusDays(60)));
-            whenEventFound(event);
-
-            evenementService.getEventDetail(EVENT_ID, USER_ID);
-
-            verify(evenementMapper).toDetailDto(eq(event), eq("proche"), any());
-        }
-
-        @Test
-        void givenDateBeyond90Days_whenGetEventDetail_thenCountdownIsSerein() {
-            Evenement event = ownerEvent(b -> b.date(LocalDate.now().plusDays(200)));
-            whenEventFound(event);
-
-            evenementService.getEventDetail(EVENT_ID, USER_ID);
-
-            verify(evenementMapper).toDetailDto(eq(event), eq("serein"), any());
+            verify(evenementMapper).toMetaDto(eq(event), eq(countdown), any());
         }
     }
 }

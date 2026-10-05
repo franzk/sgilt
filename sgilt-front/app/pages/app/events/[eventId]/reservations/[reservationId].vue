@@ -100,7 +100,7 @@ import ReservationFeed from '~/components/shared/ReservationFeed.vue'
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 import { useReservation } from '~/data/reservation/useReservation'
 import { useReservationFeed } from '~/data/reservation/useReservationFeed'
-import { useEventDetail } from '~/data/evenement/useEvenement'
+import { useEvent } from '~/data/evenement/useEvenement'
 import { useCurrentUser } from '~/composables/useCurrentUser'
 import type { FeedItem } from '~/data/reservation/domain/FeedItem'
 
@@ -125,7 +125,7 @@ const {
   canConfirm,
   confirm,
 } = useReservation(reservationId)
-const { event } = useEventDetail(eventId)
+const { event } = useEvent(eventId)
 
 useHead(
   computed(() => ({

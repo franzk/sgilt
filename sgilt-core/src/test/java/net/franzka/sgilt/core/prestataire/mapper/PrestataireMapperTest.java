@@ -119,14 +119,14 @@ class PrestataireMapperTest {
     }
 
     // -------------------------------------------------------------------------
-    // toDetailDto
+    // toMetaDto
     // -------------------------------------------------------------------------
 
     @Nested
-    class ToDetailDto {
+    class ToMetaDto {
 
         @Test
-        void givenPrestataireWithAllJsonbFieldsPopulated_whenToDetailDto_thenDeserializesEveryField() {
+        void givenPrestataireWithAllJsonbFieldsPopulated_whenToMetaDto_thenDeserializesEveryField() {
             Prestataire prestataire = Prestataire.builder()
                     .id(UUID.randomUUID()).name("Studio Fleur").slug("studio-fleur")
                     .baseline("Baseline").avatar("avatar.jpg").shortDescription("Résumé")
@@ -143,7 +143,7 @@ class PrestataireMapperTest {
                     .status(PrestataireStatus.PUBLISHED)
                     .build();
 
-            PrestataireDetailDto dto = mapper.toDetailDto(prestataire);
+            PrestataireDetailDto dto = mapper.toMetaDto(prestataire);
 
             assertThat(dto.id()).isEqualTo(prestataire.getId().toString());
             assertThat(dto.name()).isEqualTo("Studio Fleur");
@@ -160,10 +160,10 @@ class PrestataireMapperTest {
         }
 
         @Test
-        void givenPrestataireWithNoJsonbFieldsSet_whenToDetailDto_thenListFieldsAreNullOrEmpty() {
+        void givenPrestataireWithNoJsonbFieldsSet_whenToMetaDto_thenListFieldsAreNullOrEmpty() {
             Prestataire prestataire = Prestataire.builder().id(UUID.randomUUID()).build();
 
-            PrestataireDetailDto dto = mapper.toDetailDto(prestataire);
+            PrestataireDetailDto dto = mapper.toMetaDto(prestataire);
 
             assertThat(dto.medias()).isEmpty();
             assertThat(dto.badges()).isNull();
@@ -173,11 +173,11 @@ class PrestataireMapperTest {
         }
 
         @Test
-        void givenCorruptedOfferingsJson_whenToDetailDto_thenOfferingsIsNullRestOfDtoStillMapped() {
+        void givenCorruptedOfferingsJson_whenToMetaDto_thenOfferingsIsNullRestOfDtoStillMapped() {
             Prestataire prestataire = Prestataire.builder()
                     .id(UUID.randomUUID()).name("Studio Fleur").offerings("{corrompu").build();
 
-            PrestataireDetailDto dto = mapper.toDetailDto(prestataire);
+            PrestataireDetailDto dto = mapper.toMetaDto(prestataire);
 
             assertThat(dto.offerings()).isNull();
             assertThat(dto.name()).isEqualTo("Studio Fleur");

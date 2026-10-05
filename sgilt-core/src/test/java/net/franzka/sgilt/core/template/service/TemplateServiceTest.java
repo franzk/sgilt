@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -79,11 +80,47 @@ class TemplateServiceTest {
     }
 
     // -------------------------------------------------------------------------
-    // rubriquesWithDemande
+    // placeInRubriques
     // -------------------------------------------------------------------------
 
     @Nested
-    class RubriquesWithDemande {
+    class PlaceInRubriques {
+
+        @Test
+        void givenItemsOfTheGivenRubriques_whenPlaceInRubriques_thenKeepsTheirOrderEmptyOnesIncluded() {
+            when(categorieService.getCategoryKeyOf("dj")).thenReturn("musique");
+
+            Map<String, List<String>> placed = templateService.placeInRubriques(
+                    "mariage", List.of("lieu", "musique-animation"), List.of("dj"), subcat -> subcat);
+
+            assertThat(placed).containsExactly(
+                    Map.entry("lieu", List.of()),
+                    Map.entry("musique-animation", List.of("dj")));
+        }
+
+        @Test
+        void givenItemsOutsideTheGivenRubriques_whenPlaceInRubriques_thenAddsTheirRubriquesAtTheEndAutreLast() {
+            when(categorieService.getCategoryKeyOf("dj")).thenReturn("musique");
+            when(categorieService.getCategoryKeyOf("video")).thenReturn("services");
+            when(categorieService.getCategoryKeyOf("decoration")).thenReturn("services");
+
+            Map<String, List<String>> placed = templateService.placeInRubriques(
+                    "mariage", List.of("lieu"), List.of("dj", "video", "decoration"), subcat -> subcat);
+
+            assertThat(placed).containsExactly(
+                    Map.entry("lieu", List.of()),
+                    Map.entry("musique-animation", List.of("dj")),
+                    Map.entry("decoration", List.of("decoration")),
+                    Map.entry(TemplateService.RUBRIQUE_AUTRE, List.of("video")));
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // getEventRubriqueFromDemande
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetEventRubriqueFromDemande {
 
         private final DemandeInitieeDto demande = new DemandeInitieeDto(UUID.randomUUID(), "Bonjour");
 
@@ -94,11 +131,11 @@ class TemplateServiceTest {
         }
 
         @Test
-        void givenSubcategoryInATemplateRubrique_whenRubriquesWithDemande_thenPlacesItThereAmongAllRubriques() {
+        void givenSubcategoryInATemplateRubrique_whenGetEventRubriqueFromDemande_thenPlacesItThereAmongAllRubriques() {
             givenPrestataireIn("dj");
             when(categorieService.getCategoryKeyOf("dj")).thenReturn("musique");
 
-            assertThat(templateService.rubriquesWithDemande("mariage", demande)).containsExactly(
+            assertThat(templateService.getEventRubriqueFromDemande("mariage", demande)).containsExactly(
                     new RubriqueDto("lieu", List.of()),
                     new RubriqueDto("musique-animation", List.of(demande)),
                     new RubriqueDto("decoration", List.of()),
@@ -106,11 +143,11 @@ class TemplateServiceTest {
         }
 
         @Test
-        void givenIsolatedSubcategory_whenRubriquesWithDemande_thenPlacesItInTheRubriqueOfTheSubcategory() {
+        void givenIsolatedSubcategory_whenGetEventRubriqueFromDemande_thenPlacesItInTheRubriqueOfTheSubcategory() {
             givenPrestataireIn("decoration");
             when(categorieService.getCategoryKeyOf("decoration")).thenReturn("services");
 
-            assertThat(templateService.rubriquesWithDemande("mariage", demande)).containsExactly(
+            assertThat(templateService.getEventRubriqueFromDemande("mariage", demande)).containsExactly(
                     new RubriqueDto("lieu", List.of()),
                     new RubriqueDto("musique-animation", List.of()),
                     new RubriqueDto("decoration", List.of(demande)),
@@ -118,22 +155,22 @@ class TemplateServiceTest {
         }
 
         @Test
-        void givenSubcategoryInNoRubrique_whenRubriquesWithDemande_thenAddsAutreAtTheEndWithIt() {
+        void givenSubcategoryInNoRubrique_whenGetEventRubriqueFromDemande_thenAddsAutreAtTheEndWithIt() {
             givenPrestataireIn("video");
             when(categorieService.getCategoryKeyOf("video")).thenReturn("services");
 
-            List<RubriqueDto> rubriques = templateService.rubriquesWithDemande("mariage", demande);
+            List<RubriqueDto> rubriques = templateService.getEventRubriqueFromDemande("mariage", demande);
 
             assertThat(rubriques).hasSize(5);
             assertThat(rubriques.getLast()).isEqualTo(new RubriqueDto(TemplateService.RUBRIQUE_AUTRE, List.of(demande)));
         }
 
         @Test
-        void givenTypeWithoutTemplate_whenRubriquesWithDemande_thenOnlyAutreWithTheDemande() {
+        void givenTypeWithoutTemplate_whenGetEventRubriqueFromDemande_thenOnlyAutreWithTheDemande() {
             givenPrestataireIn("dj");
             when(categorieService.getCategoryKeyOf("dj")).thenReturn("musique");
 
-            assertThat(templateService.rubriquesWithDemande("anniversaire", demande))
+            assertThat(templateService.getEventRubriqueFromDemande("anniversaire", demande))
                     .containsExactly(new RubriqueDto(TemplateService.RUBRIQUE_AUTRE, List.of(demande)));
         }
     }

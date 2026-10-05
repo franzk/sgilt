@@ -35,7 +35,9 @@ Feature: Parcours événement — création, ajout de prestataires, édition, jo
     And header Authorization = 'Bearer ' + tokenUser
     When method GET
     Then status 200
-    And match response.ville == 'Marseille'
+    And match response.meta.ville == 'Marseille'
+    # La réservation initiale est rangée dans une rubrique de l'événement
+    And match response.rubriques[*].reservations[*].prestataireId contains prestataireId
 
     # Conséquence : la création de l'événement a aussi créé sa réservation initiale
     Given path '/api/v1/user/events/' + eventId + '/counts'
