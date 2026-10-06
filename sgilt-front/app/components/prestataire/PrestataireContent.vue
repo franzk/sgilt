@@ -422,6 +422,7 @@ $section-gap: 2.5rem;
   }
 
   .detail-content {
+    white-space: pre-line;
     font-size: 0.9rem;
     line-height: 1.6;
     color: $text-secondary;

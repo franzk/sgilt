@@ -23,6 +23,7 @@
         :model-value="answerModel"
         field="faq.answer"
         :editable="true"
+        multiline
         class="answer"
         @update:model-value="setAnswer"
       />
@@ -74,6 +75,7 @@ defineExpose({ startEdit })
 }
 
 .question {
+  white-space: pre-line;
   font-size: 0.9rem;
   font-weight: 600;
   color: $color-primary;
@@ -81,6 +83,7 @@ defineExpose({ startEdit })
 }
 
 .answer {
+  white-space: pre-line;
   font-size: 0.9rem;
   line-height: 1.6;
   color: $text-secondary;
