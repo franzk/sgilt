@@ -1,6 +1,6 @@
 <template>
   <div class="search-page">
-    <section ref="headerRef" class="search-header">
+>    <section class="search-header">
       <div v-if="showDateFilter" class="date-filter">
         <SgiltDateFilter v-model="dateModel" />
       </div>
@@ -27,8 +27,6 @@
         </div>
       </div>
     </section>
-
-    <div class="margin-for-header" :style="{ marginTop: headerHeight + 'px' }" />
 
     <section class="search-results">
       <SgiltSearchResults
@@ -66,19 +64,6 @@ const isAllCategories = computed(() => categoryKey.value === APP_CATEGORIES[0]?.
 watch(categoryKey, () => {
   showOnboarding.value = false
 })
-
-// ── Header height dynamique ───────────────────────────────────────────────────
-const headerRef = ref<HTMLElement | null>(null)
-const headerHeight = ref(0)
-
-onMounted(() => {
-  if (!headerRef.value) return
-  const ro = new ResizeObserver(([entry]) => {
-    headerHeight.value = entry!.contentRect.height
-  })
-  ro.observe(headerRef.value)
-  onUnmounted(() => ro.disconnect())
-})
 </script>
 
 <style scoped lang="scss">
@@ -105,7 +90,8 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  position: fixed;
+  position: sticky;
+  top: var(--content-top, 0);
   z-index: 10;
   background-color: #fff;
 }

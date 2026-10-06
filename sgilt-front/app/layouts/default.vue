@@ -19,13 +19,14 @@ const { showContextBanner } = useFlow()
 @use '@/assets/styles/base' as *;
 
 .default-content {
-  padding-top: $app-header-height;
+  --content-top: #{$app-header-height};
+  padding-top: var(--content-top);
   flex: 1;
   display: flex;
   flex-direction: column;
 
   &.has-banner {
-    padding-top: calc(#{$app-header-height} + 44px);
+    --content-top: calc(#{$app-header-height} + 44px);
   }
 }
 </style>
