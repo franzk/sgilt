@@ -70,6 +70,17 @@ const mosaicThumbs = computed<MosaicThumb[]>(() =>
   }),
 )
 
+/**
+ * Répartition des miniatures sur la moitié droite : 1 ou 2 empilées en une colonne,
+ * au-delà sur 2 colonnes — si leur nombre est impair, la première prend toute la largeur.
+ */
+const thumbColumns = computed(() => (mosaicThumbs.value.length <= 2 ? 1 : 2))
+const thumbRows = computed(() => Math.ceil(mosaicThumbs.value.length / thumbColumns.value))
+
+function isWideThumb(index: number): boolean {
+  return index === 0 && thumbColumns.value === 2 && mosaicThumbs.value.length % 2 === 1
+}
+
 function onThumbClick(thumb: MosaicThumb): void {
   if (thumb.type === 'video') {
     emit('openVideo', thumb.youtubeId)
@@ -153,7 +164,7 @@ async function share() {
       </div>
 
       <!-- ── Desktop : mosaïque ── -->
-      <div class="mosaic">
+      <div class="mosaic" :class="{ single: !mosaicThumbs.length }">
         <!-- Photo principale -->
         <div class="mosaic-main">
           <SgiltImage
@@ -177,12 +188,16 @@ async function share() {
         </div>
 
         <!-- Miniatures -->
-        <div v-if="mosaicThumbs.length" class="mosaic-thumbs">
+        <div
+          v-if="mosaicThumbs.length"
+          class="mosaic-thumbs"
+          :style="{ '--thumb-columns': thumbColumns, '--thumb-rows': thumbRows }"
+        >
           <button
             v-for="(thumb, i) in mosaicThumbs"
             :key="i"
             class="mosaic-thumb"
-            :class="{ video: thumb.type === 'video' }"
+            :class="{ video: thumb.type === 'video', wide: isWideThumb(i) }"
             @click="onThumbClick(thumb)"
             :aria-label="thumb.type === 'video' ? 'Lancer la vidéo' : `Voir la photo`"
           >
@@ -276,10 +291,14 @@ async function share() {
 
     @media (min-width: $breakpoint-desktop) {
       display: grid;
-      grid-template-columns: 1.2fr 1fr;
+      grid-template-columns: 1fr 1fr;
       height: 55vh;
-      gap: 8px;
+      gap: 0.5rem;
       overflow: hidden;
+
+      &.single {
+        grid-template-columns: 1fr;
+      }
     }
 
     &-main {
@@ -291,8 +310,8 @@ async function share() {
 
     &-thumbs {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
+      grid-template-columns: repeat(var(--thumb-columns), 1fr);
+      grid-template-rows: repeat(var(--thumb-rows), minmax(0, 1fr));
       gap: 0.5rem;
       height: 100%;
       overflow: hidden;
@@ -307,6 +326,10 @@ async function share() {
       cursor: pointer;
       display: block;
       border-radius: 1rem;
+
+      &.wide {
+        grid-column: span 2;
+      }
 
       &::after {
         content: '';
