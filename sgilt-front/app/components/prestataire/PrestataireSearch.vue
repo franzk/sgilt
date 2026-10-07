@@ -1,6 +1,6 @@
 <template>
   <div class="search-page">
->    <section class="search-header">
+    <section class="search-header">
       <div v-if="showDateFilter" class="date-filter">
         <SgiltDateFilter v-model="dateModel" />
       </div>
