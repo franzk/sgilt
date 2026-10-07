@@ -5,10 +5,8 @@
     <EvenementOptionSelect
       :options="AMBIANCE_OPTIONS"
       :model-value="localEvent.ambiance"
-      :autre-value="localEvent.ambianceAutre"
       autre-placeholder="Décrivez l'ambiance souhaitée…"
       @update:model-value="localEvent.ambiance = $event"
-      @update:autre-value="localEvent.ambianceAutre = $event"
       @change="next"
     />
   </div>

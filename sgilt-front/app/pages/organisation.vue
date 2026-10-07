@@ -31,7 +31,6 @@
             <OrganisationChoiceStep
               v-if="step === 1"
               v-model="localEvent.ambiance"
-              v-model:autre-value="localEvent.ambianceAutre"
               :options="AMBIANCE_OPTIONS"
               :autre-placeholder="$t('organisation.steps.ambiance.autre-placeholder')"
               @next="next"
@@ -39,7 +38,6 @@
             <OrganisationChoiceStep
               v-else-if="step === 2"
               v-model="localEvent.momentCle"
-              v-model:autre-value="localEvent.momentCleAutre"
               :options="MOMENT_CLE_OPTIONS"
               :autre-placeholder="$t('organisation.steps.moment-cle.autre-placeholder')"
               @next="next"
@@ -136,11 +134,9 @@ function skipQuestion() {
   switch (step.value) {
     case 1:
       localEvent.ambiance = null
-      localEvent.ambianceAutre = ''
       break
     case 2:
       localEvent.momentCle = null
-      localEvent.momentCleAutre = ''
       break
     case 3:
       localEvent.ville = ''

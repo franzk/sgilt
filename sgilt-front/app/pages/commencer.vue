@@ -58,6 +58,7 @@ import { SearchIcon, TaskIcon, ArrowRightSIcon, SparklingIcon } from '@remixicon
 import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
 import PhotoCurveClipPath from '~/components/commencer/PhotoCurveClipPath.vue'
 import { EVENT_TYPE_IMAGES, EVENT_TYPE_COVERS } from '~/utils/eventTypes'
+import { eventTypeKey } from '~/types/evenement'
 
 useHead({ title: "Vous avez l'idée - Sgilt" })
 
@@ -71,12 +72,12 @@ onMounted(() => {
   }
 })
 
-const eventTypeKey = computed(() => localEvent.eventType ?? 'autre')
-const eventTypeImage = computed(() => EVENT_TYPE_IMAGES[eventTypeKey.value])
-const eventTypeLabel = computed(() => t(`event-picker.types.${eventTypeKey.value}.label`))
-const paragraph = computed(() => t(`commencer-picker.paragraphs.${eventTypeKey.value}`))
-const coverImage = computed(() => EVENT_TYPE_COVERS[eventTypeKey.value])
-const photoAlt = computed(() => t(`commencer-picker.photo-alt.${eventTypeKey.value}`))
+const typeKey = computed(() => eventTypeKey(localEvent.eventType) ?? 'autre')
+const eventTypeImage = computed(() => EVENT_TYPE_IMAGES[typeKey.value])
+const eventTypeLabel = computed(() => t(`event-picker.types.${typeKey.value}.label`))
+const paragraph = computed(() => t(`commencer-picker.paragraphs.${typeKey.value}`))
+const coverImage = computed(() => EVENT_TYPE_COVERS[typeKey.value])
+const photoAlt = computed(() => t(`commencer-picker.photo-alt.${typeKey.value}`))
 
 function goToSearch() {
   navigateTo('/search')

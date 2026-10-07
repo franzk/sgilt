@@ -64,12 +64,13 @@ import AppBanner from '~/components/app/AppBanner.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 import { EVENT_TYPE_CATALOG } from '~/utils/eventTypes'
+import { eventTypeKey } from '~/types/evenement'
 
 const { t } = useI18n()
 const { localEvent, reset } = useLocalEvent()
 
 // Le type n'est pas modifiable : simple rappel, affiché à partir du desktop.
-const typeKey = computed(() => localEvent.eventType ?? 'autre')
+const typeKey = computed(() => eventTypeKey(localEvent.eventType) ?? 'autre')
 const typeIcon = computed(
   () => EVENT_TYPE_CATALOG.find((type) => type.key === typeKey.value)?.icon ?? SparklingIcon,
 )

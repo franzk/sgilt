@@ -8,7 +8,7 @@
         :event-meta="event"
         :rubriques="rubriques"
         :cover-image="coverImage"
-        @settings="openEditDialog"
+        @settings="navigateTo(`/app/events/${eventId}/parametres`)"
         @rubrique="(rubriqueKey) => navigateTo(`/app/events/${eventId}/${rubriqueKey}`)"
       >
         <div class="sticky-cta">

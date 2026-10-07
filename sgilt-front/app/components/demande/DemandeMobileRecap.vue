@@ -119,10 +119,8 @@
         <EvenementOptionSelect
           :options="EVENT_TYPE_OPTIONS"
           :model-value="localEvent.eventType"
-          :autre-value="localEvent.eventTypeAutre"
           autre-placeholder="Quel événement préparez-vous ?"
           @update:model-value="localEvent.eventType = $event"
-          @update:autre-value="localEvent.eventTypeAutre = $event"
           @change="sheetOpen = false"
         />
       </div>
@@ -130,10 +128,8 @@
         <EvenementOptionSelect
           :options="AMBIANCE_OPTIONS"
           :model-value="localEvent.ambiance"
-          :autre-value="localEvent.ambianceAutre"
           autre-placeholder="Décrivez l'ambiance souhaitée…"
           @update:model-value="localEvent.ambiance = $event"
-          @update:autre-value="localEvent.ambianceAutre = $event"
           @change="sheetOpen = false"
         />
       </div>
@@ -141,10 +137,8 @@
         <EvenementOptionSelect
           :options="MOMENT_CLE_OPTIONS"
           :model-value="localEvent.momentCle"
-          :autre-value="localEvent.momentCleAutre"
           autre-placeholder="Décrivez le moment clé…"
           @update:model-value="localEvent.momentCle = $event"
-          @update:autre-value="localEvent.momentCleAutre = $event"
           @change="sheetOpen = false"
         />
       </div>

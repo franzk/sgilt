@@ -38,6 +38,7 @@
 import EventTypeCard from '~/components/cards/EventTypeCard.vue'
 import PageHeroTitle from '~/components/landing/PageHeroTitle.vue'
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
+import { eventTypeKey } from '~/types/evenement'
 
 useHead({ title: "Qu'est-ce qu'on fête ? - Sgilt" })
 
@@ -79,7 +80,8 @@ const changeTypeDialogOpen = ref(false)
 const pendingType = ref<string | null>(null)
 
 function selectType(key: string) {
-  const wouldEraseEvent = localEvent.organisationStarted && localEvent.eventType !== key
+  const wouldEraseEvent =
+    localEvent.organisationStarted && eventTypeKey(localEvent.eventType) !== key
   if (wouldEraseEvent) {
     pendingType.value = key
     changeTypeDialogOpen.value = true

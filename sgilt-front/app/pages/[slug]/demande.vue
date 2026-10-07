@@ -51,6 +51,7 @@ import DemandeRecapEvenement from '~/components/demande/DemandeRecapEvenement.vu
 import { useDemande } from '~/composables/useDemande'
 import { usePrestataire } from '~/data/prestataire/usePrestataire'
 import type { DemandeSummary } from '~/types/demande'
+import { eventTypeKey } from '~/types/evenement'
 
 const route = useRoute()
 const slug = route.params.slug as string
@@ -157,7 +158,7 @@ onMounted(() => {
   if (
     etapeActuelle.value === 1 &&
     localEvent.eventType &&
-    localEvent.eventType.toUpperCase() !== 'AUTRE'
+    eventTypeKey(localEvent.eventType) !== 'autre'
   ) {
     // on saute l'étape de sélection du type d'événement si elle a déjà été saisie au début du parcours
     // et qu'elle n'est pas "Autre"

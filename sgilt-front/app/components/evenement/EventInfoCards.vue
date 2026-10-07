@@ -32,7 +32,6 @@
         <OrganisationChoiceStep
           v-if="activeField === 'eventType'"
           v-model="draft.eventType"
-          v-model:autre-value="draft.eventTypeAutre"
           :options="EVENT_TYPE_OPTIONS"
           :autre-placeholder="$t('event-info.event-type-autre-placeholder')"
           @next="validateField"
@@ -40,7 +39,6 @@
         <OrganisationChoiceStep
           v-else-if="activeField === 'ambiance'"
           v-model="draft.ambiance"
-          v-model:autre-value="draft.ambianceAutre"
           :options="AMBIANCE_OPTIONS"
           :autre-placeholder="$t('organisation.steps.ambiance.autre-placeholder')"
           @next="validateField"
@@ -48,7 +46,6 @@
         <OrganisationChoiceStep
           v-else-if="activeField === 'momentCle'"
           v-model="draft.momentCle"
-          v-model:autre-value="draft.momentCleAutre"
           :options="MOMENT_CLE_OPTIONS"
           :autre-placeholder="$t('organisation.steps.moment-cle.autre-placeholder')"
           @next="validateField"
@@ -123,6 +120,8 @@ const props = defineProps<{
   withTitle?: boolean
   // Date, type et ville obligatoires (envoi d'une demande) : voir validate().
   essentialsRequired?: boolean
+  // Date non modifiable (événement en base : en changer demande l'accord des prestataires).
+  dateLocked?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -167,7 +166,7 @@ const cards = computed<InfoCard[]>(() => {
       key: 'eventType',
       label: t('event-info.fields.event-type'),
       icon: eventTypeIcon.value,
-      value: choiceLabel(EVENT_TYPE_OPTIONS, event.eventType, event.eventTypeAutre),
+      value: choiceLabel(EVENT_TYPE_OPTIONS, event.eventType),
       missing: required && !event.eventType,
       // Le type n'est plus modifiable une fois choisi : en changer revient à repartir de zéro.
       editable: !event.eventType,
@@ -178,7 +177,7 @@ const cards = computed<InfoCard[]>(() => {
       icon: markRaw(CalendarEventIcon),
       value: formatDateWithWeekday(event.date) || null,
       missing: required && !event.date,
-      editable: true,
+      editable: !props.dateLocked,
     },
     {
       key: 'lieu',
@@ -200,7 +199,7 @@ const cards = computed<InfoCard[]>(() => {
       key: 'ambiance',
       label: t('event-info.fields.ambiance'),
       icon: markRaw(Sparkling2Icon),
-      value: choiceLabel(AMBIANCE_OPTIONS, event.ambiance, event.ambianceAutre),
+      value: choiceLabel(AMBIANCE_OPTIONS, event.ambiance),
       missing: false,
       editable: true,
     },
@@ -208,7 +207,7 @@ const cards = computed<InfoCard[]>(() => {
       key: 'momentCle',
       label: t('event-info.fields.moment-cle'),
       icon: markRaw(Music2Icon),
-      value: choiceLabel(MOMENT_CLE_OPTIONS, event.momentCle, event.momentCleAutre),
+      value: choiceLabel(MOMENT_CLE_OPTIONS, event.momentCle),
       missing: false,
       editable: true,
     },
@@ -248,15 +247,12 @@ function eventSnapshot(): EventInfoFields {
   return {
     title: event.title,
     eventType: event.eventType,
-    eventTypeAutre: event.eventTypeAutre,
     date: event.date,
     ville: event.ville,
     lieu: event.lieu,
     nbInvites: event.nbInvites,
     ambiance: event.ambiance,
-    ambianceAutre: event.ambianceAutre,
     momentCle: event.momentCle,
-    momentCleAutre: event.momentCleAutre,
     description: event.description,
   }
 }

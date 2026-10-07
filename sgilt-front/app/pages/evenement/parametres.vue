@@ -39,15 +39,12 @@ const { localEvent } = useLocalEvent()
 const draft = reactive<EventInfoFields>({
   title: localEvent.title,
   eventType: localEvent.eventType,
-  eventTypeAutre: localEvent.eventTypeAutre,
   date: localEvent.date,
   ville: localEvent.ville,
   lieu: localEvent.lieu,
   nbInvites: localEvent.nbInvites,
   ambiance: localEvent.ambiance,
-  ambianceAutre: localEvent.ambianceAutre,
   momentCle: localEvent.momentCle,
-  momentCleAutre: localEvent.momentCleAutre,
   description: localEvent.description,
 })
 

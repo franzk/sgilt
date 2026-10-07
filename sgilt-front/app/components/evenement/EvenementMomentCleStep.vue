@@ -5,10 +5,8 @@
     <EvenementOptionSelect
       :options="MOMENT_CLE_OPTIONS"
       :model-value="localEvent.momentCle"
-      :autre-value="localEvent.momentCleAutre"
       autre-placeholder="Décrivez le moment clé…"
       @update:model-value="localEvent.momentCle = $event"
-      @update:autre-value="localEvent.momentCleAutre = $event"
       @change="next"
     />
   </div>

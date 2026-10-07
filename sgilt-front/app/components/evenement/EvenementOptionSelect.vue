@@ -1,18 +1,14 @@
 <template>
   <div class="evenement-option-select">
     <Transition name="fade-down">
-      <div
-        v-if="modelValue === 'autre'"
-        class="autre-input-container"
-        @click.self="$emit('update:modelValue', null)"
-      >
+      <div v-if="autreOpen" class="autre-input-container" @click.self="closeAutre">
         <div class="autre-input">
           <input
-            :value="autreValue"
+            v-model="autreDraft"
             class="field"
             type="text"
             :placeholder="autrePlaceholder"
-            @input="$emit('update:autreValue', $event.target.value)"
+            @input="$emit('update:modelValue', autreDraft.trim() || AUTRE_VALUE)"
           />
           <SgiltButton @click="$emit('change')" class="autre-value-button"> → </SgiltButton>
         </div>
@@ -23,7 +19,7 @@
         v-for="option in options"
         :key="option.value"
         class="option"
-        :class="{ selected: modelValue === option.value }"
+        :class="{ selected: selectedOption === option.value }"
         type="button"
         @click="select(option.value)"
       >
@@ -38,24 +34,43 @@
 import type { EvenementOption } from '~/types/evenement'
 import SgiltButton from '@/components/basics/buttons/SgiltButton.vue'
 
-defineProps<{
+const AUTRE_VALUE = 'autre'
+
+const props = defineProps<{
   options: EvenementOption[]
+  // Valeur unique : un choix de la liste, 'autre' sans précision, ou le texte libre de « Autre ».
   modelValue: string | null
-  autreValue: string
   autrePlaceholder?: string
 }>()
 
 const emit = defineEmits<{
   (e: 'update:modelValue', v: string | null): void
-  (e: 'update:autreValue', v: string): void
   (e: 'change'): void
 }>()
 
+const isFreeText = (value: string | null) =>
+  !!value && !props.options.some((option) => option.value === value)
+
+// Carte mise en avant : le texte libre est affiché sous « Autre ».
+const selectedOption = computed(() =>
+  isFreeText(props.modelValue) ? AUTRE_VALUE : props.modelValue,
+)
+const autreOpen = ref(selectedOption.value === AUTRE_VALUE)
+const autreDraft = ref(isFreeText(props.modelValue) ? (props.modelValue ?? '') : '')
+
+function closeAutre() {
+  autreOpen.value = false
+  emit('update:modelValue', null)
+}
+
 function select(value: string) {
-  emit('update:modelValue', value)
-  if (value !== 'autre') {
+  autreOpen.value = value === AUTRE_VALUE
+  if (value !== AUTRE_VALUE) {
+    emit('update:modelValue', value)
     emit('change')
   } else {
+    // Un texte déjà saisi sous « Autre » est conservé.
+    emit('update:modelValue', autreDraft.value.trim() || AUTRE_VALUE)
     // focus input when "autre" is selected
     nextTick(() => {
       const input = document.querySelector('.field') as HTMLInputElement | null
@@ -154,7 +169,6 @@ function select(value: string) {
       align-items: center;
       justify-content: center;
       border-radius: $radius-md;
-      // padding: 0 $spacing-s;
     }
 
     .field {

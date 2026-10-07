@@ -39,7 +39,7 @@ import type { EvenementOption } from '~/types/evenement'
 
 const AUTRE_VALUE = 'autre'
 
-defineProps<{
+const props = defineProps<{
   options: EvenementOption[]
   autrePlaceholder: string
 }>()
@@ -48,18 +48,20 @@ const emit = defineEmits<{
   (e: 'next'): void
 }>()
 
+// Valeur unique : un choix de la liste, 'autre' sans précision, ou le texte libre saisi sous « Autre ».
 const choice = defineModel<string | null>({ required: true })
-const autreValue = defineModel<string>('autreValue', { required: true })
+
+const isFreeText = (value: string | null) =>
+  !!value && !props.options.some((option) => option.value === value)
 
 // Le texte "Autre" est un brouillon local : il n'entre dans le state qu'à la
 // validation, pour qu'une saisie abandonnée ne soit pas comptée comme réponse.
-const autreOpen = ref(choice.value === AUTRE_VALUE)
-const autreDraft = ref(autreValue.value)
+const autreOpen = ref(choice.value === AUTRE_VALUE || isFreeText(choice.value))
+const autreDraft = ref(isFreeText(choice.value) ? (choice.value ?? '') : '')
 const root = ref<HTMLElement | null>(null)
 
 function choose(value: string) {
   choice.value = value
-  autreValue.value = ''
   emit('next')
 }
 
@@ -67,15 +69,13 @@ function choose(value: string) {
 // qui est affiché, donc un skip de tunnel à ce stade ne garde pas l'ancien choix.
 function openAutre() {
   choice.value = null
-  autreValue.value = ''
   autreOpen.value = true
   nextTick(() => root.value?.querySelector<HTMLInputElement>('.autre-field')?.focus())
 }
 
 // "Autre" validé avec un texte vide reste un choix à part entière.
 function validateAutre() {
-  choice.value = AUTRE_VALUE
-  autreValue.value = autreDraft.value.trim()
+  choice.value = autreDraft.value.trim() || AUTRE_VALUE
   emit('next')
 }
 </script>

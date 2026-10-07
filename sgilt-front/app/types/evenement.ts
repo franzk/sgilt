@@ -1,6 +1,6 @@
 // app/types/evenement.ts
 
-// Champs de l'événement envoyés au serveur, choix « autre » déjà résolus en texte libre.
+// Champs de l'événement envoyés au serveur.
 export interface EvenementRequest {
   eventType: string | null
   ambiance: string | null
@@ -12,6 +12,8 @@ export interface EvenementRequest {
   lieu: string | null
 }
 
+// Type, ambiance et moment clé sont une valeur unique : un choix de la liste (dont 'autre', choisi
+// sans précision) ou, hors liste, le texte libre saisi sous « Autre ».
 export interface EvenementOption {
   value: string
   label: string
@@ -26,6 +28,13 @@ export const EVENT_TYPE_OPTIONS: EvenementOption[] = [
   { value: 'evenement_public', label: 'Événement public', emoji: '🎪' },
   { value: 'autre', label: 'Autre', emoji: '•••' },
 ]
+
+// Clé du type d'événement (template, illustrations, libellés) : la valeur si elle fait partie de
+// la liste, sinon 'autre' (texte libre).
+export function eventTypeKey(eventType: string | null | undefined): string | null {
+  if (!eventType) return null
+  return EVENT_TYPE_OPTIONS.some((option) => option.value === eventType) ? eventType : 'autre'
+}
 
 export const AMBIANCE_OPTIONS: EvenementOption[] = [
   { value: 'festif', label: 'Festif et dansant', emoji: '🎉' },

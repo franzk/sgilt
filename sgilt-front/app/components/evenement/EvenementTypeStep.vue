@@ -5,10 +5,8 @@
     <EvenementOptionSelect
       :options="EVENT_TYPE_OPTIONS"
       :model-value="localEvent.eventType"
-      :autre-value="localEvent.eventTypeAutre"
       autre-placeholder="Quel événement préparez-vous&nbsp;?"
       @update:model-value="localEvent.eventType = $event"
-      @update:autre-value="localEvent.eventTypeAutre = $event"
       @change="next"
     />
 

@@ -108,9 +108,8 @@ import EventBlockDesktopEdit from '~/components/app/EventBlockDesktopEdit.vue'
 import EventBlockMobileDisplay from '~/components/app/EventBlockMobileDisplay.vue'
 import EventBlockMobileEdit from '~/components/app/EventBlockMobileEdit.vue'
 import { patchEventApi } from '~/data/evenement/api/evenementApi'
-import { fetchEventJournal } from '~/data/evenement/service/evenementService'
+import { useEventJournal } from '~/data/evenement/useEventJournal'
 import type { EventMeta } from '~/data/evenement/domain/EventMeta'
-import type { JournalEntry } from '~/data/evenement/domain/JournalEntry'
 import type { ClientContactInfo } from '~/data/reservation/domain/ClientContactInfo'
 import type { EventMetaPatchRequestDto } from '~/data/evenement/dto/EventMetaPatchRequestDto'
 import { CalendarEventIcon, MapPin2Icon, GroupIcon } from '@remixicons/vue/line'
@@ -136,35 +135,22 @@ const sheetOpen = ref(false)
 const journalOpen = ref(false)
 const showAbandonModal = ref(false)
 
-const journalEntries = ref<JournalEntry[]>([])
-const journalPage = ref(0)
-const journalHasMore = ref(false)
-const journalLoading = ref(false)
+const {
+  entries: journalEntries,
+  hasMore: journalHasMore,
+  loading: journalLoading,
+  loadFirstPage: loadFirstJournalPage,
+  loadNextPage: loadJournalPage,
+} = useEventJournal(props.event.id)
 
 const lastUpdateDate = computed((): string | null => {
   if (!props.event.lastUpdateDate) return null
   return `Dernière mise à jour : ${props.event.lastUpdateDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`
 })
 
-watch(journalOpen, async (open) => {
-  if (!open) return
-  journalEntries.value = []
-  journalPage.value = 0
-  journalHasMore.value = false
-  await loadJournalPage()
+watch(journalOpen, (open) => {
+  if (open) loadFirstJournalPage()
 })
-
-async function loadJournalPage(): Promise<void> {
-  journalLoading.value = true
-  try {
-    const result = await fetchEventJournal(props.event.id, journalPage.value)
-    journalEntries.value = [...journalEntries.value, ...result.entries]
-    journalHasMore.value = !result.last
-    journalPage.value++
-  } finally {
-    journalLoading.value = false
-  }
-}
 
 function enterEditMode() {
   if (variant.value === 'pro') return
@@ -204,9 +190,6 @@ async function onSave(payload: {
       lastUpdateDate: updated.lastUpdateDate ? new Date(updated.lastUpdateDate) : null,
     })
     emit('updatedClientInfo', payload.clientPatch)
-    // Réinitialise le journal : il sera rechargé à la prochaine ouverture
-    journalEntries.value = []
-    journalPage.value = 0
     editMode.value = false
   } finally {
     saving.value = false

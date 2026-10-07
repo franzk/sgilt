@@ -149,7 +149,9 @@
     "settings-aria": "Paramètres de l'événement",
     "settings": {
       "page-title": "Paramètres de l'événement - Sgilt",
-      "back": "Retour à mon événement"
+      "back": "Retour à mon événement",
+      "cover": "Changer l'image de couverture",
+      "journal": "Journal des modifications"
     },
     "banner": {
       "label": "Événement en cours de création",

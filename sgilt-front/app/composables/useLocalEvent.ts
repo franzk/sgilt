@@ -6,6 +6,7 @@ import {
   AMBIANCE_OPTIONS,
   EVENT_TYPE_OPTIONS,
   MOMENT_CLE_OPTIONS,
+  eventTypeKey,
   type EvenementOption,
   type EvenementRequest,
 } from '~/types/evenement'
@@ -20,22 +21,19 @@ import {
 // Ne contient aucune donnée de contact (prénom, nom, email, téléphone) : elles restent
 // dans useDemande, qui est le brouillon d'une demande à un prestataire.
 const LOCAL_EVENT_STORAGE_KEY = 'sgilt:evenement'
-const LOCAL_EVENT_VERSION = 2
+const LOCAL_EVENT_VERSION = 3
 // Durée glissante : renouvelée à chaque modification. Passé ce délai, l'événement est effacé.
 const LOCAL_EVENT_TTL_MS = 30 * 24 * 60 * 60 * 1000
 
 export interface LocalEvent {
   eventType: string | null
-  eventTypeAutre: string
   title: string
   date: Date | undefined
   ville: string
   lieu: string
   nbInvites: string
   ambiance: string | null
-  ambianceAutre: string
   momentCle: string | null
-  momentCleAutre: string
   description: string
   rubriques: EventRubrique[]
   // Mode événement : vrai une fois que l'utilisateur a choisi de commencer son organisation avec
@@ -48,31 +46,25 @@ export type EventInfoFields = Pick<
   LocalEvent,
   | 'title'
   | 'eventType'
-  | 'eventTypeAutre'
   | 'date'
   | 'ville'
   | 'lieu'
   | 'nbInvites'
   | 'ambiance'
-  | 'ambianceAutre'
   | 'momentCle'
-  | 'momentCleAutre'
   | 'description'
 >
 
 function defaultLocalEvent(): LocalEvent {
   return {
     eventType: null,
-    eventTypeAutre: '',
     title: '',
     date: undefined,
     ville: '',
     lieu: '',
     nbInvites: '',
     ambiance: null,
-    ambianceAutre: '',
     momentCle: null,
-    momentCleAutre: '',
     description: '',
     rubriques: [],
     organisationStarted: false,
@@ -108,16 +100,13 @@ const asBoolean = (value: unknown): boolean => value === true
 function deserialize(raw: Record<string, unknown>): LocalEvent {
   return {
     eventType: asStringOrNull(raw.eventType),
-    eventTypeAutre: asString(raw.eventTypeAutre),
     title: asString(raw.title),
     date: parseISODate(raw.date),
     ville: asString(raw.ville),
     lieu: asString(raw.lieu),
     nbInvites: asString(raw.nbInvites),
     ambiance: asStringOrNull(raw.ambiance),
-    ambianceAutre: asString(raw.ambianceAutre),
     momentCle: asStringOrNull(raw.momentCle),
-    momentCleAutre: asString(raw.momentCleAutre),
     description: asString(raw.description),
     rubriques: Array.isArray(raw.rubriques)
       ? raw.rubriques
@@ -179,14 +168,10 @@ if (import.meta.client) {
 
 // ── Libellés des choix (type, ambiance, moment clé) ───────────────────────────
 
-export function choiceLabel(
-  options: EvenementOption[],
-  value: string | null,
-  autre: string,
-): string | null {
+// Libellé du choix de la liste, sinon le texte libre lui-même.
+export function choiceLabel(options: EvenementOption[], value: string | null): string | null {
   if (!value) return null
-  if (value === 'autre') return autre || 'Autre'
-  return options.find((option) => option.value === value)?.label ?? null
+  return options.find((option) => option.value === value)?.label ?? value
 }
 
 function choiceEmoji(options: EvenementOption[], value: string | null): string {
@@ -205,7 +190,7 @@ export function useLocalEvent() {
   // Choix du type d'événement. Un seul événement local à la fois : un type différent
   // repart de zéro, le même type conserve ce qui a déjà été saisi.
   function start(eventType: string) {
-    if (localEvent.eventType === eventType) return
+    if (eventTypeKey(localEvent.eventType) === eventType) return
     reset()
     localEvent.eventType = eventType
     localEvent.title = EVENT_TYPE_DEFAULT_TITLES[eventType] ?? EVENT_TYPE_DEFAULT_TITLES.autre!
@@ -214,24 +199,24 @@ export function useLocalEvent() {
   // Rubriques du template du type d'événement, demandées au back (qui porte les règles). N'injecte
   // que ce qui manque : un événement déjà initialisé (rubriques présentes) n'est jamais écrasé.
   async function initRubriques() {
-    if (!localEvent.eventType || localEvent.rubriques.length > 0) return
+    const key = eventTypeKey(localEvent.eventType)
+    if (!key || localEvent.rubriques.length > 0) return
     try {
-      const rubriques = await fetchNewEventRubriques(localEvent.eventType)
+      const rubriques = await fetchNewEventRubriques(key)
       if (localEvent.rubriques.length === 0) localEvent.rubriques = rubriques
     } catch (e) {
       console.error('[evenement] Échec du chargement des rubriques du template :', e)
     }
   }
 
-  // Champs de l'événement tels qu'envoyés au serveur : choix « autre » remplacés par le texte
-  // saisi, date au format ISO, champs vides à null.
+  // Champs de l'événement tels qu'envoyés au serveur : « autre » sans précision non transmis,
+  // date au format ISO, champs vides à null.
   function toEvenementRequest(): EvenementRequest {
-    const resolveAutre = (value: string | null, autre: string) =>
-      value === 'autre' ? autre || null : value
+    const withoutBareAutre = (value: string | null) => (value === 'autre' ? null : value)
     return {
-      eventType: resolveAutre(localEvent.eventType, localEvent.eventTypeAutre),
-      ambiance: resolveAutre(localEvent.ambiance, localEvent.ambianceAutre),
-      momentCle: resolveAutre(localEvent.momentCle, localEvent.momentCleAutre),
+      eventType: withoutBareAutre(localEvent.eventType),
+      ambiance: withoutBareAutre(localEvent.ambiance),
+      momentCle: withoutBareAutre(localEvent.momentCle),
       description: localEvent.description || null,
       date: localEvent.date ? toISODate(localEvent.date) : null,
       ville: localEvent.ville || null,
@@ -240,17 +225,11 @@ export function useLocalEvent() {
     }
   }
 
-  const eventTypeLabel = computed(() =>
-    choiceLabel(EVENT_TYPE_OPTIONS, localEvent.eventType, localEvent.eventTypeAutre),
-  )
+  const eventTypeLabel = computed(() => choiceLabel(EVENT_TYPE_OPTIONS, localEvent.eventType))
   const eventTypeEmoji = computed(() => choiceEmoji(EVENT_TYPE_OPTIONS, localEvent.eventType))
-  const ambianceLabel = computed(() =>
-    choiceLabel(AMBIANCE_OPTIONS, localEvent.ambiance, localEvent.ambianceAutre),
-  )
+  const ambianceLabel = computed(() => choiceLabel(AMBIANCE_OPTIONS, localEvent.ambiance))
   const ambianceEmoji = computed(() => choiceEmoji(AMBIANCE_OPTIONS, localEvent.ambiance))
-  const momentCleLabel = computed(() =>
-    choiceLabel(MOMENT_CLE_OPTIONS, localEvent.momentCle, localEvent.momentCleAutre),
-  )
+  const momentCleLabel = computed(() => choiceLabel(MOMENT_CLE_OPTIONS, localEvent.momentCle))
   const momentCleEmoji = computed(() => choiceEmoji(MOMENT_CLE_OPTIONS, localEvent.momentCle))
 
   return {
