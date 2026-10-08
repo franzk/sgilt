@@ -66,7 +66,7 @@ const startAddPrestataireFlow = () => {
 .reservations {
   display: flex;
   flex-direction: column;
-  gap: $spacing-m;
+  gap: $spacing-s;
 }
 
 .cover-skeleton {
