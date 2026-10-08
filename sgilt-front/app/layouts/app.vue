@@ -3,14 +3,22 @@
   <main class="app-content">
     <slot />
   </main>
-  <BottomNav />
+  <!-- Dans un événement, sa propre navigation remplace la navigation globale. -->
+  <EventBottomNav v-if="eventId" :event-id="eventId" />
+  <BottomNav v-else />
 </template>
 
 <script setup lang="ts">
 import AppHeader from '~/components/AppHeader.vue'
 import BottomNav from '~/components/app/BottomNav.vue'
+import EventBottomNav from '~/components/app/EventBottomNav.vue'
 
 useVirtualKeyboard()
+
+const route = useRoute()
+const eventId = computed(() =>
+  typeof route.params.eventId === 'string' ? route.params.eventId : null,
+)
 </script>
 
 <style lang="scss">

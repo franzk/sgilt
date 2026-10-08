@@ -153,6 +153,11 @@
       "cover": "Changer l'image de couverture",
       "journal": "Journal des modifications"
     },
+    "prestataires": {
+      "page-title": "Prestataires - Sgilt",
+      "title": "Mes prestataires",
+      "empty": "Aucun prestataire pour le moment."
+    },
     "banner": {
       "label": "Événement en cours de création",
       "board": "Voir mon événement",
