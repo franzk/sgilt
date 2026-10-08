@@ -24,9 +24,13 @@ const props = defineProps<{
 const route = useRoute()
 const boardPath = computed(() => `/app/events/${props.eventId}`)
 const prestatairesPath = computed(() => `${boardPath.value}/prestataires`)
-// Onglet en surbrillance : Prestataires sur sa page uniquement, Accueil sur toutes les autres pages
-// de l'événement (board, rubrique, paramètres, fiche réservation).
-const isPrestatairesActive = computed(() => route.path.startsWith(prestatairesPath.value))
+// Onglet en surbrillance : Prestataires sur sa page et sur les fiches réservation, Accueil sur
+// toutes les autres pages de l'événement (board, rubrique, paramètres).
+const isPrestatairesActive = computed(
+  () =>
+    route.path.startsWith(prestatairesPath.value) ||
+    route.path.startsWith(`${boardPath.value}/reservations/`),
+)
 </script>
 
 <style scoped lang="scss">
