@@ -8,7 +8,7 @@
           v-for="reservation in reservations"
           :key="reservation.id"
           :reservation="reservation"
-          @click="navigateTo(`/app/events/${eventId}/reservations/${reservation.id}`)"
+          @click="navigateTo(`/app/events/${eventId}/prestataires/${reservation.id}`)"
         />
       </div>
       <p v-else class="empty">{{ $t('evenement.prestataires.empty') }}</p>
