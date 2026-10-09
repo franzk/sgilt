@@ -153,6 +153,9 @@
       "cover": "Changer l'image de couverture",
       "journal": "Journal des modifications"
     },
+    "home": {
+      "invite": "Choisissez une rubrique pour avancer dans votre organisation."
+    },
     "prestataires": {
       "page-title": "Prestataires - Sgilt",
       "title": "Mes prestataires",

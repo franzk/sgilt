@@ -1,5 +1,5 @@
 <template>
-  <button class="rubrique-item" type="button">
+  <button class="rubrique-item" :class="{ active }" type="button">
     <span class="icon-wrap" :style="{ background: accentColor }" aria-hidden="true">
       <component :is="rubriqueIcon(rubriqueKey)" class="icon" />
     </span>
@@ -21,6 +21,8 @@ const props = defineProps<{
   rubriqueKey: string
   // Nombre de réservations de la rubrique.
   count: number
+  // Rubrique ouverte (sidebar desktop).
+  active?: boolean
 }>()
 
 const { t } = useI18n()
@@ -52,6 +54,10 @@ const accentColor = computed(() => rubriqueAccent(props.rubriqueKey))
 
   &:active {
     background: $surface-soft;
+  }
+
+  &.active {
+    background: rgba($brand-accent, 0.15);
   }
 
   .icon-wrap {

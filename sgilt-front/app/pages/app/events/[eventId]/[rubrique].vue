@@ -23,14 +23,13 @@
 import ReservationCard from '~/components/app/ReservationCard.vue'
 import Sk from '~/components/basics/Sk.vue'
 import EventRubriqueDetail from '~/components/evenement/EventRubriqueDetail.vue'
-import { useEvent } from '~/data/evenement/useEvenement'
+import { useEventContext } from '~/data/evenement/useEventContext'
 
 definePageMeta({ layout: 'app' })
 
 const route = useRoute()
-const eventId = route.params.eventId as string
 
-const { event, rubriques, pending } = useEvent(eventId)
+const { eventId, event, rubriques, pending } = useEventContext()
 
 // ── Rubrique ─────────────────────────────────────────────────────────────────
 // Clé absente des rubriques de l'événement (URL tapée à la main) : retour à l'event board.
@@ -38,9 +37,13 @@ const rubrique = computed(
   () => rubriques.value.find((candidate) => candidate.key === route.params.rubrique) ?? null,
 )
 
-watch(pending, (loading) => {
-  if (!loading && !rubrique.value) navigateTo(`/app/events/${eventId}`, { replace: true })
-})
+watch(
+  pending,
+  (loading) => {
+    if (!loading && !rubrique.value) navigateTo(`/app/events/${eventId}`, { replace: true })
+  },
+  { immediate: true },
+)
 
 function backToBoard() {
   navigateTo(`/app/events/${eventId}`)

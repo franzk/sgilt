@@ -19,7 +19,8 @@ export function useEvent(id: string) {
   const pending = ref(true)
   const error = ref<unknown>(null)
 
-  onMounted(async () => {
+  // `pending` ne couvre que le premier chargement : un rechargement garde les données affichées.
+  async function refresh() {
     try {
       const result = await fetchEvent(id)
       event.value = result.event
@@ -30,9 +31,11 @@ export function useEvent(id: string) {
     } finally {
       pending.value = false
     }
-  })
+  }
 
-  return { event, clientInfo, rubriques, pending, error }
+  onMounted(refresh)
+
+  return { event, clientInfo, rubriques, pending, error, refresh }
 }
 
 export function useEventCounts(id: string) {

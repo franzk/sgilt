@@ -83,7 +83,7 @@ import EventInfoCards from '~/components/evenement/EventInfoCards.vue'
 import type { EventInfoFields } from '~/composables/useLocalEvent'
 import type { EventMetaPatch } from '~/data/evenement/domain/EventMetaPatch'
 import { patchEvent } from '~/data/evenement/service/evenementService'
-import { useEvent } from '~/data/evenement/useEvenement'
+import { useEventContext } from '~/data/evenement/useEventContext'
 import { useEventJournal } from '~/data/evenement/useEventJournal'
 
 definePageMeta({ layout: 'app' })
@@ -91,10 +91,7 @@ definePageMeta({ layout: 'app' })
 const { t } = useI18n()
 useHead({ title: t('evenement.settings.page-title') })
 
-const route = useRoute()
-const eventId = route.params.eventId as string
-
-const { event, clientInfo } = useEvent(eventId)
+const { eventId, event, clientInfo } = useEventContext()
 
 // ── Brouillon ─────────────────────────────────────────────────────────────────
 // Rempli au chargement de l'événement ; l'événement n'est modifié qu'à l'enregistrement.
@@ -111,10 +108,14 @@ const draft = reactive<EventInfoFields>({
 })
 const sharedNote = ref('')
 
+// Rempli une seule fois, dès que l'événement est disponible (il l'est déjà si l'on vient d'une
+// autre page de l'événement) : ses rechargements en arrière-plan n'écrasent pas la saisie.
+let draftFilled = false
 watch(
   event,
   (loaded) => {
-    if (!loaded) return
+    if (!loaded || draftFilled) return
+    draftFilled = true
     Object.assign(draft, {
       title: loaded.title,
       eventType: loaded.eventType ?? null,
@@ -128,7 +129,7 @@ watch(
     })
     sharedNote.value = loaded.sharedNote
   },
-  { once: true },
+  { immediate: true },
 )
 
 const clientName = computed(() =>

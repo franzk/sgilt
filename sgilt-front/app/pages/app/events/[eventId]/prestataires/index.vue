@@ -22,17 +22,14 @@
 // « Prestataires » de la navigation de l'événement).
 import ReservationCard from '~/components/app/ReservationCard.vue'
 import Sk from '~/components/basics/Sk.vue'
-import { useEvent } from '~/data/evenement/useEvenement'
+import { useEventContext } from '~/data/evenement/useEventContext'
 
 definePageMeta({ layout: 'app' })
 
 const { t } = useI18n()
 useHead({ title: t('evenement.prestataires.page-title') })
 
-const route = useRoute()
-const eventId = route.params.eventId as string
-
-const { rubriques, pending } = useEvent(eventId)
+const { eventId, rubriques, pending } = useEventContext()
 
 // Dans l'ordre des rubriques de l'événement.
 const reservations = computed(() => rubriques.value.flatMap((rubrique) => rubrique.reservations))
