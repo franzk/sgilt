@@ -1,26 +1,32 @@
 <template>
+  <!-- Réservation ouverte depuis la rubrique : affichée à la place de la rubrique. -->
+  <ReservationDetail
+    v-if="reservationId"
+    :key="reservationId"
+    :reservation-id="reservationId"
+    :event-title="event?.title"
+    @back="navigateTo(rubriquePath)"
+  />
   <EventRubriqueDetail
-    v-if="event && rubrique"
+    v-else-if="event && rubrique"
     :rubrique-key="rubrique.key"
     @back="backToBoard"
     @search="startAddPrestataireFlow"
   >
     <template v-if="rubrique.reservations.length > 0" #reservations>
-      <div class="reservations">
-        <ReservationCard
-          v-for="reservation in rubrique.reservations"
-          :key="reservation.id"
-          :reservation="reservation"
-          @click="navigateTo(`/app/events/${eventId}/reservations/${reservation.id}`)"
-        />
-      </div>
+      <ReservationList
+        :reservations="rubrique.reservations"
+        @open="(id) => navigateTo(`${rubriquePath}/${id}`)"
+      />
     </template>
   </EventRubriqueDetail>
   <Sk v-else class="cover-skeleton" light />
 </template>
 
 <script setup lang="ts">
-import ReservationCard from '~/components/app/ReservationCard.vue'
+// Page d'une rubrique, ou la réservation ouverte depuis elle (/:rubrique/:id).
+import ReservationDetail from '~/components/app/ReservationDetail.vue'
+import ReservationList from '~/components/app/ReservationList.vue'
 import Sk from '~/components/basics/Sk.vue'
 import EventRubriqueDetail from '~/components/evenement/EventRubriqueDetail.vue'
 import { useEventContext } from '~/data/evenement/useEventContext'
@@ -35,6 +41,10 @@ const { eventId, event, rubriques, pending } = useEventContext()
 // Clé absente des rubriques de l'événement (URL tapée à la main) : retour à l'event board.
 const rubrique = computed(
   () => rubriques.value.find((candidate) => candidate.key === route.params.rubrique) ?? null,
+)
+const rubriquePath = computed(() => `/app/events/${eventId}/${route.params.rubrique}`)
+const reservationId = computed(() =>
+  typeof route.params.reservationId === 'string' ? route.params.reservationId : null,
 )
 
 watch(
@@ -65,12 +75,6 @@ const startAddPrestataireFlow = () => {
 
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
-
-.reservations {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-s;
-}
 
 .cover-skeleton {
   height: 12.5rem;

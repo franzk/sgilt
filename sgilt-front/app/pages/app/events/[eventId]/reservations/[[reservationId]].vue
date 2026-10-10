@@ -1,16 +1,21 @@
 <template>
-  <div class="prestataires">
+  <!-- Réservation ouverte depuis la liste (ou un mail, une notification) : à la place de la liste. -->
+  <ReservationDetail
+    v-if="reservationId"
+    :key="reservationId"
+    :reservation-id="reservationId"
+    :event-title="event?.title"
+    @back="navigateTo(listPath)"
+  />
+  <div v-else class="reservations-list">
     <div v-if="!pending" class="column">
       <h1 class="title">{{ $t('evenement.prestataires.title') }}</h1>
 
-      <div v-if="reservations.length > 0" class="list">
-        <ReservationCard
-          v-for="reservation in reservations"
-          :key="reservation.id"
-          :reservation="reservation"
-          @click="navigateTo(`/app/events/${eventId}/prestataires/${reservation.id}`)"
-        />
-      </div>
+      <ReservationList
+        v-if="reservations.length > 0"
+        :reservations="reservations"
+        @open="(id) => navigateTo(`${listPath}/${id}`)"
+      />
       <p v-else class="empty">{{ $t('evenement.prestataires.empty') }}</p>
     </div>
     <Sk v-else class="skeleton" />
@@ -18,9 +23,10 @@
 </template>
 
 <script setup lang="ts">
-// Liste plate des réservations de l'événement, toutes rubriques confondues (onglet
-// « Prestataires » de la navigation de l'événement).
-import ReservationCard from '~/components/app/ReservationCard.vue'
+// Liste plate des réservations de l'événement, toutes rubriques confondues (menu « Prestataires »
+// de l'événement), ou la réservation ouverte depuis elle (/reservations/:id).
+import ReservationDetail from '~/components/app/ReservationDetail.vue'
+import ReservationList from '~/components/app/ReservationList.vue'
 import Sk from '~/components/basics/Sk.vue'
 import { useEventContext } from '~/data/evenement/useEventContext'
 
@@ -29,7 +35,13 @@ definePageMeta({ layout: 'app' })
 const { t } = useI18n()
 useHead({ title: t('evenement.prestataires.page-title') })
 
-const { eventId, rubriques, pending } = useEventContext()
+const { eventId, event, rubriques, pending } = useEventContext()
+
+const route = useRoute()
+const listPath = `/app/events/${eventId}/reservations`
+const reservationId = computed(() =>
+  typeof route.params.reservationId === 'string' ? route.params.reservationId : null,
+)
 
 // Dans l'ordre des rubriques de l'événement.
 const reservations = computed(() => rubriques.value.flatMap((rubrique) => rubrique.reservations))
@@ -38,7 +50,7 @@ const reservations = computed(() => rubriques.value.flatMap((rubrique) => rubriq
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
-.prestataires {
+.reservations-list {
   display: flex;
   justify-content: center;
   flex: 1;
@@ -49,7 +61,8 @@ const reservations = computed(() => rubriques.value.flatMap((rubrique) => rubriq
     flex-direction: column;
     gap: $spacing-m;
     width: 100%;
-    max-width: 30rem;
+    // Même largeur que la page rubrique (EventRubriqueDetail) : cartes réservation identiques.
+    max-width: 45rem;
     padding: $spacing-m $section-padding-x $spacing-xl;
 
     .title {
@@ -58,12 +71,6 @@ const reservations = computed(() => rubriques.value.flatMap((rubrique) => rubriq
       font-size: 1.6rem;
       font-weight: 600;
       color: $text-primary;
-    }
-
-    .list {
-      display: flex;
-      flex-direction: column;
-      gap: $spacing-s;
     }
 
     .empty {
@@ -75,7 +82,7 @@ const reservations = computed(() => rubriques.value.flatMap((rubrique) => rubriq
 
   .skeleton {
     width: 100%;
-    max-width: 30rem;
+    max-width: 45rem;
     height: 20rem;
     margin: $spacing-m;
   }

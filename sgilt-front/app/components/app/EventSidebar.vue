@@ -25,7 +25,7 @@
         <span class="label">{{ $t('nav.home') }}</span>
       </NuxtLink>
       <NuxtLink
-        :to="`${boardPath}/prestataires`"
+        :to="`${boardPath}/reservations`"
         class="item"
         :class="{ active: activeKey === PRESTATAIRES_KEY }"
       >
@@ -78,18 +78,13 @@ const route = useRoute()
 const boardPath = computed(() => `/app/events/${props.eventId}`)
 const place = computed(() => [props.event.lieu, props.event.ville].filter(Boolean).join(', '))
 
-// Entrée en surbrillance : Prestataires sur la liste et les réservations ouvertes depuis elle ;
-// la rubrique de la réservation sur /reservations/:id ; la rubrique ouverte ; Accueil sinon.
+// Entrée en surbrillance, d'après le premier segment de l'URL :
+// Prestataires sur la liste des réservations (/reservations, /reservations/:id),
+// la rubrique ouverte (/:rubrique, /:rubrique/:id),
+// Accueil sinon.
 const activeKey = computed(() => {
-  const subPath = route.path.slice(boardPath.value.length + 1)
-  const [section, reservationId] = subPath.split('/')
-  if (section === 'prestataires') return PRESTATAIRES_KEY
-  if (section === 'reservations') {
-    const rubrique = props.rubriques.find((candidate) =>
-      candidate.reservations.some((reservation) => reservation.id === reservationId),
-    )
-    return rubrique?.key ?? HOME_KEY
-  }
+  const [section] = route.path.slice(boardPath.value.length + 1).split('/')
+  if (section === 'reservations') return PRESTATAIRES_KEY
   if (props.rubriques.some((rubrique) => rubrique.key === section)) return section
   return HOME_KEY
 })
