@@ -46,7 +46,6 @@ function mapProReservationDetailEvent(
     ville: dto.evenementVille ?? undefined,
     coverImage: dto.evenementImagePath ?? null,
     sharedNote: '',
-    countdown: 'serein',
   }
 }
 

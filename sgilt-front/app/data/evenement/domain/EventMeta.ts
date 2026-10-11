@@ -16,6 +16,5 @@ export interface EventMeta {
   sharedNoteUpdatedAt?: Date
   description?: string
   momentCle?: string
-  countdown: 'imminent' | 'proche' | 'serein' | 'past'
   lastUpdateDate?: Date | null
 }

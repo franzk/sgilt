@@ -4,30 +4,24 @@
 import {
   getEvenementsApi,
   getEventApi,
-  getEventCountsApi,
   getEventJournalApi,
   patchEventApi,
   uploadEventCoverApi,
   selectEventCoverApi,
   addReservationApi,
 } from '../api/evenementApi'
-import { getReservationsByEventApi } from '~/data/reservation/api/reservationApi'
 import {
   mapEvenementSummary,
   mapEventMeta,
   mapEventRubrique,
-  mapEventCounts,
-  mapEventReservation,
   mapJournalEntry,
 } from '../mapper/evenementMapper'
 import type { EventSummary } from '../domain/EventSummary'
 import type { EventMeta } from '../domain/EventMeta'
 import type { EventRubrique } from '../domain/EventRubrique'
-import type { EventCounts } from '../domain/EventCounts'
 import type { EventMetaPatch } from '../domain/EventMetaPatch'
 import type { JournalEntry } from '../domain/JournalEntry'
 import type { ClientContactInfo } from '~/data/reservation/domain/ClientContactInfo'
-import type { ReservationSummary } from '~/data/reservation/domain/ReservationSummary'
 
 export async function getEvenements(): Promise<EventSummary[]> {
   const dtos = await getEvenementsApi()
@@ -41,16 +35,6 @@ export async function fetchEvent(id: string): Promise<{
 }> {
   const dto = await getEventApi(id)
   return { ...mapEventMeta(dto.meta), rubriques: dto.rubriques.map(mapEventRubrique) }
-}
-
-export async function fetchEventCounts(id: string): Promise<EventCounts> {
-  const dto = await getEventCountsApi(id)
-  return mapEventCounts(dto)
-}
-
-export async function fetchEventReservations(id: string): Promise<ReservationSummary[]> {
-  const dtos = await getReservationsByEventApi(id)
-  return dtos.map(mapEventReservation)
 }
 
 export async function fetchEventJournal(

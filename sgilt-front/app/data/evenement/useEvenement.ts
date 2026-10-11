@@ -1,16 +1,10 @@
 ﻿/**
- * Composable — expose les données d'un événement unique (détail, counts, réservations)
+ * Composable — expose les données d'un événement unique (détail, rubriques et leurs réservations)
  */
-import {
-  fetchEvent,
-  fetchEventCounts,
-  fetchEventReservations,
-} from './service/evenementService'
+import { fetchEvent } from './service/evenementService'
 import type { EventMeta } from './domain/EventMeta'
 import type { EventRubrique } from './domain/EventRubrique'
-import type { EventCounts } from './domain/EventCounts'
 import type { ClientContactInfo } from '~/data/reservation/domain/ClientContactInfo'
-import type { ReservationSummary } from '~/data/reservation/domain/ReservationSummary'
 
 export function useEvent(id: string) {
   const event = ref<EventMeta | null>(null)
@@ -36,40 +30,4 @@ export function useEvent(id: string) {
   onMounted(refresh)
 
   return { event, clientInfo, rubriques, pending, error, refresh }
-}
-
-export function useEventCounts(id: string) {
-  const counts = ref<EventCounts | null>(null)
-  const pending = ref(true)
-  const error = ref<unknown>(null)
-
-  onMounted(async () => {
-    try {
-      counts.value = await fetchEventCounts(id)
-    } catch (e) {
-      error.value = e
-    } finally {
-      pending.value = false
-    }
-  })
-
-  return { counts, pending, error }
-}
-
-export function useEventReservations(id: string) {
-  const reservations = ref<ReservationSummary[]>([])
-  const pending = ref(true)
-  const error = ref<unknown>(null)
-
-  onMounted(async () => {
-    try {
-      reservations.value = await fetchEventReservations(id)
-    } catch (e) {
-      error.value = e
-    } finally {
-      pending.value = false
-    }
-  })
-
-  return { reservations, pending, error }
 }

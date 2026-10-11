@@ -4,13 +4,11 @@
 import type { EvenementSummaryDto } from '../dto/EvenementSummaryDto'
 import type { EventMetaDto } from '../dto/EventMetaDto'
 import type { EventRubriqueDto } from '../dto/EventRubriqueDto'
-import type { EventCountsDto } from '../dto/EventCountsDto'
 import type { EventReservationSummaryDto } from '../dto/EventReservationSummaryDto'
 import type { JournalEvenementDto } from '../dto/JournalEvenementDto'
 import type { EventSummary } from '../domain/EventSummary'
 import type { EventMeta } from '../domain/EventMeta'
 import type { EventRubrique } from '../domain/EventRubrique'
-import type { EventCounts } from '../domain/EventCounts'
 import type { JournalEntry } from '../domain/JournalEntry'
 import type { ClientContactInfo } from '~/data/reservation/domain/ClientContactInfo'
 import type { ReservationSummary } from '~/data/reservation/domain/ReservationSummary'
@@ -47,7 +45,6 @@ export function mapEventMeta(dto: EventMetaDto): {
       nbInvites: dto.nbInvites,
       coverImage: dto.imagePath ?? null,
       sharedNote: dto.sharedNote,
-      countdown: dto.countdown,
       lastUpdateDate: dto.lastUpdateDate ? new Date(dto.lastUpdateDate) : null,
     },
     clientInfo: {
@@ -56,18 +53,6 @@ export function mapEventMeta(dto: EventMetaDto): {
       phone: dto.clientInfo.phone ?? '',
       email: dto.clientInfo.email,
     },
-  }
-}
-
-export function mapEventCounts(dto: EventCountsDto): EventCounts {
-  return {
-    mood: dto.mood,
-    confirmedCount: dto.confirmedCount,
-    inDiscussionCount: dto.inDiscussionCount,
-    nouvelleCount: dto.nouvelleCount,
-    refuseeCount: dto.refuseeCount,
-    annuleeCount: dto.annuleeCount,
-    realiseeCount: dto.realiseeCount,
   }
 }
 

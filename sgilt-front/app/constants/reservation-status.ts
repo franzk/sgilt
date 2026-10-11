@@ -15,15 +15,6 @@ export type ReservationStatut = (typeof RESERVATION_STATUTS)[number]
 
 // ── Listes statiques ─────────────────────────────────────────────────────────
 
-export const RESERVATION_STATUS_ORDER: ReservationStatut[] = [
-  'nouvelle',
-  'en_discussion',
-  'confirmee',
-  'refusee',
-  'annulee',
-  'realisee',
-]
-
 export const ALL_RESERVATION_STATUTS: ReservationStatut[] = [
   'nouvelle',
   'en_discussion',

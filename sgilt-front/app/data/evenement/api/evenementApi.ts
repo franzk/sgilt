@@ -7,7 +7,6 @@ import type { EvenementSummaryDto } from '../dto/EvenementSummaryDto'
 import type { EventDto } from '../dto/EventDto'
 import type { EventMetaDto } from '../dto/EventMetaDto'
 import type { EventMetaPatchRequestDto } from '../dto/EventMetaPatchRequestDto'
-import type { EventCountsDto } from '../dto/EventCountsDto'
 import type { JournalEvenementPageDto } from '../dto/JournalEvenementDto'
 
 export interface CoverUrlResponseDto {
@@ -27,10 +26,6 @@ export async function patchEventApi(
   patch: EventMetaPatchRequestDto,
 ): Promise<EventMetaDto> {
   return apiFetch<EventMetaDto>(`/user/events/${eventId}`, { method: 'PATCH', body: patch })
-}
-
-export async function getEventCountsApi(eventId: string): Promise<EventCountsDto> {
-  return apiFetch<EventCountsDto>(`/user/events/${eventId}/counts`)
 }
 
 export async function getEventJournalApi(
