@@ -20,7 +20,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -76,42 +75,6 @@ class TemplateServiceTest {
         @Test
         void givenTypeWithoutTemplate_whenGetNewEventRubriques_thenReturnsEmpty() {
             assertThat(templateService.getNewEventRubriques("anniversaire")).isEmpty();
-        }
-    }
-
-    // -------------------------------------------------------------------------
-    // placeInRubriques
-    // -------------------------------------------------------------------------
-
-    @Nested
-    class PlaceInRubriques {
-
-        @Test
-        void givenItemsOfTheGivenRubriques_whenPlaceInRubriques_thenKeepsTheirOrderEmptyOnesIncluded() {
-            when(categorieService.getCategoryKeyOf("dj")).thenReturn("musique");
-
-            Map<String, List<String>> placed = templateService.placeInRubriques(
-                    "mariage", List.of("lieu", "musique-animation"), List.of("dj"), subcat -> subcat);
-
-            assertThat(placed).containsExactly(
-                    Map.entry("lieu", List.of()),
-                    Map.entry("musique-animation", List.of("dj")));
-        }
-
-        @Test
-        void givenItemsOutsideTheGivenRubriques_whenPlaceInRubriques_thenAddsTheirRubriquesAtTheEndAutreLast() {
-            when(categorieService.getCategoryKeyOf("dj")).thenReturn("musique");
-            when(categorieService.getCategoryKeyOf("video")).thenReturn("services");
-            when(categorieService.getCategoryKeyOf("decoration")).thenReturn("services");
-
-            Map<String, List<String>> placed = templateService.placeInRubriques(
-                    "mariage", List.of("lieu"), List.of("dj", "video", "decoration"), subcat -> subcat);
-
-            assertThat(placed).containsExactly(
-                    Map.entry("lieu", List.of()),
-                    Map.entry("musique-animation", List.of("dj")),
-                    Map.entry("decoration", List.of("decoration")),
-                    Map.entry(TemplateService.RUBRIQUE_AUTRE, List.of("video")));
         }
     }
 

@@ -39,9 +39,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
@@ -171,33 +169,32 @@ class EvenementServiceTest {
         }
 
         @Test
-        void givenReservations_whenGetEvent_thenReturnsTheMetaAndTheRubriquesPlacedByTheTemplate() {
+        void givenReservations_whenGetEvent_thenReturnsTheMetaAndEachRubriqueWithItsReservationsInTheEventOrder() {
             Evenement event = ownerEvent(b -> b.eventType("mariage").rubriques(List.of(
-                    new EvenementRubrique("lieu"), new EvenementRubrique("musique-animation"))));
+                    new EvenementRubrique("lieu"), new EvenementRubrique("musique-animation"),
+                    new EvenementRubrique("decoration"))));
             EventMetaDto meta = mock(EventMetaDto.class);
-            ReservationSummaryDto dj = summary("dj");
-            Map<String, List<ReservationSummaryDto>> placed = new LinkedHashMap<>();
-            placed.put("lieu", List.of());
-            placed.put("musique-animation", List.of(dj));
+            ReservationSummaryDto dj = summary("dj", "musique-animation");
+            ReservationSummaryDto chanteur = summary("pop-rock", "musique-animation");
+            ReservationSummaryDto salle = summary("salle", "lieu");
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
             when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
             when(evenementMapper.toMetaDto(any(), any())).thenReturn(meta);
-            when(reservationService.getReservationSummaries(EVENT_ID)).thenReturn(List.of(dj));
-            when(templateService.placeInRubriques(eq("mariage"), eq(List.of("lieu", "musique-animation")),
-                    eq(List.of(dj)), any())).thenReturn(placed);
+            when(reservationService.getReservationSummaries(EVENT_ID)).thenReturn(List.of(dj, salle, chanteur));
 
             EventDto detail = evenementService.getEvent(EVENT_ID, USER_ID);
 
             assertThat(detail.meta()).isSameAs(meta);
             assertThat(detail.rubriques()).containsExactly(
-                    new EventRubriqueDto("lieu", List.of()),
-                    new EventRubriqueDto("musique-animation", List.of(dj)));
+                    new EventRubriqueDto("lieu", List.of(salle)),
+                    new EventRubriqueDto("musique-animation", List.of(dj, chanteur)),
+                    new EventRubriqueDto("decoration", List.of()));
         }
 
-        // Résumé d'une réservation dont le prestataire a la sous-catégorie donnée.
-        private ReservationSummaryDto summary(String subcatKey) {
+        // Résumé d'une réservation dont le prestataire a la sous-catégorie donnée, rangée dans la rubrique donnée.
+        private ReservationSummaryDto summary(String subcatKey, String rubriqueKey) {
             return new ReservationSummaryDto(UUID.randomUUID(), UUID.randomUUID(), "Presta " + subcatKey,
-                    null, "categorie", subcatKey, "nouvelle", 0);
+                    null, "categorie", subcatKey, rubriqueKey, "nouvelle", 0);
         }
     }
 

@@ -42,8 +42,8 @@ class ReservationMapperTest {
 
     private final Reservation reservation = Reservation.builder()
             .id(reservationId).prestataire(prestataire).evenement(evenement).utilisateur(client)
-            .date(LocalDate.of(2027, 6, 15)).status(ReservationStatus.CONFIRMED).createdAt(createdAt)
-            .build();
+            .date(LocalDate.of(2027, 6, 15)).status(ReservationStatus.CONFIRMED).rubriqueKey("photo-video")
+            .createdAt(createdAt).build();
 
     // -------------------------------------------------------------------------
     // mapStatus
@@ -110,7 +110,8 @@ class ReservationMapperTest {
             ReservationSummaryDto dto = mapper.toSummaryDto(reservation);
 
             assertThat(dto).isEqualTo(new ReservationSummaryDto(
-                    reservationId, prestataire.getId(), "Studio Fleur", "avatar.jpg", "photo", "photographe", "confirmee", 0));
+                    reservationId, prestataire.getId(), "Studio Fleur", "avatar.jpg", "photo", "photographe", "photo-video",
+                    "confirmee", 0));
         }
     }
 

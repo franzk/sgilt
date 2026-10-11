@@ -35,6 +35,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -88,15 +89,21 @@ public class EvenementService {
         return new EventDto(meta, rubriquesWithReservations(event));
     }
 
-    // Rubriques de l'événement, dans son ordre, chacune avec ses réservations rangées selon la règle
-    // du template (sous-catégorie du prestataire de chaque réservation).
+    // Rubriques de l'événement, dans son ordre, chacune avec les réservations qui y sont rangées
+    // (rubrique fixée à l'entrée de chaque réservation).
     private List<EventRubriqueDto> rubriquesWithReservations(Evenement event) {
-        List<String> keys = event.getRubriques().stream().map(EvenementRubrique::key).toList();
-        return templateService.placeInRubriques(event.getEventType(), keys,
-                        reservationService.getReservationSummaries(event.getId()), ReservationSummaryDto::subcatKey)
-                .entrySet().stream()
-                .map(rubrique -> new EventRubriqueDto(rubrique.getKey(), rubrique.getValue()))
-                .toList();
+        // 1 — les réservations de l'événement, regroupées par rubrique.
+        Map<String, List<ReservationSummaryDto>> reservationsByRubrique = new HashMap<>();
+        for (ReservationSummaryDto reservation : reservationService.getReservationSummaries(event.getId())) {
+            reservationsByRubrique.computeIfAbsent(reservation.rubriqueKey(), key -> new ArrayList<>()).add(reservation);
+        }
+
+        // 2 — chaque rubrique de l'événement, dans son ordre, avec ses réservations (aucune si vide).
+        List<EventRubriqueDto> rubriques = new ArrayList<>();
+        for (EvenementRubrique rubrique : event.getRubriques()) {
+            rubriques.add(new EventRubriqueDto(rubrique.key(), reservationsByRubrique.getOrDefault(rubrique.key(), List.of())));
+        }
+        return rubriques;
     }
 
     /**
