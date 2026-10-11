@@ -33,6 +33,7 @@ INSERT INTO sous_categories (key, name, category_key, position) VALUES
     ('jazz',                  'Jazz',                  'musique',      3),
     ('traiteur',              'Traiteur',              'restauration', 1),
     ('food-truck',            'Food Truck',            'restauration', 2),
+    ('boissons',              'Boissons',              'restauration', 3),
     ('salle',                 'Salle',                 'lieu',         1),
     ('decoration',            'Décoration',            'services',     1),
     ('animation',             'Animation',             'services',     2),
@@ -41,7 +42,20 @@ INSERT INTO sous_categories (key, name, category_key, position) VALUES
     ('photobooth',            'Photobooth',            'services',     5),
     ('communication',         'Communication',         'services',     6),
     ('location-voiture',      'Location de voiture',   'services',     7),
-    ('agence-evenementielle', 'Agence événementielle', 'services',     8);
+    ('agence-evenementielle', 'Agence événementielle', 'services',     8),
+    ('coiffure',              'Coiffure',              'services',     9);
+
+-- 1 bis. Sous-catégorie saisie avec un libellé hors référentiel, constatée en prod : rattachée à la
+--    sous-catégorie existante qui lui correspond. Même principe que V114 : insertion de la clé puis
+--    suppression du libellé, pour ne jamais heurter la PK (prestataire_id, subcat_key).
+INSERT INTO prestataires_sous_categories (prestataire_id, subcat_key)
+SELECT prestataire_id, 'agence-evenementielle'
+FROM prestataires_sous_categories
+WHERE subcat_key = 'Organisation'
+ON CONFLICT (prestataire_id, subcat_key) DO NOTHING;
+
+DELETE FROM prestataires_sous_categories
+WHERE subcat_key = 'Organisation';
 
 -- 2. Une seule sous-catégorie par prestataire. La migration échoue si un prestataire en a
 --    zéro ou plusieurs : le choix de la sous-catégorie à garder se fait à la main, pas ici.
