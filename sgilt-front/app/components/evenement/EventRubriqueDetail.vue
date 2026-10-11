@@ -41,9 +41,10 @@
         </button>
       </section>
 
-      <p class="tip">
+      <!-- Conseil de la rubrique, seulement s'il est rédigé (clé présente dans les traductions). -->
+      <p v-if="tip" class="tip">
         <LightbulbFlashIcon class="icon" aria-hidden="true" />
-        {{ $t(`evenement.rubrique.content.${rubriqueKey}.tip`) }}
+        {{ tip }}
       </p>
 
       <!-- ── Mes réservations ─────────────────────────────────────────────────── -->
@@ -117,9 +118,14 @@ defineEmits<{
   search: []
 }>()
 
-const { t } = useI18n()
+const { t, te } = useI18n()
 
 const name = computed(() => t(`evenement.rubriques.${props.rubriqueKey}`))
+
+const tip = computed(() => {
+  const key = `evenement.rubrique.content.${props.rubriqueKey}.tip`
+  return te(key) ? t(key) : null
+})
 
 useHead(() => ({ title: t('evenement.rubrique.page-title', { rubrique: name.value }) }))
 

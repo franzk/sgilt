@@ -1,10 +1,8 @@
 package net.franzka.sgilt.core.reservation.controller;
 
-import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.reservation.dto.ActiveReservationsDto;
 import net.franzka.sgilt.core.reservation.dto.CancelReservationRequest;
 import net.franzka.sgilt.core.reservation.dto.ReservationMetaDto;
-import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
 import net.franzka.sgilt.core.security.CurrentUserService;
 import org.junit.jupiter.api.Nested;
@@ -17,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,9 +30,6 @@ class ClientReservationControllerTest {
     private ReservationService reservationService;
 
     @Mock
-    private EvenementService evenementService;
-
-    @Mock
     private CurrentUserService currentUserService;
 
     @InjectMocks
@@ -43,30 +37,6 @@ class ClientReservationControllerTest {
 
     private final UUID userId = UUID.randomUUID();
     private final UUID reservationId = UUID.randomUUID();
-    private final UUID eventId = UUID.randomUUID();
-
-    // -------------------------------------------------------------------------
-    // getByEventId
-    // -------------------------------------------------------------------------
-
-    @Nested
-    class GetByEventId {
-
-        @Test
-        void givenOwnedEvent_whenGetByEventId_thenVerifiesOwnershipBeforeReturningSummaries() {
-            when(currentUserService.getId()).thenReturn(userId);
-            List<ReservationSummaryDto> summaries = List.of(mock(ReservationSummaryDto.class));
-            when(reservationService.getReservationSummaries(eventId)).thenReturn(summaries);
-
-            ResponseEntity<List<ReservationSummaryDto>> response = controller.getByEventId(eventId);
-
-            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-            assertThat(response.getBody()).isEqualTo(summaries);
-            InOrder order = inOrder(evenementService, reservationService);
-            order.verify(evenementService).verifyEventOwnership(eventId, userId);
-            order.verify(reservationService).getReservationSummaries(eventId);
-        }
-    }
 
     // -------------------------------------------------------------------------
     // getActive

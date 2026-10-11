@@ -8,7 +8,6 @@ import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
 import net.franzka.sgilt.core.evenement.dto.DemandeInitieeDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
-import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
 import net.franzka.sgilt.core.evenement.dto.EventDto;
 import net.franzka.sgilt.core.evenement.dto.EventMetaDto;
 import net.franzka.sgilt.core.evenement.dto.EventMetaPatchDto;
@@ -21,7 +20,6 @@ import net.franzka.sgilt.core.evenement.mapper.EvenementMapper;
 import net.franzka.sgilt.core.evenement.repository.EvenementRepository;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
-import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
@@ -31,8 +29,6 @@ import net.franzka.sgilt.core.template.service.TemplateService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
@@ -84,7 +80,7 @@ class EvenementServiceTest {
     private void whenEventFound(Evenement event) {
         when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
         when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
-        when(evenementMapper.toMetaDto(any(), any(), any())).thenReturn(mock(EventMetaDto.class));
+        when(evenementMapper.toMetaDto(any(), any())).thenReturn(mock(EventMetaDto.class));
     }
 
     @SuppressWarnings("unchecked")
@@ -154,11 +150,11 @@ class EvenementServiceTest {
             Evenement event = ownerEvent(b -> b);
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
             when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
-            when(evenementMapper.toMetaDto(any(), any(), any())).thenReturn(mock(EventMetaDto.class));
+            when(evenementMapper.toMetaDto(any(), any())).thenReturn(mock(EventMetaDto.class));
 
             evenementService.getEvent(EVENT_ID, USER_ID);
 
-            verify(evenementMapper).toMetaDto(eq(event), any(), isNull());
+            verify(evenementMapper).toMetaDto(eq(event), isNull());
         }
 
         @Test
@@ -167,11 +163,11 @@ class EvenementServiceTest {
             Evenement event = ownerEvent(b -> b);
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
             when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.of(lastUpdate));
-            when(evenementMapper.toMetaDto(any(), any(), any())).thenReturn(mock(EventMetaDto.class));
+            when(evenementMapper.toMetaDto(any(), any())).thenReturn(mock(EventMetaDto.class));
 
             evenementService.getEvent(EVENT_ID, USER_ID);
 
-            verify(evenementMapper).toMetaDto(eq(event), any(), eq(lastUpdate));
+            verify(evenementMapper).toMetaDto(eq(event), eq(lastUpdate));
         }
 
         @Test
@@ -185,7 +181,7 @@ class EvenementServiceTest {
             placed.put("musique-animation", List.of(dj));
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
             when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
-            when(evenementMapper.toMetaDto(any(), any(), any())).thenReturn(meta);
+            when(evenementMapper.toMetaDto(any(), any())).thenReturn(meta);
             when(reservationService.getReservationSummaries(EVENT_ID)).thenReturn(List.of(dj));
             when(templateService.placeInRubriques(eq("mariage"), eq(List.of("lieu", "musique-animation")),
                     eq(List.of(dj)), any())).thenReturn(placed);
@@ -636,94 +632,6 @@ class EvenementServiceTest {
         }
     }
 
-    // ── GetEventCounts ────────────────────────────────────────────────────────
-
-    @Nested
-    class GetEventCounts {
-
-        @Test
-        void givenNoActiveReservation_whenGetEventCounts_thenMoodIsDefaut() {
-            Evenement event = ownerEvent(b -> b);
-            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            when(reservationService.getStatusCountsByEvenement(EVENT_ID)).thenReturn(Map.of());
-
-            EventCountsDto result = evenementService.getEventCounts(EVENT_ID, USER_ID);
-
-            assertThat(result).isEqualTo(new EventCountsDto("defaut", 0, 0, 0, 0, 0, 0));
-        }
-
-        @Test
-        void givenMoreConfirmedThanOthers_whenGetEventCounts_thenMoodIsConfirmee() {
-            Evenement event = ownerEvent(b -> b);
-            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            when(reservationService.getStatusCountsByEvenement(EVENT_ID)).thenReturn(Map.of(
-                    ReservationStatus.CONFIRMED, 3,
-                    ReservationStatus.IN_DISCUSSION, 1
-            ));
-
-            EventCountsDto result = evenementService.getEventCounts(EVENT_ID, USER_ID);
-
-            assertThat(result.mood()).isEqualTo("confirmee");
-            assertThat(result.confirmedCount()).isEqualTo(3);
-            assertThat(result.inDiscussionCount()).isEqualTo(1);
-        }
-
-        @Test
-        void givenInDiscussionButNotEnoughConfirmed_whenGetEventCounts_thenMoodIsEnDiscussion() {
-            Evenement event = ownerEvent(b -> b);
-            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            when(reservationService.getStatusCountsByEvenement(EVENT_ID)).thenReturn(Map.of(
-                    ReservationStatus.CONFIRMED, 1,
-                    ReservationStatus.IN_DISCUSSION, 2
-            ));
-
-            assertThat(evenementService.getEventCounts(EVENT_ID, USER_ID).mood()).isEqualTo("en_discussion");
-        }
-
-        @Test
-        void givenOnlyNewReservations_whenGetEventCounts_thenMoodIsNouvelle() {
-            Evenement event = ownerEvent(b -> b);
-            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            when(reservationService.getStatusCountsByEvenement(EVENT_ID)).thenReturn(Map.of(
-                    ReservationStatus.NEW, 2
-            ));
-
-            assertThat(evenementService.getEventCounts(EVENT_ID, USER_ID).mood()).isEqualTo("nouvelle");
-        }
-
-        @Test
-        void givenRefusedAndCanceledCounts_whenGetEventCounts_thenSumsBothVariants() {
-            Evenement event = ownerEvent(b -> b);
-            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            when(reservationService.getStatusCountsByEvenement(EVENT_ID)).thenReturn(Map.of(
-                    ReservationStatus.REFUSED_PRE_CONTACT, 1,
-                    ReservationStatus.REFUSED_POST_CONTACT, 2,
-                    ReservationStatus.CANCELED_BY_CLIENT_PRE_CONTACT, 1,
-                    ReservationStatus.CANCELED_BY_CLIENT_POST_CONTACT, 1,
-                    ReservationStatus.CANCELED_BY_CLIENT_POST_CONFIRMATION, 1,
-                    ReservationStatus.CANCELED_BY_PRO_POST_CONFIRMATION, 1,
-                    ReservationStatus.DONE, 5
-            ));
-
-            EventCountsDto result = evenementService.getEventCounts(EVENT_ID, USER_ID);
-
-            assertThat(result.refuseeCount()).isEqualTo(3);
-            assertThat(result.annuleeCount()).isEqualTo(4);
-            assertThat(result.realiseeCount()).isEqualTo(5);
-        }
-
-        @Test
-        void givenWrongUser_whenGetEventCounts_thenThrowsNotAllowedException() {
-            Utilisateur otherOwner = mock(Utilisateur.class);
-            when(otherOwner.getId()).thenReturn(UUID.randomUUID());
-            Evenement event = Evenement.builder().id(EVENT_ID).utilisateur(otherOwner).date(LocalDate.now()).build();
-            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-
-            assertThatThrownBy(() -> evenementService.getEventCounts(EVENT_ID, USER_ID))
-                    .isInstanceOf(EvenementNotAllowedException.class);
-        }
-    }
-
     // ── SelectCover ───────────────────────────────────────────────────────────
 
     @Nested
@@ -780,70 +688,6 @@ class EvenementServiceTest {
 
             assertThatThrownBy(() -> evenementService.selectCover(EVENT_ID, USER_ID, "bank/plage.jpg"))
                     .isInstanceOf(EvenementNotAllowedException.class);
-        }
-    }
-
-    // ── VerifyEventOwnership ──────────────────────────────────────────────────
-
-    @Nested
-    class VerifyEventOwnership {
-
-        @Test
-        void givenOwner_whenVerifyEventOwnership_thenNoException() {
-            Evenement event = ownerEvent(b -> b);
-            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-
-            assertThatNoException().isThrownBy(() -> evenementService.verifyEventOwnership(EVENT_ID, USER_ID));
-        }
-
-        @Test
-        void givenWrongUser_whenVerifyEventOwnership_thenThrowsNotAllowedException() {
-            Utilisateur otherOwner = mock(Utilisateur.class);
-            when(otherOwner.getId()).thenReturn(UUID.randomUUID());
-            Evenement event = Evenement.builder().id(EVENT_ID).utilisateur(otherOwner).date(LocalDate.now()).build();
-            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-
-            assertThatThrownBy(() -> evenementService.verifyEventOwnership(EVENT_ID, USER_ID))
-                    .isInstanceOf(EvenementNotAllowedException.class);
-        }
-    }
-
-    // ── Countdown (via GetEvent, computeCountdown est privé) ───────────
-
-    @Nested
-    class Countdown {
-
-        @Test
-        void givenNoDate_whenGetEvent_thenCountdownIsSerein() {
-            Evenement event = ownerEvent(b -> b.date(null));
-            whenEventFound(event);
-
-            evenementService.getEvent(EVENT_ID, USER_ID);
-
-            verify(evenementMapper).toMetaDto(eq(event), eq("serein"), any());
-        }
-
-        @Test
-        void givenPastDate_whenGetEvent_thenCountdownIsPast() {
-            Evenement event = ownerEvent(b -> b.date(LocalDate.now().minusDays(1)));
-            whenEventFound(event);
-
-            evenementService.getEvent(EVENT_ID, USER_ID);
-
-            verify(evenementMapper).toMetaDto(eq(event), eq("past"), any());
-        }
-
-        // Jours avant l'événement → compte à rebours : moins de 30 jours imminent, moins de 90
-        // jours proche, au-delà serein.
-        @ParameterizedTest
-        @CsvSource({ "10, imminent", "60, proche", "200, serein" })
-        void givenFutureDate_whenGetEvent_thenCountdownDependsOnDaysLeft(int daysLeft, String countdown) {
-            Evenement event = ownerEvent(b -> b.date(LocalDate.now().plusDays(daysLeft)));
-            whenEventFound(event);
-
-            evenementService.getEvent(EVENT_ID, USER_ID);
-
-            verify(evenementMapper).toMetaDto(eq(event), eq(countdown), any());
         }
     }
 }

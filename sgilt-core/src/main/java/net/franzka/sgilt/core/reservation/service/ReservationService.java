@@ -90,21 +90,6 @@ public class ReservationService {
     }
 
     /**
-     * Retourne le nombre de réservations par statut pour un événement.
-     * Données brutes — la construction du DTO et le calcul du mood sont à la charge de l'appelant.
-     *
-     * @param evenementId l'identifiant de l'événement
-     * @return une map statut → nombre de réservations
-     */
-    public Map<ReservationStatus, Integer> getStatusCountsByEvenement(UUID evenementId) {
-        List<Reservation> reservations = reservationRepository.findByEvenementId(evenementId);
-        return reservations.stream()
-            .collect(
-                    Collectors.groupingBy(
-                            Reservation::getStatus, Collectors.summingInt(r -> 1)));
-    }
-
-    /**
      * Retourne le nombre de réservations par statut pour un prestataire.
      * Données brutes — la construction du DTO est à la charge de l'appelant.
      *

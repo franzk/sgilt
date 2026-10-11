@@ -1,6 +1,7 @@
 import { markRaw, type Component } from 'vue'
 import {
   Building2Icon,
+  CameraIcon,
   FlowerIcon,
   FolderIcon,
   HotelBedIcon,
@@ -18,6 +19,7 @@ const RUBRIQUE_ICONS: Partial<Record<string, Component>> = {
   restauration: markRaw(RestaurantIcon),
   'musique-animation': markRaw(Music2Icon),
   decoration: markRaw(FlowerIcon),
+  'photo-video': markRaw(CameraIcon),
   hebergement: markRaw(HotelBedIcon),
 }
 const DEFAULT_RUBRIQUE_ICON = markRaw(FolderIcon)
@@ -29,6 +31,7 @@ const RUBRIQUE_ACCENTS: Partial<Record<string, string>> = {
   restauration: '#d68c00',
   'musique-animation': '#b0447e',
   decoration: '#5a8f6b',
+  'photo-video': '#4a6fa5',
   hebergement: '#2f6f73',
 }
 const DEFAULT_RUBRIQUE_ACCENT = '#6b6b6b'

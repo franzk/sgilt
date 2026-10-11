@@ -8,7 +8,6 @@ import net.franzka.sgilt.core.evenement.dto.CreateEventInConnectedFlowDemandeReq
 import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
 import net.franzka.sgilt.core.evenement.dto.EvenementDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
-import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
 import net.franzka.sgilt.core.evenement.dto.EventDto;
 import net.franzka.sgilt.core.evenement.dto.EventMetaDto;
 import net.franzka.sgilt.core.evenement.dto.EventMetaPatchDto;
@@ -46,9 +45,6 @@ public interface EvenementApi {
 
     @PatchMapping("/{eventId}")
     ResponseEntity<EventMetaDto> patchEvent(@PathVariable UUID eventId, @RequestBody EventMetaPatchDto patch);
-
-    @GetMapping("/{eventId}/counts")
-    ResponseEntity<EventCountsDto> getEventCounts(@PathVariable UUID eventId);
 
     @GetMapping("/{eventId}/journal")
     ResponseEntity<Page<JournalEvenementDto>> getJournal(

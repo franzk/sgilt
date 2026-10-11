@@ -34,9 +34,8 @@ public interface EvenementMapper {
     @Mapping(source = "evenement.momentCle",    target = "momentCle")
     @Mapping(source = "evenement.utilisateur",  target = "clientInfo")
     @Mapping(source = "evenement.imagePath",    target = "imagePath")
-    @Mapping(source = "countdown",              target = "countdown")
     @Mapping(source = "lastUpdateDate",         target = "lastUpdateDate")
-    EventMetaDto toMetaDto(Evenement evenement, String countdown, LocalDateTime lastUpdateDate);
+    EventMetaDto toMetaDto(Evenement evenement, LocalDateTime lastUpdateDate);
 
     /**
      * Mappe un événement complet (pas encore créé) vers l'entité, en statut ACTIVE, avec les

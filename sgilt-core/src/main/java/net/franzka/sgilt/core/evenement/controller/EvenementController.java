@@ -10,7 +10,6 @@ import net.franzka.sgilt.core.evenement.dto.CreateEventInConnectedFlowDemandeReq
 import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
 import net.franzka.sgilt.core.evenement.dto.EvenementDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
-import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
 import net.franzka.sgilt.core.evenement.dto.EventDto;
 import net.franzka.sgilt.core.evenement.dto.EventMetaDto;
 import net.franzka.sgilt.core.evenement.dto.EventMetaPatchDto;
@@ -78,14 +77,6 @@ public class EvenementController implements EvenementApi {
         UUID userId = currentUserService.getId();
         log.info("PATCH /events/{}", eventId);
         return ResponseEntity.ok(evenementService.patchEvent(eventId, userId, patch));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public ResponseEntity<EventCountsDto> getEventCounts(UUID eventId) {
-        UUID userId = currentUserService.getId();
-        log.info("GET /events/{}/counts", eventId);
-        return ResponseEntity.ok(evenementService.getEventCounts(eventId, userId));
     }
 
     @Override

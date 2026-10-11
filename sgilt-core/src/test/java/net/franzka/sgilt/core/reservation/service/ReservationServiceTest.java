@@ -506,29 +506,6 @@ class ReservationServiceTest {
     }
 
     // -------------------------------------------------------------------------
-    // getStatusCountsByEvenement
-    // -------------------------------------------------------------------------
-
-    @Nested
-    class GetStatusCountsByEvenement {
-
-        @Test
-        void givenMixedStatuses_whenGetStatusCountsByEvenement_thenGroupsByStatus() {
-            when(reservationRepository.findByEvenementId(EVENT_ID)).thenReturn(List.of(
-                    reservationWith(ReservationStatus.CONFIRMED),
-                    reservationWith(ReservationStatus.CONFIRMED),
-                    reservationWith(ReservationStatus.NEW)
-            ));
-
-            Map<ReservationStatus, Integer> result = reservationService.getStatusCountsByEvenement(EVENT_ID);
-
-            assertThat(result)
-                    .containsEntry(ReservationStatus.CONFIRMED, 2)
-                    .containsEntry(ReservationStatus.NEW, 1);
-        }
-    }
-
-    // -------------------------------------------------------------------------
     // getReservationSummaries
     // -------------------------------------------------------------------------
 

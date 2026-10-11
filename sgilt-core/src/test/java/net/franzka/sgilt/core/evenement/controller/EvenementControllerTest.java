@@ -7,7 +7,6 @@ import net.franzka.sgilt.core.evenement.dto.CreateEventInConnectedFlowDemandeReq
 import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
 import net.franzka.sgilt.core.evenement.dto.EvenementDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
-import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
 import net.franzka.sgilt.core.evenement.dto.EventDto;
 import net.franzka.sgilt.core.evenement.dto.EventMetaDto;
 import net.franzka.sgilt.core.evenement.dto.EventMetaPatchDto;
@@ -137,23 +136,6 @@ class EvenementControllerTest {
             when(evenementService.patchEvent(eventId, userId, patch)).thenReturn(dto);
 
             assertThat(controller.patchEvent(eventId, patch).getBody()).isEqualTo(dto);
-        }
-    }
-
-    // -------------------------------------------------------------------------
-    // getEventCounts
-    // -------------------------------------------------------------------------
-
-    @Nested
-    class GetEventCounts {
-
-        @Test
-        void givenEventId_whenGetEventCounts_thenReturnsCounts() {
-            when(currentUserService.getId()).thenReturn(userId);
-            EventCountsDto dto = mock(EventCountsDto.class);
-            when(evenementService.getEventCounts(eventId, userId)).thenReturn(dto);
-
-            assertThat(controller.getEventCounts(eventId).getBody()).isEqualTo(dto);
         }
     }
 

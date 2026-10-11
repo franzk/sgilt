@@ -2,7 +2,7 @@ Feature: Parcours événement — création, ajout de prestataires, édition, jo
 
   Un client déjà authentifié crée un événement (indépendamment de l'onboarding) en ciblant un premier
   prestataire, y ajoute un second prestataire, édite les informations de l'événement, puis consulte
-  les compteurs et le journal des modifications — avec les vraies règles d'accès : propriétaire de
+  ses réservations et le journal des modifications — avec les vraies règles d'accès : propriétaire de
   l'événement, mais aussi tout prestataire qui y a une réservation (pour le journal uniquement).
 
   Background:
@@ -36,15 +36,12 @@ Feature: Parcours événement — création, ajout de prestataires, édition, jo
     When method GET
     Then status 200
     And match response.meta.ville == 'Marseille'
-    # La réservation initiale est rangée dans une rubrique de l'événement
-    And match response.rubriques[*].reservations[*].prestataireId contains prestataireId
-
-    # Conséquence : la création de l'événement a aussi créé sa réservation initiale
-    Given path '/api/v1/user/events/' + eventId + '/counts'
-    And header Authorization = 'Bearer ' + tokenUser
-    When method GET
-    Then status 200
-    And match response.nouvelleCount == 1
+    # Conséquence : la création de l'événement a aussi créé sa réservation initiale, rangée dans
+    # une rubrique de l'événement
+    * def reservations = karate.jsonPath(response, '$.rubriques[*].reservations[*]')
+    And match reservations == '#[1]'
+    And match reservations[0].prestataireId == prestataireId
+    And match reservations[0].status == 'nouvelle'
 
     # Un autre client (pas propriétaire) n'a pas accès à cet événement
     Given path '/api/v1/user/events/' + eventId
@@ -65,11 +62,13 @@ Feature: Parcours événement — création, ajout de prestataires, édition, jo
     When method POST
     Then status 201
 
-    Given path '/api/v1/user/events/' + eventId + '/counts'
+    Given path '/api/v1/user/events/' + eventId
     And header Authorization = 'Bearer ' + tokenUser
     When method GET
     Then status 200
-    And match response.nouvelleCount == 2
+    * def reservations = karate.jsonPath(response, '$.rubriques[*].reservations[*]')
+    And match reservations == '#[2]'
+    And match each reservations contains { status: 'nouvelle' }
 
     # ── 3. Le client édite l'événement ────────────────────────────────────────────────────────────
     Given path '/api/v1/user/events/' + eventId

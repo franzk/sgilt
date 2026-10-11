@@ -9,7 +9,6 @@ import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
 import net.franzka.sgilt.core.evenement.dto.DemandeInitieeDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
-import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
 import net.franzka.sgilt.core.evenement.dto.EventDto;
 import net.franzka.sgilt.core.evenement.dto.EventMetaDto;
 import net.franzka.sgilt.core.evenement.dto.EventMetaPatchDto;
@@ -22,7 +21,6 @@ import net.franzka.sgilt.core.evenement.mapper.EvenementMapper;
 import net.franzka.sgilt.core.evenement.repository.EvenementRepository;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
-import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
 import net.franzka.sgilt.core.storage.FileStorageException;
@@ -36,11 +34,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -87,7 +83,7 @@ public class EvenementService {
     public EventDto getEvent(UUID eventId, UUID utilisateurId) {
         Evenement event = getOwnedEvent(eventId, utilisateurId);
         LocalDateTime lastUpdateDate = journalEvenementService.derniereModification(eventId).orElse(null);
-        EventMetaDto meta = evenementMapper.toMetaDto(event, computeCountdown(event.getDate()), lastUpdateDate);
+        EventMetaDto meta = evenementMapper.toMetaDto(event, lastUpdateDate);
         return new EventDto(meta, rubriquesWithReservations(event));
     }
 
@@ -100,32 +96,6 @@ public class EvenementService {
                 .entrySet().stream()
                 .map(rubrique -> new EventRubriqueDto(rubrique.getKey(), rubrique.getValue()))
                 .toList();
-    }
-
-    /**
-     * Retourne les compteurs de réservations et le mood pour l'EventBoard.
-     *
-     * @param eventId       l'identifiant de l'événement
-     * @param utilisateurId l'identifiant de l'utilisateur connecté
-     * @return les compteurs par statut et le mood calculé
-     * @throws EvenementNotFoundException   si l'événement n'existe pas
-     * @throws EvenementNotAllowedException si l'événement n'appartient pas à l'utilisateur connecté
-     */
-    public EventCountsDto getEventCounts(UUID eventId, UUID utilisateurId) {
-        getOwnedEvent(eventId, utilisateurId); // vérifie que l'événement appartient bien à l'utilisateur
-        return buildEventCounts(reservationService.getStatusCountsByEvenement(eventId));
-    }
-
-    /**
-     * Vérifie que l'utilisateur est bien le propriétaire de l'événement.
-     *
-     * @param eventId       l'identifiant de l'événement
-     * @param utilisateurId l'identifiant de l'utilisateur connecté
-     * @throws EvenementNotFoundException   si l'événement n'existe pas
-     * @throws EvenementNotAllowedException si l'événement n'appartient pas à l'utilisateur connecté
-     */
-    public void verifyEventOwnership(UUID eventId, UUID utilisateurId) {
-        getOwnedEvent(eventId, utilisateurId);
     }
 
     /**
@@ -221,7 +191,7 @@ public class EvenementService {
         evenementRepository.save(event);
         journalEvenementService.save(event, modifications);
         LocalDateTime lastUpdateDate = journalEvenementService.derniereModification(eventId).orElse(null);
-        return evenementMapper.toMetaDto(event, computeCountdown(event.getDate()), lastUpdateDate);
+        return evenementMapper.toMetaDto(event, lastUpdateDate);
     }
 
     private List<ModificationChamp> computeModifications(Evenement event, EventMetaPatchDto patch) {
@@ -355,44 +325,6 @@ public class EvenementService {
                 .orElseThrow(EvenementNotFoundException::new);
     }
 
-    /**
-     * Mappe les comptes par statuts d'un événement en un DTO de compteurs et mood pour l'EventBoard.
-     *
-     * @param counts les comptes par statut de réservation pour un événement
-     * @return un DTO contenant les compteurs et le mood calculé
-     */
-    private EventCountsDto buildEventCounts(Map<ReservationStatus, Integer> counts) {
-        int confirmed    = counts.getOrDefault(ReservationStatus.CONFIRMED, 0);
-        int inDiscussion = counts.getOrDefault(ReservationStatus.IN_DISCUSSION, 0);
-        int nouvelle     = counts.getOrDefault(ReservationStatus.NEW, 0);
-        int refusee      = counts.getOrDefault(ReservationStatus.REFUSED_PRE_CONTACT, 0)
-                         + counts.getOrDefault(ReservationStatus.REFUSED_POST_CONTACT, 0);
-        int annulee      = counts.getOrDefault(ReservationStatus.CANCELED_BY_CLIENT_PRE_CONTACT, 0)
-                         + counts.getOrDefault(ReservationStatus.CANCELED_BY_CLIENT_POST_CONTACT, 0)
-                         + counts.getOrDefault(ReservationStatus.CANCELED_BY_CLIENT_POST_CONFIRMATION, 0)
-                         + counts.getOrDefault(ReservationStatus.CANCELED_BY_PRO_POST_CONFIRMATION, 0);
-        int realisee     = counts.getOrDefault(ReservationStatus.DONE, 0);
-
-        return new EventCountsDto(computeMood(confirmed, inDiscussion, nouvelle),
-                confirmed, inDiscussion, nouvelle, refusee, annulee, realisee);
-    }
-
-    /**
-     * calcule le mood pour l'EventBoard.
-     *
-     * @param confirmed nombre de réservations confirmées
-     * @param inDiscussion nombre de réservations en discussion
-     * @param nouvelle nombre de réservations nouvelles en attente de recontact par le prestataire
-     * @return le mood calculé : "confirmee", "en_discussion", "nouvelle" ou "defaut"
-     */
-    private String computeMood(int confirmed, int inDiscussion, int nouvelle) {
-        int active = confirmed + inDiscussion + nouvelle;
-        if (active == 0)                         return "defaut";
-        if (confirmed > inDiscussion + nouvelle) return "confirmee";
-        if (inDiscussion > 0)                    return "en_discussion";
-        return "nouvelle";
-    }
-
     private String defaultName(LocalDate date) {
         if (date == null) return "Mon événement";
         String month = date.format(DateTimeFormatter.ofPattern("MMMM", Locale.FRENCH));
@@ -404,12 +336,4 @@ public class EvenementService {
         return s.substring(0, 1).toUpperCase() + s.substring(1);
     }
 
-    private String computeCountdown(LocalDate eventDate) {
-        if (eventDate == null) return "serein";
-        long days = ChronoUnit.DAYS.between(LocalDate.now(), eventDate);
-        if (days < 0)  return "past";
-        if (days < 30) return "imminent";
-        if (days < 90) return "proche";
-        return "serein";
-    }
 }

@@ -18,13 +18,14 @@ Feature: Parcours réservation — le prestataire refuse une demande
     Then status 201
     * def eventId = response.eventId
 
-    Given path '/api/v1/user/reservations'
+    # Les réservations de l'événement sont lues dans ses rubriques
+    Given path '/api/v1/user/events/' + eventId
     And header Authorization = 'Bearer ' + tokenUser
-    And param eventId = eventId
     When method GET
     Then status 200
-    * def reservationId = response[0].id
-    And match response[0].status == 'nouvelle'
+    * def reservations = karate.jsonPath(response, '$.rubriques[*].reservations[*]')
+    * def reservationId = reservations[0].id
+    And match reservations[0].status == 'nouvelle'
 
     # ── 2. Le prestataire (propriétaire de la fiche ciblée) refuse la demande ─────────────────────
     Given path '/api/v1/pro/reservations/' + reservationId + '/refuse'
@@ -79,12 +80,13 @@ Feature: Parcours réservation — le prestataire refuse une demande
     Then status 201
     * def secondEventId = response.eventId
 
-    Given path '/api/v1/user/reservations'
+    # Les réservations de l'événement sont lues dans ses rubriques
+    Given path '/api/v1/user/events/' + secondEventId
     And header Authorization = 'Bearer ' + tokenUser
-    And param eventId = secondEventId
     When method GET
     Then status 200
-    * def secondReservationId = response[0].id
+    * def reservations = karate.jsonPath(response, '$.rubriques[*].reservations[*]')
+    * def secondReservationId = reservations[0].id
 
     Given path '/api/v1/pro/reservations/' + secondReservationId + '/refuse'
     And header Authorization = 'Bearer ' + tokenPro

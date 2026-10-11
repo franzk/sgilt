@@ -73,7 +73,7 @@ class EvenementMapperTest {
     class ToMetaDto {
 
         @Test
-        void givenEvenementCountdownAndLastUpdate_whenToMetaDto_thenMapsAllFields() {
+        void givenEvenementAndLastUpdate_whenToMetaDto_thenMapsAllFields() {
             Utilisateur utilisateur = Utilisateur.builder()
                     .firstName("Sophie").lastName("Leroy").phone("0102030405").email("sophie@sgilt.fr").build();
             Evenement evenement = Evenement.builder()
@@ -83,12 +83,12 @@ class EvenementMapperTest {
                     .description("Description").momentCle("Vin d'honneur").utilisateur(utilisateur).build();
             LocalDateTime lastUpdate = LocalDateTime.of(2027, 5, 1, 10, 0);
 
-            EventMetaDto dto = mapper.toMetaDto(evenement, "imminent", lastUpdate);
+            EventMetaDto dto = mapper.toMetaDto(evenement, lastUpdate);
 
             assertThat(dto).isEqualTo(new EventMetaDto(
                     evenement.getId(), "Anniversaire de Paul", LocalDate.of(2027, 6, 15), "Anniversaire",
                     "Champetre", "Lyon", "Domaine des fleurs", "80", "cover.jpg", "Note partagee",
-                    "Description", "Vin d'honneur", "imminent", lastUpdate,
+                    "Description", "Vin d'honneur", lastUpdate,
                     new ClientInfoDto("Sophie", "Leroy", "0102030405", "sophie@sgilt.fr")));
         }
 
@@ -96,7 +96,7 @@ class EvenementMapperTest {
         void givenNoLastUpdateDate_whenToMetaDto_thenLastUpdateDateIsNull() {
             Evenement evenement = Evenement.builder().id(UUID.randomUUID()).title("Anniversaire").build();
 
-            EventMetaDto dto = mapper.toMetaDto(evenement, "serein", null);
+            EventMetaDto dto = mapper.toMetaDto(evenement, null);
 
             assertThat(dto.lastUpdateDate()).isNull();
         }

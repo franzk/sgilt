@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * Métadonnées d'un événement pour l'EventBoard : ses données, son compte à rebours, sa dernière
- * modification et les coordonnées de son propriétaire.
+ * Métadonnées d'un événement pour l'EventBoard : ses données, sa dernière modification et les
+ * coordonnées de son propriétaire.
  */
 public record EventMetaDto(
         UUID id,
@@ -21,7 +21,6 @@ public record EventMetaDto(
         String sharedNote,
         String description,
         String momentCle,
-        String countdown,
         LocalDateTime lastUpdateDate,
         ClientInfoDto clientInfo
 ) {}

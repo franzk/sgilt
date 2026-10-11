@@ -179,6 +179,7 @@
       "restauration": "Restauration",
       "musique-animation": "Musique / Animation",
       "decoration": "Décoration",
+      "photo-video": "Photo / Vidéo",
       "hebergement": "Hébergement",
       "reservation-count": "{n} réservation | {n} réservations"
     },
@@ -194,28 +195,27 @@
       "content": {
         "lieu": {
           "tagline": "Domaine, salle, extérieur… Trouvez le lieu qui vous ressemble.",
-          "already": "J'ai déjà mon lieu",
-          "tip": "Le lieu est souvent le premier choix : il débloque le reste de l'organisation."
+          "already": "J'ai déjà mon lieu"
         },
         "restauration": {
           "tagline": "Traiteur, food truck, cocktail… Régalez vos invités.",
-          "already": "J'ai déjà mon traiteur",
-          "tip": "Les traiteurs les plus demandés se réservent longtemps à l'avance : ne tardez pas trop."
+          "already": "J'ai déjà mon traiteur"
         },
         "musique-animation": {
           "tagline": "DJ, musiciens, animations… Donnez le rythme à votre fête.",
-          "already": "J'ai déjà mon animation",
-          "tip": "Partagez vos incontournables (et vos interdits !) avec votre DJ ou vos musiciens."
+          "already": "J'ai déjà mon animation"
         },
         "decoration": {
-          "tagline": "Fleurs, lumières, mobilier… Créez une ambiance à votre image.",
-          "already": "J'ai déjà ma décoration",
-          "tip": "Choisissez votre lieu avant la décoration : c'est lui qui guide les couleurs et le style."
+          "tagline": "Créez une ambiance à votre image.",
+          "already": "J'ai déjà ma décoration"
+        },
+        "photo-video": {
+          "tagline": "Photographe, vidéaste, photobooth… Gardez une trace de chaque instant.",
+          "already": "J'ai déjà mon photographe"
         },
         "hebergement": {
           "tagline": "Gîtes, hôtels, chambres d'hôtes… Gardez vos invités près de vous.",
-          "already": "J'ai déjà mon hébergement",
-          "tip": "Réservez des chambres tôt près du lieu : vos invités venus de loin vous remercieront."
+          "already": "J'ai déjà mon hébergement"
         }
       }
     }
