@@ -37,6 +37,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -111,7 +112,22 @@ public class EvenementService {
     public void addReservation(UUID eventId, Utilisateur utilisateur, UUID prestataireId, String message) {
         Evenement event = getOwnedEvent(eventId, utilisateur.getId());
         Prestataire prestataire = prestataireService.getById(prestataireId);
-        reservationService.create(event, prestataire, utilisateur, event.getDate(), message);
+        String rubriqueKey = templateService.rubriqueOf(event.getEventType(), prestataire.getSubcatKey());
+        addRubrique(event, rubriqueKey); // si la catégorie du la sous catégorie du prestataire n'a pas de rubrique correspondante dans l'événement, on l'ajoute à la fin de la liste des rubriques
+        reservationService.create(event, prestataire, utilisateur, event.getDate(), message, rubriqueKey);
+    }
+
+    // Ajoute à l'événement la rubrique où entre une réservation, si elle n'y est pas encore, à la
+    // position que lui donne le template. Les rubriques déjà présentes restent telles quelles.
+    private void addRubrique(Evenement event, String rubriqueKey) {
+        List<String> keys = event.getRubriques().stream().map(EvenementRubrique::key).toList();
+        if (keys.contains(rubriqueKey)) return;
+
+        int position = templateService.insertionPosition(event.getEventType(), keys, rubriqueKey);
+        List<EvenementRubrique> rubriques = new ArrayList<>(event.getRubriques());
+        rubriques.add(position, new EvenementRubrique(rubriqueKey));
+        event.setRubriques(rubriques);
+        evenementRepository.save(event);
     }
 
     /**
@@ -162,16 +178,18 @@ public class EvenementService {
 
     /**
      * Crée une réservation pour chaque demande initiée rangée dans les rubriques d'un événement
-     * qui vient d'être créé, au nom de son propriétaire et pour sa date.
+     * qui vient d'être créé, au nom de son propriétaire et pour sa date. Chaque réservation garde
+     * la rubrique de sa demande.
      *
      * @param evenement l'événement créé
      * @param rubriques ses rubriques telles que transmises, avec leurs demandes initiées
      */
     private void createReservationsFromDemandesInitiees(Evenement evenement, List<RubriqueDto> rubriques) {
-        RubriqueDto.demandesInitiees(rubriques)
+        if (rubriques == null) return;
+        rubriques.forEach(rubrique -> Objects.requireNonNullElse(rubrique.reservations(), List.<DemandeInitieeDto>of())
                 .forEach(demande -> reservationService.create(evenement,
                         prestataireService.getById(demande.prestataireId()),
-                        evenement.getUtilisateur(), evenement.getDate(), demande.message()));
+                        evenement.getUtilisateur(), evenement.getDate(), demande.message(), rubrique.key())));
     }
 
     /**

@@ -54,12 +54,13 @@ public final class Fixtures {
         return id;
     }
 
-    public UUID insertReservation(UUID evenementId, UUID prestataireId, UUID utilisateurId, LocalDate date, String status) {
+    public UUID insertReservation(UUID evenementId, UUID prestataireId, UUID utilisateurId, LocalDate date, String status,
+                                  String rubriqueKey) {
         UUID id = UUID.randomUUID();
         update("""
-                INSERT INTO reservations (id, evenement_id, prestataire_id, utilisateur_id, date, status, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?::reservation_status, now(), now())
-                """, id, evenementId, prestataireId, utilisateurId, date, status);
+                INSERT INTO reservations (id, evenement_id, prestataire_id, utilisateur_id, date, status, rubrique_key, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?::reservation_status, ?, now(), now())
+                """, id, evenementId, prestataireId, utilisateurId, date, status, rubriqueKey);
         return id;
     }
 

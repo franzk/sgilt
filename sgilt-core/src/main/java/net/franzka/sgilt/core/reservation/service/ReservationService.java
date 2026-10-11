@@ -125,13 +125,15 @@ public class ReservationService {
      * @param utilisateur    l'utilisateur à l'origine de la réservation
      * @param date           la date souhaitée pour la prestation
      * @param initialMessage le message initial adressé au prestataire (peut être null)
+     * @param rubriqueKey    la rubrique de l'événement où la réservation est rangée
      * @return la réservation sauvegardée
      */
     public Reservation create(Evenement evenement,
                               Prestataire prestataire,
                               Utilisateur utilisateur,
                               LocalDate date,
-                              String initialMessage
+                              String initialMessage,
+                              String rubriqueKey
     ) {
         Reservation reservation = Reservation.builder()
                 .evenement(evenement)
@@ -139,6 +141,7 @@ public class ReservationService {
                 .utilisateur(utilisateur)
                 .date(date)
                 .status(ReservationStatus.NEW)
+                .rubriqueKey(rubriqueKey)
                 .build();
         reservation = reservationRepository.save(reservation);
 

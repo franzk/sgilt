@@ -73,10 +73,9 @@ public class TemplateService {
 
     /**
      * Range des éléments dans les rubriques d'un événement. Chaque élément va dans la rubrique de
-     * sa sous-catégorie : celle du template qui regroupe la sous-catégorie, sinon celle qui
-     * regroupe sa catégorie entière, sinon {@value #RUBRIQUE_AUTRE}. Les rubriques données gardent
-     * leur ordre (vides comprises) ; celles qui reçoivent un élément sans y être sont ajoutées en
-     * fin, {@value #RUBRIQUE_AUTRE} en dernier.
+     * sa sous-catégorie (voir {@link #rubriqueOf}). Les rubriques données gardent leur ordre (vides
+     * comprises) ; celles qui reçoivent un élément sans y être sont ajoutées en fin,
+     * {@value #RUBRIQUE_AUTRE} en dernier.
      *
      * @param eventType    le type d'événement (son template donne la règle de rangement)
      * @param rubriqueKeys les rubriques de départ, dans l'ordre d'affichage
@@ -88,16 +87,16 @@ public class TemplateService {
      */
     public <T> Map<String, List<T>> placeInRubriques(String eventType, List<String> rubriqueKeys,
                                                      List<T> items, Function<T, String> subcatOf) {
-        // 1 — on récupère les rubriques du template du type d'événement : pas pour savoir quelles
-        // rubriques rendre (ce sont rubriqueKeys), mais pour la règle de rangement — c'est le
-        // template qui dit quelle rubrique regroupe quelles catégories et sous-catégories.
-        List<TemplateRubrique> templateRubriques = findTemplate(eventType).map(Template::rubriques).orElse(List.of());
+        // 1 — on récupère les templates : pas pour savoir quelles rubriques rendre (ce sont
+        // rubriqueKeys), mais pour la règle de rangement — ce sont eux qui disent quelle rubrique
+        // regroupe quelles catégories et sous-catégories.
+        List<Template> templates = loadTemplates();
 
         // 2 — on regroupe les éléments par rubrique : pour chaque élément, sa sous-catégorie
-        // (subcatOf) donne sa rubrique (rubriqueKeyOf).
+        // (subcatOf) donne sa rubrique (rubriqueOf).
         Map<String, List<T>> itemsByRubrique = items.stream()
                 .collect(Collectors.groupingBy(
-                        item -> rubriqueKeyOf(templateRubriques, subcatOf.apply(item)),  // 1. la clé de groupe : la rubrique de l'élément
+                        item -> rubriqueOf(templates, eventType, subcatOf.apply(item)),  // 1. la clé de groupe : la rubrique de l'élément
                         LinkedHashMap::new,                                              // 2. la Map à créer pour stocker les groupes
                         Collectors.toList()));                                           // 3. ce qu'on met dans chaque groupe : une liste
 
@@ -116,9 +115,70 @@ public class TemplateService {
         return placed;
     }
 
-    // Rubrique d'une sous-catégorie parmi les rubriques du template (règle de placeInRubriques).
-    private String rubriqueKeyOf(List<TemplateRubrique> rubriques, String subcatKey) {
+    /**
+     * Retourne la rubrique où entre une sous-catégorie dans un événement du type donné : celle du
+     * template du type qui regroupe la sous-catégorie, sinon sa catégorie entière ; à défaut, la
+     * même recherche dans tous les templates (catalogue des rubriques connues) ; sinon
+     * {@value #RUBRIQUE_AUTRE}.
+     *
+     * @param eventType le type d'événement
+     * @param subcatKey la sous-catégorie (celle du prestataire d'une réservation…)
+     * @return la clé de la rubrique
+     * @throws SousCategorieNotFoundException si la sous-catégorie n'existe pas
+     */
+    public String rubriqueOf(String eventType, String subcatKey) {
+        return rubriqueOf(loadTemplates(), eventType, subcatKey);
+    }
+
+    /**
+     * Retourne la position où insérer une rubrique qui manque à un événement : à son rang si elle
+     * vient du template du type (avant la première rubrique présente qui la suit dans le template),
+     * en fin sinon ; toujours avant {@value #RUBRIQUE_AUTRE}, qui reste en dernier.
+     *
+     * @param eventType    le type d'événement (son template donne le rang des rubriques)
+     * @param rubriqueKeys les rubriques de l'événement, dans l'ordre d'affichage (sans la rubrique à insérer)
+     * @param rubriqueKey  la rubrique à insérer (celle d'une réservation qui entre…)
+     * @return la position d'insertion dans rubriqueKeys
+     */
+    public int insertionPosition(String eventType, List<String> rubriqueKeys, String rubriqueKey) {
+        // RUBRIQUE_AUTRE va toujours en dernier.
+        if (RUBRIQUE_AUTRE.equals(rubriqueKey)) return rubriqueKeys.size();
+
+        // Rubrique du template : avant la première rubrique présente qui la suit dans le template.
+        List<String> templateKeys = findTemplate(eventType).map(Template::rubriques).orElse(List.of()).stream()
+                .map(TemplateRubrique::key)
+                .toList();
+        int rankInTemplate = templateKeys.indexOf(rubriqueKey);
+        if (rankInTemplate >= 0) {
+            for (String following : templateKeys.subList(rankInTemplate + 1, templateKeys.size())) {
+                int position = rubriqueKeys.indexOf(following);
+                if (position >= 0) return position;
+            }
+        }
+
+        // Sinon (rubrique du catalogue, ou rien ne la suit) : en fin, avant RUBRIQUE_AUTRE s'il est là.
+        int autrePosition = rubriqueKeys.indexOf(RUBRIQUE_AUTRE);
+        return autrePosition >= 0 ? autrePosition : rubriqueKeys.size();
+    }
+
+    // Règle de rubriqueOf, sur des templates déjà chargés.
+    private String rubriqueOf(List<Template> templates, String eventType, String subcatKey) {
         String categoryKey = categorieService.getCategoryKeyOf(subcatKey);
+        List<TemplateRubrique> ownRubriques = templates.stream()
+                .filter(template -> template.type().equals(eventType))
+                .findFirst()
+                .map(Template::rubriques)
+                .orElse(List.of());
+        List<TemplateRubrique> catalogue = templates.stream()
+                .flatMap(template -> template.rubriques().stream())
+                .toList();
+        return findRubrique(ownRubriques, subcatKey, categoryKey)
+                .or(() -> findRubrique(catalogue, subcatKey, categoryKey))
+                .orElse(RUBRIQUE_AUTRE);
+    }
+
+    // Première rubrique qui regroupe la sous-catégorie, sinon sa catégorie entière.
+    private Optional<String> findRubrique(List<TemplateRubrique> rubriques, String subcatKey, String categoryKey) {
         return rubriques.stream()
                 .filter(rubrique -> rubrique.subcategories().contains(subcatKey))
                 .findFirst()
@@ -127,16 +187,18 @@ public class TemplateService {
                                 .filter(rubrique -> rubrique.categories().contains(categoryKey))
                                 .findFirst()
                 )
-                .map(TemplateRubrique::key)
-                .orElse(RUBRIQUE_AUTRE);
+                .map(TemplateRubrique::key);
     }
 
     private Optional<Template> findTemplate(String eventType) {
-        return templateDocumentRepository.findById(TemplateDocument.SINGLE_ID)
-                .map(TemplateDocument::getContent)
-                .orElse(List.of())
-                .stream()
+        return loadTemplates().stream()
                 .filter(template -> template.type().equals(eventType))
                 .findFirst();
+    }
+
+    private List<Template> loadTemplates() {
+        return templateDocumentRepository.findById(TemplateDocument.SINGLE_ID)
+                .map(TemplateDocument::getContent)
+                .orElse(List.of());
     }
 }

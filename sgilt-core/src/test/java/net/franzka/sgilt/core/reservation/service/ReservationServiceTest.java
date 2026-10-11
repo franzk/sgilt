@@ -232,13 +232,14 @@ class ReservationServiceTest {
                     "Sophie", "Leroy", "Anniversaire de Paul", date);
             when(reservationEventMapper.toReservationCreatedEvent(any(Reservation.class))).thenReturn(mappedEvent);
 
-            reservationService.create(evenement, prestataire, client, date, "Un message");
+            reservationService.create(evenement, prestataire, client, date, "Un message", "musique-animation");
 
             ArgumentCaptor<Reservation> reservationCaptor = ArgumentCaptor.forClass(Reservation.class);
             verify(reservationEventMapper).toReservationCreatedEvent(reservationCaptor.capture());
             assertThat(reservationCaptor.getValue().getPrestataire()).isEqualTo(prestataire);
             assertThat(reservationCaptor.getValue().getUtilisateur()).isEqualTo(client);
             assertThat(reservationCaptor.getValue().getEvenement()).isEqualTo(evenement);
+            assertThat(reservationCaptor.getValue().getRubriqueKey()).isEqualTo("musique-animation");
 
             verify(applicationEventPublisher).publishEvent(mappedEvent);
         }

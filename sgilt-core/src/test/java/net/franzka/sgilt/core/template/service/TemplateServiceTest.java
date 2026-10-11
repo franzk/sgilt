@@ -166,12 +166,110 @@ class TemplateServiceTest {
         }
 
         @Test
-        void givenTypeWithoutTemplate_whenGetEventRubriqueFromDemande_thenOnlyAutreWithTheDemande() {
+        void givenTypeWithoutTemplate_whenGetEventRubriqueFromDemande_thenOnlyTheCatalogueRubriqueWithTheDemande() {
             givenPrestataireIn("dj");
             when(categorieService.getCategoryKeyOf("dj")).thenReturn("musique");
 
             assertThat(templateService.getEventRubriqueFromDemande("anniversaire", demande))
+                    .containsExactly(new RubriqueDto("musique-animation", List.of(demande)));
+        }
+
+        @Test
+        void givenTypeWithoutTemplateAndSubcategoryInNoTemplate_whenGetEventRubriqueFromDemande_thenOnlyAutreWithTheDemande() {
+            givenPrestataireIn("video");
+            when(categorieService.getCategoryKeyOf("video")).thenReturn("services");
+
+            assertThat(templateService.getEventRubriqueFromDemande("anniversaire", demande))
                     .containsExactly(new RubriqueDto(TemplateService.RUBRIQUE_AUTRE, List.of(demande)));
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // rubriqueOf
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class RubriqueOf {
+
+        // Deux templates : mariage (BeforeEach) et anniversaire, sans rubrique de musique mais avec
+        // une rubrique « photo-video » qui regroupe la vidéo.
+        @BeforeEach
+        void givenMariageAndAnniversaireTemplates() {
+            Template anniversaire = new Template("anniversaire", List.of(
+                    new TemplateRubrique("lieu", List.of("lieu"), List.of()),
+                    new TemplateRubrique("photo-video", List.of(), List.of("video"))));
+            Template mariage = templateDocumentRepository.findById(TemplateDocument.SINGLE_ID).orElseThrow()
+                    .getContent().getFirst();
+            when(templateDocumentRepository.findById(TemplateDocument.SINGLE_ID))
+                    .thenReturn(Optional.of(TemplateDocument.builder().id(TemplateDocument.SINGLE_ID)
+                            .content(List.of(mariage, anniversaire)).build()));
+        }
+
+        @Test
+        void givenSubcategoryOfARubriqueOfTheEventTemplate_whenRubriqueOf_thenReturnsThatRubrique() {
+            when(categorieService.getCategoryKeyOf("decoration")).thenReturn("services");
+
+            assertThat(templateService.rubriqueOf("mariage", "decoration")).isEqualTo("decoration");
+        }
+
+        @Test
+        void givenCategoryOfARubriqueOfTheEventTemplate_whenRubriqueOf_thenReturnsThatRubrique() {
+            when(categorieService.getCategoryKeyOf("dj")).thenReturn("musique");
+
+            assertThat(templateService.rubriqueOf("mariage", "dj")).isEqualTo("musique-animation");
+        }
+
+        @Test
+        void givenSubcategoryOnlyInAnotherTemplate_whenRubriqueOf_thenReturnsTheCatalogueRubrique() {
+            when(categorieService.getCategoryKeyOf("dj")).thenReturn("musique");
+
+            assertThat(templateService.rubriqueOf("anniversaire", "dj")).isEqualTo("musique-animation");
+        }
+
+        @Test
+        void givenSubcategoryInNoTemplate_whenRubriqueOf_thenReturnsAutre() {
+            when(categorieService.getCategoryKeyOf("photobooth")).thenReturn("services");
+
+            assertThat(templateService.rubriqueOf("anniversaire", "photobooth")).isEqualTo(TemplateService.RUBRIQUE_AUTRE);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // insertionPosition
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class InsertionPosition {
+
+        @Test
+        void givenRubriqueOfTheTemplate_whenInsertionPosition_thenBeforeTheFirstPresentRubriqueThatFollowsIt() {
+            // mariage : lieu, musique-animation, decoration, hebergement → musique-animation avant hebergement
+            assertThat(templateService.insertionPosition("mariage", List.of("lieu", "hebergement", "autre"), "musique-animation"))
+                    .isEqualTo(1);
+        }
+
+        @Test
+        void givenRubriqueOfTheTemplateWithNothingAfterIt_whenInsertionPosition_thenBeforeAutre() {
+            assertThat(templateService.insertionPosition("mariage", List.of("lieu", "autre"), "hebergement"))
+                    .isEqualTo(1);
+        }
+
+        @Test
+        void givenRubriqueFromTheCatalogue_whenInsertionPosition_thenAtTheEndBeforeAutre() {
+            assertThat(templateService.insertionPosition("mariage", List.of("lieu", "decoration", "autre"), "photo-video"))
+                    .isEqualTo(2);
+        }
+
+        @Test
+        void givenRubriqueFromTheCatalogueAndNoAutre_whenInsertionPosition_thenAtTheEnd() {
+            assertThat(templateService.insertionPosition("mariage", List.of("lieu", "decoration"), "photo-video"))
+                    .isEqualTo(2);
+        }
+
+        @Test
+        void givenAutre_whenInsertionPosition_thenLast() {
+            assertThat(templateService.insertionPosition("mariage", List.of("lieu", "decoration"), TemplateService.RUBRIQUE_AUTRE))
+                    .isEqualTo(2);
         }
     }
 

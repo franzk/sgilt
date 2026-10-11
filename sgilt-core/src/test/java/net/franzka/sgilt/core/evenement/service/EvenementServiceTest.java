@@ -526,19 +526,45 @@ class EvenementServiceTest {
     @Nested
     class AddReservation {
 
-        @Test
-        void givenOwner_whenAddReservation_thenCreatesReservationOnEvent() {
-            UUID prestataireId = UUID.randomUUID();
+        private final UUID prestataireId = UUID.randomUUID();
+        private final Prestataire dj = Prestataire.builder().id(prestataireId).subcatKey("dj").build();
+
+        // Le propriétaire ajoute le DJ à son événement de mariage, dont les rubriques sont données.
+        private Utilisateur givenOwnerAddingTheDjTo(Evenement event) {
             Utilisateur utilisateur = mock(Utilisateur.class);
             when(utilisateur.getId()).thenReturn(USER_ID);
-            Evenement event = ownerEvent(b -> b);
-            Prestataire prestataire = mock(Prestataire.class);
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            when(prestataireService.getById(prestataireId)).thenReturn(prestataire);
+            when(prestataireService.getById(prestataireId)).thenReturn(dj);
+            when(templateService.rubriqueOf("mariage", "dj")).thenReturn("musique-animation");
+            return utilisateur;
+        }
+
+        @Test
+        void givenRubriqueAlreadyInTheEvent_whenAddReservation_thenCreatesTheReservationInItWithoutTouchingTheEvent() {
+            Evenement event = ownerEvent(b -> b.eventType("mariage").rubriques(List.of(
+                    new EvenementRubrique("lieu"), new EvenementRubrique("musique-animation"))));
+            Utilisateur utilisateur = givenOwnerAddingTheDjTo(event);
 
             evenementService.addReservation(EVENT_ID, utilisateur, prestataireId, "Bonjour");
 
-            verify(reservationService).create(event, prestataire, utilisateur, event.getDate(), "Bonjour");
+            verify(reservationService).create(event, dj, utilisateur, event.getDate(), "Bonjour", "musique-animation");
+            verify(evenementRepository, never()).save(any());
+        }
+
+        @Test
+        void givenRubriqueMissingFromTheEvent_whenAddReservation_thenInsertsItWhereTheTemplateSaysAndSavesTheEvent() {
+            EvenementRubrique lieu = new EvenementRubrique("lieu");
+            EvenementRubrique decoration = new EvenementRubrique("decoration");
+            Evenement event = ownerEvent(b -> b.eventType("mariage").rubriques(List.of(lieu, decoration)));
+            Utilisateur utilisateur = givenOwnerAddingTheDjTo(event);
+            when(templateService.insertionPosition("mariage", List.of("lieu", "decoration"), "musique-animation"))
+                    .thenReturn(1);
+
+            evenementService.addReservation(EVENT_ID, utilisateur, prestataireId, "Bonjour");
+
+            assertThat(event.getRubriques()).containsExactly(lieu, new EvenementRubrique("musique-animation"), decoration);
+            verify(evenementRepository).save(event);
+            verify(reservationService).create(event, dj, utilisateur, event.getDate(), "Bonjour", "musique-animation");
         }
 
         @Test
@@ -551,7 +577,7 @@ class EvenementServiceTest {
 
             assertThatThrownBy(() -> evenementService.addReservation(EVENT_ID, utilisateur, prestataireId, "Bonjour"))
                     .isInstanceOf(EvenementNotAllowedException.class);
-            verify(reservationService, never()).create(any(), any(), any(), any(), any());
+            verify(reservationService, never()).create(any(), any(), any(), any(), any(), any());
         }
     }
 
@@ -608,7 +634,7 @@ class EvenementServiceTest {
         }
 
         @Test
-        void givenDemandesInSeveralRubriques_whenCreateFromDto_thenCreatesOneReservationPerDemande() {
+        void givenDemandesInSeveralRubriques_whenCreateFromDto_thenCreatesOneReservationPerDemandeInItsRubrique() {
             Utilisateur utilisateur = mock(Utilisateur.class);
             LocalDate date = LocalDate.of(2027, 6, 12);
             UUID djId = UUID.randomUUID();
@@ -627,8 +653,8 @@ class EvenementServiceTest {
 
             evenementService.createFromDto(utilisateur, evenementDto);
 
-            verify(reservationService).create(saved, traiteur, utilisateur, date, "Pour 80 ?");
-            verify(reservationService).create(saved, dj, utilisateur, date, "La soirée ?");
+            verify(reservationService).create(saved, traiteur, utilisateur, date, "Pour 80 ?", "restauration");
+            verify(reservationService).create(saved, dj, utilisateur, date, "La soirée ?", "musique-animation");
         }
     }
 
