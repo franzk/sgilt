@@ -36,11 +36,7 @@
       <div class="booking-layout">
         <!-- Colonne gauche : bloc bento unique -->
         <div class="left">
-          <EventBlock
-            variant="pro"
-            :event="reservation.event"
-            :client-info="reservation.clientInfo"
-          />
+          <ProEventInfo :event="reservation.event" :client-info="reservation.clientInfo" />
           <hr v-if="!isMobile" class="left-divider" />
 
           <!-- nouvelle : CTA statut desktop uniquement -->
@@ -189,7 +185,7 @@ import Sk from '~/components/basics/Sk.vue'
 import BookingStatusBanner from '~/components/pro/BookingStatusBanner.vue'
 import BookingContactActions from '~/components/pro/BookingContactActions.vue'
 import BookingStatusCta from '~/components/pro/BookingStatusCta.vue'
-import EventBlock from '~/components/app/EventBlock.vue'
+import ProEventInfo from '~/components/pro/ProEventInfo.vue'
 import BookingCriticalActions from '~/components/pro/BookingCriticalActions.vue'
 import { defaultCoverPath } from '~/utils/eventCovers'
 import { buildReservationMailto } from '~/utils/reservationMailto'
@@ -455,13 +451,6 @@ $bento-radius: $radius-sm;
         border: none;
         border-top: 1px solid $divider-color;
         margin: 0;
-      }
-
-      // EventBlock perd sa carte individuelle — le bento est la carte
-      :deep(.event-block) {
-        background: transparent;
-        box-shadow: none;
-        border-radius: 0;
       }
 
       // ContactActionCards dans la colonne — supprimer ombre redondante

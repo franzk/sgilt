@@ -798,30 +798,14 @@
       },
       "upload-button": "Importer ma propre photo"
     },
-    "widget": {
-      "countdown": {
-        "imminent": "Dernière ligne droite",
-        "proche": "Ça approche",
-        "serein": "On a le temps de bien faire les choses"
-      },
-      "mood": {
-        "confirmee": "Ça se concrétise ✨",
-        "en_discussion": "Les échanges avancent",
-        "nouvelle": "Les réponses arrivent…",
-        "defaut": "Votre événement prend forme"
-      }
-    },
     "board": {
       "mobile": {
         "reservations": "Aucune réservation confirmée pour le moment. | 1 réservation confirmée pour le moment. | {count} réservations confirmées pour le moment."
-      },
-      "edit-title-image": "Modifier",
-      "edit-event-aria": "Modifier l'événement"
+      }
     },
     "block": {
       "logistics-label": "Lieu",
       "logistics-empty": "Salle, adresse… non renseigné",
-      "logistics-placeholder": "Salle, adresse…",
       "shared-note-label": "Note partagée",
       "shared-note-empty": "Aucune note pour le moment.",
       "shared-note-placeholder": "Informations utiles pour tous vos prestataires…",
@@ -832,31 +816,16 @@
       "party-ambiance-label": "Ambiance",
       "party-moment-label": "Moment clé",
       "party-moment-empty": "Non renseigné",
-      "party-edit-event-type": "Type d'événement",
-      "party-edit-ambiance": "Ambiance",
       "party-edit-city": "Ville",
       "party-edit-guests": "Nombre d'invités",
       "party-edit-description": "Description",
-      "party-description-placeholder": "Atmosphère, souhaits particuliers…",
       "party-select-empty": "— Non renseigné",
-      "party-city-placeholder": "Ville",
       "update-label": "Mise à jour",
       "no-update": "Aucune modification enregistrée.",
-      "saving": "Enregistrement…",
-      "save": "Enregistrer",
-      "cancel": "Annuler",
-      "edit-client-firstname": "Prénom",
-      "edit-client-lastname": "Nom",
-      "edit-client-phone": "Téléphone",
-      "edit-client-email": "Email",
       "copy-phone-aria": "Copier le numéro",
       "copy-email-aria": "Copier l'email",
       "copied-aria": "Copié",
-      "edit-event-aria": "Modifier l'événement",
-      "abandon-title": "Abandonner les modifications\u00a0?",
-      "abandon-body": "Vos changements ne seront pas sauvegardés.",
-      "abandon-continue": "Continuer à éditer",
-      "abandon-confirm": "Abandonner"
+      "edit-event-aria": "Modifier l'événement"
     },
     "reservation": {
       "steps": {
