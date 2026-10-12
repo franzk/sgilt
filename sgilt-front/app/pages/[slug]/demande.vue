@@ -8,10 +8,11 @@
   <template v-else-if="prestataire">
     <!-- Visiteur non connecté sur mobile : récap de l'événement puis coordonnées ; la
          confirmation d'envoi est sur /demande-envoyee (desktop à venir). -->
-    <template v-if="isMobile && isPublicVisitor">
+    <template v-if="isMobile && (isPublicVisitor || isNewEventFlow)">
       <DemandeCoordonnees
         v-if="publicStep === 'coordonnees' && summary"
         :summary="summary"
+        :skip-contact="isNewEventFlow"
         @back="goToPublicStep('recap')"
         @send="onSend"
       />
@@ -83,11 +84,13 @@ useHead({ title: 'Votre demande' })
 
 const { localEvent, eventTypeLabel } = useLocalEvent()
 const { categoryName, subcategoryName } = useCategories()
-const { currentFlow } = useFlow()
+const { currentFlow, onFlowSuccess } = useFlow()
 const { isAuthenticated } = useKeycloak()
 
-// Les flows connectés (new-event, add-prestataire) gardent le tunnel pas-à-pas.
 const isPublicVisitor = computed(() => !isAuthenticated.value && currentFlow.value === null)
+// Nouvel événement d'un utilisateur connecté : les mêmes écrans que le visiteur (le prestataire a
+// besoin des mêmes informations), sans les coordonnées, connues par le compte.
+const isNewEventFlow = computed(() => currentFlow.value === 'new-event')
 
 // Écran courant du parcours public dans l'URL (?etape=) : retour navigateur et refresh
 // fonctionnent sans état supplémentaire. Absent ou inconnu = récap de l'événement.
@@ -126,6 +129,14 @@ const summary = computed<DemandeSummary | null>(() => {
 // s'affiche sous le bouton. `replace` : le retour arrière ne ramène pas au formulaire.
 async function onSend() {
   if (!summary.value) return
+  // Connecté : l'événement est créé avec la demande, puis on arrive sur son board.
+  if (isNewEventFlow.value) {
+    await submit()
+    if (!submitted.value) return
+    resetDemande()
+    onFlowSuccess()
+    return
+  }
   const sentConfirmation = {
     summary: { ...summary.value, evenement: { ...summary.value.evenement } },
     email: state.email.trim(),

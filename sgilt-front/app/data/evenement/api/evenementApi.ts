@@ -2,9 +2,9 @@
  * Couche API — appels HTTP vers /user/events
  */
 import { apiFetch } from '~/composables/useApi'
-import type { DemandeRequest } from '~/types/demande'
 import type { EvenementSummaryDto } from '../dto/EvenementSummaryDto'
 import type { EventDto } from '../dto/EventDto'
+import type { CreateEventRequestDto } from '../dto/CreateEventRequestDto'
 import type { EventMetaDto } from '../dto/EventMetaDto'
 import type { EventMetaPatchRequestDto } from '../dto/EventMetaPatchRequestDto'
 import type { JournalEvenementPageDto } from '../dto/JournalEvenementDto'
@@ -54,9 +54,9 @@ export async function selectEventCoverApi(
   })
 }
 
-// Création par demande unique (fiche d'un prestataire) : le back construit l'événement complet.
-export async function createEventApi(body: DemandeRequest): Promise<{ eventId: string }> {
-  return apiFetch<{ eventId: string }>('/user/events/demande', { method: 'POST', body })
+// Création d'un événement (flow « Nouvel événement » connecté), avec sa première demande éventuelle.
+export async function createEventApi(body: CreateEventRequestDto): Promise<{ eventId: string }> {
+  return apiFetch<{ eventId: string }>('/user/events', { method: 'POST', body })
 }
 
 export async function addReservationApi(

@@ -79,7 +79,8 @@ const FIRST_STEP_WITH_CTA = 3
 
 const route = useRoute()
 const { t } = useI18n()
-const { localEvent } = useLocalEvent()
+const { localEvent, create } = useLocalEvent()
+const { currentFlow, flowPayload, onFlowSuccess } = useFlow()
 
 // Accès sans type choisi (arrivée directe sur l'URL) : renvoie au choix du type.
 onMounted(() => {
@@ -150,9 +151,14 @@ function skipQuestion() {
 }
 
 // Sortie du stepper (CTA final ou skip de tunnel) avec les valeurs déjà renseignées.
-function finish() {
-  // TODO(brief séparé) : création réelle de l'événement en base pas encore livrée,
-  // la vue d'ensemble travaille sur un état purement local.
+async function finish() {
+  // Connecté (flow « Nouvel événement ») : l'événement est créé en base, puis on arrive sur son
+  // board. Visiteur : la vue d'ensemble travaille sur l'événement local.
+  if (currentFlow.value === 'new-event') {
+    flowPayload.value = { id: await create() }
+    onFlowSuccess()
+    return
+  }
   navigateTo('/evenement')
 }
 </script>

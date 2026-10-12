@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.domain.EvenementRubrique;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
-import net.franzka.sgilt.core.evenement.dto.CreateEventInConnectedFlowDemandeRequest;
+import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
 import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
 import net.franzka.sgilt.core.evenement.dto.DemandeInitieeDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementDto;
@@ -20,6 +20,7 @@ import net.franzka.sgilt.core.evenement.exception.EvenementNotFoundException;
 import net.franzka.sgilt.core.evenement.mapper.EvenementMapper;
 import net.franzka.sgilt.core.evenement.repository.EvenementRepository;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
+import net.franzka.sgilt.core.prestataire.exception.PrestataireNotFoundException;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
@@ -138,31 +139,34 @@ public class EvenementService {
     }
 
     /**
-     * Crée un événement complet pour un utilisateur authentifié.
+     * Crée un événement pour un utilisateur authentifié, avec sa première demande s'il en a une
+     * (prestataire vérifié publié, réservation rangée dans sa rubrique).
      *
      * @param utilisateur l'utilisateur connecté (propriétaire de l'événement)
-     * @param evenement   l'événement : données, rubriques et demandes initiées
+     * @param request     les données de l'événement et sa première demande éventuelle
      * @return l'identifiant du nouvel événement
+     * @throws PrestataireNotFoundException si le prestataire de la demande n'existe pas ou n'est pas publié
      */
-    public CreateEventResponse createEvent(Utilisateur utilisateur, EvenementDto evenement) {
-        return new CreateEventResponse(createFromDto(utilisateur, evenement).getId());
+    public CreateEventResponse createEvent(Utilisateur utilisateur, CreateEventRequest request) {
+        if (request.demande() != null) prestataireService.ensurePublished(request.demande().prestataireId());
+        return new CreateEventResponse(createFromDto(utilisateur, buildEvenement(request)).getId());
     }
 
     /**
-     * Crée un événement à partir d'une demande unique (fiche d'un prestataire) pour un utilisateur
-     * authentifié : rubriques du template de son type, demande rangée dans la sienne.
+     * Construit, sans l'enregistrer, un événement à créer : ses données, les rubriques du template
+     * de son type et, s'il naît d'une demande, la demande rangée dans sa rubrique. Commun à la
+     * création connectée et à l'onboarding (où l'événement attend l'activation du compte).
      *
-     * @param utilisateur l'utilisateur connecté (propriétaire de l'événement)
-     * @param request     les champs du tunnel de demande
-     * @return l'identifiant du nouvel événement
+     * @param request les données de l'événement et sa première demande éventuelle
+     * @return l'événement complet, prêt pour {@link #createFromDto}
      */
-    public CreateEventResponse createEventFromDemande(Utilisateur utilisateur, CreateEventInConnectedFlowDemandeRequest request) {
-        List<RubriqueDto> rubriques = templateService.getEventRubriquesFromDemande(
-                request.eventType(), new DemandeInitieeDto(request.prestataireId(), request.prestataireMessage()));
-        EvenementDto evenement = new EvenementDto(
-                request.eventType(), request.ambiance(), request.momentCle(), request.description(), request.date(),
-                request.ville(), request.nbInvites(), request.lieu(), rubriques);
-        return createEvent(utilisateur, evenement);
+    public EvenementDto buildEvenement(CreateEventRequest request) {
+        List<RubriqueDto> rubriques = request.demande() == null
+                ? templateService.getNewEventRubriques(request.eventType())
+                : templateService.getEventRubriquesFromDemande(request.eventType(), request.demande());
+        return new EvenementDto(
+                request.eventType(), request.ambiance(), request.momentCle(), request.description(),
+                request.date(), request.ville(), request.nbInvites(), request.lieu(), rubriques);
     }
 
     /**

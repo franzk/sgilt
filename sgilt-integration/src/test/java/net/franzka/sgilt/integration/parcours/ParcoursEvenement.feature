@@ -1,7 +1,7 @@
 Feature: Parcours événement — création, ajout de prestataires, édition, journal
 
-  Un client déjà authentifié crée un événement (indépendamment de l'onboarding) en ciblant un premier
-  prestataire, y ajoute un second prestataire, édite les informations de l'événement, puis consulte
+  Un client déjà authentifié crée un événement (indépendamment de l'onboarding) avec une demande à un
+  premier prestataire, y ajoute un second prestataire, édite les informations de l'événement, puis consulte
   ses réservations et le journal des modifications — avec les vraies règles d'accès : propriétaire de
   l'événement, mais aussi tout prestataire qui y a une réservation (pour le journal uniquement).
 
@@ -11,14 +11,14 @@ Feature: Parcours événement — création, ajout de prestataires, édition, jo
 
   Scenario: Création, ajout d'un second prestataire, édition et consultation
 
-    # ── 1. Le client crée un événement ciblant le premier prestataire ────────────────────────────
-    Given path '/api/v1/user/events/demande'
+    # ── 1. Le client crée un événement avec une demande à un premier prestataire ─────────────────
+    Given path '/api/v1/user/events'
     And header Authorization = 'Bearer ' + tokenUser
     And request
       """
       {
-        prestataireId: '#(prestataireId)', eventType: 'Anniversaire', date: '2027-09-20',
-        ville: 'Marseille', nbInvites: '50', prestataireMessage: 'Disponible le 20 septembre ?'
+        eventType: 'anniversaire', date: '2027-09-20', ville: 'Marseille', nbInvites: '50',
+        demande: { prestataireId: '#(prestataireId)', message: 'Disponible le 20 septembre ?' }
       }
       """
     When method POST
@@ -36,8 +36,7 @@ Feature: Parcours événement — création, ajout de prestataires, édition, jo
     When method GET
     Then status 200
     And match response.meta.ville == 'Marseille'
-    # Conséquence : la création de l'événement a aussi créé sa réservation initiale, rangée dans
-    # une rubrique de l'événement
+    # Conséquence : la réservation du premier prestataire est rangée dans une rubrique de l'événement
     * def reservations = karate.jsonPath(response, '$.rubriques[*].reservations[*]')
     And match reservations == '#[1]'
     And match reservations[0].prestataireId == prestataireId

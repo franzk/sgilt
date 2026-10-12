@@ -15,8 +15,8 @@
 
       <DemandeSummaryCard class="summary" :summary="summary" />
 
-      <!-- ── Vos coordonnées ─────────────────────────────────────────────────── -->
-      <section class="section">
+      <!-- ── Vos coordonnées (connues pour un utilisateur connecté) ─────────────── -->
+      <section v-if="!skipContact" class="section">
         <h2 class="section-title">{{ $t('tunnel.coordonnees.contact-title') }}</h2>
         <p class="section-subtitle">{{ $t('tunnel.coordonnees.contact-subtitle') }}</p>
 
@@ -153,8 +153,10 @@ import { validateEmail, validatePhone } from '~/utils/contactValidation'
 // Même limite que la validation back (InitOnboardingRequest.prestataireMessage).
 const MESSAGE_MAX_LENGTH = 1000
 
-defineProps<{
+const props = defineProps<{
   summary: DemandeSummary
+  // Utilisateur connecté : ses coordonnées sont celles de son compte, seul le message est demandé.
+  skipContact?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -204,6 +206,10 @@ const inputs = {
 // Coordonnées valides : la page envoie la demande (POST /onboarding/demande).
 function onSubmit() {
   if (submitting.value) return
+  if (props.skipContact) {
+    emit('send')
+    return
+  }
   submitAttempted.value = true
   const firstError = CONTACT_FIELDS.find((field) => errors.value[field])
   if (firstError) {

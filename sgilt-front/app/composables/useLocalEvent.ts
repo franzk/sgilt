@@ -1,4 +1,6 @@
 import type { EventRubrique } from '~/data/evenement/domain/EventRubrique'
+import { createEventApi } from '~/data/evenement/api/evenementApi'
+import type { CreateEventRequestDto } from '~/data/evenement/dto/CreateEventRequestDto'
 import { fetchNewEventRubriques } from '~/data/template/service/templateService'
 import { toISODate } from '~/utils/dateUtils'
 import { EVENT_TYPE_DEFAULT_TITLES } from '~/utils/eventTypes'
@@ -225,6 +227,15 @@ export function useLocalEvent() {
     }
   }
 
+  // Crée en base l'événement local, pour l'utilisateur connecté (flow « Nouvel événement »),
+  // avec sa première demande s'il naît d'une demande à un prestataire. Le back en déduit les
+  // rubriques. La copie locale est ensuite effacée : la base devient la source de vérité.
+  async function create(demande: CreateEventRequestDto['demande'] = null): Promise<string> {
+    const { eventId } = await createEventApi({ ...toEvenementRequest(), demande })
+    reset()
+    return eventId
+  }
+
   const eventTypeLabel = computed(() => choiceLabel(EVENT_TYPE_OPTIONS, localEvent.eventType))
   const eventTypeEmoji = computed(() => choiceEmoji(EVENT_TYPE_OPTIONS, localEvent.eventType))
   const ambianceLabel = computed(() => choiceLabel(AMBIANCE_OPTIONS, localEvent.ambiance))
@@ -238,6 +249,7 @@ export function useLocalEvent() {
     reset,
     initRubriques,
     toEvenementRequest,
+    create,
     eventTypeLabel,
     eventTypeEmoji,
     ambianceLabel,

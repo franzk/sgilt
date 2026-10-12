@@ -4,9 +4,8 @@ import jakarta.validation.Valid;
 import net.franzka.sgilt.core.evenement.dto.AddReservationRequest;
 import net.franzka.sgilt.core.evenement.dto.CoverSelectDto;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
-import net.franzka.sgilt.core.evenement.dto.CreateEventInConnectedFlowDemandeRequest;
+import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
 import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
-import net.franzka.sgilt.core.evenement.dto.EvenementDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
 import net.franzka.sgilt.core.evenement.dto.EventDto;
 import net.franzka.sgilt.core.evenement.dto.EventMetaDto;
@@ -32,10 +31,7 @@ import java.util.UUID;
 public interface EvenementApi {
 
     @PostMapping
-    ResponseEntity<CreateEventResponse> createEvent(@RequestBody @Valid EvenementDto body);
-
-    @PostMapping("/demande")
-    ResponseEntity<CreateEventResponse> createEventDemande(@RequestBody @Valid CreateEventInConnectedFlowDemandeRequest body);
+    ResponseEntity<CreateEventResponse> createEvent(@RequestBody @Valid CreateEventRequest body);
 
     @GetMapping
     ResponseEntity<List<EvenementSummaryDto>> getMyEvents();

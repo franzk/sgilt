@@ -66,6 +66,8 @@ const disableDatePicker = computed(() => currentFlow.value === 'add-prestataire'
 
 const showFinalisation = ref(false)
 function onSelect(p: PrestataireDetail) {
+  // Ajout à un événement existant : la demande part depuis la fenêtre de finalisation. Nouvel
+  // événement (visiteur ou connecté) : les écrans de demande, les mêmes pour tous.
   if (currentFlow.value === 'add-prestataire') {
     showFinalisation.value = true
     return

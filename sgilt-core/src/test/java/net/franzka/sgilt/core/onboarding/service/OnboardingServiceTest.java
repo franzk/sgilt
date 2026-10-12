@@ -3,7 +3,9 @@ package net.franzka.sgilt.core.onboarding.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import net.franzka.sgilt.core.evenement.dto.DemandeInitieeDto;
+import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
 import net.franzka.sgilt.core.evenement.dto.EvenementDto;
+import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.evenement.dto.RubriqueDto;
 import net.franzka.sgilt.core.jwt.domain.ActionToken;
 import net.franzka.sgilt.core.jwt.service.ActionTokenService;
@@ -19,7 +21,6 @@ import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.mailer.OnboardingMailerService;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
-import net.franzka.sgilt.core.template.service.TemplateService;
 import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -63,7 +64,7 @@ class OnboardingServiceTest {
     @Mock private UtilisateurService utilisateurService;
     @Mock private KeycloakAdminService keycloakAdminService;
     @Mock private ActionTokenService actionTokenService;
-    @Mock private TemplateService templateService;
+    @Mock private EvenementService evenementService;
 
     @InjectMocks
     private OnboardingService onboardingService;
@@ -112,12 +113,12 @@ class OnboardingServiceTest {
         }
 
         @Test
-        void givenNewUser_whenInitOnboardingDemande_thenPlacesTheDemandeInTheTemplateRubriques() {
+        void givenNewUser_whenInitOnboardingDemande_thenBuildsTheEventLikeAConnectedCreationWithTheDemande() {
             stubHappyPath();
 
             onboardingService.initOnboardingDemande(buildDemande());
 
-            verify(templateService).getEventRubriquesFromDemande(EVENT_TYPE, new DemandeInitieeDto(PRESTATAIRE_ID, MESSAGE));
+            verify(evenementService).buildEvenement(eventToCreate());
         }
 
         @Test
@@ -131,10 +132,16 @@ class OnboardingServiceTest {
 
         private void stubHappyPath() {
             when(utilisateurService.existsByEmail(EMAIL)).thenReturn(false);
-            when(templateService.getEventRubriquesFromDemande(EVENT_TYPE, new DemandeInitieeDto(PRESTATAIRE_ID, MESSAGE)))
-                    .thenReturn(RUBRIQUES);
+            when(evenementService.buildEvenement(eventToCreate()))
+                    .thenReturn(new EvenementDto(EVENT_TYPE, null, null, null, DATE, null, null, null, RUBRIQUES));
             when(onboardingSessionService.initiate(eq(EMAIL), any()))
                     .thenReturn(new OnboardingSessionService.InitiationResult(Onboarding.builder().email(EMAIL).build(), "hmac.token"));
+        }
+
+        // L'événement à créer que porte la demande (mêmes données, la demande en première demande).
+        private CreateEventRequest eventToCreate() {
+            return new CreateEventRequest(EVENT_TYPE, null, null, null, DATE, null, null, null,
+                    new DemandeInitieeDto(PRESTATAIRE_ID, MESSAGE));
         }
 
         private InitOnboardingDemandeRequest buildDemande() {

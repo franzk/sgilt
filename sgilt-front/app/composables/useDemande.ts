@@ -5,7 +5,6 @@ import type {
   DemandeState,
 } from '~/types/demande'
 import { submitOnboarding } from '~/data/onboarding/api/onboardingApi'
-import { createEventApi } from '~/data/evenement/api/evenementApi'
 
 // Demande envoyée à un prestataire : le prestataire visé, les coordonnées de la personne et
 // son message. L'événement n'est pas ici : il vit dans useLocalEvent (source de vérité),
@@ -84,10 +83,22 @@ export function useDemande() {
     submitting.value = true
     submitError.value = null
     try {
-      const { toEvenementRequest, reset: resetLocalEvent } = useLocalEvent()
+      const { toEvenementRequest, reset: resetLocalEvent, create } = useLocalEvent()
 
       if (!state.prestataireId) {
         submitError.value = 'Prestataire manquant'
+        return
+      }
+
+      // Connecté (flow « Nouvel événement ») : le back crée l'événement avec cette première
+      // demande ; les coordonnées transmises au prestataire sont celles du compte.
+      if (useFlow().currentFlow.value === 'new-event') {
+        const demande = {
+          prestataireId: state.prestataireId,
+          message: state.prestataireMessage || null,
+        }
+        useFlow().flowPayload.value = { id: await create(demande) }
+        submitted.value = true
         return
       }
 
@@ -97,23 +108,16 @@ export function useDemande() {
         prestataireMessage: state.prestataireMessage || null,
       }
 
-      if (useFlow().currentFlow.value === 'new-event') {
-        const { eventId } = await createEventApi(demandeBody)
-        resetLocalEvent() // matérialisé en base : le serveur devient la vérité
-        submitted.value = true
-        useFlow().flowPayload.value = { id: eventId }
-      } else {
-        const onboardingBody: OnboardingDemandeRequest = {
-          ...demandeBody,
-          firstName: state.prenom,
-          lastName: state.nom,
-          email: state.email,
-          telephone: state.telephone || null,
-        }
-        await submitOnboarding(onboardingBody)
-        resetLocalEvent() // transmis au serveur : plus de copie locale
-        submitted.value = true
+      const onboardingBody: OnboardingDemandeRequest = {
+        ...demandeBody,
+        firstName: state.prenom,
+        lastName: state.nom,
+        email: state.email,
+        telephone: state.telephone || null,
       }
+      await submitOnboarding(onboardingBody)
+      resetLocalEvent() // transmis au serveur : plus de copie locale
+      submitted.value = true
     } catch (err) {
       console.error('submit error:', err)
       submitError.value = 'Une erreur est survenue. Veuillez réessayer.'

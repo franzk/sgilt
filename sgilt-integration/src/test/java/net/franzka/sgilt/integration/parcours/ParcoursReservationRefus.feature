@@ -10,10 +10,10 @@ Feature: Parcours réservation — le prestataire refuse une demande
 
   Scenario: Le prestataire refuse une demande avant tout contact — NEW -> REFUSED_PRE_CONTACT
 
-    # ── 1. Le client crée un événement ciblant le prestataire ────────────────────────────────────
-    Given path '/api/v1/user/events/demande'
+    # ── 1. Le client crée un événement avec une demande au prestataire ────────────────────────────────────
+    Given path '/api/v1/user/events'
     And header Authorization = 'Bearer ' + tokenUser
-    And request { prestataireId: '#(prestataireId)', eventType: 'Anniversaire', date: '2027-11-08', ville: 'Nantes' }
+    And request { eventType: 'anniversaire', date: '2027-11-08', ville: 'Nantes', demande: { prestataireId: '#(prestataireId)' } }
     When method POST
     Then status 201
     * def eventId = response.eventId
@@ -73,9 +73,9 @@ Feature: Parcours réservation — le prestataire refuse une demande
     Then status 409
 
     # Un pro tiers (pas propriétaire de cette fiche) ne peut pas refuser à sa place
-    Given path '/api/v1/user/events/demande'
+    Given path '/api/v1/user/events'
     And header Authorization = 'Bearer ' + tokenUser
-    And request { prestataireId: '#(prestataireId)', eventType: 'Anniversaire', date: '2027-11-09', ville: 'Nantes' }
+    And request { eventType: 'anniversaire', date: '2027-11-09', ville: 'Nantes', demande: { prestataireId: '#(prestataireId)' } }
     When method POST
     Then status 201
     * def secondEventId = response.eventId

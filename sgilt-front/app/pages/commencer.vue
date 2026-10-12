@@ -79,6 +79,8 @@ const paragraph = computed(() => t(`commencer-picker.paragraphs.${typeKey.value}
 const coverImage = computed(() => EVENT_TYPE_COVERS[typeKey.value])
 const photoAlt = computed(() => t(`commencer-picker.photo-alt.${typeKey.value}`))
 
+// Visiteur ou connecté (flow « Nouvel événement ») : même parcours, l'événement n'est créé qu'à
+// l'envoi de la demande au prestataire choisi.
 function goToSearch() {
   navigateTo('/search')
 }

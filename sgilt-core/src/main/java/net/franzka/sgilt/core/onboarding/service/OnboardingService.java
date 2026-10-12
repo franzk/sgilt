@@ -4,9 +4,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
 import net.franzka.sgilt.core.evenement.dto.DemandeInitieeDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementDto;
-import net.franzka.sgilt.core.evenement.dto.RubriqueDto;
+import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.jwt.domain.ActionToken;
 import net.franzka.sgilt.core.jwt.service.ActionTokenService;
 import net.franzka.sgilt.core.jwt.service.TokenJwtService;
@@ -21,11 +22,9 @@ import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.mailer.OnboardingMailerService;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
-import net.franzka.sgilt.core.template.service.TemplateService;
 import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -40,7 +39,7 @@ public class OnboardingService {
     private final UtilisateurService utilisateurService;
     private final KeycloakAdminService keycloakAdminService;
     private final ActionTokenService actionTokenService;
-    private final TemplateService templateService;
+    private final EvenementService evenementService;
 
     /**
      * Un visiteur passe par la fiche d'un prestataire : c'est aussi la création d'un événement,
@@ -62,20 +61,14 @@ public class OnboardingService {
         // Vérification de la validité du prestataire
         prestataireService.ensurePublished(request.prestataireId()); // lève PrestataireNotFoundException si le prestataire n'existe pas ou n'est pas publié
 
-        return startSession(new InitOnboardingRequest(
-                request.firstName(), request.lastName(), request.email(), request.telephone(),
-                buildEvenementFromSingleDemande(request)));
-    }
-
-    // Événement né d'une demande unique, construit sans être enregistré (il ne le sera qu'à
-    // l'activation du compte) : ses données, les rubriques du template de son type et la demande
-    // rangée dans sa rubrique.
-    private EvenementDto buildEvenementFromSingleDemande(InitOnboardingDemandeRequest request) {
-        List<RubriqueDto> rubriques = templateService.getEventRubriquesFromDemande(
-                request.eventType(), new DemandeInitieeDto(request.prestataireId(), request.prestataireMessage()));
-        return new EvenementDto(
+        // L'événement est construit comme pour une création connectée, mais il n'est enregistré qu'à
+        // l'activation du compte.
+        EvenementDto evenement = evenementService.buildEvenement(new CreateEventRequest(
                 request.eventType(), request.ambiance(), request.momentCle(), request.description(),
-                request.date(), request.ville(), request.nbInvites(), request.lieu(), rubriques);
+                request.date(), request.ville(), request.nbInvites(), request.lieu(),
+                new DemandeInitieeDto(request.prestataireId(), request.prestataireMessage())));
+        return startSession(new InitOnboardingRequest(
+                request.firstName(), request.lastName(), request.email(), request.telephone(), evenement));
     }
 
     // Email déjà associé à un compte : prévient son propriétaire par une alerte de sécurité.
