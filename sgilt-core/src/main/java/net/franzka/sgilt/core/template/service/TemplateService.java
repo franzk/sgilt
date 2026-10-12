@@ -56,7 +56,7 @@ public class TemplateService {
      * @return les rubriques de l'événement, dans l'ordre d'affichage
      * @throws SousCategorieNotFoundException si la sous-catégorie du prestataire n'existe pas
      */
-    public List<RubriqueDto> getEventRubriqueFromDemande(String eventType, DemandeInitieeDto demande) {
+    public List<RubriqueDto> getEventRubriquesFromDemande(String eventType, DemandeInitieeDto demande) {
         // 1 — les rubriques du template, puis celle de la demande insérée à sa place si elle manque.
         List<String> keys = new ArrayList<>(findTemplate(eventType).map(Template::rubriques).orElse(List.of()).stream()
                 .map(TemplateRubrique::key)

@@ -43,27 +43,6 @@ public class OnboardingService {
     private final TemplateService templateService;
 
     /**
-     * Un visiteur envoie l'événement qu'il a construit : vérifie que les prestataires de ses
-     * demandes initiées sont publiés, puis ouvre la session.
-     *
-     * @param request les coordonnées et l'événement complet
-     * @return l'email encapsulé dans la réponse
-     */
-    public InitOnboardingResponse initOnboardingSession(InitOnboardingRequest request) {
-        if (utilisateurService.existsByEmail(request.email())) {
-            alertExistingAccount(request.email());
-            // Réponse identique à celle d'un nouvel email : l'appelant ne doit pas pouvoir déduire de la
-            // réponse qu'un compte existe pour cet email (énumération de comptes). Seul le propriétaire
-            // de l'adresse fait la différence, par le mail qu'il reçoit.
-            return new InitOnboardingResponse(request.email());
-        }
-
-        RubriqueDto.demandesInitiees(request.evenement().rubriques())
-                .forEach(demande -> prestataireService.ensurePublished(demande.prestataireId()));
-        return startSession(request);
-    }
-
-    /**
      * Un visiteur passe par la fiche d'un prestataire : c'est aussi la création d'un événement,
      * construit ici (rubriques du template du type, demande rangée dans la sienne), puis la
      * session est ouverte.
@@ -83,16 +62,20 @@ public class OnboardingService {
         // Vérification de la validité du prestataire
         prestataireService.ensurePublished(request.prestataireId()); // lève PrestataireNotFoundException si le prestataire n'existe pas ou n'est pas publié
 
-        // Construction d'un événement à partir du type d'événement
-        // avec les rubriques du template et la demande initiée rangée dans sa rubrique
-        List<RubriqueDto> rubriques = templateService.getEventRubriqueFromDemande(
+        return startSession(new InitOnboardingRequest(
+                request.firstName(), request.lastName(), request.email(), request.telephone(),
+                buildEvenementFromSingleDemande(request)));
+    }
+
+    // Événement né d'une demande unique, construit sans être enregistré (il ne le sera qu'à
+    // l'activation du compte) : ses données, les rubriques du template de son type et la demande
+    // rangée dans sa rubrique.
+    private EvenementDto buildEvenementFromSingleDemande(InitOnboardingDemandeRequest request) {
+        List<RubriqueDto> rubriques = templateService.getEventRubriquesFromDemande(
                 request.eventType(), new DemandeInitieeDto(request.prestataireId(), request.prestataireMessage()));
-        EvenementDto evenement = new EvenementDto(
+        return new EvenementDto(
                 request.eventType(), request.ambiance(), request.momentCle(), request.description(),
                 request.date(), request.ville(), request.nbInvites(), request.lieu(), rubriques);
-
-        return startSession(new InitOnboardingRequest(
-                request.firstName(), request.lastName(), request.email(), request.telephone(), evenement));
     }
 
     // Email déjà associé à un compte : prévient son propriétaire par une alerte de sécurité.

@@ -8,11 +8,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/v1/onboarding")
 public interface OnboardingApi {
 
-    // Etape 1 : un visiteur crée un événement — à partir de l'événement qu'il a construit
-    @PostMapping()
-    ResponseEntity<InitOnboardingResponse> initOnboarding(@RequestBody @Valid InitOnboardingRequest request);
-
-    // Etape 1 bis : un visiteur crée un événement — par la fiche d'un prestataire (demande unique)
+    // Etape 1 : un visiteur crée un événement — par la fiche d'un prestataire (demande unique)
     @PostMapping("/demande")
     ResponseEntity<InitOnboardingResponse> initOnboardingDemande(@RequestBody @Valid InitOnboardingDemandeRequest request);
 

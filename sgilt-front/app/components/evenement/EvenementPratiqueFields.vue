@@ -43,14 +43,14 @@
 </template>
 
 <script setup lang="ts">
-import type { LocalEvent } from '~/composables/useLocalEvent'
 import { scrollInputIntoView } from '~/utils/scrollInputIntoView'
 
 const props = defineProps<{
-  state: LocalEvent
   mobile?: boolean
   villeError?: string | null
 }>()
+
+const { localEvent } = useLocalEvent()
 
 function onFocus(e: FocusEvent) {
   if (props.mobile) {

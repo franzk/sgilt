@@ -28,23 +28,7 @@ public class OnboardingController implements OnboardingApi {
     private final VerifyService verifyService;
 
     /**
-     * ETAPE 1 : initialisation de l'onboarding à partir d'un événement complet.
-     * Stocke l'événement et les coordonnées, et envoie le mail de vérification.
-     *
-     * @param request les coordonnées et l'événement complet
-     * @return 202 Accepted avec l'email en réponse
-     */
-    @Override
-    @Transactional
-    public ResponseEntity<InitOnboardingResponse> initOnboarding(
-            @RequestBody @Valid InitOnboardingRequest request
-    ) {
-        log.info("POST /onboarding — email={}", request.email());
-        return ResponseEntity.accepted().body(onboardingService.initOnboardingSession(request));
-    }
-
-    /**
-     * ETAPE 1 bis : initialisation de l'onboarding par demande unique (fiche d'un prestataire).
+     * ETAPE 1 : initialisation de l'onboarding par demande unique (fiche d'un prestataire).
      * Le back construit l'événement complet, le stocke et envoie le mail de vérification.
      *
      * @param request les champs du tunnel de demande

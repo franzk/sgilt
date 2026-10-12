@@ -117,7 +117,7 @@ class OnboardingServiceTest {
 
             onboardingService.initOnboardingDemande(buildDemande());
 
-            verify(templateService).getEventRubriqueFromDemande(EVENT_TYPE, new DemandeInitieeDto(PRESTATAIRE_ID, MESSAGE));
+            verify(templateService).getEventRubriquesFromDemande(EVENT_TYPE, new DemandeInitieeDto(PRESTATAIRE_ID, MESSAGE));
         }
 
         @Test
@@ -131,7 +131,7 @@ class OnboardingServiceTest {
 
         private void stubHappyPath() {
             when(utilisateurService.existsByEmail(EMAIL)).thenReturn(false);
-            when(templateService.getEventRubriqueFromDemande(EVENT_TYPE, new DemandeInitieeDto(PRESTATAIRE_ID, MESSAGE)))
+            when(templateService.getEventRubriquesFromDemande(EVENT_TYPE, new DemandeInitieeDto(PRESTATAIRE_ID, MESSAGE)))
                     .thenReturn(RUBRIQUES);
             when(onboardingSessionService.initiate(eq(EMAIL), any()))
                     .thenReturn(new OnboardingSessionService.InitiationResult(Onboarding.builder().email(EMAIL).build(), "hmac.token"));
@@ -142,50 +142,6 @@ class OnboardingServiceTest {
                     FIRSTNAME, LASTNAME, EMAIL, PRESTATAIRE_ID,
                     EVENT_TYPE, null, null, null, DATE,
                     null, null, null, TELEPHONE, MESSAGE);
-        }
-    }
-
-    // -------------------------------------------------------------------------
-    // initOnboardingSession
-    // -------------------------------------------------------------------------
-
-    @Nested
-    class InitOnboardingSession {
-
-        @Test
-        void givenExistingUser_whenInitOnboardingSession_thenSendsSecurityAlertWithoutSession() {
-            when(utilisateurService.existsByEmail(EMAIL)).thenReturn(true);
-
-            onboardingService.initOnboardingSession(fullRequest());
-
-            verify(onboardingMailerService).sendSecurityAlertEmail(EMAIL);
-            verify(onboardingSessionService, never()).initiate(any(), any());
-        }
-
-        @Test
-        void givenNewUser_whenInitOnboardingSession_thenChecksEachDemandePrestataireIsPublished() {
-            stubNewUser();
-
-            onboardingService.initOnboardingSession(fullRequest());
-
-            verify(prestataireService).ensurePublished(PRESTATAIRE_ID);
-        }
-
-        @Test
-        void givenNewUser_whenInitOnboardingSession_thenStoresTheEventAsIs() {
-            stubNewUser();
-            InitOnboardingRequest request = fullRequest();
-
-            onboardingService.initOnboardingSession(request);
-
-            verify(onboardingSessionService).initiate(EMAIL, request);
-            verify(onboardingMailerService).sendVerificationEmail(EMAIL, "hmac.token");
-        }
-
-        private void stubNewUser() {
-            when(utilisateurService.existsByEmail(EMAIL)).thenReturn(false);
-            when(onboardingSessionService.initiate(eq(EMAIL), any()))
-                    .thenReturn(new OnboardingSessionService.InitiationResult(Onboarding.builder().email(EMAIL).build(), "hmac.token"));
         }
     }
 

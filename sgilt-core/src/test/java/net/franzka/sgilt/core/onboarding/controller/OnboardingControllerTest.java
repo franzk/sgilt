@@ -1,10 +1,8 @@
 package net.franzka.sgilt.core.onboarding.controller;
 
-import net.franzka.sgilt.core.evenement.dto.EvenementDto;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountRequest;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountResponse;
 import net.franzka.sgilt.core.onboarding.dto.InitOnboardingDemandeRequest;
-import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
 import net.franzka.sgilt.core.onboarding.dto.InitOnboardingResponse;
 import net.franzka.sgilt.core.onboarding.dto.SetPasswordTokenDto;
 import net.franzka.sgilt.core.onboarding.service.OnboardingService;
@@ -19,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,21 +40,6 @@ class OnboardingControllerTest {
 
     @Nested
     class InitOnboarding {
-
-        @Test
-        void givenCompleteEvent_whenInitOnboarding_thenReturns202WithEmail() {
-            InitOnboardingRequest request = new InitOnboardingRequest(
-                    "Jean", "Dupont", "jean@sgilt.fr", "0102030405",
-                    new EvenementDto("mariage", null, null, null, LocalDate.of(2027, 6, 15),
-                            "Lyon", null, null, List.of()));
-            InitOnboardingResponse response = new InitOnboardingResponse("jean@sgilt.fr");
-            when(onboardingService.initOnboardingSession(request)).thenReturn(response);
-
-            ResponseEntity<InitOnboardingResponse> result = controller.initOnboarding(request);
-
-            assertThat(result.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
-            assertThat(result.getBody()).isEqualTo(response);
-        }
 
         @Test
         void givenSingleDemande_whenInitOnboardingDemande_thenReturns202WithEmail() {

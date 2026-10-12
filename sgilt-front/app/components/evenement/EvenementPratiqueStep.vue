@@ -1,7 +1,7 @@
 <template>
   <div class="etape">
     <h2 class="question">Votre événement en pratique</h2>
-    <EvenementPratiqueFields :state="localEvent" :ville-error="villeError" />
+    <EvenementPratiqueFields :ville-error="villeError" />
     <SgiltButton class="button" @click="handleContinue">
       {{ $t('tunnel.footer.continue') }}
     </SgiltButton>

@@ -79,11 +79,11 @@ class TemplateServiceTest {
     }
 
     // -------------------------------------------------------------------------
-    // getEventRubriqueFromDemande
+    // getEventRubriquesFromDemande
     // -------------------------------------------------------------------------
 
     @Nested
-    class GetEventRubriqueFromDemande {
+    class GetEventRubriquesFromDemande {
 
         private final DemandeInitieeDto demande = new DemandeInitieeDto(UUID.randomUUID(), "Bonjour");
 
@@ -94,11 +94,11 @@ class TemplateServiceTest {
         }
 
         @Test
-        void givenSubcategoryInATemplateRubrique_whenGetEventRubriqueFromDemande_thenPlacesItThereAmongAllRubriques() {
+        void givenSubcategoryInATemplateRubrique_whenGetEventRubriquesFromDemande_thenPlacesItThereAmongAllRubriques() {
             givenPrestataireIn("dj");
             when(categorieService.getCategoryKeyOf("dj")).thenReturn("musique");
 
-            assertThat(templateService.getEventRubriqueFromDemande("mariage", demande)).containsExactly(
+            assertThat(templateService.getEventRubriquesFromDemande("mariage", demande)).containsExactly(
                     new RubriqueDto("lieu", List.of()),
                     new RubriqueDto("musique-animation", List.of(demande)),
                     new RubriqueDto("decoration", List.of()),
@@ -106,11 +106,11 @@ class TemplateServiceTest {
         }
 
         @Test
-        void givenIsolatedSubcategory_whenGetEventRubriqueFromDemande_thenPlacesItInTheRubriqueOfTheSubcategory() {
+        void givenIsolatedSubcategory_whenGetEventRubriquesFromDemande_thenPlacesItInTheRubriqueOfTheSubcategory() {
             givenPrestataireIn("decoration");
             when(categorieService.getCategoryKeyOf("decoration")).thenReturn("services");
 
-            assertThat(templateService.getEventRubriqueFromDemande("mariage", demande)).containsExactly(
+            assertThat(templateService.getEventRubriquesFromDemande("mariage", demande)).containsExactly(
                     new RubriqueDto("lieu", List.of()),
                     new RubriqueDto("musique-animation", List.of()),
                     new RubriqueDto("decoration", List.of(demande)),
@@ -118,31 +118,31 @@ class TemplateServiceTest {
         }
 
         @Test
-        void givenSubcategoryInNoRubrique_whenGetEventRubriqueFromDemande_thenAddsAutreAtTheEndWithIt() {
+        void givenSubcategoryInNoRubrique_whenGetEventRubriquesFromDemande_thenAddsAutreAtTheEndWithIt() {
             givenPrestataireIn("video");
             when(categorieService.getCategoryKeyOf("video")).thenReturn("services");
 
-            List<RubriqueDto> rubriques = templateService.getEventRubriqueFromDemande("mariage", demande);
+            List<RubriqueDto> rubriques = templateService.getEventRubriquesFromDemande("mariage", demande);
 
             assertThat(rubriques).hasSize(5);
             assertThat(rubriques.getLast()).isEqualTo(new RubriqueDto(TemplateService.RUBRIQUE_AUTRE, List.of(demande)));
         }
 
         @Test
-        void givenTypeWithoutTemplate_whenGetEventRubriqueFromDemande_thenOnlyTheCatalogueRubriqueWithTheDemande() {
+        void givenTypeWithoutTemplate_whenGetEventRubriquesFromDemande_thenOnlyTheCatalogueRubriqueWithTheDemande() {
             givenPrestataireIn("dj");
             when(categorieService.getCategoryKeyOf("dj")).thenReturn("musique");
 
-            assertThat(templateService.getEventRubriqueFromDemande("anniversaire", demande))
+            assertThat(templateService.getEventRubriquesFromDemande("anniversaire", demande))
                     .containsExactly(new RubriqueDto("musique-animation", List.of(demande)));
         }
 
         @Test
-        void givenTypeWithoutTemplateAndSubcategoryInNoTemplate_whenGetEventRubriqueFromDemande_thenOnlyAutreWithTheDemande() {
+        void givenTypeWithoutTemplateAndSubcategoryInNoTemplate_whenGetEventRubriquesFromDemande_thenOnlyAutreWithTheDemande() {
             givenPrestataireIn("video");
             when(categorieService.getCategoryKeyOf("video")).thenReturn("services");
 
-            assertThat(templateService.getEventRubriqueFromDemande("anniversaire", demande))
+            assertThat(templateService.getEventRubriquesFromDemande("anniversaire", demande))
                     .containsExactly(new RubriqueDto(TemplateService.RUBRIQUE_AUTRE, List.of(demande)));
         }
     }

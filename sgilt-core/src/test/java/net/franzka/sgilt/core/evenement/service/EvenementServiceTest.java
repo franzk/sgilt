@@ -594,7 +594,7 @@ class EvenementServiceTest {
             Utilisateur utilisateur = mock(Utilisateur.class);
             EvenementDto expected = new EvenementDto(
                     "mariage", null, null, null, date, "Lyon", null, null, rubriques);
-            when(templateService.getEventRubriqueFromDemande("mariage", demande)).thenReturn(rubriques);
+            when(templateService.getEventRubriquesFromDemande("mariage", demande)).thenReturn(rubriques);
             when(evenementMapper.toEvenement(expected, utilisateur)).thenReturn(Evenement.builder().build());
             when(evenementRepository.save(any())).thenAnswer(invocation -> {
                 Evenement e = invocation.getArgument(0);

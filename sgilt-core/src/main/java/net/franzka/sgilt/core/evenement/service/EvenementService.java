@@ -157,7 +157,7 @@ public class EvenementService {
      * @return l'identifiant du nouvel événement
      */
     public CreateEventResponse createEventFromDemande(Utilisateur utilisateur, CreateEventInConnectedFlowDemandeRequest request) {
-        List<RubriqueDto> rubriques = templateService.getEventRubriqueFromDemande(
+        List<RubriqueDto> rubriques = templateService.getEventRubriquesFromDemande(
                 request.eventType(), new DemandeInitieeDto(request.prestataireId(), request.prestataireMessage()));
         EvenementDto evenement = new EvenementDto(
                 request.eventType(), request.ambiance(), request.momentCle(), request.description(), request.date(),
