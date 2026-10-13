@@ -591,9 +591,10 @@ class EvenementServiceTest {
             when(templateService.getNewEventRubriques("mariage")).thenReturn(rubriques);
 
             EvenementDto built = evenementService.buildEvenement(
-                    new CreateEventRequest("mariage", null, null, null, date, "Lyon", null, null, null));
+                    new CreateEventRequest("Notre mariage", "mariage", null, null, null, date, "Lyon", null, null, null));
 
-            assertThat(built).isEqualTo(new EvenementDto("mariage", null, null, null, date, "Lyon", null, null, rubriques));
+            assertThat(built).isEqualTo(
+                    new EvenementDto("Notre mariage", "mariage", null, null, null, date, "Lyon", null, null, rubriques));
         }
 
         @Test
@@ -604,7 +605,7 @@ class EvenementServiceTest {
             when(templateService.getEventRubriquesFromDemande("mariage", demande)).thenReturn(rubriques);
 
             EvenementDto built = evenementService.buildEvenement(
-                    new CreateEventRequest("mariage", null, null, null, date, "Lyon", null, null, demande));
+                    new CreateEventRequest(null, "mariage", null, null, null, date, "Lyon", null, null, demande));
 
             assertThat(built.rubriques()).isEqualTo(rubriques);
         }
@@ -633,10 +634,10 @@ class EvenementServiceTest {
         void givenNoDemande_whenCreateEvent_thenCreatesTheEventWithoutReservation() {
             List<RubriqueDto> rubriques = List.of(new RubriqueDto("lieu", List.of()));
             when(templateService.getNewEventRubriques("mariage")).thenReturn(rubriques);
-            givenTheEventIsSaved(new EvenementDto("mariage", null, null, null, date, "Lyon", null, null, rubriques));
+            givenTheEventIsSaved(new EvenementDto(null, "mariage", null, null, null, date, "Lyon", null, null, rubriques));
 
             CreateEventResponse response = evenementService.createEvent(utilisateur,
-                    new CreateEventRequest("mariage", null, null, null, date, "Lyon", null, null, null));
+                    new CreateEventRequest(null, "mariage", null, null, null, date, "Lyon", null, null, null));
 
             assertThat(response.eventId()).isEqualTo(EVENT_ID);
             verify(prestataireService, never()).ensurePublished(any());
@@ -653,10 +654,10 @@ class EvenementServiceTest {
             when(templateService.getEventRubriquesFromDemande("mariage", demande)).thenReturn(rubriques);
             when(prestataireService.getById(prestataireId)).thenReturn(dj);
             Evenement saved = givenTheEventIsSaved(
-                    new EvenementDto("mariage", null, null, null, date, "Lyon", null, null, rubriques));
+                    new EvenementDto(null, "mariage", null, null, null, date, "Lyon", null, null, rubriques));
 
             CreateEventResponse response = evenementService.createEvent(utilisateur,
-                    new CreateEventRequest("mariage", null, null, null, date, "Lyon", null, null, demande));
+                    new CreateEventRequest(null, "mariage", null, null, null, date, "Lyon", null, null, demande));
 
             assertThat(response.eventId()).isEqualTo(EVENT_ID);
             verify(prestataireService).ensurePublished(prestataireId);
@@ -670,10 +671,38 @@ class EvenementServiceTest {
     class CreateFromDto {
 
         @Test
+        void givenTitle_whenCreateFromDto_thenSavesTheMappedEventWithThatTitle() {
+            Utilisateur utilisateur = mock(Utilisateur.class);
+            EvenementDto evenementDto = new EvenementDto(
+                    "Notre mariage", "mariage", null, null, null, null, "Lyon", null, null, List.of());
+            Evenement mapped = Evenement.builder().ville("Lyon").build();
+            when(evenementMapper.toEvenement(evenementDto, utilisateur)).thenReturn(mapped);
+            when(evenementRepository.save(mapped)).thenReturn(mapped);
+
+            Evenement result = evenementService.createFromDto(utilisateur, evenementDto);
+
+            assertThat(result.getTitle()).isEqualTo("Notre mariage");
+        }
+
+        @Test
+        void givenBlankTitle_whenCreateFromDto_thenSavesTheMappedEventWithTheDefaultTitleOfItsDate() {
+            Utilisateur utilisateur = mock(Utilisateur.class);
+            EvenementDto evenementDto = new EvenementDto(
+                    "  ", "mariage", null, null, null, LocalDate.of(2027, 6, 12), "Lyon", null, null, List.of());
+            Evenement mapped = Evenement.builder().ville("Lyon").build();
+            when(evenementMapper.toEvenement(evenementDto, utilisateur)).thenReturn(mapped);
+            when(evenementRepository.save(mapped)).thenReturn(mapped);
+
+            Evenement result = evenementService.createFromDto(utilisateur, evenementDto);
+
+            assertThat(result.getTitle()).isEqualTo("Mon événement du 12 Juin");
+        }
+
+        @Test
         void givenEvenementDto_whenCreateFromDto_thenSavesTheMappedEventWithItsDefaultTitle() {
             Utilisateur utilisateur = mock(Utilisateur.class);
             EvenementDto evenementDto = new EvenementDto(
-                    "mariage", null, null, null, null, "Lyon", null, null, List.of());
+                    null, "mariage", null, null, null, null, "Lyon", null, null, List.of());
             Evenement mapped = Evenement.builder().ville("Lyon").build();
             when(evenementMapper.toEvenement(evenementDto, utilisateur)).thenReturn(mapped);
             when(evenementRepository.save(mapped)).thenReturn(mapped);
@@ -692,7 +721,7 @@ class EvenementServiceTest {
             UUID traiteurId = UUID.randomUUID();
             Prestataire dj = mock(Prestataire.class);
             Prestataire traiteur = mock(Prestataire.class);
-            EvenementDto evenementDto = new EvenementDto("mariage", null, null, null, date, "Lyon", null, null,
+            EvenementDto evenementDto = new EvenementDto(null, "mariage", null, null, null, date, "Lyon", null, null,
                     List.of(new RubriqueDto("restauration", List.of(new DemandeInitieeDto(traiteurId, "Pour 80 ?"))),
                             new RubriqueDto("musique-animation", List.of(new DemandeInitieeDto(djId, "La soirée ?"))),
                             new RubriqueDto("lieu", List.of())));

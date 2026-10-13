@@ -34,7 +34,7 @@ class OnboardingMapperTest {
                     .id(id).email("client@sgilt.fr").state(OnboardingState.OPEN)
                     .createdAt(createdAt).expiresAt(expiresAt).build();
             DemandeInitieeDto demande = new DemandeInitieeDto(UUID.randomUUID(), null);
-            EvenementDto evenement = new EvenementDto("mariage", null, null, null, date, "Lyon", null, null,
+            EvenementDto evenement = new EvenementDto(null, "mariage", null, null, null, date, "Lyon", null, null,
                     List.of(new RubriqueDto("lieu", List.of(demande)),
                             new RubriqueDto("musique-animation", List.of(demande, demande)),
                             new RubriqueDto("decoration", null)));

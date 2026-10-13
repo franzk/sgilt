@@ -134,7 +134,7 @@ class InitOnboardingDemandeRequestTest {
 
     private InitOnboardingDemandeRequest validRequest() {
         return new InitOnboardingDemandeRequest(
-                "Jean", "Dupont", "jean.dupont@example.com", PRESTATAIRE_ID,
+                "Jean", "Dupont", "jean.dupont@example.com", PRESTATAIRE_ID, "Les 40 ans de Paul",
                 "anniversaire", "festif", "danse", "Une belle fête", LocalDate.of(2026, 6, 15),
                 "Strasbourg", "50", "Salle des fêtes", "06 12 34 56 78", "Merci de me recontacter vite");
     }
@@ -145,28 +145,28 @@ class InitOnboardingDemandeRequestTest {
 
     private InitOnboardingDemandeRequest withDescription(InitOnboardingDemandeRequest r, String description) {
         return new InitOnboardingDemandeRequest(
-                r.firstName(), r.lastName(), r.email(), r.prestataireId(),
+                r.firstName(), r.lastName(), r.email(), r.prestataireId(), r.title(),
                 r.eventType(), r.ambiance(), r.momentCle(), description, r.date(),
                 r.ville(), r.nbInvites(), r.lieu(), r.telephone(), r.prestataireMessage());
     }
 
     private InitOnboardingDemandeRequest withVille(InitOnboardingDemandeRequest r, String ville) {
         return new InitOnboardingDemandeRequest(
-                r.firstName(), r.lastName(), r.email(), r.prestataireId(),
+                r.firstName(), r.lastName(), r.email(), r.prestataireId(), r.title(),
                 r.eventType(), r.ambiance(), r.momentCle(), r.description(), r.date(),
                 ville, r.nbInvites(), r.lieu(), r.telephone(), r.prestataireMessage());
     }
 
     private InitOnboardingDemandeRequest withPrestataireMessage(InitOnboardingDemandeRequest r, String prestataireMessage) {
         return new InitOnboardingDemandeRequest(
-                r.firstName(), r.lastName(), r.email(), r.prestataireId(),
+                r.firstName(), r.lastName(), r.email(), r.prestataireId(), r.title(),
                 r.eventType(), r.ambiance(), r.momentCle(), r.description(), r.date(),
                 r.ville(), r.nbInvites(), r.lieu(), r.telephone(), prestataireMessage);
     }
 
     private InitOnboardingDemandeRequest withTelephone(InitOnboardingDemandeRequest r, String telephone) {
         return new InitOnboardingDemandeRequest(
-                r.firstName(), r.lastName(), r.email(), r.prestataireId(),
+                r.firstName(), r.lastName(), r.email(), r.prestataireId(), r.title(),
                 r.eventType(), r.ambiance(), r.momentCle(), r.description(), r.date(),
                 r.ville(), r.nbInvites(), r.lieu(), telephone, r.prestataireMessage());
     }

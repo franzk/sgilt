@@ -2,6 +2,7 @@
 
 // Champs de l'événement envoyés au serveur.
 export interface EvenementRequest {
+  title: string | null
   eventType: string | null
   ambiance: string | null
   momentCle: string | null

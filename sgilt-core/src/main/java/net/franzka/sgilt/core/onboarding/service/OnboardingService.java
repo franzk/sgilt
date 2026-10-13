@@ -64,7 +64,7 @@ public class OnboardingService {
         // L'événement est construit comme pour une création connectée, mais il n'est enregistré qu'à
         // l'activation du compte.
         EvenementDto evenement = evenementService.buildEvenement(new CreateEventRequest(
-                request.eventType(), request.ambiance(), request.momentCle(), request.description(),
+                request.title(), request.eventType(), request.ambiance(), request.momentCle(), request.description(),
                 request.date(), request.ville(), request.nbInvites(), request.lieu(),
                 new DemandeInitieeDto(request.prestataireId(), request.prestataireMessage())));
         return startSession(new InitOnboardingRequest(

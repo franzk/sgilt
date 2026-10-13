@@ -112,7 +112,7 @@ class EvenementMapperTest {
         @Test
         void givenEvenementDto_whenToEvenement_thenMapsDataStatusOwnerAndRubriqueKeys() {
             Utilisateur utilisateur = Utilisateur.builder().id(UUID.randomUUID()).build();
-            EvenementDto evenementDto = new EvenementDto("mariage", "chic", "danse", "Description",
+            EvenementDto evenementDto = new EvenementDto(null, "mariage", "chic", "danse", "Description",
                     LocalDate.of(2027, 6, 12), "Lyon", "80", "Domaine", List.of(
                             new RubriqueDto("lieu", List.of()),
                             new RubriqueDto("autre", List.of(new DemandeInitieeDto(UUID.randomUUID(), "Bonjour")))));
@@ -131,7 +131,7 @@ class EvenementMapperTest {
         @Test
         void givenNoRubriques_whenToEvenement_thenRubriquesAreEmpty() {
             EvenementDto evenementDto = new EvenementDto(
-                    "mariage", null, null, null, null, null, null, null, null);
+                    null, "mariage", null, null, null, null, null, null, null, null);
 
             assertThat(mapper.toEvenement(evenementDto, Utilisateur.builder().build()).getRubriques()).isEmpty();
         }

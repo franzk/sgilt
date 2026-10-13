@@ -66,7 +66,7 @@ class InitOnboardingRequestTest {
         @Test
         void givenDescriptionOverMaxLength_whenValidate_thenReportsNestedViolation() {
             EvenementDto evenement = new EvenementDto(
-                    "mariage", null, null, "a".repeat(2001), LocalDate.of(2027, 6, 12), null, null, null, List.of());
+                    null, "mariage", null, null, "a".repeat(2001), LocalDate.of(2027, 6, 12), null, null, null, List.of());
 
             Set<ConstraintViolation<InitOnboardingRequest>> violations = validator.validate(requestWith(evenement));
 
@@ -79,7 +79,7 @@ class InitOnboardingRequestTest {
     // -------------------------------------------------------------------------
 
     private static EvenementDto evenement(DemandeInitieeDto demande) {
-        return new EvenementDto("mariage", null, null, null, LocalDate.of(2027, 6, 12), "Lyon", null, null,
+        return new EvenementDto(null, "mariage", null, null, null, LocalDate.of(2027, 6, 12), "Lyon", null, null,
                 List.of(new RubriqueDto("musique-animation", List.of(demande))));
     }
 

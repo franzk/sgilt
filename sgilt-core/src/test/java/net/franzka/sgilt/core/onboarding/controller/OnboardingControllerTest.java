@@ -44,7 +44,7 @@ class OnboardingControllerTest {
         @Test
         void givenSingleDemande_whenInitOnboardingDemande_thenReturns202WithEmail() {
             InitOnboardingDemandeRequest request = new InitOnboardingDemandeRequest(
-                    "Jean", "Dupont", "jean@sgilt.fr", UUID.randomUUID(), "Mariage", "Champetre",
+                    "Jean", "Dupont", "jean@sgilt.fr", UUID.randomUUID(), "Notre mariage", "Mariage", "Champetre",
                     "Vin d'honneur", "Description", LocalDate.of(2027, 6, 15), "Lyon", "80",
                     "Domaine des fleurs", "0102030405", "Bonjour");
             InitOnboardingResponse response = new InitOnboardingResponse("jean@sgilt.fr");

@@ -9,8 +9,11 @@ import java.util.List;
 /**
  * Événement complet pas encore créé : ses données et sa structure (rubriques et demandes
  * initiées). C'est ce qui est matérialisé à l'activation d'un onboarding.
+ *
+ * @param title le nom choisi pour l'événement ; vide, il reçoit un nom par défaut
  */
 public record EvenementDto(
+        @Size(max = 255) String title,
         @Size(max = 100) String eventType,
         @Size(max = 100) String ambiance,
         @Size(max = 100) String momentCle,

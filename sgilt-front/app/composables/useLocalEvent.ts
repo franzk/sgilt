@@ -237,6 +237,7 @@ export function useLocalEvent() {
   function toEvenementRequest(): EvenementRequest {
     const withoutBareAutre = (value: string | null) => (value === 'autre' ? null : value)
     return {
+      title: localEvent.title.trim() || null,
       eventType: withoutBareAutre(localEvent.eventType),
       ambiance: withoutBareAutre(localEvent.ambiance),
       momentCle: withoutBareAutre(localEvent.momentCle),

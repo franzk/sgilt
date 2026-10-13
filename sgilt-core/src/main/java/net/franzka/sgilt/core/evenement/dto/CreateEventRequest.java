@@ -10,9 +10,11 @@ import java.time.LocalDate;
  * demande. Ses rubriques ne sont jamais transmises : le back les déduit du template de son type
  * (et y range la demande).
  *
+ * @param title   le nom choisi pour l'événement ; vide, il reçoit un nom par défaut
  * @param demande la première demande, {@code null} pour un événement créé sans prestataire
  */
 public record CreateEventRequest(
+        @Size(max = 255) String title,
         @Size(max = 100) String eventType,
         @Size(max = 100) String ambiance,
         @Size(max = 100) String momentCle,

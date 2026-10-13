@@ -18,6 +18,7 @@ public record InitOnboardingDemandeRequest(
         @NotBlank @Size(max = 100) String lastName,
         @NotBlank @Email @Size(max = 255) String email,
         @NotNull UUID prestataireId,
+        @Size(max = 255) String title,
         @Size(max = 100) String eventType,
         @Size(max = 100) String ambiance,
         @Size(max = 100) String momentCle,

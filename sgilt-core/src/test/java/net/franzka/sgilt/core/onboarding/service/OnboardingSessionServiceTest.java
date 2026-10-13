@@ -472,7 +472,7 @@ class OnboardingSessionServiceTest {
     // Événement avec une demande au DJ (musique-animation) et une au traiteur (restauration).
     private InitOnboardingRequest buildRequest() {
         return new InitOnboardingRequest(FIRSTNAME, LASTNAME, EMAIL, TELEPHONE,
-                new EvenementDto("mariage", null, null, null, DATE, null, null, null, List.of(
+                new EvenementDto(null, "mariage", null, null, null, DATE, null, null, null, List.of(
                         new RubriqueDto("restauration",
                                 List.of(new DemandeInitieeDto(TRAITEUR_ID, "Pour 80 personnes ?"))),
                         new RubriqueDto("musique-animation",

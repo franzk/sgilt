@@ -29,6 +29,7 @@ import net.franzka.sgilt.core.storage.FileStorageService;
 import net.franzka.sgilt.core.template.service.TemplateService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -165,13 +166,14 @@ public class EvenementService {
                 ? templateService.getNewEventRubriques(request.eventType())
                 : templateService.getEventRubriquesFromDemande(request.eventType(), request.demande());
         return new EvenementDto(
-                request.eventType(), request.ambiance(), request.momentCle(), request.description(),
+                request.title(), request.eventType(), request.ambiance(), request.momentCle(), request.description(),
                 request.date(), request.ville(), request.nbInvites(), request.lieu(), rubriques);
     }
 
     /**
      * Crée en statut ACTIVE un événement complet (données et rubriques), puis une réservation
-     * pour chaque demande initiée rangée dans ses rubriques. Seules les clés des rubriques sont
+     * pour chaque demande initiée rangée dans ses rubriques. Sans nom choisi, l'événement reçoit un
+     * nom par défaut tiré de sa date. Seules les clés des rubriques sont
      * enregistrées sur l'événement : les demandes deviennent des réservations.
      *
      * @param utilisateur l'utilisateur propriétaire de l'événement
@@ -180,7 +182,7 @@ public class EvenementService {
      */
     public Evenement createFromDto(Utilisateur utilisateur, EvenementDto evenement) {
         Evenement created = evenementMapper.toEvenement(evenement, utilisateur);
-        created.setTitle(defaultName(evenement.date()));
+        created.setTitle(StringUtils.hasText(evenement.title()) ? evenement.title() : defaultName(evenement.date()));
         created = evenementRepository.save(created);
 
         createReservationsFromDemandesInitiees(created, evenement.rubriques());

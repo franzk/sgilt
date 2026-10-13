@@ -49,6 +49,7 @@ class OnboardingServiceTest {
     private static final String    LASTNAME       = "Dupont";
     private static final String    EMAIL          = "jean.dupont@example.com";
     private static final UUID      PRESTATAIRE_ID = UUID.randomUUID();
+    private static final String    TITLE          = "Les 40 ans de Paul";
     private static final String    EVENT_TYPE     = "anniversaire";
     private static final LocalDate DATE           = LocalDate.of(2025, 6, 15);
     private static final String    TELEPHONE      = "0612345678";
@@ -133,20 +134,20 @@ class OnboardingServiceTest {
         private void stubHappyPath() {
             when(utilisateurService.existsByEmail(EMAIL)).thenReturn(false);
             when(evenementService.buildEvenement(eventToCreate()))
-                    .thenReturn(new EvenementDto(EVENT_TYPE, null, null, null, DATE, null, null, null, RUBRIQUES));
+                    .thenReturn(new EvenementDto(null, EVENT_TYPE, null, null, null, DATE, null, null, null, RUBRIQUES));
             when(onboardingSessionService.initiate(eq(EMAIL), any()))
                     .thenReturn(new OnboardingSessionService.InitiationResult(Onboarding.builder().email(EMAIL).build(), "hmac.token"));
         }
 
         // L'événement à créer que porte la demande (mêmes données, la demande en première demande).
         private CreateEventRequest eventToCreate() {
-            return new CreateEventRequest(EVENT_TYPE, null, null, null, DATE, null, null, null,
+            return new CreateEventRequest(TITLE, EVENT_TYPE, null, null, null, DATE, null, null, null,
                     new DemandeInitieeDto(PRESTATAIRE_ID, MESSAGE));
         }
 
         private InitOnboardingDemandeRequest buildDemande() {
             return new InitOnboardingDemandeRequest(
-                    FIRSTNAME, LASTNAME, EMAIL, PRESTATAIRE_ID,
+                    FIRSTNAME, LASTNAME, EMAIL, PRESTATAIRE_ID, TITLE,
                     EVENT_TYPE, null, null, null, DATE,
                     null, null, null, TELEPHONE, MESSAGE);
         }
@@ -154,7 +155,7 @@ class OnboardingServiceTest {
 
     private static InitOnboardingRequest fullRequest() {
         return new InitOnboardingRequest(FIRSTNAME, LASTNAME, EMAIL, TELEPHONE,
-                new EvenementDto(EVENT_TYPE, null, null, null, DATE, null, null, null, RUBRIQUES));
+                new EvenementDto(null, EVENT_TYPE, null, null, null, DATE, null, null, null, RUBRIQUES));
     }
 
     // -------------------------------------------------------------------------
