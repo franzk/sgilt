@@ -5,36 +5,23 @@
     <NuxtLink to="/app">{{ $t('tunnel.no-flow.back-to-app') }}</NuxtLink>
   </div>
 
+  <!-- Mêmes écrans pour tous, mobile comme desktop, visiteur comme connecté : récap de
+       l'événement, puis envoi de la demande (sans les coordonnées pour un connecté). La
+       confirmation d'envoi du visiteur est sur /demande-envoyee. -->
   <template v-else-if="prestataire">
-    <!-- Visiteur non connecté sur mobile : récap de l'événement puis coordonnées ; la
-         confirmation d'envoi est sur /demande-envoyee (desktop à venir). -->
-    <template v-if="isMobile && (isPublicVisitor || isNewEventFlow)">
-      <DemandeCoordonnees
-        v-if="publicStep === 'coordonnees' && summary"
-        :summary="summary"
-        :skip-contact="isNewEventFlow"
-        @back="goToPublicStep('recap')"
-        @send="onSend"
-      />
-      <DemandeRecapEvenement
-        v-else
-        :prestataire-name="prestataire.name"
-        :prestataire-image="heroRef(prestataire.medias) ?? ''"
-        :slug="slug"
-        @continue="goToPublicStep('coordonnees')"
-      />
-    </template>
-    <DemandeDesktop
-      v-else-if="!isMobile"
-      :slug="slug"
-      :prestataire-name="prestataire.name"
-      :prestataire-image="heroRef(prestataire.medias) ?? ''"
+    <DemandeCoordonnees
+      v-if="publicStep === 'coordonnees' && summary"
+      :summary="summary"
+      :skip-contact="isNewEventFlow"
+      @back="goToPublicStep('recap')"
+      @send="onSend"
     />
-    <DemandeMobile
+    <DemandeRecapEvenement
       v-else
       :prestataire-name="prestataire.name"
       :prestataire-image="heroRef(prestataire.medias) ?? ''"
       :slug="slug"
+      @continue="goToPublicStep('coordonnees')"
     />
   </template>
 
@@ -45,28 +32,16 @@
 </template>
 
 <script setup lang="ts">
-import DemandeDesktop from '~/components/demande/DemandeDesktop.vue'
-import DemandeMobile from '~/components/demande/DemandeMobile.vue'
 import DemandeCoordonnees from '~/components/demande/DemandeCoordonnees.vue'
 import DemandeRecapEvenement from '~/components/demande/DemandeRecapEvenement.vue'
 import { useDemande } from '~/composables/useDemande'
 import { usePrestataire } from '~/data/prestataire/usePrestataire'
 import type { DemandeSummary } from '~/types/demande'
-import { eventTypeKey } from '~/types/evenement'
 
 const route = useRoute()
 const slug = route.params.slug as string
 
-const {
-  state,
-  confirmation,
-  etapeActuelle,
-  submitted,
-  goTo,
-  initDemande,
-  submit,
-  reset: resetDemande,
-} = useDemande()
+const { state, confirmation, submitted, initDemande, submit, reset: resetDemande } = useDemande()
 const { prestataire, loading } = usePrestataire(slug)
 
 // Le prestataire visé vient de la route : la page le charge, la demande n'en garde qu'une référence.
@@ -78,8 +53,6 @@ watch(
   { immediate: true },
 )
 
-const { isMobile } = useDevice()
-
 useHead({ title: 'Votre demande' })
 
 const { localEvent, eventTypeLabel } = useLocalEvent()
@@ -87,12 +60,11 @@ const { categoryName, subcategoryName } = useCategories()
 const { currentFlow, onFlowSuccess } = useFlow()
 const { isAuthenticated } = useKeycloak()
 
-const isPublicVisitor = computed(() => !isAuthenticated.value && currentFlow.value === null)
 // Nouvel événement d'un utilisateur connecté : les mêmes écrans que le visiteur (le prestataire a
 // besoin des mêmes informations), sans les coordonnées, connues par le compte.
 const isNewEventFlow = computed(() => currentFlow.value === 'new-event')
 
-// Écran courant du parcours public dans l'URL (?etape=) : retour navigateur et refresh
+// Écran courant dans l'URL (?etape=) : retour navigateur et refresh
 // fonctionnent sans état supplémentaire. Absent ou inconnu = récap de l'événement.
 type PublicStep = 'recap' | 'coordonnees'
 const publicStep = computed<PublicStep>(() =>
@@ -151,30 +123,14 @@ async function onSend() {
 const noFlowWarning = ref(false)
 
 onMounted(() => {
-  if (currentFlow.value === null) {
-    if (!isAuthenticated.value) {
-      if (!localEvent.date) {
-        // Si l'utilisateur n'est pas authentifié et que l'événement n'a pas de date,
-        // on le redirige vers la page du prestataire pour qu'il puisse initier une demande
-        navigateTo(`/${slug}`)
-        return
-      }
-    } else {
-      // Si l'utilisateur est authentifié mais qu'il n'y a pas de flow en cours, on affiche un message d'erreur
-      noFlowWarning.value = true
-      return
-    }
+  if (!isAuthenticated.value) {
+    // Visiteur sans date d'événement : retour à la fiche, où la demande commence par la date.
+    if (!localEvent.date) navigateTo(`/${slug}`)
+    return
   }
-
-  if (
-    etapeActuelle.value === 1 &&
-    localEvent.eventType &&
-    eventTypeKey(localEvent.eventType) !== 'autre'
-  ) {
-    // on saute l'étape de sélection du type d'événement si elle a déjà été saisie au début du parcours
-    // et qu'elle n'est pas "Autre"
-    goTo(2)
-  }
+  // Connecté hors flow « Nouvel événement » (l'ajout à un événement existant passe par la fenêtre
+  // de finalisation de la fiche) : rien à envoyer d'ici.
+  if (!isNewEventFlow.value) noFlowWarning.value = true
 })
 </script>
 

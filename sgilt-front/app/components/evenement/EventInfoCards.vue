@@ -1,93 +1,64 @@
 <template>
   <div class="event-info-cards">
-    <div
-      v-for="card in cards"
-      :key="card.key"
-      :ref="(el: HTMLElement) => setCardEl(card.key, el)"
-      class="card"
-      :class="{ 'has-error': showErrors && card.missing }"
-    >
-      <span class="card-icon" aria-hidden="true">
-        <component :is="card.icon" class="icon" />
-      </span>
-      <span class="card-text">
-        <span class="card-label">{{ card.label }}</span>
-        <span v-if="card.value" class="card-value">{{ card.value }}</span>
-        <span v-else-if="showErrors && card.missing" class="card-error">
-          {{ $t('event-info.required') }}
+    <div v-for="card in cards" :key="card.key" class="card-group">
+      <div
+        :ref="(el: HTMLElement) => setCardEl(card.key, el)"
+        class="card"
+        :class="{
+          'has-error': showErrors && isMissing(card.key),
+          open: isDesktop && isOpen(card.key),
+        }"
+      >
+        <span class="card-icon" aria-hidden="true">
+          <component :is="card.icon" class="icon" />
         </span>
-      </span>
-      <button v-if="card.editable" class="card-btn" type="button" @click="openField(card.key)">
-        <PencilIcon v-if="card.value" class="icon" aria-hidden="true" />
-        <AddIcon v-else class="icon" aria-hidden="true" />
-        {{ card.value ? $t('event-info.edit') : $t('event-info.add') }}
-      </button>
-    </div>
-
-    <!-- ── Panneau d'édition ─────────────────────────────────────────────────── -->
-    <!-- Le panneau travaille sur un brouillon : fermer sans valider ne change rien. -->
-    <SgiltBottomSheet v-model:open="sheetOpen" :title="activeCard?.label ?? ''" overlay>
-      <div v-if="activeField" class="sheet-body">
-        <!-- Les choix par cartes valident au clic, comme dans le tunnel /organisation. -->
-        <OrganisationChoiceStep
-          v-if="activeField === 'eventType'"
-          v-model="draft.eventType"
-          :options="EVENT_TYPE_OPTIONS"
-          :autre-placeholder="$t('event-info.event-type-autre-placeholder')"
-          @next="validateField"
-        />
-        <OrganisationChoiceStep
-          v-else-if="activeField === 'ambiance'"
-          v-model="draft.ambiance"
-          :options="AMBIANCE_OPTIONS"
-          :autre-placeholder="$t('organisation.steps.ambiance.autre-placeholder')"
-          @next="validateField"
-        />
-        <OrganisationChoiceStep
-          v-else-if="activeField === 'momentCle'"
-          v-model="draft.momentCle"
-          :options="MOMENT_CLE_OPTIONS"
-          :autre-placeholder="$t('organisation.steps.moment-cle.autre-placeholder')"
-          @next="validateField"
-        />
-
-        <template v-else>
-          <template v-if="activeField === 'title'">
-            <input
-              v-model="draft.title"
-              class="title-input"
-              :class="{ invalid: titleError }"
-              type="text"
-              :aria-label="$t('event-info.fields.title')"
-              :placeholder="$t('event-info.title-placeholder')"
-              @input="titleError = false"
-            />
-            <p v-if="titleError" class="error">{{ $t('event-info.title-required') }}</p>
-          </template>
+        <span class="card-text">
+          <span class="card-label">{{ card.label }}</span>
+          <!-- Date modifiable : choisie directement dans la carte, appliquée aussitôt. -->
           <SgiltDatePicker
-            v-else-if="activeField === 'date'"
-            v-model="draft.date"
-            inline
-            fullwidth
+            v-if="isDateInCard(card)"
+            v-model="eventDate"
+            class="card-date"
+            :placeholder="$t('event-info.date-placeholder')"
+            :error="showErrors && isMissing(card.key)"
           />
-          <OrganisationLieuStep
-            v-else-if="activeField === 'lieu'"
-            v-model:ville="draft.ville"
-            v-model:lieu="draft.lieu"
-            :city-required="essentialsRequired"
-          />
-          <OrganisationInvitesStep
-            v-else-if="activeField === 'nbInvites'"
-            v-model="draft.nbInvites"
-          />
-          <OrganisationPetitPlusStep v-else v-model="draft.description" />
-
-          <button class="validate" type="button" @click="validateField">
-            {{ $t('event-info.validate') }}
-          </button>
-        </template>
+          <template v-else>
+            <span v-if="card.value" class="card-value">{{ card.value }}</span>
+            <span v-else-if="showErrors && isMissing(card.key)" class="card-error">
+              {{ $t('event-info.required') }}
+            </span>
+          </template>
+        </span>
+        <button
+          v-if="card.editable && !isDateInCard(card)"
+          class="card-btn"
+          type="button"
+          @click="toggleField(card.key)"
+        >
+          <template v-if="isOpen(card.key)">{{ $t('common.cancel') }}</template>
+          <template v-else>
+            <PencilIcon v-if="card.value" class="icon" aria-hidden="true" />
+            <AddIcon v-else class="icon" aria-hidden="true" />
+            {{ card.value ? $t('event-info.edit') : $t('event-info.add') }}
+          </template>
+        </button>
       </div>
-    </SgiltBottomSheet>
+
+      <!-- Éditeur de la carte : déroulé sous elle sur desktop, en bottom sheet sur mobile. -->
+      <SgiltInlinePanel
+        v-if="card.editable && !isDateInCard(card)"
+        :open="isOpen(card.key)"
+        :title="card.label"
+        @update:open="(open) => !open && closeField()"
+      >
+        <EventInfoFieldEditor
+          :field="card.key"
+          :event="event"
+          :essentials-required="essentialsRequired"
+          @validate="onValidated"
+        />
+      </SgiltInlinePanel>
+    </div>
   </div>
 </template>
 
@@ -105,9 +76,15 @@ import {
   Sparkling2Icon,
   SparklingIcon,
 } from '@remixicons/vue/line'
-import SgiltBottomSheet from '~/components/basics/sheets/SgiltBottomSheet.vue'
+import SgiltInlinePanel from '~/components/basics/sheets/SgiltInlinePanel.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
-import { choiceLabel, type EventInfoFields } from '~/composables/useLocalEvent'
+import EventInfoFieldEditor from '~/components/evenement/EventInfoFieldEditor.vue'
+import {
+  choiceLabel,
+  isEssentialInfoMissing,
+  type EventInfoFieldKey,
+  type EventInfoFields,
+} from '~/composables/useLocalEvent'
 import { AMBIANCE_OPTIONS, EVENT_TYPE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/evenement'
 import { formatDateWithWeekday } from '~/utils/dateUtils'
 import { EVENT_TYPE_CATALOG } from '~/utils/eventTypes'
@@ -118,37 +95,26 @@ const props = defineProps<{
   event: EventInfoFields
   // Ajoute la carte « Nom de l'événement » en tête.
   withTitle?: boolean
-  // Date, type et ville obligatoires (envoi d'une demande) : voir validate().
+  // Informations essentielles obligatoires (envoi d'une demande, voir ESSENTIAL_EVENT_INFO) :
+  // voir validate().
   essentialsRequired?: boolean
   // Date non modifiable (événement en base : en changer demande l'accord des prestataires).
   dateLocked?: boolean
 }>()
 
 const emit = defineEmits<{
-  update: [patch: EventInfoFields]
+  update: [patch: Partial<EventInfoFields>]
 }>()
 
 const { t } = useI18n()
 
 // ── Cartes ────────────────────────────────────────────────────────────────────
 
-type FieldKey =
-  | 'title'
-  | 'eventType'
-  | 'date'
-  | 'lieu'
-  | 'nbInvites'
-  | 'ambiance'
-  | 'momentCle'
-  | 'description'
-
 interface InfoCard {
-  key: FieldKey
+  key: EventInfoFieldKey
   label: string
   icon: Component
   value: string | null
-  // Obligatoire et non renseigné : fait échouer validate().
-  missing: boolean
   editable: boolean
 }
 
@@ -160,14 +126,12 @@ const eventTypeIcon = computed(
 
 const cards = computed<InfoCard[]>(() => {
   const event = props.event
-  const required = props.essentialsRequired
   const infoCards: InfoCard[] = [
     {
       key: 'eventType',
       label: t('event-info.fields.event-type'),
       icon: eventTypeIcon.value,
       value: choiceLabel(EVENT_TYPE_OPTIONS, event.eventType),
-      missing: required && !event.eventType,
       // Le type n'est plus modifiable une fois choisi : en changer revient à repartir de zéro.
       editable: !event.eventType,
     },
@@ -176,7 +140,6 @@ const cards = computed<InfoCard[]>(() => {
       label: t('event-info.fields.date'),
       icon: markRaw(CalendarEventIcon),
       value: formatDateWithWeekday(event.date) || null,
-      missing: required && !event.date,
       editable: !props.dateLocked,
     },
     {
@@ -184,7 +147,6 @@ const cards = computed<InfoCard[]>(() => {
       label: t('event-info.fields.lieu'),
       icon: markRaw(MapPin2Icon),
       value: [event.lieu, event.ville].filter(Boolean).join(', ') || null,
-      missing: required && !event.ville,
       editable: true,
     },
     {
@@ -192,7 +154,6 @@ const cards = computed<InfoCard[]>(() => {
       label: t('event-info.fields.nb-invites'),
       icon: markRaw(GroupIcon),
       value: event.nbInvites ? t('event-info.nb-invites-value', { value: event.nbInvites }) : null,
-      missing: false,
       editable: true,
     },
     {
@@ -200,7 +161,6 @@ const cards = computed<InfoCard[]>(() => {
       label: t('event-info.fields.ambiance'),
       icon: markRaw(Sparkling2Icon),
       value: choiceLabel(AMBIANCE_OPTIONS, event.ambiance),
-      missing: false,
       editable: true,
     },
     {
@@ -208,7 +168,6 @@ const cards = computed<InfoCard[]>(() => {
       label: t('event-info.fields.moment-cle'),
       icon: markRaw(Music2Icon),
       value: choiceLabel(MOMENT_CLE_OPTIONS, event.momentCle),
-      missing: false,
       editable: true,
     },
     {
@@ -216,7 +175,6 @@ const cards = computed<InfoCard[]>(() => {
       label: t('event-info.fields.description'),
       icon: markRaw(FileTextIcon),
       value: event.description || null,
-      missing: false,
       editable: true,
     },
   ]
@@ -227,64 +185,62 @@ const cards = computed<InfoCard[]>(() => {
       label: t('event-info.fields.title'),
       icon: markRaw(Edit2Icon),
       value: event.title || null,
-      missing: false,
       editable: true,
     },
     ...infoCards,
   ]
 })
 
+// Information essentielle exigée (envoi d'une demande) et non renseignée : fait échouer validate().
+function isMissing(key: EventInfoFieldKey): boolean {
+  return props.essentialsRequired && isEssentialInfoMissing(props.event, key)
+}
+
 // ── Panneau d'édition ─────────────────────────────────────────────────────────
 
-const sheetOpen = ref(false)
-const activeField = ref<FieldKey | null>(null)
-const activeCard = computed(() => cards.value.find((card) => card.key === activeField.value))
-const titleError = ref(false)
-
-// Copie des informations, réinitialisée à chaque ouverture du panneau.
-function eventSnapshot(): EventInfoFields {
-  const event = props.event
-  return {
-    title: event.title,
-    eventType: event.eventType,
-    date: event.date,
-    ville: event.ville,
-    lieu: event.lieu,
-    nbInvites: event.nbInvites,
-    ambiance: event.ambiance,
-    momentCle: event.momentCle,
-    description: event.description,
-  }
+// La date se choisit dans sa carte, sans éditeur (quand elle est modifiable).
+function isDateInCard(card: InfoCard): boolean {
+  return card.key === 'date' && card.editable
 }
 
-const draft = reactive<EventInfoFields>(eventSnapshot())
+// Date choisie dans sa carte : appliquée aussitôt. L'effacement du sélecteur renvoie null : pas
+// de date.
+const eventDate = computed({
+  get: () => props.event.date,
+  set: (date: Date | null | undefined) => emit('update', { date: date ?? undefined }),
+})
 
-function openField(key: FieldKey) {
-  Object.assign(draft, eventSnapshot())
-  titleError.value = false
-  activeField.value = key
-  sheetOpen.value = true
+// Carte dont l'éditeur est ouvert (une seule à la fois). L'éditeur est recréé à chaque
+// ouverture : il repart d'une copie fraîche des informations.
+const openKey = ref<EventInfoFieldKey | null>(null)
+
+const { isDesktop } = useDevice()
+
+function isOpen(key: EventInfoFieldKey): boolean {
+  return openKey.value === key
 }
 
-function validateField() {
-  // Le nom ne peut pas être vidé : l'erreur reste dans le panneau.
-  if (activeField.value === 'title') {
-    draft.title = draft.title.trim()
-    if (!draft.title) {
-      titleError.value = true
-      return
-    }
-  }
-  emit('update', { ...draft })
-  sheetOpen.value = false
+// Le bouton d'une carte ouvre son éditeur ; recliquer le referme sans valider.
+function toggleField(key: EventInfoFieldKey) {
+  openKey.value = isOpen(key) ? null : key
+}
+
+function closeField() {
+  openKey.value = null
+}
+
+// Informations validées dans l'éditeur : transmises au parent, qui les applique.
+function onValidated(fields: EventInfoFields) {
+  emit('update', fields)
+  closeField()
 }
 
 // ── Validation ────────────────────────────────────────────────────────────────
 
 const showErrors = ref(false)
-const cardEls = new Map<FieldKey, HTMLElement>()
+const cardEls = new Map<EventInfoFieldKey, HTMLElement>()
 
-function setCardEl(key: FieldKey, el: Element | ComponentPublicInstance | null) {
+function setCardEl(key: EventInfoFieldKey, el: Element | ComponentPublicInstance | null) {
   if (el instanceof HTMLElement) cardEls.set(key, el)
 }
 
@@ -292,7 +248,7 @@ function setCardEl(key: FieldKey, el: Element | ComponentPublicInstance | null) 
 // Retourne vrai si tout est renseigné.
 function validate(): boolean {
   showErrors.value = true
-  const firstMissing = cards.value.find((card) => card.missing)
+  const firstMissing = cards.value.find((card) => isMissing(card.key))
   if (!firstMissing) return true
   cardEls.get(firstMissing.key)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   return false
@@ -309,6 +265,11 @@ defineExpose({ validate })
   flex-direction: column;
   gap: $spacing-s;
 
+  .card-group {
+    display: flex;
+    flex-direction: column;
+  }
+
   .card {
     display: flex;
     align-items: center;
@@ -321,6 +282,13 @@ defineExpose({ validate })
 
     &.has-error {
       border-color: $state-error;
+    }
+
+    // Éditeur déroulé dessous : la carte et l'éditeur forment un seul bloc.
+    &.open {
+      border-color: $brand-accent;
+      border-bottom: none;
+      border-radius: $radius-lg $radius-lg 0 0;
     }
 
     .card-icon {
@@ -364,6 +332,10 @@ defineExpose({ validate })
         color: $state-error;
         font-size: $font-size-xs;
       }
+
+      .card-date {
+        margin-top: $spacing-xxs;
+      }
     }
 
     .card-btn {
@@ -386,69 +358,14 @@ defineExpose({ validate })
       }
     }
   }
-}
 
-// Hors de .event-info-cards : le panneau est téléporté hors de ce conteneur par le drawer.
-.sheet-body {
-  display: flex;
-  flex-direction: column;
-  padding: 0 $spacing-m $spacing-l;
-
-  .title-input {
-    height: 3.25rem;
-    padding: 0 $spacing-m;
-    border: 1.5px solid $divider-color;
-    border-radius: $radius-lg;
+  // ── Éditeur déroulé sous sa carte (desktop) : la carte et lui forment un seul bloc ──
+  :deep(.sgilt-inline-panel) {
+    padding-top: $spacing-s;
+    border: 1.5px solid $brand-accent;
+    border-top: none;
+    border-radius: 0 0 $radius-lg $radius-lg;
     background: $surface-white;
-    color: $brand-primary;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.25rem;
-    font-weight: 600;
-    outline: none;
-    transition: border-color 180ms ease;
-
-    &:focus {
-      border-color: $brand-accent;
-    }
-
-    &.invalid {
-      border-color: $state-error;
-    }
-
-    &::placeholder {
-      color: $text-secondary;
-      opacity: 0.6;
-    }
-  }
-
-  .error {
-    margin: $spacing-xs 0 0;
-    color: $state-error;
-    font-size: $font-size-xs;
-  }
-
-  // Même bouton que le CTA du tunnel /organisation.
-  .validate {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 3.25rem;
-    margin-top: $spacing-l;
-    border: none;
-    border-radius: 9999px;
-    background: $brand-accent;
-    color: $brand-primary;
-    font-family: inherit;
-    font-size: $font-size-md;
-    font-weight: $font-weight-bold;
-    cursor: pointer;
-    box-shadow: 0 0.25rem 0.625rem rgba($brand-primary, 0.18);
-
-    &:focus-visible {
-      outline: 3px solid $brand-primary;
-      outline-offset: 4px;
-    }
   }
 }
 </style>

@@ -6,11 +6,13 @@
         {{ $t('evenement.settings.back') }}
       </button>
 
-      <!-- Les panneaux alimentent le brouillon ; l'événement n'est modifié qu'à l'enregistrement. -->
+      <!-- Les panneaux alimentent le brouillon ; l'événement n'est modifié qu'à l'enregistrement.
+           Événement enregistré : ses informations essentielles ne peuvent pas être effacées. -->
       <EventInfoCards
         :event="draft"
         with-title
         date-locked
+        essentials-required
         @update="Object.assign(draft, $event)"
       />
 

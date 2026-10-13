@@ -31,8 +31,6 @@ function defaultDemandeState(): DemandeState {
 
 // ── Singleton state (module-level, shared across all useDemande calls) ─────────
 
-const etapeActuelle = ref<number>(1)
-const direction = ref<'forward' | 'back'>('forward')
 const submitted = ref(false)
 const submitting = ref(false)
 const submitError = ref<string | null>(null)
@@ -44,31 +42,8 @@ const confirmation = ref<DemandeConfirmation | null>(null)
 // ── Composable ────────────────────────────────────────────────────────────────
 
 export function useDemande() {
-  function next() {
-    if (etapeActuelle.value < 6) {
-      direction.value = 'forward'
-      etapeActuelle.value++
-    }
-  }
-
-  function back() {
-    if (etapeActuelle.value > 1) {
-      direction.value = 'back'
-      etapeActuelle.value--
-    }
-  }
-
-  function goTo(etape: number) {
-    if (etape >= 1 && etape <= 6) {
-      direction.value = etape > etapeActuelle.value ? 'forward' : 'back'
-      etapeActuelle.value = etape
-    }
-  }
-
   function reset() {
     Object.assign(state, defaultDemandeState())
-    etapeActuelle.value = 1
-    direction.value = 'forward'
     submitted.value = false
   }
 
@@ -127,17 +102,12 @@ export function useDemande() {
   }
 
   return {
-    etapeActuelle,
-    direction,
     submitted,
     submitting,
     submitError,
     state,
     confirmation,
     initDemande,
-    next,
-    back,
-    goTo,
     reset,
     submit,
   }

@@ -57,6 +57,27 @@ export type EventInfoFields = Pick<
   | 'description'
 >
 
+// Information modifiable une à une (une carte de EventInfoCards) : 'lieu' couvre la ville et le lieu.
+export type EventInfoFieldKey =
+  | 'title'
+  | 'eventType'
+  | 'date'
+  | 'lieu'
+  | 'nbInvites'
+  | 'ambiance'
+  | 'momentCle'
+  | 'description'
+
+// Informations essentielles : exigées pour envoyer une demande à un prestataire.
+export const ESSENTIAL_EVENT_INFO: EventInfoFieldKey[] = ['eventType', 'date', 'lieu']
+
+// Information essentielle non renseignée. Le lieu compte par sa ville (le nom du lieu reste
+// facultatif).
+export function isEssentialInfoMissing(event: EventInfoFields, key: EventInfoFieldKey): boolean {
+  if (!ESSENTIAL_EVENT_INFO.includes(key)) return false
+  return !(key === 'lieu' ? event.ville : event[key])
+}
+
 function defaultLocalEvent(): LocalEvent {
   return {
     eventType: null,

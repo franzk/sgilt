@@ -53,5 +53,3 @@ export interface DemandeState {
   telephone: string
   prestataireMessage?: string
 }
-
-export const ETAPES_COUNT = 6
