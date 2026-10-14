@@ -25,16 +25,6 @@
 
       <div class="actions">
         <button
-          class="save"
-          type="button"
-          :title="$t('evenement.banner.save')"
-          :aria-label="$t('evenement.banner.save')"
-          @click="onSave"
-        >
-          <Save3Icon class="save-icon" aria-hidden="true" />
-          <span class="save-label">{{ $t('evenement.banner.save') }}</span>
-        </button>
-        <button
           class="reset"
           type="button"
           :aria-label="$t('evenement.banner.reset')"
@@ -59,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { DeleteBin6Icon, Home2Icon, Save3Icon, SparklingIcon } from '@remixicons/vue/line'
+import { DeleteBin6Icon, Home2Icon, SparklingIcon } from '@remixicons/vue/line'
 import AppBanner from '~/components/app/AppBanner.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
@@ -83,11 +73,6 @@ const pickerDate = computed<Date | undefined>({
     localEvent.date = value ?? undefined
   },
 })
-
-function onSave() {
-  // TODO(brief séparé) : parcours d'inscription par email (création de l'espace utilisateur).
-  console.log('stay tuned')
-}
 
 const resetDialogOpen = ref(false)
 
@@ -178,47 +163,6 @@ function onReset() {
 
   @media (min-width: $breakpoint-desktop) {
     gap: $spacing-xs;
-  }
-
-  // Mobile : bouton rond avec icône seule. Desktop : bouton pilule avec le libellé.
-  .save {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    padding: 0;
-    border: none;
-    border-radius: 9999px;
-    background: $brand-accent;
-    color: $brand-primary;
-    font-family: inherit;
-    font-size: $font-size-xs;
-    font-weight: $font-weight-bold;
-    white-space: nowrap;
-    cursor: pointer;
-
-    .save-icon {
-      width: 1rem;
-      height: 1rem;
-    }
-
-    .save-label {
-      display: none;
-    }
-
-    @media (min-width: $breakpoint-desktop) {
-      width: auto;
-      padding: 0 0.9rem;
-
-      .save-icon {
-        display: none;
-      }
-
-      .save-label {
-        display: inline;
-      }
-    }
   }
 
   .reset {
