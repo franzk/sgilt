@@ -221,7 +221,7 @@ onMounted(async () => {
   .content {
     display: flex;
     flex-direction: column;
-    gap: $spacing-l;
+    gap: $spacing-xl;
     width: 100%;
     max-width: 45rem;
     margin: 0 auto;
