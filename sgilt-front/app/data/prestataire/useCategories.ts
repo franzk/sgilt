@@ -36,5 +36,14 @@ export function useCategories() {
     )
   }
 
-  return { categories, load, categoryName, subcategoryName }
+  // Sous-catégories couvertes par des catégories entières et des sous-catégories isolées (le
+  // contenu d'une rubrique) : celles des catégories, puis les isolées.
+  function subcategoriesOf(categoryKeys: string[], subcategoryKeys: string[]): string[] {
+    const ofCategories = categories.value
+      .filter((category) => categoryKeys.includes(category.key))
+      .flatMap((category) => category.subcategories.map((subcategory) => subcategory.key))
+    return [...new Set([...ofCategories, ...subcategoryKeys])]
+  }
+
+  return { categories, load, categoryName, subcategoryName, subcategoriesOf }
 }

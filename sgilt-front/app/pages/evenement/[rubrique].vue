@@ -4,6 +4,7 @@
   <EventRubriqueDetail
     v-if="rubriqueKey"
     :rubrique-key="rubriqueKey"
+    :event-type="eventTypeKey(localEvent.eventType)"
     @back="navigateTo('/evenement')"
     @search="navigateTo('/search')"
     @open-provider="(slug) => navigateTo(`/${slug}`)"
@@ -12,6 +13,7 @@
 
 <script setup lang="ts">
 import EventRubriqueDetail from '~/components/evenement/EventRubriqueDetail.vue'
+import { eventTypeKey } from '~/types/evenement'
 
 definePageMeta({ layout: 'evenement' })
 

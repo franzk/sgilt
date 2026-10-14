@@ -8,6 +8,7 @@ import net.franzka.sgilt.core.prestataire.service.PrestataireService;
 import net.franzka.sgilt.core.template.domain.Template;
 import net.franzka.sgilt.core.template.domain.TemplateDocument;
 import net.franzka.sgilt.core.template.domain.TemplateRubrique;
+import net.franzka.sgilt.core.template.dto.RubriqueContenuDto;
 import net.franzka.sgilt.core.template.repository.TemplateDocumentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -144,6 +145,44 @@ class TemplateServiceTest {
 
             assertThat(templateService.getEventRubriquesFromDemande("anniversaire", demande))
                     .containsExactly(new RubriqueDto(TemplateService.RUBRIQUE_AUTRE, List.of(demande)));
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // getRubriqueContenu
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetRubriqueContenu {
+
+        // Deux templates : mariage (BeforeEach) et anniversaire, avec une rubrique « photo-video ».
+        @BeforeEach
+        void givenMariageAndAnniversaireTemplates() {
+            Template anniversaire = new Template("anniversaire", List.of(
+                    new TemplateRubrique("photo-video", List.of(), List.of("video"))));
+            Template mariage = templateDocumentRepository.findById(TemplateDocument.SINGLE_ID).orElseThrow()
+                    .getContent().getFirst();
+            when(templateDocumentRepository.findById(TemplateDocument.SINGLE_ID))
+                    .thenReturn(Optional.of(TemplateDocument.builder().id(TemplateDocument.SINGLE_ID)
+                            .content(List.of(mariage, anniversaire)).build()));
+        }
+
+        @Test
+        void givenRubriqueOfTheEventTemplate_whenGetRubriqueContenu_thenReturnsItsCategoriesAndSubcategories() {
+            assertThat(templateService.getRubriqueContenu("mariage", "musique-animation"))
+                    .isEqualTo(new RubriqueContenuDto(List.of("musique"), List.of("animation")));
+        }
+
+        @Test
+        void givenRubriqueOnlyInAnotherTemplate_whenGetRubriqueContenu_thenReturnsTheCatalogueRubrique() {
+            assertThat(templateService.getRubriqueContenu("mariage", "photo-video"))
+                    .isEqualTo(new RubriqueContenuDto(List.of(), List.of("video")));
+        }
+
+        @Test
+        void givenRubriqueInNoTemplate_whenGetRubriqueContenu_thenReturnsNothing() {
+            assertThat(templateService.getRubriqueContenu("mariage", TemplateService.RUBRIQUE_AUTRE))
+                    .isEqualTo(new RubriqueContenuDto(List.of(), List.of()));
         }
     }
 

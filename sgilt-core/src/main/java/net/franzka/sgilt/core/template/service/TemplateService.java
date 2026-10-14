@@ -9,6 +9,7 @@ import net.franzka.sgilt.core.prestataire.service.PrestataireService;
 import net.franzka.sgilt.core.template.domain.Template;
 import net.franzka.sgilt.core.template.domain.TemplateDocument;
 import net.franzka.sgilt.core.template.domain.TemplateRubrique;
+import net.franzka.sgilt.core.template.dto.RubriqueContenuDto;
 import net.franzka.sgilt.core.template.repository.TemplateDocumentRepository;
 import org.springframework.stereotype.Service;
 
@@ -90,6 +91,23 @@ public class TemplateService {
     }
 
     /**
+     * Retourne ce que regroupe une rubrique dans un événement du type donné : la rubrique du
+     * template du type, à défaut la même rubrique dans tous les templates (catalogue des rubriques
+     * connues) ; rien pour une rubrique qu'aucun template ne définit ({@value #RUBRIQUE_AUTRE}…).
+     *
+     * @param eventType   le type d'événement
+     * @param rubriqueKey la clé de la rubrique
+     * @return ses catégories entières et sous-catégories isolées
+     */
+    public RubriqueContenuDto getRubriqueContenu(String eventType, String rubriqueKey) {
+        List<Template> templates = loadTemplates();
+        return findByKey(ownRubriques(templates, eventType), rubriqueKey)
+                .or(() -> findByKey(catalogue(templates), rubriqueKey))
+                .map(rubrique -> new RubriqueContenuDto(rubrique.categories(), rubrique.subcategories()))
+                .orElse(new RubriqueContenuDto(List.of(), List.of()));
+    }
+
+    /**
      * Retourne la position où insérer une rubrique qui manque à un événement : à son rang si elle
      * vient du template du type (avant la première rubrique présente qui la suit dans le template),
      * en fin sinon ; toujours avant {@value #RUBRIQUE_AUTRE}, qui reste en dernier.
@@ -123,17 +141,32 @@ public class TemplateService {
     // Règle de rubriqueOf, sur des templates déjà chargés.
     private String rubriqueOf(List<Template> templates, String eventType, String subcatKey) {
         String categoryKey = categorieService.getCategoryKeyOf(subcatKey);
-        List<TemplateRubrique> ownRubriques = templates.stream()
+        return findRubrique(ownRubriques(templates, eventType), subcatKey, categoryKey)
+                .or(() -> findRubrique(catalogue(templates), subcatKey, categoryKey))
+                .orElse(RUBRIQUE_AUTRE);
+    }
+
+    // Rubriques du template du type, vide s'il n'en a pas.
+    private List<TemplateRubrique> ownRubriques(List<Template> templates, String eventType) {
+        return templates.stream()
                 .filter(template -> template.type().equals(eventType))
                 .findFirst()
                 .map(Template::rubriques)
                 .orElse(List.of());
-        List<TemplateRubrique> catalogue = templates.stream()
+    }
+
+    // Rubriques de tous les templates (catalogue des rubriques connues).
+    private List<TemplateRubrique> catalogue(List<Template> templates) {
+        return templates.stream()
                 .flatMap(template -> template.rubriques().stream())
                 .toList();
-        return findRubrique(ownRubriques, subcatKey, categoryKey)
-                .or(() -> findRubrique(catalogue, subcatKey, categoryKey))
-                .orElse(RUBRIQUE_AUTRE);
+    }
+
+    // Première rubrique de la clé donnée.
+    private Optional<TemplateRubrique> findByKey(List<TemplateRubrique> rubriques, String rubriqueKey) {
+        return rubriques.stream()
+                .filter(rubrique -> rubrique.key().equals(rubriqueKey))
+                .findFirst();
     }
 
     // Première rubrique qui regroupe la sous-catégorie, sinon sa catégorie entière.

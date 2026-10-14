@@ -104,12 +104,15 @@ import PrestataireCard from '~/components/cards/PrestataireCard.vue'
 import { RUBRIQUE_COVERS, rubriqueAccent, rubriqueIcon } from '~/constants/event-rubriques'
 import type { PrestataireCardDetail } from '~/data/prestataire/domain/PrestataireCardDetail'
 import { searchPrestataires } from '~/data/prestataire/service/prestataireService'
+import { fetchRubriqueContenu } from '~/data/template/service/templateService'
 import { ALL_CATEGORY_KEY } from '~/utils/constants'
 
 const INSPIRATIONS_COUNT = 6
 
 const props = defineProps<{
   rubriqueKey: string
+  // Type de l'événement : son template définit ce que regroupe la rubrique (null : aucun type).
+  eventType: string | null
 }>()
 
 // La page décide de la navigation : recherche d'un prestataire, ou fiche d'une inspiration
@@ -140,15 +143,18 @@ const coverImage = computed(() => {
 })
 
 // ── Inspirations ─────────────────────────────────────────────────────────────
-// Recherche globale en attendant la correspondance rubrique → filtres du template.
+// Prestataires de la rubrique (ce qu'elle regroupe dans le template du type) ; tous pour une
+// rubrique qui ne regroupe rien (« autre »).
 const inspirations = ref<PrestataireCardDetail[]>([])
 const inspirationsLoading = ref(true)
+const { subcategoriesOf } = useCategories()
 
 onMounted(async () => {
   try {
+    const contenu = await fetchRubriqueContenu(props.eventType ?? 'autre', props.rubriqueKey)
     const { results } = await searchPrestataires({
       categoryKey: ALL_CATEGORY_KEY,
-      subcatKeys: [],
+      subcatKeys: subcategoriesOf(contenu.categories, contenu.subcategories),
     })
     inspirations.value = results.slice(0, INSPIRATIONS_COUNT)
   } catch (e) {

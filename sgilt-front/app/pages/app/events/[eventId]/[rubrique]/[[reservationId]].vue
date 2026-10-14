@@ -10,6 +10,7 @@
   <EventRubriqueDetail
     v-else-if="event && rubrique"
     :rubrique-key="rubrique.key"
+    :event-type="eventTypeKey(event.eventType)"
     @back="backToBoard"
     @search="startAddPrestataireFlow()"
     @open-provider="(slug) => startAddPrestataireFlow(`/${slug}`)"
@@ -31,6 +32,7 @@ import ReservationList from '~/components/app/ReservationList.vue'
 import Sk from '~/components/basics/Sk.vue'
 import EventRubriqueDetail from '~/components/evenement/EventRubriqueDetail.vue'
 import { useEventContext } from '~/data/evenement/useEventContext'
+import { eventTypeKey } from '~/types/evenement'
 
 definePageMeta({ layout: 'app' })
 

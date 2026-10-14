@@ -1,6 +1,7 @@
 package net.franzka.sgilt.core.template.api;
 
 import net.franzka.sgilt.core.evenement.dto.RubriqueDto;
+import net.franzka.sgilt.core.template.dto.RubriqueContenuDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,4 +14,7 @@ public interface TemplateApi {
 
     @GetMapping("/{eventType}/rubriques")
     ResponseEntity<List<RubriqueDto>> getNewEventRubriques(@PathVariable String eventType);
+
+    @GetMapping("/{eventType}/rubriques/{rubriqueKey}")
+    ResponseEntity<RubriqueContenuDto> getRubriqueContenu(@PathVariable String eventType, @PathVariable String rubriqueKey);
 }

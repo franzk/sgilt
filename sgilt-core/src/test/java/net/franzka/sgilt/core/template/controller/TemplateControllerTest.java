@@ -1,6 +1,7 @@
 package net.franzka.sgilt.core.template.controller;
 
 import net.franzka.sgilt.core.evenement.dto.RubriqueDto;
+import net.franzka.sgilt.core.template.dto.RubriqueContenuDto;
 import net.franzka.sgilt.core.template.service.TemplateService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,22 @@ class TemplateControllerTest {
             when(templateService.getNewEventRubriques("mariage")).thenReturn(rubriques);
 
             assertThat(controller.getNewEventRubriques("mariage").getBody()).isEqualTo(rubriques);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // getRubriqueContenu
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetRubriqueContenu {
+
+        @Test
+        void givenTypeAndRubrique_whenGetRubriqueContenu_thenReturnsWhatTheRubriqueGroups() {
+            RubriqueContenuDto contenu = new RubriqueContenuDto(List.of("musique"), List.of("animation"));
+            when(templateService.getRubriqueContenu("mariage", "musique-animation")).thenReturn(contenu);
+
+            assertThat(controller.getRubriqueContenu("mariage", "musique-animation").getBody()).isEqualTo(contenu);
         }
     }
 }

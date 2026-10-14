@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.evenement.dto.RubriqueDto;
 import net.franzka.sgilt.core.template.api.TemplateApi;
+import net.franzka.sgilt.core.template.dto.RubriqueContenuDto;
 import net.franzka.sgilt.core.template.service.TemplateService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,5 +34,20 @@ public class TemplateController implements TemplateApi {
     public ResponseEntity<List<RubriqueDto>> getNewEventRubriques(String eventType) {
         log.info("GET /templates/{}/rubriques", eventType);
         return ResponseEntity.ok(templateService.getNewEventRubriques(eventType));
+    }
+
+    /**
+     * Retourne ce que regroupe une rubrique dans un événement du type donné (recherche de
+     * prestataires limitée à la rubrique).
+     *
+     * @param eventType   le type d'événement
+     * @param rubriqueKey la clé de la rubrique
+     * @return ses catégories et sous-catégories, vides si aucun template ne la définit
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<RubriqueContenuDto> getRubriqueContenu(String eventType, String rubriqueKey) {
+        log.info("GET /templates/{}/rubriques/{}", eventType, rubriqueKey);
+        return ResponseEntity.ok(templateService.getRubriqueContenu(eventType, rubriqueKey));
     }
 }
