@@ -11,7 +11,7 @@
         <span v-if="place" class="info-line"><MapPin2Icon class="icon" />{{ place }}</span>
         <div class="card-footer">
           <span v-if="event.nbInvites" class="info-line">
-            <GroupIcon class="icon" />{{ event.nbInvites }}
+            <GroupIcon class="icon" />{{ nbInvitesLabel(event.nbInvites) }}
           </span>
           <NuxtLink :to="`${boardPath}/parametres`" class="edit">{{ $t('common.edit') }}</NuxtLink>
         </div>
@@ -61,6 +61,9 @@ import EventRubriqueItem from '~/components/evenement/EventRubriqueItem.vue'
 import type { EventMeta } from '~/data/evenement/domain/EventMeta'
 import type { EventRubrique } from '~/data/evenement/domain/EventRubrique'
 import { formatDate } from '~/utils/dateUtils'
+import { useNbInvitesLabel } from '~/composables/useNbInvitesLabel'
+
+const { nbInvitesLabel } = useNbInvitesLabel()
 
 const HOME_KEY = 'accueil'
 const PRESTATAIRES_KEY = 'prestataires'

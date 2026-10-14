@@ -88,6 +88,7 @@ import {
 import { AMBIANCE_OPTIONS, EVENT_TYPE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/evenement'
 import { formatDateWithWeekday } from '~/utils/dateUtils'
 import { EVENT_TYPE_CATALOG } from '~/utils/eventTypes'
+import { useNbInvitesLabel } from '~/composables/useNbInvitesLabel'
 
 const props = defineProps<{
   // Informations affichées. Le composant ne les modifie pas : chaque validation de panneau
@@ -107,6 +108,7 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const { nbInvitesLabel } = useNbInvitesLabel()
 
 // ── Cartes ────────────────────────────────────────────────────────────────────
 
@@ -153,7 +155,7 @@ const cards = computed<InfoCard[]>(() => {
       key: 'nbInvites',
       label: t('event-info.fields.nb-invites'),
       icon: markRaw(GroupIcon),
-      value: event.nbInvites ? t('event-info.nb-invites-value', { value: event.nbInvites }) : null,
+      value: nbInvitesLabel(event.nbInvites),
       editable: true,
     },
     {

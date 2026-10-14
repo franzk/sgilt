@@ -47,7 +47,11 @@
               v-model:ville="localEvent.ville"
               v-model:lieu="localEvent.lieu"
             />
-            <OrganisationInvitesStep v-else-if="step === 4" v-model="localEvent.nbInvites" />
+            <OrganisationInvitesStep
+              v-else-if="step === 4"
+              v-model="localEvent.nbInvites"
+              @next="next"
+            />
             <OrganisationPetitPlusStep v-else v-model="localEvent.description" />
           </div>
 

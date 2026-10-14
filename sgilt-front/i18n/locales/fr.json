@@ -141,7 +141,9 @@
         "cta": "Accéder à mon événement"
       }
     },
-    "autre-validate": "Valider"
+    "autre-validate": "Valider",
+    "invites-exact": "Nombre exact",
+    "invites-exact-placeholder": "Ex. 85"
   },
   "evenement": {
     "page-title": "Votre organisation - Sgilt",
@@ -492,6 +494,7 @@
       "description": "Description"
     },
     "nb-invites-value": "{value} personnes",
+    "nb-invites-unknown": "Je ne sais pas encore",
     "edit": "Modifier",
     "add": "Ajouter",
     "required": "À renseigner pour continuer",
@@ -506,9 +509,6 @@
     "demande-header": {
       "back": "Retour",
       "request-to": "Demande à {name}"
-    },
-    "summary": {
-      "invites-value": "{value} personnes"
     },
     "envoyee": {
       "page-title": "Demande envoyée - Sgilt",

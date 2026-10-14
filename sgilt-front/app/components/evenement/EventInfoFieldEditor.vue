@@ -22,6 +22,11 @@
       :autre-placeholder="$t('organisation.steps.moment-cle.autre-placeholder')"
       @next="validate"
     />
+    <OrganisationInvitesStep
+      v-else-if="field === 'nbInvites'"
+      v-model="draft.nbInvites"
+      @next="validate"
+    />
 
     <template v-else>
       <template v-if="field === 'title'">
@@ -42,7 +47,6 @@
         v-model:lieu="draft.lieu"
         :city-required="essentialsRequired && ESSENTIAL_EVENT_INFO.includes('lieu')"
       />
-      <OrganisationInvitesStep v-else-if="field === 'nbInvites'" v-model="draft.nbInvites" />
       <OrganisationPetitPlusStep v-else v-model="draft.description" />
 
       <p v-if="essentialError" class="error">{{ $t('event-info.essential-required') }}</p>

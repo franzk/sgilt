@@ -13,7 +13,7 @@
         </dd>
         <template v-if="event.nbInvites">
           <dt>{{ $t('event.block.party-edit-guests') }}</dt>
-          <dd>{{ event.nbInvites }}</dd>
+          <dd>{{ nbInvitesLabel(event.nbInvites) }}</dd>
         </template>
       </dl>
     </div>
@@ -102,6 +102,9 @@ import type { EventMeta } from '~/data/evenement/domain/EventMeta'
 import type { ClientContactInfo } from '~/data/reservation/domain/ClientContactInfo'
 import { EVENT_TYPE_OPTIONS, AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/evenement'
 import { FileCopyIcon, CheckIcon } from '@remixicons/vue/line'
+import { useNbInvitesLabel } from '~/composables/useNbInvitesLabel'
+
+const { nbInvitesLabel } = useNbInvitesLabel()
 
 const props = defineProps<{
   event: EventMeta

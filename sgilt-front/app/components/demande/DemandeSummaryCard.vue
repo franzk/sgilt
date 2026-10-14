@@ -24,7 +24,7 @@
       </span>
       <span v-if="summary.evenement.nbInvites" class="info">
         <GroupIcon class="icon" aria-hidden="true" />
-        {{ $t('tunnel.summary.invites-value', { value: summary.evenement.nbInvites }) }}
+        {{ nbInvitesLabel(summary.evenement.nbInvites) }}
       </span>
       <span class="info">
         <MapPin2Icon class="icon" aria-hidden="true" />
@@ -39,6 +39,9 @@ import { CalendarEventIcon, GroupIcon, MapPin2Icon } from '@remixicons/vue/line'
 import SgiltImage from '~/components/basics/media/SgiltImage.vue'
 import type { DemandeSummary } from '~/types/demande'
 import { formatDate } from '~/utils/dateUtils'
+import { useNbInvitesLabel } from '~/composables/useNbInvitesLabel'
+
+const { nbInvitesLabel } = useNbInvitesLabel()
 
 defineProps<{
   summary: DemandeSummary

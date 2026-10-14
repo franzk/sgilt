@@ -9,7 +9,7 @@
           <MapPin2Icon class="icon" />{{ event.ville }}
         </span>
         <span v-if="event.nbInvites" class="event-pill">
-          <GroupIcon class="icon" />{{ event.nbInvites }}
+          <GroupIcon class="icon" />{{ nbInvitesLabel(event.nbInvites) }}
         </span>
       </div>
       <ArrowUpSIcon v-if="open" class="chevron" />
@@ -30,7 +30,7 @@
           </dd>
           <template v-if="event.nbInvites">
             <dt>{{ $t('event.block.party-edit-guests') }}</dt>
-            <dd>{{ event.nbInvites }}</dd>
+            <dd>{{ nbInvitesLabel(event.nbInvites) }}</dd>
           </template>
         </dl>
       </div>
@@ -137,6 +137,9 @@ import {
   FileCopyIcon,
   CheckIcon,
 } from '@remixicons/vue/line'
+import { useNbInvitesLabel } from '~/composables/useNbInvitesLabel'
+
+const { nbInvitesLabel } = useNbInvitesLabel()
 
 const props = defineProps<{
   event: EventMeta

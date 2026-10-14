@@ -21,7 +21,7 @@
             <MapPin2Icon class="icon" />{{ eventMeta.ville }}
           </span>
           <span v-if="eventMeta.nbInvites" class="info-line">
-            <GroupIcon class="icon" />{{ eventMeta.nbInvites }}
+            <GroupIcon class="icon" />{{ nbInvitesLabel(eventMeta.nbInvites) }}
           </span>
         </div>
       </div>
@@ -58,6 +58,9 @@ import type { EventMeta } from '~/data/evenement/domain/EventMeta'
 import type { EventRubrique } from '~/data/evenement/domain/EventRubrique'
 import { formatDate } from '~/utils/dateUtils'
 import { EVENT_TYPE_TAGLINES } from '~/utils/eventTypes'
+import { useNbInvitesLabel } from '~/composables/useNbInvitesLabel'
+
+const { nbInvitesLabel } = useNbInvitesLabel()
 
 // Champs affichés : communs à l'événement en base (EventMeta) et à l'événement local (LocalEvent,
 // qui reprend les mêmes noms ; son type peut être null tant qu'il n'est pas choisi).

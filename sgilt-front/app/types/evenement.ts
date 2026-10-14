@@ -63,3 +63,7 @@ export const NB_INVITES_OPTIONS: string[] = [
   '200 – 500',
   'Plus de 500',
 ]
+
+// Nombre d'invités pas encore connu : une réponse à part entière, stockée sous cette clé (affichée
+// par son libellé, voir useNbInvitesLabel).
+export const NB_INVITES_UNKNOWN = 'inconnu'

@@ -20,7 +20,7 @@
           <MapPin2Icon class="icon" />{{ event.ville }}
         </span>
         <span v-if="event.nbInvites" class="event-pill">
-          <GroupIcon class="icon" />{{ event.nbInvites }}
+          <GroupIcon class="icon" />{{ nbInvitesLabel(event.nbInvites) }}
         </span>
       </div>
       <span class="voir-plus">Voir plus…</span>
@@ -56,6 +56,9 @@ import { useEventJournal } from '~/data/evenement/useEventJournal'
 import type { EventMeta } from '~/data/evenement/domain/EventMeta'
 import type { ClientContactInfo } from '~/data/reservation/domain/ClientContactInfo'
 import { CalendarEventIcon, MapPin2Icon, GroupIcon } from '@remixicons/vue/line'
+import { useNbInvitesLabel } from '~/composables/useNbInvitesLabel'
+
+const { nbInvitesLabel } = useNbInvitesLabel()
 
 const props = defineProps<{
   event: EventMeta
