@@ -58,7 +58,7 @@ export function useDemande() {
     submitting.value = true
     submitError.value = null
     try {
-      const { toEvenementRequest, reset: resetLocalEvent, create } = useLocalEvent()
+      const { toEvenementRequest, create } = useLocalEvent()
 
       if (!state.prestataireId) {
         submitError.value = 'Prestataire manquant'
@@ -90,8 +90,9 @@ export function useDemande() {
         email: state.email,
         telephone: state.telephone || null,
       }
+      // Transmis au serveur : l'événement local est à effacer, par la page, une fois l'écran
+      // quitté (sinon ses champs se vident sous les yeux de l'utilisateur).
       await submitOnboarding(onboardingBody)
-      resetLocalEvent() // transmis au serveur : plus de copie locale
       submitted.value = true
     } catch (err) {
       console.error('submit error:', err)

@@ -55,7 +55,7 @@ watch(
 
 useHead({ title: 'Votre demande' })
 
-const { localEvent, eventTypeLabel } = useLocalEvent()
+const { localEvent, eventTypeLabel, reset: resetLocalEvent } = useLocalEvent()
 const { categoryName, subcategoryName } = useCategories()
 const { currentFlow, onFlowSuccess } = useFlow()
 const { isAuthenticated } = useKeycloak()
@@ -96,9 +96,10 @@ const summary = computed<DemandeSummary | null>(() => {
 })
 
 // Envoi de la demande : le parcours public de cet événement est terminé, la suite passe par le
-// lien du mail. La confirmation est figée avant l'envoi, car submit() vide l'événement local en
-// cas de succès ; la demande (coordonnées comprises) est vidée ensuite. En cas d'échec, l'erreur
-// s'affiche sous le bouton. `replace` : le retour arrière ne ramène pas au formulaire.
+// lien du mail. L'événement local et la demande (coordonnées comprises) ne sont vidés qu'une fois
+// sur l'écran de confirmation : vidés avant, les champs du formulaire s'effaceraient sous les yeux
+// de l'utilisateur. En cas d'échec, l'erreur s'affiche sous le bouton. `replace` : le retour
+// arrière ne ramène pas au formulaire.
 async function onSend() {
   if (!summary.value) return
   // Connecté : l'événement est créé avec la demande, puis on arrive sur son board.
@@ -116,8 +117,9 @@ async function onSend() {
   await submit()
   if (!submitted.value) return
   confirmation.value = sentConfirmation
+  await navigateTo('/demande-envoyee', { replace: true })
+  resetLocalEvent()
   resetDemande()
-  navigateTo('/demande-envoyee', { replace: true })
 }
 
 const noFlowWarning = ref(false)

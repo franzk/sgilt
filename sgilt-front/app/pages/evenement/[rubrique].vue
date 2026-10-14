@@ -6,6 +6,7 @@
     :rubrique-key="rubriqueKey"
     @back="navigateTo('/evenement')"
     @search="navigateTo('/search')"
+    @open-provider="(slug) => navigateTo(`/${slug}`)"
   />
 </template>
 

@@ -11,7 +11,8 @@
     v-else-if="event && rubrique"
     :rubrique-key="rubrique.key"
     @back="backToBoard"
-    @search="startAddPrestataireFlow"
+    @search="startAddPrestataireFlow()"
+    @open-provider="(slug) => startAddPrestataireFlow(`/${slug}`)"
   >
     <template v-if="rubrique.reservations.length > 0" #reservations>
       <ReservationList
@@ -61,15 +62,21 @@ function backToBoard() {
 
 // ── Flow ajout prestataire ────────────────────────────────────────────────────
 const { start } = useFlow()
-const startAddPrestataireFlow = () => {
-  start('add-prestataire', `Ajouter à ${event.value?.title ?? "l'événement"}`, {
-    id: event.value?.id,
-    nom: event.value?.title,
-    date: event.value?.date ?? null,
-    ville: event.value?.ville,
-    ambiance: event.value?.ambiance,
-    invites: event.value?.nbInvites,
-  })
+// Démarre par la recherche, ou par la fiche d'une inspiration (`to`).
+const startAddPrestataireFlow = (to?: string) => {
+  start(
+    'add-prestataire',
+    `Ajouter à ${event.value?.title ?? "l'événement"}`,
+    {
+      id: event.value?.id,
+      nom: event.value?.title,
+      date: event.value?.date ?? null,
+      ville: event.value?.ville,
+      ambiance: event.value?.ambiance,
+      invites: event.value?.nbInvites,
+    },
+    to,
+  )
 }
 </script>
 

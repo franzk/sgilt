@@ -98,13 +98,15 @@ export function useFlow() {
     },
   }
 
-  // Démarre un flow : enregistre le contexte, affiche le bandeau, lance le handler.
-  function start(flow: NonNullable<Flow>, label: string, payload?: any) {
+  // Démarre un flow : enregistre le contexte, affiche le bandeau, lance le handler. `to` : page où
+  // démarrer à la place de celle du handler (ex. la fiche d'un prestataire déjà choisi).
+  function start(flow: NonNullable<Flow>, label: string, payload?: any, to?: string) {
     currentFlow.value = flow
     flowPayload.value = payload ?? null
     flowLabel.value = label
     writeStorage(flow, payload ?? null, label)
-    flows[flow].start()
+    if (to) navigateTo(to)
+    else flows[flow].start()
   }
 
   // Abandonne le flow en cours : exécute le handler d'annulation puis nettoie l'état.

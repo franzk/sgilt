@@ -36,9 +36,6 @@
           <SearchIcon class="icon" aria-hidden="true" />
           {{ $t('evenement.rubrique.search') }}
         </button>
-        <button class="cta secondary" type="button" @click="onAlreadyClick">
-          {{ $t(`evenement.rubrique.content.${rubriqueKey}.already`) }}
-        </button>
       </section>
 
       <!-- Conseil de la rubrique, seulement s'il est rédigé (clé présente dans les traductions). -->
@@ -81,6 +78,8 @@
               :key="provider.id"
               class="card"
               :provider="provider"
+              selectable
+              @select="$emit('open-provider', provider.slug)"
             />
           </template>
         </div>
@@ -113,9 +112,12 @@ const props = defineProps<{
   rubriqueKey: string
 }>()
 
+// La page décide de la navigation : recherche d'un prestataire, ou fiche d'une inspiration
+// (en connecté, l'une comme l'autre passent par le flow d'ajout à l'événement).
 defineEmits<{
   back: []
   search: []
+  'open-provider': [slug: string]
 }>()
 
 const { t, te } = useI18n()
@@ -155,12 +157,6 @@ onMounted(async () => {
     inspirationsLoading.value = false
   }
 })
-
-// ── Action à venir ───────────────────────────────────────────────────────────
-function onAlreadyClick() {
-  // « J'ai déjà mon … » : lot suivant.
-  console.log('stay tuned')
-}
 </script>
 
 <style scoped lang="scss">
@@ -296,12 +292,6 @@ function onAlreadyClick() {
           background: $brand-accent;
           color: $brand-primary;
           box-shadow: 0 0.25rem 0.625rem rgba($brand-primary, 0.18);
-        }
-
-        &.secondary {
-          border: 1.5px solid $divider-color;
-          background: $surface-white;
-          color: $text-primary;
         }
 
         &:focus-visible {
