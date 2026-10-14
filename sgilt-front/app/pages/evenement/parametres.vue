@@ -6,25 +6,17 @@
         {{ $t('evenement.settings.back') }}
       </button>
 
-      <!-- Les panneaux alimentent le brouillon ; l'événement n'est modifié qu'à l'enregistrement. -->
-      <EventInfoCards :event="draft" with-title @update="Object.assign(draft, $event)" />
-
-      <!-- ── Actions ──────────────────────────────────────────────────────────── -->
-      <div class="actions">
-        <SgiltButton variant="secondary" @click="backToBoard">
-          {{ $t('common.cancel') }}
-        </SgiltButton>
-        <SgiltButton @click="save">{{ $t('common.save') }}</SgiltButton>
-      </div>
+      <!-- Chaque panneau validé s'applique aussitôt à l'événement local. Aucune information
+           obligatoire ici : le nom ne peut pas être vidé (refusé dans son panneau), date, type et
+           ville ne sont exigés qu'à l'envoi d'une demande. -->
+      <EventInfoCards :event="localEvent" with-title @update="Object.assign(localEvent, $event)" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ArrowLeftIcon } from '@remixicons/vue/line'
-import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import EventInfoCards from '~/components/evenement/EventInfoCards.vue'
-import type { EventInfoFields } from '~/composables/useLocalEvent'
 
 definePageMeta({ layout: 'evenement' })
 
@@ -33,31 +25,9 @@ useHead({ title: t('evenement.settings.page-title') })
 
 const { localEvent } = useLocalEvent()
 
-// ── Brouillon ─────────────────────────────────────────────────────────────────
-// Les modifications ne touchent localEvent qu'à l'enregistrement : annuler ou quitter
-// la page les abandonne.
-const draft = reactive<EventInfoFields>({
-  title: localEvent.title,
-  eventType: localEvent.eventType,
-  date: localEvent.date,
-  ville: localEvent.ville,
-  lieu: localEvent.lieu,
-  nbInvites: localEvent.nbInvites,
-  ambiance: localEvent.ambiance,
-  momentCle: localEvent.momentCle,
-  description: localEvent.description,
-})
-
-// ── Actions ───────────────────────────────────────────────────────────────────
+// ── Navigation ────────────────────────────────────────────────────────────────
 function backToBoard() {
   navigateTo('/evenement')
-}
-
-// Aucune information obligatoire ici : le nom ne peut pas être vidé (refusé dans son panneau),
-// date, type et ville ne sont exigés qu'à l'envoi d'une demande.
-function save() {
-  Object.assign(localEvent, draft)
-  backToBoard()
 }
 </script>
 
@@ -95,12 +65,6 @@ function save() {
         width: 1.125rem;
         height: 1.125rem;
       }
-    }
-
-    .actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: $spacing-s;
     }
   }
 }

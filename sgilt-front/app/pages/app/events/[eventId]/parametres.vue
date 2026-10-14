@@ -1,19 +1,19 @@
 <template>
   <div class="parametres">
-    <div v-if="event && clientInfo" class="column">
+    <div v-if="fields && clientInfo" class="column">
       <button class="back" type="button" @click="backToBoard">
         <ArrowLeftIcon class="icon" aria-hidden="true" />
         {{ $t('evenement.settings.back') }}
       </button>
 
-      <!-- Les panneaux alimentent le brouillon ; l'événement n'est modifié qu'à l'enregistrement.
-           Événement enregistré : ses informations essentielles ne peuvent pas être effacées. -->
+      <!-- Chaque panneau validé est enregistré aussitôt. Événement enregistré : ses informations
+           essentielles ne peuvent pas être effacées. -->
       <EventInfoCards
-        :event="draft"
+        :event="fields"
         with-title
         date-locked
         essentials-required
-        @update="Object.assign(draft, $event)"
+        @update="saveFields"
       />
 
       <!-- ── Note partagée ───────────────────────────────────────────────────── -->
@@ -22,6 +22,7 @@
         <textarea
           v-model="sharedNote"
           class="note"
+          @change="saveSharedNote"
           rows="4"
           :placeholder="$t('event.block.shared-note-placeholder')"
         />
@@ -45,14 +46,6 @@
           <HistoryIcon class="icon" aria-hidden="true" />
           {{ $t('evenement.settings.journal') }}
         </button>
-      </div>
-
-      <!-- ── Actions ──────────────────────────────────────────────────────────── -->
-      <div class="actions">
-        <SgiltButton variant="secondary" @click="backToBoard">
-          {{ $t('common.cancel') }}
-        </SgiltButton>
-        <SgiltButton @click="save">{{ $t('common.save') }}</SgiltButton>
       </div>
     </div>
     <Sk v-else class="skeleton" />
@@ -79,7 +72,6 @@
 import { ArrowLeftIcon, HistoryIcon, ImageIcon } from '@remixicons/vue/line'
 import EventEditDialog from '~/components/app/EventEditDialog.vue'
 import EventJournal from '~/components/app/EventJournal.vue'
-import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import Sk from '~/components/basics/Sk.vue'
 import EventInfoCards from '~/components/evenement/EventInfoCards.vue'
 import type { EventInfoFields } from '~/composables/useLocalEvent'
@@ -95,56 +87,71 @@ useHead({ title: t('evenement.settings.page-title') })
 
 const { eventId, event, clientInfo } = useEventContext()
 
-// ── Brouillon ─────────────────────────────────────────────────────────────────
-// Rempli au chargement de l'événement ; l'événement n'est modifié qu'à l'enregistrement.
-const draft = reactive<EventInfoFields>({
-  title: '',
-  eventType: null,
-  date: undefined,
-  ville: '',
-  lieu: '',
-  nbInvites: '',
-  ambiance: null,
-  momentCle: null,
-  description: '',
+// ── Informations ──────────────────────────────────────────────────────────────
+// Celles de l'événement en base : chaque modification est enregistrée aussitôt.
+const fields = computed<EventInfoFields | null>(() => {
+  const loaded = event.value
+  if (!loaded) return null
+  return {
+    title: loaded.title,
+    eventType: loaded.eventType ?? null,
+    date: loaded.date,
+    ville: loaded.ville ?? '',
+    lieu: loaded.lieu ?? '',
+    nbInvites: loaded.nbInvites ?? '',
+    ambiance: loaded.ambiance ?? null,
+    momentCle: loaded.momentCle ?? null,
+    description: loaded.description ?? '',
+  }
 })
-const sharedNote = ref('')
 
-// Rempli une seule fois, dès que l'événement est disponible (il l'est déjà si l'on vient d'une
-// autre page de l'événement) : ses rechargements en arrière-plan n'écrasent pas la saisie.
-let draftFilled = false
+// La date n'est pas envoyée : elle ne se modifie pas sur un événement en base. « Autre » sans
+// précision n'est pas enregistré, comme à la création de l'événement (toEvenementRequest).
+async function saveFields(update: Partial<EventInfoFields>) {
+  if (!fields.value) return
+  const updated = { ...fields.value, ...update }
+  const withoutBareAutre = (value: string | null) => (!value || value === 'autre' ? '' : value)
+  event.value = await patchEvent(eventId, {
+    title: updated.title,
+    eventType: withoutBareAutre(updated.eventType),
+    ville: updated.ville,
+    lieu: updated.lieu,
+    nbInvites: updated.nbInvites,
+    ambiance: withoutBareAutre(updated.ambiance),
+    momentCle: withoutBareAutre(updated.momentCle),
+    description: updated.description,
+  })
+}
+
+// ── Note partagée ─────────────────────────────────────────────────────────────
+// Saisie libre : enregistrée quand on quitte le champ. Remplie une seule fois, dès que l'événement
+// est disponible : ses rechargements en arrière-plan n'écrasent pas la saisie en cours.
+const sharedNote = ref('')
+let sharedNoteFilled = false
 watch(
   event,
   (loaded) => {
-    if (!loaded || draftFilled) return
-    draftFilled = true
-    Object.assign(draft, {
-      title: loaded.title,
-      eventType: loaded.eventType ?? null,
-      date: loaded.date,
-      ville: loaded.ville ?? '',
-      lieu: loaded.lieu ?? '',
-      nbInvites: loaded.nbInvites ?? '',
-      ambiance: loaded.ambiance ?? null,
-      momentCle: loaded.momentCle ?? null,
-      description: loaded.description ?? '',
-    })
+    if (!loaded || sharedNoteFilled) return
+    sharedNoteFilled = true
     sharedNote.value = loaded.sharedNote
   },
   { immediate: true },
 )
+
+async function saveSharedNote() {
+  event.value = await patchEvent(eventId, { sharedNote: sharedNote.value })
+}
 
 const clientName = computed(() =>
   [clientInfo.value?.firstName, clientInfo.value?.lastName].filter(Boolean).join(' '),
 )
 
 // ── Couverture ────────────────────────────────────────────────────────────────
-// Le dialogue enregistre lui-même la couverture ; le nom qu'il modifie est reporté dans le brouillon.
+// Le dialogue enregistre lui-même la couverture et le nom.
 const coverDialogOpen = ref(false)
 
 async function onCoverDialogSave(patch: EventMetaPatch) {
   event.value = await patchEvent(eventId, patch)
-  draft.title = event.value.title
 }
 
 function onCoverUpdated(imagePath: string) {
@@ -165,27 +172,9 @@ watch(journalOpen, (open) => {
   if (open) loadFirstJournalPage()
 })
 
-// ── Actions ───────────────────────────────────────────────────────────────────
+// ── Navigation ────────────────────────────────────────────────────────────────
 function backToBoard() {
   navigateTo(`/app/events/${eventId}`)
-}
-
-// La date n'est pas envoyée : elle ne se modifie pas sur un événement en base. « Autre » sans
-// précision n'est pas enregistré, comme à la création de l'événement (toEvenementRequest).
-async function save() {
-  const withoutBareAutre = (value: string | null) => (!value || value === 'autre' ? '' : value)
-  await patchEvent(eventId, {
-    title: draft.title,
-    eventType: withoutBareAutre(draft.eventType),
-    ville: draft.ville,
-    lieu: draft.lieu,
-    nbInvites: draft.nbInvites,
-    ambiance: withoutBareAutre(draft.ambiance),
-    momentCle: withoutBareAutre(draft.momentCle),
-    description: draft.description,
-    sharedNote: sharedNote.value,
-  })
-  backToBoard()
 }
 </script>
 
@@ -284,12 +273,6 @@ async function save() {
           height: 1.125rem;
         }
       }
-    }
-
-    .actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: $spacing-s;
     }
   }
 
