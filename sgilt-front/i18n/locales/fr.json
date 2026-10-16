@@ -168,6 +168,29 @@
         },
         "intro": "Nous avons créé votre espace d'organisation à partir des informations que vous nous avez partagées. Explorez les différentes rubriques pour trouver les prestataires et outils adaptés."
       },
+      "start": {
+        "title": "Par où commencer ?",
+        "lieu": {
+          "title": "Trouver un lieu",
+          "description": "Découvrez des lieux adaptés à votre style."
+        },
+        "restauration": {
+          "title": "Explorer la restauration",
+          "description": "Traiteurs, food-trucks, options sur mesure."
+        },
+        "musique-animation": {
+          "title": "Découvrir les animations",
+          "description": "DJ, groupes, animateurs et bien plus encore."
+        },
+        "decoration": {
+          "title": "Imaginer la décoration",
+          "description": "Fleurs, mobilier, mises en scène à votre image."
+        },
+        "photo-video": {
+          "title": "Garder des souvenirs",
+          "description": "Photographes, vidéastes, photobooths pour immortaliser le jour J."
+        }
+      },
       "glance": {
         "title": "Votre événement en un coup d'œil",
         "date": "Date",

@@ -9,9 +9,30 @@
       </div>
     </section>
 
+    <!-- ── Par où commencer ? ───────────────────────────────────────────────────── -->
+    <!-- Les premières rubriques de l'événement (ordre du template) ; rien si aucune n'a sa carte. -->
+    <section v-if="startRubriques.length > 0" class="start">
+      <h2 class="section-title">{{ $t('evenement.home.start.title') }}</h2>
+      <div class="start-cards">
+        <NuxtLink
+          v-for="key in startRubriques"
+          :key="key"
+          :to="`/evenement/${key}`"
+          class="start-card"
+        >
+          <span class="badge" :style="{ background: rubriqueAccent(key) }" aria-hidden="true">
+            <component :is="rubriqueIcon(key)" class="icon" />
+          </span>
+          <span class="card-title">{{ $t(`evenement.home.start.${key}.title`) }}</span>
+          <span class="card-description">{{ $t(`evenement.home.start.${key}.description`) }}</span>
+          <span class="arrow" aria-hidden="true"><ArrowRightSIcon class="icon" /></span>
+        </NuxtLink>
+      </div>
+    </section>
+
     <!-- ── Votre événement en un coup d'œil ─────────────────────────────────────── -->
     <section class="glance">
-      <h2 class="glance-title">{{ $t('evenement.home.glance.title') }}</h2>
+      <h2 class="section-title">{{ $t('evenement.home.glance.title') }}</h2>
       <div class="glance-row">
         <div v-for="info in infos" :key="info.key" class="info">
           <component :is="info.icon" class="icon" aria-hidden="true" />
@@ -30,15 +51,17 @@
 </template>
 
 <script setup lang="ts">
-// Accueil desktop de l'événement local (parcours public, /evenement) : accroche, l'événement en un
-// coup d'œil. La carte et les rubriques sont dans la sidebar.
+// Accueil desktop de l'événement local (parcours public, /evenement) : accroche, par où commencer,
+// l'événement en un coup d'œil. La carte et les rubriques sont dans la sidebar.
 import {
+  ArrowRightSIcon,
   CalendarEventIcon,
   GroupIcon,
   Heart3Icon,
   MapPin2Icon,
   PencilIcon,
 } from '@remixicons/vue/line'
+import { rubriqueAccent, rubriqueIcon } from '~/constants/event-rubriques'
 import { eventTypeKey } from '~/types/evenement'
 import { formatDate } from '~/utils/dateUtils'
 
@@ -46,10 +69,21 @@ defineProps<{
   coverImage: string
 }>()
 
+const START_CARDS_COUNT = 3
+
+const { te } = useI18n()
 const { localEvent, eventTypeLabel } = useLocalEvent()
 const { nbInvitesLabel } = useNbInvitesLabel()
 
 const typeKey = computed(() => eventTypeKey(localEvent.eventType) ?? 'autre')
+
+// Premières rubriques de l'événement qui ont un texte de carte.
+const startRubriques = computed(() =>
+  localEvent.rubriques
+    .map((rubrique) => rubrique.key)
+    .filter((key) => te(`evenement.home.start.${key}.title`))
+    .slice(0, START_CARDS_COUNT),
+)
 
 // Valeur vide : « À définir ».
 const infos = computed(() => [
@@ -122,6 +156,84 @@ const infos = computed(() => [
     }
   }
 
+  .section-title {
+    margin: 0;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+  }
+
+  // ── Par où commencer ? ───────────────────────────────────────────────────────
+  .start {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-m;
+
+    .start-cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: $spacing-m;
+
+      .start-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-xs;
+        padding: $spacing-l $spacing-l $spacing-xxl;
+        border-radius: $radius-lg;
+        background: $surface-soft;
+        color: $text-primary;
+        text-decoration: none;
+
+        .badge {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 2.5rem;
+          height: 2.5rem;
+          margin-bottom: $spacing-xs;
+          border-radius: 50%;
+          color: $text-inverted;
+
+          .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+          }
+        }
+
+        .card-title {
+          font-size: $font-size-md;
+          font-weight: $font-weight-bold;
+        }
+
+        .card-description {
+          font-size: $font-size-sm;
+          color: $text-secondary;
+          line-height: 1.4;
+        }
+
+        .arrow {
+          position: absolute;
+          right: $spacing-m;
+          bottom: $spacing-m;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 2.25rem;
+          height: 2.25rem;
+          border-radius: 50%;
+          background: $surface-white;
+          box-shadow: 0 0.125rem 0.5rem $shadow-s;
+
+          .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+          }
+        }
+      }
+    }
+  }
+
   // ── Votre événement en un coup d'œil ─────────────────────────────────────────
   .glance {
     display: flex;
@@ -131,12 +243,6 @@ const infos = computed(() => [
     border-radius: $radius-lg;
     background: $surface-soft;
 
-    .glance-title {
-      margin: 0;
-      font-size: $font-size-lg;
-      font-weight: $font-weight-bold;
-      color: $text-primary;
-    }
 
     .glance-row {
       display: flex;
