@@ -3,7 +3,8 @@
     <EventSidebar
       v-if="isDesktop && event"
       class="sidebar"
-      :event-id="eventId"
+      :board-path="`/app/events/${eventId}`"
+      show-prestataires
       :event="event"
       :rubriques="rubriques"
       :cover-image="coverImage"

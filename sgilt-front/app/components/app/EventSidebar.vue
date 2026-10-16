@@ -25,6 +25,7 @@
         <span class="label">{{ $t('nav.home') }}</span>
       </NuxtLink>
       <NuxtLink
+        v-if="showPrestataires"
         :to="`${boardPath}/reservations`"
         class="item"
         :class="{ active: activeKey === PRESTATAIRES_KEY }"
@@ -49,7 +50,9 @@
 
 <script setup lang="ts">
 // Sidebar desktop d'un événement : carte de l'événement (« Modifier » → paramètres), accueil,
-// prestataires et rubriques. Affichée par la route parente /app/events/:eventId.
+// prestataires et rubriques. Commune à l'espace connecté (événement en base, sous
+// /app/events/:eventId) et au parcours public (événement local, sous /evenement) : les liens
+// partent du chemin du board.
 import {
   CalendarEventIcon,
   GroupIcon,
@@ -68,9 +71,15 @@ const { nbInvitesLabel } = useNbInvitesLabel()
 const HOME_KEY = 'accueil'
 const PRESTATAIRES_KEY = 'prestataires'
 
+// Ce que la carte affiche, commun à l'événement en base et à l'événement local.
+type SidebarEventMeta = Pick<EventMeta, 'title' | 'date' | 'ville' | 'lieu' | 'nbInvites'>
+
 const props = defineProps<{
-  eventId: string
-  event: EventMeta
+  // Chemin du board de l'événement, base de tous les liens.
+  boardPath: string
+  event: SidebarEventMeta
+  // Entrée « Prestataires » (liste des réservations) : absente quand l'événement n'en a jamais (public).
+  showPrestataires?: boolean
   // Rubriques dans l'ordre d'affichage.
   rubriques: EventRubrique[]
   coverImage: string
@@ -78,7 +87,6 @@ const props = defineProps<{
 
 const route = useRoute()
 
-const boardPath = computed(() => `/app/events/${props.eventId}`)
 const place = computed(() => [props.event.lieu, props.event.ville].filter(Boolean).join(', '))
 
 // Entrée en surbrillance, d'après le premier segment de l'URL :
@@ -86,7 +94,7 @@ const place = computed(() => [props.event.lieu, props.event.ville].filter(Boolea
 // la rubrique ouverte (/:rubrique, /:rubrique/:id),
 // Accueil sinon.
 const activeKey = computed(() => {
-  const [section] = route.path.slice(boardPath.value.length + 1).split('/')
+  const [section] = route.path.slice(props.boardPath.length + 1).split('/')
   if (section === 'reservations') return PRESTATAIRES_KEY
   if (props.rubriques.some((rubrique) => rubrique.key === section)) return section
   return HOME_KEY
