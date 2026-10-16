@@ -95,6 +95,10 @@ function onReset() {
   align-items: center;
   column-gap: $spacing-xs;
   width: 100%;
+
+  @media (min-width: $breakpoint-desktop) {
+    grid-template-columns: minmax(max-content, 1fr) minmax(6rem, 20rem) minmax(max-content, 1fr);
+  }
 }
 
 .left {
