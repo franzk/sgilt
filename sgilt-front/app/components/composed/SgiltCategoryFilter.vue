@@ -5,6 +5,11 @@ import { useCategories } from '~/data/prestataire/useCategories'
 
 const modelValue = defineModel<string>() // La clé de la catégorie active
 
+const props = defineProps<{
+  // Clés des catégories affichées (recherche restreinte à une rubrique) ; absent : toutes.
+  visibleKeys?: string[] | null
+}>()
+
 const emit = defineEmits(['update:modelValue'])
 
 const { t } = useI18n()
@@ -13,7 +18,7 @@ const { categories } = useCategories()
 // « Tous » n'est pas une catégorie : c'est l'absence de filtre, toujours en tête.
 const filterOptions = computed(() => [
   { key: ALL_CATEGORY_KEY, name: t('search.all-categories') },
-  ...categories.value,
+  ...categories.value.filter((category) => !props.visibleKeys || props.visibleKeys.includes(category.key)),
 ])
 </script>
 

@@ -1,13 +1,14 @@
 <template>
   <div class="search-page">
     <section ref="headerRef" class="search-header">
-      <SgiltCategoryFilter v-model="categoryKey" />
+      <SgiltCategoryFilter v-model="categoryKey" :visible-keys="visibleCategoryKeys" />
 
       <SgiltSubCategoryFilter
         v-if="!isAllCategories"
         :category-key="categoryKey"
         :active-subcats="currentSubcats"
         :counts="subcatCounts"
+        :visible-keys="visibleSubcatKeysOfCategory(categoryKey)"
         @toggle="toggleSubcat"
       />
 
@@ -49,7 +50,13 @@ const props = defineProps<{
 defineEmits<{ select: [provider: PrestataireCardDetail] }>()
 
 // ── Search state ──────────────────────────────────────────────────────────────
-const { categoryKey, currentSubcats, toggleSubcat } = useSearchUi()
+const {
+  categoryKey,
+  currentSubcats,
+  toggleSubcat,
+  visibleCategoryKeys,
+  visibleSubcatKeysOfCategory,
+} = useSearchUi()
 const { results, loading, subcatCounts, error } = useSearchFetch()
 
 const isAllCategories = computed(() => categoryKey.value === ALL_CATEGORY_KEY)

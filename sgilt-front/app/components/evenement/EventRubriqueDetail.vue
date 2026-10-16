@@ -31,8 +31,7 @@
         <h1 class="name">{{ name }}</h1>
         <p class="tagline">{{ $t(`evenement.rubrique.content.${rubriqueKey}.tagline`) }}</p>
 
-        <!-- Recherche globale en attendant la correspondance rubrique → filtres du template. -->
-        <button class="cta primary" type="button" @click="$emit('search')">
+        <button class="cta primary" type="button" @click="search">
           <SearchIcon class="icon" aria-hidden="true" />
           {{ $t('evenement.rubrique.search') }}
         </button>
@@ -48,7 +47,7 @@
       <section class="reservations">
         <div class="section-head">
           <h2 class="section-title">{{ $t('evenement.rubrique.reservations-title') }}</h2>
-          <button class="add" type="button" @click="$emit('search')">
+          <button class="add" type="button" @click="search">
             {{ $t('evenement.rubrique.add') }}
             <AddIcon class="icon" aria-hidden="true" />
           </button>
@@ -63,7 +62,7 @@
       <section v-if="inspirationsLoading || inspirations.length > 0" class="inspirations">
         <div class="section-head">
           <h2 class="section-title">{{ $t('evenement.rubrique.inspirations-title') }}</h2>
-          <button class="see-more" type="button" @click="$emit('search')">
+          <button class="see-more" type="button" @click="search">
             {{ $t('evenement.rubrique.see-more') }}
             <ArrowRightSIcon class="icon" aria-hidden="true" />
           </button>
@@ -105,6 +104,7 @@ import { RUBRIQUE_COVERS, rubriqueAccent, rubriqueIcon } from '~/constants/event
 import type { PrestataireCardDetail } from '~/data/prestataire/domain/PrestataireCardDetail'
 import { searchPrestataires } from '~/data/prestataire/service/prestataireService'
 import { fetchRubriqueContenu } from '~/data/template/service/templateService'
+import type { RubriqueContenu } from '~/data/template/domain/RubriqueContenu'
 import { ALL_CATEGORY_KEY } from '~/utils/constants'
 
 const INSPIRATIONS_COUNT = 6
@@ -115,11 +115,11 @@ const props = defineProps<{
   eventType: string | null
 }>()
 
-// La page décide de la navigation : recherche d'un prestataire, ou fiche d'une inspiration
-// (en connecté, l'une comme l'autre passent par le flow d'ajout à l'événement).
-defineEmits<{
+// La page décide de la navigation : recherche d'un prestataire (restreinte à la rubrique : `path`),
+// ou fiche d'une inspiration (en connecté, l'une comme l'autre passent par le flow d'ajout à l'événement).
+const emit = defineEmits<{
   back: []
-  search: []
+  search: [path: string]
   'open-provider': [slug: string]
 }>()
 
@@ -149,9 +149,17 @@ const inspirations = ref<PrestataireCardDetail[]>([])
 const inspirationsLoading = ref(true)
 const { subcategoriesOf } = useCategories()
 
+// Contenu de la rubrique, partagé par les inspirations et la recherche ; null si son chargement a échoué.
+let contenuPromise: Promise<RubriqueContenu | null> | null = null
+
 onMounted(async () => {
+  contenuPromise = fetchRubriqueContenu(props.eventType ?? 'autre', props.rubriqueKey).catch((e) => {
+    console.error(e)
+    return null
+  })
   try {
-    const contenu = await fetchRubriqueContenu(props.eventType ?? 'autre', props.rubriqueKey)
+    const contenu = await contenuPromise
+    if (!contenu) return
     const { results } = await searchPrestataires({
       categoryKey: ALL_CATEGORY_KEY,
       subcatKeys: subcategoriesOf(contenu.categories, contenu.subcategories),
@@ -163,6 +171,13 @@ onMounted(async () => {
     inspirationsLoading.value = false
   }
 })
+
+// ── Recherche ────────────────────────────────────────────────────────────────
+// Restreinte à ce que regroupe la rubrique ; recherche normale si son contenu n'a pas pu être chargé.
+async function search() {
+  const contenu = await contenuPromise
+  emit('search', contenu ? restrictedSearchPath(contenu) : '/search')
+}
 </script>
 
 <style scoped lang="scss">

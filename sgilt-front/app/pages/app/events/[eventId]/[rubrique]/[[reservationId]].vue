@@ -12,7 +12,7 @@
     :rubrique-key="rubrique.key"
     :event-type="eventTypeKey(event.eventType)"
     @back="backToBoard"
-    @search="startAddPrestataireFlow()"
+    @search="(path) => startAddPrestataireFlow(path)"
     @open-provider="(slug) => startAddPrestataireFlow(`/${slug}`)"
   >
     <template v-if="rubrique.reservations.length > 0" #reservations>
@@ -64,7 +64,7 @@ function backToBoard() {
 
 // ── Flow ajout prestataire ────────────────────────────────────────────────────
 const { start } = useFlow()
-// Démarre par la recherche, ou par la fiche d'une inspiration (`to`).
+// Démarre par la recherche restreinte à la rubrique, ou par la fiche d'une inspiration (`to`).
 const startAddPrestataireFlow = (to?: string) => {
   start(
     'add-prestataire',

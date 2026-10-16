@@ -6,7 +6,7 @@
     :rubrique-key="rubriqueKey"
     :event-type="eventTypeKey(localEvent.eventType)"
     @back="navigateTo('/evenement')"
-    @search="navigateTo('/search')"
+    @search="(path) => navigateTo(path)"
     @open-provider="(slug) => navigateTo(`/${slug}`)"
   />
 </template>
