@@ -1,7 +1,13 @@
 <template>
   <div class="search-page">
     <section ref="headerRef" class="search-header">
-      <SgiltCategoryFilter v-model="categoryKey" :visible-keys="visibleCategoryKeys" />
+      <!-- Recherche lancée depuis une rubrique : retour à la rubrique, comme le retour de la fiche. -->
+      <SgiltCategoryFilter
+        v-model="categoryKey"
+        :visible-keys="visibleCategoryKeys"
+        :show-back="isRestricted"
+        @back="router.back()"
+      />
 
       <SgiltSubCategoryFilter
         v-if="!isAllCategories"
@@ -54,9 +60,11 @@ const {
   categoryKey,
   currentSubcats,
   toggleSubcat,
+  isRestricted,
   visibleCategoryKeys,
   visibleSubcatKeysOfCategory,
 } = useSearchUi()
+const router = useRouter()
 const { results, loading, subcatCounts, error } = useSearchFetch()
 
 const isAllCategories = computed(() => categoryKey.value === ALL_CATEGORY_KEY)

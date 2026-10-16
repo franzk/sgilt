@@ -310,7 +310,8 @@
   },
   "search": {
     "results-count": "{count} prestataires correspondent à votre recherche.",
-    "all-categories": "Tous"
+    "all-categories": "Tous",
+    "back": "Retour"
   },
   "provider": {
     "not-found": "Ce prestataire est introuvable.",

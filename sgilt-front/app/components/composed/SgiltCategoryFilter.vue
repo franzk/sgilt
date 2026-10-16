@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ArrowLeftSIcon } from '@remixicons/vue/line'
 import { ALL_CATEGORY_KEY } from '~/utils/constants'
 import SgiltCategoryIcon from '~/components/basics/icons/SgiltCategoryIcon.vue'
 import { useCategories } from '~/data/prestataire/useCategories'
@@ -8,9 +9,11 @@ const modelValue = defineModel<string>() // La clé de la catégorie active
 const props = defineProps<{
   // Clés des catégories affichées (recherche restreinte à une rubrique) ; absent : toutes.
   visibleKeys?: string[] | null
+  // Bouton retour en tête de rangée (recherche lancée depuis une rubrique).
+  showBack?: boolean
 }>()
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'back'])
 
 const { t } = useI18n()
 const { categories } = useCategories()
@@ -24,6 +27,12 @@ const filterOptions = computed(() => [
 
 <template>
   <nav class="category-filter">
+    <button v-if="showBack" class="category-btn" type="button" @click="$emit('back')">
+      <div class="icon-circle">
+        <ArrowLeftSIcon class="icon-svg" />
+      </div>
+      <span class="name">{{ $t('search.back') }}</span>
+    </button>
     <button
       v-for="cat in filterOptions"
       :key="cat.key"

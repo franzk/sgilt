@@ -114,6 +114,7 @@ export function useSearchUi() {
     categoryKey,
     currentSubcats,
     searchedSubcats,
+    isRestricted,
     visibleCategoryKeys,
     visibleSubcatKeysOfCategory,
     toggleSubcat,
