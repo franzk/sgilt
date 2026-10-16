@@ -18,7 +18,7 @@
 <script setup lang="ts">
 // Route parente des pages d'un événement : charge l'événement et le partage avec elles
 // (useEventContext). Sur desktop, ajoute la sidebar à gauche de la page ; ailleurs, la page seule.
-import EventSidebar from '~/components/app/EventSidebar.vue'
+import EventSidebar from '~/components/evenement/EventSidebar.vue'
 import { provideEventContext } from '~/data/evenement/useEventContext'
 import { defaultCoverPath } from '~/utils/eventCovers'
 

@@ -106,12 +106,13 @@ const activeKey = computed(() => {
 
 .event-sidebar {
   position: sticky;
-  top: $app-header-height;
+  // Sous le header et, s'il est affiché, le bandeau (--banner-offset, posé par le layout).
+  top: calc(#{$app-header-height} + var(--banner-offset, 0rem));
   display: flex;
   flex-direction: column;
   gap: $spacing-m;
   width: 18rem;
-  height: calc(100dvh - #{$app-header-height});
+  height: $viewport-below-header;
   padding: $spacing-m;
   overflow-y: auto;
   border-right: 1px solid $divider-color;
