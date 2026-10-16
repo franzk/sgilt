@@ -1,9 +1,6 @@
 <template>
-  <!-- Desktop : accueil léger (carte et rubriques sont dans la sidebar), comme /app/events/:id. -->
-  <div v-if="isDesktop" class="home">
-    <h1 class="title">{{ localEvent.title }}</h1>
-    <p class="invite">{{ $t('evenement.home.invite') }}</p>
-  </div>
+  <!-- Desktop : l'accueil (carte et rubriques sont dans la sidebar). -->
+  <EvenementHome v-if="isDesktop" :cover-image="coverImage" />
 
   <!-- Mobile : le board. -->
   <EventBoard
@@ -18,6 +15,7 @@
 
 <script setup lang="ts">
 import EventBoard from '~/components/evenement/EventBoard.vue'
+import EvenementHome from '~/components/evenement/EvenementHome.vue'
 import { defaultCoverPath } from '~/utils/eventCovers'
 
 definePageMeta({ layout: 'evenement' })
@@ -41,27 +39,3 @@ const { toUrl } = useImageUrl()
 const coverImage = computed(() => toUrl(defaultCoverPath(localEvent.eventType)))
 </script>
 
-<style scoped lang="scss">
-@use '@/assets/styles/base' as *;
-
-.home {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-s;
-  padding: $spacing-xl;
-
-  .title {
-    margin: 0;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 2.25rem;
-    font-weight: 600;
-    color: $text-primary;
-  }
-
-  .invite {
-    margin: 0;
-    color: $text-secondary;
-    font-size: $font-size-md;
-  }
-}
-</style>
