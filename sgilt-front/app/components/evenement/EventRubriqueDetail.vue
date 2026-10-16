@@ -59,30 +59,18 @@
       </section>
 
       <!-- ── Nos inspirations ─────────────────────────────────────────────────── -->
-      <section v-if="inspirationsLoading || inspirations.length > 0" class="inspirations">
-        <div class="section-head">
+      <PrestataireSuggestions
+        :subcat-keys="inspirationSubcats"
+        :count="INSPIRATIONS_COUNT"
+        :more-label="$t('evenement.rubrique.see-more')"
+        layout="carousel"
+        @more="search"
+        @select="(provider) => $emit('open-provider', provider.slug)"
+      >
+        <template #title>
           <h2 class="section-title">{{ $t('evenement.rubrique.inspirations-title') }}</h2>
-          <button class="see-more" type="button" @click="search">
-            {{ $t('evenement.rubrique.see-more') }}
-            <ArrowRightSIcon class="icon" aria-hidden="true" />
-          </button>
-        </div>
-        <div class="carousel">
-          <template v-if="inspirationsLoading">
-            <PrestataireCard v-for="n in INSPIRATIONS_COUNT" :key="n" class="card" loading />
-          </template>
-          <template v-else>
-            <PrestataireCard
-              v-for="provider in inspirations"
-              :key="provider.id"
-              class="card"
-              :provider="provider"
-              selectable
-              @select="$emit('open-provider', provider.slug)"
-            />
-          </template>
-        </div>
-      </section>
+        </template>
+      </PrestataireSuggestions>
     </div>
   </div>
 </template>
@@ -95,17 +83,13 @@
 import {
   AddIcon,
   ArrowLeftSIcon,
-  ArrowRightSIcon,
   LightbulbFlashIcon,
   SearchIcon,
 } from '@remixicons/vue/line'
-import PrestataireCard from '~/components/cards/PrestataireCard.vue'
+import PrestataireSuggestions from '~/components/prestataire/PrestataireSuggestions.vue'
 import { RUBRIQUE_COVERS, rubriqueAccent, rubriqueIcon } from '~/constants/event-rubriques'
-import type { PrestataireCardDetail } from '~/data/prestataire/domain/PrestataireCardDetail'
-import { searchPrestataires } from '~/data/prestataire/service/prestataireService'
 import { fetchRubriqueContenu } from '~/data/template/service/templateService'
 import type { RubriqueContenu } from '~/data/template/domain/RubriqueContenu'
-import { ALL_CATEGORY_KEY } from '~/utils/constants'
 
 const INSPIRATIONS_COUNT = 6
 
@@ -144,9 +128,8 @@ const coverImage = computed(() => {
 
 // ── Inspirations ─────────────────────────────────────────────────────────────
 // Prestataires de la rubrique (ce qu'elle regroupe dans le template du type) ; tous pour une
-// rubrique qui ne regroupe rien (« autre »).
-const inspirations = ref<PrestataireCardDetail[]>([])
-const inspirationsLoading = ref(true)
+// rubrique qui ne regroupe rien (« autre ») ou dont le contenu n'a pas pu être chargé.
+const inspirationSubcats = ref<string[] | null>(null)
 const { subcategoriesOf } = useCategories()
 
 // Contenu de la rubrique, partagé par les inspirations et la recherche ; null si son chargement a échoué.
@@ -157,19 +140,8 @@ onMounted(async () => {
     console.error(e)
     return null
   })
-  try {
-    const contenu = await contenuPromise
-    if (!contenu) return
-    const { results } = await searchPrestataires({
-      categoryKey: ALL_CATEGORY_KEY,
-      subcatKeys: subcategoriesOf(contenu.categories, contenu.subcategories),
-    })
-    inspirations.value = results.slice(0, INSPIRATIONS_COUNT)
-  } catch (e) {
-    console.error(e)
-  } finally {
-    inspirationsLoading.value = false
-  }
+  const contenu = await contenuPromise
+  inspirationSubcats.value = contenu ? subcategoriesOf(contenu.categories, contenu.subcategories) : []
 })
 
 // ── Recherche ────────────────────────────────────────────────────────────────
@@ -353,14 +325,15 @@ async function search() {
       align-items: center;
       justify-content: space-between;
       gap: $spacing-s;
+    }
 
-      .section-title {
-        margin: 0;
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 1.6rem;
-        font-weight: 600;
-        color: $text-primary;
-      }
+    // Titres de section, dont celui des inspirations (slot de PrestataireSuggestions).
+    .section-title {
+      margin: 0;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: $text-primary;
     }
 
     // ── Mes réservations ──────────────────────────────────────────────────────
@@ -394,53 +367,6 @@ async function search() {
         margin: 0;
         color: $text-secondary;
         font-size: $font-size-sm;
-      }
-    }
-
-    // ── Nos inspirations ──────────────────────────────────────────────────────
-    .inspirations {
-      display: flex;
-      flex-direction: column;
-      gap: $spacing-s;
-
-      .see-more {
-        display: inline-flex;
-        padding: 0;
-        border: none;
-        background: none;
-        font-family: inherit;
-        cursor: pointer;
-        align-items: center;
-        gap: $spacing-xxs;
-        color: $text-primary;
-        font-size: $font-size-sm;
-        text-decoration: none;
-
-        .icon {
-          width: 1.125rem;
-          height: 1.125rem;
-        }
-      }
-
-      // Défilement horizontal : les cartes débordent jusqu'aux bords de l'écran.
-      .carousel {
-        display: flex;
-        gap: $spacing-s;
-        margin: 0 (-$spacing-m);
-        // Marge verticale : laisse la place à l'élévation des cartes au survol.
-        padding: $spacing-xs $spacing-m;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        scrollbar-width: none;
-
-        &::-webkit-scrollbar {
-          display: none;
-        }
-
-        .card {
-          flex: 0 0 11rem;
-          scroll-snap-align: start;
-        }
       }
     }
   }

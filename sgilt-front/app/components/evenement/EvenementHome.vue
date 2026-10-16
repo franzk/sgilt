@@ -47,12 +47,26 @@
         </NuxtLink>
       </div>
     </section>
+
+    <!-- ── Des idées pour vous inspirer ─────────────────────────────────────────── -->
+    <PrestataireSuggestions
+      :subcat-keys="inspirationSubcats"
+      :count="INSPIRATIONS_COUNT"
+      :more-label="$t('evenement.home.inspirations.see-all')"
+      layout="grid"
+      @more="navigateTo('/search')"
+      @select="(provider) => navigateTo(`/${provider.slug}`)"
+    >
+      <template #title>
+        <h2 class="section-title">{{ $t('evenement.home.inspirations.title') }}</h2>
+      </template>
+    </PrestataireSuggestions>
   </div>
 </template>
 
 <script setup lang="ts">
 // Accueil desktop de l'événement local (parcours public, /evenement) : accroche, par où commencer,
-// l'événement en un coup d'œil. La carte et les rubriques sont dans la sidebar.
+// l'événement en un coup d'œil, idées de prestataires. La carte et les rubriques sont dans la sidebar.
 import {
   ArrowRightSIcon,
   CalendarEventIcon,
@@ -61,7 +75,9 @@ import {
   MapPin2Icon,
   PencilIcon,
 } from '@remixicons/vue/line'
+import PrestataireSuggestions from '~/components/prestataire/PrestataireSuggestions.vue'
 import { rubriqueAccent, rubriqueIcon } from '~/constants/event-rubriques'
+import { fetchRubriqueContenu } from '~/data/template/service/templateService'
 import { eventTypeKey } from '~/types/evenement'
 import { formatDate } from '~/utils/dateUtils'
 
@@ -70,6 +86,7 @@ defineProps<{
 }>()
 
 const START_CARDS_COUNT = 3
+const INSPIRATIONS_COUNT = 4
 
 const { te } = useI18n()
 const { localEvent, eventTypeLabel } = useLocalEvent()
@@ -96,6 +113,34 @@ const infos = computed(() => [
     value: [localEvent.lieu, localEvent.ville].filter(Boolean).join(', '),
   },
 ])
+
+// ── Des idées pour vous inspirer ─────────────────────────────────────────────
+// Prestataires de ce que regroupent les rubriques de l'événement ; tous si elles ne regroupent rien,
+// si l'événement n'a pas de rubrique ou si leur contenu n'a pas pu être chargé. Recalculé quand les
+// rubriques changent (copiées du template à la première arrivée, après le montage).
+const inspirationSubcats = ref<string[] | null>(null)
+const { subcategoriesOf } = useCategories()
+const rubriqueKeys = computed(() => localEvent.rubriques.map((rubrique) => rubrique.key))
+
+async function loadInspirationSubcats(keys: string[]) {
+  inspirationSubcats.value = null
+  try {
+    const contenus = await Promise.all(keys.map((key) => fetchRubriqueContenu(typeKey.value, key)))
+    // Rubriques changées entre-temps : la recherche suivante l'emporte.
+    if (keys !== rubriqueKeys.value) return
+    inspirationSubcats.value = subcategoriesOf(
+      contenus.flatMap((contenu) => contenu.categories),
+      contenus.flatMap((contenu) => contenu.subcategories),
+    )
+  } catch (e) {
+    console.error(e)
+    if (keys === rubriqueKeys.value) inspirationSubcats.value = []
+  }
+}
+
+onMounted(() => {
+  watch(rubriqueKeys, loadInspirationSubcats, { immediate: true })
+})
 </script>
 
 <style scoped lang="scss">

@@ -199,6 +199,10 @@
         "lieu": "Lieu",
         "to-define": "À définir",
         "edit": "Modifier les informations"
+      },
+      "inspirations": {
+        "title": "Des idées pour vous inspirer",
+        "see-all": "Voir tous les prestataires"
       }
     },
     "prestataires": {
