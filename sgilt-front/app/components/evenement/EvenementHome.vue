@@ -1,5 +1,44 @@
 <template>
-  <div class="evenement-home">
+  <!-- ── Mobile : le board (couverture, réglages, rubriques), avec l'accueil autour ─── -->
+  <EventBoard
+    v-if="isMobile"
+    :event-meta="localEvent"
+    :rubriques="localEvent.rubriques"
+    :cover-image="coverImage"
+    @settings="navigateTo('/evenement/parametres')"
+    @rubrique="(rubriqueKey) => navigateTo(`/evenement/${rubriqueKey}`)"
+  >
+    <template #intro>
+      <div class="mobile-intro">
+        <div class="hero-text">
+          <h2 class="title">{{ $t(`evenement.home.hero.title.${typeKey}`) }}</h2>
+          <p class="intro">{{ $t('evenement.home.hero.intro') }}</p>
+        </div>
+        <EvenementStartCards>
+          <template #title>
+            <h2 class="section-title">{{ $t('evenement.home.start.title') }}</h2>
+          </template>
+        </EvenementStartCards>
+      </div>
+    </template>
+
+    <PrestataireSuggestions
+      class="mobile-inspirations"
+      :subcat-keys="inspirationSubcats"
+      :count="INSPIRATIONS_COUNT"
+      :more-label="$t('evenement.home.inspirations.see-all')"
+      layout="carousel"
+      @more="navigateTo('/search')"
+      @select="(provider) => navigateTo(`/${provider.slug}`)"
+    >
+      <template #title>
+        <h2 class="section-title">{{ $t('evenement.home.inspirations.title') }}</h2>
+      </template>
+    </PrestataireSuggestions>
+  </EventBoard>
+
+  <!-- ── Desktop : la carte et les rubriques sont dans la sidebar ─────────────────── -->
+  <div v-if="isDesktop" class="evenement-home">
     <!-- ── Accroche ─────────────────────────────────────────────────────────────── -->
     <section class="hero">
       <div class="hero-image" :style="{ backgroundImage: `url(${coverImage})` }" />
@@ -10,25 +49,11 @@
     </section>
 
     <!-- ── Par où commencer ? ───────────────────────────────────────────────────── -->
-    <!-- Les premières rubriques de l'événement (ordre du template) ; rien si aucune n'a sa carte. -->
-    <section v-if="startRubriques.length > 0" class="start">
-      <h2 class="section-title">{{ $t('evenement.home.start.title') }}</h2>
-      <div class="start-cards">
-        <NuxtLink
-          v-for="key in startRubriques"
-          :key="key"
-          :to="`/evenement/${key}`"
-          class="start-card"
-        >
-          <span class="badge" :style="{ background: rubriqueAccent(key) }" aria-hidden="true">
-            <component :is="rubriqueIcon(key)" class="icon" />
-          </span>
-          <span class="card-title">{{ $t(`evenement.home.start.${key}.title`) }}</span>
-          <span class="card-description">{{ $t(`evenement.home.start.${key}.description`) }}</span>
-          <span class="arrow" aria-hidden="true"><ArrowRightSIcon class="icon" /></span>
-        </NuxtLink>
-      </div>
-    </section>
+    <EvenementStartCards>
+      <template #title>
+        <h2 class="section-title">{{ $t('evenement.home.start.title') }}</h2>
+      </template>
+    </EvenementStartCards>
 
     <!-- ── Votre événement en un coup d'œil ─────────────────────────────────────── -->
     <section class="glance">
@@ -65,18 +90,20 @@
 </template>
 
 <script setup lang="ts">
-// Accueil desktop de l'événement local (parcours public, /evenement) : accroche, par où commencer,
-// l'événement en un coup d'œil, idées de prestataires. La carte et les rubriques sont dans la sidebar.
+// Accueil de l'événement local (parcours public, /evenement).
+// Mobile : le board (couverture et réglages, rubriques) autour du texte d'accueil, de par où commencer
+// et des idées de prestataires. Desktop (carte et rubriques dans la sidebar) : accroche, par où
+// commencer, l'événement en un coup d'œil, idées de prestataires.
 import {
-  ArrowRightSIcon,
   CalendarEventIcon,
   GroupIcon,
   Heart3Icon,
   MapPin2Icon,
   PencilIcon,
 } from '@remixicons/vue/line'
+import EventBoard from '~/components/evenement/EventBoard.vue'
+import EvenementStartCards from '~/components/evenement/EvenementStartCards.vue'
 import PrestataireSuggestions from '~/components/prestataire/PrestataireSuggestions.vue'
-import { rubriqueAccent, rubriqueIcon } from '~/constants/event-rubriques'
 import { fetchRubriqueContenu } from '~/data/template/service/templateService'
 import { eventTypeKey } from '~/types/evenement'
 import { formatDate } from '~/utils/dateUtils'
@@ -85,22 +112,13 @@ defineProps<{
   coverImage: string
 }>()
 
-const START_CARDS_COUNT = 3
 const INSPIRATIONS_COUNT = 4
 
-const { te } = useI18n()
+const { isMobile, isDesktop } = useDevice()
 const { localEvent, eventTypeLabel } = useLocalEvent()
 const { nbInvitesLabel } = useNbInvitesLabel()
 
 const typeKey = computed(() => eventTypeKey(localEvent.eventType) ?? 'autre')
-
-// Premières rubriques de l'événement qui ont un texte de carte.
-const startRubriques = computed(() =>
-  localEvent.rubriques
-    .map((rubrique) => rubrique.key)
-    .filter((key) => te(`evenement.home.start.${key}.title`))
-    .slice(0, START_CARDS_COUNT),
-)
 
 // Valeur vide : « À définir ».
 const infos = computed(() => [
@@ -145,6 +163,43 @@ onMounted(() => {
 
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
+
+// Titres de section, sur mobile comme sur desktop (dont ceux passés aux slots des sections).
+.section-title {
+  margin: 0;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $text-primary;
+}
+
+// ── Mobile : texte d'accueil et par où commencer, entre la couverture et les rubriques ──
+.mobile-intro {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-l;
+
+  .hero-text {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+
+    .title {
+      margin: 0;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: $font-size-2xl;
+      font-weight: $font-weight-semibold;
+      color: $text-primary;
+      line-height: 1.1;
+    }
+
+    .intro {
+      margin: 0;
+      color: $text-secondary;
+      font-size: $font-size-sm;
+      line-height: 1.5;
+    }
+  }
+}
 
 .evenement-home {
   display: flex;
@@ -197,84 +252,6 @@ onMounted(() => {
         color: $text-secondary;
         font-size: $font-size-md;
         line-height: 1.5;
-      }
-    }
-  }
-
-  .section-title {
-    margin: 0;
-    font-size: $font-size-lg;
-    font-weight: $font-weight-bold;
-    color: $text-primary;
-  }
-
-  // ── Par où commencer ? ───────────────────────────────────────────────────────
-  .start {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-m;
-
-    .start-cards {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: $spacing-m;
-
-      .start-card {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        gap: $spacing-xs;
-        padding: $spacing-l $spacing-l $spacing-xxl;
-        border-radius: $radius-lg;
-        background: $surface-soft;
-        color: $text-primary;
-        text-decoration: none;
-
-        .badge {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 2.5rem;
-          height: 2.5rem;
-          margin-bottom: $spacing-xs;
-          border-radius: 50%;
-          color: $text-inverted;
-
-          .icon {
-            width: 1.25rem;
-            height: 1.25rem;
-          }
-        }
-
-        .card-title {
-          font-size: $font-size-md;
-          font-weight: $font-weight-bold;
-        }
-
-        .card-description {
-          font-size: $font-size-sm;
-          color: $text-secondary;
-          line-height: 1.4;
-        }
-
-        .arrow {
-          position: absolute;
-          right: $spacing-m;
-          bottom: $spacing-m;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 2.25rem;
-          height: 2.25rem;
-          border-radius: 50%;
-          background: $surface-white;
-          box-shadow: 0 0.125rem 0.5rem $shadow-s;
-
-          .icon {
-            width: 1.25rem;
-            height: 1.25rem;
-          }
-        }
       }
     }
   }

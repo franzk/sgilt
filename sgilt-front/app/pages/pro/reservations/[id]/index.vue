@@ -37,18 +37,18 @@
         <!-- Colonne gauche : bloc bento unique -->
         <div class="left">
           <ProEventInfo :event="reservation.event" :client-info="reservation.clientInfo" />
-          <hr v-if="!isMobile" class="left-divider" />
+          <hr v-if="isDesktop" class="left-divider" />
 
           <!-- nouvelle : CTA statut desktop uniquement -->
           <BookingStatusCta
-            v-if="reservation.status === 'nouvelle' && !isMobile"
+            v-if="reservation.status === 'nouvelle' && isDesktop"
             layout="column"
             status="nouvelle"
             @refuse="openRefusalModal"
           />
 
           <BookingContactActions
-            v-if="reservation.status !== 'nouvelle' && !isMobile"
+            v-if="reservation.status !== 'nouvelle' && isDesktop"
             variant="big"
             layout="column"
             :client-info="reservation.clientInfo"
@@ -61,7 +61,7 @@
           <!-- nouvelle ─────────────────────────────────────────── -->
           <template v-if="reservation.status === 'nouvelle'">
             <!-- Desktop : cartes contact dans leur bento -->
-            <div v-if="!isMobile" class="bento-card">
+            <div v-if="isDesktop" class="bento-card">
               <BookingContactActions
                 variant="big"
                 layout="row"
@@ -191,7 +191,7 @@ import { defaultCoverPath } from '~/utils/eventCovers'
 import { buildReservationMailto } from '~/utils/reservationMailto'
 import { getStatusOverlayStyle } from '~/constants/reservation-status'
 
-const { isMobile } = useDevice()
+const { isMobile, isDesktop } = useDevice()
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()

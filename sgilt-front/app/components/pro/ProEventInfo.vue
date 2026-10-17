@@ -1,6 +1,6 @@
 <template>
   <!-- ── Desktop ─────────────────────────────────────────────────────────────────── -->
-  <template v-if="!isMobile">
+  <template v-if="isDesktop">
     <ProEventInfoDesktop
       :event="event"
       :client-info="clientInfo"
@@ -10,7 +10,7 @@
   </template>
 
   <!-- ── Mobile ─────────────────────────────────────────────────────────────────── -->
-  <template v-else>
+  <template v-if="isMobile">
     <button class="mobile-trigger" type="button" @click="sheetOpen = true">
       <div class="pills">
         <span v-if="event.date" class="event-pill date">
@@ -65,7 +65,7 @@ const props = defineProps<{
   clientInfo: ClientContactInfo
 }>()
 
-const { isMobile } = useDevice()
+const { isMobile, isDesktop } = useDevice()
 
 const sheetOpen = ref(false)
 const journalOpen = ref(false)

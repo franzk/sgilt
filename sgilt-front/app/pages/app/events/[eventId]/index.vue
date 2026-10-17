@@ -9,7 +9,7 @@
     </div>
 
     <!-- ── Mobile : même board que le parcours public ─────────────────────────── -->
-    <template v-else>
+    <template v-if="isMobile">
       <EventBoard
         v-if="!pending && event"
         class="mobile-board"
@@ -41,7 +41,7 @@ definePageMeta({ layout: 'app' })
 
 const { eventId, event, rubriques, pending } = useEventContext()
 
-const { isDesktop } = useDevice()
+const { isMobile, isDesktop } = useDevice()
 
 // ── Cover image ────────────────────────────────────────────────────────────────
 const { toUrl } = useImageUrl()

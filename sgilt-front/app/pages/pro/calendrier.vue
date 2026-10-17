@@ -5,7 +5,7 @@
         <template v-if="isMobile">
           {{ $t('pro.calendrier.hint-mobile') }}
         </template>
-        <template v-else>
+        <template v-if="isDesktop">
           {{ $t('pro.calendrier.hint-desktop') }}
         </template>
       </p>
@@ -20,7 +20,7 @@ import ProCalendar from '~/components/pro/ProCalendar.vue'
 
 definePageMeta({ layout: 'pro' })
 
-const { isMobile } = useDevice()
+const { isMobile, isDesktop } = useDevice()
 </script>
 
 <style scoped lang="scss">

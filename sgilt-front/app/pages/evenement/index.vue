@@ -1,20 +1,8 @@
 <template>
-  <!-- Desktop : l'accueil (carte et rubriques sont dans la sidebar). -->
-  <EvenementHome v-if="isDesktop" :cover-image="coverImage" />
-
-  <!-- Mobile : le board. -->
-  <EventBoard
-    v-else
-    :event-meta="localEvent"
-    :rubriques="localEvent.rubriques"
-    :cover-image="coverImage"
-    @settings="navigateTo('/evenement/parametres')"
-    @rubrique="(rubriqueKey) => navigateTo(`/evenement/${rubriqueKey}`)"
-  />
+  <EvenementHome :cover-image="coverImage" />
 </template>
 
 <script setup lang="ts">
-import EventBoard from '~/components/evenement/EventBoard.vue'
 import EvenementHome from '~/components/evenement/EvenementHome.vue'
 import { defaultCoverPath } from '~/utils/eventCovers'
 
@@ -24,7 +12,6 @@ const { t } = useI18n()
 useHead({ title: t('evenement.page-title') })
 
 const { localEvent, initRubriques } = useLocalEvent()
-const { isDesktop } = useDevice()
 
 // Le type d'événement se choisit sur /fete : sans type (accès direct), on y renvoie. Sinon, à la
 // première arrivée, les rubriques du template sont copiées dans l'événement local. Côté client

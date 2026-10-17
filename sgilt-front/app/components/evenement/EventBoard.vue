@@ -28,7 +28,10 @@
     </div>
 
     <!-- ── Formule d'accroche ─────────────────────────────────────────────────── -->
-    <p v-if="tagline" class="tagline">{{ tagline }}</p>
+    <slot name="intro">
+      <!-- contenu par défaut, si aucun <template #intro> n'est fourni -->
+      <p v-if="tagline" class="tagline">{{ tagline }}</p>
+    </slot>
 
     <!-- ── Rubriques ──────────────────────────────────────────────────────────── -->
     <section class="rubriques">

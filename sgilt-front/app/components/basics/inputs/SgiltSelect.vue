@@ -12,7 +12,7 @@
         </template>
       </SgiltSelectMobile>
 
-      <SgiltSelectDesktop v-else v-model="modelValue" :options="options" :disabled="disabled">
+      <SgiltSelectDesktop v-if="isDesktop" v-model="modelValue" :options="options" :disabled="disabled">
         <template #left-icon>
           <slot name="left-icon" />
         </template>
@@ -42,7 +42,7 @@ defineProps<{
   disabled?: boolean
 }>()
 
-const { isMobile } = useDevice()
+const { isMobile, isDesktop } = useDevice()
 </script>
 
 <style scoped lang="scss">

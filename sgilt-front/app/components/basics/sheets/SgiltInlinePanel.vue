@@ -1,11 +1,11 @@
 <template>
   <!-- ── Mobile : bottom sheet ────────────────────────────────────────────────── -->
-  <SgiltBottomSheet v-if="!isDesktop" v-model:open="open" :title="title" overlay>
+  <SgiltBottomSheet v-if="isMobile" v-model:open="open" :title="title" overlay>
     <slot />
   </SgiltBottomSheet>
 
   <!-- ── Desktop : déroulé sur place, à l'endroit où le panneau est posé ─────── -->
-  <Transition v-else name="sgilt-inline-panel">
+  <Transition v-if="isDesktop" name="sgilt-inline-panel">
     <div v-if="open" class="sgilt-inline-panel">
       <slot />
     </div>
@@ -24,7 +24,7 @@ defineProps<{
   title: string
 }>()
 
-const { isDesktop } = useDevice()
+const { isMobile, isDesktop } = useDevice()
 </script>
 
 <style scoped lang="scss">
