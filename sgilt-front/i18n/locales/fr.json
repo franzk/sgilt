@@ -856,28 +856,47 @@
     "cancel-dialog": {
       "title": "Annuler la demande",
       "body": "Êtes-vous sûr de vouloir annuler cette demande\u00a0?",
-      "title-confirmed": "Annuler la réservation",
-      "body-confirmed": "Êtes-vous sûr de vouloir annuler cette réservation ?",
       "confirm": "Oui, annuler",
       "keep": "Non, garder",
       "reason-placeholder": "Motif de l'annulation (facultatif)"
     },
     "cancel-btn": "Annuler la demande",
-    "cancel-btn-confirmed": "Annuler la réservation",
     "mark-contacted-dialog": {
       "title": "Marquer comme contacté",
       "body": "Confirmez-vous avoir été contacté·e par ce prestataire ?",
       "confirm": "Oui, j'ai été contacté·e",
       "cancel": "Pas encore"
     },
-    "mark-contacted-btn": "J'ai été contacté·e",
+    "mark-contacted-btn": "Le prestataire m'a contacté·e",
     "confirm-dialog": {
-      "title": "Confirmer la réservation",
-      "body": "Confirmez-vous cette réservation avec ce prestataire ?",
+      "title": "Le prestataire a confirmé ?",
+      "body": "Confirmez-vous que ce prestataire a validé votre réservation ?",
       "confirm": "Oui, c'est confirmé",
       "cancel": "Pas encore"
     },
-    "confirm-btn": "Confirmer la réservation"
+    "confirm-btn": "Le prestataire a confirmé la réservation",
+    "tabs": {
+      "suivi": "Suivi",
+      "details": "Détails",
+      "documents": "Documents",
+      "prestataire": "Prestataire"
+    },
+    "special-actions": {
+      "link": "Actions spéciales",
+      "page-title": "Actions spéciales",
+      "page-subtitle": "Ces actions sont irréversibles. Procédez avec précaution.",
+      "back": "‹ Retour",
+      "contact": "En cas de problème ou pour toute question, contactez-nous :",
+      "cancel": {
+        "label": "Annuler la réservation",
+        "inactive": "Cette demande ne peut plus être annulée.",
+        "dialog-title": "Annuler la réservation",
+        "dialog-body": "Êtes-vous sûr de vouloir annuler cette réservation ? Cette action est difficilement réversible.",
+        "dialog-cancel": "Annuler",
+        "dialog-confirm": "Confirmer l'annulation",
+        "reason-placeholder": "Vous pouvez indiquer le motif de l'annulation (facultatif)"
+      }
+    }
   },
   "client": {
     "reservation": {
@@ -1098,11 +1117,13 @@
     },
     "reservation-detail": {
       "back": "‹ Retour",
+      "refuse-btn": "Non, je refuse cette prestation",
       "refusal-modal": {
         "title": "Refuser la demande",
         "lead": "Voulez-vous laisser un message au client ? (optionnel)",
         "placeholder": "Votre message…",
-        "submit": "Confirmer le refus"
+        "submit": "Confirmer le refus",
+        "cancel": "Retour"
       }
     },
     "contact": {
@@ -1113,21 +1134,6 @@
       "write-mail": "Rédiger un mail",
       "mobile": "Mobile",
       "tel": "Tél"
-    },
-    "actions": {
-      "page-title": "Actions spéciales",
-      "page-subtitle": "Ces actions sont irréversibles. Procédez avec précaution.",
-      "back": "‹ Retour",
-      "cancel-reservation": {
-        "label": "Annuler la réservation",
-        "desc-active": "",
-        "desc-inactive": "Cette demande ne peut plus être annulée.",
-        "dialog-title": "Annuler la réservation",
-        "dialog-body": "Êtes-vous sûr de vouloir annuler cette réservation ? Cette action est difficilement réversible.",
-        "dialog-cancel": "Annuler",
-        "dialog-confirm": "Confirmer l'annulation",
-        "reason-placeholder": "Vous pouvez indiquer le motif de l'annulation (facultatif)"
-      }
     }
   },
   "feed": {
@@ -1138,14 +1144,25 @@
       "refused": "{name} a décliné la demande de réservation"
     },
     "title": "Notes & suivi",
-    "subtitle": "Ajoutez des notes, documents ou informations utiles pour le suivi.",
+    "subtitle": "Ajoutez des notes, documents ou informations utiles pour le suivi de votre réservation.",
     "upload-error": {
       "too-large": "Le fichier dépasse la taille maximale autorisée (10 Mo)."
     },
-    "pills": {
-      "all": "Tout",
-      "notes": "Notes",
-      "documents": "Documents"
+    "you": "Vous",
+    "visibility": {
+      "public": "Note publique",
+      "private": "Note privée"
+    },
+    "document": {
+      "title": "Document ajouté",
+      "menu-aria": "Actions du document",
+      "download": "Télécharger",
+      "delete": "Supprimer",
+      "type": {
+        "pdf": "PDF",
+        "image": "IMG",
+        "other": "DOC"
+      }
     },
     "actions": {
       "add-note": "+ Note",
@@ -1155,6 +1172,7 @@
     "empty": "Aucun élément pour le moment.",
     "note-initial-label": "Demande initiale",
     "add-note-dialog": {
+      "error": "La note n'a pas pu être enregistrée. Réessayez dans un instant.",
       "title": "Ajouter une note",
       "title-placeholder": "Titre de la note",
       "placeholder": "Ajouter une note...",

@@ -1,13 +1,5 @@
 <template>
-  <!-- Réservation ouverte depuis la liste (ou un mail, une notification) : à la place de la liste. -->
-  <ReservationDetail
-    v-if="reservationId"
-    :key="reservationId"
-    :reservation-id="reservationId"
-    :event-title="event?.title"
-    @back="navigateTo(listPath)"
-  />
-  <div v-else class="reservations-list">
+  <div class="reservations-list">
     <div v-if="!pending" class="column">
       <h1 class="title">{{ $t('evenement.prestataires.title') }}</h1>
 
@@ -23,9 +15,9 @@
 </template>
 
 <script setup lang="ts">
-// Liste plate des réservations de l'événement, toutes rubriques confondues (menu « Prestataires »
-// de l'événement), ou la réservation ouverte depuis elle (/reservations/:id).
-import ReservationDetail from '~/components/app/ReservationDetail.vue'
+// Liste de toutes les réservations de l'événement, toutes rubriques confondues : l'écran du menu
+// « Prestataires » de l'événement (/app/events/:eventId/reservations). Une réservation s'ouvre dans
+// reservations/[reservationId]/[[onglet]].vue.
 import ReservationList from '~/components/app/ReservationList.vue'
 import Sk from '~/components/basics/Sk.vue'
 import { useEventContext } from '~/data/evenement/useEventContext'
@@ -35,13 +27,9 @@ definePageMeta({ layout: 'app' })
 const { t } = useI18n()
 useHead({ title: t('evenement.prestataires.page-title') })
 
-const { eventId, event, rubriques, pending } = useEventContext()
+const { eventId, rubriques, pending } = useEventContext()
 
-const route = useRoute()
 const listPath = `/app/events/${eventId}/reservations`
-const reservationId = computed(() =>
-  typeof route.params.reservationId === 'string' ? route.params.reservationId : null,
-)
 
 // Dans l'ordre des rubriques de l'événement.
 const reservations = computed(() => rubriques.value.flatMap((rubrique) => rubrique.reservations))

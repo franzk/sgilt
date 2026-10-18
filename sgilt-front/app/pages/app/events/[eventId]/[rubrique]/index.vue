@@ -1,14 +1,6 @@
 <template>
-  <!-- Réservation ouverte depuis la rubrique : affichée à la place de la rubrique. -->
-  <ReservationDetail
-    v-if="reservationId"
-    :key="reservationId"
-    :reservation-id="reservationId"
-    :event-title="event?.title"
-    @back="navigateTo(rubriquePath)"
-  />
   <EventRubriqueDetail
-    v-else-if="event && rubrique"
+    v-if="event && rubrique"
     :rubrique-key="rubrique.key"
     :event-type="eventTypeKey(event.eventType)"
     @back="backToBoard"
@@ -26,8 +18,9 @@
 </template>
 
 <script setup lang="ts">
-// Page d'une rubrique, ou la réservation ouverte depuis elle (/:rubrique/:id).
-import ReservationDetail from '~/components/app/ReservationDetail.vue'
+// Page d'une rubrique de l'événement (/app/events/:eventId/:rubrique, ex. « Lieu ») : présentation,
+// réservations de la rubrique, inspirations. Une réservation s'ouvre dans
+// [rubrique]/[reservationId]/[[onglet]].vue.
 import ReservationList from '~/components/app/ReservationList.vue'
 import Sk from '~/components/basics/Sk.vue'
 import EventRubriqueDetail from '~/components/evenement/EventRubriqueDetail.vue'
@@ -46,9 +39,6 @@ const rubrique = computed(
   () => rubriques.value.find((candidate) => candidate.key === route.params.rubrique) ?? null,
 )
 const rubriquePath = computed(() => `/app/events/${eventId}/${route.params.rubrique}`)
-const reservationId = computed(() =>
-  typeof route.params.reservationId === 'string' ? route.params.reservationId : null,
-)
 
 watch(
   pending,

@@ -72,9 +72,6 @@ export function mapProReservationDetail(
     unreadNotesCount: 0,
     event: mapProReservationDetailEvent(reservationId, dto),
     clientInfo: mapProReservationDetailClientInfo(dto),
-    progressType: null,
-    progressValue: null,
-    phraseInfoState: null,
   }
 }
 

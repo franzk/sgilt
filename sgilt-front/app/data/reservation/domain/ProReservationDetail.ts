@@ -4,8 +4,5 @@ import type { ClientContactInfo } from './ClientContactInfo'
 
 export interface ProReservationDetail extends ReservationMeta {
   event: EventMeta
-  progressType: 'deadline' | 'duration' | 'temporal' | null
-  progressValue: number | null
-  phraseInfoState: string | null
   clientInfo: ClientContactInfo
 }
