@@ -43,32 +43,12 @@
     :author="item.author"
     :is-own="isOwn"
   >
-    <div class="file">
-      <span class="file-icon" :class="fileKind">{{ $t(`feed.document.type.${fileKind}`) }}</span>
-      <span class="file-name">{{ item.name }}</span>
-      <div ref="menuRef" class="menu">
-        <button
-          class="menu-btn"
-          type="button"
-          :aria-label="$t('feed.document.menu-aria')"
-          @click="menuOpen = !menuOpen"
-        >
-          <More2Icon class="icon" />
-        </button>
-        <ul v-if="menuOpen" class="menu-list">
-          <li>
-            <button class="menu-item" type="button" @click="onDownload">
-              <DownloadIcon class="icon" />{{ $t('feed.document.download') }}
-            </button>
-          </li>
-          <li v-if="isOwn">
-            <button class="menu-item danger" type="button" @click="onDelete">
-              <DeleteBinIcon class="icon" />{{ $t('feed.document.delete') }}
-            </button>
-          </li>
-        </ul>
-      </div>
-    </div>
+    <DocumentFile
+      :document="item"
+      :can-delete="isOwn"
+      @download="(url, fileName) => $emit('download', url, fileName)"
+      @delete="(id) => $emit('delete', id)"
+    />
   </FeedEntryCard>
 </template>
 
@@ -77,20 +57,17 @@
 // prestataire. Trois blocs distincts dans le template, chacun dans la coquille FeedEntryCard
 // (pastille, titre, date, auteur) : une note (de l'organisateur, du prestataire ou d'un changement de
 // statut), la demande initiale, un document (fichier et menu : télécharger, supprimer le sien).
-import { onClickOutside } from '@vueuse/core'
 import {
   AttachmentIcon,
   ArrowRightCircleIcon,
   CheckboxCircleIcon,
   CloseCircleIcon,
-  DeleteBinIcon,
-  DownloadIcon,
   FileTextIcon,
   FileUploadIcon,
   LockIcon,
-  More2Icon,
 } from '@remixicons/vue/line'
 import type { Component } from 'vue'
+import DocumentFile from '~/components/shared/DocumentFile.vue'
 import FeedEntryCard from '~/components/shared/FeedEntryCard.vue'
 import { RESERVATION_STATUS_CONFIG } from '~/constants/reservation-status'
 import type { FeedItem } from '~/data/reservation/domain/FeedItem'
@@ -101,7 +78,7 @@ const props = defineProps<{
   currentUserRole: 'client' | 'prestataire'
 }>()
 
-const emit = defineEmits<{
+defineEmits<{
   download: [url: string, fileName: string]
   delete: [id: string]
 }>()
@@ -165,26 +142,7 @@ const noteTitle = computed(() =>
 
 const isOwn = computed(() => props.item.author.role === props.currentUserRole)
 
-const fileKind = computed(() => {
-  if (props.item.fileType === 'pdf') return 'pdf'
-  if (props.item.fileType === 'image') return 'image'
-  return 'other'
-})
 
-// ── Menu du document ──────────────────────────────────────────────────────────
-const menuOpen = ref(false)
-const menuRef = ref<HTMLElement | null>(null)
-onClickOutside(menuRef, () => (menuOpen.value = false))
-
-function onDownload() {
-  menuOpen.value = false
-  emit('download', props.item.url ?? '', props.item.name ?? '')
-}
-
-function onDelete() {
-  menuOpen.value = false
-  emit('delete', props.item.id)
-}
 </script>
 
 <style scoped lang="scss">
@@ -224,126 +182,6 @@ function onDelete() {
   .icon {
     width: 0.85rem;
     height: 0.85rem;
-  }
-}
-
-// ── Document : le fichier et son menu ──────────────────────────────────────────
-.file {
-  display: flex;
-  align-items: center;
-  gap: $spacing-s;
-  padding: $spacing-s;
-  border: 1px solid $divider-color;
-  border-radius: $radius-md;
-
-  .file-icon {
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    width: 2.25rem;
-    height: 2.25rem;
-    border-radius: $radius-sm;
-    font-size: 0.6rem;
-    font-weight: $font-weight-bold;
-    letter-spacing: 0.04em;
-
-    &.pdf {
-      background: rgba(163, 45, 45, 0.1);
-      color: #a32d2d;
-    }
-
-    &.image {
-      background: rgba(24, 95, 165, 0.1);
-      color: #185fa5;
-    }
-
-    &.other {
-      background: rgba(107, 99, 92, 0.1);
-      color: #6b635c;
-    }
-  }
-
-  .file-name {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    font-size: $font-size-sm;
-    font-weight: $font-weight-medium;
-    color: $text-primary;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .menu {
-    position: relative;
-
-    .menu-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 2rem;
-      height: 2rem;
-      padding: 0;
-      border: none;
-      border-radius: 50%;
-      background: none;
-      color: $text-secondary;
-      cursor: pointer;
-
-      &:hover {
-        background: $surface-soft;
-      }
-
-      .icon {
-        width: 1.25rem;
-        height: 1.25rem;
-      }
-    }
-
-    .menu-list {
-      position: absolute;
-      top: 100%;
-      right: 0;
-      z-index: 5;
-      min-width: 10rem;
-      margin: $spacing-xxs 0 0;
-      padding: $spacing-xxs;
-      border: 1px solid $divider-color;
-      border-radius: $radius-md;
-      background: $surface-white;
-      box-shadow: 0 0.25rem 1rem $shadow-m;
-      list-style: none;
-
-      .menu-item {
-        display: flex;
-        align-items: center;
-        gap: $spacing-xs;
-        width: 100%;
-        padding: $spacing-xs $spacing-s;
-        border: none;
-        border-radius: $radius-sm;
-        background: none;
-        color: $text-primary;
-        font-family: inherit;
-        font-size: $font-size-sm;
-        text-align: left;
-        cursor: pointer;
-
-        &:hover {
-          background: $surface-soft;
-        }
-
-        &.danger {
-          color: #a32d2d;
-        }
-
-        .icon {
-          width: 1rem;
-          height: 1rem;
-        }
-      }
-    }
   }
 }
 </style>

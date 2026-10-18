@@ -12,17 +12,13 @@
         <StickyNoteAddIcon class="icon" aria-hidden="true" />
         {{ $t('feed.actions.add-note') }}
       </button>
-      <button
+      <DocumentUploadButton
         v-if="canUploadDocument"
         class="feed__action-btn"
-        type="button"
-        :disabled="uploadingDocument"
-        @click="fileInputRef?.click()"
-      >
-        <span v-if="uploadingDocument" class="feed__upload-spinner" aria-hidden="true" />
-        <AttachmentIcon v-else class="icon" aria-hidden="true" />
-        {{ uploadingDocument ? $t('feed.actions.uploading') : $t('feed.actions.add-document') }}
-      </button>
+        :uploading="uploadingDocument"
+        @upload="(file) => $emit('upload-document', file)"
+        @error="(message) => (uploadError = message)"
+      />
     </div>
 
     <p v-if="uploadError" class="feed__upload-error">{{ uploadError }}</p>
@@ -46,7 +42,6 @@
 
     <p v-else class="feed__empty">{{ $t('feed.empty') }}</p>
 
-    <input ref="fileInputRef" type="file" style="display: none" @change="handleUpload" />
 
     <!-- ── Modale ajout note ──────────────────────────────────────────────────── -->
     <SgiltDialog
@@ -91,7 +86,8 @@
 </template>
 
 <script setup lang="ts">
-import { AttachmentIcon, StickyNoteAddIcon } from '@remixicons/vue/line'
+import { StickyNoteAddIcon } from '@remixicons/vue/line'
+import DocumentUploadButton from '~/components/shared/DocumentUploadButton.vue'
 import type { FeedItem } from '~/types/event'
 import FeedEntry from '~/components/shared/FeedEntry.vue'
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
@@ -130,30 +126,14 @@ const emit = defineEmits<{
   'delete-document': [id: string]
 }>()
 
-const { t } = useI18n()
-
 // ── Frise : du plus récent au plus ancien ──────────────────────────────────────
 const sortedItems = computed(() =>
   [...props.items].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()),
 )
 
 // ── Documents ─────────────────────────────────────────────────────────────────
-const fileInputRef = ref<HTMLInputElement | null>(null)
-
+// Erreur du dernier fichier choisi (trop lourd), affichée sous les boutons.
 const uploadError = ref<string | null>(null)
-const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
-
-function handleUpload(e: Event) {
-  const file = (e.target as HTMLInputElement).files?.[0]
-  if (!file || !file.size) return
-  ;(e.target as HTMLInputElement).value = ''
-  if (file.size > MAX_FILE_SIZE) {
-    uploadError.value = t('feed.upload-error.too-large')
-    return
-  }
-  uploadError.value = null
-  emit('upload-document', file)
-}
 
 // ── Modale note ────────────────────────────────────────────────────────────────
 const noteModalOpen = ref(false)
@@ -209,12 +189,6 @@ watch(
 @use '@/assets/styles/base' as *;
 
 $desktop: $breakpoint-desktop;
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
 
 .feed {
   display: flex;
@@ -282,16 +256,6 @@ $desktop: $breakpoint-desktop;
       width: 1.125rem;
       height: 1.125rem;
     }
-  }
-
-  &__upload-spinner {
-    display: inline-block;
-    width: 0.75rem;
-    height: 0.75rem;
-    border: 2px solid currentColor;
-    border-top-color: transparent;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
   }
 
   &__upload-error {

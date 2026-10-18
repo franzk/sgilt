@@ -877,6 +877,11 @@
       "copy": "Copier",
       "last-update": "Dernière mise à jour : {date}"
     },
+    "documents": {
+      "title": "Documents",
+      "subtitle": "Tous les documents échangés pour cette réservation.",
+      "empty": "Aucun document pour le moment."
+    },
     "tabs": {
       "suivi": "Suivi",
       "details": "Détails",

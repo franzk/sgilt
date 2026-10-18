@@ -66,7 +66,21 @@
         :edit-path="details.editPath"
       />
     </div>
-    <!-- Documents, Prestataire : à venir (briques suivantes). -->
+
+    <!-- ── Documents : tous les documents de la réservation ──────────────────── -->
+    <div v-else-if="tab === 'documents'" class="tab-content">
+      <ReservationDocuments
+        :items="feed"
+        :current-user-role="role"
+        :loading="feedPending"
+        :can-upload="canEditFeed"
+        :uploading="uploading"
+        @upload="(file) => uploadDocument(file, false)"
+        @download="download"
+        @delete="deleteDocument"
+      />
+    </div>
+    <!-- Prestataire : à venir (brique suivante). -->
 
     <!-- ── Prestataire, mobile : contact du client fixé en bas, sur tous les onglets ── -->
     <template v-if="isPro && isMobile && proReservation">
@@ -156,6 +170,7 @@ import ReservationMeta from '~/components/app/ReservationMeta.vue'
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 import BookingContactActions from '~/components/pro/BookingContactActions.vue'
 import ProReservationCover from '~/components/pro/ProReservationCover.vue'
+import ReservationDocuments from '~/components/shared/ReservationDocuments.vue'
 import ReservationEventDetails from '~/components/shared/ReservationEventDetails.vue'
 import ReservationFeed from '~/components/shared/ReservationFeed.vue'
 import ReservationSpecialActions from '~/components/shared/ReservationSpecialActions.vue'
