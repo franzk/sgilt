@@ -185,7 +185,8 @@ class ReservationMapperTest {
             ReservationMetaDto dto = mapper.toReservationMetaDto(reservation);
 
             assertThat(dto).isEqualTo(new ReservationMetaDto(
-                    reservationId, prestataire.getId(), "Studio Fleur", "avatar.jpg", "photo", "confirmee", 0));
+                    reservationId, prestataire.getId(), "Studio Fleur", "studio-fleur", "avatar.jpg", "photo",
+                    "confirmee", 0));
         }
     }
 

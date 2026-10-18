@@ -1,3 +1,6 @@
+/**
+ * Mapper — DTO des réservations (client, prestataire, admin) vers les objets du domaine.
+ */
 import type { ReservationMetaDto } from '../dto/ReservationMetaDto'
 import type { ProReservationSummaryDto } from '../dto/ProReservationSummaryDto'
 import type { ProReservationDetailDto } from '../dto/ProReservationDetailDto'
@@ -15,6 +18,7 @@ export function mapReservationMeta(dto: ReservationMetaDto): ReservationMeta {
     id: dto.id,
     prestataireId: dto.prestataireId,
     prestataireName: dto.prestataireName,
+    prestataireSlug: dto.prestataireSlug,
     prestatairePhoto: dto.prestatairePhoto ?? undefined,
     category: dto.category,
     status: dto.status as ReservationMeta['status'],

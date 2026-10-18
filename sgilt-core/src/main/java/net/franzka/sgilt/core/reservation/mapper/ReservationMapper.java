@@ -81,6 +81,7 @@ public interface ReservationMapper {
 
     @Mapping(source = "prestataire.id",          target = "prestataireId")
     @Mapping(source = "prestataire.name",        target = "prestataireName")
+    @Mapping(source = "prestataire.slug",        target = "prestataireSlug")
     @Mapping(source = "prestataire",             target = "prestatairePhoto", qualifiedByName = "resolveAvatar")
     @Mapping(source = "prestataire.categoryKey", target = "category")
     @Mapping(source = "status",                  target = "status")

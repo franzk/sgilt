@@ -1,3 +1,8 @@
+<!--
+  Fiche d'une réservation, la même pour le client et le prestataire. Affiche l'en-tête, la barre
+  d'onglets et l'onglet ouvert — Suivi (actions de statut, frise, lien vers les actions spéciales),
+  Détails, Documents, Prestataire — ou, sur le segment /actions, la page des actions spéciales.
+-->
 <template>
   <!-- ── Actions spéciales : page à part (annulation après confirmation) ─────── -->
   <ReservationSpecialActions
@@ -80,7 +85,11 @@
         @delete="deleteDocument"
       />
     </div>
-    <!-- Prestataire : à venir (brique suivante). -->
+
+    <!-- ── Prestataire : sa fiche publique, en lecture seule ─────────────────── -->
+    <div v-else-if="tab === 'prestataire'" class="tab-content">
+      <ReservationPrestataire v-if="prestataireSlug" :slug="prestataireSlug" />
+    </div>
 
     <!-- ── Prestataire, mobile : contact du client fixé en bas, sur tous les onglets ── -->
     <template v-if="isPro && isMobile && proReservation">
@@ -160,18 +169,13 @@
 </template>
 
 <script setup lang="ts">
-// Fiche d'une réservation, la même pour le client et le prestataire : en-tête, onglets (Suivi :
-// actions de statut, fil, lien vers les actions spéciales), ou la page des actions spéciales. Chaque
-// onglet est un segment d'URL sous le chemin de la réservation ; la page qui l'affiche donne ce
-// chemin et décide du retour.
-// Seuls écarts selon le rôle : les données (appels au back propres à chacun), l'en-tête, les actions
-// de statut proposées, et le contact du client côté prestataire.
 import ReservationMeta from '~/components/app/ReservationMeta.vue'
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 import BookingContactActions from '~/components/pro/BookingContactActions.vue'
 import ProReservationCover from '~/components/pro/ProReservationCover.vue'
 import ReservationDocuments from '~/components/shared/ReservationDocuments.vue'
 import ReservationEventDetails from '~/components/shared/ReservationEventDetails.vue'
+import ReservationPrestataire from '~/components/shared/ReservationPrestataire.vue'
 import ReservationFeed from '~/components/shared/ReservationFeed.vue'
 import ReservationSpecialActions from '~/components/shared/ReservationSpecialActions.vue'
 import ReservationSpecialActionsLink from '~/components/shared/ReservationSpecialActionsLink.vue'
@@ -279,6 +283,13 @@ watch(
   { immediate: true },
 )
 
+// Slug du prestataire, pour sa fiche publique : dans la réservation côté client ; côté prestataire,
+// c'est le sien.
+const currentUser = useCurrentUser()
+const prestataireSlug = computed(() =>
+  isClient ? reservation.value?.prestataireSlug : (currentUser.slug ?? undefined),
+)
+
 // ── Contact du client (prestataire) ───────────────────────────────────────────
 const hasContactColumn = computed(() => isPro && isDesktop.value)
 const mailtoHref = computed(() =>
@@ -288,7 +299,6 @@ const mailtoHref = computed(() =>
 // ── Note système optimiste ────────────────────────────────────────────────────
 // Le contenu d'une note système (contacté/confirmé/annulé) est entièrement déductible côté front :
 // pas besoin d'aller-retour serveur pour l'afficher immédiatement.
-const currentUser = useCurrentUser()
 
 function pushSystemNote(generatedKey: string, content?: string, isPersonal = false) {
   const item: FeedItem = {
