@@ -57,7 +57,16 @@
         />
       </div>
     </div>
-    <!-- Détails, Documents, Prestataire : à venir (briques suivantes). -->
+    <!-- ── Détails : l'événement et les coordonnées partagées ─────────────────── -->
+    <div v-else-if="tab === 'details'" class="tab-content">
+      <ReservationEventDetails
+        v-if="details"
+        :event="details.event"
+        :client-info="details.clientInfo"
+        :edit-path="details.editPath"
+      />
+    </div>
+    <!-- Documents, Prestataire : à venir (briques suivantes). -->
 
     <!-- ── Prestataire, mobile : contact du client fixé en bas, sur tous les onglets ── -->
     <template v-if="isPro && isMobile && proReservation">
@@ -147,6 +156,7 @@ import ReservationMeta from '~/components/app/ReservationMeta.vue'
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 import BookingContactActions from '~/components/pro/BookingContactActions.vue'
 import ProReservationCover from '~/components/pro/ProReservationCover.vue'
+import ReservationEventDetails from '~/components/shared/ReservationEventDetails.vue'
 import ReservationFeed from '~/components/shared/ReservationFeed.vue'
 import ReservationSpecialActions from '~/components/shared/ReservationSpecialActions.vue'
 import ReservationSpecialActionsLink from '~/components/shared/ReservationSpecialActionsLink.vue'
@@ -158,6 +168,7 @@ import { useCurrentUser } from '~/composables/useCurrentUser'
 import { SPECIAL_ACTIONS_SEGMENT, reservationTabOf } from '~/constants/reservation-tabs'
 import type { FeedItem } from '~/data/reservation/domain/FeedItem'
 import type { ReservationMeta as ReservationMetaData } from '~/data/reservation/domain/ReservationMeta'
+import { useEventContext } from '~/data/evenement/useEventContext'
 import { useProReservationDetail } from '~/data/reservation/useProReservationDetail'
 import { useReservation } from '~/data/reservation/useReservation'
 import { useReservationFeed } from '~/data/reservation/useReservationFeed'
@@ -192,6 +203,24 @@ const reservation = computed<ReservationMetaData | null>(
   () => clientData?.reservation.value ?? proData?.reservation.value ?? null,
 )
 const proReservation = computed(() => proData?.reservation.value ?? null)
+
+// L'événement et les coordonnées du client : dans la réservation côté prestataire ; côté client,
+// dans l'événement en cours (la fiche est toujours ouverte sous /app/events/:eventId).
+const eventContext = isClient ? useEventContext() : null
+const details = computed(() => {
+  if (eventContext) {
+    const event = eventContext.event.value
+    const clientInfo = eventContext.clientInfo.value
+    if (!event || !clientInfo) return null
+    return { event, clientInfo, editPath: `/app/events/${eventContext.eventId}/parametres?from=reservation` }
+  }
+  if (!proReservation.value) return null
+  return {
+    event: proReservation.value.event,
+    clientInfo: proReservation.value.clientInfo,
+    editPath: undefined,
+  }
+})
 const metaPending = computed(() => clientData?.pending.value ?? proData?.loading.value ?? false)
 const status = computed(() => reservation.value?.status ?? '')
 
@@ -413,6 +442,18 @@ $contact-bar-h: 12.5rem;
       flex-direction: column;
       gap: $spacing-m;
       min-width: 0;
+    }
+  }
+
+  // ── Onglets sans colonnes (Détails…) ───────────────────────────────────────────
+  .tab-content {
+    padding: $spacing-m $spacing-m calc($bottom-nav-h + env(safe-area-inset-bottom, 0px) + $spacing-m);
+
+    @media (min-width: $desktop) {
+      width: 100%;
+      max-width: 47.5rem;
+      margin: 0 auto;
+      padding: $spacing-l 0;
     }
   }
 

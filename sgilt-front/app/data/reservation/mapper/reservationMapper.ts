@@ -34,18 +34,21 @@ export function mapProReservationSummary(dto: ProReservationSummaryDto): ProRese
   }
 }
 
-function mapProReservationDetailEvent(
-  reservationId: string,
-  dto: ProReservationDetailDto,
-): EventMeta {
+function mapProReservationDetailEvent(dto: ProReservationDetailDto): EventMeta {
   return {
-    id: reservationId,
+    id: dto.evenementId,
     title: dto.evenementTitre,
     date: dto.evenementDate ? new Date(dto.evenementDate) : undefined,
     eventType: dto.evenementType ?? undefined,
     ville: dto.evenementVille ?? undefined,
+    lieu: dto.evenementLieu ?? undefined,
+    nbInvites: dto.evenementNbInvites ?? undefined,
+    ambiance: dto.evenementAmbiance ?? undefined,
+    momentCle: dto.evenementMomentCle ?? undefined,
+    description: dto.evenementDescription ?? undefined,
     coverImage: dto.evenementImagePath ?? null,
-    sharedNote: '',
+    sharedNote: dto.evenementNotePartagee ?? '',
+    lastUpdateDate: dto.evenementLastUpdateDate ? new Date(dto.evenementLastUpdateDate) : null,
   }
 }
 
@@ -58,10 +61,7 @@ function mapProReservationDetailClientInfo(dto: ProReservationDetailDto): Client
   }
 }
 
-export function mapProReservationDetail(
-  reservationId: string,
-  dto: ProReservationDetailDto,
-): ProReservationDetail {
+export function mapProReservationDetail(dto: ProReservationDetailDto): ProReservationDetail {
   return {
     id: dto.id,
     prestataireId: '',
@@ -70,7 +70,7 @@ export function mapProReservationDetail(
     category: dto.category,
     status: dto.statut as ProReservationDetail['status'],
     unreadNotesCount: 0,
-    event: mapProReservationDetailEvent(reservationId, dto),
+    event: mapProReservationDetailEvent(dto),
     clientInfo: mapProReservationDetailClientInfo(dto),
   }
 }

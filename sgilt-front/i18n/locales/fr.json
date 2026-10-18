@@ -152,6 +152,7 @@
     "settings": {
       "page-title": "Paramètres de l'événement - Sgilt",
       "back": "Retour à mon événement",
+      "back-reservation": "Retour à la réservation",
       "cover": "Changer l'image de couverture",
       "journal": "Journal des modifications"
     },
@@ -762,28 +763,9 @@
       }
     },
     "block": {
-      "logistics-label": "Lieu",
-      "logistics-empty": "Salle, adresse… non renseigné",
       "shared-note-label": "Note partagée",
-      "shared-note-empty": "Aucune note pour le moment.",
       "shared-note-placeholder": "Informations utiles pour tous vos prestataires…",
-      "coordinates-label": "Coordonnées",
-      "party-label": "L'événement",
-      "party-empty": "Non renseigné",
-      "party-type-label": "Type",
-      "party-ambiance-label": "Ambiance",
-      "party-moment-label": "Moment clé",
-      "party-moment-empty": "Non renseigné",
-      "party-edit-city": "Ville",
-      "party-edit-guests": "Nombre d'invités",
-      "party-edit-description": "Description",
-      "party-select-empty": "— Non renseigné",
-      "update-label": "Mise à jour",
-      "no-update": "Aucune modification enregistrée.",
-      "copy-phone-aria": "Copier le numéro",
-      "copy-email-aria": "Copier l'email",
-      "copied-aria": "Copié",
-      "edit-event-aria": "Modifier l'événement"
+      "coordinates-label": "Coordonnées"
     },
     "reservation": {
       "steps": {
@@ -875,6 +857,26 @@
       "cancel": "Pas encore"
     },
     "confirm-btn": "Le prestataire a confirmé la réservation",
+    "details": {
+      "title": "L'événement",
+      "edit": "Modifier",
+      "practical": "Infos pratiques",
+      "date": "Date",
+      "ville": "Ville",
+      "lieu": "Lieu",
+      "nb-invites": "Invités",
+      "event": "L'événement",
+      "type": "Type d'événement",
+      "ambiance": "Ambiance",
+      "moment-cle": "Moment clé",
+      "description": "Description",
+      "to-define": "À définir",
+      "shared-note": "Note partagée avec les prestataires",
+      "shared-note-empty": "Aucune note partagée pour le moment.",
+      "contact": "Coordonnées partagées avec le prestataire",
+      "copy": "Copier",
+      "last-update": "Dernière mise à jour : {date}"
+    },
     "tabs": {
       "suivi": "Suivi",
       "details": "Détails",

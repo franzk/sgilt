@@ -1,5 +1,6 @@
 package net.franzka.sgilt.core.reservation.service;
 
+import net.franzka.sgilt.core.evenement.service.JournalEvenementService;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.reservation.event.ActorRole;
 import net.franzka.sgilt.core.reservation.event.reservationcreated.ReservationCreatedEvent;
@@ -69,6 +70,9 @@ class ReservationServiceTest {
 
     @Mock
     private ReservationEventMapper reservationEventMapper;
+
+    @Mock
+    private JournalEvenementService journalEvenementService;
 
     @InjectMocks
     private ReservationService reservationService;
@@ -636,12 +640,28 @@ class ReservationServiceTest {
     class GetProReservationDetail {
 
         @Test
-        void givenExistingReservation_whenGetProReservationDetail_thenReturnsMappedDto() {
+        void givenExistingReservation_whenGetProReservationDetail_thenReturnsMappedDtoWithLastUpdateDate() {
             UUID reservationId = UUID.randomUUID();
             Reservation reservation = reservationWith(ReservationStatus.NEW);
+            reservation.setEvenement(Evenement.builder().id(EVENT_ID).build());
+            LocalDateTime lastUpdateDate = LocalDateTime.of(2027, 1, 10, 14, 30);
             ProReservationDetailDto dto = mock(ProReservationDetailDto.class);
             when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
-            when(reservationMapper.toProReservationDetailDto(reservation)).thenReturn(dto);
+            when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.of(lastUpdateDate));
+            when(reservationMapper.toProReservationDetailDto(reservation, lastUpdateDate)).thenReturn(dto);
+
+            assertThat(reservationService.getProReservationDetail(reservationId)).isEqualTo(dto);
+        }
+
+        @Test
+        void givenEventNeverModified_whenGetProReservationDetail_thenMapsWithoutLastUpdateDate() {
+            UUID reservationId = UUID.randomUUID();
+            Reservation reservation = reservationWith(ReservationStatus.NEW);
+            reservation.setEvenement(Evenement.builder().id(EVENT_ID).build());
+            ProReservationDetailDto dto = mock(ProReservationDetailDto.class);
+            when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
+            when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
+            when(reservationMapper.toProReservationDetailDto(reservation, null)).thenReturn(dto);
 
             assertThat(reservationService.getProReservationDetail(reservationId)).isEqualTo(dto);
         }

@@ -1,9 +1,9 @@
 <template>
   <div class="parametres">
     <div v-if="fields && clientInfo" class="column">
-      <button class="back" type="button" @click="backToBoard">
+      <button class="back" type="button" @click="back">
         <ArrowLeftIcon class="icon" aria-hidden="true" />
-        {{ $t('evenement.settings.back') }}
+        {{ fromReservation ? $t('evenement.settings.back-reservation') : $t('evenement.settings.back') }}
       </button>
 
       <!-- Chaque panneau validé est enregistré aussitôt. Événement enregistré : ses informations
@@ -173,8 +173,15 @@ watch(journalOpen, (open) => {
 })
 
 // ── Navigation ────────────────────────────────────────────────────────────────
-function backToBoard() {
-  navigateTo(`/app/events/${eventId}`)
+// Ouverte depuis la fiche d'une réservation (« Modifier » de l'onglet Détails, ?from=reservation) :
+// retour à cette fiche ; sinon, retour à l'event board.
+const route = useRoute()
+const router = useRouter()
+const fromReservation = computed(() => route.query.from === 'reservation')
+
+function back() {
+  if (fromReservation.value) router.back()
+  else navigateTo(`/app/events/${eventId}`)
 }
 </script>
 

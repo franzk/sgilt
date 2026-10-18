@@ -10,10 +10,7 @@
       {{ $t('pro.reservation-detail.back') }}
     </button>
     <div class="bottom">
-      <div class="info">
-        <span class="category">{{ reservation.category }}</span>
-        <span class="name">{{ reservation.event.title }}</span>
-      </div>
+      <span class="name">{{ reservation.event.title }}</span>
       <span class="badge" :style="getStatusOverlayStyle(reservation.status)">
         {{ $t(`reservation.statut.${reservation.status}`) }}
       </span>
@@ -23,8 +20,8 @@
 </template>
 
 <script setup lang="ts">
-// Bandeau de la fiche d'une réservation côté prestataire : couverture de l'événement, catégorie,
-// titre de l'événement, statut (pendant de ReservationMeta côté client).
+// Bandeau de la fiche d'une réservation côté prestataire : couverture de l'événement, titre de
+// l'événement, statut (pendant de ReservationMeta côté client).
 import Sk from '~/components/basics/Sk.vue'
 import { getStatusOverlayStyle } from '~/constants/reservation-status'
 import type { ProReservationDetail } from '~/data/reservation/domain/ProReservationDetail'
@@ -119,32 +116,17 @@ $desktop: $breakpoint-desktop;
     justify-content: space-between;
     gap: $spacing-s;
 
-    .info {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
+    .name {
+      max-width: 85%;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.1;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 
-      .category {
-        font-family: 'Inter', sans-serif;
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.75);
-      }
-
-      .name {
-        max-width: 85%;
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 26px;
-        font-weight: 600;
-        color: #fff;
-        line-height: 1.1;
-        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-
-        @media (min-width: $desktop) {
-          font-size: 36px;
-        }
+      @media (min-width: $desktop) {
+        font-size: 36px;
       }
     }
 

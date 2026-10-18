@@ -1,5 +1,7 @@
 package net.franzka.sgilt.core.reservation.service;
 
+import java.time.LocalDateTime;
+import net.franzka.sgilt.core.evenement.service.JournalEvenementService;
 import lombok.RequiredArgsConstructor;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
@@ -47,6 +49,7 @@ public class ReservationService {
     private final NoteRepository noteRepository;
     private final ReservationMapper reservationMapper;
     private final ReservationEventMapper reservationEventMapper;
+    private final JournalEvenementService journalEvenementService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     /**
@@ -272,7 +275,8 @@ public class ReservationService {
     }
 
     /**
-     * Retourne le détail d'une réservation pour le prestataire.
+     * Retourne le détail d'une réservation pour le prestataire, avec l'événement complet et la date
+     * de sa dernière modification (journal).
      * L'ownership doit être vérifié par l'appelant avant d'invoquer cette méthode.
      *
      * @param reservationId l'identifiant de la réservation
@@ -282,7 +286,10 @@ public class ReservationService {
     public ProReservationDetailDto getProReservationDetail(UUID reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(ReservationNotFoundException::new);
-        return reservationMapper.toProReservationDetailDto(reservation);
+        LocalDateTime lastUpdateDate = journalEvenementService
+                .derniereModification(reservation.getEvenement().getId())
+                .orElse(null);
+        return reservationMapper.toProReservationDetailDto(reservation, lastUpdateDate);
     }
 
     /**
