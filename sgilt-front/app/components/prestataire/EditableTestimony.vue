@@ -15,9 +15,9 @@
         :model-value="textModel"
         field="testimonials.text"
         :editable="true"
+        multiline
         class="text"
         @update:model-value="setText"
-        @enter="authorRef?.startEdit()"
       />
       <div class="footer">
         <EditableText
@@ -81,6 +81,7 @@ defineExpose({ startEdit })
 }
 
 .text {
+  white-space: pre-line;
   font-family: 'Cormorant Garamond', serif;
   font-size: 1.05rem;
   font-style: italic;
@@ -96,6 +97,7 @@ defineExpose({ startEdit })
 }
 
 .author {
+  white-space: pre-line;
   font-size: 0.85rem;
   font-weight: 600;
   color: $text-secondary;

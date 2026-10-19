@@ -1,6 +1,6 @@
 <template>
   <div class="search-page">
-    <section ref="headerRef" class="search-header">
+    <section class="search-header">
       <!-- Recherche lancée depuis une rubrique : retour à la rubrique, comme le retour de la fiche. -->
       <SgiltCategoryFilter
         v-model="categoryKey"
@@ -27,8 +27,6 @@
         </div>
       </div>
     </section>
-
-    <div class="margin-for-header" :style="{ marginTop: headerHeight + 'px' }" />
 
     <section class="search-results">
       <SgiltSearchResults
@@ -68,19 +66,6 @@ const router = useRouter()
 const { results, loading, subcatCounts, error } = useSearchFetch()
 
 const isAllCategories = computed(() => categoryKey.value === ALL_CATEGORY_KEY)
-
-// ── Header height dynamique ───────────────────────────────────────────────────
-const headerRef = ref<HTMLElement | null>(null)
-const headerHeight = ref(0)
-
-onMounted(() => {
-  if (!headerRef.value) return
-  const ro = new ResizeObserver(([entry]) => {
-    headerHeight.value = entry!.contentRect.height
-  })
-  ro.observe(headerRef.value)
-  onUnmounted(() => ro.disconnect())
-})
 </script>
 
 <style scoped lang="scss">
@@ -107,7 +92,8 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  position: fixed;
+  position: sticky;
+  top: var(--content-top, 0);
   z-index: 10;
   background-color: #fff;
 }

@@ -16,7 +16,7 @@
       @keydown.enter="onKeydownEnter"
       @blur="onBlur"
     />
-    <span v-else :class="{ ghost: !modelValue, multiline }">{{
+    <span v-else class="value" :class="{ ghost: !modelValue }">{{
       modelValue ? (displayValue ?? modelValue) : ghostText
     }}</span>
     <button v-if="isEdit && !focused" type="button" class="pencil" @click.stop="startEdit">
@@ -54,7 +54,7 @@ const props = defineProps<{
   field: string
   /** Active le mode édition (crayon, clic, prompt au focus). Défaut : false */
   editable?: boolean
-  /** Autorise les retours à la ligne (Entrée insère un saut de ligne, affichage nl2br). Défaut : false */
+  /** Autorise la saisie de retours à la ligne (Entrée insère un saut de ligne). Défaut : false */
   multiline?: boolean
   /** Texte affiché à la place de la valeur réelle quand non focus (ex. aperçu tronqué). Défaut : la valeur elle-même */
   displayValue?: string | null
@@ -172,7 +172,8 @@ defineExpose({ startEdit })
   opacity: 0.4;
 }
 
-.multiline {
+// nl2br : les retours à la ligne de la valeur sont rendus, quel que soit le champ
+.value {
   white-space: pre-line;
 }
 
