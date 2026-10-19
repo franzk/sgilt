@@ -13,7 +13,11 @@
     @cancel="onSpecialCancel"
   />
 
-  <div v-else class="reservation-board" :class="{ 'with-contact-bar': isPro && isMobile }">
+  <div
+    v-else
+    class="reservation-board"
+    :class="{ 'with-contact-bar': isPro && isMobile, 'with-status-bar': hasFixedStatusBar }"
+  >
     <!-- ── En-tête : le prestataire côté client, l'événement côté prestataire ─── -->
     <ReservationMeta
       v-if="isClient"
@@ -38,7 +42,12 @@
       </aside>
 
       <div class="main">
-        <ReservationStatusActions :actions="statusActions" @action="onStatusAction" />
+        <!-- Desktop : au-dessus de la frise. Mobile : fixés en bas d'écran (essai, voir plus bas). -->
+        <ReservationStatusActions
+          v-if="isDesktop"
+          :actions="statusActions"
+          @action="onStatusAction"
+        />
 
         <ReservationFeed
           :items="feed"
@@ -91,9 +100,26 @@
       <ReservationPrestataire v-if="prestataireSlug" :slug="prestataireSlug" />
     </div>
 
+    <!-- ── Mobile, onglet Suivi : actions de statut fixées en bas (essai) ──────────
+         Client : au-dessus de la barre de navigation de l'événement. Prestataire : au-dessus de la
+         barre de contact compacte, ou dans le bloc des grands boutons de contact (nouvelle). -->
+    <div
+      v-if="hasFixedStatusBar && !(isPro && proReservation?.status === 'nouvelle')"
+      class="status-bar"
+      :class="{ 'above-contact': isPro }"
+    >
+      <ReservationStatusActions :actions="statusActions" @action="onStatusAction" />
+    </div>
+
     <!-- ── Prestataire, mobile : contact du client fixé en bas, sur tous les onglets ── -->
     <template v-if="isPro && isMobile && proReservation">
       <div v-if="proReservation.status === 'nouvelle'" class="contact-bar">
+        <ReservationStatusActions
+          v-if="hasFixedStatusBar"
+          class="contact-bar-status"
+          :actions="statusActions"
+          @action="onStatusAction"
+        />
         <BookingContactActions
           variant="big"
           layout="row"
@@ -169,6 +195,7 @@
 </template>
 
 <script setup lang="ts">
+import { CloseCircleIcon, ShakeHandsIcon, UserVoiceIcon } from '@remixicons/vue/line'
 import ReservationMeta from '~/components/app/ReservationMeta.vue'
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
 import BookingContactActions from '~/components/pro/BookingContactActions.vue'
@@ -330,21 +357,54 @@ const statusActions = computed<StatusAction[]>(() => {
   const beforeConfirmation = ['nouvelle', 'en_discussion'].includes(status.value)
   if (isPro) {
     return beforeConfirmation
-      ? [{ key: 'exit', label: t('pro.reservation-detail.refuse-btn'), kind: 'exit' }]
+      ? [
+          {
+            key: 'exit',
+            label: t('pro.reservation-detail.refuse-btn'),
+            icon: CloseCircleIcon,
+            kind: 'exit',
+          },
+        ]
       : []
   }
   return [
     ...(status.value === 'nouvelle'
-      ? [{ key: 'contacted', label: t('reservation.mark-contacted-btn'), kind: 'main' as const }]
+      ? [
+          {
+            key: 'contacted',
+            label: t('reservation.mark-contacted-btn'),
+            icon: UserVoiceIcon,
+            kind: 'main' as const,
+          },
+        ]
       : []),
     ...(status.value === 'en_discussion'
-      ? [{ key: 'confirm', label: t('reservation.confirm-btn'), kind: 'main' as const }]
+      ? [
+          {
+            key: 'confirm',
+            label: t('reservation.confirm-btn'),
+            icon: ShakeHandsIcon,
+            kind: 'main' as const,
+          },
+        ]
       : []),
     ...(beforeConfirmation
-      ? [{ key: 'exit', label: t('reservation.cancel-btn'), kind: 'exit' as const }]
+      ? [
+          {
+            key: 'exit',
+            label: t('reservation.cancel-btn'),
+            icon: CloseCircleIcon,
+            kind: 'exit' as const,
+          },
+        ]
       : []),
   ]
 })
+
+// Essai : sur mobile, les actions de statut sont fixées en bas de l'onglet Suivi.
+const hasFixedStatusBar = computed(
+  () => isMobile.value && tab.value === 'suivi' && statusActions.value.length > 0,
+)
 
 function onStatusAction(key: string) {
   if (key === 'contacted') contactedOpen.value = true
@@ -482,6 +542,31 @@ $contact-bar-h: 12.5rem;
     }
   }
 
+  // ── Mobile : actions de statut fixées en bas (essai) ───────────────────────────
+  // Client : au-dessus de la barre de navigation de l'événement ; prestataire : au-dessus de la
+  // barre de contact compacte (56px).
+  &.with-status-bar .suivi {
+    // Jusqu'à deux boutons empilés (pleine largeur) dans la barre.
+    padding-bottom: calc(#{$bottom-nav-h} + env(safe-area-inset-bottom, 0px) + 7rem);
+  }
+
+  .status-bar {
+    position: fixed;
+    right: 0;
+    bottom: calc(#{$bottom-nav-h} + env(safe-area-inset-bottom, 0px));
+    left: 0;
+    z-index: 100;
+    padding: $spacing-s $spacing-m;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    background: rgba(245, 245, 243, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    &.above-contact {
+      bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+    }
+  }
+
   // ── Prestataire, mobile, réservation nouvelle : grands boutons de contact fixés en bas ──
   .contact-bar {
     position: fixed;
@@ -494,6 +579,10 @@ $contact-bar-h: 12.5rem;
     background: rgba(245, 245, 243, 0.85);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+
+    .contact-bar-status {
+      margin-bottom: $spacing-s;
+    }
   }
 }
 </style>
