@@ -201,6 +201,11 @@
         "to-define": "À définir",
         "edit": "Modifier les informations"
       },
+      "free-search": {
+        "title": "Vous savez déjà ce qu'il vous faut ?",
+        "description": "Parcourez tous les prestataires Sgilt, sans passer par une rubrique.",
+        "button": "Rechercher un prestataire"
+      },
       "inspirations": {
         "title": "Des idées pour vous inspirer",
         "see-all": "Voir tous les prestataires"
@@ -738,7 +743,6 @@
     "confirmed": "{n} confirmée | {n} confirmées",
     "in-progress": "{n} en cours",
     "pending": "{n} en attente",
-    "add-provider": "+ Ajouter un prestataire",
     "see-event": "Voir l'événement"
   },
   "event": {
