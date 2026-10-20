@@ -1,3 +1,10 @@
+<!--
+  Recherche de prestataires, affichée par la page /search : filtres de catégorie et de
+  sous-catégorie, collés en haut sous le header de l'app (et le bandeau s'il est affiché), puis la
+  liste des résultats. L'état de la recherche est porté par l'URL (useSearchUi). Lancée depuis une
+  rubrique, elle ne montre que ce que la rubrique regroupe, avec un bouton retour vers la rubrique.
+  La page décide de ce que fait le clic sur un résultat (`select`).
+-->
 <template>
   <div class="search-page">
     <section class="search-header">
