@@ -1,3 +1,8 @@
+<!--
+  Bandeau de l'événement local sur le parcours public, sous le header : lien vers l'accueil de
+  l'événement, rappel du type (desktop), sélecteur de date et effacement de l'événement (avec
+  confirmation). Affiché par le layout par défaut quand useEvenementBanner le demande.
+-->
 <template>
   <AppBanner tone="light" role="region" :aria-label="$t('evenement.banner.label')">
     <div class="layout">
@@ -49,11 +54,11 @@
 </template>
 
 <script setup lang="ts">
-import { DeleteBin6Icon, Home2Icon, SparklingIcon } from '@remixicons/vue/line'
+import { DeleteBin6Icon, Home2Icon } from '@remixicons/vue/line'
 import AppBanner from '~/components/app/AppBanner.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
 import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
-import { EVENT_TYPE_CATALOG } from '~/utils/eventTypes'
+import { eventTypeIcon } from '~/utils/eventTypes'
 import { eventTypeKey } from '~/types/evenement'
 
 const { t } = useI18n()
@@ -61,9 +66,7 @@ const { localEvent, reset } = useLocalEvent()
 
 // Le type n'est pas modifiable : simple rappel, affiché à partir du desktop.
 const typeKey = computed(() => eventTypeKey(localEvent.eventType) ?? 'autre')
-const typeIcon = computed(
-  () => EVENT_TYPE_CATALOG.find((type) => type.key === typeKey.value)?.icon ?? SparklingIcon,
-)
+const typeIcon = computed(() => eventTypeIcon(typeKey.value))
 const typeLabel = computed(() => t(`event-picker.types.${typeKey.value}.label`))
 
 // L'effacement du sélecteur renvoie null : on le ramène à « pas de date ».

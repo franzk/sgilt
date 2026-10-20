@@ -1,3 +1,9 @@
+<!--
+  Event board, commun au parcours public (/evenement, événement local) et à l'espace connecté
+  (/app/events/:id sur mobile, événement en base) : couverture, accroche du type d'événement
+  (remplaçable par le slot `intro`) et rubriques. La page fournit les données et décide de la
+  navigation (réglages, rubrique).
+-->
 <template>
   <div class="board">
     <!-- ── Couverture ─────────────────────────────────────────────────────────── -->
@@ -52,15 +58,11 @@
 </template>
 
 <script setup lang="ts">
-// Event board, commun au parcours public (/evenement, événement local) et à l'espace connecté
-// (/app/events/:id sur mobile, événement en base) : couverture, accroche et rubriques. La page
-// fournit les données et décide de la navigation (réglages, rubrique).
 import { CalendarEventIcon, GroupIcon, MapPin2Icon, SettingsIcon } from '@remixicons/vue/line'
 import EventRubriqueItem from '~/components/evenement/EventRubriqueItem.vue'
 import type { EventMeta } from '~/data/evenement/domain/EventMeta'
 import type { EventRubrique } from '~/data/evenement/domain/EventRubrique'
 import { formatDate } from '~/utils/dateUtils'
-import { EVENT_TYPE_TAGLINES } from '~/utils/eventTypes'
 import { useNbInvitesLabel } from '~/composables/useNbInvitesLabel'
 
 const { nbInvitesLabel } = useNbInvitesLabel()
@@ -83,7 +85,12 @@ defineEmits<{
   rubrique: [rubriqueKey: string]
 }>()
 
-const tagline = computed(() => EVENT_TYPE_TAGLINES[props.eventMeta.eventType ?? ''])
+// Accroche du type d'événement ; aucune pour un type sans texte (ou pas encore choisi).
+const { t, te } = useI18n()
+const tagline = computed(() => {
+  const key = `evenement.board.tagline.${props.eventMeta.eventType ?? ''}`
+  return te(key) ? t(key) : null
+})
 
 // ── Parallax ───────────────────────────────────────────────────────────────────
 const coverRef = ref<HTMLElement | null>(null)

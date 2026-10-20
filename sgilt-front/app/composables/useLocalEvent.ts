@@ -1,9 +1,20 @@
+/**
+ * Composable — événement du parcours public (route /) : source de vérité unique tant qu'il n'est pas
+ * matérialisé en base, comme un panier d'e-boutique. Seuls appels au back : les rubriques du type
+ * (initRubriques) et la création de l'événement en base (create).
+ *
+ * Les noms de champs sont ceux de EventMeta (domaine de l'événement en base) : les écrans
+ * qui manipulent cet état ne dépendent que de ce composable et de ces noms, pour pouvoir
+ * être branchés sur la base (route /app) sans être réécrits.
+ *
+ * Ne contient aucune donnée de contact (prénom, nom, email, téléphone) : elles restent
+ * dans useDemande, qui est le brouillon d'une demande à un prestataire.
+ */
 import type { EventRubrique } from '~/data/evenement/domain/EventRubrique'
 import { createEventApi } from '~/data/evenement/api/evenementApi'
 import type { CreateEventRequestDto } from '~/data/evenement/dto/CreateEventRequestDto'
 import { fetchNewEventRubriques } from '~/data/template/service/templateService'
 import { toISODate } from '~/utils/dateUtils'
-import { EVENT_TYPE_DEFAULT_TITLES } from '~/utils/eventTypes'
 import {
   AMBIANCE_OPTIONS,
   EVENT_TYPE_OPTIONS,
@@ -13,15 +24,6 @@ import {
   type EvenementRequest,
 } from '~/types/evenement'
 
-// Événement du parcours public (route /) : source de vérité unique tant qu'il n'est pas
-// matérialisé en base, comme un panier d'e-boutique. Aucun appel réseau.
-//
-// Les noms de champs sont ceux de EventMeta (domaine de l'événement en base) : les écrans
-// qui manipulent cet état ne dépendent que de ce composable et de ces noms, pour pouvoir
-// être branchés sur la base (route /app) sans être réécrits.
-//
-// Ne contient aucune donnée de contact (prénom, nom, email, téléphone) : elles restent
-// dans useDemande, qui est le brouillon d'une demande à un prestataire.
 const LOCAL_EVENT_STORAGE_KEY = 'sgilt:evenement'
 const LOCAL_EVENT_VERSION = 3
 // Durée glissante : renouvelée à chaque modification. Passé ce délai, l'événement est effacé.
@@ -210,13 +212,14 @@ export function useLocalEvent() {
     Object.assign(localEvent, defaultLocalEvent())
   }
 
-  // Choix du type d'événement. Un seul événement local à la fois : un type différent
-  // repart de zéro, le même type conserve ce qui a déjà été saisi.
-  function start(eventType: string) {
+  // Choix du type d'événement, avec le titre par défaut de ce type (traduit par l'appelant). Un
+  // seul événement local à la fois : un type différent repart de zéro, le même type conserve ce
+  // qui a déjà été saisi.
+  function start(eventType: string, defaultTitle: string) {
     if (eventTypeKey(localEvent.eventType) === eventType) return
     reset()
     localEvent.eventType = eventType
-    localEvent.title = EVENT_TYPE_DEFAULT_TITLES[eventType] ?? EVENT_TYPE_DEFAULT_TITLES.autre!
+    localEvent.title = defaultTitle
   }
 
   // Rubriques du template du type d'événement, demandées au back (qui porte les règles). N'injecte

@@ -1,3 +1,9 @@
+<!--
+  Écran « Qu'est-ce qu'on fête ? » (/fete), première étape du parcours public : le choix du type
+  d'événement. Un clic sur une tuile démarre l'événement local (type et titre par défaut) et passe à
+  /date ; changer de type une fois l'organisation commencée demande confirmation (l'événement est
+  effacé).
+-->
 <template>
   <div class="event-picker">
     <div class="wrap">
@@ -95,7 +101,7 @@ function confirmTypeChange() {
 }
 
 function chooseType(key: string) {
-  start(key)
+  start(key, t(`event-picker.types.${key}.default-title`))
   navigateTo('/date')
 }
 </script>

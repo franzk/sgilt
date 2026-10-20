@@ -1,3 +1,10 @@
+<!--
+  Cartes des informations d'un événement (nom, date, lieu, invités, type, ambiance, moment clé,
+  description…), chacune avec son bouton Modifier / Ajouter qui ouvre son éditeur
+  (EventInfoFieldEditor) : déroulé sous la carte sur desktop, en bottom sheet sur mobile.
+  Ne modifie rien elle-même : émet `update`, au parent de l'appliquer. Utilisée par les paramètres
+  de l'événement (public et connecté) et le récap de la demande.
+-->
 <template>
   <div class="event-info-cards">
     <div v-for="card in cards" :key="card.key" class="card-group">
@@ -74,7 +81,6 @@ import {
   Music2Icon,
   PencilIcon,
   Sparkling2Icon,
-  SparklingIcon,
 } from '@remixicons/vue/line'
 import SgiltInlinePanel from '~/components/basics/sheets/SgiltInlinePanel.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
@@ -87,7 +93,7 @@ import {
 } from '~/composables/useLocalEvent'
 import { AMBIANCE_OPTIONS, EVENT_TYPE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/evenement'
 import { formatDateWithWeekday } from '~/utils/dateUtils'
-import { EVENT_TYPE_CATALOG } from '~/utils/eventTypes'
+import { eventTypeIcon } from '~/utils/eventTypes'
 import { useNbInvitesLabel } from '~/composables/useNbInvitesLabel'
 
 const props = defineProps<{
@@ -120,11 +126,7 @@ interface InfoCard {
   editable: boolean
 }
 
-const eventTypeIcon = computed(
-  () =>
-    EVENT_TYPE_CATALOG.find((type) => type.key === props.event.eventType)?.icon ??
-    markRaw(SparklingIcon),
-)
+const typeIcon = computed(() => eventTypeIcon(props.event.eventType))
 
 const cards = computed<InfoCard[]>(() => {
   const event = props.event
@@ -132,7 +134,7 @@ const cards = computed<InfoCard[]>(() => {
     {
       key: 'eventType',
       label: t('event-info.fields.event-type'),
-      icon: eventTypeIcon.value,
+      icon: typeIcon.value,
       value: choiceLabel(EVENT_TYPE_OPTIONS, event.eventType),
       // Le type n'est plus modifiable une fois choisi : en changer revient à repartir de zéro.
       editable: !event.eventType,

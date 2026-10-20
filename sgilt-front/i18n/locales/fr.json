@@ -66,12 +66,12 @@
       "cancel": "Garder mon événement"
     },
     "types": {
-      "mariage": { "label": "Mariage", "tagline": "Le grand oui" },
-      "anniversaire": { "label": "Anniversaire", "tagline": "Un an de plus à célébrer" },
-      "soiree_privee": { "label": "Soirée privée", "tagline": "Entre amis ou en famille" },
-      "fete_entreprise": { "label": "Fête d'entreprise", "tagline": "Vos équipes à l'honneur" },
-      "evenement_public": { "label": "Événement public", "tagline": "Ouvert à tous" },
-      "autre": { "label": "Autre", "tagline": "Dites-nous en plus" }
+      "mariage": { "label": "Mariage", "tagline": "Le grand oui", "default-title": "Votre mariage" },
+      "anniversaire": { "label": "Anniversaire", "tagline": "Un an de plus à célébrer", "default-title": "Votre anniversaire" },
+      "soiree_privee": { "label": "Soirée privée", "tagline": "Entre amis ou en famille", "default-title": "Votre soirée privée" },
+      "fete_entreprise": { "label": "Fête d'entreprise", "tagline": "Vos équipes à l'honneur", "default-title": "Votre fête d'entreprise" },
+      "evenement_public": { "label": "Événement public", "tagline": "Ouvert à tous", "default-title": "Votre événement public" },
+      "autre": { "label": "Autre", "tagline": "Dites-nous en plus", "default-title": "Votre événement" }
     }
   },
   "commencer-picker": {
@@ -149,6 +149,16 @@
     "page-title": "Votre organisation - Sgilt",
     "rubriques-title": "Votre organisation",
     "settings-aria": "Paramètres de l'événement",
+    "board": {
+      "tagline": {
+        "mariage": "Une belle journée se prépare !",
+        "anniversaire": "Ça se fête, et ça se prépare !",
+        "soiree_privee": "Une belle soirée en perspective !",
+        "fete_entreprise": "Un beau moment à partager !",
+        "evenement_public": "Un événement qui rassemble !",
+        "autre": "Une belle idée prend forme !"
+      }
+    },
     "settings": {
       "page-title": "Paramètres de l'événement - Sgilt",
       "back": "Retour à mon événement",
