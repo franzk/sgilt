@@ -1,3 +1,9 @@
+<!--
+  Écran /commencer (« Vous avez l'idée, on vous aide à construire la suite. »), après le choix du
+  type sur /fete : texte et photo propres au type choisi (photo servie par la banque d'images R2),
+  puis deux façons de démarrer (organisation guidée ou recherche). Un accès direct sans type
+  choisi renvoie sur /fete.
+-->
 <template>
   <!-- Desktop utilise une diagonale droite (clip-path: polygon() dans le
        style ci-dessous), donc pas besoin de ce clip-path SVG pour lui. -->
@@ -64,6 +70,7 @@ useHead({ title: "Vous avez l'idée - Sgilt" })
 
 const { t } = useI18n()
 const { localEvent } = useLocalEvent()
+const { toUrl } = useImageUrl()
 
 // Accès sans type choisi (arrivée directe sur l'URL) : renvoie au choix du type.
 onMounted(() => {
@@ -76,7 +83,10 @@ const typeKey = computed(() => eventTypeKey(localEvent.eventType) ?? 'autre')
 const eventTypeImage = computed(() => EVENT_TYPE_IMAGES[typeKey.value])
 const eventTypeLabel = computed(() => t(`event-picker.types.${typeKey.value}.label`))
 const paragraph = computed(() => t(`commencer-picker.paragraphs.${typeKey.value}`))
-const coverImage = computed(() => EVENT_TYPE_COVERS[typeKey.value])
+const coverImage = computed(() => {
+  const imagePath = EVENT_TYPE_COVERS[typeKey.value]
+  return imagePath ? toUrl(imagePath) : undefined
+})
 const photoAlt = computed(() => t(`commencer-picker.photo-alt.${typeKey.value}`))
 
 // Visiteur ou connecté (flow « Nouvel événement ») : même parcours, l'événement n'est créé qu'à

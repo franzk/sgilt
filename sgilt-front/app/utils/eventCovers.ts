@@ -3,11 +3,11 @@
  */
 export const BANK_IMAGE_PATHS: Record<string, string> = {
   mariage: 'bank/mariage.jpg',
-  anniversaire: 'bank/anniversaire.jpg',
-  soiree_privee: 'bank/soiree_privee.jpg',
-  fete_entreprise: 'bank/fete_entreprise.jpg',
-  evenement_public: 'bank/evenement_public.jpg',
-  autre: 'bank/autre.jpg',
+  anniversaire: 'bank/anniversaire.webp',
+  soiree_privee: 'bank/soiree-privee.jpg',
+  fete_entreprise: 'bank/fete-entreprise.webp',
+  evenement_public: 'bank/evenement-public.webp',
+  autre: 'bank/autre.webp',
 }
 
 /**

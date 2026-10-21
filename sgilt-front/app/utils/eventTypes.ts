@@ -49,10 +49,15 @@ export const EVENT_TYPE_IMAGES: Record<string, string> = {
 }
 
 /**
- * Photos de couverture par type d'événement, écran "commencer" (commencer.vue).
- * Partielle par construction : un type sans entrée ici n'affiche simplement
- * pas de photo, en attendant que les autres visuels soient fournis.
+ * Photos de couverture par type d'événement, écran "commencer" (commencer.vue) : chemins
+ * d'images de la banque (servies via useImageUrl, comme BANK_IMAGE_PATHS). Un type sans
+ * entrée ici n'affiche simplement pas de photo.
  */
 export const EVENT_TYPE_COVERS: Record<string, string> = {
-  mariage: '/images/commencer/mariage.jpg',
+  mariage: 'bank/mariage-commencer.jpg',
+  anniversaire: 'bank/anniversaire.webp',
+  soiree_privee: 'bank/soiree-privee.jpg',
+  fete_entreprise: 'bank/fete-entreprise.webp',
+  evenement_public: 'bank/evenement-public.webp',
+  autre: 'bank/autre.webp',
 }
