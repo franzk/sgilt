@@ -44,6 +44,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -96,7 +97,7 @@ class PrestataireServiceTest {
             PrestataireDetailDto dto = dummyDetailDto();
             when(prestataireRepository.findBySlugAndStatusAndDeletedAtIsNull(SLUG, PrestataireStatus.PUBLISHED))
                     .thenReturn(Optional.of(prestataire));
-            when(prestataireMapper.toDetailDto(prestataire)).thenReturn(dto);
+            when(prestataireMapper.toMetaDto(prestataire)).thenReturn(dto);
 
             PrestataireDetailDto result = prestataireService.getBySlug(SLUG);
 
@@ -114,31 +115,31 @@ class PrestataireServiceTest {
     }
 
     // -------------------------------------------------------------------------
-    // getPublishedById
+    // ensurePublished
     // -------------------------------------------------------------------------
 
     @Nested
-    class GetPublishedById {
+    class EnsurePublished {
 
         @Test
-        void givenPublishedPrestataire_whenGetPublishedById_thenReturnsPrestataire() {
-            Prestataire prestataire = prestataireWith(PrestataireStatus.PUBLISHED);
-            when(prestataireRepository.findByIdAndStatusAndDeletedAtIsNull(prestataire.getId(), PrestataireStatus.PUBLISHED))
-                    .thenReturn(Optional.of(prestataire));
+        void givenPublishedPrestataire_whenEnsurePublished_thenDoesNotThrow() {
+            UUID id = UUID.randomUUID();
+            when(prestataireRepository.existsByIdAndStatusAndDeletedAtIsNull(id, PrestataireStatus.PUBLISHED))
+                    .thenReturn(true);
 
-            assertThat(prestataireService.getPublishedById(prestataire.getId())).isEqualTo(prestataire);
+            assertThatCode(() -> prestataireService.ensurePublished(id)).doesNotThrowAnyException();
         }
 
         @Test
-        void givenNoPublishedPrestataireForId_whenGetPublishedById_thenThrowsNotFound() {
+        void givenNoPublishedPrestataireForId_whenEnsurePublished_thenThrowsNotFound() {
             // la requête filtre déjà par statut PUBLISHED et deletedAt IS NULL : id inconnu,
-            // non publié (DRAFT/IN_REVIEW) et soft-deleted produisent tous Optional.empty() ici —
+            // non publié (DRAFT/IN_REVIEW) et soft-deleted produisent tous false ici —
             // même exception dans les 3 cas, pour ne pas exposer la distinction à l'appelant
             UUID id = UUID.randomUUID();
-            when(prestataireRepository.findByIdAndStatusAndDeletedAtIsNull(id, PrestataireStatus.PUBLISHED))
-                    .thenReturn(Optional.empty());
+            when(prestataireRepository.existsByIdAndStatusAndDeletedAtIsNull(id, PrestataireStatus.PUBLISHED))
+                    .thenReturn(false);
 
-            assertThatThrownBy(() -> prestataireService.getPublishedById(id))
+            assertThatThrownBy(() -> prestataireService.ensurePublished(id))
                     .isInstanceOf(PrestataireNotFoundException.class);
         }
     }
@@ -155,7 +156,7 @@ class PrestataireServiceTest {
             Prestataire prestataire = prestataireWith(PrestataireStatus.DRAFT);
             PrestataireDetailDto dto = dummyDetailDto();
             when(prestataireRepository.findByUtilisateurAndDeletedAtIsNull(utilisateur)).thenReturn(Optional.of(prestataire));
-            when(prestataireMapper.toDetailDto(prestataire)).thenReturn(dto);
+            when(prestataireMapper.toMetaDto(prestataire)).thenReturn(dto);
 
             assertThat(prestataireService.getByUtilisateurOwner(utilisateur)).isEqualTo(dto);
         }
@@ -265,12 +266,12 @@ class PrestataireServiceTest {
         void givenSubcatFilter_whenSearch_thenQueriesSubcatsWithPublishedStatus() {
             List<String> subcats = List.of("dj");
             when(prestataireRepository.findByStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(PrestataireStatus.PUBLISHED)).thenReturn(List.of());
-            when(prestataireRepository.findBySubcatKeysInAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(subcats, PrestataireStatus.PUBLISHED))
+            when(prestataireRepository.findBySubcatKeyInAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(subcats, PrestataireStatus.PUBLISHED))
                     .thenReturn(List.of());
 
             prestataireService.search(null, subcats);
 
-            verify(prestataireRepository).findBySubcatKeysInAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(subcats, PrestataireStatus.PUBLISHED);
+            verify(prestataireRepository).findBySubcatKeyInAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(subcats, PrestataireStatus.PUBLISHED);
         }
     }
 
@@ -302,7 +303,7 @@ class PrestataireServiceTest {
             when(prestataireRepository.save(captor.capture())).thenAnswer(invocation -> invocation.getArgument(0));
 
             PrestataireService.CreationResult result = prestataireService.createPrestataireCleEnMain(
-                    utilisateur, SLUG, "Jean Photographe", "photo", List.of());
+                    utilisateur, SLUG, "Jean Photographe", "services", "photographe");
 
             assertThat(captor.getValue().getStatus()).isEqualTo(PrestataireStatus.WAITING_FOR_CREATION_SERVICE);
             assertThat(captor.getValue().getFlow()).isEqualTo(PrestataireFlow.CREATION_CLE_EN_MAIN);
@@ -324,7 +325,7 @@ class PrestataireServiceTest {
                     .thenReturn(true);
 
             PrestataireService.CreationResult result = prestataireService.createPrestataireAutonome(
-                    utilisateur, SLUG, "Jean Photographe", "photo", List.of());
+                    utilisateur, SLUG, "Jean Photographe", "services", "photographe");
 
             assertThat(captor.getValue().getStatus()).isEqualTo(PrestataireStatus.DRAFT);
             assertThat(captor.getValue().getFlow()).isEqualTo(PrestataireFlow.CREATION_AUTONOME);
@@ -340,7 +341,7 @@ class PrestataireServiceTest {
                     .thenReturn(false);
 
             PrestataireService.CreationResult result = prestataireService.createPrestataireAutonome(
-                    utilisateur, SLUG, "Jean Photographe", "photo", List.of());
+                    utilisateur, SLUG, "Jean Photographe", "services", "photographe");
 
             assertThat(result.notificationDelivered()).isFalse();
         }
@@ -504,9 +505,9 @@ class PrestataireServiceTest {
             Prestataire draft = prestataireWith(PrestataireStatus.DRAFT);
             Prestataire published = prestataireWith(PrestataireStatus.PUBLISHED);
             PrestataireAdminListItemDto draftDto = new PrestataireAdminListItemDto(
-                    draft.getId(), "Jean", SLUG, PrestataireStatus.DRAFT, "pro@sgilt.fr", "photo", List.of(), emptyCounts());
+                    draft.getId(), "Jean", SLUG, PrestataireStatus.DRAFT, "pro@sgilt.fr", "photo", "photographe", emptyCounts());
             PrestataireAdminListItemDto publishedDto = new PrestataireAdminListItemDto(
-                    published.getId(), "Jean", SLUG, PrestataireStatus.PUBLISHED, "pro@sgilt.fr", "photo", List.of(), emptyCounts());
+                    published.getId(), "Jean", SLUG, PrestataireStatus.PUBLISHED, "pro@sgilt.fr", "photo", "photographe", emptyCounts());
             when(prestataireRepository.findConfirmedByDeletedAtIsNull()).thenReturn(List.of(draft, published));
             when(reservationService.getStatusCountsByPrestataire(any())).thenReturn(Map.of());
             when(prestataireMapper.toAdminListItemDto(eq(draft), any())).thenReturn(draftDto);
@@ -530,7 +531,7 @@ class PrestataireServiceTest {
             when(prestataireMapper.toAdminListItemDto(eq(published), countsCaptor.capture()))
                     .thenReturn(new PrestataireAdminListItemDto(
                             published.getId(), "Jean", SLUG, PrestataireStatus.PUBLISHED, "pro@sgilt.fr",
-                            "photo", List.of(), emptyCounts()));
+                            "photo", "photographe", emptyCounts()));
 
             prestataireService.getConfirmedPrestataires();
 
@@ -605,6 +606,21 @@ class PrestataireServiceTest {
             assertThatThrownBy(() -> prestataireService.update(prestataire.getId(), patch, other))
                     .isInstanceOf(PrestataireForbiddenException.class);
             verify(prestataireRepository, never()).save(any());
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // countUsingSubcategory
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class CountUsingSubcategory {
+
+        @Test
+        void givenPrestatairesInSubcategory_whenCountUsingSubcategory_thenReturnsRepositoryCount() {
+            when(prestataireRepository.countBySubcatKey("dj")).thenReturn(2L);
+
+            assertThat(prestataireService.countUsingSubcategory("dj")).isEqualTo(2L);
         }
     }
 
@@ -735,7 +751,7 @@ class PrestataireServiceTest {
             PrestataireDetailDto dto = dummyDetailDto();
             when(prestataireRepository.findByUtilisateurAndDeletedAtIsNull(utilisateur)).thenReturn(Optional.of(prestataire));
             when(prestataireRepository.save(prestataire)).thenReturn(prestataire);
-            when(prestataireMapper.toDetailDto(prestataire)).thenReturn(dto);
+            when(prestataireMapper.toMetaDto(prestataire)).thenReturn(dto);
 
             PrestataireDetailDto result = prestataireService.updateMedias(utilisateur, medias);
 
@@ -774,7 +790,7 @@ class PrestataireServiceTest {
             prestataire = prestataireWith(PrestataireStatus.DRAFT);
             dto = dummyDetailDto();
             lenient().when(prestataireRepository.save(prestataire)).thenReturn(prestataire);
-            lenient().when(prestataireMapper.toDetailDto(prestataire)).thenReturn(dto);
+            lenient().when(prestataireMapper.toMetaDto(prestataire)).thenReturn(dto);
         }
 
         @Test
@@ -888,9 +904,9 @@ class PrestataireServiceTest {
 
         @Test
         void givenPrestatairesInDifferentCategories_whenSearchWithoutFilter_thenCountsPerCategoryAndTotal() {
-            Prestataire photo1 = Prestataire.builder().id(UUID.randomUUID()).categoryKey("photo").subcatKeys(List.of()).build();
-            Prestataire photo2 = Prestataire.builder().id(UUID.randomUUID()).categoryKey("photo").subcatKeys(List.of()).build();
-            Prestataire musique = Prestataire.builder().id(UUID.randomUUID()).categoryKey("musique").subcatKeys(List.of()).build();
+            Prestataire photo1 = Prestataire.builder().id(UUID.randomUUID()).categoryKey("photo").subcatKey("photographe").build();
+            Prestataire photo2 = Prestataire.builder().id(UUID.randomUUID()).categoryKey("photo").subcatKey("photographe").build();
+            Prestataire musique = Prestataire.builder().id(UUID.randomUUID()).categoryKey("musique").subcatKey("dj").build();
             when(prestataireRepository.findByStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(PrestataireStatus.PUBLISHED))
                     .thenReturn(List.of(photo1, photo2, musique));
 
@@ -904,14 +920,14 @@ class PrestataireServiceTest {
         void givenSubcatFilterMatchingPrestataires_whenSearch_thenCountsSubcatsForActiveCategory() {
             List<String> subcats = List.of("dj");
             Prestataire dj = Prestataire.builder().id(UUID.randomUUID())
-                    .categoryKey("musique").subcatKeys(List.of("dj", "orchestre")).build();
+                    .categoryKey("musique").subcatKey("dj").build();
             when(prestataireRepository.findByStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(PrestataireStatus.PUBLISHED)).thenReturn(List.of(dj));
-            when(prestataireRepository.findBySubcatKeysInAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(subcats, PrestataireStatus.PUBLISHED))
+            when(prestataireRepository.findBySubcatKeyInAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(subcats, PrestataireStatus.PUBLISHED))
                     .thenReturn(List.of(dj));
 
             var result = prestataireService.search(null, subcats);
 
-            assertThat(result.subcatCounts()).containsEntry("dj", 1L).containsEntry("orchestre", 1L);
+            assertThat(result.subcatCounts()).containsOnly(Map.entry("dj", 1L));
         }
     }
 
@@ -945,7 +961,7 @@ class PrestataireServiceTest {
     private PrestataireDetailDto dummyDetailDto() {
         return new PrestataireDetailDto(
                 UUID.randomUUID().toString(), "Jean Photographe", SLUG, null, null, null, null, null, "photo",
-                List.of(), List.of(), List.of(), List.of(), null, null, List.of(), List.of(), List.of(),
+                "photographe", List.of(), List.of(), List.of(), null, null, List.of(), List.of(), List.of(),
                 PrestataireStatus.PUBLISHED
         );
     }

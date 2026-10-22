@@ -2,7 +2,7 @@ package net.franzka.sgilt.core.onboarding.controller;
 
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountRequest;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountResponse;
-import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
+import net.franzka.sgilt.core.onboarding.dto.InitOnboardingDemandeRequest;
 import net.franzka.sgilt.core.onboarding.dto.InitOnboardingResponse;
 import net.franzka.sgilt.core.onboarding.dto.SetPasswordTokenDto;
 import net.franzka.sgilt.core.onboarding.service.OnboardingService;
@@ -42,15 +42,15 @@ class OnboardingControllerTest {
     class InitOnboarding {
 
         @Test
-        void givenValidRequest_whenInitOnboarding_thenReturns202WithEmail() {
-            InitOnboardingRequest request = new InitOnboardingRequest(
-                    "Jean", "Dupont", "jean@sgilt.fr", UUID.randomUUID(), "Mariage", "Champetre",
+        void givenSingleDemande_whenInitOnboardingDemande_thenReturns202WithEmail() {
+            InitOnboardingDemandeRequest request = new InitOnboardingDemandeRequest(
+                    "Jean", "Dupont", "jean@sgilt.fr", UUID.randomUUID(), "Notre mariage", "Mariage", "Champetre",
                     "Vin d'honneur", "Description", LocalDate.of(2027, 6, 15), "Lyon", "80",
                     "Domaine des fleurs", "0102030405", "Bonjour");
             InitOnboardingResponse response = new InitOnboardingResponse("jean@sgilt.fr");
-            when(onboardingService.initOnboardingSession(request)).thenReturn(response);
+            when(onboardingService.initOnboardingDemande(request)).thenReturn(response);
 
-            ResponseEntity<InitOnboardingResponse> result = controller.initOnboarding(request);
+            ResponseEntity<InitOnboardingResponse> result = controller.initOnboardingDemande(request);
 
             assertThat(result.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
             assertThat(result.getBody()).isEqualTo(response);

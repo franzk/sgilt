@@ -32,9 +32,22 @@ export function useReservationFeed(reservationId: string) {
     { immediate: true },
   )
 
+  const addingNote = ref(false)
+  // Échec du dernier enregistrement de note (affiché dans la fenêtre d'ajout).
+  const addNoteFailed = ref(false)
+
   async function addNote(title: string, content: string, isPersonal: boolean) {
-    const item = await addNoteService(reservationId, title, content, isPersonal)
-    feed.value.unshift(item)
+    addingNote.value = true
+    addNoteFailed.value = false
+    try {
+      const item = await addNoteService(reservationId, title, content, isPersonal)
+      feed.value.unshift(item)
+    } catch (e) {
+      console.error(e)
+      addNoteFailed.value = true
+    } finally {
+      addingNote.value = false
+    }
   }
 
   const uploading = ref(false)
@@ -63,6 +76,8 @@ export function useReservationFeed(reservationId: string) {
     pending,
     error,
     uploading,
+    addingNote,
+    addNoteFailed,
     load,
     addNote,
     uploadDocument,

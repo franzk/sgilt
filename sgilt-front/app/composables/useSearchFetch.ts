@@ -4,7 +4,7 @@ import { searchPrestataires } from '~/data/prestataire/service/prestataireServic
 import type { PrestataireCardDetail } from '~/data/prestataire/domain/PrestataireCardDetail'
 
 export function useSearchFetch() {
-  const { date, categoryKey, currentSubcats } = useSearchUi()
+  const { categoryKey, searchedSubcats } = useSearchUi()
 
   const loading = ref(false)
   const results = ref<PrestataireCardDetail[]>([])
@@ -17,9 +17,8 @@ export function useSearchFetch() {
     error.value = null
     try {
       const data = await searchPrestataires({
-        date: date.value,
         categoryKey: categoryKey.value,
-        subcatKeys: currentSubcats.value,
+        subcatKeys: searchedSubcats.value,
       })
       results.value = data.results
       countsByCategory.value = data.countsByCategory
@@ -34,7 +33,9 @@ export function useSearchFetch() {
 
   const fetchThrottled = useThrottleFn(fetchNow, 300)
 
-  watch([date, categoryKey, currentSubcats], () => fetchThrottled(), { immediate: true })
+  // Recherche côté client uniquement : les résultats sont dynamiques, jamais rendus en SSR.
+  onMounted(() => fetchNow())
+  watch([categoryKey, searchedSubcats], () => fetchThrottled())
 
   return {
     loading,

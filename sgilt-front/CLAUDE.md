@@ -67,6 +67,36 @@ Les états et variantes sont imbriqués avec `&` :
 
 ---
 
+## En-tête de fichier — obligatoire
+
+Chaque fichier du front commence par un commentaire qui décrit ce qu'il fait : son rôle, où il est
+utilisé, et ce qu'il faut savoir pour le comprendre (ex. les URL couvertes par une page).
+
+- **`.ts`** : un bloc JSDoc `/** … */` tout en haut du fichier.
+- **`.vue`** : un commentaire HTML `<!-- … -->` tout en haut du fichier, avant `<template>`.
+
+Les fichiers existants sans en-tête se mettent en conformité quand on les crée ou les modifie (pas de
+passe globale).
+
+```vue
+<!--
+  Onglet Documents de la fiche d'une réservation, le même pour le client et le prestataire :
+  tous les documents de la réservation, l'ajout, le téléchargement et la suppression des siens.
+-->
+<template>
+  …
+</template>
+```
+
+```ts
+/**
+ * Composable — état de la page de recherche de prestataires, porté par l'URL.
+ */
+export function useSearchUi() { … }
+```
+
+---
+
 ## Ce que Claude Code ne doit pas faire
 
 - Ne jamais lancer de build du front (`nuxt build`, `nuxi typecheck`, `nuxt generate`, etc.) — l'environnement n'est pas fiable pour ça (échecs préexistants sans rapport avec le code modifié). Relire le code à la main et laisser l'utilisateur vérifier via `npm run dev`.

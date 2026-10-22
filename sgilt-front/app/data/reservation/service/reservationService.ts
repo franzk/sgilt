@@ -47,7 +47,7 @@ export async function fetchProBoardCounts(): Promise<ProBoardCounts> {
 export async function fetchProReservationDetail(
   reservationId: string,
 ): Promise<ProReservationDetail> {
-  return mapProReservationDetail(reservationId, await getProReservationDetailApi(reservationId))
+  return mapProReservationDetail(await getProReservationDetailApi(reservationId))
 }
 
 export async function markDemandeContacted(reservationId: string): Promise<void> {

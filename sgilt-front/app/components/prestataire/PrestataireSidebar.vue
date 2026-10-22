@@ -7,18 +7,12 @@
     >
       <SgiltDatePicker
         v-model="dateModel"
-        :booked-dates="unavailableDatesAsDate"
         :disabled="disableDate || displayMode === 'preview'"
         :placeholder="$t('provider.details.verify-date')"
         :error="!!dateError"
       />
       <Transition name="fade">
         <p v-if="dateError" class="date-error">{{ dateError }}</p>
-        <!-- reintroduce when we handle availability
-        <div v-else-if="dateModel" class="availability-badge" :class="availabilityClass">
-          <span class="icon">{{ availabilityIcon }}</span>
-          <span>{{ availabilityLabel }}</span>
-        </div-->
       </Transition>
     </div>
 
@@ -53,8 +47,6 @@ import EditableText from '~/components/prestataire/EditableText.vue'
 import type { PrestataireDetail } from '~/data/prestataire/domain/PrestataireDetail'
 import type { DisplayMode } from '~/types/prestataire'
 
-const { t } = useI18n()
-
 const props = defineProps<{
   prestataire: PrestataireDetail
   displayMode: DisplayMode
@@ -69,25 +61,17 @@ const emit = defineEmits<{
   'select-intent': []
 }>()
 
-const { dateModel } = useSearchUi()
+// La date est celle de l'événement local. Dans le flow « ajouter un prestataire », le sélecteur
+// est désactivé et affiche celle de l'événement existant.
+const { localEvent } = useLocalEvent()
+const { flowPayload } = useFlow()
 
-const unavailableDatesAsDate = computed<Date[]>(() =>
-  props.prestataire.unavailableDates.map((d) => new Date(d)),
-)
-
-const isUnavailable = computed(() => {
-  if (!dateModel.value) return false
-  const iso = dateModel.value.toISOString().slice(0, 10)
-  return props.prestataire.unavailableDates.includes(iso)
+const dateModel = computed<Date | undefined>({
+  get: () => (props.disableDate ? flowPayload.value?.date : localEvent.date),
+  set: (value) => {
+    localEvent.date = value
+  },
 })
-
-const availabilityIcon = computed(() => (isUnavailable.value ? '✗' : '✓'))
-const availabilityLabel = computed(() =>
-  isUnavailable.value
-    ? t('provider.details.availability.unavailable')
-    : t('provider.details.availability.available'),
-)
-const availabilityClass = computed(() => (isUnavailable.value ? 'unavailable' : 'available'))
 </script>
 
 <style scoped lang="scss">
@@ -158,31 +142,6 @@ const availabilityClass = computed(() => (isUnavailable.value ? 'unavailable' : 
   font-size: 0.82rem;
   color: $state-error;
   margin: 0;
-}
-
-.availability-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.35rem 0.8rem;
-  border-radius: 2rem;
-  font-size: 0.82rem;
-  font-weight: 600;
-  width: fit-content;
-
-  &.available {
-    background: rgba(#2d9e6b, 0.1);
-    color: #1e7a51;
-  }
-  &.unavailable {
-    background: rgba(#c0392b, 0.1);
-    color: #a93226;
-  }
-
-  .icon {
-    font-size: 0.75rem;
-    font-weight: 700;
-  }
 }
 
 .fade-enter-active,

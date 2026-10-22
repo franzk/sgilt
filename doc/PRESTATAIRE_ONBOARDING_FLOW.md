@@ -161,7 +161,7 @@ porté uniquement par les comptes admin dédiés).
 3. Transaction DB courte (via `TransactionTemplate`, pas `@Transactional` — la frontière
    transactionnelle doit démarrer précisément après l'appel Keycloak, dans la même méthode) :
    - `Utilisateur` (email, prénom, nom)
-   - `Prestataire` (fiche vierge : `slug`, `name`, `categoryKey`, `subcatKeys` seulement — tout le
+   - `Prestataire` (fiche vierge : `slug`, `name`, `categoryKey`, `subcatKey` seulement — tout le
      reste vide, le front gère l'état "ghost") — selon `request.cleEnMain()`, déléguée à
      `PrestataireService#createPrestataireCleEnMain` (statut `WAITING_FOR_CREATION_SERVICE`,
      **pas** d'`ActionToken` créé ici) ou `#createPrestataireAutonome` (statut `DRAFT`, crée

@@ -1,0 +1,285 @@
+/**
+ * Composable — événement du parcours public (route /) : source de vérité unique tant qu'il n'est pas
+ * matérialisé en base, comme un panier d'e-boutique. Seuls appels au back : les rubriques du type
+ * (initRubriques) et la création de l'événement en base (create).
+ *
+ * Les noms de champs sont ceux de EventMeta (domaine de l'événement en base) : les écrans
+ * qui manipulent cet état ne dépendent que de ce composable et de ces noms, pour pouvoir
+ * être branchés sur la base (route /app) sans être réécrits.
+ *
+ * Ne contient aucune donnée de contact (prénom, nom, email, téléphone) : elles restent
+ * dans useDemande, qui est le brouillon d'une demande à un prestataire.
+ */
+import type { EventRubrique } from '~/data/evenement/domain/EventRubrique'
+import { createEventApi } from '~/data/evenement/api/evenementApi'
+import type { CreateEventRequestDto } from '~/data/evenement/dto/CreateEventRequestDto'
+import { fetchNewEventRubriques } from '~/data/template/service/templateService'
+import { toISODate } from '~/utils/dateUtils'
+import {
+  AMBIANCE_OPTIONS,
+  EVENT_TYPE_OPTIONS,
+  MOMENT_CLE_OPTIONS,
+  eventTypeKey,
+  type EvenementOption,
+  type EvenementRequest,
+} from '~/types/evenement'
+
+const LOCAL_EVENT_STORAGE_KEY = 'sgilt:evenement'
+const LOCAL_EVENT_VERSION = 3
+// Durée glissante : renouvelée à chaque modification. Passé ce délai, l'événement est effacé.
+const LOCAL_EVENT_TTL_MS = 30 * 24 * 60 * 60 * 1000
+
+export interface LocalEvent {
+  eventType: string | null
+  title: string
+  date: Date | undefined
+  ville: string
+  lieu: string
+  nbInvites: string
+  ambiance: string | null
+  momentCle: string | null
+  description: string
+  rubriques: EventRubrique[]
+  // Mode événement : vrai une fois que l'utilisateur a choisi de commencer son organisation avec
+  // Sgilt (/commencer). Détermine l'affichage du bandeau sur les pages publiques.
+  organisationStarted: boolean
+}
+
+// Informations de l'événement modifiables par l'utilisateur (paramètres, récap de demande).
+export type EventInfoFields = Pick<
+  LocalEvent,
+  | 'title'
+  | 'eventType'
+  | 'date'
+  | 'ville'
+  | 'lieu'
+  | 'nbInvites'
+  | 'ambiance'
+  | 'momentCle'
+  | 'description'
+>
+
+// Information modifiable une à une (une carte de EventInfoCards) : 'lieu' couvre la ville et le lieu.
+export type EventInfoFieldKey =
+  | 'title'
+  | 'eventType'
+  | 'date'
+  | 'lieu'
+  | 'nbInvites'
+  | 'ambiance'
+  | 'momentCle'
+  | 'description'
+
+// Informations essentielles : exigées pour envoyer une demande à un prestataire.
+export const ESSENTIAL_EVENT_INFO: EventInfoFieldKey[] = ['eventType', 'date', 'lieu']
+
+// Information essentielle non renseignée. Le lieu compte par sa ville (le nom du lieu reste
+// facultatif).
+export function isEssentialInfoMissing(event: EventInfoFields, key: EventInfoFieldKey): boolean {
+  if (!ESSENTIAL_EVENT_INFO.includes(key)) return false
+  return !(key === 'lieu' ? event.ville : event[key])
+}
+
+function defaultLocalEvent(): LocalEvent {
+  return {
+    eventType: null,
+    title: '',
+    date: undefined,
+    ville: '',
+    lieu: '',
+    nbInvites: '',
+    ambiance: null,
+    momentCle: null,
+    description: '',
+    rubriques: [],
+    organisationStarted: false,
+  }
+}
+
+// ── Sérialisation (Date ↔ 'YYYY-MM-DD') ───────────────────────────────────────
+
+function serialize(event: LocalEvent) {
+  return { ...event, date: event.date ? toISODate(event.date) : null }
+}
+
+function parseISODate(value: unknown): Date | undefined {
+  if (typeof value !== 'string') return undefined
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
+  if (!match) return undefined
+  return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
+}
+
+// L'événement local n'a jamais de réservation (le parcours public s'arrête à l'envoi de la
+// demande) : seule la clé de chaque rubrique est relue.
+function deserializeRubrique(value: unknown): EventRubrique | null {
+  if (typeof value !== 'object' || value === null) return null
+  const { key } = value as Record<string, unknown>
+  if (typeof key !== 'string' || !key) return null
+  return { key, reservations: [] }
+}
+
+const asString = (value: unknown): string => (typeof value === 'string' ? value : '')
+const asStringOrNull = (value: unknown): string | null => (typeof value === 'string' ? value : null)
+const asBoolean = (value: unknown): boolean => value === true
+
+function deserialize(raw: Record<string, unknown>): LocalEvent {
+  return {
+    eventType: asStringOrNull(raw.eventType),
+    title: asString(raw.title),
+    date: parseISODate(raw.date),
+    ville: asString(raw.ville),
+    lieu: asString(raw.lieu),
+    nbInvites: asString(raw.nbInvites),
+    ambiance: asStringOrNull(raw.ambiance),
+    momentCle: asStringOrNull(raw.momentCle),
+    description: asString(raw.description),
+    rubriques: Array.isArray(raw.rubriques)
+      ? raw.rubriques
+          .map(deserializeRubrique)
+          .filter((rubrique): rubrique is EventRubrique => rubrique !== null)
+      : [],
+    organisationStarted: asBoolean(raw.organisationStarted),
+  }
+}
+
+// ── Storage ───────────────────────────────────────────────────────────────────
+
+function readStorage(): LocalEvent | null {
+  if (!import.meta.client) return null
+  try {
+    const raw = localStorage.getItem(LOCAL_EVENT_STORAGE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw)
+    const expired =
+      typeof parsed.updatedAt !== 'number' || Date.now() - parsed.updatedAt > LOCAL_EVENT_TTL_MS
+    if (parsed.v !== LOCAL_EVENT_VERSION || expired) {
+      localStorage.removeItem(LOCAL_EVENT_STORAGE_KEY)
+      return null
+    }
+    return deserialize(parsed.event ?? {})
+  } catch {
+    return null
+  }
+}
+
+// Un événement identique à l'état par défaut n'est pas stocké : la clé disparaît.
+// C'est ce qui rend reset() atomique sans avoir à couper le watcher.
+function writeStorage(event: LocalEvent) {
+  if (!import.meta.client) return
+  try {
+    const serialized = serialize(event)
+    if (JSON.stringify(serialized) === JSON.stringify(serialize(defaultLocalEvent()))) {
+      localStorage.removeItem(LOCAL_EVENT_STORAGE_KEY)
+      return
+    }
+    localStorage.setItem(
+      LOCAL_EVENT_STORAGE_KEY,
+      JSON.stringify({ v: LOCAL_EVENT_VERSION, updatedAt: Date.now(), event: serialized }),
+    )
+  } catch {
+    // Stockage indisponible (navigation privée, quota) : l'état reste en mémoire.
+  }
+}
+
+// ── Singleton state ───────────────────────────────────────────────────────────
+// Même pattern que useDemande : reactive au niveau module, initialisé depuis le
+// storage une seule fois, puis persisté à chaque modification.
+
+const localEvent = reactive<LocalEvent>({ ...defaultLocalEvent(), ...readStorage() })
+
+if (import.meta.client) {
+  watch(localEvent, () => writeStorage(toRaw(localEvent)), { deep: true })
+}
+
+// ── Libellés des choix (type, ambiance, moment clé) ───────────────────────────
+
+// Libellé du choix de la liste, sinon le texte libre lui-même.
+export function choiceLabel(options: EvenementOption[], value: string | null): string | null {
+  if (!value) return null
+  return options.find((option) => option.value === value)?.label ?? value
+}
+
+function choiceEmoji(options: EvenementOption[], value: string | null): string {
+  if (!value) return ''
+  return options.find((option) => option.value === value)?.emoji ?? '•••'
+}
+
+// ── Composable ────────────────────────────────────────────────────────────────
+
+export function useLocalEvent() {
+  // Efface l'événement local (bouton « effacer », déconnexion, abandon, matérialisation).
+  function reset() {
+    Object.assign(localEvent, defaultLocalEvent())
+  }
+
+  // Choix du type d'événement, avec le titre par défaut de ce type (traduit par l'appelant). Un
+  // seul événement local à la fois : un type différent repart de zéro, le même type conserve ce
+  // qui a déjà été saisi.
+  function start(eventType: string, defaultTitle: string) {
+    if (eventTypeKey(localEvent.eventType) === eventType) return
+    reset()
+    localEvent.eventType = eventType
+    localEvent.title = defaultTitle
+  }
+
+  // Rubriques du template du type d'événement, demandées au back (qui porte les règles). N'injecte
+  // que ce qui manque : un événement déjà initialisé (rubriques présentes) n'est jamais écrasé.
+  async function initRubriques() {
+    const key = eventTypeKey(localEvent.eventType)
+    if (!key || localEvent.rubriques.length > 0) return
+    try {
+      const rubriques = await fetchNewEventRubriques(key)
+      if (localEvent.rubriques.length === 0) localEvent.rubriques = rubriques
+    } catch (e) {
+      console.error('[evenement] Échec du chargement des rubriques du template :', e)
+    }
+  }
+
+  // Champs de l'événement tels qu'envoyés au serveur : « autre » sans précision non transmis,
+  // date au format ISO, champs vides à null.
+  function toEvenementRequest(): EvenementRequest {
+    const withoutBareAutre = (value: string | null) => (value === 'autre' ? null : value)
+    return {
+      title: localEvent.title.trim() || null,
+      eventType: withoutBareAutre(localEvent.eventType),
+      ambiance: withoutBareAutre(localEvent.ambiance),
+      momentCle: withoutBareAutre(localEvent.momentCle),
+      description: localEvent.description || null,
+      date: localEvent.date ? toISODate(localEvent.date) : null,
+      ville: localEvent.ville || null,
+      nbInvites: localEvent.nbInvites || null,
+      lieu: localEvent.lieu || null,
+    }
+  }
+
+  // Crée en base l'événement local, pour l'utilisateur connecté (flow « Nouvel événement »),
+  // avec sa première demande s'il naît d'une demande à un prestataire. Le back en déduit les
+  // rubriques. La copie locale est ensuite effacée : la base devient la source de vérité.
+  async function create(demande: CreateEventRequestDto['demande'] = null): Promise<string> {
+    const { eventId } = await createEventApi({ ...toEvenementRequest(), demande })
+    reset()
+    return eventId
+  }
+
+  const eventTypeLabel = computed(() => choiceLabel(EVENT_TYPE_OPTIONS, localEvent.eventType))
+  const eventTypeEmoji = computed(() => choiceEmoji(EVENT_TYPE_OPTIONS, localEvent.eventType))
+  const ambianceLabel = computed(() => choiceLabel(AMBIANCE_OPTIONS, localEvent.ambiance))
+  const ambianceEmoji = computed(() => choiceEmoji(AMBIANCE_OPTIONS, localEvent.ambiance))
+  const momentCleLabel = computed(() => choiceLabel(MOMENT_CLE_OPTIONS, localEvent.momentCle))
+  const momentCleEmoji = computed(() => choiceEmoji(MOMENT_CLE_OPTIONS, localEvent.momentCle))
+
+  return {
+    localEvent,
+    start,
+    reset,
+    initRubriques,
+    toEvenementRequest,
+    create,
+    eventTypeLabel,
+    eventTypeEmoji,
+    ambianceLabel,
+    ambianceEmoji,
+    momentCleLabel,
+    momentCleEmoji,
+  }
+}

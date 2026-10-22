@@ -74,44 +74,39 @@ export function useFlow() {
         navigateTo('/fete')
       },
       abort: () => {
-        useSearchUi().dateModel.value = undefined
         navigateTo('/app')
       },
       success: () => {
         const eventId = flowPayload.value?.id
-        useSearchUi().dateModel.value = undefined
         navigateTo(eventId ? `/app/events/${eventId}` : '/app/events')
       },
     },
 
     'add-prestataire': {
       start: () => {
-        // Pré-remplit la date de recherche depuis le contexte de l'événement
-        const date = flowPayload.value?.date
-        useSearchUi().dateModel.value = date ? new Date(date) : undefined
         navigateTo('/search')
       },
       abort: () => {
         const eventId = flowPayload.value?.id
-        useSearchUi().dateModel.value = undefined
         navigateTo(`/app/events/${eventId}`)
       },
       success: () => {
         // Retour à l'EventBoard une fois la demande envoyée
         const eventId = flowPayload.value?.id
-        useSearchUi().dateModel.value = undefined
         navigateTo(`/app/events/${eventId}`)
       },
     },
   }
 
-  // Démarre un flow : enregistre le contexte, affiche le bandeau, lance le handler.
-  function start(flow: NonNullable<Flow>, label: string, payload?: any) {
+  // Démarre un flow : enregistre le contexte, affiche le bandeau, lance le handler. `to` : page où
+  // démarrer à la place de celle du handler (ex. la fiche d'un prestataire déjà choisi).
+  function start(flow: NonNullable<Flow>, label: string, payload?: any, to?: string) {
     currentFlow.value = flow
     flowPayload.value = payload ?? null
     flowLabel.value = label
     writeStorage(flow, payload ?? null, label)
-    flows[flow].start()
+    if (to) navigateTo(to)
+    else flows[flow].start()
   }
 
   // Abandonne le flow en cours : exécute le handler d'annulation puis nettoie l'état.

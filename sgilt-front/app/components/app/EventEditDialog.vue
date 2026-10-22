@@ -70,21 +70,21 @@
 <script setup lang="ts">
 import SgiltDialog from '~/components/basics/dialogs/SgiltDialog.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
-import type { EventDetail } from '~/data/evenement/domain/EventDetail'
-import type { EventPatch } from '~/data/evenement/domain/EventPatch'
-import { BANK_IMAGE_PATHS, resolveEventCover } from '~/utils/eventCovers'
+import type { EventMeta } from '~/data/evenement/domain/EventMeta'
+import type { EventMetaPatch } from '~/data/evenement/domain/EventMetaPatch'
+import { BANK_IMAGE_PATHS, defaultCoverPath } from '~/utils/eventCovers'
 import { uploadEventCover, selectEventCover } from '~/data/evenement/service/evenementService'
 import { ImageAddIcon } from '@remixicons/vue/line'
 
 // ── Props / emits ─────────────────────────────────────────────────────────────
 
 const props = defineProps<{
-  event: EventDetail
+  event: EventMeta
   eventId: string
 }>()
 
 const emit = defineEmits<{
-  save: [patch: EventPatch]
+  save: [patch: EventMetaPatch]
   coverUpdated: [coverUrl: string]
 }>()
 
@@ -124,7 +124,7 @@ function resetDraft() {
     localPreviewUrl = null
   }
   draft.title = props.event.title
-  draft.coverDisplayUrl = resolveEventCover(props.event, toUrl)
+  draft.coverDisplayUrl = toUrl(props.event.coverImage || defaultCoverPath(props.event.eventType))
   draft.pendingFile = null
   draft.pendingBankImagePath = null
   const bankEntry = Object.entries(BANK_IMAGE_PATHS).find(

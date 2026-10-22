@@ -91,13 +91,27 @@ export default defineNuxtConfig({
       },
     },
 
-    // Tunnel de réservation (fête -> date -> recherche) = utilitaire, pas indexé
+    // Tunnel de réservation (fête -> date -> commencer -> recherche) = utilitaire, pas indexé
     '/fete': {
       headers: {
         'X-Robots-Tag': 'noindex, nofollow',
       },
     },
     '/date': {
+      headers: {
+        'X-Robots-Tag': 'noindex, nofollow',
+      },
+    },
+    '/commencer': {
+      ssr: false,
+      headers: {
+        'X-Robots-Tag': 'noindex, nofollow',
+      },
+    },
+
+    // Vue d'ensemble de l'événement (flow public) = SPA, état en localStorage, pas de SEO
+    '/evenement': {
+      ssr: false,
       headers: {
         'X-Robots-Tag': 'noindex, nofollow',
       },
@@ -175,7 +189,6 @@ export default defineNuxtConfig({
         ital: [400],
       },
       Inter: [400, 500, 600, 900],
-      Caveat: [500, 600],
     },
   },
 

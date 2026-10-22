@@ -4,7 +4,6 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
-import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.jwt.service.VerificationTokenHmacService;
 import net.franzka.sgilt.core.onboarding.domain.Onboarding;
@@ -13,8 +12,6 @@ import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
 import net.franzka.sgilt.core.onboarding.exception.TokenAlreadyUsedException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.repository.OnboardingRepository;
-import net.franzka.sgilt.core.prestataire.domain.Prestataire;
-import net.franzka.sgilt.core.reservation.service.ReservationService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
 import org.springframework.stereotype.Service;
@@ -27,7 +24,8 @@ import java.util.UUID;
 
 /**
  * Service métier pour l'entité {@link Onboarding}.
- * Gère le cycle de vie d'une session d'onboarding : initiation, validation du lien email, consommation.
+ * Gère le cycle de vie d'une session d'onboarding (un visiteur crée un événement et son compte) :
+ * initiation, validation du lien email, consommation et création de l'utilisateur et de l'événement.
  */
 @Service
 @Slf4j
@@ -39,16 +37,7 @@ public class OnboardingSessionService {
     private final ConfirmationTokenProperties confirmationTokenProperties;
     private final UtilisateurService utilisateurService;
     private final EvenementService evenementService;
-    private final ReservationService reservationService;
     private final ObjectMapper objectMapper;
-
-    /**
-     * Données désérialisées d'une session d'onboarding consommée.
-     *
-     * @param formData    les données saisies dans le tunnel
-     * @param prestataire le prestataire ciblé par la demande
-     */
-    public record OnboardingContent(InitOnboardingRequest formData, Prestataire prestataire) {}
 
     /**
      * Résultat de la création d'une session : l'entité persistée et le token HMAC à envoyer par email.
@@ -59,14 +48,21 @@ public class OnboardingSessionService {
     public record InitiationResult(Onboarding onboarding, String hmacToken) {}
 
     /**
-     * Crée et persiste une session d'onboarding en sérialisant les données du tunnel.
+     * Session d'onboarding en attente, avec l'événement qu'elle porte (suivi admin).
      *
-     * @param email       l'adresse email du demandeur
-     * @param prestataire le prestataire ciblé
-     * @param request     les données saisies dans le tunnel
+     * @param onboarding la session
+     * @param content    les coordonnées et l'événement complet
+     */
+    public record PendingOnboarding(Onboarding onboarding, InitOnboardingRequest content) {}
+
+    /**
+     * Crée et persiste une session d'onboarding en sérialisant l'événement et les coordonnées.
+     *
+     * @param email   l'adresse email du visiteur
+     * @param request l'événement complet et les coordonnées
      * @return le résultat contenant la session persistée et le token HMAC complet
      */
-    public InitiationResult initiate(String email, Prestataire prestataire, InitOnboardingRequest request) {
+    public InitiationResult initiate(String email, InitOnboardingRequest request) {
         try {
             VerificationTokenHmacService.GeneratedToken generated = verificationTokenHmacService.generate();
 
@@ -75,14 +71,13 @@ public class OnboardingSessionService {
                     .email(email)
                     .expiresAt(LocalDateTime.now().plusHours(
                             confirmationTokenProperties.confirmationExpirationHours()))
-                    .prestataire(prestataire)
                     .data(objectMapper.writeValueAsString(request))
                     .build();
 
             onboardingRepository.save(onboarding);
             return new InitiationResult(onboarding, generated.fullToken());
         } catch (JacksonException e) {
-            throw new RuntimeException("Échec de la sérialisation des données du tunnel", e);
+            throw new RuntimeException("Échec de la sérialisation de l'événement de l'onboarding", e);
         }
     }
 
@@ -149,14 +144,16 @@ public class OnboardingSessionService {
     }
 
     /**
-     * Retourne les sessions d'onboarding utilisateur en attente (OPEN ou PENDING_CONFIRMATION),
-     * triées par date de création décroissante — pour le suivi admin.
+     * Retourne les sessions d'onboarding en attente (OPEN ou PENDING_CONFIRMATION), avec leur
+     * événement, triées par date de création décroissante — pour le suivi admin.
      *
-     * @return la liste des sessions en attente
+     * @return les sessions en attente
      */
-    public List<Onboarding> listPending() {
+    public List<PendingOnboarding> listPending() {
         return onboardingRepository.findByStateInOrderByCreatedAtDesc(
-                List.of(OnboardingState.OPEN, OnboardingState.PENDING_CONFIRMATION));
+                        List.of(OnboardingState.OPEN, OnboardingState.PENDING_CONFIRMATION)).stream()
+                .map(onboarding -> new PendingOnboarding(onboarding, readContent(onboarding)))
+                .toList();
     }
 
     /**
@@ -172,49 +169,42 @@ public class OnboardingSessionService {
     }
 
     /**
-     * Désérialise les données du tunnel, charge le prestataire, puis supprime la session.
+     * Désérialise l'événement et les coordonnées de la session, puis la supprime.
      * Doit être appelé dans un contexte transactionnel.
      *
      * @param onboarding la session à consommer
-     * @return les données du formulaire et le prestataire ciblé
+     * @return les coordonnées et l'événement complet
      */
-    public OnboardingContent consume(Onboarding onboarding) {
+    public InitOnboardingRequest consume(Onboarding onboarding) {
+        InitOnboardingRequest request = readContent(onboarding);
+        onboardingRepository.delete(onboarding);
+        return request;
+    }
+
+    /** Désérialise l'événement et les coordonnées stockés dans la session. */
+    private InitOnboardingRequest readContent(Onboarding onboarding) {
         try {
-            InitOnboardingRequest formData = objectMapper.readValue(onboarding.getData(), InitOnboardingRequest.class);
-            Prestataire prestataire = onboarding.getPrestataire();
-            onboardingRepository.delete(onboarding);
-            return new OnboardingContent(formData, prestataire);
+            return objectMapper.readValue(onboarding.getData(), InitOnboardingRequest.class);
         } catch (JacksonException e) {
-            throw new RuntimeException("Échec de la désérialisation des données du tunnel", e);
+            throw new RuntimeException("Échec de la désérialisation de l'événement de l'onboarding", e);
         }
     }
 
     /**
-    * Importe les données issues de la demande initiale dans la base de données.
-    * Les données initiales sont réparties dans
-    * - un nouvel utilisateur
-    * - un nouvel événement
-    * - une nouvelle réservation
-    *
-    * @param formData les données saisies dans le tunnel d'onboarding
-     * @param prestataire le prestataire ciblé par la demande
-     * @param email l'adresse email du demandeur, utilisée pour créer l'utilisateur
-    *
+     * Matérialise l'onboarding : crée l'utilisateur, puis l'événement avec ses rubriques et une
+     * réservation par demande initiée.
+     *
+     * @param request les coordonnées et l'événement complet
+     * @param email    l'adresse email du visiteur, utilisée pour créer l'utilisateur
+     * @return l'identifiant de l'événement créé
      */
-    public UUID createEntities(InitOnboardingRequest formData, Prestataire prestataire, String email) {
-        // création de l'utilisateur
+    public UUID createEntities(InitOnboardingRequest request, String email) {
         Utilisateur utilisateur = utilisateurService.createUtilisateur(
-                formData.firstName(), formData.lastName(), email, formData.telephone());
+                request.firstName(), request.lastName(), email, request.telephone());
 
         // enregistrement de l'acceptation des CGU et de la politique de confidentialité
         utilisateurService.acceptCgu(utilisateur);
 
-        // création de l'événement
-        Evenement evenement = evenementService.createFromFormData(utilisateur, formData);
-
-        // création de la réservation
-        reservationService.create(evenement, prestataire, utilisateur, formData.date(), formData.prestataireMessage());
-
-        return evenement.getId();
+        return evenementService.createFromDto(utilisateur, request.evenement()).getId();
     }
 }

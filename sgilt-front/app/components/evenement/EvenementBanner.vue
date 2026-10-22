@@ -1,0 +1,194 @@
+<!--
+  Bandeau de l'événement local sur le parcours public, sous le header : lien vers l'accueil de
+  l'événement, rappel du type (desktop), sélecteur de date et effacement de l'événement (avec
+  confirmation). Affiché par le layout par défaut quand useEvenementBanner le demande.
+-->
+<template>
+  <AppBanner tone="light" role="region" :aria-label="$t('evenement.banner.label')">
+    <div class="layout">
+      <div class="left">
+        <NuxtLink
+          to="/evenement"
+          class="home"
+          :title="$t('evenement.banner.board')"
+          :aria-label="$t('evenement.banner.board')"
+        >
+          <Home2Icon class="icon" aria-hidden="true" />
+        </NuxtLink>
+        <span class="type">
+          <component :is="typeIcon" class="type-icon" aria-hidden="true" />
+          {{ typeLabel }}
+        </span>
+      </div>
+
+      <div class="date-field">
+        <SgiltDatePicker
+          v-model="pickerDate"
+          :placeholder="$t('evenement.banner.date-placeholder')"
+        />
+      </div>
+
+      <div class="actions">
+        <button
+          class="reset"
+          type="button"
+          :aria-label="$t('evenement.banner.reset')"
+          @click="resetDialogOpen = true"
+        >
+          <DeleteBin6Icon class="icon" aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+  </AppBanner>
+
+  <SgiltConfirmDialog
+    v-model:open="resetDialogOpen"
+    :title="$t('evenement.banner.reset-dialog.title')"
+    :message="$t('evenement.banner.reset-dialog.message')"
+    :confirm-label="$t('evenement.banner.reset-dialog.confirm')"
+    :cancel-label="$t('evenement.banner.reset-dialog.cancel')"
+    destructive
+    max-width="400px"
+    @confirm="onReset"
+  />
+</template>
+
+<script setup lang="ts">
+import { DeleteBin6Icon, Home2Icon } from '@remixicons/vue/line'
+import AppBanner from '~/components/app/AppBanner.vue'
+import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
+import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.vue'
+import { eventTypeIcon } from '~/utils/eventTypes'
+import { eventTypeKey } from '~/types/evenement'
+
+const { t } = useI18n()
+const { localEvent, reset } = useLocalEvent()
+
+// Le type n'est pas modifiable : simple rappel, affiché à partir du desktop.
+const typeKey = computed(() => eventTypeKey(localEvent.eventType) ?? 'autre')
+const typeIcon = computed(() => eventTypeIcon(typeKey.value))
+const typeLabel = computed(() => t(`event-picker.types.${typeKey.value}.label`))
+
+// L'effacement du sélecteur renvoie null : on le ramène à « pas de date ».
+const pickerDate = computed<Date | undefined>({
+  get: () => localEvent.date,
+  set: (value) => {
+    localEvent.date = value ?? undefined
+  },
+})
+
+const resetDialogOpen = ref(false)
+
+function onReset() {
+  reset()
+  navigateTo('/fete')
+}
+</script>
+
+<style scoped lang="scss">
+@use '@/assets/styles/base' as *;
+
+// Trois colonnes : le contenu de gauche, le sélecteur de date, les actions. Les colonnes
+// latérales ne descendent jamais sous la largeur de leur contenu (max-content) : quand la place
+// manque, c'est le sélecteur qui rétrécit, il ne chevauche jamais les boutons. Avec assez de
+// place, les deux côtés sont égaux et le sélecteur est exactement centré sur la barre.
+.layout {
+  display: grid;
+  grid-template-columns: minmax(max-content, 1fr) minmax(6rem, 13rem) minmax(max-content, 1fr);
+  align-items: center;
+  column-gap: $spacing-xs;
+  width: 100%;
+
+  @media (min-width: $breakpoint-desktop) {
+    grid-template-columns: minmax(max-content, 1fr) minmax(6rem, 20rem) minmax(max-content, 1fr);
+  }
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  justify-self: start;
+  gap: $spacing-xs;
+
+  .home {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid $divider-color;
+    border-radius: 50%;
+    background: $surface-white;
+    color: $text-primary;
+
+    &.router-link-exact-active {
+      border-color: $brand-accent;
+    }
+
+    .icon {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  .type {
+    display: none;
+    align-items: center;
+    gap: $spacing-xxs;
+    color: $text-primary;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    white-space: nowrap;
+
+    @media (min-width: $breakpoint-desktop) {
+      display: inline-flex;
+    }
+
+    .type-icon {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+}
+
+// Le sélecteur remplit sa colonne (width: 100%). Champ compacté (police et padding) pour
+// laisser une marge verticale dans le bandeau.
+.date-field {
+  min-width: 0;
+  font-size: 0.85rem;
+
+  :deep(.dp__theme_light) {
+    --dp-input-padding: 0.5rem 2.5rem 0.5rem 0.5rem;
+  }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 0.25rem;
+
+  @media (min-width: $breakpoint-desktop) {
+    gap: $spacing-xs;
+  }
+
+  .reset {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid $divider-color;
+    border-radius: 50%;
+    background: $surface-white;
+    color: $text-secondary;
+    cursor: pointer;
+
+    .icon {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+}
+</style>

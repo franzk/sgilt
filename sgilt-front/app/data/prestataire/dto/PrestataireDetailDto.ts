@@ -15,7 +15,7 @@ export interface PrestataireDetailDto {
   categoryKey: string
   baseline: string
   avatar: string | null
-  subcatKeys: string[]
+  subcatKey: string
   medias: Media[]
   badges: EngagementKey[]
   offerings: string[]

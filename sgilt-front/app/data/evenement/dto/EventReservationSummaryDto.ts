@@ -7,6 +7,7 @@ export interface EventReservationSummaryDto {
   prestataireName: string
   prestatairePhoto?: string | null
   category: string
+  subcatKey: string
   status: string
   unreadNotesCount: number
 }

@@ -3,50 +3,38 @@
  */
 import {
   getEvenementsApi,
-  getEventDetailApi,
-  getEventCountsApi,
+  getEventApi,
   getEventJournalApi,
   patchEventApi,
   uploadEventCoverApi,
   selectEventCoverApi,
   addReservationApi,
 } from '../api/evenementApi'
-import { getReservationsByEventApi } from '~/data/reservation/api/reservationApi'
 import {
   mapEvenementSummary,
-  mapEventDetail,
-  mapEventCounts,
-  mapEventReservation,
+  mapEventMeta,
+  mapEventRubrique,
   mapJournalEntry,
 } from '../mapper/evenementMapper'
 import type { EventSummary } from '../domain/EventSummary'
-import type { EventDetail } from '../domain/EventDetail'
-import type { EventCounts } from '../domain/EventCounts'
-import type { EventPatch } from '../domain/EventPatch'
+import type { EventMeta } from '../domain/EventMeta'
+import type { EventRubrique } from '../domain/EventRubrique'
+import type { EventMetaPatch } from '../domain/EventMetaPatch'
 import type { JournalEntry } from '../domain/JournalEntry'
 import type { ClientContactInfo } from '~/data/reservation/domain/ClientContactInfo'
-import type { ReservationSummary } from '~/data/reservation/domain/ReservationSummary'
 
 export async function getEvenements(): Promise<EventSummary[]> {
   const dtos = await getEvenementsApi()
   return dtos.map(mapEvenementSummary)
 }
 
-export async function fetchEventDetail(
-  id: string,
-): Promise<{ event: EventDetail; clientInfo: ClientContactInfo }> {
-  const dto = await getEventDetailApi(id)
-  return mapEventDetail(dto)
-}
-
-export async function fetchEventCounts(id: string): Promise<EventCounts> {
-  const dto = await getEventCountsApi(id)
-  return mapEventCounts(dto)
-}
-
-export async function fetchEventReservations(id: string): Promise<ReservationSummary[]> {
-  const dtos = await getReservationsByEventApi(id)
-  return dtos.map(mapEventReservation)
+export async function fetchEvent(id: string): Promise<{
+  event: EventMeta
+  clientInfo: ClientContactInfo
+  rubriques: EventRubrique[]
+}> {
+  const dto = await getEventApi(id)
+  return { ...mapEventMeta(dto.meta), rubriques: dto.rubriques.map(mapEventRubrique) }
 }
 
 export async function fetchEventJournal(
@@ -57,9 +45,9 @@ export async function fetchEventJournal(
   return { entries: dto.content.map(mapJournalEntry), last: dto.last }
 }
 
-export async function patchEvent(eventId: string, patch: EventPatch): Promise<EventDetail> {
+export async function patchEvent(eventId: string, patch: EventMetaPatch): Promise<EventMeta> {
   const dto = await patchEventApi(eventId, patch)
-  return mapEventDetail(dto).event
+  return mapEventMeta(dto).event
 }
 
 export async function uploadEventCover(eventId: string, file: File): Promise<string> {

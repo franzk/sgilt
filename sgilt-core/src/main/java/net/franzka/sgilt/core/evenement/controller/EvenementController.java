@@ -4,14 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.evenement.api.EvenementApi;
 import net.franzka.sgilt.core.evenement.dto.AddReservationRequest;
-import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
-import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
 import net.franzka.sgilt.core.evenement.dto.CoverSelectDto;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
-import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
-import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
-import net.franzka.sgilt.core.evenement.dto.EventPatchDto;
+import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
+import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
+import net.franzka.sgilt.core.evenement.dto.EventDto;
+import net.franzka.sgilt.core.evenement.dto.EventMetaDto;
+import net.franzka.sgilt.core.evenement.dto.EventMetaPatchDto;
 import net.franzka.sgilt.core.evenement.dto.JournalEvenementDto;
 import org.springframework.web.multipart.MultipartFile;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
@@ -43,8 +43,7 @@ public class EvenementController implements EvenementApi {
     public ResponseEntity<CreateEventResponse> createEvent(CreateEventRequest body) {
         Utilisateur utilisateur = currentUserService.get();
         log.info("POST /events");
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(evenementService.createEvent(utilisateur, body));
+        return ResponseEntity.status(HttpStatus.CREATED).body(evenementService.createEvent(utilisateur, body));
     }
 
     @Override
@@ -57,26 +56,18 @@ public class EvenementController implements EvenementApi {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<EventDetailDto> getEventDetail(UUID eventId) {
+    public ResponseEntity<EventDto> getEvent(UUID eventId) {
         UUID userId = currentUserService.getId();
         log.info("GET /events/{}", eventId);
-        return ResponseEntity.ok(evenementService.getEventDetail(eventId, userId));
+        return ResponseEntity.ok(evenementService.getEvent(eventId, userId));
     }
 
     @Override
     @Transactional
-    public ResponseEntity<EventDetailDto> patchEvent(UUID eventId, EventPatchDto patch) {
+    public ResponseEntity<EventMetaDto> patchEvent(UUID eventId, EventMetaPatchDto patch) {
         UUID userId = currentUserService.getId();
         log.info("PATCH /events/{}", eventId);
         return ResponseEntity.ok(evenementService.patchEvent(eventId, userId, patch));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public ResponseEntity<EventCountsDto> getEventCounts(UUID eventId) {
-        UUID userId = currentUserService.getId();
-        log.info("GET /events/{}/counts", eventId);
-        return ResponseEntity.ok(evenementService.getEventCounts(eventId, userId));
     }
 
     @Override

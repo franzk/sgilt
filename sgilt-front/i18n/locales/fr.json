@@ -59,13 +59,229 @@
     "note": "Des événements qui vous ressemblent",
     "location-line-1": "En Alsace",
     "location-line-2": "et au-delà",
+    "change-type-dialog": {
+      "title": "Changer de type d'événement ?",
+      "message": "Changer de type d'événement va effacer votre événement en cours (date, réponses, organisation).",
+      "confirm": "Effacer et continuer",
+      "cancel": "Garder mon événement"
+    },
     "types": {
-      "mariage": { "label": "Mariage", "tagline": "Le grand oui" },
-      "anniversaire": { "label": "Anniversaire", "tagline": "Un an de plus à célébrer" },
-      "soiree_privee": { "label": "Soirée privée", "tagline": "Entre amis ou en famille" },
-      "fete_entreprise": { "label": "Fête d'entreprise", "tagline": "Vos équipes à l'honneur" },
-      "evenement_public": { "label": "Événement public", "tagline": "Ouvert à tous" },
-      "autre": { "label": "Autre", "tagline": "Dites-nous en plus" }
+      "mariage": { "label": "Mariage", "tagline": "Le grand oui", "default-title": "Votre mariage" },
+      "anniversaire": { "label": "Anniversaire", "tagline": "Un an de plus à célébrer", "default-title": "Votre anniversaire" },
+      "soiree_privee": { "label": "Soirée privée", "tagline": "Entre amis ou en famille", "default-title": "Votre soirée privée" },
+      "fete_entreprise": { "label": "Fête d'entreprise", "tagline": "Vos équipes à l'honneur", "default-title": "Votre fête d'entreprise" },
+      "evenement_public": { "label": "Événement public", "tagline": "Ouvert à tous", "default-title": "Votre événement public" },
+      "autre": { "label": "Autre", "tagline": "Dites-nous en plus", "default-title": "Votre événement" }
+    }
+  },
+  "commencer-picker": {
+    "title": "Vous avez l'idée,",
+    "title-highlight": "On vous aide à construire la suite.",
+    "photo-alt": {
+      "mariage": "Un dîner en plein air, à la tombée du jour"
+    },
+    "search-cta": {
+      "label": "Je cherche un prestataire",
+      "subtitle": "Je sais déjà ce qu'il me faut."
+    },
+    "guided-cta": {
+      "label": "Je commence mon organisation avec Sgilt",
+      "subtitle": "J'avance étape par étape."
+    },
+    "paragraphs": {
+      "mariage": "Votre grand jour est encore loin, ou l'organisation a déjà bien commencé ? Sgilt vous aide à y voir clair, avancer étape par étape et trouver les bons prestataires quand vous en avez besoin.",
+      "anniversaire": "Une grande fête, un dîner entre proches ou une surprise mémorable ? Sgilt vous aide à organiser votre anniversaire, poser les bonnes bases et trouver tout ce qu'il vous faut pour en faire un vrai moment à part.",
+      "soiree_privee": "Vous savez déjà qui inviter, ou tout reste encore à imaginer ? Sgilt vous aide à construire votre soirée, penser aux détails qui comptent et trouver les bonnes personnes pour lui donner vie.",
+      "fete_entreprise": "Un moment pour réunir l'équipe, célébrer ou simplement sortir du cadre ? Sgilt vous aide à structurer votre événement, avancer sans rien oublier et trouver les prestataires adaptés à votre projet.",
+      "evenement_public": "Concert, festival, rendez-vous associatif ou événement local : Sgilt vous aide à donner forme à votre projet, organiser les prochaines étapes et réunir les bons partenaires pour le faire vivre.",
+      "autre": "Même si votre événement ne rentre dans aucune case, Sgilt vous aide à poser les bases, avancer étape par étape et rassembler tout ce qu'il vous faut au même endroit."
+    }
+  },
+  "organisation": {
+    "back": "Retour",
+    "progress-label": "Progression",
+    "skip-tunnel": "Accéder directement à votre événement",
+    "skip-question": "Je ne sais pas encore",
+    "steps": {
+      "ambiance": {
+        "eyebrow": "Ambiance",
+        "title": "Quelle ambiance souhaitez-vous créer ?",
+        "subtitle": "",
+        "autre-placeholder": "Décrivez l'ambiance souhaitée…"
+      },
+      "moment-cle": {
+        "eyebrow": "Moment clé",
+        "title": "Quel serait le moment parfait de cet événement ?",
+        "title-soiree": "Quel serait le moment parfait de cette soirée ?",
+        "subtitle": "",
+        "autre-placeholder": "Décrivez le moment parfait…"
+      },
+      "lieu": {
+        "eyebrow": "Lieu",
+        "title": "Où aura lieu l'événement ?",
+        "subtitle": "Vous pouvez indiquer une ville, un lieu précis ou laisser cette information vide pour l'instant.",
+        "field-city": "Ville",
+        "field-venue": "Lieu",
+        "optional": "(facultatif)",
+        "city-placeholder": "Ex. Strasbourg, Colmar, ...",
+        "venue-placeholder": "Salle, domaine, adresse...",
+        "cta": "Continuer"
+      },
+      "invites": {
+        "eyebrow": "Nombre d'invités",
+        "title": "Vous serez combien environ ?",
+        "subtitle": "Une estimation suffit, vous pourrez la modifier plus tard.",
+        "cta": "Continuer"
+      },
+      "petit-plus": {
+        "eyebrow": "Petit plus",
+        "title": "Vous voulez nous en dire un peu plus ?",
+        "subtitle": "Racontez-nous ce qui rend votre événement unique. (C'est facultatif !)",
+        "placeholder": "Ex. thème, style, envies particulières, ce qui compte pour vous...",
+        "cta": "Accéder à mon événement"
+      }
+    },
+    "autre-validate": "Valider",
+    "invites-exact": "Nombre exact",
+    "invites-exact-placeholder": "Ex. 85"
+  },
+  "evenement": {
+    "page-title": "Votre organisation - Sgilt",
+    "rubriques-title": "Votre organisation",
+    "settings-aria": "Paramètres de l'événement",
+    "board": {
+      "tagline": {
+        "mariage": "Une belle journée se prépare !",
+        "anniversaire": "Ça se fête, et ça se prépare !",
+        "soiree_privee": "Une belle soirée en perspective !",
+        "fete_entreprise": "Un beau moment à partager !",
+        "evenement_public": "Un événement qui rassemble !",
+        "autre": "Une belle idée prend forme !"
+      }
+    },
+    "settings": {
+      "page-title": "Paramètres de l'événement - Sgilt",
+      "back": "Retour à mon événement",
+      "back-reservation": "Retour à la réservation",
+      "cover": "Changer l'image de couverture",
+      "journal": "Journal des modifications"
+    },
+    "home": {
+      "invite": "Choisissez une rubrique pour avancer dans votre organisation.",
+      "hero": {
+        "title": {
+          "mariage": "Votre mariage prend forme ! 🎉",
+          "anniversaire": "Votre anniversaire prend forme ! 🎉",
+          "soiree_privee": "Votre soirée prend forme ! 🎉",
+          "fete_entreprise": "Votre fête d'entreprise prend forme ! 🎉",
+          "evenement_public": "Votre événement prend forme ! 🎉",
+          "autre": "Votre événement prend forme ! 🎉"
+        },
+        "intro": "Nous avons créé votre espace d'organisation à partir des informations que vous nous avez partagées. Explorez les différentes rubriques pour trouver les prestataires et outils adaptés."
+      },
+      "start": {
+        "title": "Par où commencer ?",
+        "lieu": {
+          "title": "Trouver un lieu",
+          "description": "Découvrez des lieux adaptés à votre style."
+        },
+        "restauration": {
+          "title": "Explorer la restauration",
+          "description": "Traiteurs, food-trucks, options sur mesure."
+        },
+        "musique-animation": {
+          "title": "Découvrir les animations",
+          "description": "DJ, groupes, animateurs et bien plus encore."
+        },
+        "decoration": {
+          "title": "Imaginer la décoration",
+          "description": "Fleurs, mobilier, mises en scène à votre image."
+        },
+        "photo-video": {
+          "title": "Garder des souvenirs",
+          "description": "Photographes, vidéastes, photobooths pour immortaliser le jour J."
+        }
+      },
+      "glance": {
+        "title": "Votre événement en un coup d'œil",
+        "date": "Date",
+        "nb-invites": "Nombre d'invités",
+        "type": "Type d'événement",
+        "lieu": "Lieu",
+        "to-define": "À définir",
+        "edit": "Modifier les informations"
+      },
+      "free-search": {
+        "title": "Vous savez déjà ce qu'il vous faut ?",
+        "description": "Parcourez tous les prestataires Sgilt, sans passer par une rubrique.",
+        "button": "Rechercher un prestataire"
+      },
+      "inspirations": {
+        "title": "Des idées pour vous inspirer",
+        "see-all": "Voir tous les prestataires"
+      }
+    },
+    "prestataires": {
+      "page-title": "Prestataires - Sgilt",
+      "title": "Mes prestataires",
+      "empty": "Aucun prestataire pour le moment."
+    },
+    "banner": {
+      "label": "Événement en cours de création",
+      "board": "Voir mon événement",
+      "date-placeholder": "Date à définir",
+      "reset": "Effacer mon événement",
+      "reset-dialog": {
+        "title": "Effacer votre événement ?",
+        "message": "Les informations saisies et votre organisation seront supprimées de cet appareil. Cette action est définitive.",
+        "confirm": "Effacer",
+        "cancel": "Garder"
+      }
+    },
+    "rubriques": {
+      "lieu": "Lieu",
+      "restauration": "Restauration",
+      "musique-animation": "Musique / Animation",
+      "decoration": "Décoration",
+      "photo-video": "Photo / Vidéo",
+      "hebergement": "Hébergement",
+      "reservation-count": "{n} réservation | {n} réservations"
+    },
+    "rubrique": {
+      "page-title": "{rubrique} - Sgilt",
+      "back-aria": "Retour à mon événement",
+      "search": "Rechercher dans Sgilt",
+      "reservations-title": "Mes réservations",
+      "add": "Ajouter",
+      "empty": "Aucune réservation pour le moment.",
+      "inspirations-title": "Nos inspirations",
+      "see-more": "Voir plus",
+      "content": {
+        "lieu": {
+          "tagline": "Domaine, salle, extérieur… Trouvez le lieu qui vous ressemble.",
+          "already": "J'ai déjà mon lieu"
+        },
+        "restauration": {
+          "tagline": "Traiteur, food truck, cocktail… Régalez vos invités.",
+          "already": "J'ai déjà mon traiteur"
+        },
+        "musique-animation": {
+          "tagline": "DJ, musiciens, animations… Donnez le rythme à votre fête.",
+          "already": "J'ai déjà mon animation"
+        },
+        "decoration": {
+          "tagline": "Créez une ambiance à votre image.",
+          "already": "J'ai déjà ma décoration"
+        },
+        "photo-video": {
+          "tagline": "Photographe, vidéaste, photobooth… Gardez une trace de chaque instant.",
+          "already": "J'ai déjà mon photographe"
+        },
+        "hebergement": {
+          "tagline": "Gîtes, hôtels, chambres d'hôtes… Gardez vos invités près de vous.",
+          "already": "J'ai déjà mon hébergement"
+        }
+      }
     }
   },
   "landing": {
@@ -157,18 +373,14 @@
   },
   "search": {
     "results-count": "{count} prestataires correspondent à votre recherche.",
-    "results-count-with-dispo": "{count} prestataires sont disponibles à votre date.",
-    "vibe-text": "Votre événement prend forme."
+    "all-categories": "Tous",
+    "back": "Retour"
   },
   "provider": {
     "not-found": "Ce prestataire est introuvable.",
     "back-to-search": "← Retour à la recherche",
     "details": {
       "verify-date": "Choisir une date",
-      "availability": {
-        "available": "Disponible à cette date",
-        "unavailable": "Non disponible à cette date"
-      },
       "rates": "Tarifs",
       "send-request": "Envoyer une demande",
       "date-required": "Veuillez sélectionner une date",
@@ -255,11 +467,6 @@
         "applying": "Voir le résultat…"
       }
     },
-    "availability": {
-      "available": "🟢 Disponible",
-      "option": "🟠 Sous option",
-      "booked": "🔴 Réservé"
-    },
     "editable": {
       "baseline": {
         "ghost": "Cliquez ici pour ajouter votre accroche",
@@ -338,83 +545,86 @@
       }
     }
   },
+  "event-info": {
+    "fields": {
+      "title": "Nom de l'événement",
+      "event-type": "Type d'événement",
+      "date": "Date",
+      "lieu": "Lieu",
+      "nb-invites": "Nombre d'invités",
+      "ambiance": "Ambiance",
+      "moment-cle": "Moment clé",
+      "description": "Description"
+    },
+    "nb-invites-value": "{value} personnes",
+    "nb-invites-unknown": "Je ne sais pas encore",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "required": "À renseigner pour continuer",
+    "title-placeholder": "Ex. Le mariage de Julie & Thomas",
+    "title-required": "Donnez un nom à votre événement.",
+    "essential-required": "Cette information est obligatoire.",
+    "date-placeholder": "Choisir une date",
+    "event-type-autre-placeholder": "Quel événement préparez-vous ?",
+    "validate": "Valider"
+  },
   "tunnel": {
+    "demande-header": {
+      "back": "Retour",
+      "request-to": "Demande à {name}"
+    },
+    "envoyee": {
+      "page-title": "Demande envoyée - Sgilt",
+      "title": "Plus qu'une étape !",
+      "text": "Cliquez sur le lien reçu par e-mail pour confirmer votre demande.",
+      "text-then": "Elle sera ensuite transmise à {name}.",
+      "email-sent-to": "E-mail envoyé à",
+      "request-sent-to": "Votre demande sera envoyée à",
+      "home": "Retour à l'accueil"
+    },
+    "coordonnees": {
+      "title": "Envoyer votre demande",
+      "subtitle": "Vos coordonnées et un message seront transmis directement à {name}.",
+      "contact-title": "Vos coordonnées",
+      "contact-subtitle": "Elles seront transmises au prestataire avec votre demande.",
+      "field-prenom": "Prénom",
+      "prenom-placeholder": "Votre prénom",
+      "field-nom": "Nom",
+      "nom-placeholder": "Votre nom",
+      "field-email": "Adresse e-mail",
+      "email-placeholder": "{'votre@email.fr'}",
+      "field-phone": "Téléphone",
+      "phone-placeholder": "06 12 34 56 78",
+      "message-title": "Votre message",
+      "message-subtitle": "Précisez ici votre besoin, vos questions ou ce que vous attendez de {name}.",
+      "message-placeholder": "Ex. : type de menu, contraintes alimentaires, horaires, options souhaitées…",
+      "submit": "Envoyer ma demande",
+      "back-to-recap": "Vérifier les informations de l'événement",
+      "error-required": "Ce champ est obligatoire",
+      "error-email": "Adresse e-mail invalide",
+      "error-phone": "Format invalide (ex : 06 12 34 56 78)"
+    },
+    "recap-evenement": {
+      "title": "Vérifiez les informations de votre événement",
+      "subtitle": "Ces informations seront transmises à {name} pour l'aider à vous faire une réponse adaptée.",
+      "tip-title": "Plus vous donnez de détails, meilleure sera la réponse",
+      "tip-text": "Ces informations peuvent être modifiées à tout moment dans votre événement.",
+      "continue": "Continuer"
+    },
     "bottom-sheet": {
       "title": "Envoyer une demande",
       "description": "Remplissez les étapes pour contacter ce prestataire."
     },
-    "footer": {
-      "continue": "Continuer →",
-      "skip": "Passer cette étape"
-    },
     "desktop": {
-      "back": "← Retour",
-      "edit": "Modifier"
-    },
-    "steps": {
-      "labels": {
-        "event-type": "Type d'événement",
-        "ambiance": "Ambiance",
-        "moment-cle": "Moment clé",
-        "description": "Description",
-        "details": "Détails pratiques",
-        "coordonnees": "Vos coordonnées"
-      }
-    },
-    "comment-ca-marche": {
-      "title": "Comment ça marche ?",
-      "step-1": "Dites-nous ce que vous préparez",
-      "step-2": "Votre demande part au prestataire",
-      "step-3": "Vous échangez ensuite directement avec lui"
-    },
-    "etape1": {
-      "question": "Parlez-nous de votre événement"
-    },
-    "etape2": {
-      "question": "Quelle ambiance souhaitez-vous créer\u00a0?"
-    },
-    "etape3": {
-      "question": "Quel serait le moment parfait de cette soirée\u00a0?"
-    },
-    "etape4": {
-      "question": "Parlez-nous de votre événement",
-      "subtitle-before": "Décrivez-le comme vous l'imaginez…",
-      "subtitle-after": "Quelques détails aident à mieux vous répondre.",
-      "placeholder": "Ce que vous avez en tête, vos envies, le type d’ambiance…"
+      "back": "← Retour"
     },
     "etape5": {
       "question": "Votre événement en pratique",
       "field-date": "📅 Date",
-      "date-placeholder": "Choisir une date",
-      "field-city": "📍 Ville",
-      "city-placeholder": "Ex : Strasbourg, Colmar, Breuschwickersheim...",
-      "field-guests": "👥 Nombre d'invités",
-      "guests-placeholder": "Ex : Environ 40 personnes",
-      "field-venue": "🏛️ Lieu",
-      "error-ville": "La ville est obligatoire"
-    },
-    "etape6": {
-      "question-contact": "Comment vous contacter ?",
-      "question-message": "Votre message",
-      "field-prenom": "👤 Prénom",
-      "prenom-placeholder": "Votre prénom",
-      "field-nom": "Nom",
-      "nom-placeholder": "Votre nom",
-      "field-email": "📧 Email",
-      "email-placeholder": "{'Ex: votre@email.fr'}",
-      "field-phone": "📱 Téléphone",
-      "phone-placeholder": "06 12 34 56 78",
-      "message-placeholder": "(optionnel) Votre message pour le prestataire",
-      "submit": "Envoyer la demande",
-      "error-required": "Ce champ est obligatoire",
-      "error-email": "Adresse email invalide",
-      "error-phone": "Format invalide (ex : +33 6 12 34 56 78)"
+      "date-placeholder": "Choisir une date"
     },
     "finalisation": {
-      "title-sent": "Votre demande a bien été envoyée",
-      "title-confirm": "On y est presque\u00a0!",
-      "cta-text": "Confirmez votre demande via le lien reçu par email. Elle sera ensuite transmise à {name}.",
-      "see-event": "Voir mon événement →"
+      "title-confirm": "On y est presque\u00a0!"
     },
     "no-flow": {
       "title": "Vous souhaitez contacter ce prestataire ?",
@@ -425,36 +635,7 @@
       "title": "Votre événement"
     },
     "recap-mobile": {
-      "header-title": "Encore quelques détails ✨",
-      "add": "Ajouter",
-      "edit": "Modifier",
-      "missing": "Requis",
-      "incomplete": "À compléter",
-      "submit": "Envoyer ma demande",
-      "validate": "Valider",
-      "items": {
-        "event-type": "Type d'événement",
-        "ambiance": "Ambiance",
-        "moment-cle": "Moment clé",
-        "description": "Description",
-        "ville": "Ville",
-        "nb-invites": "Nombre d'invités",
-        "lieu": "Lieu",
-        "details-pratiques": "Votre événement",
-        "coordonnees": "Vos coordonnées",
-        "prenom": "Prénom",
-        "nom": "Nom",
-        "email": "Email",
-        "telephone": "Téléphone",
-        "message": "Message au prestataire"
-      }
-    },
-    "cancel": {
-      "label": "Annuler",
-      "dialog-title": "Abandonner cette demande ?",
-      "dialog-body": "Votre progression sera perdue.",
-      "confirm": "Abandonner",
-      "back": "Reprendre"
+      "incomplete": "À compléter"
     },
     "booking-flow": {
       "step-1": {
@@ -572,7 +753,6 @@
     "confirmed": "{n} confirmée | {n} confirmées",
     "in-progress": "{n} en cours",
     "pending": "{n} en attente",
-    "add-provider": "+ Ajouter un prestataire",
     "see-event": "Voir l'événement"
   },
   "event": {
@@ -591,65 +771,15 @@
       },
       "upload-button": "Importer ma propre photo"
     },
-    "widget": {
-      "countdown": {
-        "imminent": "Dernière ligne droite",
-        "proche": "Ça approche",
-        "serein": "On a le temps de bien faire les choses"
-      },
-      "mood": {
-        "confirmee": "Ça se concrétise ✨",
-        "en_discussion": "Les échanges avancent",
-        "nouvelle": "Les réponses arrivent…",
-        "defaut": "Votre événement prend forme"
-      }
-    },
     "board": {
       "mobile": {
         "reservations": "Aucune réservation confirmée pour le moment. | 1 réservation confirmée pour le moment. | {count} réservations confirmées pour le moment."
-      },
-      "edit-title-image": "Modifier",
-      "edit-event-aria": "Modifier l'événement"
+      }
     },
     "block": {
-      "logistics-label": "Lieu",
-      "logistics-empty": "Salle, adresse… non renseigné",
-      "logistics-placeholder": "Salle, adresse…",
       "shared-note-label": "Note partagée",
-      "shared-note-empty": "Aucune note pour le moment.",
       "shared-note-placeholder": "Informations utiles pour tous vos prestataires…",
-      "coordinates-label": "Coordonnées",
-      "party-label": "L'événement",
-      "party-empty": "Non renseigné",
-      "party-type-label": "Type",
-      "party-ambiance-label": "Ambiance",
-      "party-moment-label": "Moment clé",
-      "party-moment-empty": "Non renseigné",
-      "party-edit-event-type": "Type d'événement",
-      "party-edit-ambiance": "Ambiance",
-      "party-edit-city": "Ville",
-      "party-edit-guests": "Nombre d'invités",
-      "party-edit-description": "Description",
-      "party-description-placeholder": "Atmosphère, souhaits particuliers…",
-      "party-select-empty": "— Non renseigné",
-      "party-city-placeholder": "Ville",
-      "update-label": "Mise à jour",
-      "no-update": "Aucune modification enregistrée.",
-      "saving": "Enregistrement…",
-      "save": "Enregistrer",
-      "cancel": "Annuler",
-      "edit-client-firstname": "Prénom",
-      "edit-client-lastname": "Nom",
-      "edit-client-phone": "Téléphone",
-      "edit-client-email": "Email",
-      "copy-phone-aria": "Copier le numéro",
-      "copy-email-aria": "Copier l'email",
-      "copied-aria": "Copié",
-      "edit-event-aria": "Modifier l'événement",
-      "abandon-title": "Abandonner les modifications\u00a0?",
-      "abandon-body": "Vos changements ne seront pas sauvegardés.",
-      "abandon-continue": "Continuer à éditer",
-      "abandon-confirm": "Abandonner"
+      "coordinates-label": "Coordonnées"
     },
     "reservation": {
       "steps": {
@@ -722,28 +852,75 @@
     "cancel-dialog": {
       "title": "Annuler la demande",
       "body": "Êtes-vous sûr de vouloir annuler cette demande\u00a0?",
-      "title-confirmed": "Annuler la réservation",
-      "body-confirmed": "Êtes-vous sûr de vouloir annuler cette réservation ?",
       "confirm": "Oui, annuler",
       "keep": "Non, garder",
       "reason-placeholder": "Motif de l'annulation (facultatif)"
     },
     "cancel-btn": "Annuler la demande",
-    "cancel-btn-confirmed": "Annuler la réservation",
     "mark-contacted-dialog": {
       "title": "Marquer comme contacté",
       "body": "Confirmez-vous avoir été contacté·e par ce prestataire ?",
       "confirm": "Oui, j'ai été contacté·e",
       "cancel": "Pas encore"
     },
-    "mark-contacted-btn": "J'ai été contacté·e",
+    "mark-contacted-btn": "Le prestataire m'a contacté·e",
     "confirm-dialog": {
-      "title": "Confirmer la réservation",
-      "body": "Confirmez-vous cette réservation avec ce prestataire ?",
+      "title": "Le prestataire a confirmé ?",
+      "body": "Confirmez-vous que ce prestataire a validé votre réservation ?",
       "confirm": "Oui, c'est confirmé",
       "cancel": "Pas encore"
     },
-    "confirm-btn": "Confirmer la réservation"
+    "confirm-btn": "Le prestataire a confirmé la réservation",
+    "details": {
+      "title": "L'événement",
+      "edit": "Modifier",
+      "practical": "Infos pratiques",
+      "date": "Date",
+      "ville": "Ville",
+      "lieu": "Lieu",
+      "nb-invites": "Invités",
+      "event": "L'événement",
+      "type": "Type d'événement",
+      "ambiance": "Ambiance",
+      "moment-cle": "Moment clé",
+      "description": "Description",
+      "to-define": "À définir",
+      "shared-note": "Note partagée avec les prestataires",
+      "shared-note-empty": "Aucune note partagée pour le moment.",
+      "contact": "Coordonnées partagées avec le prestataire",
+      "copy": "Copier",
+      "last-update": "Dernière mise à jour : {date}"
+    },
+    "documents": {
+      "title": "Documents",
+      "subtitle": "Tous les documents échangés pour cette réservation.",
+      "empty": "Aucun document pour le moment."
+    },
+    "prestataire": {
+      "unavailable": "La fiche de ce prestataire n'est pas disponible pour le moment."
+    },
+    "tabs": {
+      "suivi": "Suivi",
+      "details": "Détails",
+      "documents": "Documents",
+      "prestataire": "Prestataire"
+    },
+    "special-actions": {
+      "link": "Actions spéciales",
+      "page-title": "Actions spéciales",
+      "page-subtitle": "Ces actions sont irréversibles. Procédez avec précaution.",
+      "back": "‹ Retour",
+      "contact": "En cas de problème ou pour toute question, contactez-nous :",
+      "cancel": {
+        "label": "Annuler la réservation",
+        "inactive": "Cette demande ne peut plus être annulée.",
+        "dialog-title": "Annuler la réservation",
+        "dialog-body": "Êtes-vous sûr de vouloir annuler cette réservation ? Cette action est difficilement réversible.",
+        "dialog-cancel": "Annuler",
+        "dialog-confirm": "Confirmer l'annulation",
+        "reason-placeholder": "Vous pouvez indiquer le motif de l'annulation (facultatif)"
+      }
+    }
   },
   "client": {
     "reservation": {
@@ -964,11 +1141,13 @@
     },
     "reservation-detail": {
       "back": "‹ Retour",
+      "refuse-btn": "Non, je refuse cette prestation",
       "refusal-modal": {
         "title": "Refuser la demande",
         "lead": "Voulez-vous laisser un message au client ? (optionnel)",
         "placeholder": "Votre message…",
-        "submit": "Confirmer le refus"
+        "submit": "Confirmer le refus",
+        "cancel": "Retour"
       }
     },
     "contact": {
@@ -979,21 +1158,6 @@
       "write-mail": "Rédiger un mail",
       "mobile": "Mobile",
       "tel": "Tél"
-    },
-    "actions": {
-      "page-title": "Actions spéciales",
-      "page-subtitle": "Ces actions sont irréversibles. Procédez avec précaution.",
-      "back": "‹ Retour",
-      "cancel-reservation": {
-        "label": "Annuler la réservation",
-        "desc-active": "",
-        "desc-inactive": "Cette demande ne peut plus être annulée.",
-        "dialog-title": "Annuler la réservation",
-        "dialog-body": "Êtes-vous sûr de vouloir annuler cette réservation ? Cette action est difficilement réversible.",
-        "dialog-cancel": "Annuler",
-        "dialog-confirm": "Confirmer l'annulation",
-        "reason-placeholder": "Vous pouvez indiquer le motif de l'annulation (facultatif)"
-      }
     }
   },
   "feed": {
@@ -1004,14 +1168,25 @@
       "refused": "{name} a décliné la demande de réservation"
     },
     "title": "Notes & suivi",
-    "subtitle": "Ajoutez des notes, documents ou informations utiles pour le suivi.",
+    "subtitle": "Ajoutez des notes, documents ou informations utiles pour le suivi de votre réservation.",
     "upload-error": {
       "too-large": "Le fichier dépasse la taille maximale autorisée (10 Mo)."
     },
-    "pills": {
-      "all": "Tout",
-      "notes": "Notes",
-      "documents": "Documents"
+    "you": "Vous",
+    "visibility": {
+      "public": "Note publique",
+      "private": "Note privée"
+    },
+    "document": {
+      "title": "Document ajouté",
+      "menu-aria": "Actions du document",
+      "download": "Télécharger",
+      "delete": "Supprimer",
+      "type": {
+        "pdf": "PDF",
+        "image": "IMG",
+        "other": "DOC"
+      }
     },
     "actions": {
       "add-note": "+ Note",
@@ -1021,6 +1196,7 @@
     "empty": "Aucun élément pour le moment.",
     "note-initial-label": "Demande initiale",
     "add-note-dialog": {
+      "error": "La note n'a pas pu être enregistrée. Réessayez dans un instant.",
       "title": "Ajouter une note",
       "title-placeholder": "Titre de la note",
       "placeholder": "Ajouter une note...",
@@ -1031,6 +1207,7 @@
   "nav": {
     "home": "Accueil",
     "events": "Événements",
+    "prestataires": "Prestataires",
     "notifications": "Notifications",
     "profile": "Profil"
   },
@@ -1152,10 +1329,33 @@
     "ECORESPONSABLE": { "label": "Éco", "description": "Éco-responsable" }
   },
   "admin": {
+    "sous-categories": {
+      "title": "Sous-catégories",
+      "loading": "Chargement…",
+      "key": "Clé (ex. photo-video)",
+      "key-hint": "La clé n’est plus modifiable après la création : elle est utilisée par les prestataires et les URLs de recherche.",
+      "name": "Libellé",
+      "category": "Catégorie",
+      "prestataire-count": "aucun prestataire | {n} prestataire | {n} prestataires",
+      "move-up": "Monter",
+      "move-down": "Descendre",
+      "save": "Enregistrer",
+      "delete": "Supprimer",
+      "create-title": "Nouvelle sous-catégorie",
+      "create": "Créer",
+      "errors": {
+        "KEY_ALREADY_EXISTS": "Cette clé de sous-catégorie existe déjà.",
+        "SOUS_CATEGORIE_IN_USE": "Suppression impossible : cette sous-catégorie est utilisée par des prestataires.",
+        "INCOMPLETE": "Renseignez tous les champs.",
+        "INVALID_KEY": "La clé ne peut contenir que des minuscules, des chiffres et des tirets (ex. photo-video).",
+        "TECHNICAL": "Une erreur est survenue. Réessayez."
+      }
+    },
     "nav": {
       "prestataires": "Prestataires",
       "onboarding": "Onboardings",
-      "reservations": "Réservations"
+      "reservations": "Réservations",
+      "sous-categories": "Sous-catégories"
     },
     "onboarding-nav": {
       "pro": "Pro",
@@ -1182,7 +1382,7 @@
         "prestataire-name": "Nom du prestataire",
         "slug": "Slug",
         "category": "Catégorie",
-        "subcats": "Sous-catégories",
+        "subcategory": "Sous-catégorie",
         "first-name": "Prénom",
         "last-name": "Nom",
         "email": "Email",
@@ -1234,7 +1434,7 @@
       "title": "Onboardings clients en attente",
       "loading": "Chargement…",
       "empty": "Aucun onboarding client en attente.",
-      "target": "Vers {name}",
+      "demandes": "aucune demande | {n} demande | {n} demandes",
       "sent-at": "Envoyé le {date}",
       "expires-at": "expire le {date}",
       "state": {

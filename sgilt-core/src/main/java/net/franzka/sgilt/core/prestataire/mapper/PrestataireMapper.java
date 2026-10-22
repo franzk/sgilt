@@ -78,7 +78,7 @@ public abstract class PrestataireMapper {
     @Mapping(target = "testimonials", source = "testimonials", qualifiedByName = "parseTestimonialList")
     @Mapping(target = "details",      source = "details",      qualifiedByName = "parseDetailList")
     @Mapping(target = "faq",          source = "faq",          qualifiedByName = "parseFaqList")
-    public abstract PrestataireDetailDto toDetailDto(Prestataire prestataire);
+    public abstract PrestataireDetailDto toMetaDto(Prestataire prestataire);
 
     /**
      * Applique les champs non-null du DTO sur l'entité chargée.
@@ -93,7 +93,7 @@ public abstract class PrestataireMapper {
     @Mapping(target = "slug",        ignore = true)
     @Mapping(target = "utilisateur", ignore = true)
     @Mapping(target = "categoryKey", ignore = true)
-    @Mapping(target = "subcatKeys",  ignore = true)
+    @Mapping(target = "subcatKey",   ignore = true)
     @Mapping(target = "avatar",      ignore = true)
     @Mapping(target = "medias",      ignore = true)
     @Mapping(target = "status",      ignore = true)

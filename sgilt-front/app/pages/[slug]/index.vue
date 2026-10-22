@@ -65,15 +65,13 @@ const { currentFlow } = useFlow()
 const disableDatePicker = computed(() => currentFlow.value === 'add-prestataire')
 
 const showFinalisation = ref(false)
-const { dateModel } = useSearchUi()
-
 function onSelect(p: PrestataireDetail) {
+  // Ajout à un événement existant : la demande part depuis la fenêtre de finalisation. Nouvel
+  // événement (visiteur ou connecté) : les écrans de demande, les mêmes pour tous.
   if (currentFlow.value === 'add-prestataire') {
     showFinalisation.value = true
     return
   }
-
-  useDemande().initDemande(p.id, p.name, heroRef(p.medias) ?? '', p.slug, dateModel.value)
 
   navigateTo(`/${p.slug}/demande`)
 }

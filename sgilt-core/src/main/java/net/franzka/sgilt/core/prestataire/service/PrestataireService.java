@@ -75,22 +75,21 @@ public class PrestataireService {
     public PrestataireDetailDto getBySlug(String slug) {
         Prestataire p = prestataireRepository.findBySlugAndStatusAndDeletedAtIsNull(slug, PrestataireStatus.PUBLISHED)
                 .orElseThrow(() -> new PrestataireNotFoundException(slug));
-        return prestataireMapper.toDetailDto(p);
+        return prestataireMapper.toMetaDto(p);
     }
 
     /**
-     * Charge un prestataire publié par son identifiant.
-     * Utilisé pour valider une cible avant création d'une ressource publique (ex. onboarding) —
-     * lève la même exception qu'un identifiant inexistant, qu'il soit inexistant, non publié ou
-     * supprimé, pour ne pas exposer cette distinction à un appelant non authentifié.
+     * Vérifie qu'un prestataire est publié, avant de lui adresser une demande depuis un parcours
+     * public (ex. onboarding). Même exception qu'il soit inexistant, non publié ou supprimé, pour
+     * ne pas exposer cette distinction à un appelant non authentifié.
      *
      * @param id l'identifiant du prestataire
-     * @return le prestataire correspondant
      * @throws PrestataireNotFoundException si aucun prestataire publié ne correspond à cet identifiant
      */
-    public Prestataire getPublishedById(UUID id) {
-        return prestataireRepository.findByIdAndStatusAndDeletedAtIsNull(id, PrestataireStatus.PUBLISHED)
-                .orElseThrow(() -> new PrestataireNotFoundException(id.toString()));
+    public void ensurePublished(UUID id) {
+        if (!prestataireRepository.existsByIdAndStatusAndDeletedAtIsNull(id, PrestataireStatus.PUBLISHED)) {
+            throw new PrestataireNotFoundException(id.toString());
+        }
     }
 
     /**
@@ -101,7 +100,7 @@ public class PrestataireService {
      * @throws PrestataireNotFoundException si aucun prestataire n'est lié à cet utilisateur
      */
     public PrestataireDetailDto getByUtilisateurOwner(Utilisateur utilisateur) {
-        return prestataireMapper.toDetailDto(findPrestataire(utilisateur));
+        return prestataireMapper.toMetaDto(findPrestataire(utilisateur));
     }
 
     /**
@@ -310,6 +309,16 @@ public class PrestataireService {
     }
 
     /**
+     * Compte les prestataires rattachés à une sous-catégorie, supprimés compris.
+     *
+     * @param subcatKey la clé de la sous-catégorie
+     * @return le nombre de prestataires qui l'utilisent
+     */
+    public long countUsingSubcategory(String subcatKey) {
+        return prestataireRepository.countBySubcatKey(subcatKey);
+    }
+
+    /**
      * Résultat d'une création de fiche : la fiche créée et si la notification associée a bien été
      * délivrée — {@code true} aussi si aucune notification n'était due à ce stade (flow
      * clé-en-main, voir {@link #createPrestataireCleEnMain}).
@@ -329,13 +338,13 @@ public class PrestataireService {
      * @param slug        le slug public de la fiche
      * @param name        le nom du prestataire
      * @param categoryKey la clé de catégorie
-     * @param subcatKeys  les clés de sous-catégories (peut être vide)
+     * @param subcatKey   la clé de sous-catégorie, qui appartient à la catégorie
      * @return la fiche créée ; la notification est toujours considérée comme délivrée (aucune n'est due)
      */
     public CreationResult createPrestataireCleEnMain(
-            Utilisateur utilisateur, String slug, String name, String categoryKey, List<String> subcatKeys) {
+            Utilisateur utilisateur, String slug, String name, String categoryKey, String subcatKey) {
         Prestataire prestataire = buildAndSave(
-                utilisateur, slug, name, categoryKey, subcatKeys,
+                utilisateur, slug, name, categoryKey, subcatKey,
                 PrestataireStatus.WAITING_FOR_CREATION_SERVICE, PrestataireFlow.CREATION_CLE_EN_MAIN);
         return new CreationResult(prestataire, true);
     }
@@ -348,13 +357,13 @@ public class PrestataireService {
      * @param slug        le slug public de la fiche
      * @param name        le nom du prestataire
      * @param categoryKey la clé de catégorie
-     * @param subcatKeys  les clés de sous-catégories (peut être vide)
+     * @param subcatKey   la clé de sous-catégorie, qui appartient à la catégorie
      * @return la fiche créée et si le mail d'activation a bien été délivré
      */
     public CreationResult createPrestataireAutonome(
-            Utilisateur utilisateur, String slug, String name, String categoryKey, List<String> subcatKeys) {
+            Utilisateur utilisateur, String slug, String name, String categoryKey, String subcatKey) {
         Prestataire prestataire = buildAndSave(
-                utilisateur, slug, name, categoryKey, subcatKeys,
+                utilisateur, slug, name, categoryKey, subcatKey,
                 PrestataireStatus.DRAFT, PrestataireFlow.CREATION_AUTONOME);
         String actionUrl = actionLinkService.createLink(
                 ActionType.PRESTATAIRE_ONBOARDING, Map.of("email", utilisateur.getEmail()));
@@ -364,14 +373,14 @@ public class PrestataireService {
     }
 
     private Prestataire buildAndSave(
-            Utilisateur utilisateur, String slug, String name, String categoryKey, List<String> subcatKeys,
+            Utilisateur utilisateur, String slug, String name, String categoryKey, String subcatKey,
             PrestataireStatus initialStatus, PrestataireFlow flow) {
         Prestataire prestataire = Prestataire.builder()
                 .utilisateur(utilisateur)
                 .slug(slug)
                 .name(name)
                 .categoryKey(categoryKey)
-                .subcatKeys(subcatKeys)
+                .subcatKey(subcatKey)
                 .status(initialStatus)
                 .flow(flow)
                 .build();
@@ -449,7 +458,7 @@ public class PrestataireService {
             throw new IllegalStateException("Échec de sérialisation des médias", e);
         }
 
-        return prestataireMapper.toDetailDto(prestataireRepository.save(prestataire));
+        return prestataireMapper.toMetaDto(prestataireRepository.save(prestataire));
     }
 
     // ── Application de contenu généré (ex. génération IA) ─────────────────────
@@ -605,7 +614,7 @@ public class PrestataireService {
 
     private List<Prestataire> resolveFiltered(String categoryKey, List<String> subcatKeys) {
         if (subcatKeys != null && !subcatKeys.isEmpty()) {
-            return prestataireRepository.findBySubcatKeysInAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(subcatKeys, PrestataireStatus.PUBLISHED);
+            return prestataireRepository.findBySubcatKeyInAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(subcatKeys, PrestataireStatus.PUBLISHED);
         }
         if (categoryKey != null) {
             return prestataireRepository.findByCategoryKeyAndStatusAndDeletedAtIsNullOrderByDisplayOrderAsc(categoryKey, PrestataireStatus.PUBLISHED);
@@ -636,7 +645,7 @@ public class PrestataireService {
     // ── JSONB pour l'application de contenu généré ─────────────────────────────
 
     private PrestataireDetailDto saveAndMap(Prestataire prestataire) {
-        return prestataireMapper.toDetailDto(prestataireRepository.save(prestataire));
+        return prestataireMapper.toMetaDto(prestataireRepository.save(prestataire));
     }
 
     private <T> List<T> concat(List<T> existing, List<T> toAppend) {
@@ -676,7 +685,7 @@ public class PrestataireService {
         Map<String, Long> counts = new HashMap<>();
         all.stream()
                 .filter(p -> activeCategoryKey.equals(p.getCategoryKey()))
-                .forEach(p -> p.getSubcatKeys().forEach(key -> counts.merge(key, 1L, Long::sum)));
+                .forEach(p -> counts.merge(p.getSubcatKey(), 1L, Long::sum));
         return counts;
     }
 

@@ -16,6 +16,6 @@ export interface PrestataireAdminFormat {
   status: PrestataireStatus
   email: string
   categoryKey: string
-  subcatKeys: string[]
+  subcatKey: string
   reservationCounts: PrestataireReservationCounts
 }

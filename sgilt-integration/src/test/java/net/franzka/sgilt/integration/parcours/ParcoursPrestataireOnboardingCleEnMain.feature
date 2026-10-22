@@ -22,7 +22,7 @@ Feature: Parcours prestataire (flow clé en main) — pas de mail avant publicat
       {
         email: '#(cleEnMainEmail)', firstName: 'Karim', lastName: 'Cléenmain',
         slug: 'karim-cle-en-main-dj', prestataireName: 'Karim DJ',
-        category: 'dj', subcats: '', cleEnMain: true
+        category: 'musique', subcat: 'dj', cleEnMain: true
       }
       """
     When method POST

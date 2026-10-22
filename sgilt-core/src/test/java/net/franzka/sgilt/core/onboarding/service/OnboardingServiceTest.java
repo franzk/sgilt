@@ -2,6 +2,11 @@ package net.franzka.sgilt.core.onboarding.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
+import net.franzka.sgilt.core.evenement.dto.DemandeInitieeDto;
+import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
+import net.franzka.sgilt.core.evenement.dto.EvenementDto;
+import net.franzka.sgilt.core.evenement.service.EvenementService;
+import net.franzka.sgilt.core.evenement.dto.RubriqueDto;
 import net.franzka.sgilt.core.jwt.domain.ActionToken;
 import net.franzka.sgilt.core.jwt.service.ActionTokenService;
 import net.franzka.sgilt.core.jwt.service.TokenJwtService;
@@ -9,24 +14,26 @@ import net.franzka.sgilt.core.keycloak.KeycloakAdminService;
 import net.franzka.sgilt.core.onboarding.domain.Onboarding;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountRequest;
 import net.franzka.sgilt.core.onboarding.dto.ConfirmAccountResponse;
+import net.franzka.sgilt.core.onboarding.dto.InitOnboardingDemandeRequest;
 import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
 import net.franzka.sgilt.core.onboarding.dto.InitOnboardingResponse;
 import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.mailer.OnboardingMailerService;
-import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
 import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,10 +49,14 @@ class OnboardingServiceTest {
     private static final String    LASTNAME       = "Dupont";
     private static final String    EMAIL          = "jean.dupont@example.com";
     private static final UUID      PRESTATAIRE_ID = UUID.randomUUID();
+    private static final String    TITLE          = "Les 40 ans de Paul";
     private static final String    EVENT_TYPE     = "anniversaire";
     private static final LocalDate DATE           = LocalDate.of(2025, 6, 15);
     private static final String    TELEPHONE      = "0612345678";
     private static final String    SP_TOKEN       = "sp.header.payload.signature";
+    private static final String    MESSAGE        = "Disponible le 15 juin ?";
+    private static final List<RubriqueDto> RUBRIQUES = List.of(new RubriqueDto(
+            "musique-animation", List.of(new DemandeInitieeDto(PRESTATAIRE_ID, MESSAGE))));
 
     @Mock private PrestataireService prestataireService;
     @Mock private OnboardingSessionService onboardingSessionService;
@@ -54,106 +65,97 @@ class OnboardingServiceTest {
     @Mock private UtilisateurService utilisateurService;
     @Mock private KeycloakAdminService keycloakAdminService;
     @Mock private ActionTokenService actionTokenService;
+    @Mock private EvenementService evenementService;
 
     @InjectMocks
     private OnboardingService onboardingService;
 
     // -------------------------------------------------------------------------
-    // initOnboardingSession
+    // initOnboardingDemande
     // -------------------------------------------------------------------------
 
     @Nested
-    class InitOnboardingSession {
+    class InitOnboardingDemande {
 
         @Test
-        void givenExistingUser_whenInitOnboardingSession_thenSendsSecurityAlertEmail() {
+        void givenExistingUser_whenInitOnboardingDemande_thenSendsSecurityAlertWithoutSession() {
             when(utilisateurService.existsByEmail(EMAIL)).thenReturn(true);
 
-            onboardingService.initOnboardingSession(buildRequest());
-
-            verify(onboardingMailerService).sendSecurityAlertEmail(EMAIL);
-        }
-
-        @Test
-        void givenExistingUser_whenInitOnboardingSession_thenDoesNotInitiateOnboarding() {
-            when(utilisateurService.existsByEmail(EMAIL)).thenReturn(true);
-
-            onboardingService.initOnboardingSession(buildRequest());
-
-            verify(onboardingSessionService, never()).initiate(any(), any(), any());
-        }
-
-        @Test
-        void givenExistingUser_whenInitOnboardingSession_thenReturnsResponseWithEmail() {
-            when(utilisateurService.existsByEmail(EMAIL)).thenReturn(true);
-
-            InitOnboardingResponse response = onboardingService.initOnboardingSession(buildRequest());
+            InitOnboardingResponse response = onboardingService.initOnboardingDemande(buildDemande());
 
             assertThat(response.email()).isEqualTo(EMAIL);
+            verify(onboardingMailerService).sendSecurityAlertEmail(EMAIL);
+            verify(onboardingSessionService, never()).initiate(any(), any());
         }
 
         @Test
-        void givenNewUser_whenInitOnboardingSession_thenCancelsExistingSessionsForEmail() {
+        void givenNewUser_whenInitOnboardingDemande_thenCancelsExistingSessionsForEmail() {
             stubHappyPath();
 
-            onboardingService.initOnboardingSession(buildRequest());
+            onboardingService.initOnboardingDemande(buildDemande());
 
             verify(onboardingSessionService).cancelExistingForEmail(EMAIL);
         }
 
         @Test
-        void givenNewUser_whenInitOnboardingSession_thenLoadsPrestataire() {
+        void givenNewUser_whenInitOnboardingDemande_thenStoresTheEventBuiltFromTheTemplate() {
             stubHappyPath();
 
-            onboardingService.initOnboardingSession(buildRequest());
+            onboardingService.initOnboardingDemande(buildDemande());
 
-            verify(prestataireService).getPublishedById(PRESTATAIRE_ID);
+            ArgumentCaptor<InitOnboardingRequest> captor = ArgumentCaptor.forClass(InitOnboardingRequest.class);
+            verify(onboardingSessionService).initiate(eq(EMAIL), captor.capture());
+            InitOnboardingRequest stored = captor.getValue();
+            assertThat(stored.firstName()).isEqualTo(FIRSTNAME);
+            assertThat(stored.telephone()).isEqualTo(TELEPHONE);
+            assertThat(stored.evenement().eventType()).isEqualTo(EVENT_TYPE);
+            assertThat(stored.evenement().date()).isEqualTo(DATE);
+            assertThat(stored.evenement().rubriques()).isEqualTo(RUBRIQUES);
         }
 
         @Test
-        void givenNewUser_whenInitOnboardingSession_thenInitiatesOnboardingWithEmailPrestataireAndRequest() {
-            Prestataire prestataire = stubHappyPath();
+        void givenNewUser_whenInitOnboardingDemande_thenBuildsTheEventLikeAConnectedCreationWithTheDemande() {
+            stubHappyPath();
 
-            onboardingService.initOnboardingSession(buildRequest());
+            onboardingService.initOnboardingDemande(buildDemande());
 
-            verify(onboardingSessionService).initiate(eq(EMAIL), eq(prestataire), any(InitOnboardingRequest.class));
+            verify(evenementService).buildEvenement(eventToCreate());
         }
 
         @Test
-        void givenNewUser_whenInitOnboardingSession_thenSendsVerificationEmailWithHmacToken() {
+        void givenNewUser_whenInitOnboardingDemande_thenSendsVerificationEmailWithHmacToken() {
             stubHappyPath();
 
-            onboardingService.initOnboardingSession(buildRequest());
+            onboardingService.initOnboardingDemande(buildDemande());
 
             verify(onboardingMailerService).sendVerificationEmail(EMAIL, "hmac.token");
         }
 
-        @Test
-        void givenNewUser_whenInitOnboardingSession_thenReturnsResponseWithEmail() {
-            stubHappyPath();
-
-            InitOnboardingResponse response = onboardingService.initOnboardingSession(buildRequest());
-
-            assertThat(response.email()).isEqualTo(EMAIL);
-        }
-
-        private Prestataire stubHappyPath() {
+        private void stubHappyPath() {
             when(utilisateurService.existsByEmail(EMAIL)).thenReturn(false);
-            Prestataire prestataire = Prestataire.builder().id(PRESTATAIRE_ID).build();
-            when(prestataireService.getPublishedById(PRESTATAIRE_ID)).thenReturn(prestataire);
-            Onboarding onboarding = Onboarding.builder().email(EMAIL).build();
-            OnboardingSessionService.InitiationResult result =
-                    new OnboardingSessionService.InitiationResult(onboarding, "hmac.token");
-            when(onboardingSessionService.initiate(eq(EMAIL), eq(prestataire), any())).thenReturn(result);
-            return prestataire;
+            when(evenementService.buildEvenement(eventToCreate()))
+                    .thenReturn(new EvenementDto(null, EVENT_TYPE, null, null, null, DATE, null, null, null, RUBRIQUES));
+            when(onboardingSessionService.initiate(eq(EMAIL), any()))
+                    .thenReturn(new OnboardingSessionService.InitiationResult(Onboarding.builder().email(EMAIL).build(), "hmac.token"));
         }
 
-        private InitOnboardingRequest buildRequest() {
-            return new InitOnboardingRequest(
-                    FIRSTNAME, LASTNAME, EMAIL, PRESTATAIRE_ID,
-                    EVENT_TYPE, null, null, null, DATE,
-                    null, null, null, TELEPHONE, null);
+        // L'événement à créer que porte la demande (mêmes données, la demande en première demande).
+        private CreateEventRequest eventToCreate() {
+            return new CreateEventRequest(TITLE, EVENT_TYPE, null, null, null, DATE, null, null, null,
+                    new DemandeInitieeDto(PRESTATAIRE_ID, MESSAGE));
         }
+
+        private InitOnboardingDemandeRequest buildDemande() {
+            return new InitOnboardingDemandeRequest(
+                    FIRSTNAME, LASTNAME, EMAIL, PRESTATAIRE_ID, TITLE,
+                    EVENT_TYPE, null, null, null, DATE,
+                    null, null, null, TELEPHONE, MESSAGE);
+        }
+    }
+
+    private static InitOnboardingRequest fullRequest() {
+        return new InitOnboardingRequest(FIRSTNAME, LASTNAME, EMAIL, TELEPHONE,
+                new EvenementDto(null, EVENT_TYPE, null, null, null, DATE, null, null, null, RUBRIQUES));
     }
 
     // -------------------------------------------------------------------------
@@ -206,7 +208,7 @@ class OnboardingServiceTest {
 
             onboardingService.confirmOnboarding(buildRequest());
 
-            verify(onboardingSessionService).createEntities(eq(formData), any(Prestataire.class), eq(EMAIL));
+            verify(onboardingSessionService).createEntities(formData, EMAIL);
         }
 
         @Test
@@ -226,17 +228,11 @@ class OnboardingServiceTest {
             when(setPasswordTokenJwtService.isExpired(SP_TOKEN)).thenReturn(false);
             when(setPasswordTokenJwtService.extractClaims(SP_TOKEN)).thenReturn(claims);
 
-            Prestataire prestataire = Prestataire.builder().id(PRESTATAIRE_ID).build();
-            InitOnboardingRequest formData = new InitOnboardingRequest(
-                    FIRSTNAME, LASTNAME, EMAIL, PRESTATAIRE_ID,
-                    EVENT_TYPE, null, null, null, DATE,
-                    null, null, null, TELEPHONE, null);
+            InitOnboardingRequest formData = fullRequest();
             Onboarding onboarding = Onboarding.builder().id(onboardingId).email(EMAIL).build();
             when(onboardingSessionService.findById(onboardingId)).thenReturn(onboarding);
-            when(onboardingSessionService.consume(onboarding))
-                    .thenReturn(new OnboardingSessionService.OnboardingContent(formData, prestataire));
-            when(onboardingSessionService.createEntities(any(), any(), any()))
-                    .thenReturn(UUID.randomUUID());
+            when(onboardingSessionService.consume(onboarding)).thenReturn(formData);
+            when(onboardingSessionService.createEntities(any(), any())).thenReturn(UUID.randomUUID());
 
             return formData;
         }
@@ -271,7 +267,7 @@ class OnboardingServiceTest {
             onboardingService.confirmOnboarding(buildRequest());
 
             verify(onboardingSessionService, never()).findById(any());
-            verify(onboardingSessionService, never()).createEntities(any(), any(), any());
+            verify(onboardingSessionService, never()).createEntities(any(), any());
         }
 
         @Test

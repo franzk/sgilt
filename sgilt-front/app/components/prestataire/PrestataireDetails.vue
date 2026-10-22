@@ -150,16 +150,19 @@ const emit = defineEmits<{
 }>()
 
 // ── Soumission ────────────────────────────────────────────────────────────────
-const { dateModel } = useSearchUi()
+const { localEvent } = useLocalEvent()
 const dateError = ref<string | null>(null)
 const datepickerAreaRef = ref<HTMLElement | null>(null)
 
-watch(dateModel, () => {
-  dateError.value = null
-})
+watch(
+  () => localEvent.date,
+  () => {
+    dateError.value = null
+  },
+)
 
 function onSelect() {
-  if (!props.disableDate && !dateModel.value) {
+  if (!props.disableDate && !localEvent.date) {
     dateError.value = t('provider.details.date-required')
     // scroll vers le champ en erreur
     const el = datepickerAreaRef.value
@@ -316,7 +319,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
     @media (min-width: $breakpoint-desktop) {
       grid-area: sidebar;
       position: sticky;
-      top: 5rem;
+      top: calc(5rem + var(--banner-offset, 0rem));
       background: #fff;
       border: 1px solid rgba(0, 0, 0, 0.08);
       border-radius: $radius-md;

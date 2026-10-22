@@ -24,6 +24,21 @@ export function formatDate(d: Date | string | null | undefined): string {
 }
 
 /**
+ * Formate une date en français avec le jour de la semaine. Ex : "Samedi 12 juin 2027"
+ * Accepte Date, ISO string, null ou undefined. Retourne '' si absent.
+ */
+export function formatDateWithWeekday(d: Date | string | null | undefined): string {
+  if (!d) return ''
+  const formatted = new Date(d).toLocaleDateString('fr-FR', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1)
+}
+
+/**
  * Formate une date en français, mois abrégé. Ex : "14 sept. 2026"
  * Accepte Date, ISO string, null ou undefined. Retourne '' si absent.
  */
@@ -49,4 +64,21 @@ export function formatDateTime(d: Date | string | null | undefined): string {
     hour: '2-digit',
     minute: '2-digit',
   })
+}
+
+/**
+ * Formate une date+heure relative au jour courant, en français. Ex : "Aujourd'hui · 14:32",
+ * "Hier · 18:05", "16 oct. 2026 · 09:12" au-delà.
+ * Accepte Date, ISO string, null ou undefined. Retourne '' si absent.
+ */
+export function formatRelativeDateTime(d: Date | string | null | undefined): string {
+  if (!d) return ''
+  const date = new Date(d)
+  const time = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+  const today = new Date()
+  const yesterday = new Date(today)
+  yesterday.setDate(today.getDate() - 1)
+  if (toISODate(date) === toISODate(today)) return `Aujourd'hui · ${time}`
+  if (toISODate(date) === toISODate(yesterday)) return `Hier · ${time}`
+  return `${formatDateShort(date)} · ${time}`
 }

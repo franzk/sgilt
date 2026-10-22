@@ -2,10 +2,11 @@
  * Couche API — appels HTTP vers /user/events
  */
 import { apiFetch } from '~/composables/useApi'
-import type { DemandeRequest } from '~/types/demande'
 import type { EvenementSummaryDto } from '../dto/EvenementSummaryDto'
-import type { EventDetailDto, EventPatchRequestDto } from '../dto/EventDetailDto'
-import type { EventCountsDto } from '../dto/EventCountsDto'
+import type { EventDto } from '../dto/EventDto'
+import type { CreateEventRequestDto } from '../dto/CreateEventRequestDto'
+import type { EventMetaDto } from '../dto/EventMetaDto'
+import type { EventMetaPatchRequestDto } from '../dto/EventMetaPatchRequestDto'
 import type { JournalEvenementPageDto } from '../dto/JournalEvenementDto'
 
 export interface CoverUrlResponseDto {
@@ -16,19 +17,15 @@ export async function getEvenementsApi(): Promise<EvenementSummaryDto[]> {
   return apiFetch<EvenementSummaryDto[]>('/user/events')
 }
 
-export async function getEventDetailApi(eventId: string): Promise<EventDetailDto> {
-  return apiFetch<EventDetailDto>(`/user/events/${eventId}`)
+export async function getEventApi(eventId: string): Promise<EventDto> {
+  return apiFetch<EventDto>(`/user/events/${eventId}`)
 }
 
 export async function patchEventApi(
   eventId: string,
-  patch: EventPatchRequestDto,
-): Promise<EventDetailDto> {
-  return apiFetch<EventDetailDto>(`/user/events/${eventId}`, { method: 'PATCH', body: patch })
-}
-
-export async function getEventCountsApi(eventId: string): Promise<EventCountsDto> {
-  return apiFetch<EventCountsDto>(`/user/events/${eventId}/counts`)
+  patch: EventMetaPatchRequestDto,
+): Promise<EventMetaDto> {
+  return apiFetch<EventMetaDto>(`/user/events/${eventId}`, { method: 'PATCH', body: patch })
 }
 
 export async function getEventJournalApi(
@@ -57,7 +54,8 @@ export async function selectEventCoverApi(
   })
 }
 
-export async function createEventApi(body: DemandeRequest): Promise<{ eventId: string }> {
+// Création d'un événement (flow « Nouvel événement » connecté), avec sa première demande éventuelle.
+export async function createEventApi(body: CreateEventRequestDto): Promise<{ eventId: string }> {
   return apiFetch<{ eventId: string }>('/user/events', { method: 'POST', body })
 }
 

@@ -8,6 +8,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -54,6 +55,11 @@ public class Evenement {
     private String lieu;
 
     private String notePartagee;
+
+    /** Rubriques de l'événement, dans l'ordre d'affichage (copiées du template à la création). */
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb", nullable = false)
+    private List<EvenementRubrique> rubriques;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

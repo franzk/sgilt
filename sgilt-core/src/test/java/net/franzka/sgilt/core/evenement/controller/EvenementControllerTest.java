@@ -5,10 +5,10 @@ import net.franzka.sgilt.core.evenement.dto.CoverSelectDto;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
 import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
 import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
-import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
-import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
-import net.franzka.sgilt.core.evenement.dto.EventPatchDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
+import net.franzka.sgilt.core.evenement.dto.EventDto;
+import net.franzka.sgilt.core.evenement.dto.EventMetaDto;
+import net.franzka.sgilt.core.evenement.dto.EventMetaPatchDto;
 import net.franzka.sgilt.core.evenement.dto.JournalEvenementDto;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.evenement.service.JournalEvenementService;
@@ -60,7 +60,7 @@ class EvenementControllerTest {
     class CreateEvent {
 
         @Test
-        void givenValidRequest_whenCreateEvent_thenReturns201() {
+        void givenCompleteEvent_whenCreateEvent_thenReturns201() {
             when(currentUserService.get()).thenReturn(utilisateur);
             CreateEventRequest body = mock(CreateEventRequest.class);
             CreateEventResponse response = new CreateEventResponse(eventId);
@@ -91,19 +91,19 @@ class EvenementControllerTest {
     }
 
     // -------------------------------------------------------------------------
-    // getEventDetail
+    // getEvent
     // -------------------------------------------------------------------------
 
     @Nested
-    class GetEventDetail {
+    class GetEvent {
 
         @Test
-        void givenEventId_whenGetEventDetail_thenReturnsDetail() {
+        void givenEventId_whenGetEvent_thenReturnsDetail() {
             when(currentUserService.getId()).thenReturn(userId);
-            EventDetailDto dto = mock(EventDetailDto.class);
-            when(evenementService.getEventDetail(eventId, userId)).thenReturn(dto);
+            EventDto dto = mock(EventDto.class);
+            when(evenementService.getEvent(eventId, userId)).thenReturn(dto);
 
-            assertThat(controller.getEventDetail(eventId).getBody()).isEqualTo(dto);
+            assertThat(controller.getEvent(eventId).getBody()).isEqualTo(dto);
         }
     }
 
@@ -117,28 +117,11 @@ class EvenementControllerTest {
         @Test
         void givenPatch_whenPatchEvent_thenDelegatesAndReturnsDetail() {
             when(currentUserService.getId()).thenReturn(userId);
-            EventPatchDto patch = new EventPatchDto(null, "Lyon", null, null, null, null, null, null, null);
-            EventDetailDto dto = mock(EventDetailDto.class);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, "Lyon", null, null, null, null, null, null, null);
+            EventMetaDto dto = mock(EventMetaDto.class);
             when(evenementService.patchEvent(eventId, userId, patch)).thenReturn(dto);
 
             assertThat(controller.patchEvent(eventId, patch).getBody()).isEqualTo(dto);
-        }
-    }
-
-    // -------------------------------------------------------------------------
-    // getEventCounts
-    // -------------------------------------------------------------------------
-
-    @Nested
-    class GetEventCounts {
-
-        @Test
-        void givenEventId_whenGetEventCounts_thenReturnsCounts() {
-            when(currentUserService.getId()).thenReturn(userId);
-            EventCountsDto dto = mock(EventCountsDto.class);
-            when(evenementService.getEventCounts(eventId, userId)).thenReturn(dto);
-
-            assertThat(controller.getEventCounts(eventId).getBody()).isEqualTo(dto);
         }
     }
 

@@ -1,5 +1,6 @@
 package net.franzka.sgilt.core.reservation.mapper;
 
+import java.time.LocalDateTime;
 import net.franzka.sgilt.core.prestataire.domain.MediaUtils;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
@@ -34,6 +35,7 @@ public interface ReservationMapper {
     @Mapping(source = "prestataire.name",        target = "prestataireName")
     @Mapping(source = "prestataire",             target = "prestatairePhoto", qualifiedByName = "resolveAvatar")
     @Mapping(source = "prestataire.categoryKey", target = "category")
+    @Mapping(source = "prestataire.subcatKey",   target = "subcatKey")
     @Mapping(target = "unreadNotesCount",        constant = "0")
     ReservationSummaryDto toSummaryDto(Reservation reservation);
 
@@ -54,23 +56,32 @@ public interface ReservationMapper {
     @Mapping(target = "unreadNotesCount",    constant = "0")
     ProReservationSummaryDto toProReservationSummaryDto(Reservation reservation);
 
-    @Mapping(source = "status",                   target = "statut")
-    @Mapping(source = "prestataire.categoryKey",  target = "category")
-    @Mapping(source = "prestataire.name",         target = "prestataireName")
-    @Mapping(source = "prestataire",              target = "prestatairePhoto", qualifiedByName = "resolveAvatar")
-    @Mapping(source = "evenement.title",          target = "evenementTitre")
-    @Mapping(source = "evenement.eventType",      target = "evenementType")
-    @Mapping(source = "evenement.imagePath",      target = "evenementImagePath")
-    @Mapping(source = "evenement.date",           target = "evenementDate")
-    @Mapping(source = "evenement.ville",          target = "evenementVille")
-    @Mapping(source = "utilisateur.firstName",    target = "clientFirstName")
-    @Mapping(source = "utilisateur.lastName",     target = "clientLastName")
-    @Mapping(source = "utilisateur.phone",        target = "clientPhone")
-    @Mapping(source = "utilisateur.email",        target = "clientEmail")
-    ProReservationDetailDto toProReservationDetailDto(Reservation reservation);
+    @Mapping(source = "reservation.status",                     target = "statut")
+    @Mapping(source = "reservation.prestataire.categoryKey",    target = "category")
+    @Mapping(source = "reservation.prestataire.name",           target = "prestataireName")
+    @Mapping(source = "reservation.prestataire",                target = "prestatairePhoto", qualifiedByName = "resolveAvatar")
+    @Mapping(source = "reservation.evenement.title",            target = "evenementTitre")
+    @Mapping(source = "reservation.evenement.eventType",        target = "evenementType")
+    @Mapping(source = "reservation.evenement.imagePath",        target = "evenementImagePath")
+    @Mapping(source = "reservation.evenement.date",             target = "evenementDate")
+    @Mapping(source = "reservation.evenement.ville",            target = "evenementVille")
+    @Mapping(source = "reservation.evenement.id",               target = "evenementId")
+    @Mapping(source = "reservation.evenement.lieu",             target = "evenementLieu")
+    @Mapping(source = "reservation.evenement.nbInvites",        target = "evenementNbInvites")
+    @Mapping(source = "reservation.evenement.ambiance",         target = "evenementAmbiance")
+    @Mapping(source = "reservation.evenement.momentCle",        target = "evenementMomentCle")
+    @Mapping(source = "reservation.evenement.description",      target = "evenementDescription")
+    @Mapping(source = "reservation.evenement.notePartagee",     target = "evenementNotePartagee")
+    @Mapping(source = "lastUpdateDate",                         target = "evenementLastUpdateDate")
+    @Mapping(source = "reservation.utilisateur.firstName",      target = "clientFirstName")
+    @Mapping(source = "reservation.utilisateur.lastName",       target = "clientLastName")
+    @Mapping(source = "reservation.utilisateur.phone",          target = "clientPhone")
+    @Mapping(source = "reservation.utilisateur.email",          target = "clientEmail")
+    ProReservationDetailDto toProReservationDetailDto(Reservation reservation, LocalDateTime lastUpdateDate);
 
     @Mapping(source = "prestataire.id",          target = "prestataireId")
     @Mapping(source = "prestataire.name",        target = "prestataireName")
+    @Mapping(source = "prestataire.slug",        target = "prestataireSlug")
     @Mapping(source = "prestataire",             target = "prestatairePhoto", qualifiedByName = "resolveAvatar")
     @Mapping(source = "prestataire.categoryKey", target = "category")
     @Mapping(source = "status",                  target = "status")

@@ -48,6 +48,10 @@ public class Reservation {
     @Column(columnDefinition = "reservation_status", nullable = false)
     private ReservationStatus status;
 
+    /** Rubrique de l'événement où la réservation est rangée, fixée à son entrée. */
+    @Column(name = "rubrique_key", nullable = false)
+    private String rubriqueKey;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

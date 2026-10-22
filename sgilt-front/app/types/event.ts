@@ -12,4 +12,4 @@ export type { ClientContactInfo } from '~/data/reservation/domain/ClientContactI
 export type { ProReservationDetail } from '~/data/reservation/domain/ProReservationDetail'
 export type { ProBoardCounts } from '~/data/reservation/domain/ProBoardCounts'
 export type { ProReservationSummary } from '~/data/reservation/domain/ProReservationSummary'
-export type { EventDetail } from '~/data/evenement/domain/EventDetail'
+export type { EventMeta } from '~/data/evenement/domain/EventMeta'

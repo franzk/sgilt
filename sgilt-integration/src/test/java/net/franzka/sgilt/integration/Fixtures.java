@@ -36,12 +36,12 @@ public final class Fixtures {
     }
 
     /** Prestataire publié par défaut — visible en recherche publique et ciblable par un onboarding. */
-    public UUID insertPrestataire(UUID utilisateurId, String name, String slug, String categoryKey) {
+    public UUID insertPrestataire(UUID utilisateurId, String name, String slug, String categoryKey, String subcatKey) {
         UUID id = UUID.randomUUID();
         update("""
-                INSERT INTO prestataires (id, utilisateur_id, name, slug, category_key, status, flow, created_at)
-                VALUES (?, ?, ?, ?, ?, 'PUBLISHED', 'AUCUN', now())
-                """, id, utilisateurId, name, slug, categoryKey);
+                INSERT INTO prestataires (id, utilisateur_id, name, slug, category_key, subcat_key, status, flow, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, 'PUBLISHED', 'AUCUN', now())
+                """, id, utilisateurId, name, slug, categoryKey, subcatKey);
         return id;
     }
 
@@ -54,12 +54,13 @@ public final class Fixtures {
         return id;
     }
 
-    public UUID insertReservation(UUID evenementId, UUID prestataireId, UUID utilisateurId, LocalDate date, String status) {
+    public UUID insertReservation(UUID evenementId, UUID prestataireId, UUID utilisateurId, LocalDate date, String status,
+                                  String rubriqueKey) {
         UUID id = UUID.randomUUID();
         update("""
-                INSERT INTO reservations (id, evenement_id, prestataire_id, utilisateur_id, date, status, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?::reservation_status, now(), now())
-                """, id, evenementId, prestataireId, utilisateurId, date, status);
+                INSERT INTO reservations (id, evenement_id, prestataire_id, utilisateur_id, date, status, rubrique_key, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?::reservation_status, ?, now(), now())
+                """, id, evenementId, prestataireId, utilisateurId, date, status, rubriqueKey);
         return id;
     }
 

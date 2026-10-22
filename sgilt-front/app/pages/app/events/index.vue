@@ -3,7 +3,7 @@
     <!-- ── En-tête ──────────────────────────────────────────────────────────── -->
     <div class="events-page__header">
       <p class="events-page__count">
-        {{ t('events.count', events.length, { n: events.length }) }}
+        {{ t('events.count', { n: events.length }, events.length) }}
       </p>
       <button
         class="events-page__create-btn"
@@ -88,9 +88,9 @@ function coverImage(event: EventSummary): string {
 function reservationSummary(event: EventSummary): string {
   const parts: string[] = []
   if (event.confirmedCount)
-    parts.push(`✓ ${t('events.confirmed', event.confirmedCount, { n: event.confirmedCount })}`)
+    parts.push(`✓ ${t('events.confirmed', { n: event.confirmedCount }, event.confirmedCount)}`)
   if (event.inDiscussionCount)
-    parts.push(t('events.in-progress', event.inDiscussionCount, { n: event.inDiscussionCount }))
+    parts.push(t('events.in-progress', { n: event.inDiscussionCount }, event.inDiscussionCount))
   return parts.join(' · ') || '—'
 }
 </script>

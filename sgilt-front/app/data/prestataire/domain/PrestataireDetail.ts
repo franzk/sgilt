@@ -17,15 +17,13 @@ export interface PrestataireDetail {
   slug: string
   baseline: string
   categoryKey: string
-  category: string
-  subcats: string[]
+  subcatKey: string
   avatar: string | null
   medias: Media[]
   badges: EngagementKey[]
   offerings: string[]
   identity: { quote: string | null; bio: string | null }
   budget: string | null
-  unavailableDates: string[]
   testimonials: Testimonial[]
   details: DetailItem[]
   faq: FaqItem[]

@@ -5,18 +5,23 @@
     <NuxtLink to="/app">{{ $t('tunnel.no-flow.back-to-app') }}</NuxtLink>
   </div>
 
+  <!-- Mêmes écrans pour tous, mobile comme desktop, visiteur comme connecté : récap de
+       l'événement, puis envoi de la demande (sans les coordonnées pour un connecté). La
+       confirmation d'envoi du visiteur est sur /demande-envoyee. -->
   <template v-else-if="prestataire">
-    <DemandeDesktop
-      v-if="!isMobile"
-      :slug="slug"
-      :prestataire-name="prestataire.name"
-      :prestataire-image="heroRef(prestataire.medias) ?? ''"
+    <DemandeCoordonnees
+      v-if="publicStep === 'coordonnees' && summary"
+      :summary="summary"
+      :skip-contact="isNewEventFlow"
+      @back="goToPublicStep('recap')"
+      @send="onSend"
     />
-    <DemandeMobile
+    <DemandeRecapEvenement
       v-else
       :prestataire-name="prestataire.name"
       :prestataire-image="heroRef(prestataire.medias) ?? ''"
       :slug="slug"
+      @continue="goToPublicStep('coordonnees')"
     />
   </template>
 
@@ -27,47 +32,107 @@
 </template>
 
 <script setup lang="ts">
-import DemandeDesktop from '~/components/demande/DemandeDesktop.vue'
-import DemandeMobile from '~/components/demande/DemandeMobile.vue'
+import DemandeCoordonnees from '~/components/demande/DemandeCoordonnees.vue'
+import DemandeRecapEvenement from '~/components/demande/DemandeRecapEvenement.vue'
 import { useDemande } from '~/composables/useDemande'
 import { usePrestataire } from '~/data/prestataire/usePrestataire'
+import type { DemandeSummary } from '~/types/demande'
 
 const route = useRoute()
 const slug = route.params.slug as string
 
+const { state, confirmation, submitted, initDemande, submit, reset: resetDemande } = useDemande()
 const { prestataire, loading } = usePrestataire(slug)
 
-const { isMobile } = useDevice()
+// Le prestataire visé vient de la route : la page le charge, la demande n'en garde qu'une référence.
+watch(
+  prestataire,
+  (p) => {
+    if (p) initDemande(p.id, p.name, heroRef(p.medias) ?? '', p.slug)
+  },
+  { immediate: true },
+)
 
 useHead({ title: 'Votre demande' })
 
-const { etapeActuelle, state, goTo } = useDemande()
-const { currentFlow } = useFlow()
+const { localEvent, eventTypeLabel, reset: resetLocalEvent } = useLocalEvent()
+const { categoryName, subcategoryName } = useCategories()
+const { currentFlow, onFlowSuccess } = useFlow()
 const { isAuthenticated } = useKeycloak()
+
+// Nouvel événement d'un utilisateur connecté : les mêmes écrans que le visiteur (le prestataire a
+// besoin des mêmes informations), sans les coordonnées, connues par le compte.
+const isNewEventFlow = computed(() => currentFlow.value === 'new-event')
+
+// Écran courant dans l'URL (?etape=) : retour navigateur et refresh
+// fonctionnent sans état supplémentaire. Absent ou inconnu = récap de l'événement.
+type PublicStep = 'recap' | 'coordonnees'
+const publicStep = computed<PublicStep>(() =>
+  route.query.etape === 'coordonnees' ? 'coordonnees' : 'recap',
+)
+
+// Le récap est l'écran par défaut : il n'a pas de paramètre dans l'URL.
+async function goToPublicStep(step: PublicStep) {
+  await navigateTo({ path: route.path, query: step === 'recap' ? {} : { etape: step } })
+  window.scrollTo({ top: 0 })
+}
+
+// Synthèse prestataire + événement des écrans coordonnées et confirmation.
+const summary = computed<DemandeSummary | null>(() => {
+  const p = prestataire.value
+  if (!p) return null
+  return {
+    prestataireName: p.name,
+    prestataireImage: heroRef(p.medias) ?? '',
+    // « Restauration · Traiteur » : catégorie puis sous-catégorie.
+    prestataireCategoryLine: [categoryName(p.categoryKey), subcategoryName(p.subcatKey)].join(' · '),
+    evenement: {
+      eventTypeLabel: eventTypeLabel.value,
+      date: localEvent.date,
+      nbInvites: localEvent.nbInvites,
+      ville: localEvent.ville,
+    },
+  }
+})
+
+// Envoi de la demande : le parcours public de cet événement est terminé, la suite passe par le
+// lien du mail. L'événement local et la demande (coordonnées comprises) ne sont vidés qu'une fois
+// sur l'écran de confirmation : vidés avant, les champs du formulaire s'effaceraient sous les yeux
+// de l'utilisateur. En cas d'échec, l'erreur s'affiche sous le bouton. `replace` : le retour
+// arrière ne ramène pas au formulaire.
+async function onSend() {
+  if (!summary.value) return
+  // Connecté : l'événement est créé avec la demande, puis on arrive sur son board.
+  if (isNewEventFlow.value) {
+    await submit()
+    if (!submitted.value) return
+    resetDemande()
+    onFlowSuccess()
+    return
+  }
+  const sentConfirmation = {
+    summary: { ...summary.value, evenement: { ...summary.value.evenement } },
+    email: state.email.trim(),
+  }
+  await submit()
+  if (!submitted.value) return
+  confirmation.value = sentConfirmation
+  await navigateTo('/demande-envoyee', { replace: true })
+  resetLocalEvent()
+  resetDemande()
+}
 
 const noFlowWarning = ref(false)
 
 onMounted(() => {
-  if (currentFlow.value === null) {
-    if (!isAuthenticated.value) {
-      if (state.prestataireSlug !== slug || !state.date) {
-        // Si l'utilisateur n'est pas authentifié et qu'il n'y a pas de prestataire ou de date dans le store,
-        // on le redirige vers la page du prestataire pour qu'il puisse initier une demande
-        navigateTo(`/${slug}`)
-        return
-      }
-    } else {
-      // Si l'utilisateur est authentifié mais qu'il n'y a pas de flow en cours, on affiche un message d'erreur
-      noFlowWarning.value = true
-      return
-    }
+  if (!isAuthenticated.value) {
+    // Visiteur sans date d'événement : retour à la fiche, où la demande commence par la date.
+    if (!localEvent.date) navigateTo(`/${slug}`)
+    return
   }
-
-  if (etapeActuelle.value === 1 && state.eventType && state.eventType.toUpperCase() !== 'AUTRE') {
-    // on saute l'étape de sélection du type d'événement si elle a déjà été saisie au début du parcours
-    // et qu'elle n'est pas "Autre"
-    goTo(2)
-  }
+  // Connecté hors flow « Nouvel événement » (l'ajout à un événement existant passe par la fenêtre
+  // de finalisation de la fiche) : rien à envoyer d'ici.
+  if (!isNewEventFlow.value) noFlowWarning.value = true
 })
 </script>
 

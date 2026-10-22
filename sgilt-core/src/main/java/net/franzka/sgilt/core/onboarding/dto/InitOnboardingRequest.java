@@ -1,32 +1,24 @@
 package net.franzka.sgilt.core.onboarding.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-
-import java.time.LocalDate;
-import java.util.UUID;
+import net.franzka.sgilt.core.evenement.dto.EvenementDto;
 
 /**
- * DTO pour la demande de réservation initiale dans le flux d'onboarding.
+ * Création d'un événement par un visiteur : ses coordonnées et l'événement
+ * (données, rubriques, demandes initiées). C'est aussi la forme stockée dans la session
+ * d'onboarding, quelle que soit la séquence d'entrée.
  */
 public record InitOnboardingRequest(
         @NotBlank @Size(max = 100) String firstName,
         @NotBlank @Size(max = 100) String lastName,
         @NotBlank @Email @Size(max = 255) String email,
-        @NotNull UUID prestataireId,
-        @Size(max = 100) String eventType,
-        @Size(max = 100) String ambiance,
-        @Size(max = 100) String momentCle,
-        @Size(max = 2000) String description,
-        LocalDate date,
-        @Size(max = 100) String ville,
-        @Size(max = 20) String nbInvites,
-        @Size(max = 200) String lieu,
         @Size(max = 30)
         @Pattern(regexp = "^(?:[\\s\\-.()/+]*\\d){7,15}[\\s\\-.()/+]*$", message = "Numéro de téléphone invalide")
         String telephone,
-        @Size(max = 1000) String prestataireMessage
+        @Valid @NotNull EvenementDto evenement
 ) {}

@@ -1,12 +1,14 @@
 package net.franzka.sgilt.core.prestataire.controller;
 
 import net.franzka.sgilt.core.prestataire.domain.Engagement;
+import net.franzka.sgilt.core.prestataire.dto.CategorieDto;
 import net.franzka.sgilt.core.prestataire.dto.MediaUploadDto;
 import net.franzka.sgilt.core.prestataire.dto.MediaDto;
 import net.franzka.sgilt.core.prestataire.dto.MediasPutRequest;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireDetailDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireSearchResponseDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireUpdateDto;
+import net.franzka.sgilt.core.prestataire.service.CategorieService;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
 import net.franzka.sgilt.core.security.CurrentUserService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
@@ -32,6 +34,9 @@ class PrestataireControllerTest {
 
     @Mock
     private PrestataireService prestataireService;
+
+    @Mock
+    private CategorieService categorieService;
 
     @Mock
     private CurrentUserService currentUserService;
@@ -89,6 +94,22 @@ class PrestataireControllerTest {
             assertThat(keys).containsExactlyInAnyOrder(
                     "REPONSE_48H", "ADAPTABLE", "ACCOMPAGNEMENT", "EQUIPE", "INTERLOCUTEUR_UNIQUE", "ECORESPONSABLE");
             assertThat(keys).hasSize(Engagement.values().length);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // getCategories
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetCategories {
+
+        @Test
+        void givenCategories_whenGetCategories_thenDelegatesToService() {
+            List<CategorieDto> categories = List.of(new CategorieDto("musique", "Musique", List.of()));
+            when(categorieService.getCategories()).thenReturn(categories);
+
+            assertThat(controller.getCategories().getBody()).isEqualTo(categories);
         }
     }
 

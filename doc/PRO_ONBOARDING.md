@@ -51,11 +51,11 @@ Gardé par `ROLE_ADMIN`. Body JSON :
 | `lastName`        | nom                                                                        |
 | `slug`            | identifiant public de la fiche — doit être unique, fourni explicitement    |
 | `prestataireName` | nom du prestataire                                                         |
-| `category`        | clé de catégorie (string libre)                                            |
-| `subcats`         | clés de sous-catégories séparées par des virgules (peut être vide)         |
+| `category`        | clé de catégorie (table `categories`)                                      |
+| `subcat`          | clé de sous-catégorie (table `sous_categories`), de la catégorie `category` |
 | `cleEnMain`       | `true` pour le flow clé-en-main, `false` (ou absent) pour le flow autonome |
 
-Tous les champs sont requis sauf `subcats` et `cleEnMain`. Un champ manquant → 400, rien n'est créé.
+Tous les champs sont requis sauf `cleEnMain`. Un champ manquant → 400, rien n'est créé.
 
 ### Exemple — flow autonome
 
@@ -70,8 +70,8 @@ curl --request POST \
     "lastName": "Dupont",
     "slug": "dj-max",
     "prestataireName": "DJ Max",
-    "category": "music",
-    "subcats": "dj,mariage",
+    "category": "musique",
+    "subcat": "dj",
     "cleEnMain": false
   }'
 ```

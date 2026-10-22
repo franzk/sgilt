@@ -15,16 +15,16 @@ Feature: Parcours découverte — recherche publique de prestataires
     Then status 200
     And match response.results[*].slug contains 'studio-test'
     And match response.results[*].slug contains 'dj-test'
-    And match response.countsByCategory contains { photographe: '#number', dj: '#number' }
+    And match response.countsByCategory contains { services: '#number', musique: '#number' }
 
-    # ── 2. Recherche filtrée sur la catégorie "photographe" : le DJ n'apparaît plus ───────────────
+    # ── 2. Recherche filtrée sur la catégorie "services" : le DJ n'apparaît plus ───────────────
     Given path '/api/v1/prestataires'
-    And param categoryKey = 'photographe'
+    And param categoryKey = 'services'
     When method GET
     Then status 200
     And match response.results[*].slug contains 'studio-test'
     And match response.results[*].slug !contains 'dj-test'
-    And match each response.results[*].categoryKey == 'photographe'
+    And match each response.results[*].categoryKey == 'services'
 
     # ── 3. Consultation de la fiche trouvée, sans authentification ────────────────────────────────
     Given path '/api/v1/prestataires/studio-test'

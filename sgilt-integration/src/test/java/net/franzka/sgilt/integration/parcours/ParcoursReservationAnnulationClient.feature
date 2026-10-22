@@ -10,20 +10,21 @@ Feature: Parcours réservation — le client annule sa propre demande
 
   Scenario: Le client annule sa demande avant tout contact — NEW -> CANCELED_BY_CLIENT_PRE_CONTACT
 
-    # ── 1. Le client crée un événement ciblant le prestataire ────────────────────────────────────
+    # ── 1. Le client crée un événement avec une demande au prestataire ────────────────────────────────────
     Given path '/api/v1/user/events'
     And header Authorization = 'Bearer ' + tokenUser
-    And request { prestataireId: '#(prestataireId)', eventType: 'Anniversaire', date: '2027-11-15', ville: 'Bordeaux' }
+    And request { eventType: 'anniversaire', date: '2027-11-15', ville: 'Bordeaux', demande: { prestataireId: '#(prestataireId)' } }
     When method POST
     Then status 201
     * def eventId = response.eventId
 
-    Given path '/api/v1/user/reservations'
+    # Les réservations de l'événement sont lues dans ses rubriques
+    Given path '/api/v1/user/events/' + eventId
     And header Authorization = 'Bearer ' + tokenUser
-    And param eventId = eventId
     When method GET
     Then status 200
-    * def reservationId = response[0].id
+    * def reservations = karate.jsonPath(response, '$.rubriques[*].reservations[*]')
+    * def reservationId = reservations[0].id
 
     # ── 2. Le client annule sa propre demande ─────────────────────────────────────────────────────
     Given path '/api/v1/user/reservations/' + reservationId + '/cancel'
@@ -72,17 +73,18 @@ Feature: Parcours réservation — le client annule sa propre demande
     # Un autre client (pas propriétaire de l'événement) ne peut pas annuler à sa place
     Given path '/api/v1/user/events'
     And header Authorization = 'Bearer ' + tokenUser
-    And request { prestataireId: '#(prestataireId)', eventType: 'Anniversaire', date: '2027-11-16', ville: 'Bordeaux' }
+    And request { eventType: 'anniversaire', date: '2027-11-16', ville: 'Bordeaux', demande: { prestataireId: '#(prestataireId)' } }
     When method POST
     Then status 201
     * def secondEventId = response.eventId
 
-    Given path '/api/v1/user/reservations'
+    # Les réservations de l'événement sont lues dans ses rubriques
+    Given path '/api/v1/user/events/' + secondEventId
     And header Authorization = 'Bearer ' + tokenUser
-    And param eventId = secondEventId
     When method GET
     Then status 200
-    * def secondReservationId = response[0].id
+    * def reservations = karate.jsonPath(response, '$.rubriques[*].reservations[*]')
+    * def secondReservationId = reservations[0].id
 
     Given path '/api/v1/user/reservations/' + secondReservationId + '/cancel'
     And header Authorization = 'Bearer ' + tokenUser2

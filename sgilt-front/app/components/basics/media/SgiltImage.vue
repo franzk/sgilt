@@ -13,19 +13,18 @@ const props = defineProps<{
 
 const { toUrl } = useImageUrl()
 
-const resolvedSrc = computed(() =>
-  props.src ? toUrl(props.src) : '/images/placeholder-default.jpg',
-)
+// Sans source, rien n'est chargé : l'icône d'erreur s'affiche directement.
+const resolvedSrc = computed(() => (props.src ? toUrl(props.src) : null))
 
 const isLoaded = ref(false)
-const hasError = ref(false)
+const hasError = ref(!props.src)
 
 // On réinitialise si la source change (ex: navigation)
 watch(
   () => props.src,
-  () => {
+  (src) => {
     isLoaded.value = false
-    hasError.value = false
+    hasError.value = !src
   },
 )
 </script>
@@ -39,6 +38,7 @@ watch(
     </div>
 
     <img
+      v-if="resolvedSrc"
       v-show="!hasError"
       :src="resolvedSrc"
       :alt="alt"

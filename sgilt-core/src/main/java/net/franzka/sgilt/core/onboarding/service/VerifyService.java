@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 /**
- * Service pour la confirmation de la demande initiale par email.
+ * Service de vérification de l'email d'un onboarding (lien reçu par mail).
  * Vérifie le token reçu par email et génère un JWT set-password court terme — que le token
  * appartienne au flux client ({@link Onboarding}) ou au flux prestataire ({@link ActionToken}) :
  * essaie d'abord le flux client, retombe sur le flux prestataire si le token n'y correspond pas.

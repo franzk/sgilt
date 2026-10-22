@@ -8,14 +8,14 @@ package net.franzka.sgilt.sgilt_mailer.template;
 public enum MailType {
 
     /**
-     * Mail de confirmation d'adresse email envoyé lors de l'initiation
-     * du tunnel de demande de réservation.
+     * Mail de confirmation d'adresse email envoyé quand un visiteur commence l'organisation
+     * d'un événement (création de son compte au passage).
      */
     VERIFICATION_EMAIL,
 
     /**
-     * Mail d'alerte de sécurité envoyé lorsqu'une demande de réservation
-     * est initiée avec une adresse email déjà associée à un compte existant.
+     * Mail d'alerte de sécurité envoyé lorsque l'organisation d'un événement est commencée
+     * avec une adresse email déjà associée à un compte existant.
      */
     SECURITY_ALERT_EMAIL,
 

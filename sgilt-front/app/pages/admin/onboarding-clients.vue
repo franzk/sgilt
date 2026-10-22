@@ -16,7 +16,7 @@
         <div class="row-content">
           <div class="text">
             <p class="email">{{ row.email }}</p>
-            <p class="meta">{{ $t('admin.onboarding-clients.target', { name: row.prestataireName }) }}</p>
+            <p class="meta">{{ eventSummary(row) }}</p>
             <p class="dates">
               {{ $t(`admin.onboarding-clients.state.${row.state}`) }}
               ·
@@ -34,11 +34,22 @@
 <script setup lang="ts">
 import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
 import AdminOnboardingTabs from '~/components/admin/AdminOnboardingTabs.vue'
-import { formatDateTime } from '~/utils/dateUtils'
+import { formatDate, formatDateTime } from '~/utils/dateUtils'
+import { EVENT_TYPE_OPTIONS } from '~/types/evenement'
+import type { OnboardingPending } from '~/data/admin/domain/OnboardingPending'
 
 definePageMeta({ layout: 'admin' })
 
 const { rows, loading, load } = useAdminUserOnboarding()
+
+const { t } = useI18n()
+
+// Type, date et nombre de demandes de l'événement en cours de création
+function eventSummary(row: OnboardingPending): string {
+  const type = EVENT_TYPE_OPTIONS.find((o) => o.value === row.eventType)?.label ?? row.eventType
+  const demandes = t('admin.onboarding-clients.demandes', { n: row.demandeCount }, row.demandeCount)
+  return [type, row.eventDate ? formatDate(row.eventDate) : null, demandes].filter(Boolean).join(' · ')
+}
 
 onMounted(() => load())
 </script>

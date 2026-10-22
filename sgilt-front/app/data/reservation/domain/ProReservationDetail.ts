@@ -1,11 +1,8 @@
 import type { ReservationMeta } from './ReservationMeta'
-import type { EventDetail } from '~/data/evenement/domain/EventDetail'
+import type { EventMeta } from '~/data/evenement/domain/EventMeta'
 import type { ClientContactInfo } from './ClientContactInfo'
 
 export interface ProReservationDetail extends ReservationMeta {
-  event: EventDetail
-  progressType: 'deadline' | 'duration' | 'temporal' | null
-  progressValue: number | null
-  phraseInfoState: string | null
+  event: EventMeta
   clientInfo: ClientContactInfo
 }

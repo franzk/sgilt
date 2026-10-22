@@ -8,5 +8,4 @@ export interface PrestataireCardDetail {
   image: string
   slug: string
   categoryKey?: string
-  categoryName?: string
 }

@@ -1,5 +1,7 @@
 package net.franzka.sgilt.core.reservation.service;
 
+import java.time.LocalDateTime;
+import net.franzka.sgilt.core.evenement.service.JournalEvenementService;
 import lombok.RequiredArgsConstructor;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
@@ -47,6 +49,7 @@ public class ReservationService {
     private final NoteRepository noteRepository;
     private final ReservationMapper reservationMapper;
     private final ReservationEventMapper reservationEventMapper;
+    private final JournalEvenementService journalEvenementService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     /**
@@ -90,21 +93,6 @@ public class ReservationService {
     }
 
     /**
-     * Retourne le nombre de réservations par statut pour un événement.
-     * Données brutes — la construction du DTO et le calcul du mood sont à la charge de l'appelant.
-     *
-     * @param evenementId l'identifiant de l'événement
-     * @return une map statut → nombre de réservations
-     */
-    public Map<ReservationStatus, Integer> getStatusCountsByEvenement(UUID evenementId) {
-        List<Reservation> reservations = reservationRepository.findByEvenementId(evenementId);
-        return reservations.stream()
-            .collect(
-                    Collectors.groupingBy(
-                            Reservation::getStatus, Collectors.summingInt(r -> 1)));
-    }
-
-    /**
      * Retourne le nombre de réservations par statut pour un prestataire.
      * Données brutes — la construction du DTO est à la charge de l'appelant.
      *
@@ -140,13 +128,15 @@ public class ReservationService {
      * @param utilisateur    l'utilisateur à l'origine de la réservation
      * @param date           la date souhaitée pour la prestation
      * @param initialMessage le message initial adressé au prestataire (peut être null)
+     * @param rubriqueKey    la rubrique de l'événement où la réservation est rangée
      * @return la réservation sauvegardée
      */
     public Reservation create(Evenement evenement,
                               Prestataire prestataire,
                               Utilisateur utilisateur,
                               LocalDate date,
-                              String initialMessage
+                              String initialMessage,
+                              String rubriqueKey
     ) {
         Reservation reservation = Reservation.builder()
                 .evenement(evenement)
@@ -154,6 +144,7 @@ public class ReservationService {
                 .utilisateur(utilisateur)
                 .date(date)
                 .status(ReservationStatus.NEW)
+                .rubriqueKey(rubriqueKey)
                 .build();
         reservation = reservationRepository.save(reservation);
 
@@ -284,7 +275,8 @@ public class ReservationService {
     }
 
     /**
-     * Retourne le détail d'une réservation pour le prestataire.
+     * Retourne le détail d'une réservation pour le prestataire, avec l'événement complet et la date
+     * de sa dernière modification (journal).
      * L'ownership doit être vérifié par l'appelant avant d'invoquer cette méthode.
      *
      * @param reservationId l'identifiant de la réservation
@@ -294,7 +286,10 @@ public class ReservationService {
     public ProReservationDetailDto getProReservationDetail(UUID reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(ReservationNotFoundException::new);
-        return reservationMapper.toProReservationDetailDto(reservation);
+        LocalDateTime lastUpdateDate = journalEvenementService
+                .derniereModification(reservation.getEvenement().getId())
+                .orElse(null);
+        return reservationMapper.toProReservationDetailDto(reservation, lastUpdateDate);
     }
 
     /**

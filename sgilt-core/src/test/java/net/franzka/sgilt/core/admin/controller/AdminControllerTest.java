@@ -69,7 +69,7 @@ class AdminControllerTest {
     class ProvisionPrestataire {
 
         private final ProvisionPrestataireRequest request = new ProvisionPrestataireRequest(
-                "pro@sgilt.fr", "Jean", "Dupont", "studio-fleur", "Studio Fleur", "photo", "mariage,portrait", true);
+                "pro@sgilt.fr", "Jean", "Dupont", "studio-fleur", "Studio Fleur", "services", "photographe", true);
 
         @Test
         void givenSlugAlreadyExists_whenProvisionPrestataire_thenThrowsWithoutCreatingKeycloakUser() {
@@ -91,7 +91,7 @@ class AdminControllerTest {
             Prestataire prestataire = Prestataire.builder()
                     .id(UUID.randomUUID()).utilisateur(utilisateur).slug("studio-fleur").build();
             when(prestataireService.createPrestataireCleEnMain(
-                    utilisateur, "studio-fleur", "Studio Fleur", "photo", List.of("mariage", "portrait")))
+                    utilisateur, "studio-fleur", "Studio Fleur", "services", "photographe"))
                     .thenReturn(new PrestataireService.CreationResult(prestataire, true));
 
             ResponseEntity<ProvisionPrestataireResponse> response = controller.provisionPrestataire(request);
@@ -106,14 +106,14 @@ class AdminControllerTest {
         void givenAutonomeFlow_whenProvisionPrestataire_thenCreatesViaAutonome() {
             stubTransactionExecution();
             ProvisionPrestataireRequest autonomeRequest = new ProvisionPrestataireRequest(
-                    "pro@sgilt.fr", "Jean", "Dupont", "studio-fleur", "Studio Fleur", "photo", "mariage", false);
+                    "pro@sgilt.fr", "Jean", "Dupont", "studio-fleur", "Studio Fleur", "services", "photographe", false);
             when(keycloakAdminService.createProUserWithoutPassword(any(), any(), any())).thenReturn("kc-user-id");
             Utilisateur utilisateur = Utilisateur.builder().id(UUID.randomUUID()).build();
             when(utilisateurService.createUtilisateur(any(), any(), any(), any())).thenReturn(utilisateur);
             Prestataire prestataire = Prestataire.builder()
                     .id(UUID.randomUUID()).utilisateur(utilisateur).slug("studio-fleur").build();
             when(prestataireService.createPrestataireAutonome(
-                    utilisateur, "studio-fleur", "Studio Fleur", "photo", List.of("mariage")))
+                    utilisateur, "studio-fleur", "Studio Fleur", "services", "photographe"))
                     .thenReturn(new PrestataireService.CreationResult(prestataire, true));
 
             controller.provisionPrestataire(autonomeRequest);

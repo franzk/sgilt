@@ -1,14 +1,15 @@
 package net.franzka.sgilt.core.evenement.api;
 
+import jakarta.validation.Valid;
 import net.franzka.sgilt.core.evenement.dto.AddReservationRequest;
-import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
-import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
 import net.franzka.sgilt.core.evenement.dto.CoverSelectDto;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
-import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
-import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
-import net.franzka.sgilt.core.evenement.dto.EventPatchDto;
+import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
+import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
+import net.franzka.sgilt.core.evenement.dto.EventDto;
+import net.franzka.sgilt.core.evenement.dto.EventMetaDto;
+import net.franzka.sgilt.core.evenement.dto.EventMetaPatchDto;
 import net.franzka.sgilt.core.evenement.dto.JournalEvenementDto;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -30,19 +31,16 @@ import java.util.UUID;
 public interface EvenementApi {
 
     @PostMapping
-    ResponseEntity<CreateEventResponse> createEvent(@RequestBody CreateEventRequest body);
+    ResponseEntity<CreateEventResponse> createEvent(@RequestBody @Valid CreateEventRequest body);
 
     @GetMapping
     ResponseEntity<List<EvenementSummaryDto>> getMyEvents();
 
     @GetMapping("/{eventId}")
-    ResponseEntity<EventDetailDto> getEventDetail(@PathVariable UUID eventId);
+    ResponseEntity<EventDto> getEvent(@PathVariable UUID eventId);
 
     @PatchMapping("/{eventId}")
-    ResponseEntity<EventDetailDto> patchEvent(@PathVariable UUID eventId, @RequestBody EventPatchDto patch);
-
-    @GetMapping("/{eventId}/counts")
-    ResponseEntity<EventCountsDto> getEventCounts(@PathVariable UUID eventId);
+    ResponseEntity<EventMetaDto> patchEvent(@PathVariable UUID eventId, @RequestBody EventMetaPatchDto patch);
 
     @GetMapping("/{eventId}/journal")
     ResponseEntity<Page<JournalEvenementDto>> getJournal(

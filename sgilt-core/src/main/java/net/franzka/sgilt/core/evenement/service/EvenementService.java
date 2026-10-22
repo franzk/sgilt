@@ -2,41 +2,47 @@ package net.franzka.sgilt.core.evenement.service;
 
 import lombok.RequiredArgsConstructor;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
-import net.franzka.sgilt.core.evenement.domain.EvenementStatus;
+import net.franzka.sgilt.core.evenement.domain.EvenementRubrique;
+import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
 import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
 import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
-import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
-import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
-import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
-import net.franzka.sgilt.core.evenement.dto.EventPatchDto;
+import net.franzka.sgilt.core.evenement.dto.DemandeInitieeDto;
+import net.franzka.sgilt.core.evenement.dto.EvenementDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
+import net.franzka.sgilt.core.evenement.dto.EventDto;
+import net.franzka.sgilt.core.evenement.dto.EventMetaDto;
+import net.franzka.sgilt.core.evenement.dto.EventMetaPatchDto;
+import net.franzka.sgilt.core.evenement.dto.EventRubriqueDto;
 import net.franzka.sgilt.core.evenement.dto.ModificationChamp;
+import net.franzka.sgilt.core.evenement.dto.RubriqueDto;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotAllowedException;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotFoundException;
 import net.franzka.sgilt.core.evenement.mapper.EvenementMapper;
 import net.franzka.sgilt.core.evenement.repository.EvenementRepository;
+import net.franzka.sgilt.core.prestataire.domain.Prestataire;
+import net.franzka.sgilt.core.prestataire.exception.PrestataireNotFoundException;
+import net.franzka.sgilt.core.prestataire.service.PrestataireService;
+import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
+import net.franzka.sgilt.core.reservation.service.ReservationService;
 import net.franzka.sgilt.core.storage.FileStorageException;
 import net.franzka.sgilt.core.storage.FileStorageService;
-import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
-import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
-import net.franzka.sgilt.core.prestataire.domain.Prestataire;
-import net.franzka.sgilt.core.prestataire.service.PrestataireService;
-import net.franzka.sgilt.core.reservation.service.ReservationService;
+import net.franzka.sgilt.core.template.service.TemplateService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Set;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -54,6 +60,7 @@ public class EvenementService {
     private final EvenementMapper evenementMapper;
     private final JournalEvenementService journalEvenementService;
     private final FileStorageService fileStorageService;
+    private final TemplateService templateService;
 
     /**
      * Retourne la liste des événements de l'utilisateur identifié par son id.
@@ -68,71 +75,37 @@ public class EvenementService {
     }
 
     /**
-     * Retourne les métadonnées d'un événement pour l'EventBoard.
+     * Retourne tout un événement pour l'EventBoard : ses métadonnées et ses rubriques, chacune
+     * avec ses réservations.
      *
      * @param eventId       l'identifiant de l'événement
      * @param utilisateurId l'identifiant de l'utilisateur connecté
-     * @return les métadonnées de l'événement
+     * @return l'événement complet
      * @throws EvenementNotFoundException   si l'événement n'existe pas
      * @throws EvenementNotAllowedException si l'événement n'appartient pas à l'utilisateur connecté
      */
-    public EventDetailDto getEventDetail(UUID eventId, UUID utilisateurId) {
-        Evenement event = getEvent(eventId, utilisateurId);
+    public EventDto getEvent(UUID eventId, UUID utilisateurId) {
+        Evenement event = getOwnedEvent(eventId, utilisateurId);
         LocalDateTime lastUpdateDate = journalEvenementService.derniereModification(eventId).orElse(null);
-        return evenementMapper.toDetailDto(event, computeCountdown(event.getDate()), lastUpdateDate);
+        EventMetaDto meta = evenementMapper.toMetaDto(event, lastUpdateDate);
+        return new EventDto(meta, rubriquesWithReservations(event));
     }
 
-    /**
-     * Retourne les compteurs de réservations et le mood pour l'EventBoard.
-     *
-     * @param eventId       l'identifiant de l'événement
-     * @param utilisateurId l'identifiant de l'utilisateur connecté
-     * @return les compteurs par statut et le mood calculé
-     * @throws EvenementNotFoundException   si l'événement n'existe pas
-     * @throws EvenementNotAllowedException si l'événement n'appartient pas à l'utilisateur connecté
-     */
-    public EventCountsDto getEventCounts(UUID eventId, UUID utilisateurId) {
-        getEvent(eventId, utilisateurId); // vérifie que l'événement appartient bien à l'utilisateur
-        return buildEventCounts(reservationService.getStatusCountsByEvenement(eventId));
-    }
+    // Rubriques de l'événement, dans son ordre, chacune avec les réservations qui y sont rangées
+    // (rubrique fixée à l'entrée de chaque réservation).
+    private List<EventRubriqueDto> rubriquesWithReservations(Evenement event) {
+        // 1 — les réservations de l'événement, regroupées par rubrique.
+        Map<String, List<ReservationSummaryDto>> reservationsByRubrique = new HashMap<>();
+        for (ReservationSummaryDto reservation : reservationService.getReservationSummaries(event.getId())) {
+            reservationsByRubrique.computeIfAbsent(reservation.rubriqueKey(), key -> new ArrayList<>()).add(reservation);
+        }
 
-    /**
-     * Crée un nouvel événement et sa réservation initiale pour un utilisateur authentifié.
-     *
-     * @param utilisateur l'utilisateur connecté (propriétaire de l'événement)
-     * @param request     les données de l'événement et de la réservation
-     * @return l'identifiant du nouvel événement
-     */
-    public CreateEventResponse createEvent(Utilisateur utilisateur, CreateEventRequest request) {
-        Evenement evenement = Evenement.builder()
-                .utilisateur(utilisateur)
-                .title(defaultName(request.date()))
-                .date(request.date())
-                .status(EvenementStatus.ACTIVE)
-                .lieu(request.lieu())
-                .ville(request.ville())
-                .nbInvites(request.nbInvites())
-                .eventType(request.eventType())
-                .ambiance(request.ambiance())
-                .momentCle(request.momentCle())
-                .description(request.description())
-                .build();
-        evenement = evenementRepository.save(evenement);
-        Prestataire prestataire = prestataireService.getById(request.prestataireId());
-        reservationService.create(evenement, prestataire, utilisateur, request.date(), request.prestataireMessage());
-        return new CreateEventResponse(evenement.getId());
-    }
-
-    /**
-     * Vérifie que l'utilisateur est bien le propriétaire de l'événement.
-     *
-     * @param eventId       l'identifiant de l'événement
-     * @param utilisateurId l'identifiant de l'utilisateur connecté
-     * @throws EvenementNotFoundException   si l'événement n'existe pas
-     * @throws EvenementNotAllowedException si l'événement n'appartient pas à l'utilisateur connecté
-     */
-    public void verifyEventOwnership(UUID eventId, UUID utilisateurId) {
-        getEvent(eventId, utilisateurId);
+        // 2 — chaque rubrique de l'événement, dans son ordre, avec ses réservations (aucune si vide).
+        List<EventRubriqueDto> rubriques = new ArrayList<>();
+        for (EvenementRubrique rubrique : event.getRubriques()) {
+            rubriques.add(new EventRubriqueDto(rubrique.key(), reservationsByRubrique.getOrDefault(rubrique.key(), List.of())));
+        }
+        return rubriques;
     }
 
     /**
@@ -146,33 +119,90 @@ public class EvenementService {
      * @throws EvenementNotAllowedException si l'utilisateur n'est pas le propriétaire
      */
     public void addReservation(UUID eventId, Utilisateur utilisateur, UUID prestataireId, String message) {
-        Evenement event = getEvent(eventId, utilisateur.getId());
+        Evenement event = getOwnedEvent(eventId, utilisateur.getId());
         Prestataire prestataire = prestataireService.getById(prestataireId);
-        reservationService.create(event, prestataire, utilisateur, event.getDate(), message);
+        String rubriqueKey = templateService.rubriqueOf(event.getEventType(), prestataire.getSubcatKey());
+        addRubrique(event, rubriqueKey); // si la catégorie du la sous catégorie du prestataire n'a pas de rubrique correspondante dans l'événement, on l'ajoute à la fin de la liste des rubriques
+        reservationService.create(event, prestataire, utilisateur, event.getDate(), message, rubriqueKey);
+    }
+
+    // Ajoute à l'événement la rubrique où entre une réservation, si elle n'y est pas encore, à la
+    // position que lui donne le template. Les rubriques déjà présentes restent telles quelles.
+    private void addRubrique(Evenement event, String rubriqueKey) {
+        List<String> keys = event.getRubriques().stream().map(EvenementRubrique::key).toList();
+        if (keys.contains(rubriqueKey)) return;
+
+        int position = templateService.insertionPosition(event.getEventType(), keys, rubriqueKey);
+        List<EvenementRubrique> rubriques = new ArrayList<>(event.getRubriques());
+        rubriques.add(position, new EvenementRubrique(rubriqueKey));
+        event.setRubriques(rubriques);
+        evenementRepository.save(event);
     }
 
     /**
-     * Crée et persiste un événement en statut ACTIVE pour l'utilisateur donné.
+     * Crée un événement pour un utilisateur authentifié, avec sa première demande s'il en a une
+     * (prestataire vérifié publié, réservation rangée dans sa rubrique).
+     *
+     * @param utilisateur l'utilisateur connecté (propriétaire de l'événement)
+     * @param request     les données de l'événement et sa première demande éventuelle
+     * @return l'identifiant du nouvel événement
+     * @throws PrestataireNotFoundException si le prestataire de la demande n'existe pas ou n'est pas publié
+     */
+    public CreateEventResponse createEvent(Utilisateur utilisateur, CreateEventRequest request) {
+        if (request.demande() != null) prestataireService.ensurePublished(request.demande().prestataireId());
+        return new CreateEventResponse(createFromDto(utilisateur, buildEvenement(request)).getId());
+    }
+
+    /**
+     * Construit, sans l'enregistrer, un événement à créer : ses données, les rubriques du template
+     * de son type et, s'il naît d'une demande, la demande rangée dans sa rubrique. Commun à la
+     * création connectée et à l'onboarding (où l'événement attend l'activation du compte).
+     *
+     * @param request les données de l'événement et sa première demande éventuelle
+     * @return l'événement complet, prêt pour {@link #createFromDto}
+     */
+    public EvenementDto buildEvenement(CreateEventRequest request) {
+        List<RubriqueDto> rubriques = request.demande() == null
+                ? templateService.getNewEventRubriques(request.eventType())
+                : templateService.getEventRubriquesFromDemande(request.eventType(), request.demande());
+        return new EvenementDto(
+                request.title(), request.eventType(), request.ambiance(), request.momentCle(), request.description(),
+                request.date(), request.ville(), request.nbInvites(), request.lieu(), rubriques);
+    }
+
+    /**
+     * Crée en statut ACTIVE un événement complet (données et rubriques), puis une réservation
+     * pour chaque demande initiée rangée dans ses rubriques. Sans nom choisi, l'événement reçoit un
+     * nom par défaut tiré de sa date. Seules les clés des rubriques sont
+     * enregistrées sur l'événement : les demandes deviennent des réservations.
      *
      * @param utilisateur l'utilisateur propriétaire de l'événement
-     * @param formData    les données saisies dans le tunnel d'onboarding
+     * @param evenement   l'événement : données, rubriques et demandes initiées
      * @return l'événement sauvegardé
      */
-    public Evenement createFromFormData(Utilisateur utilisateur, InitOnboardingRequest formData) {
-        Evenement evenement = Evenement.builder()
-                .utilisateur(utilisateur)
-                .title(defaultName(formData.date()))
-                .date(formData.date())
-                .status(EvenementStatus.ACTIVE)
-                .lieu(formData.lieu())
-                .ville(formData.ville())
-                .nbInvites(formData.nbInvites())
-                .eventType(formData.eventType())
-                .ambiance(formData.ambiance())
-                .momentCle(formData.momentCle())
-                .description(formData.description())
-                .build();
-        return evenementRepository.save(evenement);
+    public Evenement createFromDto(Utilisateur utilisateur, EvenementDto evenement) {
+        Evenement created = evenementMapper.toEvenement(evenement, utilisateur);
+        created.setTitle(StringUtils.hasText(evenement.title()) ? evenement.title() : defaultName(evenement.date()));
+        created = evenementRepository.save(created);
+
+        createReservationsFromDemandesInitiees(created, evenement.rubriques());
+        return created;
+    }
+
+    /**
+     * Crée une réservation pour chaque demande initiée rangée dans les rubriques d'un événement
+     * qui vient d'être créé, au nom de son propriétaire et pour sa date. Chaque réservation garde
+     * la rubrique de sa demande.
+     *
+     * @param evenement l'événement créé
+     * @param rubriques ses rubriques telles que transmises, avec leurs demandes initiées
+     */
+    private void createReservationsFromDemandesInitiees(Evenement evenement, List<RubriqueDto> rubriques) {
+        if (rubriques == null) return;
+        rubriques.forEach(rubrique -> Objects.requireNonNullElse(rubrique.reservations(), List.<DemandeInitieeDto>of())
+                .forEach(demande -> reservationService.create(evenement,
+                        prestataireService.getById(demande.prestataireId()),
+                        evenement.getUtilisateur(), evenement.getDate(), demande.message(), rubrique.key())));
     }
 
     /**
@@ -185,17 +215,17 @@ public class EvenementService {
      * @throws EvenementNotFoundException   si l'événement n'existe pas
      * @throws EvenementNotAllowedException si l'événement n'appartient pas à l'utilisateur connecté
      */
-    public EventDetailDto patchEvent(UUID eventId, UUID utilisateurId, EventPatchDto patch) {
-        Evenement event = getEvent(eventId, utilisateurId);
+    public EventMetaDto patchEvent(UUID eventId, UUID utilisateurId, EventMetaPatchDto patch) {
+        Evenement event = getOwnedEvent(eventId, utilisateurId);
         List<ModificationChamp> modifications = computeModifications(event, patch);
         applyPatch(event, patch);
         evenementRepository.save(event);
         journalEvenementService.save(event, modifications);
         LocalDateTime lastUpdateDate = journalEvenementService.derniereModification(eventId).orElse(null);
-        return evenementMapper.toDetailDto(event, computeCountdown(event.getDate()), lastUpdateDate);
+        return evenementMapper.toMetaDto(event, lastUpdateDate);
     }
 
-    private List<ModificationChamp> computeModifications(Evenement event, EventPatchDto patch) {
+    private List<ModificationChamp> computeModifications(Evenement event, EventMetaPatchDto patch) {
         List<ModificationChamp> modifications = new ArrayList<>();
         if (patch.title()       != null) addIfUpdated(modifications, "titre",        event.getTitle(),       blankToNull(patch.title()));
         if (patch.lieu()        != null) addIfUpdated(modifications, "lieu",         event.getLieu(),        blankToNull(patch.lieu()));
@@ -215,7 +245,7 @@ public class EvenementService {
         }
     }
 
-    private void applyPatch(Evenement event, EventPatchDto patch) {
+    private void applyPatch(Evenement event, EventMetaPatchDto patch) {
         if (patch.title()       != null) event.setTitle(blankToNull(patch.title()));
         if (patch.lieu()        != null) event.setLieu(blankToNull(patch.lieu()));
         if (patch.sharedNote()  != null) event.setNotePartagee(patch.sharedNote());
@@ -243,7 +273,7 @@ public class EvenementService {
      * @throws FileStorageException        en cas d'erreur de stockage
      */
     public CoverUrlDto updateCover(UUID eventId, UUID utilisateurId, MultipartFile file) {
-        Evenement event = getEvent(eventId, utilisateurId);
+        Evenement event = getOwnedEvent(eventId, utilisateurId);
         supprimerAncienneImageSiDeletable(event.getImagePath());
         try {
             String imagePath = fileStorageService.upload(file, "uploads");
@@ -267,7 +297,7 @@ public class EvenementService {
      * @throws EvenementNotAllowedException si l'utilisateur n'est pas le propriétaire
      */
     public CoverUrlDto selectCover(UUID eventId, UUID utilisateurId, String imagePath) {
-        Evenement event = getEvent(eventId, utilisateurId);
+        Evenement event = getOwnedEvent(eventId, utilisateurId);
         supprimerAncienneImageSiDeletable(event.getImagePath());
         event.setImagePath(imagePath);
         evenementRepository.save(event);
@@ -313,7 +343,7 @@ public class EvenementService {
      * @throws EvenementNotFoundException si l'événement n'existe pas
      * @throws EvenementNotAllowedException si l'événement n'appartient pas à l'utilisateur
      */
-    private Evenement getEvent(UUID eventId, UUID utilisateurId) {
+    private Evenement getOwnedEvent(UUID eventId, UUID utilisateurId) {
         Evenement event = chargerEvenement(eventId);
         if (!event.getUtilisateur().getId().equals(utilisateurId)) {
             throw new EvenementNotAllowedException();
@@ -324,44 +354,6 @@ public class EvenementService {
     private Evenement chargerEvenement(UUID eventId) {
         return evenementRepository.findById(eventId)
                 .orElseThrow(EvenementNotFoundException::new);
-    }
-
-    /**
-     * Mappe les comptes par statuts d'un événement en un DTO de compteurs et mood pour l'EventBoard.
-     *
-     * @param counts les comptes par statut de réservation pour un événement
-     * @return un DTO contenant les compteurs et le mood calculé
-     */
-    private EventCountsDto buildEventCounts(Map<ReservationStatus, Integer> counts) {
-        int confirmed    = counts.getOrDefault(ReservationStatus.CONFIRMED, 0);
-        int inDiscussion = counts.getOrDefault(ReservationStatus.IN_DISCUSSION, 0);
-        int nouvelle     = counts.getOrDefault(ReservationStatus.NEW, 0);
-        int refusee      = counts.getOrDefault(ReservationStatus.REFUSED_PRE_CONTACT, 0)
-                         + counts.getOrDefault(ReservationStatus.REFUSED_POST_CONTACT, 0);
-        int annulee      = counts.getOrDefault(ReservationStatus.CANCELED_BY_CLIENT_PRE_CONTACT, 0)
-                         + counts.getOrDefault(ReservationStatus.CANCELED_BY_CLIENT_POST_CONTACT, 0)
-                         + counts.getOrDefault(ReservationStatus.CANCELED_BY_CLIENT_POST_CONFIRMATION, 0)
-                         + counts.getOrDefault(ReservationStatus.CANCELED_BY_PRO_POST_CONFIRMATION, 0);
-        int realisee     = counts.getOrDefault(ReservationStatus.DONE, 0);
-
-        return new EventCountsDto(computeMood(confirmed, inDiscussion, nouvelle),
-                confirmed, inDiscussion, nouvelle, refusee, annulee, realisee);
-    }
-
-    /**
-     * calcule le mood pour l'EventBoard.
-     *
-     * @param confirmed nombre de réservations confirmées
-     * @param inDiscussion nombre de réservations en discussion
-     * @param nouvelle nombre de réservations nouvelles en attente de recontact par le prestataire
-     * @return le mood calculé : "confirmee", "en_discussion", "nouvelle" ou "defaut"
-     */
-    private String computeMood(int confirmed, int inDiscussion, int nouvelle) {
-        int active = confirmed + inDiscussion + nouvelle;
-        if (active == 0)                         return "defaut";
-        if (confirmed > inDiscussion + nouvelle) return "confirmee";
-        if (inDiscussion > 0)                    return "en_discussion";
-        return "nouvelle";
     }
 
     private String defaultName(LocalDate date) {
@@ -375,12 +367,4 @@ public class EvenementService {
         return s.substring(0, 1).toUpperCase() + s.substring(1);
     }
 
-    private String computeCountdown(LocalDate eventDate) {
-        if (eventDate == null) return "serein";
-        long days = ChronoUnit.DAYS.between(LocalDate.now(), eventDate);
-        if (days < 0)  return "past";
-        if (days < 30) return "imminent";
-        if (days < 90) return "proche";
-        return "serein";
-    }
 }

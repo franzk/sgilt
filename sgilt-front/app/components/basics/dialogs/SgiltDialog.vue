@@ -13,7 +13,7 @@
   </SgiltBottomSheet>
 
   <!-- ── Desktop : modal centrée ──────────────────────────────────────────────── -->
-  <Teleport v-if="!isMobile" to="body">
+  <Teleport v-if="isDesktop" to="body">
     <Transition name="sgilt-dialog">
       <div
         v-if="open"
@@ -63,7 +63,7 @@ const props = defineProps<{
   fullscreen?: boolean
 }>()
 
-const { isMobile } = useDevice()
+const { isMobile, isDesktop } = useDevice()
 </script>
 
 <style scoped lang="scss">

@@ -20,7 +20,7 @@ Feature: Parcours prestataire (flow autonome) â€” provisionnement, activation, Ã
       {
         email: '#(prestataireEmail)', firstName: 'Nadia', lastName: 'Nouvelle',
         slug: 'nadia-nouvelle-photo', prestataireName: 'Nadia Nouvelle Photographie',
-        category: 'photographe', subcats: '', cleEnMain: false
+        category: 'services', subcat: 'photographe', cleEnMain: false
       }
       """
     When method POST
@@ -54,7 +54,7 @@ Feature: Parcours prestataire (flow autonome) â€” provisionnement, activation, Ã
       {
         email: 'autre-prestataire@sgilt.test', firstName: 'X', lastName: 'Y',
         slug: 'nadia-nouvelle-photo', prestataireName: 'Doublon',
-        category: 'photographe', subcats: '', cleEnMain: false
+        category: 'services', subcat: 'photographe', cleEnMain: false
       }
       """
     When method POST
@@ -67,7 +67,7 @@ Feature: Parcours prestataire (flow autonome) â€” provisionnement, activation, Ã
       """
       {
         email: 'refuse@sgilt.test', firstName: 'X', lastName: 'Y', slug: 'refuse',
-        prestataireName: 'X', category: 'photographe', subcats: '', cleEnMain: false
+        prestataireName: 'X', category: 'services', subcat: 'photographe', cleEnMain: false
       }
       """
     When method POST

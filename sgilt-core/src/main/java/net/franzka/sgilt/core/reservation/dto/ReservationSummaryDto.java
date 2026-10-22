@@ -8,6 +8,8 @@ public record ReservationSummaryDto(
         String prestataireName,
         String prestatairePhoto,
         String category,
+        String subcatKey,
+        String rubriqueKey,
         String status,
         int unreadNotesCount
 ) {}

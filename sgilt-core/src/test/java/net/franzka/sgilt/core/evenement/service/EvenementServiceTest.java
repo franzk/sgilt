@@ -1,26 +1,31 @@
 package net.franzka.sgilt.core.evenement.service;
 
 import net.franzka.sgilt.core.evenement.domain.Evenement;
+import net.franzka.sgilt.core.evenement.domain.EvenementRubrique;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
 import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
 import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
-import net.franzka.sgilt.core.evenement.dto.EventCountsDto;
-import net.franzka.sgilt.core.evenement.dto.EventDetailDto;
-import net.franzka.sgilt.core.evenement.dto.EventPatchDto;
+import net.franzka.sgilt.core.evenement.dto.DemandeInitieeDto;
+import net.franzka.sgilt.core.evenement.dto.EvenementDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
+import net.franzka.sgilt.core.evenement.dto.EventDto;
+import net.franzka.sgilt.core.evenement.dto.EventMetaDto;
+import net.franzka.sgilt.core.evenement.dto.EventMetaPatchDto;
+import net.franzka.sgilt.core.evenement.dto.EventRubriqueDto;
 import net.franzka.sgilt.core.evenement.dto.ModificationChamp;
+import net.franzka.sgilt.core.evenement.dto.RubriqueDto;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotAllowedException;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotFoundException;
 import net.franzka.sgilt.core.evenement.mapper.EvenementMapper;
 import net.franzka.sgilt.core.evenement.repository.EvenementRepository;
-import net.franzka.sgilt.core.onboarding.dto.InitOnboardingRequest;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
-import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
+import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
+import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
+import net.franzka.sgilt.core.reservation.service.ReservationService;
 import net.franzka.sgilt.core.storage.FileStorageException;
 import net.franzka.sgilt.core.storage.FileStorageService;
-import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
-import net.franzka.sgilt.core.reservation.service.ReservationService;
+import net.franzka.sgilt.core.template.service.TemplateService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -35,7 +40,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
@@ -56,6 +60,7 @@ class EvenementServiceTest {
     @Mock private EvenementMapper         evenementMapper;
     @Mock private JournalEvenementService journalEvenementService;
     @Mock private FileStorageService      fileStorageService;
+    @Mock private TemplateService         templateService;
 
     @InjectMocks
     private EvenementService evenementService;
@@ -66,14 +71,14 @@ class EvenementServiceTest {
         Utilisateur owner = mock(Utilisateur.class);
         when(owner.getId()).thenReturn(USER_ID);
         return configure.apply(
-                Evenement.builder().id(EVENT_ID).utilisateur(owner).date(LocalDate.now())
+                Evenement.builder().id(EVENT_ID).utilisateur(owner).date(LocalDate.now()).rubriques(List.of())
         ).build();
     }
 
     private void whenEventFound(Evenement event) {
         when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
         when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
-        when(evenementMapper.toDetailDto(any(), any(), any())).thenReturn(mock(EventDetailDto.class));
+        when(evenementMapper.toMetaDto(any(), any())).thenReturn(mock(EventMetaDto.class));
     }
 
     @SuppressWarnings("unchecked")
@@ -84,8 +89,8 @@ class EvenementServiceTest {
         return captor.getValue();
     }
 
-    private EventPatchDto emptyPatch() {
-        return new EventPatchDto(null, null, null, null, null, null, null, null, null);
+    private EventMetaPatchDto emptyPatch() {
+        return new EventMetaPatchDto(null, null, null, null, null, null, null, null, null);
     }
 
     // ── GetUserEvents ────────────────────────────────────────────────────────────
@@ -133,34 +138,63 @@ class EvenementServiceTest {
         }
     }
 
-    // ── GetEventDetail ────────────────────────────────────────────────────────────
+    // ── GetEvent ────────────────────────────────────────────────────────────
 
     @Nested
-    class GetEventDetail {
+    class GetEvent {
 
         @Test
-        void givenNoJournalEntry_whenGetEventDetail_thenMapperCalledWithNullLastUpdateDate() {
+        void givenNoJournalEntry_whenGetEvent_thenMapperCalledWithNullLastUpdateDate() {
             Evenement event = ownerEvent(b -> b);
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
             when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
-            when(evenementMapper.toDetailDto(any(), any(), any())).thenReturn(mock(EventDetailDto.class));
+            when(evenementMapper.toMetaDto(any(), any())).thenReturn(mock(EventMetaDto.class));
 
-            evenementService.getEventDetail(EVENT_ID, USER_ID);
+            evenementService.getEvent(EVENT_ID, USER_ID);
 
-            verify(evenementMapper).toDetailDto(eq(event), any(), isNull());
+            verify(evenementMapper).toMetaDto(eq(event), isNull());
         }
 
         @Test
-        void givenJournalEntry_whenGetEventDetail_thenMapperCalledWithLastUpdateDate() {
+        void givenJournalEntry_whenGetEvent_thenMapperCalledWithLastUpdateDate() {
             LocalDateTime lastUpdate = LocalDateTime.of(2026, 5, 12, 10, 0);
             Evenement event = ownerEvent(b -> b);
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
             when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.of(lastUpdate));
-            when(evenementMapper.toDetailDto(any(), any(), any())).thenReturn(mock(EventDetailDto.class));
+            when(evenementMapper.toMetaDto(any(), any())).thenReturn(mock(EventMetaDto.class));
 
-            evenementService.getEventDetail(EVENT_ID, USER_ID);
+            evenementService.getEvent(EVENT_ID, USER_ID);
 
-            verify(evenementMapper).toDetailDto(eq(event), any(), eq(lastUpdate));
+            verify(evenementMapper).toMetaDto(eq(event), eq(lastUpdate));
+        }
+
+        @Test
+        void givenReservations_whenGetEvent_thenReturnsTheMetaAndEachRubriqueWithItsReservationsInTheEventOrder() {
+            Evenement event = ownerEvent(b -> b.eventType("mariage").rubriques(List.of(
+                    new EvenementRubrique("lieu"), new EvenementRubrique("musique-animation"),
+                    new EvenementRubrique("decoration"))));
+            EventMetaDto meta = mock(EventMetaDto.class);
+            ReservationSummaryDto dj = summary("dj", "musique-animation");
+            ReservationSummaryDto chanteur = summary("pop-rock", "musique-animation");
+            ReservationSummaryDto salle = summary("salle", "lieu");
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
+            when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
+            when(evenementMapper.toMetaDto(any(), any())).thenReturn(meta);
+            when(reservationService.getReservationSummaries(EVENT_ID)).thenReturn(List.of(dj, salle, chanteur));
+
+            EventDto detail = evenementService.getEvent(EVENT_ID, USER_ID);
+
+            assertThat(detail.meta()).isSameAs(meta);
+            assertThat(detail.rubriques()).containsExactly(
+                    new EventRubriqueDto("lieu", List.of(salle)),
+                    new EventRubriqueDto("musique-animation", List.of(dj, chanteur)),
+                    new EventRubriqueDto("decoration", List.of()));
+        }
+
+        // Résumé d'une réservation dont le prestataire a la sous-catégorie donnée, rangée dans la rubrique donnée.
+        private ReservationSummaryDto summary(String subcatKey, String rubriqueKey) {
+            return new ReservationSummaryDto(UUID.randomUUID(), UUID.randomUUID(), "Presta " + subcatKey,
+                    null, "categorie", subcatKey, rubriqueKey, "nouvelle", 0);
         }
     }
 
@@ -289,7 +323,7 @@ class EvenementServiceTest {
         @Test
         void givenFieldChanged_whenPatchEvent_thenModificationLogged() {
             Evenement event = ownerEvent(b -> b.lieu("Paris"));
-            EventPatchDto patch = new EventPatchDto(null, "Lyon", null, null, null, null, null, null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, "Lyon", null, null, null, null, null, null, null);
 
             whenEventFound(event);
 
@@ -302,7 +336,7 @@ class EvenementServiceTest {
         @Test
         void givenFieldUnchanged_whenPatchEvent_thenFieldNotLogged() {
             Evenement event = ownerEvent(b -> b.lieu("Paris"));
-            EventPatchDto patch = new EventPatchDto(null, "Paris", null, null, null, null, null, null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, "Paris", null, null, null, null, null, null, null);
 
             whenEventFound(event);
 
@@ -314,7 +348,7 @@ class EvenementServiceTest {
         @Test
         void givenNullPatchField_whenPatchEvent_thenFieldNotLogged() {
             Evenement event = ownerEvent(b -> b.lieu("Paris"));
-            EventPatchDto patch = new EventPatchDto(null, null, null, null, null, null, null, null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, null, null, null, null, null, null, null, null);
 
             whenEventFound(event);
 
@@ -327,7 +361,7 @@ class EvenementServiceTest {
         void givenBlankLieu_whenPatchEvent_thenLoggedAsNull() {
             // blankToNull("") = null : un blank est loggué comme null
             Evenement event = ownerEvent(b -> b.lieu("Paris"));
-            EventPatchDto patch = new EventPatchDto(null, "", null, null, null, null, null, null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, "", null, null, null, null, null, null, null);
 
             whenEventFound(event);
 
@@ -340,7 +374,7 @@ class EvenementServiceTest {
         @Test
         void givenMultipleFieldsChanged_whenPatchEvent_thenAllLogged() {
             Evenement event = ownerEvent(b -> b.lieu("Paris").ville("Paris"));
-            EventPatchDto patch = new EventPatchDto(null, "Lyon", null, null, null, "Bordeaux", null, null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, "Lyon", null, null, null, "Bordeaux", null, null, null);
 
             whenEventFound(event);
 
@@ -355,7 +389,7 @@ class EvenementServiceTest {
         @Test
         void givenTitleChanged_whenPatchEvent_thenModificationLoggedAndEntityUpdated() {
             Evenement event = ownerEvent(b -> b.title("Ancien titre"));
-            EventPatchDto patch = new EventPatchDto("Nouveau titre", null, null, null, null, null, null, null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto("Nouveau titre", null, null, null, null, null, null, null, null);
 
             whenEventFound(event);
 
@@ -369,7 +403,7 @@ class EvenementServiceTest {
         @Test
         void givenEventTypeChanged_whenPatchEvent_thenModificationLoggedAndEntityUpdated() {
             Evenement event = ownerEvent(b -> b.eventType("Mariage"));
-            EventPatchDto patch = new EventPatchDto(null, null, null, "Anniversaire", null, null, null, null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, null, null, "Anniversaire", null, null, null, null, null);
 
             whenEventFound(event);
 
@@ -383,7 +417,7 @@ class EvenementServiceTest {
         @Test
         void givenAmbianceChanged_whenPatchEvent_thenModificationLoggedAndEntityUpdated() {
             Evenement event = ownerEvent(b -> b.ambiance("Champetre"));
-            EventPatchDto patch = new EventPatchDto(null, null, null, null, "Chic", null, null, null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, null, null, null, "Chic", null, null, null, null);
 
             whenEventFound(event);
 
@@ -397,7 +431,7 @@ class EvenementServiceTest {
         @Test
         void givenNbInvitesChanged_whenPatchEvent_thenModificationLoggedAndEntityUpdated() {
             Evenement event = ownerEvent(b -> b.nbInvites("50"));
-            EventPatchDto patch = new EventPatchDto(null, null, null, null, null, null, "80", null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, null, null, null, null, null, "80", null, null);
 
             whenEventFound(event);
 
@@ -411,7 +445,7 @@ class EvenementServiceTest {
         @Test
         void givenDescriptionChanged_whenPatchEvent_thenModificationLoggedAndEntityUpdated() {
             Evenement event = ownerEvent(b -> b.description("Ancienne description"));
-            EventPatchDto patch = new EventPatchDto(null, null, null, null, null, null, null, "Nouvelle description", null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, null, null, null, null, null, null, "Nouvelle description", null);
 
             whenEventFound(event);
 
@@ -425,7 +459,7 @@ class EvenementServiceTest {
         @Test
         void givenMomentCleChanged_whenPatchEvent_thenModificationLoggedAndEntityUpdated() {
             Evenement event = ownerEvent(b -> b.momentCle("Vin d'honneur"));
-            EventPatchDto patch = new EventPatchDto(null, null, null, null, null, null, null, null, "Ouverture du bal");
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, null, null, null, null, null, null, null, "Ouverture du bal");
 
             whenEventFound(event);
 
@@ -440,7 +474,7 @@ class EvenementServiceTest {
         void givenSharedNoteChangedWithBlank_whenPatchEvent_thenLoggedAsBlankNotNull() {
             // sharedNote n'est pas soumis à blankToNull : "" reste "" dans le log
             Evenement event = ownerEvent(b -> b.notePartagee(null));
-            EventPatchDto patch = new EventPatchDto(null, null, "", null, null, null, null, null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, null, "", null, null, null, null, null, null);
 
             whenEventFound(event);
 
@@ -453,7 +487,7 @@ class EvenementServiceTest {
         @Test
         void givenNothingChanged_whenPatchEvent_thenSaveCalledWithEmptyList() {
             Evenement event = ownerEvent(b -> b.lieu("Paris").ville("Lyon"));
-            EventPatchDto patch = new EventPatchDto(null, "Paris", null, null, null, "Lyon", null, null, null);
+            EventMetaPatchDto patch = new EventMetaPatchDto(null, "Paris", null, null, null, "Lyon", null, null, null);
 
             whenEventFound(event);
 
@@ -484,75 +518,50 @@ class EvenementServiceTest {
         }
     }
 
-    // ── CreateEvent ───────────────────────────────────────────────────────────
-
-    @Nested
-    class CreateEvent {
-
-        @Test
-        void givenValidRequest_whenCreateEvent_thenSavesEventAndCreatesReservation() {
-            Utilisateur utilisateur = mock(Utilisateur.class);
-            UUID prestataireId = UUID.randomUUID();
-            LocalDate date = LocalDate.of(2027, 6, 15);
-            CreateEventRequest request = new CreateEventRequest(
-                    prestataireId, "Mariage", "Champetre", "Vin d'honneur", "Description",
-                    date, "Lyon", "80", "Domaine des fleurs", "Bonjour");
-            Prestataire prestataire = mock(Prestataire.class);
-            when(evenementRepository.save(any())).thenAnswer(invocation -> {
-                Evenement e = invocation.getArgument(0);
-                e.setId(EVENT_ID);
-                return e;
-            });
-            when(prestataireService.getById(prestataireId)).thenReturn(prestataire);
-
-            CreateEventResponse response = evenementService.createEvent(utilisateur, request);
-
-            assertThat(response.eventId()).isEqualTo(EVENT_ID);
-            ArgumentCaptor<Evenement> captor = ArgumentCaptor.forClass(Evenement.class);
-            verify(evenementRepository).save(captor.capture());
-            Evenement saved = captor.getValue();
-            assertThat(saved.getUtilisateur()).isEqualTo(utilisateur);
-            assertThat(saved.getLieu()).isEqualTo("Domaine des fleurs");
-            assertThat(saved.getVille()).isEqualTo("Lyon");
-            assertThat(saved.getNbInvites()).isEqualTo("80");
-            verify(reservationService).create(saved, prestataire, utilisateur, date, "Bonjour");
-        }
-
-        @Test
-        void givenNoDate_whenCreateEvent_thenTitleDefaultsToGenericName() {
-            Utilisateur utilisateur = mock(Utilisateur.class);
-            UUID prestataireId = UUID.randomUUID();
-            CreateEventRequest request = new CreateEventRequest(
-                    prestataireId, null, null, null, null, null, null, null, null, null);
-            when(evenementRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
-            when(prestataireService.getById(prestataireId)).thenReturn(mock(Prestataire.class));
-
-            evenementService.createEvent(utilisateur, request);
-
-            ArgumentCaptor<Evenement> captor = ArgumentCaptor.forClass(Evenement.class);
-            verify(evenementRepository).save(captor.capture());
-            assertThat(captor.getValue().getTitle()).isEqualTo("Mon événement");
-        }
-    }
-
     // ── AddReservation ────────────────────────────────────────────────────────
 
     @Nested
     class AddReservation {
 
-        @Test
-        void givenOwner_whenAddReservation_thenCreatesReservationOnEvent() {
-            UUID prestataireId = UUID.randomUUID();
+        private final UUID prestataireId = UUID.randomUUID();
+        private final Prestataire dj = Prestataire.builder().id(prestataireId).subcatKey("dj").build();
+
+        // Le propriétaire ajoute le DJ à son événement de mariage, dont les rubriques sont données.
+        private Utilisateur givenOwnerAddingTheDjTo(Evenement event) {
             Utilisateur utilisateur = mock(Utilisateur.class);
             when(utilisateur.getId()).thenReturn(USER_ID);
-            Evenement event = ownerEvent(b -> b);
-            Prestataire prestataire = mock(Prestataire.class);
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            when(prestataireService.getById(prestataireId)).thenReturn(prestataire);
+            when(prestataireService.getById(prestataireId)).thenReturn(dj);
+            when(templateService.rubriqueOf("mariage", "dj")).thenReturn("musique-animation");
+            return utilisateur;
+        }
+
+        @Test
+        void givenRubriqueAlreadyInTheEvent_whenAddReservation_thenCreatesTheReservationInItWithoutTouchingTheEvent() {
+            Evenement event = ownerEvent(b -> b.eventType("mariage").rubriques(List.of(
+                    new EvenementRubrique("lieu"), new EvenementRubrique("musique-animation"))));
+            Utilisateur utilisateur = givenOwnerAddingTheDjTo(event);
 
             evenementService.addReservation(EVENT_ID, utilisateur, prestataireId, "Bonjour");
 
-            verify(reservationService).create(event, prestataire, utilisateur, event.getDate(), "Bonjour");
+            verify(reservationService).create(event, dj, utilisateur, event.getDate(), "Bonjour", "musique-animation");
+            verify(evenementRepository, never()).save(any());
+        }
+
+        @Test
+        void givenRubriqueMissingFromTheEvent_whenAddReservation_thenInsertsItWhereTheTemplateSaysAndSavesTheEvent() {
+            EvenementRubrique lieu = new EvenementRubrique("lieu");
+            EvenementRubrique decoration = new EvenementRubrique("decoration");
+            Evenement event = ownerEvent(b -> b.eventType("mariage").rubriques(List.of(lieu, decoration)));
+            Utilisateur utilisateur = givenOwnerAddingTheDjTo(event);
+            when(templateService.insertionPosition("mariage", List.of("lieu", "decoration"), "musique-animation"))
+                    .thenReturn(1);
+
+            evenementService.addReservation(EVENT_ID, utilisateur, prestataireId, "Bonjour");
+
+            assertThat(event.getRubriques()).containsExactly(lieu, new EvenementRubrique("musique-animation"), decoration);
+            verify(evenementRepository).save(event);
+            verify(reservationService).create(event, dj, utilisateur, event.getDate(), "Bonjour", "musique-animation");
         }
 
         @Test
@@ -565,123 +574,167 @@ class EvenementServiceTest {
 
             assertThatThrownBy(() -> evenementService.addReservation(EVENT_ID, utilisateur, prestataireId, "Bonjour"))
                     .isInstanceOf(EvenementNotAllowedException.class);
-            verify(reservationService, never()).create(any(), any(), any(), any(), any());
+            verify(reservationService, never()).create(any(), any(), any(), any(), any(), any());
         }
     }
 
-    // ── CreateFromFormData ────────────────────────────────────────────────────
+    // ── BuildEvenement ────────────────────────────────────────────────────────
 
     @Nested
-    class CreateFromFormData {
+    class BuildEvenement {
+
+        private final LocalDate date = LocalDate.of(2027, 6, 12);
 
         @Test
-        void givenFormData_whenCreateFromFormData_thenSavesActiveEvent() {
+        void givenNoDemande_whenBuildEvenement_thenTheEventHasTheEmptyTemplateRubriques() {
+            List<RubriqueDto> rubriques = List.of(new RubriqueDto("lieu", List.of()));
+            when(templateService.getNewEventRubriques("mariage")).thenReturn(rubriques);
+
+            EvenementDto built = evenementService.buildEvenement(
+                    new CreateEventRequest("Notre mariage", "mariage", null, null, null, date, "Lyon", null, null, null));
+
+            assertThat(built).isEqualTo(
+                    new EvenementDto("Notre mariage", "mariage", null, null, null, date, "Lyon", null, null, rubriques));
+        }
+
+        @Test
+        void givenDemande_whenBuildEvenement_thenTheEventHasTheTemplateRubriquesWithTheDemandePlaced() {
+            DemandeInitieeDto demande = new DemandeInitieeDto(UUID.randomUUID(), "Bonjour");
+            List<RubriqueDto> rubriques = List.of(
+                    new RubriqueDto("lieu", List.of()), new RubriqueDto("musique-animation", List.of(demande)));
+            when(templateService.getEventRubriquesFromDemande("mariage", demande)).thenReturn(rubriques);
+
+            EvenementDto built = evenementService.buildEvenement(
+                    new CreateEventRequest(null, "mariage", null, null, null, date, "Lyon", null, null, demande));
+
+            assertThat(built.rubriques()).isEqualTo(rubriques);
+        }
+    }
+
+    // ── CreateEvent ───────────────────────────────────────────────────────────
+
+    @Nested
+    class CreateEvent {
+
+        private final LocalDate date = LocalDate.of(2027, 6, 12);
+        private final Utilisateur utilisateur = mock(Utilisateur.class);
+
+        // Le mapper rend l'événement à enregistrer ; l'enregistrement lui donne son identifiant.
+        private Evenement givenTheEventIsSaved(EvenementDto expected) {
+            Evenement mapped = Evenement.builder().utilisateur(utilisateur).date(date).build();
+            when(evenementMapper.toEvenement(expected, utilisateur)).thenReturn(mapped);
+            when(evenementRepository.save(mapped)).thenAnswer(invocation -> {
+                mapped.setId(EVENT_ID);
+                return mapped;
+            });
+            return mapped;
+        }
+
+        @Test
+        void givenNoDemande_whenCreateEvent_thenCreatesTheEventWithoutReservation() {
+            List<RubriqueDto> rubriques = List.of(new RubriqueDto("lieu", List.of()));
+            when(templateService.getNewEventRubriques("mariage")).thenReturn(rubriques);
+            givenTheEventIsSaved(new EvenementDto(null, "mariage", null, null, null, date, "Lyon", null, null, rubriques));
+
+            CreateEventResponse response = evenementService.createEvent(utilisateur,
+                    new CreateEventRequest(null, "mariage", null, null, null, date, "Lyon", null, null, null));
+
+            assertThat(response.eventId()).isEqualTo(EVENT_ID);
+            verify(prestataireService, never()).ensurePublished(any());
+            verify(reservationService, never()).create(any(), any(), any(), any(), any(), any());
+        }
+
+        @Test
+        void givenDemande_whenCreateEvent_thenChecksThePrestataireThenCreatesTheEventWithTheReservationInItsRubrique() {
+            UUID prestataireId = UUID.randomUUID();
+            DemandeInitieeDto demande = new DemandeInitieeDto(prestataireId, "Bonjour");
+            List<RubriqueDto> rubriques = List.of(
+                    new RubriqueDto("lieu", List.of()), new RubriqueDto("musique-animation", List.of(demande)));
+            Prestataire dj = mock(Prestataire.class);
+            when(templateService.getEventRubriquesFromDemande("mariage", demande)).thenReturn(rubriques);
+            when(prestataireService.getById(prestataireId)).thenReturn(dj);
+            Evenement saved = givenTheEventIsSaved(
+                    new EvenementDto(null, "mariage", null, null, null, date, "Lyon", null, null, rubriques));
+
+            CreateEventResponse response = evenementService.createEvent(utilisateur,
+                    new CreateEventRequest(null, "mariage", null, null, null, date, "Lyon", null, null, demande));
+
+            assertThat(response.eventId()).isEqualTo(EVENT_ID);
+            verify(prestataireService).ensurePublished(prestataireId);
+            verify(reservationService).create(saved, dj, utilisateur, date, "Bonjour", "musique-animation");
+        }
+    }
+
+    // ── CreateFromDto ─────────────────────────────────────────────────────────
+
+    @Nested
+    class CreateFromDto {
+
+        @Test
+        void givenTitle_whenCreateFromDto_thenSavesTheMappedEventWithThatTitle() {
             Utilisateur utilisateur = mock(Utilisateur.class);
-            LocalDate date = LocalDate.of(2027, 3, 1);
-            InitOnboardingRequest formData = new InitOnboardingRequest(
-                    "Jean", "Dupont", "jean@sgilt.fr", UUID.randomUUID(), "Mariage", "Champetre",
-                    "Vin d'honneur", "Description", date, "Lyon", "80", "Domaine des fleurs",
-                    "0102030405", "Bonjour");
-            Evenement saved = Evenement.builder().id(EVENT_ID).build();
-            when(evenementRepository.save(any())).thenReturn(saved);
+            EvenementDto evenementDto = new EvenementDto(
+                    "Notre mariage", "mariage", null, null, null, null, "Lyon", null, null, List.of());
+            Evenement mapped = Evenement.builder().ville("Lyon").build();
+            when(evenementMapper.toEvenement(evenementDto, utilisateur)).thenReturn(mapped);
+            when(evenementRepository.save(mapped)).thenReturn(mapped);
 
-            Evenement result = evenementService.createFromFormData(utilisateur, formData);
+            Evenement result = evenementService.createFromDto(utilisateur, evenementDto);
 
-            assertThat(result).isEqualTo(saved);
-            ArgumentCaptor<Evenement> captor = ArgumentCaptor.forClass(Evenement.class);
-            verify(evenementRepository).save(captor.capture());
-            Evenement toSave = captor.getValue();
-            assertThat(toSave.getUtilisateur()).isEqualTo(utilisateur);
-            assertThat(toSave.getStatus()).isEqualTo(net.franzka.sgilt.core.evenement.domain.EvenementStatus.ACTIVE);
-            assertThat(toSave.getVille()).isEqualTo("Lyon");
-        }
-    }
-
-    // ── GetEventCounts ────────────────────────────────────────────────────────
-
-    @Nested
-    class GetEventCounts {
-
-        @Test
-        void givenNoActiveReservation_whenGetEventCounts_thenMoodIsDefaut() {
-            Evenement event = ownerEvent(b -> b);
-            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            when(reservationService.getStatusCountsByEvenement(EVENT_ID)).thenReturn(Map.of());
-
-            EventCountsDto result = evenementService.getEventCounts(EVENT_ID, USER_ID);
-
-            assertThat(result).isEqualTo(new EventCountsDto("defaut", 0, 0, 0, 0, 0, 0));
+            assertThat(result.getTitle()).isEqualTo("Notre mariage");
         }
 
         @Test
-        void givenMoreConfirmedThanOthers_whenGetEventCounts_thenMoodIsConfirmee() {
-            Evenement event = ownerEvent(b -> b);
-            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            when(reservationService.getStatusCountsByEvenement(EVENT_ID)).thenReturn(Map.of(
-                    ReservationStatus.CONFIRMED, 3,
-                    ReservationStatus.IN_DISCUSSION, 1
-            ));
+        void givenBlankTitle_whenCreateFromDto_thenSavesTheMappedEventWithTheDefaultTitleOfItsDate() {
+            Utilisateur utilisateur = mock(Utilisateur.class);
+            EvenementDto evenementDto = new EvenementDto(
+                    "  ", "mariage", null, null, null, LocalDate.of(2027, 6, 12), "Lyon", null, null, List.of());
+            Evenement mapped = Evenement.builder().ville("Lyon").build();
+            when(evenementMapper.toEvenement(evenementDto, utilisateur)).thenReturn(mapped);
+            when(evenementRepository.save(mapped)).thenReturn(mapped);
 
-            EventCountsDto result = evenementService.getEventCounts(EVENT_ID, USER_ID);
+            Evenement result = evenementService.createFromDto(utilisateur, evenementDto);
 
-            assertThat(result.mood()).isEqualTo("confirmee");
-            assertThat(result.confirmedCount()).isEqualTo(3);
-            assertThat(result.inDiscussionCount()).isEqualTo(1);
+            assertThat(result.getTitle()).isEqualTo("Mon événement du 12 Juin");
         }
 
         @Test
-        void givenInDiscussionButNotEnoughConfirmed_whenGetEventCounts_thenMoodIsEnDiscussion() {
-            Evenement event = ownerEvent(b -> b);
-            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            when(reservationService.getStatusCountsByEvenement(EVENT_ID)).thenReturn(Map.of(
-                    ReservationStatus.CONFIRMED, 1,
-                    ReservationStatus.IN_DISCUSSION, 2
-            ));
+        void givenEvenementDto_whenCreateFromDto_thenSavesTheMappedEventWithItsDefaultTitle() {
+            Utilisateur utilisateur = mock(Utilisateur.class);
+            EvenementDto evenementDto = new EvenementDto(
+                    null, "mariage", null, null, null, null, "Lyon", null, null, List.of());
+            Evenement mapped = Evenement.builder().ville("Lyon").build();
+            when(evenementMapper.toEvenement(evenementDto, utilisateur)).thenReturn(mapped);
+            when(evenementRepository.save(mapped)).thenReturn(mapped);
 
-            assertThat(evenementService.getEventCounts(EVENT_ID, USER_ID).mood()).isEqualTo("en_discussion");
+            Evenement result = evenementService.createFromDto(utilisateur, evenementDto);
+
+            assertThat(result).isSameAs(mapped);
+            assertThat(result.getTitle()).isEqualTo("Mon événement");
         }
 
         @Test
-        void givenOnlyNewReservations_whenGetEventCounts_thenMoodIsNouvelle() {
-            Evenement event = ownerEvent(b -> b);
-            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            when(reservationService.getStatusCountsByEvenement(EVENT_ID)).thenReturn(Map.of(
-                    ReservationStatus.NEW, 2
-            ));
+        void givenDemandesInSeveralRubriques_whenCreateFromDto_thenCreatesOneReservationPerDemandeInItsRubrique() {
+            Utilisateur utilisateur = mock(Utilisateur.class);
+            LocalDate date = LocalDate.of(2027, 6, 12);
+            UUID djId = UUID.randomUUID();
+            UUID traiteurId = UUID.randomUUID();
+            Prestataire dj = mock(Prestataire.class);
+            Prestataire traiteur = mock(Prestataire.class);
+            EvenementDto evenementDto = new EvenementDto(null, "mariage", null, null, null, date, "Lyon", null, null,
+                    List.of(new RubriqueDto("restauration", List.of(new DemandeInitieeDto(traiteurId, "Pour 80 ?"))),
+                            new RubriqueDto("musique-animation", List.of(new DemandeInitieeDto(djId, "La soirée ?"))),
+                            new RubriqueDto("lieu", List.of())));
+            Evenement saved = Evenement.builder().id(EVENT_ID).utilisateur(utilisateur).date(date).build();
+            when(evenementMapper.toEvenement(evenementDto, utilisateur)).thenReturn(saved);
+            when(evenementRepository.save(saved)).thenReturn(saved);
+            when(prestataireService.getById(djId)).thenReturn(dj);
+            when(prestataireService.getById(traiteurId)).thenReturn(traiteur);
 
-            assertThat(evenementService.getEventCounts(EVENT_ID, USER_ID).mood()).isEqualTo("nouvelle");
-        }
+            evenementService.createFromDto(utilisateur, evenementDto);
 
-        @Test
-        void givenRefusedAndCanceledCounts_whenGetEventCounts_thenSumsBothVariants() {
-            Evenement event = ownerEvent(b -> b);
-            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            when(reservationService.getStatusCountsByEvenement(EVENT_ID)).thenReturn(Map.of(
-                    ReservationStatus.REFUSED_PRE_CONTACT, 1,
-                    ReservationStatus.REFUSED_POST_CONTACT, 2,
-                    ReservationStatus.CANCELED_BY_CLIENT_PRE_CONTACT, 1,
-                    ReservationStatus.CANCELED_BY_CLIENT_POST_CONTACT, 1,
-                    ReservationStatus.CANCELED_BY_CLIENT_POST_CONFIRMATION, 1,
-                    ReservationStatus.CANCELED_BY_PRO_POST_CONFIRMATION, 1,
-                    ReservationStatus.DONE, 5
-            ));
-
-            EventCountsDto result = evenementService.getEventCounts(EVENT_ID, USER_ID);
-
-            assertThat(result.refuseeCount()).isEqualTo(3);
-            assertThat(result.annuleeCount()).isEqualTo(4);
-            assertThat(result.realiseeCount()).isEqualTo(5);
-        }
-
-        @Test
-        void givenWrongUser_whenGetEventCounts_thenThrowsNotAllowedException() {
-            Utilisateur otherOwner = mock(Utilisateur.class);
-            when(otherOwner.getId()).thenReturn(UUID.randomUUID());
-            Evenement event = Evenement.builder().id(EVENT_ID).utilisateur(otherOwner).date(LocalDate.now()).build();
-            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-
-            assertThatThrownBy(() -> evenementService.getEventCounts(EVENT_ID, USER_ID))
-                    .isInstanceOf(EvenementNotAllowedException.class);
+            verify(reservationService).create(saved, traiteur, utilisateur, date, "Pour 80 ?", "restauration");
+            verify(reservationService).create(saved, dj, utilisateur, date, "La soirée ?", "musique-animation");
         }
     }
 
@@ -741,87 +794,6 @@ class EvenementServiceTest {
 
             assertThatThrownBy(() -> evenementService.selectCover(EVENT_ID, USER_ID, "bank/plage.jpg"))
                     .isInstanceOf(EvenementNotAllowedException.class);
-        }
-    }
-
-    // ── VerifyEventOwnership ──────────────────────────────────────────────────
-
-    @Nested
-    class VerifyEventOwnership {
-
-        @Test
-        void givenOwner_whenVerifyEventOwnership_thenNoException() {
-            Evenement event = ownerEvent(b -> b);
-            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-
-            assertThatNoException().isThrownBy(() -> evenementService.verifyEventOwnership(EVENT_ID, USER_ID));
-        }
-
-        @Test
-        void givenWrongUser_whenVerifyEventOwnership_thenThrowsNotAllowedException() {
-            Utilisateur otherOwner = mock(Utilisateur.class);
-            when(otherOwner.getId()).thenReturn(UUID.randomUUID());
-            Evenement event = Evenement.builder().id(EVENT_ID).utilisateur(otherOwner).date(LocalDate.now()).build();
-            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-
-            assertThatThrownBy(() -> evenementService.verifyEventOwnership(EVENT_ID, USER_ID))
-                    .isInstanceOf(EvenementNotAllowedException.class);
-        }
-    }
-
-    // ── Countdown (via GetEventDetail, computeCountdown est privé) ───────────
-
-    @Nested
-    class Countdown {
-
-        @Test
-        void givenNoDate_whenGetEventDetail_thenCountdownIsSerein() {
-            Evenement event = ownerEvent(b -> b.date(null));
-            whenEventFound(event);
-
-            evenementService.getEventDetail(EVENT_ID, USER_ID);
-
-            verify(evenementMapper).toDetailDto(eq(event), eq("serein"), any());
-        }
-
-        @Test
-        void givenPastDate_whenGetEventDetail_thenCountdownIsPast() {
-            Evenement event = ownerEvent(b -> b.date(LocalDate.now().minusDays(1)));
-            whenEventFound(event);
-
-            evenementService.getEventDetail(EVENT_ID, USER_ID);
-
-            verify(evenementMapper).toDetailDto(eq(event), eq("past"), any());
-        }
-
-        @Test
-        void givenDateWithin30Days_whenGetEventDetail_thenCountdownIsImminent() {
-            Evenement event = ownerEvent(b -> b.date(LocalDate.now().plusDays(10)));
-            whenEventFound(event);
-
-            evenementService.getEventDetail(EVENT_ID, USER_ID);
-
-            verify(evenementMapper).toDetailDto(eq(event), eq("imminent"), any());
-        }
-
-        @Test
-        void givenDateWithin90Days_whenGetEventDetail_thenCountdownIsProche() {
-            Evenement event = ownerEvent(b -> b.date(LocalDate.now().plusDays(60)));
-            whenEventFound(event);
-
-            evenementService.getEventDetail(EVENT_ID, USER_ID);
-
-            verify(evenementMapper).toDetailDto(eq(event), eq("proche"), any());
-        }
-
-        @Test
-        void givenDateBeyond90Days_whenGetEventDetail_thenCountdownIsSerein() {
-            Evenement event = ownerEvent(b -> b.date(LocalDate.now().plusDays(200)));
-            whenEventFound(event);
-
-            evenementService.getEventDetail(EVENT_ID, USER_ID);
-
-            verify(evenementMapper).toDetailDto(eq(event), eq("serein"), any());
         }
     }
 }

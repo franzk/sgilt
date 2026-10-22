@@ -30,19 +30,22 @@ class ReservationMapperTest {
             .id(UUID.randomUUID()).email("presta@sgilt.fr").build();
     private final Prestataire prestataire = Prestataire.builder()
             .id(UUID.randomUUID()).utilisateur(prestataireUtilisateur)
-            .name("Studio Fleur").slug("studio-fleur").categoryKey("photo").avatar("avatar.jpg").build();
+            .name("Studio Fleur").slug("studio-fleur").categoryKey("photo").subcatKey("photographe")
+            .avatar("avatar.jpg").build();
     private final Utilisateur client = Utilisateur.builder()
             .firstName("Sophie").lastName("Leroy").email("sophie@sgilt.fr").phone("0102030405").build();
     private final Evenement evenement = Evenement.builder()
             .id(UUID.randomUUID()).title("Anniversaire de Paul").eventType("Anniversaire")
-            .imagePath("cover.jpg").date(LocalDate.of(2027, 6, 15)).ville("Lyon").build();
+            .imagePath("cover.jpg").date(LocalDate.of(2027, 6, 15)).ville("Lyon")
+            .lieu("Domaine des Tilleuls").nbInvites("50 - 100").ambiance("festif").momentCle("danse")
+            .description("Une grande fête").notePartagee("Pas de gluten").build();
     private final UUID reservationId = UUID.randomUUID();
     private final LocalDateTime createdAt = LocalDateTime.now();
 
     private final Reservation reservation = Reservation.builder()
             .id(reservationId).prestataire(prestataire).evenement(evenement).utilisateur(client)
-            .date(LocalDate.of(2027, 6, 15)).status(ReservationStatus.CONFIRMED).createdAt(createdAt)
-            .build();
+            .date(LocalDate.of(2027, 6, 15)).status(ReservationStatus.CONFIRMED).rubriqueKey("photo-video")
+            .createdAt(createdAt).build();
 
     // -------------------------------------------------------------------------
     // mapStatus
@@ -109,7 +112,8 @@ class ReservationMapperTest {
             ReservationSummaryDto dto = mapper.toSummaryDto(reservation);
 
             assertThat(dto).isEqualTo(new ReservationSummaryDto(
-                    reservationId, prestataire.getId(), "Studio Fleur", "avatar.jpg", "photo", "confirmee", 0));
+                    reservationId, prestataire.getId(), "Studio Fleur", "avatar.jpg", "photo", "photographe", "photo-video",
+                    "confirmee", 0));
         }
     }
 
@@ -156,11 +160,15 @@ class ReservationMapperTest {
 
         @Test
         void givenFullReservation_whenToProReservationDetailDto_thenMapsAllFields() {
-            ProReservationDetailDto dto = mapper.toProReservationDetailDto(reservation);
+            LocalDateTime lastUpdateDate = LocalDateTime.of(2027, 1, 10, 14, 30);
+
+            ProReservationDetailDto dto = mapper.toProReservationDetailDto(reservation, lastUpdateDate);
 
             assertThat(dto).isEqualTo(new ProReservationDetailDto(
                     reservationId, "confirmee", "photo", "Studio Fleur", "avatar.jpg",
                     "Anniversaire de Paul", "Anniversaire", "cover.jpg", LocalDate.of(2027, 6, 15), "Lyon",
+                    evenement.getId(), "Domaine des Tilleuls", "50 - 100", "festif", "danse",
+                    "Une grande fête", "Pas de gluten", lastUpdateDate,
                     "Sophie", "Leroy", "0102030405", "sophie@sgilt.fr"));
         }
     }
@@ -177,7 +185,8 @@ class ReservationMapperTest {
             ReservationMetaDto dto = mapper.toReservationMetaDto(reservation);
 
             assertThat(dto).isEqualTo(new ReservationMetaDto(
-                    reservationId, prestataire.getId(), "Studio Fleur", "avatar.jpg", "photo", "confirmee", 0));
+                    reservationId, prestataire.getId(), "Studio Fleur", "studio-fleur", "avatar.jpg", "photo",
+                    "confirmee", 0));
         }
     }
 

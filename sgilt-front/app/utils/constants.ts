@@ -1,59 +1,10 @@
 // app/utils/constants.ts
 
 // ______________ Catégories et sous-catégories ______________
-export type Category = {
-  key: string // identifiant partagé front/back/DB ('all', 'musique'…)
-  name: string
-  subcategories: SubCategory[]
-}
+// Les catégories sont servies par le back (voir useCategories).
 
-export type SubCategory = {
-  key: string // identifiant partagé front/back/DB ('dj', 'pop-rock'…)
-  name: string
-  categoryKey: string
-}
-
-export const APP_CATEGORIES: Category[] = [
-  { key: 'all', name: 'Tous', subcategories: [] },
-  {
-    key: 'musique',
-    name: 'Musique',
-    subcategories: [
-      { key: 'dj', name: 'DJ', categoryKey: 'musique' },
-      { key: 'pop-rock', name: 'Pop/Rock', categoryKey: 'musique' },
-      { key: 'jazz', name: 'Jazz', categoryKey: 'musique' },
-    ],
-  },
-  {
-    key: 'restauration',
-    name: 'Restauration',
-    subcategories: [
-      { key: 'traiteur', name: 'Traiteur', categoryKey: 'restauration' },
-      { key: 'food-truck', name: 'Food Truck', categoryKey: 'restauration' },
-      { key: 'boissons', name: 'Boissons', categoryKey: 'restauration' },
-    ],
-  },
-  {
-    key: 'lieu',
-    name: 'Lieu',
-    subcategories: [{ key: 'salle', name: 'Salle', categoryKey: 'lieu' }],
-  },
-  {
-    key: 'services',
-    name: 'Services',
-    subcategories: [
-      { key: 'decoration', name: 'Décoration', categoryKey: 'services' },
-      { key: 'animation', name: 'Animation', categoryKey: 'services' },
-      { key: 'photographe', name: 'Photographe', categoryKey: 'services' },
-      { key: 'video', name: 'Vidéo', categoryKey: 'services' },
-      { key: 'photobooth', name: 'Photobooth', categoryKey: 'services' },
-      { key: 'communication', name: 'Communication', categoryKey: 'services' },
-      { key: 'location-voiture', name: 'Location de voiture', categoryKey: 'services' },
-      { key: 'agence-evenementielle', name: 'Agence événementielle', categoryKey: 'services' },
-      { key: 'coiffure', name: 'Coiffure', categoryKey: 'services' },
-    ],
-  },
-]
+// Clé de la catégorie « Tous » : aucun filtre. Partagée avec le back (countsByCategory).
+export const ALL_CATEGORY_KEY = 'all'
 
 // ______________ Types d'événements ______________
 export type EventType = {

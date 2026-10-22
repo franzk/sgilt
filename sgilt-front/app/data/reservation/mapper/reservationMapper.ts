@@ -1,3 +1,6 @@
+/**
+ * Mapper — DTO des réservations (client, prestataire, admin) vers les objets du domaine.
+ */
 import type { ReservationMetaDto } from '../dto/ReservationMetaDto'
 import type { ProReservationSummaryDto } from '../dto/ProReservationSummaryDto'
 import type { ProReservationDetailDto } from '../dto/ProReservationDetailDto'
@@ -7,7 +10,7 @@ import type { ProReservationSummary } from '../domain/ProReservationSummary'
 import type { ProReservationDetail } from '../domain/ProReservationDetail'
 import type { ActiveReservations, ActiveReservationItem } from '../domain/ActiveReservation'
 import type { ReservationStatus } from '../domain/ReservationStatus'
-import type { EventDetail } from '~/data/evenement/domain/EventDetail'
+import type { EventMeta } from '~/data/evenement/domain/EventMeta'
 import type { ClientContactInfo } from '../domain/ClientContactInfo'
 
 export function mapReservationMeta(dto: ReservationMetaDto): ReservationMeta {
@@ -15,6 +18,7 @@ export function mapReservationMeta(dto: ReservationMetaDto): ReservationMeta {
     id: dto.id,
     prestataireId: dto.prestataireId,
     prestataireName: dto.prestataireName,
+    prestataireSlug: dto.prestataireSlug,
     prestatairePhoto: dto.prestatairePhoto ?? undefined,
     category: dto.category,
     status: dto.status as ReservationMeta['status'],
@@ -34,22 +38,21 @@ export function mapProReservationSummary(dto: ProReservationSummaryDto): ProRese
   }
 }
 
-function mapProReservationDetailEvent(
-  reservationId: string,
-  dto: ProReservationDetailDto,
-): EventDetail {
+function mapProReservationDetailEvent(dto: ProReservationDetailDto): EventMeta {
   return {
-    id: reservationId,
+    id: dto.evenementId,
     title: dto.evenementTitre,
     date: dto.evenementDate ? new Date(dto.evenementDate) : undefined,
     eventType: dto.evenementType ?? undefined,
     ville: dto.evenementVille ?? undefined,
+    lieu: dto.evenementLieu ?? undefined,
+    nbInvites: dto.evenementNbInvites ?? undefined,
+    ambiance: dto.evenementAmbiance ?? undefined,
+    momentCle: dto.evenementMomentCle ?? undefined,
+    description: dto.evenementDescription ?? undefined,
     coverImage: dto.evenementImagePath ?? null,
-    sharedNote: '',
-    reservations: [],
-    journal: [],
-    mood: 'defaut',
-    countdown: 'serein',
+    sharedNote: dto.evenementNotePartagee ?? '',
+    lastUpdateDate: dto.evenementLastUpdateDate ? new Date(dto.evenementLastUpdateDate) : null,
   }
 }
 
@@ -62,10 +65,7 @@ function mapProReservationDetailClientInfo(dto: ProReservationDetailDto): Client
   }
 }
 
-export function mapProReservationDetail(
-  reservationId: string,
-  dto: ProReservationDetailDto,
-): ProReservationDetail {
+export function mapProReservationDetail(dto: ProReservationDetailDto): ProReservationDetail {
   return {
     id: dto.id,
     prestataireId: '',
@@ -74,11 +74,8 @@ export function mapProReservationDetail(
     category: dto.category,
     status: dto.statut as ProReservationDetail['status'],
     unreadNotesCount: 0,
-    event: mapProReservationDetailEvent(reservationId, dto),
+    event: mapProReservationDetailEvent(dto),
     clientInfo: mapProReservationDetailClientInfo(dto),
-    progressType: null,
-    progressValue: null,
-    phraseInfoState: null,
   }
 }
 

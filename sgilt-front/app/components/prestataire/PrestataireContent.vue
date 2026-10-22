@@ -1,3 +1,10 @@
+<!--
+  Contenu de la fiche d'un prestataire, sous le hero : prestations, présentation, engagements,
+  tarifs, témoignages, infos pratiques, FAQ. Lit le prestataire dans l'état partagé usePrestataire.
+  Éditable en mode 'edit' (page-edition), en lecture sinon (fiche publique, aperçu, onglet
+  Prestataire d'une réservation). Les tarifs sont dans la colonne latérale sur desktop, sauf avec
+  `withoutSidebar` (onglet Prestataire) où ils restent dans le contenu.
+-->
 <template>
   <div class="prestataire-content">
     <!-- CE QUE NOUS PROPOSONS -->
@@ -60,7 +67,11 @@
     </section>
 
     <!-- BUDGET (mobile uniquement) -->
-    <section v-if="isEdit || prestataire?.budget" class="section budget-section mobile-only">
+    <section
+      v-if="isEdit || prestataire?.budget"
+      class="section budget-section"
+      :class="{ 'mobile-only': !withoutSidebar }"
+    >
       <h2 class="title">{{ $t('provider.details.rates') }}</h2>
       <EditableText
         as="p"
@@ -194,6 +205,9 @@ import type { DetailItem } from '~/data/prestataire/domain/DetailItem'
 
 const props = defineProps<{
   displayMode: DisplayMode
+  // Affiché sans la colonne latérale de la fiche (qui porte les tarifs sur desktop) : les tarifs
+  // passent dans le contenu sur tous les écrans.
+  withoutSidebar?: boolean
 }>()
 
 const { t, tm, rt } = useI18n()

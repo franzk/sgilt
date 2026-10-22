@@ -1,0 +1,81 @@
+<template>
+  <EventRubriqueDetail
+    v-if="event && rubrique"
+    :rubrique-key="rubrique.key"
+    :event-type="eventTypeKey(event.eventType)"
+    @back="backToBoard"
+    @search="(path) => startAddPrestataireFlow(path)"
+    @open-provider="(slug) => startAddPrestataireFlow(`/${slug}`)"
+  >
+    <template v-if="rubrique.reservations.length > 0" #reservations>
+      <ReservationList
+        :reservations="rubrique.reservations"
+        @open="(id) => navigateTo(`${rubriquePath}/${id}`)"
+      />
+    </template>
+  </EventRubriqueDetail>
+  <Sk v-else class="cover-skeleton" light />
+</template>
+
+<script setup lang="ts">
+// Page d'une rubrique de l'événement (/app/events/:eventId/:rubrique, ex. « Lieu ») : présentation,
+// réservations de la rubrique, inspirations. Une réservation s'ouvre dans
+// [rubrique]/[reservationId]/[[onglet]].vue.
+import ReservationList from '~/components/app/ReservationList.vue'
+import Sk from '~/components/basics/Sk.vue'
+import EventRubriqueDetail from '~/components/evenement/EventRubriqueDetail.vue'
+import { useEventContext } from '~/data/evenement/useEventContext'
+import { eventTypeKey } from '~/types/evenement'
+
+definePageMeta({ layout: 'app' })
+
+const route = useRoute()
+
+const { eventId, event, rubriques, pending } = useEventContext()
+
+// ── Rubrique ─────────────────────────────────────────────────────────────────
+// Clé absente des rubriques de l'événement (URL tapée à la main) : retour à l'event board.
+const rubrique = computed(
+  () => rubriques.value.find((candidate) => candidate.key === route.params.rubrique) ?? null,
+)
+const rubriquePath = computed(() => `/app/events/${eventId}/${route.params.rubrique}`)
+
+watch(
+  pending,
+  (loading) => {
+    if (!loading && !rubrique.value) navigateTo(`/app/events/${eventId}`, { replace: true })
+  },
+  { immediate: true },
+)
+
+function backToBoard() {
+  navigateTo(`/app/events/${eventId}`)
+}
+
+// ── Flow ajout prestataire ────────────────────────────────────────────────────
+const { start } = useFlow()
+// Démarre par la recherche restreinte à la rubrique, ou par la fiche d'une inspiration (`to`).
+const startAddPrestataireFlow = (to?: string) => {
+  start(
+    'add-prestataire',
+    `Ajouter à ${event.value?.title ?? "l'événement"}`,
+    {
+      id: event.value?.id,
+      nom: event.value?.title,
+      date: event.value?.date ?? null,
+      ville: event.value?.ville,
+      ambiance: event.value?.ambiance,
+      invites: event.value?.nbInvites,
+    },
+    to,
+  )
+}
+</script>
+
+<style scoped lang="scss">
+@use '@/assets/styles/base' as *;
+
+.cover-skeleton {
+  height: 12.5rem;
+}
+</style>
