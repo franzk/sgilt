@@ -61,7 +61,7 @@
       <div>
         <p class="info-title">{{ $t('ticketing.confirmation.practical-info-title') }}</p>
         <ul>
-          <li v-for="line in practicalInfo" :key="line">{{ line }}</li>
+          <li v-for="line in event.practicalInfo" :key="line">{{ line }}</li>
         </ul>
       </div>
     </div>
@@ -100,16 +100,6 @@ const { quantity, unitPriceLabel, totalLabel } = useTicketOrder(
   event.unitPrice,
   event.remainingTickets,
 )
-
-/**
- * Copie spécifique à cet écran (distincte de `event.importantInfo` affiché avant l'achat) — pas
- * encore de modèle back pour ce contenu post-confirmation.
- */
-const practicalInfo = [
-  'Événement en plein air, places debout.',
-  "Aucun billet physique. Présentez vos billets depuis votre smartphone à l'entrée.",
-  "En cas d'empêchement, contactez l'organisateur.",
-]
 
 // Pas de vraie billetterie/wallet ni de génération de fichier .ics pour l'instant.
 function onViewTickets(): void {

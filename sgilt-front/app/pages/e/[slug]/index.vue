@@ -60,8 +60,8 @@
         </section>
 
         <section class="pictos">
-          <div v-for="picto in PICTOS" :key="picto.label" class="picto">
-            <component :is="picto.icon" class="icon" />
+          <div v-for="picto in event.pictos" :key="picto.label" class="picto">
+            <component :is="PICTO_ICONS[picto.icon]" class="icon" />
             <p class="label">{{ picto.label }}</p>
             <p class="sublabel">{{ picto.sublabel }}</p>
           </div>
@@ -130,7 +130,7 @@ import {
   ArrowRightSIcon,
   LockIcon,
 } from '@remixicons/vue/line'
-import { mockEvent } from '~/data/ticketing/mockEvent'
+import { mockEvent, type TicketingPictoIcon } from '~/data/ticketing/mockEvent'
 import { useTicketOrder } from '~/composables/useTicketOrder'
 
 const { t } = useI18n()
@@ -152,18 +152,12 @@ useSeoMeta({
 
 const shareText = computed(() => t('ticketing.event.share-text', { name: event.title }))
 
-interface EventPicto {
-  icon: Component
-  label: string
-  sublabel: string
+const PICTO_ICONS: Record<TicketingPictoIcon, Component> = {
+  music: markRaw(MusicIcon),
+  goblet: markRaw(GobletIcon),
+  leaf: markRaw(LeafIcon),
+  team: markRaw(TeamIcon),
 }
-
-const PICTOS: EventPicto[] = [
-  { icon: markRaw(MusicIcon), label: 'Concert live', sublabel: 'À partir de 20h' },
-  { icon: markRaw(GobletIcon), label: 'Vins & restauration', sublabel: 'Sur place' },
-  { icon: markRaw(LeafIcon), label: 'Cadre unique', sublabel: 'Au cœur du vignoble' },
-  { icon: markRaw(TeamIcon), label: 'Ambiance conviviale', sublabel: 'Locale et authentique' },
-]
 
 // ── Sélecteur de quantité ─────────────────────────────────────────────────────
 const isAvailable = computed(() => event.remainingTickets > 0)
