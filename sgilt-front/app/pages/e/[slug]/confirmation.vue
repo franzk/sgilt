@@ -86,6 +86,7 @@ import {
 } from '@remixicons/vue/line'
 import { mockEvent } from '~/data/ticketing/mockEvent'
 import { useTicketOrder } from '~/composables/useTicketOrder'
+import { buildIcsEvent, downloadIcs } from '~/utils/icsUtils'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -101,13 +102,22 @@ const { quantity, unitPriceLabel, totalLabel } = useTicketOrder(
   event.remainingTickets,
 )
 
-// Pas de vraie billetterie/wallet ni de génération de fichier .ics pour l'instant.
+// Pas de vrais billets (wallet, QR code) pour l'instant.
 function onViewTickets(): void {
   console.log(`Voir mes billets pour "${event.title}" (slug=${slug})`)
 }
 
 function onAddToCalendar(): void {
-  console.log(`Ajouter au calendrier "${event.title}" (slug=${slug})`)
+  const ics = buildIcsEvent({
+    uid: `${slug}-${event.startsAt}@sgilt.alsace`,
+    title: event.title,
+    description: event.subtitle,
+    location: `${event.venue}, ${event.city}`,
+    url: `${window.location.origin}/e/${slug}`,
+    startsAt: event.startsAt,
+    endsAt: event.endsAt,
+  })
+  downloadIcs(`${slug}.ics`, ics)
 }
 </script>
 
