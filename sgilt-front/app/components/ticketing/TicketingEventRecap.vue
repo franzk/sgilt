@@ -1,3 +1,7 @@
+<!--
+  Carte récapitulative de l'événement (photo, titre, date, lieu, public) en tête des écrans du
+  parcours d'achat de billets : commande, paiement, confirmation.
+-->
 <template>
   <section class="recap-card">
     <SgiltImage class="thumb" :src="event.heroImage" :alt="event.title" />
@@ -6,7 +10,7 @@
       <p class="event-subtitle">{{ event.subtitle }}</p>
       <div class="meta-row">
         <CalendarEventIcon class="icon" />
-        <span>{{ event.dateLabel }} · {{ event.time }}</span>
+        <span>{{ dateLabel }} · {{ timeLabel }}</span>
       </div>
       <div class="meta-row">
         <MapPin2Icon class="icon" />
@@ -24,8 +28,19 @@
 import SgiltImage from '~/components/basics/media/SgiltImage.vue'
 import { CalendarEventIcon, MapPin2Icon, TeamIcon } from '@remixicons/vue/line'
 import type { TicketingMockEvent } from '~/data/ticketing/mockEvent'
+import { formatDateWithWeekday, formatTimeOfDay } from '~/utils/dateUtils'
 
-defineProps<{ event: TicketingMockEvent }>()
+const props = defineProps<{ event: TicketingMockEvent }>()
+
+const { t } = useI18n()
+
+const dateLabel = computed(() => formatDateWithWeekday(props.event.startsAt))
+const timeLabel = computed(() =>
+  t('ticketing.event.time-label', {
+    start: formatTimeOfDay(props.event.startsAt),
+    end: formatTimeOfDay(props.event.endsAt),
+  }),
+)
 </script>
 
 <style scoped lang="scss">

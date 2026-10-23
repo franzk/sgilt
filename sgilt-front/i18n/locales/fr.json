@@ -1456,7 +1456,7 @@
       "sold-out-error": "Cet événement est complet, aucun billet ne peut être acheté.",
       "reassurance": "Paiement sécurisé par",
       "share-text": "Découvrez {name} sur Sgilt",
-      "time-label": "À partir de {time}"
+      "time-label": "{start} – {end}"
     },
     "order": {
       "back": "Retour",

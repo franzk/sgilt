@@ -22,7 +22,7 @@
       <div class="info-card-item">
         <span class="badge"><CalendarEventIcon /></span>
         <div class="text">
-          <p class="main">{{ event.dateLabel }}</p>
+          <p class="main">{{ dateLabel }}</p>
           <p class="sub">{{ timeLabel }}</p>
         </div>
       </div>
@@ -38,7 +38,7 @@
       <div class="info-item">
         <CalendarEventIcon class="icon" />
         <div class="text">
-          <p class="main">{{ event.dateLabel }}</p>
+          <p class="main">{{ dateLabel }}</p>
           <p class="sub">{{ timeLabel }}</p>
         </div>
       </div>
@@ -132,13 +132,18 @@ import {
 } from '@remixicons/vue/line'
 import { mockEvent, type TicketingPictoIcon } from '~/data/ticketing/mockEvent'
 import { useTicketOrder } from '~/composables/useTicketOrder'
+import { formatDateWithWeekday, formatTimeOfDay } from '~/utils/dateUtils'
 
 const { t } = useI18n()
 const route = useRoute()
 const slug = route.params.slug as string
 
 const event = mockEvent
-const timeLabel = computed(() => t('ticketing.event.time-label', { time: event.time }))
+const dateLabel = formatDateWithWeekday(event.startsAt)
+const timeLabel = t('ticketing.event.time-label', {
+  start: formatTimeOfDay(event.startsAt),
+  end: formatTimeOfDay(event.endsAt),
+})
 
 const eventMedias: HeroMedia[] = [{ type: 'IMAGE', ref: event.heroImage, position: 0 }]
 
