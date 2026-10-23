@@ -163,9 +163,6 @@ function onSubmit(): void {
     return
   }
   submitError.value = null
-  console.log(`Commande de ${quantity.value} billet(s) pour "${event.title}" (slug=${slug})`, {
-    ...buyer,
-  })
   navigateTo(`/e/${slug}/paiement`)
 }
 </script>
