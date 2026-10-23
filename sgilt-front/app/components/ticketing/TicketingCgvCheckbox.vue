@@ -1,3 +1,7 @@
+<!--
+  Case d'acceptation des conditions générales de vente (lien vers /m/cgv), sur l'écran de paiement
+  du parcours d'achat de billets, juste avant le bouton qui engage le paiement.
+-->
 <template>
   <div class="cgv-field">
     <label class="cgv-row">
@@ -9,7 +13,7 @@
       />
       <span class="cgv-label">
         {{ $t('ticketing.order.cgv-accept') }}
-        <NuxtLink to="/m/cgu" target="_blank" class="cgv-link" @click.stop>{{
+        <NuxtLink to="/m/cgv" target="_blank" class="cgv-link" @click.stop>{{
           $t('ticketing.order.cgv-link')
         }}</NuxtLink>
         <span class="required">*</span>

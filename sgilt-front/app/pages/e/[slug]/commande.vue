@@ -1,6 +1,6 @@
 <!--
   Étape 1 du parcours d'achat (/e/[slug]/commande) : quantité, coordonnées de l'acheteur et
-  acceptation des CGV, puis passage au paiement.
+  passage au paiement (les CGV sont acceptées sur l'écran de paiement).
 -->
 <template>
   <div class="order-page">
@@ -95,7 +95,6 @@
         </div>
       </div>
 
-      <TicketingCgvCheckbox v-model="acceptCgv" :error="errors.cgv" />
 
       <button type="button" class="submit-cta" @click="onSubmit">
         <LockIcon class="icon" />
@@ -118,7 +117,6 @@
 <script setup lang="ts">
 import TicketingOrderHeader from '~/components/ticketing/TicketingOrderHeader.vue'
 import TicketingEventRecap from '~/components/ticketing/TicketingEventRecap.vue'
-import TicketingCgvCheckbox from '~/components/ticketing/TicketingCgvCheckbox.vue'
 import TicketingQuantityStepper from '~/components/ticketing/TicketingQuantityStepper.vue'
 import { TicketIcon, InformationIcon, ArrowRightSIcon, LockIcon } from '@remixicons/vue/line'
 import { mockEvent } from '~/data/ticketing/mockEvent'
@@ -140,13 +138,10 @@ const { quantity, buyer, decrement, increment, unitPriceLabel, totalLabel } = us
 )
 
 // ── Formulaire ────────────────────────────────────────────────────────────────
-const acceptCgv = ref(false)
-
 const errors = reactive({
   lastName: '',
   firstName: '',
   email: '',
-  cgv: '',
 })
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -155,8 +150,7 @@ function validate(): boolean {
   errors.lastName = buyer.lastName.trim() ? '' : t('ticketing.order.error-required')
   errors.firstName = buyer.firstName.trim() ? '' : t('ticketing.order.error-required')
   errors.email = EMAIL_PATTERN.test(buyer.email) ? '' : t('ticketing.order.error-email')
-  errors.cgv = acceptCgv.value ? '' : t('ticketing.order.error-cgv')
-  return !errors.lastName && !errors.firstName && !errors.email && !errors.cgv
+  return !errors.lastName && !errors.firstName && !errors.email
 }
 
 // Le bouton reste toujours cliquable (jamais `disabled`) : une saisie incomplète se traduit par
