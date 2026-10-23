@@ -1,3 +1,8 @@
+<!--
+  Fiche publique d'un événement (/e/[slug]) : présentation de l'événement et, quand sa billetterie
+  est ouverte, choix de la quantité et accès à la commande. Données de démonstration (mockEvent) en
+  attendant le modèle côté back.
+-->
 <template>
   <div class="ticket-event-page">
     <SgiltHero
@@ -141,6 +146,7 @@ import {
   SubtractIcon,
 } from '@remixicons/vue/line'
 import { mockEvent } from '~/data/ticketing/mockEvent'
+import { useTicketQuantity } from '~/composables/useTicketQuantity'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -175,21 +181,11 @@ const PICTOS: EventPicto[] = [
 ]
 
 // ── Sélecteur de quantité ─────────────────────────────────────────────────────
-const MIN_QUANTITY = 1
-
 const isAvailable = computed(() => event.remainingTickets > 0)
-const quantity = ref(MIN_QUANTITY)
-
-function decrement(): void {
-  quantity.value = Math.max(MIN_QUANTITY, quantity.value - 1)
-}
-
-function increment(): void {
-  quantity.value = Math.min(event.remainingTickets, quantity.value + 1)
-}
-
-const unitPriceLabel = computed(() => `${event.unitPrice} €`)
-const totalLabel = computed(() => `${event.unitPrice * quantity.value} €`)
+const { quantity, decrement, increment, unitPriceLabel, totalLabel } = useTicketQuantity(
+  event.unitPrice,
+  event.remainingTickets,
+)
 
 // ── Achat ─────────────────────────────────────────────────────────────────────
 // Le bouton reste toujours cliquable (jamais `disabled`) : une indisponibilité se traduit par

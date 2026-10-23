@@ -1,3 +1,7 @@
+<!--
+  Étape 2 du parcours d'achat (/e/[slug]/paiement) : récapitulatif de la commande et paiement.
+  Le widget de paiement (Stripe) n'est pas encore intégré.
+-->
 <template>
   <div class="order-page">
     <TicketingOrderHeader :title="$t('ticketing.payment.title')" />
@@ -58,6 +62,7 @@ import TicketingEventRecap from '~/components/ticketing/TicketingEventRecap.vue'
 import TicketingCgvCheckbox from '~/components/ticketing/TicketingCgvCheckbox.vue'
 import { BankCard2Icon, InformationIcon, ArrowRightSIcon, LockIcon } from '@remixicons/vue/line'
 import { mockEvent } from '~/data/ticketing/mockEvent'
+import { useTicketQuantity } from '~/composables/useTicketQuantity'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -68,19 +73,11 @@ const event = mockEvent
 useHead({ title: `${t('ticketing.payment.title')} · ${event.title} · Sgilt` })
 
 // ── Récapitulatif ─────────────────────────────────────────────────────────────
-// Repris depuis la page commande (query `qty`) — pas de champ dédié tant qu'il n'y a pas de
-// panier persisté côté back.
-const MIN_QUANTITY = 1
-
-const initialQty = Number(route.query.qty)
-const quantity =
-  Number.isInteger(initialQty) && initialQty >= MIN_QUANTITY && initialQty <= event.remainingTickets
-    ? initialQty
-    : MIN_QUANTITY
-
-const unitPriceLabel = computed(() => `${event.unitPrice} €`)
-const totalLabel = computed(() => `${event.unitPrice * quantity} €`)
-const ticketsDetailLabel = computed(() => `${quantity} × ${unitPriceLabel.value}`)
+const { quantity, unitPriceLabel, totalLabel } = useTicketQuantity(
+  event.unitPrice,
+  event.remainingTickets,
+)
+const ticketsDetailLabel = computed(() => `${quantity.value} × ${unitPriceLabel}`)
 
 // ── Paiement ──────────────────────────────────────────────────────────────────
 // Le bouton reste toujours cliquable (jamais `disabled`) : une saisie incomplète se traduit par
@@ -98,7 +95,7 @@ function onPay(): void {
   }
   payError.value = null
   console.log(`Paiement de ${totalLabel.value} pour "${event.title}" (slug=${slug})`)
-  navigateTo(`/e/${slug}/confirmation?qty=${quantity}`)
+  navigateTo(`/e/${slug}/confirmation?qty=${quantity.value}`)
 }
 </script>
 
