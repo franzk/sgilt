@@ -1,3 +1,19 @@
+/**
+ * Données de démonstration d'un événement avec billetterie, en dur, partagées par la fiche
+ * événement (/e/[slug]) et les écrans du parcours d'achat pour qu'ils ne divergent pas. Le vrai
+ * contenu viendra de l'Evenement et de sa billetterie côté back, pas encore construits.
+ */
+
+// Pictogramme d'un point fort, par clé : la fiche fait la correspondance clé → icône, comme le
+// fera une donnée venue du back.
+export type TicketingPictoIcon = 'music' | 'goblet' | 'leaf' | 'team'
+
+export interface TicketingPicto {
+  icon: TicketingPictoIcon
+  label: string
+  sublabel: string
+}
+
 export interface TicketingMockEvent {
   slug: string
   tag: string
@@ -17,14 +33,14 @@ export interface TicketingMockEvent {
   // Nombre de places restantes — viendra du back (disponibilité ET plafond du sélecteur de
   // quantité en découlent tous les deux, pas de champ `available` séparé à faire diverger).
   remainingTickets: number
+  // Avant l'achat (commande).
   importantInfo: string[]
+  // Points forts de la fiche événement.
+  pictos: TicketingPicto[]
+  // Après l'achat (confirmation) — copie distincte de `importantInfo`.
+  practicalInfo: string[]
 }
 
-/**
- * Données de démonstration en dur pour ce brief — le vrai contenu (titre, date, lieu, tarif,
- * pictogrammes) viendra du modèle Outil/Billetterie, pas encore construit. Partagé entre la fiche
- * événement et la page de commande pour éviter que les deux écrans divergent.
- */
 export const mockEvent: TicketingMockEvent = {
   slug: 'les-jeudis-du-taennel',
   tag: 'Édition du 12 mars',
@@ -44,5 +60,16 @@ export const mockEvent: TicketingMockEvent = {
   importantInfo: [
     'Événement en plein air, places debout.',
     'Aucun billet physique. Présentez votre billet depuis votre smartphone à l’entrée.',
+  ],
+  pictos: [
+    { icon: 'music', label: 'Concert live', sublabel: 'À partir de 20h' },
+    { icon: 'goblet', label: 'Vins & restauration', sublabel: 'Sur place' },
+    { icon: 'leaf', label: 'Cadre unique', sublabel: 'Au cœur du vignoble' },
+    { icon: 'team', label: 'Ambiance conviviale', sublabel: 'Locale et authentique' },
+  ],
+  practicalInfo: [
+    'Événement en plein air, places debout.',
+    "Aucun billet physique. Présentez vos billets depuis votre smartphone à l'entrée.",
+    "En cas d'empêchement, contactez l'organisateur.",
   ],
 }
