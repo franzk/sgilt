@@ -1,3 +1,7 @@
+<!--
+  Étape 1 du parcours d'achat (/e/[slug]/commande) : quantité, coordonnées de l'acheteur et
+  acceptation des CGV, puis passage au paiement.
+-->
 <template>
   <div class="order-page">
     <TicketingOrderHeader :title="$t('ticketing.order.title')" />
@@ -130,6 +134,7 @@ import TicketingEventRecap from '~/components/ticketing/TicketingEventRecap.vue'
 import TicketingCgvCheckbox from '~/components/ticketing/TicketingCgvCheckbox.vue'
 import { TicketIcon, InformationIcon, ArrowRightSIcon, LockIcon, AddIcon, SubtractIcon } from '@remixicons/vue/line'
 import { mockEvent } from '~/data/ticketing/mockEvent'
+import { useTicketQuantity } from '~/composables/useTicketQuantity'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -140,27 +145,10 @@ const event = mockEvent
 useHead({ title: `${t('ticketing.order.title')} · ${event.title} · Sgilt` })
 
 // ── Sélecteur de quantité ─────────────────────────────────────────────────────
-// Repris depuis la fiche événement (query `qty`) pour ne pas faire ressaisir la quantité choisie.
-// Plafonné par le nombre de places restantes (domaine), pas une limite UI arbitraire.
-const MIN_QUANTITY = 1
-
-const initialQty = Number(route.query.qty)
-const quantity = ref(
-  Number.isInteger(initialQty) && initialQty >= MIN_QUANTITY && initialQty <= event.remainingTickets
-    ? initialQty
-    : MIN_QUANTITY,
+const { quantity, decrement, increment, unitPriceLabel, totalLabel } = useTicketQuantity(
+  event.unitPrice,
+  event.remainingTickets,
 )
-
-function decrement(): void {
-  quantity.value = Math.max(MIN_QUANTITY, quantity.value - 1)
-}
-
-function increment(): void {
-  quantity.value = Math.min(event.remainingTickets, quantity.value + 1)
-}
-
-const unitPriceLabel = computed(() => `${event.unitPrice} €`)
-const totalLabel = computed(() => `${event.unitPrice * quantity.value} €`)
 
 // ── Formulaire ────────────────────────────────────────────────────────────────
 const form = reactive({
