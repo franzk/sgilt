@@ -1,3 +1,7 @@
+<!--
+  Étape 3 du parcours d'achat (/e/[slug]/confirmation) : confirmation de l'achat, récapitulatif
+  des billets et informations pratiques.
+-->
 <template>
   <div class="confirmation-page">
     <div class="success-hero">
@@ -81,6 +85,7 @@ import {
   ArrowRightSIcon,
 } from '@remixicons/vue/line'
 import { mockEvent } from '~/data/ticketing/mockEvent'
+import { useTicketQuantity } from '~/composables/useTicketQuantity'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -90,17 +95,10 @@ const event = mockEvent
 
 useHead({ title: `${t('ticketing.confirmation.title')} · ${event.title} · Sgilt` })
 
-// Repris depuis la page paiement (query `qty`) — pas de commande persistée côté back pour l'instant.
-const MIN_QUANTITY = 1
-
-const initialQty = Number(route.query.qty)
-const quantity =
-  Number.isInteger(initialQty) && initialQty >= MIN_QUANTITY && initialQty <= event.remainingTickets
-    ? initialQty
-    : MIN_QUANTITY
-
-const unitPriceLabel = computed(() => `${event.unitPrice} €`)
-const totalLabel = computed(() => `${event.unitPrice * quantity} €`)
+const { quantity, unitPriceLabel, totalLabel } = useTicketQuantity(
+  event.unitPrice,
+  event.remainingTickets,
+)
 
 /**
  * Copie spécifique à cet écran (distincte de `event.importantInfo` affiché avant l'achat) — pas
