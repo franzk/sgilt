@@ -83,25 +83,11 @@
 
           <div class="quantity-row">
             <span class="label">{{ $t('ticketing.event.quantity-label') }}</span>
-            <div class="stepper">
-              <button
-                type="button"
-                class="step-btn"
-                :aria-label="$t('ticketing.event.decrement-aria')"
-                @click="decrement"
-              >
-                <SubtractIcon />
-              </button>
-              <span class="value">{{ quantity }}</span>
-              <button
-                type="button"
-                class="step-btn"
-                :aria-label="$t('ticketing.event.increment-aria')"
-                @click="increment"
-              >
-                <AddIcon />
-              </button>
-            </div>
+            <TicketingQuantityStepper
+              :quantity="quantity"
+              @decrement="decrement"
+              @increment="increment"
+            />
           </div>
 
           <div class="total-row">
@@ -132,6 +118,7 @@
 <script setup lang="ts">
 import { markRaw, type Component } from 'vue'
 import SgiltHero, { type HeroMedia } from '~/components/basics/media/SgiltHero.vue'
+import TicketingQuantityStepper from '~/components/ticketing/TicketingQuantityStepper.vue'
 import {
   CalendarEventIcon,
   MapPin2Icon,
@@ -142,11 +129,9 @@ import {
   TicketIcon,
   ArrowRightSIcon,
   LockIcon,
-  AddIcon,
-  SubtractIcon,
 } from '@remixicons/vue/line'
 import { mockEvent } from '~/data/ticketing/mockEvent'
-import { useTicketQuantity } from '~/composables/useTicketQuantity'
+import { useTicketOrder } from '~/composables/useTicketOrder'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -182,7 +167,8 @@ const PICTOS: EventPicto[] = [
 
 // ── Sélecteur de quantité ─────────────────────────────────────────────────────
 const isAvailable = computed(() => event.remainingTickets > 0)
-const { quantity, decrement, increment, unitPriceLabel, totalLabel } = useTicketQuantity(
+const { quantity, decrement, increment, unitPriceLabel, totalLabel } = useTicketOrder(
+  slug,
   event.unitPrice,
   event.remainingTickets,
 )
@@ -198,7 +184,7 @@ function onBuyClick(): void {
     return
   }
   purchaseError.value = null
-  navigateTo(`/e/${slug}/commande?qty=${quantity.value}`)
+  navigateTo(`/e/${slug}/commande`)
 }
 </script>
 
@@ -533,42 +519,6 @@ function onBuyClick(): void {
   }
 }
 
-.stepper {
-  display: flex;
-  align-items: center;
-  gap: $spacing-m;
-}
-
-.step-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border: none;
-  border-radius: 50%;
-  background: $surface-soft;
-  color: $text-primary;
-  cursor: pointer;
-  transition: background 150ms ease;
-
-  &:hover {
-    background: $brand-subtle;
-  }
-
-  svg {
-    width: 1rem;
-    height: 1rem;
-  }
-}
-
-.stepper .value {
-  min-width: 1.5rem;
-  text-align: center;
-  font-size: $font-size-lg;
-  font-weight: $font-weight-semibold;
-  color: $text-primary;
-}
 
 // ─── CTA ────────────────────────────────────────────────────────────────────────
 .cta {

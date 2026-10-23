@@ -15,25 +15,12 @@
           ><strong>{{ unitPriceLabel }}</strong> {{ $t('ticketing.event.per-ticket') }}</span
         >
       </div>
-      <div class="stepper">
-        <button
-          type="button"
-          class="step-btn"
-          :aria-label="$t('ticketing.event.decrement-aria')"
-          @click="decrement"
-        >
-          <SubtractIcon />
-        </button>
-        <span class="value">{{ quantity }}</span>
-        <button
-          type="button"
-          class="step-btn"
-          :aria-label="$t('ticketing.event.increment-aria')"
-          @click="increment"
-        >
-          <AddIcon />
-        </button>
-      </div>
+      <TicketingQuantityStepper
+        :quantity="quantity"
+        large
+        @decrement="decrement"
+        @increment="increment"
+      />
       <div class="total-row">
         <span class="label">{{ $t('ticketing.event.total-label') }}</span>
         <span class="value">{{ totalLabel }}</span>
@@ -46,32 +33,32 @@
 
       <div class="name-row">
         <div class="field">
-          <label class="label" for="lastName"
-            >{{ $t('ticketing.order.last-name') }} <span class="required">*</span></label
-          >
-          <input
-            id="lastName"
-            v-model="form.lastName"
-            type="text"
-            class="input"
-            :class="{ 'input-error': errors.lastName }"
-            autocomplete="family-name"
-          />
-          <p v-if="errors.lastName" class="field-error">{{ errors.lastName }}</p>
-        </div>
-        <div class="field">
           <label class="label" for="firstName"
             >{{ $t('ticketing.order.first-name') }} <span class="required">*</span></label
           >
           <input
             id="firstName"
-            v-model="form.firstName"
+            v-model="buyer.firstName"
             type="text"
             class="input"
             :class="{ 'input-error': errors.firstName }"
             autocomplete="given-name"
           />
           <p v-if="errors.firstName" class="field-error">{{ errors.firstName }}</p>
+        </div>
+        <div class="field">
+          <label class="label" for="lastName"
+            >{{ $t('ticketing.order.last-name') }} <span class="required">*</span></label
+          >
+          <input
+            id="lastName"
+            v-model="buyer.lastName"
+            type="text"
+            class="input"
+            :class="{ 'input-error': errors.lastName }"
+            autocomplete="family-name"
+          />
+          <p v-if="errors.lastName" class="field-error">{{ errors.lastName }}</p>
         </div>
       </div>
 
@@ -81,7 +68,7 @@
         >
         <input
           id="email"
-          v-model="form.email"
+          v-model="buyer.email"
           type="email"
           class="input"
           :class="{ 'input-error': errors.email }"
@@ -108,7 +95,7 @@
         </div>
       </div>
 
-      <TicketingCgvCheckbox v-model="form.acceptCgv" :error="errors.cgv" />
+      <TicketingCgvCheckbox v-model="acceptCgv" :error="errors.cgv" />
 
       <button type="button" class="submit-cta" @click="onSubmit">
         <LockIcon class="icon" />
@@ -132,9 +119,10 @@
 import TicketingOrderHeader from '~/components/ticketing/TicketingOrderHeader.vue'
 import TicketingEventRecap from '~/components/ticketing/TicketingEventRecap.vue'
 import TicketingCgvCheckbox from '~/components/ticketing/TicketingCgvCheckbox.vue'
-import { TicketIcon, InformationIcon, ArrowRightSIcon, LockIcon, AddIcon, SubtractIcon } from '@remixicons/vue/line'
+import TicketingQuantityStepper from '~/components/ticketing/TicketingQuantityStepper.vue'
+import { TicketIcon, InformationIcon, ArrowRightSIcon, LockIcon } from '@remixicons/vue/line'
 import { mockEvent } from '~/data/ticketing/mockEvent'
-import { useTicketQuantity } from '~/composables/useTicketQuantity'
+import { useTicketOrder } from '~/composables/useTicketOrder'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -145,18 +133,14 @@ const event = mockEvent
 useHead({ title: `${t('ticketing.order.title')} · ${event.title} · Sgilt` })
 
 // ── Sélecteur de quantité ─────────────────────────────────────────────────────
-const { quantity, decrement, increment, unitPriceLabel, totalLabel } = useTicketQuantity(
+const { quantity, buyer, decrement, increment, unitPriceLabel, totalLabel } = useTicketOrder(
+  slug,
   event.unitPrice,
   event.remainingTickets,
 )
 
 // ── Formulaire ────────────────────────────────────────────────────────────────
-const form = reactive({
-  lastName: '',
-  firstName: '',
-  email: '',
-  acceptCgv: false,
-})
+const acceptCgv = ref(false)
 
 const errors = reactive({
   lastName: '',
@@ -168,10 +152,10 @@ const errors = reactive({
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function validate(): boolean {
-  errors.lastName = form.lastName.trim() ? '' : t('ticketing.order.error-required')
-  errors.firstName = form.firstName.trim() ? '' : t('ticketing.order.error-required')
-  errors.email = EMAIL_PATTERN.test(form.email) ? '' : t('ticketing.order.error-email')
-  errors.cgv = form.acceptCgv ? '' : t('ticketing.order.error-cgv')
+  errors.lastName = buyer.lastName.trim() ? '' : t('ticketing.order.error-required')
+  errors.firstName = buyer.firstName.trim() ? '' : t('ticketing.order.error-required')
+  errors.email = EMAIL_PATTERN.test(buyer.email) ? '' : t('ticketing.order.error-email')
+  errors.cgv = acceptCgv.value ? '' : t('ticketing.order.error-cgv')
   return !errors.lastName && !errors.firstName && !errors.email && !errors.cgv
 }
 
@@ -186,9 +170,9 @@ function onSubmit(): void {
   }
   submitError.value = null
   console.log(`Commande de ${quantity.value} billet(s) pour "${event.title}" (slug=${slug})`, {
-    ...form,
+    ...buyer,
   })
-  navigateTo(`/e/${slug}/paiement?qty=${quantity.value}`)
+  navigateTo(`/e/${slug}/paiement`)
 }
 </script>
 
@@ -237,42 +221,8 @@ function onSubmit(): void {
   }
 }
 
-.stepper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: $spacing-xl;
-}
-
-.step-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border: none;
-  border-radius: 50%;
-  background: $surface-soft;
-  color: $text-primary;
-  cursor: pointer;
-  transition: background 150ms ease;
-
-  &:hover {
-    background: $brand-subtle;
-  }
-
-  svg {
-    width: 1.1rem;
-    height: 1.1rem;
-  }
-}
-
-.stepper .value {
-  min-width: 2rem;
-  text-align: center;
-  font-size: $font-size-2xl;
-  font-weight: $font-weight-bold;
-  color: $text-primary;
+.quantity-stepper {
+  align-self: center;
 }
 
 .total-row {
