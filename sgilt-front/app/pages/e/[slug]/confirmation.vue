@@ -85,7 +85,7 @@ import {
   ArrowRightSIcon,
 } from '@remixicons/vue/line'
 import { mockEvent } from '~/data/ticketing/mockEvent'
-import { useTicketQuantity } from '~/composables/useTicketQuantity'
+import { useTicketOrder } from '~/composables/useTicketOrder'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -95,7 +95,8 @@ const event = mockEvent
 
 useHead({ title: `${t('ticketing.confirmation.title')} · ${event.title} · Sgilt` })
 
-const { quantity, unitPriceLabel, totalLabel } = useTicketQuantity(
+const { quantity, unitPriceLabel, totalLabel } = useTicketOrder(
+  slug,
   event.unitPrice,
   event.remainingTickets,
 )
