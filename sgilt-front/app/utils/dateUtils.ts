@@ -1,4 +1,8 @@
 /**
+ * Utilitaires de dates : sérialisation ISO et formats d'affichage en français.
+ */
+
+/**
  * Sérialise une Date en chaîne ISO (YYYY-MM-DD).
  * Retourne une chaîne vide si la valeur est null ou undefined.
  */
@@ -21,6 +25,17 @@ export function formatDate(d: Date | string | null | undefined): string {
     month: 'long',
     year: 'numeric',
   })
+}
+
+/**
+ * Formate l'heure d'une date en français. Ex : "19h", "19h30"
+ * Accepte Date, ISO string, null ou undefined. Retourne '' si absent.
+ */
+export function formatTimeOfDay(d: Date | string | null | undefined): string {
+  if (!d) return ''
+  const date = new Date(d)
+  const minutes = date.getMinutes()
+  return `${date.getHours()}h${minutes ? String(minutes).padStart(2, '0') : ''}`
 }
 
 /**

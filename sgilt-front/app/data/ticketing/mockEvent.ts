@@ -22,8 +22,9 @@ export interface TicketingMockEvent {
   // Clé R2 (sgilt-r2-mock/storage/bank/taennel.png) — comme un vrai media prestataire/événement,
   // pas un asset public Nuxt.
   heroImage: string
-  dateLabel: string
-  time: string
+  // Heure locale du lieu, sans fuseau ('YYYY-MM-DDTHH:mm') : les libellés en sont dérivés.
+  startsAt: string
+  endsAt: string
   venue: string
   city: string
   audienceLabel: string
@@ -47,8 +48,8 @@ export const mockEvent: TicketingMockEvent = {
   title: 'Les Jeudis du Taennel',
   subtitle: 'Concert & bar éphémère au cœur du vignoble',
   heroImage: 'bank/taennel.png',
-  dateLabel: 'Jeudi 12 mars 2026',
-  time: '19h30',
+  startsAt: '2026-03-12T19:00',
+  endsAt: '2026-03-12T23:00',
   venue: 'Le Taennel',
   city: 'Scherwiller (67)',
   audienceLabel: 'Tout public · Places debout',
