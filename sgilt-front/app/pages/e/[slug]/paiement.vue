@@ -62,7 +62,7 @@ import TicketingEventRecap from '~/components/ticketing/TicketingEventRecap.vue'
 import TicketingCgvCheckbox from '~/components/ticketing/TicketingCgvCheckbox.vue'
 import { BankCard2Icon, InformationIcon, ArrowRightSIcon, LockIcon } from '@remixicons/vue/line'
 import { mockEvent } from '~/data/ticketing/mockEvent'
-import { useTicketQuantity } from '~/composables/useTicketQuantity'
+import { useTicketOrder } from '~/composables/useTicketOrder'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -73,7 +73,8 @@ const event = mockEvent
 useHead({ title: `${t('ticketing.payment.title')} · ${event.title} · Sgilt` })
 
 // ── Récapitulatif ─────────────────────────────────────────────────────────────
-const { quantity, unitPriceLabel, totalLabel } = useTicketQuantity(
+const { quantity, unitPriceLabel, totalLabel } = useTicketOrder(
+  slug,
   event.unitPrice,
   event.remainingTickets,
 )
@@ -81,7 +82,7 @@ const ticketsDetailLabel = computed(() => `${quantity.value} × ${unitPriceLabel
 
 // ── Paiement ──────────────────────────────────────────────────────────────────
 // Le bouton reste toujours cliquable (jamais `disabled`) : une saisie incomplète se traduit par
-// une erreur explicite au clic plutôt qu'un blocage silencieux. Le widget Lemonway n'étant pas
+// une erreur explicite au clic plutôt qu'un blocage silencieux. Le widget de paiement n'étant pas
 // encore intégré, le clic ne fait que valider les CGV — pas de paiement réel à déclencher.
 const acceptCgv = ref(false)
 const cgvError = ref<string | null>(null)
@@ -95,7 +96,7 @@ function onPay(): void {
   }
   payError.value = null
   console.log(`Paiement de ${totalLabel.value} pour "${event.title}" (slug=${slug})`)
-  navigateTo(`/e/${slug}/confirmation?qty=${quantity.value}`)
+  navigateTo(`/e/${slug}/confirmation`)
 }
 </script>
 
