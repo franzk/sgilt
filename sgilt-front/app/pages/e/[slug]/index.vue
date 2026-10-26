@@ -53,7 +53,7 @@
 
     <div class="layout" :class="{ 'with-ticketing': !!event.ticketing }">
       <div class="content-col">
-        <h2 class="section-title">{{ event.sectionTitle }}</h2>
+        <h2 v-if="event.sectionTitle" class="section-title">{{ event.sectionTitle }}</h2>
 
         <section class="description">
           <p>{{ event.description }}</p>
@@ -301,17 +301,16 @@ const PICTO_ICONS: Record<TicketingPictoIcon, Component> = {
   gap: $spacing-l;
 }
 
-// ─── Titre de section (desktop uniquement, absent de la maquette mobile) ────────
+// ─── Titre de section (facultatif) ──────────────────────────────────────────────
 .section-title {
-  display: none;
+  margin: 0;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: $font-size-xl;
+  font-weight: 700;
+  color: $text-primary;
 
   @media (min-width: $breakpoint-desktop) {
-    display: block;
-    font-family: 'Cormorant Garamond', serif;
     font-size: $font-size-2xl;
-    font-weight: 700;
-    color: $text-primary;
-    margin: 0;
   }
 }
 
