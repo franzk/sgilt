@@ -14,6 +14,18 @@ export interface TicketingPicto {
   sublabel: string
 }
 
+// Statut de la billetterie, piloté par l'organisateur (le back la ferme d'office une fois
+// l'événement passé). « Complet » n'en est pas un : il se déduit des places restantes.
+export type TicketingStatus = 'NOT_OPEN' | 'OPEN' | 'CLOSED'
+
+export interface TicketingMockTicketing {
+  status: TicketingStatus
+  unitPrice: number
+  // Nombre de places restantes — viendra du back (disponibilité ET plafond du sélecteur de
+  // quantité en découlent tous les deux, pas de champ `available` séparé à faire diverger).
+  remainingTickets: number
+}
+
 export interface TicketingMockEvent {
   slug: string
   tag: string
@@ -30,10 +42,8 @@ export interface TicketingMockEvent {
   audienceLabel: string
   sectionTitle: string
   description: string
-  unitPrice: number
-  // Nombre de places restantes — viendra du back (disponibilité ET plafond du sélecteur de
-  // quantité en découlent tous les deux, pas de champ `available` séparé à faire diverger).
-  remainingTickets: number
+  // Absente si l'événement n'a pas de billetterie.
+  ticketing?: TicketingMockTicketing
   // Avant l'achat (commande).
   importantInfo: string[]
   // Points forts de la fiche événement.
@@ -56,8 +66,11 @@ export const mockEvent: TicketingMockEvent = {
   sectionTitle: 'Une soirée musicale et conviviale',
   description:
     "Le jeudi, le Taennel se transforme : concert acoustique, bar à vin nature et food-truck sur place. Une soirée conviviale pour démarrer le week-end en avance, en plein cœur du vignoble.",
-  unitPrice: 12,
-  remainingTickets: 9,
+  ticketing: {
+    status: 'OPEN',
+    unitPrice: 12,
+    remainingTickets: 7,
+  },
   importantInfo: [
     'Événement en plein air, places debout.',
     'Aucun billet physique. Présentez votre billet depuis votre smartphone à l’entrée.',

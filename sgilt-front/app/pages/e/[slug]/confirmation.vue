@@ -24,7 +24,7 @@
       </div>
       <div class="tickets-row">
         <span class="label">{{ $t('ticketing.confirmation.quantity-label') }}</span>
-        <span class="value">{{ quantity }}</span>
+        <span class="value">{{ order.quantity }}</span>
       </div>
       <div class="tickets-row">
         <span class="label">{{ $t('ticketing.confirmation.unit-price-label') }}</span>
@@ -84,23 +84,19 @@ import {
   ArrowLeftSIcon,
   ArrowRightSIcon,
 } from '@remixicons/vue/line'
-import { mockEvent } from '~/data/ticketing/mockEvent'
+import { usePublicEvent } from '~/composables/usePublicEvent'
 import { useTicketOrder } from '~/composables/useTicketOrder'
 import { buildIcsEvent, downloadIcs } from '~/utils/icsUtils'
 
+definePageMeta({ middleware: 'ticketing' })
+
 const { t } = useI18n()
 const route = useRoute()
-const slug = route.params.slug as string
+const slug = String(route.params.slug)
+const event = await usePublicEvent(slug)
+const { order, unitPriceLabel, totalLabel } = useTicketOrder(slug, event.ticketing)
 
-const event = mockEvent
-
-useHead({ title: `${t('ticketing.confirmation.title')} · ${event.title} · Sgilt` })
-
-const { quantity, unitPriceLabel, totalLabel } = useTicketOrder(
-  slug,
-  event.unitPrice,
-  event.remainingTickets,
-)
+useHead({ title: `${t('ticketing.confirmation.title')} · ${event.title}` })
 
 // Pas de vrais billets (wallet, QR code) pour l'instant.
 function onViewTickets(): void {

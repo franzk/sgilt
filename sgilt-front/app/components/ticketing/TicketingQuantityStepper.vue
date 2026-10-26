@@ -1,10 +1,9 @@
 <!--
-  Sélecteur de quantité de billets (boutons − / +), utilisé sur la fiche événement (/e/[slug]) et
-  sur l'écran de commande. Purement visuel : la quantité et ses bornes sont portées par
-  useTicketQuantity. Variante `large` pour l'écran de commande, où le sélecteur est mis en avant.
+  Sélecteur de quantité de billets (boutons − / +), sur l'écran de commande (/e/[slug]/commande).
+  Purement visuel : la quantité et ses bornes sont portées par la page.
 -->
 <template>
-  <div class="quantity-stepper" :class="{ large }">
+  <div class="quantity-stepper">
     <button
       type="button"
       class="step-btn"
@@ -28,7 +27,7 @@
 <script setup lang="ts">
 import { AddIcon, SubtractIcon } from '@remixicons/vue/line'
 
-withDefaults(defineProps<{ quantity: number; large?: boolean }>(), { large: false })
+defineProps<{ quantity: number }>()
 defineEmits<{ decrement: []; increment: [] }>()
 </script>
 
@@ -38,14 +37,14 @@ defineEmits<{ decrement: []; increment: [] }>()
 .quantity-stepper {
   display: flex;
   align-items: center;
-  gap: $spacing-m;
+  gap: $spacing-xl;
 
   .step-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2.75rem;
+    height: 2.75rem;
     border: none;
     border-radius: 50%;
     background: $surface-soft;
@@ -58,37 +57,17 @@ defineEmits<{ decrement: []; increment: [] }>()
     }
 
     svg {
-      width: 1rem;
-      height: 1rem;
+      width: 1.1rem;
+      height: 1.1rem;
     }
   }
 
   .value {
-    min-width: 1.5rem;
+    min-width: 2rem;
     text-align: center;
-    font-size: $font-size-lg;
-    font-weight: $font-weight-semibold;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
     color: $text-primary;
-  }
-
-  &.large {
-    gap: $spacing-xl;
-
-    .step-btn {
-      width: 2.75rem;
-      height: 2.75rem;
-
-      svg {
-        width: 1.1rem;
-        height: 1.1rem;
-      }
-    }
-
-    .value {
-      min-width: 2rem;
-      font-size: $font-size-2xl;
-      font-weight: $font-weight-bold;
-    }
   }
 }
 </style>

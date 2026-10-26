@@ -1,7 +1,7 @@
 <!--
-  Fiche publique d'un événement (/e/[slug]) : présentation de l'événement et, quand sa billetterie
-  est ouverte, choix de la quantité et accès à la commande. Données de démonstration (mockEvent) en
-  attendant le modèle côté back.
+  Fiche publique d'un événement (/e/[slug]) : présentation de l'événement et, s'il a une
+  billetterie, son bloc d'achat (TicketingPurchaseCard) selon l'état de celle-ci. Événement chargé
+  par usePublicEvent (slug inconnu : 404).
 -->
 <template>
   <div class="ticket-event-page">
@@ -51,7 +51,7 @@
       </div>
     </div>
 
-    <div class="layout">
+    <div class="layout" :class="{ 'with-ticketing': !!event.ticketing }">
       <div class="content-col">
         <h2 class="section-title">{{ event.sectionTitle }}</h2>
 
@@ -68,48 +68,8 @@
         </section>
       </div>
 
-      <aside class="sidebar">
-        <section class="pricing">
-          <div class="price-row">
-            <div class="price">
-              <span class="amount">{{ unitPriceLabel }}</span>
-              <span class="unit">{{ $t('ticketing.event.per-ticket') }}</span>
-            </div>
-            <span class="availability-badge" :class="{ unavailable: !isAvailable }">
-              <span class="dot" aria-hidden="true" />
-              {{ isAvailable ? $t('ticketing.event.available') : $t('ticketing.event.unavailable') }}
-            </span>
-          </div>
-
-          <div class="quantity-row">
-            <span class="label">{{ $t('ticketing.event.quantity-label') }}</span>
-            <TicketingQuantityStepper
-              :quantity="quantity"
-              @decrement="decrement"
-              @increment="increment"
-            />
-          </div>
-
-          <div class="total-row">
-            <span class="label">{{ $t('ticketing.event.total-label') }}</span>
-            <span class="value">{{ totalLabel }}</span>
-          </div>
-
-          <button type="button" class="cta" @click="onBuyClick">
-            <TicketIcon class="icon" />
-            {{ $t('ticketing.event.cta') }}
-            <ArrowRightSIcon class="chevron" aria-hidden="true" />
-          </button>
-
-          <Transition name="fade">
-            <p v-if="purchaseError" class="purchase-error">{{ purchaseError }}</p>
-          </Transition>
-
-          <p class="reassurance">
-            <LockIcon class="icon" aria-hidden="true" />
-            {{ $t('ticketing.event.reassurance') }} <span class="brand">Sgilt</span>
-          </p>
-        </section>
+      <aside v-if="event.ticketing" class="sidebar">
+        <TicketingPurchaseCard :slug="slug" :ticketing="event.ticketing" />
       </aside>
     </div>
   </div>
@@ -118,7 +78,7 @@
 <script setup lang="ts">
 import { markRaw, type Component } from 'vue'
 import SgiltHero, { type HeroMedia } from '~/components/basics/media/SgiltHero.vue'
-import TicketingQuantityStepper from '~/components/ticketing/TicketingQuantityStepper.vue'
+import TicketingPurchaseCard from '~/components/ticketing/TicketingPurchaseCard.vue'
 import {
   CalendarEventIcon,
   MapPin2Icon,
@@ -126,19 +86,17 @@ import {
   GobletIcon,
   LeafIcon,
   TeamIcon,
-  TicketIcon,
   ArrowRightSIcon,
-  LockIcon,
 } from '@remixicons/vue/line'
-import { mockEvent, type TicketingPictoIcon } from '~/data/ticketing/mockEvent'
-import { useTicketOrder } from '~/composables/useTicketOrder'
+import type { TicketingPictoIcon } from '~/data/ticketing/mockEvent'
+import { usePublicEvent } from '~/composables/usePublicEvent'
 import { formatDateWithWeekday, formatTimeOfDay } from '~/utils/dateUtils'
 
 const { t } = useI18n()
 const route = useRoute()
-const slug = route.params.slug as string
+const slug = String(route.params.slug)
 
-const event = mockEvent
+const event = await usePublicEvent(slug)
 const dateLabel = formatDateWithWeekday(event.startsAt)
 const timeLabel = t('ticketing.event.time-label', {
   start: formatTimeOfDay(event.startsAt),
@@ -147,7 +105,7 @@ const timeLabel = t('ticketing.event.time-label', {
 
 const eventMedias: HeroMedia[] = [{ type: 'IMAGE', ref: event.heroImage, position: 0 }]
 
-useHead({ title: `${event.title} · Sgilt` })
+useHead({ title: event.title })
 
 const { toUrl } = useImageUrl()
 useSeoMeta({
@@ -162,28 +120,6 @@ const PICTO_ICONS: Record<TicketingPictoIcon, Component> = {
   goblet: markRaw(GobletIcon),
   leaf: markRaw(LeafIcon),
   team: markRaw(TeamIcon),
-}
-
-// ── Sélecteur de quantité ─────────────────────────────────────────────────────
-const isAvailable = computed(() => event.remainingTickets > 0)
-const { quantity, decrement, increment, unitPriceLabel, totalLabel } = useTicketOrder(
-  slug,
-  event.unitPrice,
-  event.remainingTickets,
-)
-
-// ── Achat ─────────────────────────────────────────────────────────────────────
-// Le bouton reste toujours cliquable (jamais `disabled`) : une indisponibilité se traduit par
-// une erreur explicite au clic plutôt qu'un blocage silencieux.
-const purchaseError = ref<string | null>(null)
-
-function onBuyClick(): void {
-  if (!isAvailable.value) {
-    purchaseError.value = t('ticketing.event.sold-out-error')
-    return
-  }
-  purchaseError.value = null
-  navigateTo(`/e/${slug}/commande`)
 }
 </script>
 
@@ -347,10 +283,15 @@ function onBuyClick(): void {
 
   @media (min-width: $breakpoint-desktop) {
     display: grid;
-    grid-template-columns: 1fr 380px;
+    grid-template-columns: 1fr;
     align-items: start;
     gap: $spacing-xxl;
     padding-top: $spacing-xxl;
+
+    // Colonne de la carte tarif seulement si l'événement a une billetterie.
+    &.with-ticketing {
+      grid-template-columns: 1fr 380px;
+    }
   }
 }
 
@@ -436,166 +377,5 @@ function onBuyClick(): void {
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
     padding: $spacing-l;
   }
-}
-
-.pricing {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-m;
-}
-
-.price-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: $spacing-s;
-}
-
-.price {
-  display: flex;
-  align-items: baseline;
-  gap: 0.4rem;
-
-  .amount {
-    font-size: $font-size-2xl;
-    font-weight: $font-weight-bold;
-    color: $text-primary;
-  }
-
-  .unit {
-    font-size: $font-size-sm;
-    color: $text-secondary;
-  }
-}
-
-.availability-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.35rem 0.8rem;
-  border-radius: 2rem;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
-  white-space: nowrap;
-  background: rgba($state-available, 0.1);
-  color: $state-available;
-
-  .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: currentColor;
-    flex-shrink: 0;
-  }
-
-  &.unavailable {
-    background: rgba($state-danger, 0.1);
-    color: $state-danger;
-  }
-}
-
-.quantity-row,
-.total-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  .label {
-    font-size: $font-size-md;
-    font-weight: $font-weight-medium;
-    color: $text-primary;
-  }
-}
-
-.total-row {
-  padding-top: $spacing-m;
-  border-top: 1px solid $divider-color;
-
-  .value {
-    font-size: $font-size-xl;
-    font-weight: $font-weight-bold;
-    color: $text-primary;
-  }
-}
-
-
-// ─── CTA ────────────────────────────────────────────────────────────────────────
-.cta {
-  width: 100%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5em;
-  height: 3.25rem;
-  border: none;
-  border-radius: 9999px;
-  background: $brand-accent;
-  color: $brand-primary;
-  font-family: inherit;
-  font-size: $font-size-md;
-  font-weight: $font-weight-bold;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba($brand-primary, 0.18);
-  transition:
-    transform 160ms ease,
-    box-shadow 160ms ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba($brand-primary, 0.22);
-  }
-
-  &:focus-visible {
-    outline: 3px solid $brand-primary;
-    outline-offset: 4px;
-  }
-
-  .icon {
-    width: 1.1rem;
-    height: 1.1rem;
-  }
-
-  .chevron {
-    width: 1.1rem;
-    height: 1.1rem;
-  }
-}
-
-.purchase-error {
-  margin: -$spacing-xs 0 0;
-  font-size: $font-size-sm;
-  color: $state-error;
-  text-align: center;
-}
-
-.reassurance {
-  margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: $spacing-xs;
-  color: $text-secondary;
-  font-size: $font-size-xs;
-
-  .icon {
-    width: 0.9rem;
-    height: 0.9rem;
-    flex-shrink: 0;
-  }
-
-  .brand {
-    text-decoration: underline;
-    font-weight: $font-weight-medium;
-  }
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 200ms ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 </style>

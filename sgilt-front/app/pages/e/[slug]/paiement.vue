@@ -61,24 +61,21 @@ import TicketingOrderHeader from '~/components/ticketing/TicketingOrderHeader.vu
 import TicketingEventRecap from '~/components/ticketing/TicketingEventRecap.vue'
 import TicketingCgvCheckbox from '~/components/ticketing/TicketingCgvCheckbox.vue'
 import { BankCard2Icon, InformationIcon, ArrowRightSIcon, LockIcon } from '@remixicons/vue/line'
-import { mockEvent } from '~/data/ticketing/mockEvent'
+import { usePublicEvent } from '~/composables/usePublicEvent'
 import { useTicketOrder } from '~/composables/useTicketOrder'
+
+definePageMeta({ middleware: 'ticketing' })
 
 const { t } = useI18n()
 const route = useRoute()
-const slug = route.params.slug as string
+const slug = String(route.params.slug)
+const event = await usePublicEvent(slug)
+const { order, markPaid, unitPriceLabel, totalLabel } = useTicketOrder(slug, event.ticketing)
 
-const event = mockEvent
-
-useHead({ title: `${t('ticketing.payment.title')} · ${event.title} · Sgilt` })
+useHead({ title: `${t('ticketing.payment.title')} · ${event.title}` })
 
 // ── Récapitulatif ─────────────────────────────────────────────────────────────
-const { quantity, unitPriceLabel, totalLabel } = useTicketOrder(
-  slug,
-  event.unitPrice,
-  event.remainingTickets,
-)
-const ticketsDetailLabel = computed(() => `${quantity.value} × ${unitPriceLabel}`)
+const ticketsDetailLabel = computed(() => `${order.value.quantity} × ${unitPriceLabel}`)
 
 // ── Paiement ──────────────────────────────────────────────────────────────────
 // Le bouton reste toujours cliquable (jamais `disabled`) : une saisie incomplète se traduit par
@@ -95,6 +92,7 @@ function onPay(): void {
     return
   }
   payError.value = null
+  markPaid()
   navigateTo(`/e/${slug}/confirmation`)
 }
 </script>

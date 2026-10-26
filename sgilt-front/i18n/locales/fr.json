@@ -1450,14 +1450,22 @@
   "ticketing": {
     "event": {
       "per-ticket": "par place",
-      "available": "Places disponibles",
-      "unavailable": "Complet",
-      "quantity-label": "Nombre de places",
+      "status": {
+        "not-open": "Bientôt",
+        "open": "Places disponibles",
+        "sold-out": "Complet",
+        "closed": "Fermée"
+      },
+      "status-message": {
+        "not-open": "La billetterie n'est pas encore ouverte.",
+        "sold-out": "Toutes les places ont été vendues.",
+        "closed": "La billetterie est fermée."
+      },
       "decrement-aria": "Retirer une place",
+      "limit-reached": "Il ne reste qu'une place pour cet événement. | Il ne reste que {n} places pour cet événement.",
       "increment-aria": "Ajouter une place",
       "total-label": "Total",
       "cta": "Acheter mes billets",
-      "sold-out-error": "Cet événement est complet, aucun billet ne peut être acheté.",
       "reassurance": "Paiement sécurisé par",
       "share-text": "Découvrez {name} sur Sgilt",
       "time-label": "{start} – {end}"

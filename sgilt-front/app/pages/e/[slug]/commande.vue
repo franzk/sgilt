@@ -16,11 +16,13 @@
         >
       </div>
       <TicketingQuantityStepper
-        :quantity="quantity"
-        large
+        :quantity="order.quantity"
         @decrement="decrement"
         @increment="increment"
       />
+      <p v-if="limitReached" class="limit-message">
+        {{ $t('ticketing.event.limit-reached', { n: remainingTickets }, remainingTickets) }}
+      </p>
       <div class="total-row">
         <span class="label">{{ $t('ticketing.event.total-label') }}</span>
         <span class="value">{{ totalLabel }}</span>
@@ -38,7 +40,7 @@
           >
           <input
             id="firstName"
-            v-model="buyer.firstName"
+            v-model="order.buyer.firstName"
             type="text"
             class="input"
             :class="{ 'input-error': errors.firstName }"
@@ -52,7 +54,7 @@
           >
           <input
             id="lastName"
-            v-model="buyer.lastName"
+            v-model="order.buyer.lastName"
             type="text"
             class="input"
             :class="{ 'input-error': errors.lastName }"
@@ -68,7 +70,7 @@
         >
         <input
           id="email"
-          v-model="buyer.email"
+          v-model="order.buyer.email"
           type="email"
           class="input"
           :class="{ 'input-error': errors.email }"
@@ -119,23 +121,27 @@ import TicketingOrderHeader from '~/components/ticketing/TicketingOrderHeader.vu
 import TicketingEventRecap from '~/components/ticketing/TicketingEventRecap.vue'
 import TicketingQuantityStepper from '~/components/ticketing/TicketingQuantityStepper.vue'
 import { TicketIcon, InformationIcon, ArrowRightSIcon, LockIcon } from '@remixicons/vue/line'
-import { mockEvent } from '~/data/ticketing/mockEvent'
+import { usePublicEvent } from '~/composables/usePublicEvent'
 import { useTicketOrder } from '~/composables/useTicketOrder'
+
+definePageMeta({ middleware: 'ticketing' })
 
 const { t } = useI18n()
 const route = useRoute()
-const slug = route.params.slug as string
+const slug = String(route.params.slug)
+const event = await usePublicEvent(slug)
+const {
+  order,
+  remainingTickets,
+  limitReached,
+  decrement,
+  increment,
+  markOrdered,
+  unitPriceLabel,
+  totalLabel,
+} = useTicketOrder(slug, event.ticketing)
 
-const event = mockEvent
-
-useHead({ title: `${t('ticketing.order.title')} · ${event.title} · Sgilt` })
-
-// ── Sélecteur de quantité ─────────────────────────────────────────────────────
-const { quantity, buyer, decrement, increment, unitPriceLabel, totalLabel } = useTicketOrder(
-  slug,
-  event.unitPrice,
-  event.remainingTickets,
-)
+useHead({ title: `${t('ticketing.order.title')} · ${event.title}` })
 
 // ── Formulaire ────────────────────────────────────────────────────────────────
 const errors = reactive({
@@ -147,9 +153,9 @@ const errors = reactive({
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function validate(): boolean {
-  errors.lastName = buyer.lastName.trim() ? '' : t('ticketing.order.error-required')
-  errors.firstName = buyer.firstName.trim() ? '' : t('ticketing.order.error-required')
-  errors.email = EMAIL_PATTERN.test(buyer.email) ? '' : t('ticketing.order.error-email')
+  errors.lastName = order.value.buyer.lastName.trim() ? '' : t('ticketing.order.error-required')
+  errors.firstName = order.value.buyer.firstName.trim() ? '' : t('ticketing.order.error-required')
+  errors.email = EMAIL_PATTERN.test(order.value.buyer.email) ? '' : t('ticketing.order.error-email')
   return !errors.lastName && !errors.firstName && !errors.email
 }
 
@@ -163,6 +169,7 @@ function onSubmit(): void {
     return
   }
   submitError.value = null
+  markOrdered()
   navigateTo(`/e/${slug}/paiement`)
 }
 </script>
@@ -214,6 +221,13 @@ function onSubmit(): void {
 
 .quantity-stepper {
   align-self: center;
+}
+
+.limit-message {
+  margin: -$spacing-xs 0 0;
+  font-size: $font-size-sm;
+  color: $state-error;
+  text-align: center;
 }
 
 .total-row {
