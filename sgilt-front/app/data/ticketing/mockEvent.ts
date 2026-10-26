@@ -39,8 +39,8 @@ export interface TicketingMockEvent {
   endsAt: string
   venue: string
   city: string
-  audienceLabel: string
-  sectionTitle: string
+  // Titre de la présentation, au-dessus de la description ; facultatif.
+  sectionTitle?: string
   description: string
   // Absente si l'événement n'a pas de billetterie.
   ticketing?: TicketingMockTicketing
@@ -62,7 +62,6 @@ export const mockEvent: TicketingMockEvent = {
   endsAt: '2026-03-12T23:00',
   venue: 'Le Taennel',
   city: 'Scherwiller (67)',
-  audienceLabel: 'Tout public · Places debout',
   sectionTitle: 'Une soirée musicale et conviviale',
   description:
     "Le jeudi, le Taennel se transforme : concert acoustique, bar à vin nature et food-truck sur place. Une soirée conviviale pour démarrer le week-end en avance, en plein cœur du vignoble.",

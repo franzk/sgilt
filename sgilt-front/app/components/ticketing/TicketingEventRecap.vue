@@ -1,5 +1,5 @@
 <!--
-  Carte récapitulative de l'événement (photo, titre, date, lieu, public) en tête des écrans du
+  Carte récapitulative de l'événement (photo, titre, date, lieu) en tête des écrans du
   parcours d'achat de billets : commande, paiement, confirmation.
 -->
 <template>
@@ -16,17 +16,13 @@
         <MapPin2Icon class="icon" />
         <span>{{ event.venue }} · {{ event.city }}</span>
       </div>
-      <div class="meta-row">
-        <TeamIcon class="icon" />
-        <span>{{ event.audienceLabel }}</span>
-      </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
 import SgiltImage from '~/components/basics/media/SgiltImage.vue'
-import { CalendarEventIcon, MapPin2Icon, TeamIcon } from '@remixicons/vue/line'
+import { CalendarEventIcon, MapPin2Icon } from '@remixicons/vue/line'
 import type { TicketingMockEvent } from '~/data/ticketing/mockEvent'
 import { formatDateWithWeekday, formatTimeOfDay } from '~/utils/dateUtils'
 

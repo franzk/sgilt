@@ -50,6 +50,8 @@ public interface EvenementMapper {
     @Mapping(target = "imagePath",    ignore = true)
     @Mapping(target = "notePartagee", ignore = true)
     @Mapping(target = "createdAt",    ignore = true)
+    @Mapping(target = "startTime",    ignore = true)
+    @Mapping(target = "endTime",      ignore = true)
     @Mapping(target = "status",       constant = "ACTIVE")
     @Mapping(target = "utilisateur",  source = "utilisateur")
     @Mapping(target = "date",         source = "evenement.date")

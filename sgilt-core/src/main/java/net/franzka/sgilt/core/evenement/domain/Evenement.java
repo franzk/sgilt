@@ -8,6 +8,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,6 +37,12 @@ public class Evenement {
 
     @Column(nullable = false)
     private LocalDate date;
+
+    /** Heure locale du lieu, le jour de {@link #date} ; facultative. */
+    private LocalTime startTime;
+
+    /** Heure locale du lieu ; avant {@link #startTime}, elle tombe le lendemain. Facultative. */
+    private LocalTime endTime;
 
     @Column(name = "image_path")
     private String imagePath;
