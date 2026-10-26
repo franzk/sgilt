@@ -117,6 +117,27 @@ export default defineNuxtConfig({
       },
     },
 
+    // Parcours d'achat de billets = SPA (commande gardée en sessionStorage, données personnelles),
+    // pas de SEO. La fiche /e/:slug reste en SSR + SEO.
+    '/e/*/commande': {
+      ssr: false,
+      headers: {
+        'X-Robots-Tag': 'noindex, nofollow',
+      },
+    },
+    '/e/*/paiement': {
+      ssr: false,
+      headers: {
+        'X-Robots-Tag': 'noindex, nofollow',
+      },
+    },
+    '/e/*/confirmation': {
+      ssr: false,
+      headers: {
+        'X-Robots-Tag': 'noindex, nofollow',
+      },
+    },
+
     // /m seul = route parente technique, pas de contenu propre
     '/m': {
       redirect: { to: '/', statusCode: 301 },
