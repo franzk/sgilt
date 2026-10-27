@@ -10,7 +10,7 @@
       <p class="event-subtitle">{{ event.subtitle }}</p>
       <div class="meta-row">
         <CalendarEventIcon class="icon" />
-        <span>{{ dateLabel }} · {{ timeLabel }}</span>
+        <span>{{ dateLabel }}</span>
       </div>
       <div class="meta-row">
         <MapPin2Icon class="icon" />
@@ -23,20 +23,20 @@
 <script setup lang="ts">
 import SgiltImage from '~/components/basics/media/SgiltImage.vue'
 import { CalendarEventIcon, MapPin2Icon } from '@remixicons/vue/line'
-import type { TicketingMockEvent } from '~/data/ticketing/mockEvent'
-import { formatDateWithWeekday, formatTimeOfDay } from '~/utils/dateUtils'
+import type { PublicEvent } from '~/data/ticketing/domain/PublicEvent'
+import { useEventHoursLabel } from '~/composables/useEventHoursLabel'
+import { formatDateWithWeekday } from '~/utils/dateUtils'
 
-const props = defineProps<{ event: TicketingMockEvent }>()
+const props = defineProps<{ event: PublicEvent }>()
 
-const { t } = useI18n()
+const { eventHoursLabel } = useEventHoursLabel()
 
-const dateLabel = computed(() => formatDateWithWeekday(props.event.startsAt))
-const timeLabel = computed(() =>
-  t('ticketing.event.time-label', {
-    start: formatTimeOfDay(props.event.startsAt),
-    end: formatTimeOfDay(props.event.endsAt),
-  }),
-)
+// « Jeudi 12 mars 2026 · 19h – 2h », ou la date seule sans horaires.
+const dateLabel = computed(() => {
+  const date = formatDateWithWeekday(props.event.date)
+  const hours = eventHoursLabel(props.event.startsAt, props.event.endsAt)
+  return hours ? `${date} · ${hours}` : date
+})
 </script>
 
 <style scoped lang="scss">

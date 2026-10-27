@@ -37,11 +37,11 @@
 
 <script setup lang="ts">
 import { TicketIcon, ArrowRightSIcon, LockIcon } from '@remixicons/vue/line'
-import type { TicketingMockTicketing } from '~/data/ticketing/mockEvent'
+import type { PublicEventTicketing } from '~/data/ticketing/domain/PublicEvent'
 import { useTicketOrder } from '~/composables/useTicketOrder'
 import { isSoldOut } from '~/utils/ticketingUtils'
 
-const props = defineProps<{ slug: string; ticketing: TicketingMockTicketing }>()
+const props = defineProps<{ slug: string; ticketing: PublicEventTicketing }>()
 
 type PurchaseState = 'NOT_OPEN' | 'OPEN' | 'SOLD_OUT' | 'CLOSED'
 

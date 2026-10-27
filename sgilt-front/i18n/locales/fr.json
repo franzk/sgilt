@@ -1468,7 +1468,8 @@
       "cta": "Acheter mes billets",
       "reassurance": "Paiement sécurisé par",
       "share-text": "Découvrez {name} sur Sgilt",
-      "time-label": "{start} – {end}"
+      "time-label": "{start} – {end}",
+      "time-label-until": "jusqu'à {end}"
     },
     "order": {
       "back": "Retour",

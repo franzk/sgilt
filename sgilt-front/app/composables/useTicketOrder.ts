@@ -12,7 +12,7 @@
  * Renvoie toujours une commande pour l'événement demandé : si la mémoire contient celle d'un autre
  * événement, ou rien, c'est une commande vierge à l'étape NONE, non enregistrée.
  */
-import type { TicketingMockTicketing } from '~/data/ticketing/mockEvent'
+import type { PublicEventTicketing } from '~/data/ticketing/domain/PublicEvent'
 import { formatPrice } from '~/utils/priceUtils'
 
 const TICKET_ORDER_STORAGE_KEY = 'sgilt:ticket-order'
@@ -125,10 +125,10 @@ if (import.meta.client) {
 // ── Composable ────────────────────────────────────────────────────────────────
 
 // ticketing : billetterie de l'événement (usePublicEvent), pour le prix et le plafond.
-export function useTicketOrder(slug: string, ticketing: TicketingMockTicketing | undefined) {
+export function useTicketOrder(slug: string, ticketing: PublicEventTicketing | undefined) {
   // Sans billetterie, aucun écran d'achat n'est atteint (middleware `ticketing`) : les valeurs
   // par défaut ne servent jamais.
-  const unitPrice = ticketing?.unitPrice ?? 0
+  const unitPriceCents = ticketing?.unitPriceCents ?? 0
   const remainingTickets = ticketing?.remainingTickets ?? 0
 
   const order = computed<TicketOrder>(() =>
@@ -171,8 +171,9 @@ export function useTicketOrder(slug: string, ticketing: TicketingMockTicketing |
     order.value.stage = 'PAID'
   }
 
-  const unitPriceLabel = formatPrice(unitPrice)
-  const totalLabel = computed(() => formatPrice(unitPrice * order.value.quantity))
+  // Montants calculés en centimes, convertis en euros pour l'affichage seulement.
+  const unitPriceLabel = formatPrice(unitPriceCents / 100)
+  const totalLabel = computed(() => formatPrice((unitPriceCents * order.value.quantity) / 100))
 
   return {
     order,

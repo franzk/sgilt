@@ -7,6 +7,14 @@ import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireRequest;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireResponse;
 import net.franzka.sgilt.core.admin.exception.SlugAlreadyExistsException;
 import net.franzka.sgilt.core.admin.service.AdminOnboardingService;
+import net.franzka.sgilt.core.evenement.domain.Evenement;
+import net.franzka.sgilt.core.evenement.dto.AdminEvenementListItemDto;
+import net.franzka.sgilt.core.evenement.exception.EvenementNotFoundException;
+import net.franzka.sgilt.core.evenement.page.dto.AdminEventPublicFormDto;
+import net.franzka.sgilt.core.evenement.page.exception.BilletterieWithoutPageException;
+import net.franzka.sgilt.core.evenement.page.exception.PageSlugAlreadyUsedException;
+import net.franzka.sgilt.core.evenement.page.service.PageEvenementService;
+import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.keycloak.KeycloakAdminService;
 import net.franzka.sgilt.core.onboarding.dto.OnboardingPendingDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireAdminListItemDto;
@@ -45,6 +53,8 @@ public class AdminController implements AdminApi {
     private final KeycloakAdminService keycloakAdminService;
     private final AdminOnboardingService adminOnboardingService;
     private final ReservationService reservationService;
+    private final EvenementService evenementService;
+    private final PageEvenementService pageEvenementService;
     private final TransactionTemplate transactionTemplate;
 
     /**
@@ -55,6 +65,8 @@ public class AdminController implements AdminApi {
      * @param keycloakAdminService le service métier des interactions Keycloak
      * @param adminOnboardingService le service de suivi et de relance des onboardings en attente
      * @param reservationService  le service métier des réservations
+     * @param evenementService    le service métier des événements
+     * @param pageEvenementService le service métier des pages d'événement
      * @param transactionManager   le gestionnaire de transaction Spring, utilisé pour construire le {@link TransactionTemplate}
      */
     public AdminController(
@@ -63,12 +75,16 @@ public class AdminController implements AdminApi {
             KeycloakAdminService keycloakAdminService,
             AdminOnboardingService adminOnboardingService,
             ReservationService reservationService,
+            EvenementService evenementService,
+            PageEvenementService pageEvenementService,
             PlatformTransactionManager transactionManager) {
         this.prestataireService = prestataireService;
         this.utilisateurService = utilisateurService;
         this.keycloakAdminService = keycloakAdminService;
         this.adminOnboardingService = adminOnboardingService;
         this.reservationService = reservationService;
+        this.evenementService = evenementService;
+        this.pageEvenementService = pageEvenementService;
         this.transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
@@ -235,5 +251,52 @@ public class AdminController implements AdminApi {
     public ResponseEntity<List<OnboardingPendingDto>> listPendingUserOnboardings() {
         log.info("GET /admin/onboarding-pending");
         return ResponseEntity.ok(adminOnboardingService.listPendingUserOnboardings());
+    }
+
+    /**
+     * Liste tous les événements, pour choisir celui dont on saisit la page publique.
+     *
+     * @return la liste des événements
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<List<AdminEvenementListItemDto>> listEvenements() {
+        log.info("GET /admin/evenements");
+        return ResponseEntity.ok(evenementService.getAdminEvenements());
+    }
+
+    /**
+     * Retourne la face publique d'un événement telle que saisie : ses horaires, sa page et sa
+     * billetterie.
+     *
+     * @param id identifiant de l'événement
+     * @return la face publique, ou 404 si l'événement n'existe pas
+     * @throws EvenementNotFoundException si l'événement n'existe pas
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<AdminEventPublicFormDto> getPublicPage(UUID id) {
+        log.info("GET /admin/evenements/{}/page-publique", id);
+        return ResponseEntity.ok(pageEvenementService.getAdminPublicPage(evenementService.getById(id)));
+    }
+
+    /**
+     * Remplace d'un bloc la face publique d'un événement : ses horaires, sa page et sa billetterie
+     * (un bloc à null est supprimé).
+     *
+     * @param id      identifiant de l'événement
+     * @param request la face publique saisie
+     * @return la face publique enregistrée
+     * @throws EvenementNotFoundException      si l'événement n'existe pas
+     * @throws BilletterieWithoutPageException si une billetterie est saisie sans page
+     * @throws PageSlugAlreadyUsedException    si le slug est celui de la page d'un autre événement
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<AdminEventPublicFormDto> putPublicPage(UUID id, AdminEventPublicFormDto request) {
+        log.info("PUT /admin/evenements/{}/page-publique", id);
+        Evenement evenement = evenementService.replaceHoraires(id, request.startTime(), request.endTime());
+        pageEvenementService.putPublicPage(evenement, request.page(), request.ticketing());
+        return ResponseEntity.ok(pageEvenementService.getAdminPublicPage(evenement));
     }
 }

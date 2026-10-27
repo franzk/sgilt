@@ -105,11 +105,12 @@ function onViewTickets(): void {
 
 function onAddToCalendar(): void {
   const ics = buildIcsEvent({
-    uid: `${slug}-${event.startsAt}@sgilt.alsace`,
+    uid: `${slug}-${event.date}@sgilt.alsace`,
     title: event.title,
-    description: event.subtitle,
+    description: event.subtitle ?? '',
     location: `${event.venue}, ${event.city}`,
     url: `${window.location.origin}/e/${slug}`,
+    date: event.date,
     startsAt: event.startsAt,
     endsAt: event.endsAt,
   })

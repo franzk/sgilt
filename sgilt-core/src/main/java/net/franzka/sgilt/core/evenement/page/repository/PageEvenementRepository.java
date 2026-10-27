@@ -18,4 +18,12 @@ public interface PageEvenementRepository extends JpaRepository<PageEvenement, UU
      * @return la page, ou vide si le slug est inconnu
      */
     Optional<PageEvenement> findBySlug(String slug);
+
+    /**
+     * Retourne la page d'un événement.
+     *
+     * @param evenementId l'identifiant de l'événement
+     * @return la page, ou vide si l'événement n'en a pas
+     */
+    Optional<PageEvenement> findByEvenementId(UUID evenementId);
 }
