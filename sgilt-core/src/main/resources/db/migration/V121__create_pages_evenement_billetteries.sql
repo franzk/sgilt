@@ -1,5 +1,5 @@
 -- Horaires d'un événement (facultatifs) : heures locales du lieu, le jour de sa date ; une fin
--- avant le début tombe le lendemain. La page d'un événement les exige (contrôlé par le service).
+-- avant le début tombe le lendemain.
 ALTER TABLE evenements ADD COLUMN start_time TIME;
 ALTER TABLE evenements ADD COLUMN end_time TIME;
 
