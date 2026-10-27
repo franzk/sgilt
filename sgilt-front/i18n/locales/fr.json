@@ -1359,7 +1359,64 @@
       "prestataires": "Prestataires",
       "onboarding": "Onboardings",
       "reservations": "Réservations",
-      "sous-categories": "Sous-catégories"
+      "sous-categories": "Sous-catégories",
+      "evenements-publics": "Pages événement"
+    },
+    "evenements-publics": {
+      "title": "Pages événement",
+      "choose": "Choisir un événement",
+      "loading": "Chargement…",
+      "hours": {
+        "title": "Horaires",
+        "start": "Début",
+        "end": "Fin",
+        "hint": "Facultatifs. Une fin avant le début tombe le lendemain (ex. 19h – 2h)."
+      },
+      "page": {
+        "title": "Page publique",
+        "slug": "Slug (adresse /e/…)",
+        "tag": "Tag (au-dessus du titre)",
+        "subtitle": "Sous-titre",
+        "section-title": "Titre de la présentation",
+        "description": "Présentation",
+        "important-info": "Infos importantes (avant l’achat)",
+        "practical-info": "Infos pratiques (après l’achat)",
+        "lines-hint": "Une info par ligne.",
+        "pictos": "Points forts",
+        "picto-icon": "Pictogramme",
+        "picto-label": "Libellé",
+        "picto-sublabel": "Sous-libellé",
+        "picto-add": "Ajouter un point fort",
+        "picto-remove": "Retirer"
+      },
+      "icons": {
+        "music": "Musique",
+        "goblet": "Verre",
+        "leaf": "Feuille",
+        "team": "Groupe"
+      },
+      "ticketing": {
+        "title": "Billetterie",
+        "status": "Statut",
+        "statuses": {
+          "NOT_OPEN": "Pas encore ouverte",
+          "OPEN": "Ouverte",
+          "CLOSED": "Fermée"
+        },
+        "price": "Prix d’un billet (€)",
+        "capacity": "Jauge (places en vente)"
+      },
+      "save": "Enregistrer",
+      "saved": "Enregistré.",
+      "errors": {
+        "SLUG_REQUIRED": "Renseignez le slug de la page.",
+        "INVALID_SLUG": "Le slug ne peut contenir que des minuscules, des chiffres et des tirets (ex. les-jeudis-du-taennel).",
+        "SLUG_ALREADY_USED": "Ce slug est déjà celui de la page d’un autre événement.",
+        "PICTO_INCOMPLETE": "Chaque point fort doit avoir un libellé.",
+        "INVALID_PRICE": "Le prix doit être un montant positif.",
+        "INVALID_CAPACITY": "La jauge doit être un nombre entier positif.",
+        "TECHNICAL": "Une erreur est survenue. Réessayez."
+      }
     },
     "onboarding-nav": {
       "pro": "Pro",
