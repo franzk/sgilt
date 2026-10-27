@@ -2,8 +2,10 @@
  * Domaine — événement public (fiche /e/[slug] et parcours d'achat de billets), avec sa billetterie
  */
 
-// Pictogramme d'un point fort, par clé : la fiche fait la correspondance clé → icône.
-export type PublicEventPictoIcon = 'music' | 'goblet' | 'leaf' | 'team'
+// Pictogrammes des points forts, par clé : la fiche fait la correspondance clé → icône, le
+// back-office les propose à la saisie.
+export const PUBLIC_EVENT_PICTO_ICONS = ['music', 'goblet', 'leaf', 'team'] as const
+export type PublicEventPictoIcon = (typeof PUBLIC_EVENT_PICTO_ICONS)[number]
 
 export interface PublicEventPicto {
   icon: PublicEventPictoIcon

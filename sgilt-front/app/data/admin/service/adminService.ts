@@ -15,6 +15,9 @@ import {
   updateSousCategorieApi,
   moveSousCategorieApi,
   deleteSousCategorieApi,
+  listAdminEvenementsApi,
+  getAdminEventPublicFormApi,
+  putAdminEventPublicFormApi,
 } from '../api/adminApi'
 import {
   mapPrestataireAdminFormat,
@@ -25,6 +28,9 @@ import {
   mapOnboardingPending,
   mapCategorieAdmin,
   mapSousCategorieAdmin,
+  mapAdminEvenementListItem,
+  mapAdminEventPublicForm,
+  mapAdminEventPublicFormRequest,
 } from '../mapper/adminMapper'
 import type { PrestataireAdminFormat } from '../domain/PrestataireAdminFormat'
 import type { PrestataireOnboardingPending } from '../domain/PrestataireOnboardingPending'
@@ -34,6 +40,7 @@ import type { AdminReservationListItem } from '../domain/AdminReservationListIte
 import type { AdminReservationStatus } from '../domain/AdminReservationStatus'
 import type { OnboardingPending } from '../domain/OnboardingPending'
 import type { CategorieAdmin, MoveDirection, SousCategorieAdmin } from '../domain/CategorieAdmin'
+import type { AdminEvenementListItem, AdminEventPublicForm } from '../domain/AdminEvenement'
 import { FetchError } from 'ofetch'
 
 /**
@@ -146,4 +153,25 @@ export async function deleteSousCategorie(key: string): Promise<void> {
  */
 export function toSousCategorieFailure(error: unknown, refusal: string): string {
   return error instanceof FetchError && error.statusCode === 400 ? refusal : 'TECHNICAL'
+}
+
+/**
+ * Récupère tous les événements, du plus lointain au plus ancien, pour le back-office admin.
+ */
+export async function fetchAdminEvenements(): Promise<AdminEvenementListItem[]> {
+  return (await listAdminEvenementsApi()).map(mapAdminEvenementListItem)
+}
+
+/**
+ * Récupère la face publique d'un événement : horaires, page et billetterie.
+ */
+export async function fetchAdminEventPublicForm(id: string): Promise<AdminEventPublicForm> {
+  return mapAdminEventPublicForm(await getAdminEventPublicFormApi(id))
+}
+
+/**
+ * Enregistre d'un bloc la face publique d'un événement et renvoie l'état enregistré.
+ */
+export async function saveAdminEventPublicForm(id: string, form: AdminEventPublicForm): Promise<AdminEventPublicForm> {
+  return mapAdminEventPublicForm(await putAdminEventPublicFormApi(id, mapAdminEventPublicFormRequest(form)))
 }
