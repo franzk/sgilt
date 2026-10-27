@@ -3,6 +3,8 @@ package net.franzka.sgilt.core.admin.api;
 import jakarta.validation.Valid;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireRequest;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireResponse;
+import net.franzka.sgilt.core.evenement.dto.AdminEvenementListItemDto;
+import net.franzka.sgilt.core.evenement.page.dto.AdminEventPublicFormDto;
 import net.franzka.sgilt.core.onboarding.dto.OnboardingPendingDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireAdminListItemDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireOnboardingPendingDto;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -47,4 +50,13 @@ public interface AdminApi {
 
     @GetMapping("/onboarding-pending")
     ResponseEntity<List<OnboardingPendingDto>> listPendingUserOnboardings();
+
+    @GetMapping("/evenements")
+    ResponseEntity<List<AdminEvenementListItemDto>> listEvenements();
+
+    @GetMapping("/evenements/{id}/page-publique")
+    ResponseEntity<AdminEventPublicFormDto> getPublicPage(@PathVariable UUID id);
+
+    @PutMapping("/evenements/{id}/page-publique")
+    ResponseEntity<AdminEventPublicFormDto> putPublicPage(@PathVariable UUID id, @RequestBody @Valid AdminEventPublicFormDto request);
 }

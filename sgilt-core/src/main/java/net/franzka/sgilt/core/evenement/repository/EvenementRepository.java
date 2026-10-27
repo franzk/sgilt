@@ -18,4 +18,11 @@ public interface EvenementRepository extends JpaRepository<Evenement, UUID> {
      * @return la liste des événements
      */
     List<Evenement> findByUtilisateurId(UUID utilisateurId);
+
+    /**
+     * Retourne tous les événements, du plus lointain au plus ancien.
+     *
+     * @return la liste des événements
+     */
+    List<Evenement> findAllByOrderByDateDesc();
 }

@@ -23,7 +23,7 @@
         <span class="badge"><CalendarEventIcon /></span>
         <div class="text">
           <p class="main">{{ dateLabel }}</p>
-          <p class="sub">{{ timeLabel }}</p>
+          <p v-if="timeLabel" class="sub">{{ timeLabel }}</p>
         </div>
       </div>
       <div class="info-card-item">
@@ -39,7 +39,7 @@
         <CalendarEventIcon class="icon" />
         <div class="text">
           <p class="main">{{ dateLabel }}</p>
-          <p class="sub">{{ timeLabel }}</p>
+          <p v-if="timeLabel" class="sub">{{ timeLabel }}</p>
         </div>
       </div>
       <div class="info-item">
@@ -88,34 +88,35 @@ import {
   TeamIcon,
   ArrowRightSIcon,
 } from '@remixicons/vue/line'
-import type { TicketingPictoIcon } from '~/data/ticketing/mockEvent'
+import type { PublicEventPictoIcon } from '~/data/ticketing/domain/PublicEvent'
 import { usePublicEvent } from '~/composables/usePublicEvent'
-import { formatDateWithWeekday, formatTimeOfDay } from '~/utils/dateUtils'
+import { useEventHoursLabel } from '~/composables/useEventHoursLabel'
+import { formatDateWithWeekday } from '~/utils/dateUtils'
 
 const { t } = useI18n()
 const route = useRoute()
 const slug = String(route.params.slug)
 
 const event = await usePublicEvent(slug)
-const dateLabel = formatDateWithWeekday(event.startsAt)
-const timeLabel = t('ticketing.event.time-label', {
-  start: formatTimeOfDay(event.startsAt),
-  end: formatTimeOfDay(event.endsAt),
-})
+const { eventHoursLabel } = useEventHoursLabel()
+const dateLabel = formatDateWithWeekday(event.date)
+const timeLabel = eventHoursLabel(event.startsAt, event.endsAt)
 
-const eventMedias: HeroMedia[] = [{ type: 'IMAGE', ref: event.heroImage, position: 0 }]
+const eventMedias: HeroMedia[] = event.heroImage
+  ? [{ type: 'IMAGE', ref: event.heroImage, position: 0 }]
+  : []
 
 useHead({ title: event.title })
 
 const { toUrl } = useImageUrl()
 useSeoMeta({
   ogTitle: `${event.title} · Sgilt`,
-  ogImage: toUrl(event.heroImage),
+  ogImage: event.heroImage ? toUrl(event.heroImage) : undefined,
 })
 
 const shareText = computed(() => t('ticketing.event.share-text', { name: event.title }))
 
-const PICTO_ICONS: Record<TicketingPictoIcon, Component> = {
+const PICTO_ICONS: Record<PublicEventPictoIcon, Component> = {
   music: markRaw(MusicIcon),
   goblet: markRaw(GobletIcon),
   leaf: markRaw(LeafIcon),

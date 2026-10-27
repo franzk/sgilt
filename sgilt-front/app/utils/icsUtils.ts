@@ -2,7 +2,7 @@
  * Fichier calendrier (.ics, RFC 5545) d'un événement, généré et téléchargé côté navigateur —
  * utilisé par « Ajouter au calendrier » sur la confirmation d'achat de billets. Les heures sont
  * « flottantes » (sans fuseau) : l'événement a lieu à l'heure locale du lieu, que les agendas
- * affichent telle quelle.
+ * affichent telle quelle. Sans heure de début, l'événement occupe la journée entière.
  */
 
 export interface IcsEvent {
@@ -12,9 +12,11 @@ export interface IcsEvent {
   description: string
   location: string
   url: string
-  // Heure locale du lieu, sans fuseau ('YYYY-MM-DDTHH:mm').
-  startsAt: string
-  endsAt: string
+  // 'YYYY-MM-DD'
+  date: string
+  // Heure locale du lieu, sans fuseau ('YYYY-MM-DDTHH:mm') ; absente si l'événement n'en a pas.
+  startsAt?: string
+  endsAt?: string
 }
 
 // Longueur maximale d'une ligne, en octets ; au-delà, la ligne est repliée (RFC 5545 §3.1).
@@ -23,6 +25,33 @@ const MAX_LINE_BYTES = 75
 // '2026-03-12T19:00' → '20260312T190000'
 function toIcsLocalDateTime(isoLocal: string): string {
   return `${isoLocal.replace(/[-:]/g, '')}00`
+}
+
+// '2026-03-12' → '20260312'
+function toIcsDate(isoDate: string): string {
+  return isoDate.replace(/-/g, '')
+}
+
+// Lendemain d'une date : la fin d'un événement « journée entière » est exclusive (RFC 5545 §3.6.1).
+function nextDay(isoDate: string): string {
+  const [year = 0, month = 1, day = 1] = isoDate.split('-').map(Number)
+  const next = new Date(Date.UTC(year, month - 1, day + 1))
+  return next.toISOString().slice(0, 10)
+}
+
+// DTSTART / DTEND : heures flottantes s'il y a une heure de début (DTEND seulement s'il y a une
+// heure de fin), sinon la journée entière — une heure de fin seule ne suffit pas à placer
+// l'événement.
+function icsDateLines(event: IcsEvent): string[] {
+  if (!event.startsAt) {
+    return [
+      `DTSTART;VALUE=DATE:${toIcsDate(event.date)}`,
+      `DTEND;VALUE=DATE:${toIcsDate(nextDay(event.date))}`,
+    ]
+  }
+  const lines = [`DTSTART:${toIcsLocalDateTime(event.startsAt)}`]
+  if (event.endsAt) lines.push(`DTEND:${toIcsLocalDateTime(event.endsAt)}`)
+  return lines
 }
 
 // Horodatage UTC de génération du fichier. Ex : '20261023T123456Z'
@@ -73,8 +102,7 @@ export function buildIcsEvent(event: IcsEvent): string {
     'BEGIN:VEVENT',
     `UID:${event.uid}`,
     `DTSTAMP:${toIcsUtcNow()}`,
-    `DTSTART:${toIcsLocalDateTime(event.startsAt)}`,
-    `DTEND:${toIcsLocalDateTime(event.endsAt)}`,
+    ...icsDateLines(event),
     `SUMMARY:${escapeText(event.title)}`,
     `DESCRIPTION:${escapeText(event.description)}`,
     `LOCATION:${escapeText(event.location)}`,

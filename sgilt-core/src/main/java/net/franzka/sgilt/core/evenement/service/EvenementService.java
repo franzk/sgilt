@@ -3,6 +3,7 @@ package net.franzka.sgilt.core.evenement.service;
 import lombok.RequiredArgsConstructor;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.domain.EvenementRubrique;
+import net.franzka.sgilt.core.evenement.dto.AdminEvenementListItemDto;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
 import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
 import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
@@ -18,6 +19,7 @@ import net.franzka.sgilt.core.evenement.dto.RubriqueDto;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotAllowedException;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotFoundException;
 import net.franzka.sgilt.core.evenement.mapper.EvenementMapper;
+import net.franzka.sgilt.core.evenement.page.service.PageEvenementService;
 import net.franzka.sgilt.core.evenement.repository.EvenementRepository;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.exception.PrestataireNotFoundException;
@@ -35,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,6 +64,7 @@ public class EvenementService {
     private final JournalEvenementService journalEvenementService;
     private final FileStorageService fileStorageService;
     private final TemplateService templateService;
+    private final PageEvenementService pageEvenementService;
 
     /**
      * Retourne la liste des événements de l'utilisateur identifié par son id.
@@ -72,6 +76,46 @@ public class EvenementService {
         return evenementRepository.findByUtilisateurId(userId).stream()
                 .map(e -> evenementMapper.toSummaryDto(e, reservationService.getCountsForEvenement(e.getId())))
                 .toList();
+    }
+
+    /**
+     * Liste tous les événements pour le back-office admin, du plus lointain au plus ancien, avec le
+     * slug de leur page publique s'ils en ont une.
+     *
+     * @return la liste des événements
+     */
+    public List<AdminEvenementListItemDto> getAdminEvenements() {
+        Map<UUID, String> slugs = pageEvenementService.getSlugsByEvenementId();
+        return evenementRepository.findAllByOrderByDateDesc().stream()
+                .map(e -> evenementMapper.toAdminListItemDto(e, slugs.get(e.getId())))
+                .toList();
+    }
+
+    /**
+     * Charge un événement par son identifiant, sans contrôle d'accès (back-office admin).
+     *
+     * @param eventId l'identifiant de l'événement
+     * @return l'événement
+     * @throws EvenementNotFoundException si l'événement n'existe pas
+     */
+    public Evenement getById(UUID eventId) {
+        return chargerEvenement(eventId);
+    }
+
+    /**
+     * Remplace les horaires d'un événement (back-office admin) ; une heure à null n'existe pas.
+     *
+     * @param eventId   l'identifiant de l'événement
+     * @param startTime l'heure de début, ou null
+     * @param endTime   l'heure de fin, ou null
+     * @return l'événement mis à jour
+     * @throws EvenementNotFoundException si l'événement n'existe pas
+     */
+    public Evenement replaceHoraires(UUID eventId, LocalTime startTime, LocalTime endTime) {
+        Evenement event = chargerEvenement(eventId);
+        event.setStartTime(startTime);
+        event.setEndTime(endTime);
+        return evenementRepository.save(event);
     }
 
     /**

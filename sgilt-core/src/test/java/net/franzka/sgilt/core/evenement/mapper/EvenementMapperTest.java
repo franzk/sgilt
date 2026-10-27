@@ -3,6 +3,7 @@ package net.franzka.sgilt.core.evenement.mapper;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.domain.EvenementRubrique;
 import net.franzka.sgilt.core.evenement.domain.EvenementStatus;
+import net.franzka.sgilt.core.evenement.dto.AdminEvenementListItemDto;
 import net.franzka.sgilt.core.evenement.dto.ClientInfoDto;
 import net.franzka.sgilt.core.evenement.dto.DemandeInitieeDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementDto;
@@ -134,6 +135,27 @@ class EvenementMapperTest {
                     null, "mariage", null, null, null, null, null, null, null, null);
 
             assertThat(mapper.toEvenement(evenementDto, Utilisateur.builder().build()).getRubriques()).isEmpty();
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // toAdminListItemDto
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ToAdminListItemDto {
+
+        @Test
+        void givenEvenementAndSlug_whenToAdminListItemDto_thenMapsAllFields() {
+            Evenement evenement = Evenement.builder()
+                    .id(UUID.randomUUID()).title("Les Jeudis du Taennel").date(LocalDate.of(2026, 3, 12))
+                    .utilisateur(Utilisateur.builder().email("equipe@sgilt.fr").build()).build();
+
+            AdminEvenementListItemDto dto = mapper.toAdminListItemDto(evenement, "les-jeudis-du-taennel");
+
+            assertThat(dto).isEqualTo(new AdminEvenementListItemDto(
+                    evenement.getId(), "Les Jeudis du Taennel", LocalDate.of(2026, 3, 12),
+                    "equipe@sgilt.fr", "les-jeudis-du-taennel"));
         }
     }
 }
