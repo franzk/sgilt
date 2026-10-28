@@ -19,6 +19,8 @@ export interface EventPageDto {
   title: string
   subtitle: string | null
   heroImage: string | null
+  // Type de l'événement (mariage, evenement_public…), null s'il n'en a pas.
+  eventType: string | null
   // 'YYYY-MM-DD'
   date: string
   // Heure locale du lieu, sans fuseau ('YYYY-MM-DDTHH:mm') ; null si l'événement n'en a pas.

@@ -3,6 +3,7 @@
  */
 import type { EventPageDto, EventPagePictoDto } from '../dto/EventPageDto'
 import type { PublicEvent, PublicEventPicto } from '../domain/PublicEvent'
+import { defaultCoverPath } from '~/utils/eventCovers'
 
 function mapPicto(dto: EventPagePictoDto): PublicEventPicto {
   return {
@@ -18,7 +19,7 @@ export function mapPublicEvent(dto: EventPageDto): PublicEvent {
     tag: dto.tag ?? undefined,
     title: dto.title,
     subtitle: dto.subtitle ?? undefined,
-    heroImage: dto.heroImage ?? undefined,
+    heroImage: dto.heroImage ?? defaultCoverPath(dto.eventType),
     date: dto.date,
     startsAt: dto.startsAt ?? undefined,
     endsAt: dto.endsAt ?? undefined,

@@ -32,8 +32,9 @@ export interface PublicEvent {
   tag?: string
   title: string
   subtitle?: string
-  // Clé R2, comme un media prestataire/événement, pas un asset public Nuxt.
-  heroImage?: string
+  // Clé R2, comme un media prestataire/événement, pas un asset public Nuxt. Sans image enregistrée,
+  // celle par défaut de son type d'événement, comme sur le board.
+  heroImage: string
   // 'YYYY-MM-DD' : toujours là, même sans horaires.
   date: string
   // Heure locale du lieu, sans fuseau ('YYYY-MM-DDTHH:mm') ; absente si l'événement n'en a pas.

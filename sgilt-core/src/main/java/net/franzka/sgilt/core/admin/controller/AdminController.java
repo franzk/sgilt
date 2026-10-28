@@ -120,7 +120,7 @@ public class AdminController implements AdminApi {
         // 3. On ouvre une courte transaction pour créer les entités en BDD
         try {
             PrestataireService.CreationResult result =
-                    transactionTemplate.execute(status -> {
+                    transactionTemplate.execute(_ -> {
 
                         Utilisateur utilisateur = utilisateurService.createUtilisateur(
                                 request.firstName(), request.lastName(), request.email(), null

@@ -17,6 +17,7 @@ import java.util.List;
  * @param title         le titre de l'événement
  * @param subtitle      le sous-titre, ou null
  * @param heroImage     le chemin de l'image de l'événement, ou null
+ * @param eventType     le type de l'événement, ou null (le front en tire l'image par défaut)
  * @param date          la date de l'événement
  * @param startsAt      le début, en heure locale du lieu, ou null si l'événement n'a pas d'heure de début
  * @param endsAt        la fin, en heure locale du lieu (le lendemain si elle passe minuit), ou null si
@@ -36,6 +37,7 @@ public record EventPageDto(
         String title,
         String subtitle,
         String heroImage,
+        String eventType,
         LocalDate date,
         // Format attendu par le front ('2026-03-12T19:00'), sans secondes ni fuseau.
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime startsAt,
