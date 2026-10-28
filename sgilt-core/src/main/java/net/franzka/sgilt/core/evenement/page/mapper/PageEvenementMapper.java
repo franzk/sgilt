@@ -29,6 +29,7 @@ public interface PageEvenementMapper {
     @Mapping(source = "page.evenement.title",      target = "title")
     @Mapping(source = "page.subtitle",             target = "subtitle")
     @Mapping(source = "page.evenement.imagePath",  target = "heroImage")
+    @Mapping(source = "page.evenement.eventType",  target = "eventType")
     @Mapping(source = "page.evenement.date",       target = "date")
     @Mapping(source = "startsAt",                  target = "startsAt")
     @Mapping(source = "endsAt",                    target = "endsAt")

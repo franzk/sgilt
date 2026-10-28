@@ -102,16 +102,14 @@ const { eventHoursLabel } = useEventHoursLabel()
 const dateLabel = formatDateWithWeekday(event.date)
 const timeLabel = eventHoursLabel(event.startsAt, event.endsAt)
 
-const eventMedias: HeroMedia[] = event.heroImage
-  ? [{ type: 'IMAGE', ref: event.heroImage, position: 0 }]
-  : []
+const eventMedias: HeroMedia[] = [{ type: 'IMAGE', ref: event.heroImage, position: 0 }]
 
 useHead({ title: event.title })
 
 const { toUrl } = useImageUrl()
 useSeoMeta({
   ogTitle: `${event.title} · Sgilt`,
-  ogImage: event.heroImage ? toUrl(event.heroImage) : undefined,
+  ogImage: toUrl(event.heroImage),
 })
 
 const shareText = computed(() => t('ticketing.event.share-text', { name: event.title }))

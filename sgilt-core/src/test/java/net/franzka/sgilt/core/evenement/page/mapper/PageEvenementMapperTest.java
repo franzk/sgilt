@@ -34,7 +34,7 @@ class PageEvenementMapperTest {
         @Test
         void givenPageTicketingAndHours_whenToEventPageDto_thenMapsAllFields() {
             Evenement evenement = Evenement.builder()
-                    .title("Les Jeudis du Taennel").imagePath("bank/taennel.png")
+                    .title("Les Jeudis du Taennel").imagePath("bank/taennel.png").eventType("evenement_public")
                     .date(LocalDate.of(2026, 3, 12))
                     .lieu("Le Taennel").ville("Scherwiller (67)").build();
             PageEvenement page = PageEvenement.builder()
@@ -53,7 +53,7 @@ class PageEvenementMapperTest {
 
             assertThat(dto).isEqualTo(new EventPageDto(
                     "les-jeudis-du-taennel", "Édition du 12 mars", "Les Jeudis du Taennel",
-                    "Concert & bar éphémère", "bank/taennel.png", LocalDate.of(2026, 3, 12), startsAt, endsAt,
+                    "Concert & bar éphémère", "bank/taennel.png", "evenement_public", LocalDate.of(2026, 3, 12), startsAt, endsAt,
                     "Le Taennel",
                     "Scherwiller (67)", "Une soirée musicale", "Le jeudi, le Taennel se transforme.",
                     ticketing, List.of("Places debout."),
