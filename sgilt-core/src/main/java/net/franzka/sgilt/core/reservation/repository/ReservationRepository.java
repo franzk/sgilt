@@ -4,6 +4,7 @@ import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -87,5 +88,15 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
      * @return la liste des réservations correspondantes, la plus récente en premier
      */
     List<Reservation> findByStatusOrderByCreatedAtDesc(ReservationStatus status);
+
+    /**
+     * Retourne les réservations d'un statut donné, créées avant la date fournie.
+     * Utilisé par les rappels automatiques.
+     *
+     * @param status        le statut à filtrer
+     * @param createdBefore la date de création maximale (exclue)
+     * @return la liste des réservations correspondantes
+     */
+    List<Reservation> findByStatusAndCreatedAtBefore(ReservationStatus status, LocalDateTime createdBefore);
 
 }
