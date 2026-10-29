@@ -141,6 +141,29 @@ class PageEvenementServiceTest {
     }
 
     // -------------------------------------------------------------------------
+    // getEvenementIdBySlug
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetEvenementIdBySlug {
+
+        @Test
+        void givenPage_whenGetEvenementIdBySlug_thenReturnsItsEvenementId() {
+            givenPage(null, null);
+
+            assertThat(pageEvenementService.getEvenementIdBySlug(SLUG)).isEqualTo(EVENEMENT_ID);
+        }
+
+        @Test
+        void givenUnknownSlug_whenGetEvenementIdBySlug_thenThrowsNotFound() {
+            when(pageEvenementRepository.findBySlug("inconnu")).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> pageEvenementService.getEvenementIdBySlug("inconnu"))
+                    .isInstanceOf(PageEvenementNotFoundException.class);
+        }
+    }
+
+    // -------------------------------------------------------------------------
     // getAdminPublicPage
     // -------------------------------------------------------------------------
 

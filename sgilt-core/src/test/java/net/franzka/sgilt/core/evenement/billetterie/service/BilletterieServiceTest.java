@@ -1,9 +1,12 @@
 package net.franzka.sgilt.core.evenement.billetterie.service;
 
+import net.franzka.sgilt.core.evenement.billetterie.commande.service.CommandeService;
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
 import net.franzka.sgilt.core.evenement.billetterie.domain.BilletterieStatus;
 import net.franzka.sgilt.core.evenement.billetterie.dto.AdminTicketingDto;
 import net.franzka.sgilt.core.evenement.billetterie.dto.TicketingDto;
+import net.franzka.sgilt.core.evenement.billetterie.exception.BilletterieNotFoundException;
+import net.franzka.sgilt.core.evenement.billetterie.exception.BilletterieNotOpenException;
 import net.franzka.sgilt.core.evenement.billetterie.mapper.BilletterieMapper;
 import net.franzka.sgilt.core.evenement.billetterie.repository.BilletterieRepository;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
@@ -18,6 +21,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -35,6 +39,9 @@ class BilletterieServiceTest {
     @Mock
     private BilletterieMapper billetterieMapper;
 
+    @Mock
+    private CommandeService commandeService;
+
     @InjectMocks
     private BilletterieService billetterieService;
 
@@ -48,11 +55,12 @@ class BilletterieServiceTest {
     class GetPublicTicketing {
 
         @Test
-        void givenBilletterie_whenGetPublicTicketing_thenMapsItWithWholeCapacityRemaining() {
+        void givenBilletterie_whenGetPublicTicketing_thenMapsItWithRemainingTickets() {
             Billetterie billetterie = Billetterie.builder().status(BilletterieStatus.OPEN).unitPriceCents(1200).capacity(150).build();
-            TicketingDto dto = new TicketingDto(BilletterieStatus.OPEN, 1200, 150);
+            TicketingDto dto = new TicketingDto(BilletterieStatus.OPEN, 1200, 42);
             when(billetterieRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(billetterie));
-            when(billetterieMapper.toTicketingDto(billetterie, 150)).thenReturn(dto);
+            when(commandeService.getRemainingTickets(billetterie)).thenReturn(42);
+            when(billetterieMapper.toTicketingDto(billetterie, 42)).thenReturn(dto);
 
             assertThat(billetterieService.getPublicTicketing(EVENEMENT_ID)).contains(dto);
         }
@@ -86,6 +94,39 @@ class BilletterieServiceTest {
             when(billetterieRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.empty());
 
             assertThat(billetterieService.getAdminTicketing(EVENEMENT_ID)).isEmpty();
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // lockOpenBilletterie
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class LockOpenBilletterie {
+
+        @Test
+        void givenOpenBilletterie_whenLockOpenBilletterie_thenReturnsItLocked() {
+            Billetterie billetterie = Billetterie.builder().status(BilletterieStatus.OPEN).build();
+            when(billetterieRepository.findForUpdateByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(billetterie));
+
+            assertThat(billetterieService.lockOpenBilletterie(EVENEMENT_ID)).isSameAs(billetterie);
+        }
+
+        @Test
+        void givenNotOpenBilletterie_whenLockOpenBilletterie_thenThrowsNotOpen() {
+            Billetterie billetterie = Billetterie.builder().status(BilletterieStatus.NOT_OPEN).build();
+            when(billetterieRepository.findForUpdateByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(billetterie));
+
+            assertThatThrownBy(() -> billetterieService.lockOpenBilletterie(EVENEMENT_ID))
+                    .isInstanceOf(BilletterieNotOpenException.class);
+        }
+
+        @Test
+        void givenNoBilletterie_whenLockOpenBilletterie_thenThrowsNotFound() {
+            when(billetterieRepository.findForUpdateByEvenementId(EVENEMENT_ID)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> billetterieService.lockOpenBilletterie(EVENEMENT_ID))
+                    .isInstanceOf(BilletterieNotFoundException.class);
         }
     }
 
