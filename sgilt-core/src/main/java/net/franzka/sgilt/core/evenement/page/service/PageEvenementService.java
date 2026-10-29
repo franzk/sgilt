@@ -52,8 +52,20 @@ public class PageEvenementService {
     }
 
     /**
-     * Retourne la face publique d'un événement telle que la saisit le back-office admin : ses
-     * horaires, sa page et sa billetterie.
+     * Retourne l'identifiant de l'événement d'une page publique.
+     *
+     * @param slug le slug de la page (/e/{slug})
+     * @return l'identifiant de l'événement
+     * @throws PageEvenementNotFoundException si aucune page ne correspond au slug
+     */
+    public UUID getEvenementIdBySlug(String slug) {
+        return pageEvenementRepository.findBySlug(slug)
+                .map(page -> page.getEvenement().getId())
+                .orElseThrow(() -> new PageEvenementNotFoundException(slug));
+    }
+
+    /**
+     * Retourne les horaires, la page et la billetterie d'un événement, tels que les saisit l'admin.
      *
      * @param evenement l'événement
      * @return la face publique, page et billetterie à null si l'événement n'en a pas
@@ -65,8 +77,7 @@ public class PageEvenementService {
     }
 
     /**
-     * Remplace la page et la billetterie d'un événement par leur saisie admin : chacune est créée,
-     * mise à jour, ou supprimée si sa saisie est null.
+     * Crée, met à jour ou supprime (saisie null) la page et la billetterie d'un événement.
      *
      * @param evenement l'événement
      * @param page      la page saisie, ou null pour qu'il n'en ait plus
@@ -90,20 +101,33 @@ public class PageEvenementService {
                 .collect(Collectors.toMap(page -> page.getEvenement().getId(), PageEvenement::getSlug));
     }
 
+    /**
+     * Crée, met à jour ou supprime (saisie null) la page d'un événement.
+     *
+     * @param evenement l'événement
+     * @param page      la page saisie, ou null pour qu'il n'en ait plus
+     * @throws PageSlugAlreadyUsedException si le slug est celui de la page d'un autre événement
+     */
     private void putPage(Evenement evenement, AdminPageDto page) {
         Optional<PageEvenement> existing = pageEvenementRepository.findByEvenementId(evenement.getId());
         if (page == null) {
             existing.ifPresent(pageEvenementRepository::delete);
             return;
         }
-        requireSlugAvailable(page.slug(), evenement);
+        if (!isSlugAvailable(page.slug(), evenement)) throw new PageSlugAlreadyUsedException(page.slug());
         PageEvenement pageEvenement = existing
                 .map(value -> applyPage(value, page))
                 .orElseGet(() -> pageEvenementMapper.toPageEvenement(page, evenement));
         pageEvenementRepository.save(pageEvenement);
     }
 
-    // Remplace les champs d'une page existante par sa saisie ; une liste absente est vide.
+    /**
+     * Remplace les champs d'une page existante par sa saisie, une liste absente devenant vide.
+     *
+     * @param pageEvenement la page existante
+     * @param page          la page saisie
+     * @return la page mise à jour
+     */
     private PageEvenement applyPage(PageEvenement pageEvenement, AdminPageDto page) {
         pageEvenement.setSlug(page.slug());
         pageEvenement.setTag(page.tag());
@@ -116,22 +140,36 @@ public class PageEvenementService {
         return pageEvenement;
     }
 
-    // Le slug est unique : il peut être celui de la page de cet événement, pas d'un autre.
-    private void requireSlugAvailable(String slug, Evenement evenement) {
-        pageEvenementRepository.findBySlug(slug)
-                .filter(other -> !other.getEvenement().getId().equals(evenement.getId()))
-                .ifPresent(other -> {
-                    throw new PageSlugAlreadyUsedException(slug);
-                });
+    /**
+     * Indique si le slug est libre ou déjà celui de la page de cet événement.
+     *
+     * @param slug      le slug saisi
+     * @param evenement l'événement
+     * @return false si le slug est celui de la page d'un autre événement
+     */
+    private boolean isSlugAvailable(String slug, Evenement evenement) {
+        return pageEvenementRepository.findBySlug(slug)
+                .filter(pageWithSlug -> !pageWithSlug.getEvenement().getId().equals(evenement.getId()))
+                .isEmpty();
     }
 
-    // Le début, le jour de l'événement ; null s'il n'a pas d'heure de début.
+    /**
+     * Calcule le début de l'événement, le jour de l'événement à son heure de début.
+     *
+     * @param evenement l'événement
+     * @return le début, ou null s'il n'a pas d'heure de début
+     */
     private LocalDateTime startsAt(Evenement evenement) {
         return evenement.getStartTime() == null ? null : evenement.getDate().atTime(evenement.getStartTime());
     }
 
-    // La fin, le jour de l'événement, ou le lendemain si elle tombe avant le début (ex. 19h – 2h) ;
-    // null s'il n'a pas d'heure de fin.
+    /**
+     * Calcule la fin de l'événement, le lendemain si elle tombe avant le début (ex. 19h – 2h).
+     *
+     * @param evenement l'événement
+     * @param startsAt  le début, ou null
+     * @return la fin, ou null s'il n'a pas d'heure de fin
+     */
     private LocalDateTime endsAt(Evenement evenement, LocalDateTime startsAt) {
         if (evenement.getEndTime() == null) return null;
         LocalDateTime endsAt = evenement.getDate().atTime(evenement.getEndTime());
