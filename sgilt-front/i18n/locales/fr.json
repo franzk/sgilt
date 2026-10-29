@@ -994,6 +994,10 @@
       "document_added": {
         "title": "Nouveau document",
         "body": "{actorName} a déposé un document pour {eventTitle}."
+      },
+      "contact_reminder": {
+        "title": "Où en est votre demande auprès de {prestataireName} ?",
+        "body": "Si vous avez pu échanger avec le prestataire, pensez à mettre à jour le statut de votre réservation pour {eventTitle}."
       }
     }
   },

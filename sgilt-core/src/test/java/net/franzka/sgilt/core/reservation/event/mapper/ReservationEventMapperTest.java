@@ -6,6 +6,7 @@ import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.event.ActorRole;
 import net.franzka.sgilt.core.reservation.event.FeedItemType;
+import net.franzka.sgilt.core.reservation.event.reservationcontactreminderdue.ReservationContactReminderDueEvent;
 import net.franzka.sgilt.core.reservation.event.reservationcreated.ReservationCreatedEvent;
 import net.franzka.sgilt.core.reservation.event.reservationfeeditemadded.ReservationFeedItemAddedEvent;
 import net.franzka.sgilt.core.reservation.event.reservationstatuschanged.ReservationStatusChangedEvent;
@@ -248,6 +249,50 @@ class ReservationEventMapperTest {
             assertThat(event.itemType()).isEqualTo(FeedItemType.DOCUMENT);
             assertThat(event.actorName()).isEqualTo("Sophie Leroy");
             assertThat(event.actorRole()).isEqualTo(ActorRole.USER);
+            assertThat(event.eventTitle()).isEqualTo("Anniversaire de Paul");
+            assertThat(event.eventDate()).isEqualTo(date);
+        }
+    }
+
+    @Nested
+    class ToContactReminderDueEvent {
+
+        @Test
+        void givenReservation_whenToContactReminderDueEvent_thenMapsAllFields() {
+            UUID reservationId = UUID.randomUUID();
+            UUID clientId = UUID.randomUUID();
+            UUID eventId = UUID.randomUUID();
+            LocalDate date = LocalDate.now();
+
+            Utilisateur client = Utilisateur.builder()
+                    .id(clientId)
+                    .email("client@example.com")
+                    .firstName("Sophie")
+                    .build();
+            Prestataire prestataire = Prestataire.builder()
+                    .name("DJ Max")
+                    .build();
+            Evenement evenement = Evenement.builder()
+                    .id(eventId)
+                    .title("Anniversaire de Paul")
+                    .build();
+            Reservation reservation = Reservation.builder()
+                    .id(reservationId)
+                    .prestataire(prestataire)
+                    .utilisateur(client)
+                    .evenement(evenement)
+                    .date(date)
+                    .status(ReservationStatus.NEW)
+                    .build();
+
+            ReservationContactReminderDueEvent event = mapper.toContactReminderDueEvent(reservation);
+
+            assertThat(event.reservationId()).isEqualTo(reservationId);
+            assertThat(event.eventId()).isEqualTo(eventId);
+            assertThat(event.recipientUserId()).isEqualTo(clientId);
+            assertThat(event.recipientEmail()).isEqualTo("client@example.com");
+            assertThat(event.recipientFirstName()).isEqualTo("Sophie");
+            assertThat(event.prestataireName()).isEqualTo("DJ Max");
             assertThat(event.eventTitle()).isEqualTo("Anniversaire de Paul");
             assertThat(event.eventDate()).isEqualTo(date);
         }

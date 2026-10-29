@@ -2,6 +2,7 @@ package net.franzka.sgilt.notifications.notification.mapper;
 
 import net.franzka.sgilt.notifications.notification.domain.Notification;
 import net.franzka.sgilt.notifications.notification.domain.NotificationType;
+import net.franzka.sgilt.notifications.notification.event.ReservationContactReminderDueEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationCreatedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationFeedItemAddedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationStatusChangedEvent;
@@ -130,6 +131,32 @@ class NotificationEventMapperTest {
             assertThat(notification.getParams()).containsEntry("actorName", "Sophie Leroy")
                     .containsEntry("eventTitle", "Anniversaire de Paul");
             assertThat(notification.getHref()).isEqualTo("/pro/reservations/" + reservationId);
+            assertThat(notification.isRead()).isFalse();
+        }
+    }
+
+    @Nested
+    class ToNotificationFromReservationContactReminderDue {
+
+        @Test
+        void givenEvent_whenToNotification_thenBuildsReminderNotificationForClient() {
+            UUID reservationId = UUID.randomUUID();
+            UUID eventId = UUID.randomUUID();
+            UUID recipientUserId = UUID.randomUUID();
+            ReservationContactReminderDueEvent event = new ReservationContactReminderDueEvent(
+                    reservationId, eventId, recipientUserId, "client@example.com",
+                    "Sophie", "Studio Fleur", "Anniversaire de Paul", LocalDate.now());
+
+            Notification notification = mapper.toNotification(event);
+
+            assertThat(notification.getRecipientEmail()).isEqualTo("client@example.com");
+            assertThat(notification.getRecipientUserId()).isEqualTo(recipientUserId);
+            assertThat(notification.getType()).isEqualTo(NotificationType.REMINDER);
+            assertThat(notification.getMessageKey()).isEqualTo("notification.reservation.contact_reminder");
+            assertThat(notification.getParams()).containsEntry("recipientFirstName", "Sophie")
+                    .containsEntry("prestataireName", "Studio Fleur")
+                    .containsEntry("eventTitle", "Anniversaire de Paul");
+            assertThat(notification.getHref()).isEqualTo("/app/events/" + eventId + "/reservations/" + reservationId);
             assertThat(notification.isRead()).isFalse();
         }
     }

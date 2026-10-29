@@ -8,5 +8,6 @@ public enum NotificationType {
     STATE_CHANGE,
     NEW_NOTE,
     NEW_DOCUMENT,
-    NEW_REQUEST
+    NEW_REQUEST,
+    REMINDER
 }

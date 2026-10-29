@@ -1,0 +1,6 @@
+{
+  "subjectTemplate": "Où en est votre demande auprès de {prestataireName} ?",
+  "htmlTemplate": "<p>Bonjour {recipientFirstName},</p>\n<p>Il y a quelques jours, vous avez envoyé une demande à <strong>{prestataireName}</strong> pour votre événement <strong>{eventTitle}</strong>.</p>\n<p><strong>Alors, des nouvelles ?</strong> 😊</p>\n<p>Si vous avez pu échanger avec le prestataire, pensez à mettre à jour le statut de votre réservation sur Sgilt. Cela ne prend que quelques secondes et vous permet de garder votre organisation à jour.</p>\n<p>👉 <a href=\"{actionUrl}\"><strong>Mettre à jour ma réservation</strong></a></p>\n<p>Si vous n’avez pas encore été contacté, ou si vous rencontrez le moindre problème, n’hésitez pas à nous en faire part en répondant simplement à cet e-mail. Nous sommes là pour vous aider !</p>\n<p>À bientôt sur Sgilt !</p>\n<p>L’équipe Sgilt.</p>\n",
+  "requiredVariables": ["recipientFirstName", "prestataireName", "eventTitle", "actionUrl"],
+  "htmlSafeVariables": []
+}

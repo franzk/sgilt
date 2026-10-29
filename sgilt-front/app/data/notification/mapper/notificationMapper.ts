@@ -9,6 +9,7 @@ const NOTIFICATION_TYPES: readonly NotificationType[] = [
   'new_note',
   'new_document',
   'new_request',
+  'reminder',
 ]
 
 function isNotificationType(value: string): value is NotificationType {

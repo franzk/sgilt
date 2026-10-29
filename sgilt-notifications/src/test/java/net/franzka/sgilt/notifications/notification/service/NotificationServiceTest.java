@@ -2,6 +2,7 @@ package net.franzka.sgilt.notifications.notification.service;
 
 import net.franzka.sgilt.notifications.notification.domain.Notification;
 import net.franzka.sgilt.notifications.notification.domain.NotificationType;
+import net.franzka.sgilt.notifications.notification.event.ReservationContactReminderDueEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationCreatedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationFeedItemAddedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationStatusChangedEvent;
@@ -85,6 +86,20 @@ class NotificationServiceTest {
                     UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "client@example.com",
                     "NOTE", "Studio Fleur", "PRO", "Anniversaire de Paul", LocalDate.now());
             Notification mapped = Notification.builder().type(NotificationType.NEW_NOTE).build();
+            when(notificationEventMapper.toNotification(event)).thenReturn(mapped);
+
+            notificationService.createFromEvent(event);
+
+            verify(notificationRepository).save(mapped);
+            verify(notificationMailerService).sendNotificationEmail(mapped);
+        }
+
+        @Test
+        void givenReservationContactReminderDueEvent_whenCreateFromEvent_thenSavesMappedNotificationAndSendsEmail() {
+            ReservationContactReminderDueEvent event = new ReservationContactReminderDueEvent(
+                    UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "client@example.com",
+                    "Sophie", "Studio Fleur", "Anniversaire de Paul", LocalDate.now());
+            Notification mapped = Notification.builder().type(NotificationType.REMINDER).build();
             when(notificationEventMapper.toNotification(event)).thenReturn(mapped);
 
             notificationService.createFromEvent(event);

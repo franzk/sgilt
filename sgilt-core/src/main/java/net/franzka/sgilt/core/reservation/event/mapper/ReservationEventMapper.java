@@ -3,6 +3,7 @@ package net.franzka.sgilt.core.reservation.event.mapper;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.event.FeedItemType;
+import net.franzka.sgilt.core.reservation.event.reservationcontactreminderdue.ReservationContactReminderDueEvent;
 import net.franzka.sgilt.core.reservation.event.reservationcreated.ReservationCreatedEvent;
 import net.franzka.sgilt.core.reservation.event.reservationfeeditemadded.ReservationFeedItemAddedEvent;
 import net.franzka.sgilt.core.reservation.event.reservationstatuschanged.ReservationStatusChangedEvent;
@@ -111,4 +112,20 @@ public interface ReservationEventMapper {
     @Mapping(source = "reservation.evenement.title",               target = "eventTitle")
     @Mapping(source = "reservation.date",                          target = "eventDate")
     ReservationFeedItemAddedEvent toFeedItemAddedEventForPro(Reservation reservation, FeedItemType itemType);
+
+    /**
+     * Construit l'évènement de rappel au client d'une réservation restée en attente de contact.
+     *
+     * @param reservation la réservation à rappeler
+     * @return l'évènement à publier
+     */
+    @Mapping(source = "id",                    target = "reservationId")
+    @Mapping(source = "evenement.id",          target = "eventId")
+    @Mapping(source = "utilisateur.id",        target = "recipientUserId")
+    @Mapping(source = "utilisateur.email",     target = "recipientEmail")
+    @Mapping(source = "utilisateur.firstName", target = "recipientFirstName")
+    @Mapping(source = "prestataire.name",      target = "prestataireName")
+    @Mapping(source = "evenement.title",       target = "eventTitle")
+    @Mapping(source = "date",                  target = "eventDate")
+    ReservationContactReminderDueEvent toContactReminderDueEvent(Reservation reservation);
 }

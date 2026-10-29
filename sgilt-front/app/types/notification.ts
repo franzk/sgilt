@@ -1,4 +1,8 @@
-export type NotificationType = 'state_change' | 'new_note' | 'new_document' | 'new_request'
+/**
+ * Types — notification in-app, telle que servie par sgilt-notifications. NotificationType est le
+ * miroir de l'enum NotificationType côté back (en snake_case).
+ */
+export type NotificationType ='state_change' | 'new_note' | 'new_document' | 'new_request' | 'reminder'
 
 export interface AppNotification {
   id: string

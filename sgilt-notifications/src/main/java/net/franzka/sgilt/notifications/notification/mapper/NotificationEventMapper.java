@@ -2,6 +2,7 @@ package net.franzka.sgilt.notifications.notification.mapper;
 
 import net.franzka.sgilt.notifications.notification.domain.Notification;
 import net.franzka.sgilt.notifications.notification.domain.NotificationType;
+import net.franzka.sgilt.notifications.notification.event.ReservationContactReminderDueEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationCreatedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationFeedItemAddedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationStatusChangedEvent;
@@ -25,6 +26,7 @@ public class NotificationEventMapper {
     private static final String MESSAGE_KEY_STATUS_PREFIX = "notification.reservation.status.";
     private static final String MESSAGE_KEY_NOTE_ADDED = "notification.reservation.note_added";
     private static final String MESSAGE_KEY_DOCUMENT_ADDED = "notification.reservation.document_added";
+    private static final String MESSAGE_KEY_CONTACT_REMINDER = "notification.reservation.contact_reminder";
 
     /**
      * Construit la notification "nouvelle demande de réservation" pour le prestataire concerné.
@@ -90,6 +92,28 @@ public class NotificationEventMapper {
                         "actorName", event.actorName(),
                         "eventTitle", event.eventTitle()))
                 .href(resolveHref(event.actorRole(), event.eventId(), event.reservationId()))
+                .read(false)
+                .build();
+    }
+
+    /**
+     * Construit la notification de rappel au client d'une réservation restée en attente de contact.
+     * Toujours destinée au client — lien vers sa page de réservation.
+     *
+     * @param event les faits bruts du rappel
+     * @return la notification à persister
+     */
+    public Notification toNotification(ReservationContactReminderDueEvent event) {
+        return Notification.builder()
+                .recipientEmail(event.recipientEmail())
+                .recipientUserId(event.recipientUserId())
+                .type(NotificationType.REMINDER)
+                .messageKey(MESSAGE_KEY_CONTACT_REMINDER)
+                .params(Map.of(
+                        "recipientFirstName", event.recipientFirstName(),
+                        "prestataireName", event.prestataireName(),
+                        "eventTitle", event.eventTitle()))
+                .href("/app/events/" + event.eventId() + "/reservations/" + event.reservationId())
                 .read(false)
                 .build();
     }

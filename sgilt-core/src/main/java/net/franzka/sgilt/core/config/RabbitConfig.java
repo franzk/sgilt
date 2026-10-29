@@ -1,5 +1,6 @@
 package net.franzka.sgilt.core.config;
 
+import net.franzka.sgilt.core.reservation.event.reservationcontactreminderdue.ReservationContactReminderDueEvent;
 import net.franzka.sgilt.core.reservation.event.reservationcreated.ReservationCreatedEvent;
 import net.franzka.sgilt.core.reservation.event.reservationfeeditemadded.ReservationFeedItemAddedEvent;
 import net.franzka.sgilt.core.reservation.event.reservationstatuschanged.ReservationStatusChangedEvent;
@@ -56,7 +57,8 @@ public class RabbitConfig {
         typeMapper.setIdClassMapping(Map.of(
                 ReservationCreatedEvent.ROUTING_KEY, ReservationCreatedEvent.class,
                 ReservationStatusChangedEvent.ROUTING_KEY, ReservationStatusChangedEvent.class,
-                ReservationFeedItemAddedEvent.ROUTING_KEY, ReservationFeedItemAddedEvent.class));
+                ReservationFeedItemAddedEvent.ROUTING_KEY, ReservationFeedItemAddedEvent.class,
+                ReservationContactReminderDueEvent.ROUTING_KEY, ReservationContactReminderDueEvent.class));
         return typeMapper;
     }
 }

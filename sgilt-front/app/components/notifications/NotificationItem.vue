@@ -1,3 +1,8 @@
+<!--
+  Une notification in-app dans la liste des notifications : icône selon son type, titre et texte
+  résolus depuis la clé i18n et ses paramètres, date, point « non lue ». Le clic émet l'id, la
+  navigation vers le lien est gérée par le parent.
+-->
 <template>
   <component
     :is="notification.href ? 'a' : 'div'"
@@ -11,6 +16,7 @@
       <Chat1Icon v-else-if="notification.type === 'new_note'" />
       <FileAddIcon v-else-if="notification.type === 'new_document'" />
       <MailSendIcon v-else-if="notification.type === 'new_request'" />
+      <HourglassIcon v-else-if="notification.type === 'reminder'" />
     </div>
 
     <div class="notif-item__body">
@@ -29,7 +35,7 @@
 
 <script setup lang="ts">
 import type { AppNotification } from '~/types/notification'
-import { ExchangeIcon, Chat1Icon, FileAddIcon, MailSendIcon } from '@remixicons/vue/line'
+import { ExchangeIcon, Chat1Icon, FileAddIcon, MailSendIcon, HourglassIcon } from '@remixicons/vue/line'
 
 const props = defineProps<{ notification: AppNotification }>()
 const emit = defineEmits<{ click: [id: string] }>()
@@ -92,6 +98,10 @@ function onClick(e: Event) {
     &.new_request {
       background: rgba(#10b981, 0.1);
       color: #059669;
+    }
+    &.reminder {
+      background: rgba(#f97316, 0.1);
+      color: #ea580c;
     }
   }
 
