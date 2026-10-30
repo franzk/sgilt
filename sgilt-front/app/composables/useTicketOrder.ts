@@ -5,9 +5,9 @@
  * quel que soit son événement. Gardée dans le sessionStorage : elle survit au rechargement, pas à
  * la fermeture de l'onglet.
  *
- * Brouillon de la commande côté front (événement, quantité, acheteur). Une fois le back branché,
- * la commande y sera créée à la validation de l'écran de commande (blocage des places, paiement
- * Stripe), et le paiement comme la confirmation reposeront sur elle.
+ * Brouillon de la commande côté front (événement, quantité, acheteur) jusqu'au clic sur « Payer »,
+ * qui crée la commande côté back (blocage des places) juste avant le paiement : son id est gardé
+ * ici, la confirmation reposera sur elle.
  *
  * Renvoie toujours une commande pour l'événement demandé : si la mémoire contient celle d'un autre
  * événement, ou rien, c'est une commande vierge à l'étape NONE, non enregistrée.
@@ -16,7 +16,8 @@ import type { PublicEventTicketing } from '~/data/ticketing/domain/PublicEvent'
 import { formatPrice } from '~/utils/priceUtils'
 
 const TICKET_ORDER_STORAGE_KEY = 'sgilt:ticket-order'
-const TICKET_ORDER_VERSION = 1
+// v2 : id de la commande back (les commandes payées en v1 n'en ont pas, elles sont oubliées).
+const TICKET_ORDER_VERSION = 2
 const MIN_QUANTITY = 1
 
 // Étape atteinte : NONE (pas de commande), STARTED à « Acheter mes billets », ORDERED à la
@@ -38,6 +39,8 @@ export interface TicketOrder {
   quantity: number
   buyer: TicketBuyer
   stage: TicketOrderStage
+  // Commande back, créée au clic sur « Payer » ; null avant, toujours renseignée à l'étape PAID.
+  commandeId: string | null
 }
 
 function newOrder(slug: string, stage: TicketOrderStage): TicketOrder {
@@ -46,6 +49,7 @@ function newOrder(slug: string, stage: TicketOrderStage): TicketOrder {
     quantity: MIN_QUANTITY,
     buyer: { firstName: '', lastName: '', email: '' },
     stage,
+    commandeId: null,
   }
 }
 
@@ -64,6 +68,8 @@ function deserialize(raw: Record<string, unknown>): TicketOrder | null {
   if (typeof quantity !== 'number' || !Number.isInteger(quantity) || quantity < MIN_QUANTITY) {
     return null
   }
+  const commandeId = typeof raw.commandeId === 'string' && raw.commandeId ? raw.commandeId : null
+  if (stage === 'PAID' && !commandeId) return null
   const isObject = typeof raw.buyer === 'object' && raw.buyer !== null
   const buyer = isObject ? (raw.buyer as Record<string, unknown>) : {}
   return {
@@ -75,6 +81,7 @@ function deserialize(raw: Record<string, unknown>): TicketOrder | null {
       email: asString(buyer.email),
     },
     stage,
+    commandeId,
   }
 }
 
@@ -167,6 +174,12 @@ export function useTicketOrder(slug: string, ticketing: PublicEventTicketing | u
     order.value.stage = 'ORDERED'
   }
 
+  // La commande back vient d'être créée au clic sur « Payer » : remplace celle d'un essai précédent
+  // (qui libère ses places à son expiration).
+  function attachCommande(commandeId: string): void {
+    order.value.commandeId = commandeId
+  }
+
   function markPaid(): void {
     order.value.stage = 'PAID'
   }
@@ -183,6 +196,7 @@ export function useTicketOrder(slug: string, ticketing: PublicEventTicketing | u
     decrement,
     increment,
     markOrdered,
+    attachCommande,
     markPaid,
     unitPriceLabel,
     totalLabel,

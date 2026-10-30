@@ -87,7 +87,7 @@
         </div>
       </div>
 
-      <div class="important-info">
+      <div v-if="event.importantInfo.length" class="important-info">
         <InformationIcon class="icon" />
         <div>
           <p class="important-title">{{ $t('ticketing.order.important-info-title') }}</p>
@@ -160,7 +160,8 @@ function validate(): boolean {
 }
 
 // Le bouton reste toujours cliquable (jamais `disabled`) : une saisie incomplète se traduit par
-// une erreur explicite au clic plutôt qu'un blocage silencieux.
+// une erreur explicite au clic plutôt qu'un blocage silencieux. Rien n'est envoyé au back : la
+// commande n'y est créée qu'au clic sur « Payer ».
 const submitError = ref<string | null>(null)
 
 function onSubmit(): void {

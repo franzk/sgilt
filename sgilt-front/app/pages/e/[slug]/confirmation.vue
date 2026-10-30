@@ -56,7 +56,7 @@
       <ArrowRightSIcon class="chevron" aria-hidden="true" />
     </button>
 
-    <div class="practical-info">
+    <div v-if="event.practicalInfo.length" class="practical-info">
       <span class="info-badge" aria-hidden="true"><InformationIcon /></span>
       <div>
         <p class="info-title">{{ $t('ticketing.confirmation.practical-info-title') }}</p>
