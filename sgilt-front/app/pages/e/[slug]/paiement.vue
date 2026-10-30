@@ -1,6 +1,7 @@
 <!--
   Étape 2 du parcours d'achat (/e/[slug]/paiement) : récapitulatif de la commande et paiement.
-  Le widget de paiement (Stripe) n'est pas encore intégré.
+  « Payer » crée la commande côté back (blocage des places) juste avant le paiement. Le widget de
+  paiement (Stripe) n'est pas encore intégré : la commande créée est considérée payée.
 -->
 <template>
   <div class="order-page">
@@ -41,8 +42,15 @@
 
       <TicketingCgvCheckbox v-model="acceptCgv" :error="cgvError" />
 
-      <button type="button" class="submit-cta" @click="onPay">
-        <LockIcon class="icon" />
+      <button
+        type="button"
+        class="submit-cta"
+        :disabled="paying"
+        :aria-busy="paying"
+        @click="onPay"
+      >
+        <span v-if="paying" class="spinner" aria-hidden="true" />
+        <LockIcon v-else class="icon" />
         {{ $t('ticketing.payment.cta', { amount: totalLabel }) }}
         <ArrowRightSIcon class="chevron" aria-hidden="true" />
       </button>
@@ -63,6 +71,7 @@ import TicketingCgvCheckbox from '~/components/ticketing/TicketingCgvCheckbox.vu
 import { BankCard2Icon, InformationIcon, ArrowRightSIcon, LockIcon } from '@remixicons/vue/line'
 import { usePublicEvent } from '~/composables/usePublicEvent'
 import { useTicketOrder } from '~/composables/useTicketOrder'
+import { createCommande, toCommandeFailure } from '~/data/ticketing/service/commandeService'
 
 definePageMeta({ middleware: 'ticketing' })
 
@@ -70,7 +79,10 @@ const { t } = useI18n()
 const route = useRoute()
 const slug = String(route.params.slug)
 const event = await usePublicEvent(slug)
-const { order, markPaid, unitPriceLabel, totalLabel } = useTicketOrder(slug, event.ticketing)
+const { order, attachCommande, markPaid, unitPriceLabel, totalLabel } = useTicketOrder(
+  slug,
+  event.ticketing,
+)
 
 useHead({ title: `${t('ticketing.payment.title')} · ${event.title}` })
 
@@ -78,22 +90,33 @@ useHead({ title: `${t('ticketing.payment.title')} · ${event.title}` })
 const ticketsDetailLabel = computed(() => `${order.value.quantity} × ${unitPriceLabel}`)
 
 // ── Paiement ──────────────────────────────────────────────────────────────────
-// Le bouton reste toujours cliquable (jamais `disabled`) : une saisie incomplète se traduit par
-// une erreur explicite au clic plutôt qu'un blocage silencieux. Le widget de paiement n'étant pas
-// encore intégré, le clic ne fait que valider les CGV — pas de paiement réel à déclencher.
+// Une saisie incomplète ne désactive pas le bouton : elle se traduit par une erreur explicite au
+// clic. Seule la création de la commande le désactive, spinner à l'appui, pour ne pas en créer deux.
+// Le widget de paiement n'étant pas encore intégré, la commande créée est aussitôt considérée
+// payée ; le paiement Stripe viendra s'insérer entre sa création et markPaid.
 const acceptCgv = ref(false)
 const cgvError = ref<string | null>(null)
 const payError = ref<string | null>(null)
+const paying = ref(false)
 
-function onPay(): void {
+async function onPay(): Promise<void> {
   cgvError.value = acceptCgv.value ? null : t('ticketing.order.error-cgv')
   if (cgvError.value) {
     payError.value = t('ticketing.order.error-form')
     return
   }
   payError.value = null
-  markPaid()
-  navigateTo(`/e/${slug}/confirmation`)
+  paying.value = true
+  try {
+    const commande = await createCommande(slug, order.value.quantity, order.value.buyer)
+    attachCommande(commande.id)
+    markPaid()
+    await navigateTo(`/e/${slug}/confirmation`)
+  } catch (e: unknown) {
+    payError.value = t(`ticketing.payment.errors.${toCommandeFailure(e)}`)
+  } finally {
+    paying.value = false
+  }
 }
 </script>
 
@@ -292,7 +315,7 @@ function onPay(): void {
     transform 160ms ease,
     box-shadow 160ms ease;
 
-  &:hover {
+  &:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba($brand-primary, 0.22);
   }
@@ -302,9 +325,24 @@ function onPay(): void {
     outline-offset: 4px;
   }
 
+  &:disabled {
+    cursor: progress;
+  }
+
   .icon {
     width: 1.1rem;
     height: 1.1rem;
+  }
+
+  .spinner {
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    animation: spin 0.6s linear infinite;
+    flex-shrink: 0;
+    box-sizing: border-box;
   }
 
   .chevron {
@@ -325,6 +363,12 @@ function onPay(): void {
   text-align: center;
   font-size: $font-size-sm;
   color: $text-secondary;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .fade-enter-active,

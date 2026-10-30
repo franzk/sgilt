@@ -1562,7 +1562,12 @@
       "widget-badge": "Aperçu de la maquette",
       "security-notice": "Avec notre prestataire de paiement, vos paiements sont sécurisés.",
       "cta": "Payer {amount}",
-      "reassurance": "Votre paiement sera sécurisé et traité par notre prestataire de paiement."
+      "reassurance": "Votre paiement sera sécurisé et traité par notre prestataire de paiement.",
+      "errors": {
+        "NOT_ENOUGH_TICKETS": "Il ne reste plus assez de places pour ce nombre de billets.",
+        "UNAVAILABLE": "La billetterie de cet événement n'est plus ouverte.",
+        "TECHNICAL": "Une erreur est survenue, merci de réessayer."
+      }
     },
     "confirmation": {
       "title": "C'est confirmé !",

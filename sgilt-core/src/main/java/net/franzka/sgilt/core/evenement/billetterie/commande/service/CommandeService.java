@@ -23,7 +23,7 @@ import java.util.List;
 public class CommandeService {
 
     // Durée de blocage des places d'une commande en attente de paiement.
-    static final Duration COMMANDE_HOLD_DURATION = Duration.ofMinutes(15);
+    static final Duration COMMANDE_HOLD_DURATION = Duration.ofMinutes(10);
 
     private final CommandeRepository commandeRepository;
     private final CommandeMapper     commandeMapper;
