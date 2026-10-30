@@ -2,6 +2,7 @@ package net.franzka.sgilt.core.evenement.service;
 
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.domain.EvenementRubrique;
+import net.franzka.sgilt.core.evenement.dto.AdminEvenementListItemDto;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
 import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
 import net.franzka.sgilt.core.evenement.dto.CreateEventResponse;
@@ -17,6 +18,7 @@ import net.franzka.sgilt.core.evenement.dto.RubriqueDto;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotAllowedException;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotFoundException;
 import net.franzka.sgilt.core.evenement.mapper.EvenementMapper;
+import net.franzka.sgilt.core.evenement.page.service.PageEvenementService;
 import net.franzka.sgilt.core.evenement.repository.EvenementRepository;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
@@ -39,7 +41,9 @@ import org.springframework.mock.web.MockMultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
@@ -61,6 +65,7 @@ class EvenementServiceTest {
     @Mock private JournalEvenementService journalEvenementService;
     @Mock private FileStorageService      fileStorageService;
     @Mock private TemplateService         templateService;
+    @Mock private PageEvenementService    pageEvenementService;
 
     @InjectMocks
     private EvenementService evenementService;
@@ -794,6 +799,75 @@ class EvenementServiceTest {
 
             assertThatThrownBy(() -> evenementService.selectCover(EVENT_ID, USER_ID, "bank/plage.jpg"))
                     .isInstanceOf(EvenementNotAllowedException.class);
+        }
+    }
+
+    // ── GetAdminEvenements ───────────────────────────────────────────────────────
+
+    @Nested
+    class GetAdminEvenements {
+
+        @Test
+        void givenEvenementsWithAndWithoutPage_whenGetAdminEvenements_thenMapsThemWithTheirSlug() {
+            Evenement withPage = Evenement.builder().id(EVENT_ID).build();
+            Evenement withoutPage = Evenement.builder().id(UUID.randomUUID()).build();
+            AdminEvenementListItemDto dto1 = mock(AdminEvenementListItemDto.class);
+            AdminEvenementListItemDto dto2 = mock(AdminEvenementListItemDto.class);
+            when(pageEvenementService.getSlugsByEvenementId()).thenReturn(Map.of(EVENT_ID, "les-jeudis-du-taennel"));
+            when(evenementRepository.findAllByOrderByDateDesc()).thenReturn(List.of(withPage, withoutPage));
+            when(evenementMapper.toAdminListItemDto(withPage, "les-jeudis-du-taennel")).thenReturn(dto1);
+            when(evenementMapper.toAdminListItemDto(withoutPage, null)).thenReturn(dto2);
+
+            assertThat(evenementService.getAdminEvenements()).containsExactly(dto1, dto2);
+        }
+    }
+
+    // ── GetById ──────────────────────────────────────────────────────────────────
+
+    @Nested
+    class GetById {
+
+        @Test
+        void givenExistingEvent_whenGetById_thenReturnsIt() {
+            Evenement event = Evenement.builder().id(EVENT_ID).build();
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
+
+            assertThat(evenementService.getById(EVENT_ID)).isSameAs(event);
+        }
+
+        @Test
+        void givenUnknownEvent_whenGetById_thenThrowsNotFound() {
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> evenementService.getById(EVENT_ID))
+                    .isInstanceOf(EvenementNotFoundException.class);
+        }
+    }
+
+    // ── ReplaceHoraires ──────────────────────────────────────────────────────────
+
+    @Nested
+    class ReplaceHoraires {
+
+        @Test
+        void givenEvent_whenReplaceHoraires_thenSetsBothHoursAndSaves() {
+            Evenement event = Evenement.builder().id(EVENT_ID).startTime(LocalTime.of(18, 0)).build();
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
+            when(evenementRepository.save(event)).thenReturn(event);
+
+            Evenement result = evenementService.replaceHoraires(EVENT_ID, null, LocalTime.of(2, 0));
+
+            assertThat(result).isSameAs(event);
+            assertThat(event.getStartTime()).isNull();
+            assertThat(event.getEndTime()).isEqualTo(LocalTime.of(2, 0));
+        }
+
+        @Test
+        void givenUnknownEvent_whenReplaceHoraires_thenThrowsNotFound() {
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> evenementService.replaceHoraires(EVENT_ID, null, null))
+                    .isInstanceOf(EvenementNotFoundException.class);
         }
     }
 }

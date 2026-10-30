@@ -29,6 +29,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/onboarding/**").permitAll()
                         .requestMatchers("/api/v1/prestataires/**").permitAll()
                         .requestMatchers("/api/v1/templates/**").permitAll()
+                        .requestMatchers("/api/v1/eventpages/**").permitAll()
+                        .requestMatchers("/api/v1/commandes/**").permitAll()
                         .requestMatchers("/api/v1/users/**").authenticated()
                         .requestMatchers("/api/v1/admin/**").authenticated()
                         .requestMatchers("/api/**").authenticated()

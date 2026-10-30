@@ -16,6 +16,7 @@ import type {
   SousCategorieUpdateRequestDto,
 } from '../dto/CategorieAdminDto'
 import type { MoveDirection } from '../domain/CategorieAdmin'
+import type { AdminEvenementListItemDto, AdminEventPublicFormDto } from '../dto/AdminEvenementDto'
 
 /**
  * Liste tous les prestataires actifs avec leur statut, pour le back-office admin.
@@ -129,4 +130,28 @@ export async function moveSousCategorieApi(key: string, direction: MoveDirection
  */
 export async function deleteSousCategorieApi(key: string): Promise<void> {
   return apiFetch<void>(`/admin/sous-categories/${key}`, { method: 'DELETE' })
+}
+
+/**
+ * Liste tous les événements, pour choisir celui dont on saisit la face publique.
+ */
+export async function listAdminEvenementsApi(): Promise<AdminEvenementListItemDto[]> {
+  return apiFetch<AdminEvenementListItemDto[]>('/admin/evenements')
+}
+
+/**
+ * Récupère la face publique d'un événement : horaires, page et billetterie.
+ */
+export async function getAdminEventPublicFormApi(id: string): Promise<AdminEventPublicFormDto> {
+  return apiFetch<AdminEventPublicFormDto>(`/admin/evenements/${id}/page-publique`)
+}
+
+/**
+ * Remplace d'un bloc la face publique d'un événement (un bloc à null est supprimé).
+ */
+export async function putAdminEventPublicFormApi(
+  id: string,
+  body: AdminEventPublicFormDto,
+): Promise<AdminEventPublicFormDto> {
+  return apiFetch<AdminEventPublicFormDto>(`/admin/evenements/${id}/page-publique`, { method: 'PUT', body })
 }

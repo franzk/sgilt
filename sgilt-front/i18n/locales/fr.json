@@ -1359,7 +1359,64 @@
       "prestataires": "Prestataires",
       "onboarding": "Onboardings",
       "reservations": "Réservations",
-      "sous-categories": "Sous-catégories"
+      "sous-categories": "Sous-catégories",
+      "evenements-publics": "Pages événement"
+    },
+    "evenements-publics": {
+      "title": "Pages événement",
+      "choose": "Choisir un événement",
+      "loading": "Chargement…",
+      "hours": {
+        "title": "Horaires",
+        "start": "Début",
+        "end": "Fin",
+        "hint": "Facultatifs. Une fin avant le début tombe le lendemain (ex. 19h – 2h)."
+      },
+      "page": {
+        "title": "Page publique",
+        "slug": "Slug (adresse /e/…)",
+        "tag": "Tag (au-dessus du titre)",
+        "subtitle": "Sous-titre",
+        "section-title": "Titre de la présentation",
+        "description": "Présentation",
+        "important-info": "Infos importantes (avant l’achat)",
+        "practical-info": "Infos pratiques (après l’achat)",
+        "lines-hint": "Une info par ligne.",
+        "pictos": "Points forts",
+        "picto-icon": "Pictogramme",
+        "picto-label": "Libellé",
+        "picto-sublabel": "Sous-libellé",
+        "picto-add": "Ajouter un point fort",
+        "picto-remove": "Retirer"
+      },
+      "icons": {
+        "music": "Musique",
+        "goblet": "Verre",
+        "leaf": "Feuille",
+        "team": "Groupe"
+      },
+      "ticketing": {
+        "title": "Billetterie",
+        "status": "Statut",
+        "statuses": {
+          "NOT_OPEN": "Pas encore ouverte",
+          "OPEN": "Ouverte",
+          "CLOSED": "Fermée"
+        },
+        "price": "Prix d’un billet (€)",
+        "capacity": "Jauge (places en vente)"
+      },
+      "save": "Enregistrer",
+      "saved": "Enregistré.",
+      "errors": {
+        "SLUG_REQUIRED": "Renseignez le slug de la page.",
+        "INVALID_SLUG": "Le slug ne peut contenir que des minuscules, des chiffres et des tirets (ex. les-jeudis-du-taennel).",
+        "SLUG_ALREADY_USED": "Ce slug est déjà celui de la page d’un autre événement.",
+        "PICTO_INCOMPLETE": "Chaque point fort doit avoir un libellé.",
+        "INVALID_PRICE": "Le prix doit être un montant positif.",
+        "INVALID_CAPACITY": "La jauge doit être un nombre entier positif.",
+        "TECHNICAL": "Une erreur est survenue. Réessayez."
+      }
     },
     "onboarding-nav": {
       "pro": "Pro",
@@ -1445,6 +1502,85 @@
         "OPEN": "En attente d'ouverture du lien",
         "PENDING_CONFIRMATION": "Lien ouvert, mot de passe non défini"
       }
+    }
+  },
+  "ticketing": {
+    "event": {
+      "per-ticket": "par place",
+      "status": {
+        "not-open": "Bientôt",
+        "open": "Places disponibles",
+        "sold-out": "Complet",
+        "closed": "Fermée"
+      },
+      "status-message": {
+        "not-open": "La billetterie n'est pas encore ouverte.",
+        "sold-out": "Toutes les places ont été vendues.",
+        "closed": "La billetterie est fermée."
+      },
+      "decrement-aria": "Retirer une place",
+      "limit-reached": "Il ne reste qu'une place pour cet événement. | Il ne reste que {n} places pour cet événement.",
+      "increment-aria": "Ajouter une place",
+      "total-label": "Total",
+      "cta": "Acheter mes billets",
+      "reassurance": "Paiement sécurisé par",
+      "share-text": "Découvrez {name} sur Sgilt",
+      "time-label": "{start} – {end}",
+      "time-label-until": "jusqu'à {end}"
+    },
+    "order": {
+      "back": "Retour",
+      "title": "Vos billets",
+      "secure-payment": "Paiement sécurisé",
+      "quantity-label": "Nombre de billets",
+      "info-title": "Vos informations",
+      "info-subtitle": "Pour recevoir vos billets et les informations pratiques",
+      "last-name": "Nom",
+      "first-name": "Prénom",
+      "email": "Adresse e-mail",
+      "email-notice-title": "Vos billets vous seront envoyés par e-mail",
+      "email-notice-sub": "Pensez à vérifier vos spams.",
+      "important-info-title": "Informations importantes",
+      "cgv-accept": "J'accepte les",
+      "cgv-link": "conditions générales de vente",
+      "submit": "Procéder au paiement",
+      "question": "Une question ?",
+      "contact-us": "Contactez-nous",
+      "error-required": "Ce champ est requis.",
+      "error-email": "Adresse e-mail invalide.",
+      "error-cgv": "Vous devez accepter les conditions générales de vente.",
+      "error-form": "Merci de corriger les champs en erreur avant de continuer."
+    },
+    "payment": {
+      "title": "Paiement",
+      "summary-title": "Récapitulatif de votre commande",
+      "tickets-label": "Billets",
+      "method-title": "Moyen de paiement",
+      "method-subtitle": "Le paiement sera bientôt disponible via notre partenaire de paiement.",
+      "widget-title": "Widget de paiement",
+      "widget-subtitle": "Intégration en cours",
+      "widget-badge": "Aperçu de la maquette",
+      "security-notice": "Avec notre prestataire de paiement, vos paiements sont sécurisés.",
+      "cta": "Payer {amount}",
+      "reassurance": "Votre paiement sera sécurisé et traité par notre prestataire de paiement.",
+      "errors": {
+        "NOT_ENOUGH_TICKETS": "Il ne reste plus assez de places pour ce nombre de billets.",
+        "UNAVAILABLE": "La billetterie de cet événement n'est plus ouverte.",
+        "TECHNICAL": "Une erreur est survenue, merci de réessayer."
+      }
+    },
+    "confirmation": {
+      "title": "C'est confirmé !",
+      "subtitle": "Vos billets ont bien été réservés et vous allez recevoir un e-mail avec tous les détails.",
+      "tickets-title": "Vos billets",
+      "confirmed-badge": "Confirmé",
+      "quantity-label": "Nombre de billets",
+      "unit-price-label": "Prix unitaire",
+      "email-notice-title": "Vos billets sont envoyés par e-mail",
+      "view-tickets": "Voir mes billets",
+      "add-to-calendar": "Ajouter à mon calendrier",
+      "practical-info-title": "Informations pratiques",
+      "back-to-event": "Retour à l'événement"
     }
   }
 }

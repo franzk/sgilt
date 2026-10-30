@@ -2,6 +2,7 @@ package net.franzka.sgilt.core.evenement.mapper;
 
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.domain.EvenementRubrique;
+import net.franzka.sgilt.core.evenement.dto.AdminEvenementListItemDto;
 import net.franzka.sgilt.core.evenement.dto.ClientInfoDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
@@ -29,6 +30,20 @@ public interface EvenementMapper {
 
     ClientInfoDto toClientInfo(Utilisateur utilisateur);
 
+    /**
+     * Mappe un événement vers la liste du back-office admin.
+     *
+     * @param evenement l'événement, avec son propriétaire
+     * @param slug      le slug de sa page publique, ou null s'il n'en a pas
+     * @return l'élément de liste
+     */
+    @Mapping(source = "evenement.id",                target = "id")
+    @Mapping(source = "evenement.title",             target = "title")
+    @Mapping(source = "evenement.date",              target = "date")
+    @Mapping(source = "evenement.utilisateur.email", target = "ownerEmail")
+    @Mapping(source = "slug",                        target = "slug")
+    AdminEvenementListItemDto toAdminListItemDto(Evenement evenement, String slug);
+
     @Mapping(source = "evenement.notePartagee", target = "sharedNote")
     @Mapping(source = "evenement.description",  target = "description")
     @Mapping(source = "evenement.momentCle",    target = "momentCle")
@@ -50,6 +65,8 @@ public interface EvenementMapper {
     @Mapping(target = "imagePath",    ignore = true)
     @Mapping(target = "notePartagee", ignore = true)
     @Mapping(target = "createdAt",    ignore = true)
+    @Mapping(target = "startTime",    ignore = true)
+    @Mapping(target = "endTime",      ignore = true)
     @Mapping(target = "status",       constant = "ACTIVE")
     @Mapping(target = "utilisateur",  source = "utilisateur")
     @Mapping(target = "date",         source = "evenement.date")

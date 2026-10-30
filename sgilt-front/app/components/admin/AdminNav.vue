@@ -20,6 +20,7 @@ const tabs = computed(() => [
   { to: '/admin/onboarding', label: t('admin.nav.onboarding') },
   { to: '/admin/reservations', label: t('admin.nav.reservations') },
   { to: '/admin/sous-categories', label: t('admin.nav.sous-categories') },
+  { to: '/admin/evenements-publics', label: t('admin.nav.evenements-publics') },
 ])
 </script>
 
