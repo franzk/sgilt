@@ -11,7 +11,7 @@
 | 5      | Création de la commande côté back (`POST /api/v1/commandes`), blocage des places          | Fait                  |
 | 1a     | `sgilt-pay` crée le PaymentIntent Stripe, le core renvoie son secret client au front      | Fait (2026-10-31)     |
 | 1b     | Payment Element Stripe dans l'écran de paiement, confirmation du paiement depuis le front | Fait (2026-10-31)     |
-| 2      | Webhook Stripe → `sgilt-pay` → RabbitMQ (queue `payment.succeeded`) → le core passe la commande `PAID` | Réception (2a), passage `PAID` (2b) et alerte de survente (2c, core) faits ; gabarit de l'e-mail d'alerte à venir |
+| 2      | Webhook Stripe → `sgilt-pay` → RabbitMQ (queue `payment.succeeded`) → le core passe la commande `PAID` | Réception (2a), passage `PAID` (2b) et alerte de survente par e-mail à l'équipe Sgilt (2c) faits |
 | 3      | `GET /commandes/{id}` et écran de confirmation sans état front                            | Fait (2026-11-01)     |
 
 Composants :

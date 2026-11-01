@@ -89,5 +89,11 @@ public enum MailType {
     RESERVATION_DOCUMENT_ADDED_EMAIL,
 
     /** Mail envoyé au client quand sa réservation est restée en attente de contact depuis 7 jours. */
-    RESERVATION_CONTACT_REMINDER_EMAIL
+    RESERVATION_CONTACT_REMINDER_EMAIL,
+
+    /**
+     * Alerte envoyée à l'équipe Sgilt quand un paiement fait dépasser la jauge d'une billetterie
+     * (paiement arrivé après l'expiration du blocage de ses places, reprises entre-temps).
+     */
+    ADMIN_OVERSOLD_ALERT_EMAIL
 }
