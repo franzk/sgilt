@@ -200,12 +200,38 @@ sequenceDiagram
 |---------------------------------------|---------------|-------------------------------------------------------------|----------------------------------------|
 | `PAY_URL`                             | `sgilt-core`  | défaut `http://localhost:5032`                              | `http://sgilt-pay-${ENV}:5032`         |
 | `STRIPE_SECRET_KEY`                   | `sgilt-pay`   | `application-local-secrets.yml` (gitignoré, profil `local`) | variable d'environnement               |
+| `STRIPE_WEBHOOK_SECRET`               | `sgilt-pay`   | `application-local-secrets.yml`, secret de `stripe listen` (conteneur `sgilt-stripe-cli`) | secret de l'endpoint déclaré dans le dashboard |
 | `NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`  | `sgilt-front` | `sgilt-front/.env` (relancer `npm run dev` après modif)     | variable d'environnement               |
 
 - Clés `sk_test` / `pk_test` en local et en staging ; clés live seulement après activation du
   compte Stripe.
 - Avant la prod : déclarer le domaine pour Apple Pay, libellé de relevé bancaire, intégrer
   `sgilt-pay` aux docker-compose et à la CI de déploiement.
+- Staging garde des clés de test en permanence, sur une sandbox Stripe dédiée (séparée de celle du
+  poste de dev, pour que les webhooks ne se mélangent pas).
+
+### Sécurité (avant la prod)
+
+- **Anti-abus sur `POST /api/v1/commandes`** : l'endpoint est public et sans limite, n'importe qui
+  peut bloquer toutes les places 10 minutes sans payer (la quantité n'est contrôlée que par
+  `@Positive`) et créer des PaymentIntents en masse. À faire :
+  - limite de requêtes par IP dans la gateway, sur le modèle d'`InitOnboardingRateLimitFilter`
+    (IP réelle via `X-Real-IP`) ;
+  - plafond de quantité par commande (ex. 10 billets), côté core et côté front.
+
+- **Clé restreinte** : en prod, `STRIPE_SECRET_KEY` reçoit une clé restreinte (`rk_live_…`) limitée
+  aux PaymentIntents (écriture) et à ce que lit le webhook, plutôt que la clé secrète complète. Une
+  fuite ne permet alors ni remboursement ni lecture des clients.
+- **Réseau Docker dédié au paiement** : les services existants gardent leur réseau à plat
+  (`sgilt-network-${ENV}`) ; un second réseau `payment` relie :
+  - `sgilt-pay`, branché **uniquement** sur `payment` ;
+  - `sgilt-core`, sur les deux réseaux (création des PaymentIntents) ;
+  - `sgilt-gateway`, sur les deux réseaux, uniquement pour faire suivre `/webhooks/stripe` (liste
+    blanche : jamais `/internal/...`).
+
+  `/internal/payment-intents` n'a pas d'authentification : seuls le core et la gateway peuvent
+  l'atteindre. Le webhook est protégé par la signature Stripe (secret `whsec_…` en variable
+  d'environnement, horodatage contre le rejeu) et le passage `PAID` est idempotent.
 
 ### Cartes de test
 

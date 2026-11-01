@@ -93,6 +93,21 @@ services:
     networks:
       - sgilt-dev-net
 
+  # Forwards Stripe webhooks (test sandbox) to the gateway running on the host, which routes them to
+  # sgilt-pay. Session from a one-time `stripe login`, kept in the stripe_cli_config volume (see
+  # dev/README.md). Events: docker logs -f sgilt-stripe-cli
+  sgilt-stripe-cli:
+    image: stripe/stripe-cli:v1.54.0
+    container_name: sgilt-stripe-cli
+    # Only the events sgilt-pay handles, like the endpoint declared in the dashboard for staging/prod
+    command: ["listen", "--events", "payment_intent.succeeded", "--forward-to", "host.docker.internal:5080/webhooks/stripe"]
+    volumes:
+      - stripe_cli_config:/root/.config/stripe
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - sgilt-dev-net
+
 networks:
   sgilt-dev-net:
     driver: bridge
@@ -102,3 +117,4 @@ volumes:
   keycloak_pgdata:
   sgilt_pgdata:
   r2_mock_db:
+  stripe_cli_config:

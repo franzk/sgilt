@@ -27,7 +27,7 @@ public class PaymentIntentService {
     static final List<AllowedPaymentMethodType> ALLOWED_PAYMENT_METHOD_TYPES =
             List.of(AllowedPaymentMethodType.CARD);
     // Clé des metadata Stripe qui relie le PaymentIntent à sa commande (lue par le webhook).
-    static final String METADATA_COMMANDE_ID = "commandeId";
+    public static final String METADATA_COMMANDE_ID = "commandeId";
 
     private final StripeClient stripeClient;
 
