@@ -8,6 +8,9 @@ import net.franzka.sgilt.core.evenement.billetterie.commande.exception.NotEnough
 import net.franzka.sgilt.core.evenement.billetterie.commande.mapper.CommandeMapper;
 import net.franzka.sgilt.core.evenement.billetterie.commande.repository.CommandeRepository;
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
+import net.franzka.sgilt.core.pay.PayClient;
+import net.franzka.sgilt.core.pay.PaymentIntentRequest;
+import net.franzka.sgilt.core.pay.PaymentIntentResponse;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +44,9 @@ class CommandeServiceTest {
 
     @Mock
     private CommandeMapper commandeMapper;
+
+    @Mock
+    private PayClient payClient;
 
     @InjectMocks
     private CommandeService commandeService;
@@ -112,16 +118,19 @@ class CommandeServiceTest {
     class CreateCommande {
 
         @Test
-        void givenEnoughTickets_whenCreateCommande_thenSavesItHeldForHoldDuration() {
+        void givenEnoughTickets_whenCreateCommande_thenSavesItHeldForHoldDurationWithItsPaymentIntent() {
             givenTakenTickets(List.of(4), List.of(2));
             CreateCommandeRequest request = request(4);
+            UUID commandeId = UUID.randomUUID();
             Commande commande = Commande.builder().build();
-            Commande saved = Commande.builder().build();
+            Commande saved = Commande.builder().id(commandeId).quantity(4).unitPriceCents(1200).build();
             CommandeDto dto = mock(CommandeDto.class);
             ArgumentCaptor<LocalDateTime> expiresAt = ArgumentCaptor.forClass(LocalDateTime.class);
             when(commandeMapper.toCommande(eq(request), eq(billetterie), any(LocalDateTime.class))).thenReturn(commande);
             when(commandeRepository.save(commande)).thenReturn(saved);
-            when(commandeMapper.toCommandeDto(saved)).thenReturn(dto);
+            when(payClient.createPaymentIntent(new PaymentIntentRequest(commandeId, 4800)))
+                    .thenReturn(new PaymentIntentResponse("pi_123_secret_456"));
+            when(commandeMapper.toCommandeDto(saved, "pi_123_secret_456")).thenReturn(dto);
 
             assertThat(commandeService.createCommande(billetterie, request)).isSameAs(dto);
 
@@ -137,6 +146,7 @@ class CommandeServiceTest {
             assertThatThrownBy(() -> commandeService.createCommande(billetterie, request(5)))
                     .isInstanceOf(NotEnoughTicketsException.class);
             verify(commandeRepository, never()).save(any());
+            verify(payClient, never()).createPaymentIntent(any());
         }
     }
 }

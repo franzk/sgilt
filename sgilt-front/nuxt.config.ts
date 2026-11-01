@@ -16,6 +16,7 @@ export default defineNuxtConfig({
       kcRealm: '',
       kcClientId: '',
       maxUploadSizeMb: '10',
+      stripePublishableKey: '',
     },
   },
 

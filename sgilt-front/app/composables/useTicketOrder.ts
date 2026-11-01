@@ -186,7 +186,8 @@ export function useTicketOrder(slug: string, ticketing: PublicEventTicketing | u
 
   // Montants calculés en centimes, convertis en euros pour l'affichage seulement.
   const unitPriceLabel = formatPrice(unitPriceCents / 100)
-  const totalLabel = computed(() => formatPrice((unitPriceCents * order.value.quantity) / 100))
+  const totalCents = computed(() => unitPriceCents * order.value.quantity)
+  const totalLabel = computed(() => formatPrice(totalCents.value / 100))
 
   return {
     order,
@@ -199,6 +200,7 @@ export function useTicketOrder(slug: string, ticketing: PublicEventTicketing | u
     attachCommande,
     markPaid,
     unitPriceLabel,
+    totalCents,
     totalLabel,
   }
 }

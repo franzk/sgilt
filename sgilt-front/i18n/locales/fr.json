@@ -1556,11 +1556,8 @@
       "summary-title": "Récapitulatif de votre commande",
       "tickets-label": "Billets",
       "method-title": "Moyen de paiement",
-      "method-subtitle": "Le paiement sera bientôt disponible via notre partenaire de paiement.",
-      "widget-title": "Widget de paiement",
-      "widget-subtitle": "Intégration en cours",
-      "widget-badge": "Aperçu de la maquette",
-      "security-notice": "Avec notre prestataire de paiement, vos paiements sont sécurisés.",
+      "method-subtitle": "Carte bancaire, Apple Pay ou Google Pay.",
+      "security-notice": "Les paiements sur Sgilt sont sécurisés.",
       "cta": "Payer {amount}",
       "reassurance": "Votre paiement sera sécurisé et traité par notre prestataire de paiement.",
       "errors": {

@@ -1,4 +1,4 @@
--- Commande de billets d'une billetterie. Créée PENDING à la validation de l'écran de commande :
+-- Commande de billets d'une billetterie. Créée PENDING au clic sur « Payer », avant le paiement :
 -- ses places sont bloquées jusqu'à expires_at (au-delà, une commande non payée ne compte plus et
 -- ses places se libèrent d'elles-mêmes, sans tâche planifiée). PAID au paiement.
 CREATE TYPE commande_status AS ENUM (

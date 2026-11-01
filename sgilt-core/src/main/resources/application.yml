@@ -64,6 +64,9 @@ sgilt:
     admin-client-secret: ${KC_ADMIN_CLIENT_SECRET}
     front-client-id: sgilt-front
     magic-link-secret: ${MAGIC_LINK_SECRET:dev-magic-secret-change-in-prod}
+  pay:
+    # sgilt-pay, sur le réseau interne (sans route dans la gateway)
+    url: ${PAY_URL:http://localhost:5032}
   openai:
     api-key: ${OPENAI_API_KEY}
 

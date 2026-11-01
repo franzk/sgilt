@@ -54,13 +54,14 @@ class CommandeMapperTest {
     class ToCommandeDto {
 
         @Test
-        void givenCommande_whenToCommandeDto_thenMapsItWithTotal() {
+        void givenCommandeAndClientSecret_whenToCommandeDto_thenMapsItWithTotal() {
             UUID id = UUID.randomUUID();
             LocalDateTime expiresAt = LocalDateTime.of(2026, 3, 12, 19, 15);
             Commande commande = Commande.builder()
                     .id(id).quantity(3).unitPriceCents(1200).expiresAt(expiresAt).build();
 
-            assertThat(mapper.toCommandeDto(commande)).isEqualTo(new CommandeDto(id, 3, 3600, expiresAt));
+            assertThat(mapper.toCommandeDto(commande, "pi_123_secret_456"))
+                    .isEqualTo(new CommandeDto(id, 3, 3600, expiresAt, "pi_123_secret_456"));
         }
     }
 }

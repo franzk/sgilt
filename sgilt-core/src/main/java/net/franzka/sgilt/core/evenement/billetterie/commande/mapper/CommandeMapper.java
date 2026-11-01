@@ -33,11 +33,16 @@ public interface CommandeMapper {
     Commande toCommande(CreateCommandeRequest request, Billetterie billetterie, LocalDateTime expiresAt);
 
     /**
-     * Mappe une commande vers ce qu'en voit l'acheteur.
+     * Mappe une commande vers ce qu'en voit l'acheteur, avec de quoi la payer.
      *
-     * @param commande la commande
+     * @param commande     la commande
+     * @param clientSecret le secret client de son PaymentIntent Stripe
      * @return la commande, avec son montant total
      */
-    @Mapping(target = "totalCents", expression = "java(commande.getQuantity() * commande.getUnitPriceCents())")
-    CommandeDto toCommandeDto(Commande commande);
+    @Mapping(target = "id",           source = "commande.id")
+    @Mapping(target = "quantity",     source = "commande.quantity")
+    @Mapping(target = "totalCents",   expression = "java(commande.getQuantity() * commande.getUnitPriceCents())")
+    @Mapping(target = "expiresAt",    source = "commande.expiresAt")
+    @Mapping(target = "clientSecret", source = "clientSecret")
+    CommandeDto toCommandeDto(Commande commande, String clientSecret);
 }

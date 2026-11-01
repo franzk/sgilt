@@ -10,5 +10,6 @@ export function mapCommande(dto: CommandeDto): Commande {
     quantity: dto.quantity,
     totalCents: dto.totalCents,
     expiresAt: dto.expiresAt,
+    clientSecret: dto.clientSecret,
   }
 }

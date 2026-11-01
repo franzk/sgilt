@@ -7,6 +7,8 @@ export interface Commande {
   quantity: number
   totalCents: number
   expiresAt: string
+  // Secret client du PaymentIntent Stripe, pour confirmer le paiement depuis le widget.
+  clientSecret: string
 }
 
 // Motif d'échec de la création d'une commande (suffixe de la clé i18n ticketing.payment.errors.*) :

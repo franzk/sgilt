@@ -15,4 +15,6 @@ export interface CommandeDto {
   totalCents: number
   // Fin du blocage des places faute de paiement, heure locale du serveur (yyyy-MM-ddTHH:mm:ss).
   expiresAt: string
+  // Secret client du PaymentIntent de la commande, passé à Stripe.js pour confirmer le paiement.
+  clientSecret: string
 }

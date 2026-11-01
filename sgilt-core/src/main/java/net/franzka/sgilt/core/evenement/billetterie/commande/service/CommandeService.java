@@ -9,6 +9,8 @@ import net.franzka.sgilt.core.evenement.billetterie.commande.exception.NotEnough
 import net.franzka.sgilt.core.evenement.billetterie.commande.mapper.CommandeMapper;
 import net.franzka.sgilt.core.evenement.billetterie.commande.repository.CommandeRepository;
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
+import net.franzka.sgilt.core.pay.PayClient;
+import net.franzka.sgilt.core.pay.PaymentIntentRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -27,6 +29,7 @@ public class CommandeService {
 
     private final CommandeRepository commandeRepository;
     private final CommandeMapper     commandeMapper;
+    private final PayClient          payClient;
 
     /**
      * Retourne le nombre de places restantes d'une billetterie : sa jauge, moins les billets des
@@ -42,12 +45,13 @@ public class CommandeService {
 
     /**
      * Crée une commande en attente de paiement, qui bloque ses places pendant
-     * {@link #COMMANDE_HOLD_DURATION}. La billetterie doit avoir été verrouillée par l'appelant :
-     * deux commandes simultanées ne peuvent pas prendre les mêmes places.
+     * {@link #COMMANDE_HOLD_DURATION}, et son PaymentIntent Stripe (via sgilt-pay). La billetterie
+     * doit avoir été verrouillée par l'appelant : deux commandes simultanées ne peuvent pas prendre
+     * les mêmes places. Si sgilt-pay échoue, l'exception annule la transaction, donc la commande.
      *
      * @param billetterie la billetterie, verrouillée et ouverte
      * @param request     la commande demandée
-     * @return la commande créée
+     * @return la commande créée, avec le secret client de son PaymentIntent
      * @throws NotEnoughTicketsException s'il ne reste pas assez de places
      */
     public CommandeDto createCommande(Billetterie billetterie, CreateCommandeRequest request) {
@@ -57,7 +61,13 @@ public class CommandeService {
         }
         LocalDateTime expiresAt = LocalDateTime.now().plus(COMMANDE_HOLD_DURATION);
         Commande commande = commandeRepository.save(commandeMapper.toCommande(request, billetterie, expiresAt));
-        return commandeMapper.toCommandeDto(commande);
+        return commandeMapper.toCommandeDto(commande, createPaymentIntent(commande));
+    }
+
+    // Crée le PaymentIntent de la commande, au montant de la commande ; renvoie son secret client.
+    private String createPaymentIntent(Commande commande) {
+        int amountCents = commande.getQuantity() * commande.getUnitPriceCents();
+        return payClient.createPaymentIntent(new PaymentIntentRequest(commande.getId(), amountCents)).clientSecret();
     }
 
     // Billets pris : ceux des commandes payées et des commandes en attente pas encore expirées.

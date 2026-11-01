@@ -1,7 +1,8 @@
 <!--
   Étape 2 du parcours d'achat (/e/[slug]/paiement) : récapitulatif de la commande et paiement.
-  « Payer » crée la commande côté back (blocage des places) juste avant le paiement. Le widget de
-  paiement (Stripe) n'est pas encore intégré : la commande créée est considérée payée.
+  Le widget de paiement est le Payment Element de Stripe, monté sans PaymentIntent (mode différé) :
+  « Payer » valide la saisie, crée la commande côté back (blocage des places et PaymentIntent),
+  puis confirme le paiement auprès de Stripe.
 -->
 <template>
   <div class="order-page">
@@ -28,12 +29,7 @@
       <h2 class="section-title">{{ $t('ticketing.payment.method-title') }}</h2>
       <p class="section-subtitle">{{ $t('ticketing.payment.method-subtitle') }}</p>
 
-      <div class="widget-placeholder">
-        <span class="widget-icon" aria-hidden="true"><BankCard2Icon /></span>
-        <p class="widget-title">{{ $t('ticketing.payment.widget-title') }}</p>
-        <p class="widget-subtitle">{{ $t('ticketing.payment.widget-subtitle') }}</p>
-        <span class="widget-badge">{{ $t('ticketing.payment.widget-badge') }}</span>
-      </div>
+      <div ref="paymentElementRef" class="payment-element" />
 
       <div class="security-notice">
         <InformationIcon class="icon" />
@@ -68,10 +64,12 @@
 import TicketingOrderHeader from '~/components/ticketing/TicketingOrderHeader.vue'
 import TicketingEventRecap from '~/components/ticketing/TicketingEventRecap.vue'
 import TicketingCgvCheckbox from '~/components/ticketing/TicketingCgvCheckbox.vue'
-import { BankCard2Icon, InformationIcon, ArrowRightSIcon, LockIcon } from '@remixicons/vue/line'
+import { InformationIcon, ArrowRightSIcon, LockIcon } from '@remixicons/vue/line'
 import { usePublicEvent } from '~/composables/usePublicEvent'
 import { useTicketOrder } from '~/composables/useTicketOrder'
 import { createCommande, toCommandeFailure } from '~/data/ticketing/service/commandeService'
+import { loadStripe } from '@stripe/stripe-js'
+import type { Stripe, StripeElements, StripeError } from '@stripe/stripe-js'
 
 definePageMeta({ middleware: 'ticketing' })
 
@@ -79,7 +77,7 @@ const { t } = useI18n()
 const route = useRoute()
 const slug = String(route.params.slug)
 const event = await usePublicEvent(slug)
-const { order, attachCommande, markPaid, unitPriceLabel, totalLabel } = useTicketOrder(
+const { order, attachCommande, markPaid, unitPriceLabel, totalCents, totalLabel } = useTicketOrder(
   slug,
   event.ticketing,
 )
@@ -89,11 +87,54 @@ useHead({ title: `${t('ticketing.payment.title')} · ${event.title}` })
 // ── Récapitulatif ─────────────────────────────────────────────────────────────
 const ticketsDetailLabel = computed(() => `${order.value.quantity} × ${unitPriceLabel}`)
 
+// ── Widget Stripe ─────────────────────────────────────────────────────────────
+// Moyen de paiement accepté : la carte (Apple Pay et Google Pay en découlent, sur les appareils et
+// domaines compatibles). Pas de Link, qui redemande les coordonnées de l'acheteur. Même liste que
+// celle du PaymentIntent côté sgilt-pay.
+const ALLOWED_PAYMENT_METHOD_TYPES = ['card']
+const CURRENCY = 'eur'
+
+const { stripePublishableKey } = useRuntimeConfig().public
+const paymentElementRef = ref<HTMLElement | null>(null)
+let stripe: Stripe | null = null
+let elements: StripeElements | null = null
+
+// Page en SPA : Stripe.js se charge et le widget se monte côté client seulement.
+onMounted(async () => {
+  try {
+    stripe = await loadStripe(stripePublishableKey)
+  } catch {
+    stripe = null
+  }
+  if (!stripe || !paymentElementRef.value) {
+    payError.value = t('ticketing.payment.errors.TECHNICAL')
+    return
+  }
+  elements = stripe.elements({
+    mode: 'payment',
+    amount: totalCents.value,
+    currency: CURRENCY,
+    allowedPaymentMethodTypes: ALLOWED_PAYMENT_METHOD_TYPES,
+    locale: 'fr',
+  })
+  // Link s'invite dans le formulaire carte même hors des moyens autorisés : masqué explicitement.
+  elements.create('payment', { wallets: { link: 'never' } }).mount(paymentElementRef.value)
+})
+
+// Message d'une erreur Stripe : celui de Stripe (déjà en français) pour une saisie invalide ou une
+// carte refusée, le message générique sinon.
+function toStripeErrorMessage(error: StripeError): string {
+  if ((error.type === 'card_error' || error.type === 'validation_error') && error.message) {
+    return error.message
+  }
+  return t('ticketing.payment.errors.TECHNICAL')
+}
+
 // ── Paiement ──────────────────────────────────────────────────────────────────
 // Une saisie incomplète ne désactive pas le bouton : elle se traduit par une erreur explicite au
-// clic. Seule la création de la commande le désactive, spinner à l'appui, pour ne pas en créer deux.
-// Le widget de paiement n'étant pas encore intégré, la commande créée est aussitôt considérée
-// payée ; le paiement Stripe viendra s'insérer entre sa création et markPaid.
+// clic. Seul le paiement en cours le désactive, spinner à l'appui, pour ne pas payer deux fois.
+// Un paiement refusé laisse la commande en attente : un nouvel essai en crée une autre, la
+// précédente libère ses places à son expiration.
 const acceptCgv = ref(false)
 const cgvError = ref<string | null>(null)
 const payError = ref<string | null>(null)
@@ -105,13 +146,36 @@ async function onPay(): Promise<void> {
     payError.value = t('ticketing.order.error-form')
     return
   }
+  if (!stripe || !elements) {
+    payError.value = t('ticketing.payment.errors.TECHNICAL')
+    return
+  }
   payError.value = null
   paying.value = true
   try {
+    // Valide la saisie du widget avant de bloquer des places : les champs en erreur s'y signalent.
+    const { error: submitError } = await elements.submit()
+    if (submitError) {
+      payError.value = toStripeErrorMessage(submitError)
+      return
+    }
     const commande = await createCommande(slug, order.value.quantity, order.value.buyer)
     attachCommande(commande.id)
+    // Sans redirection pour les cartes (le 3D Secure s'ouvre dans une modale) : Stripe ne redirige
+    // vers return_url que pour un moyen de paiement qui l'exige.
+    const confirmationPath = `/e/${slug}/confirmation?commande=${commande.id}`
+    const { error } = await stripe.confirmPayment({
+      elements,
+      clientSecret: commande.clientSecret,
+      confirmParams: { return_url: `${window.location.origin}${confirmationPath}` },
+      redirect: 'if_required',
+    })
+    if (error) {
+      payError.value = toStripeErrorMessage(error)
+      return
+    }
     markPaid()
-    await navigateTo(`/e/${slug}/confirmation`)
+    await navigateTo(confirmationPath)
   } catch (e: unknown) {
     payError.value = t(`ticketing.payment.errors.${toCommandeFailure(e)}`)
   } finally {
@@ -219,56 +283,8 @@ async function onPay(): Promise<void> {
   color: $text-secondary;
 }
 
-.widget-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: $spacing-xs;
-  padding: $spacing-xl $spacing-m;
-  border: 1.5px dashed $divider-color;
-  border-radius: $radius-lg;
-  background: $surface-soft;
-  text-align: center;
-
-  .widget-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 3.5rem;
-    height: 3.5rem;
-    margin-bottom: $spacing-xs;
-    border-radius: 50%;
-    background: $surface-white;
-    color: $text-primary;
-
-    svg {
-      width: 1.5rem;
-      height: 1.5rem;
-    }
-  }
-
-  .widget-title {
-    margin: 0;
-    font-size: $font-size-md;
-    font-weight: $font-weight-bold;
-    color: $text-primary;
-  }
-
-  .widget-subtitle {
-    margin: 0;
-    font-size: $font-size-sm;
-    color: $text-secondary;
-  }
-
-  .widget-badge {
-    margin-top: $spacing-xs;
-    padding: 0.35rem 0.9rem;
-    border-radius: 2rem;
-    background: $brand-accent;
-    color: $brand-primary;
-    font-size: $font-size-xs;
-    font-weight: $font-weight-semibold;
-  }
+.payment-element {
+  min-height: 12rem;
 }
 
 .security-notice {

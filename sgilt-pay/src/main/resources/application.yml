@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: sgilt-pay
+
+sgilt:
+  stripe:
+    # Clé secrète Stripe (sk_test_… en local et staging) : jamais commitée
+    secret-key: ${STRIPE_SECRET_KEY}
+
+server:
+  port: 5032
