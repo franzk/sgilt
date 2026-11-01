@@ -43,5 +43,11 @@ public enum MailType {
      * avoir reçu de mail auparavant — met en avant la page déjà construite, avec le lien
      * d'activation pour accéder à son espace.
      */
-    PRESTATAIRE_PAGE_READY_EMAIL
+    PRESTATAIRE_PAGE_READY_EMAIL,
+
+    /**
+     * Alerte envoyée à l'équipe Sgilt quand un paiement fait dépasser la jauge d'une billetterie
+     * (paiement arrivé après l'expiration du blocage de ses places, reprises entre-temps).
+     */
+    ADMIN_OVERSOLD_ALERT_EMAIL
 }

@@ -95,6 +95,7 @@ public abstract class IntegrationTestContext {
                 .withEnv("KC_ADMIN_CLIENT_SECRET", "dev-admin-secret")
                 .withEnv("CONFIRMATION_TOKEN_SECRET", CONFIRMATION_SECRET)
                 .withEnv("OPENAI_API_KEY", "unused-in-integration-tests")
+                .withEnv("ADMIN_EMAIL", "admin@integration.test")
                 // Wait.forHttp() sur un endpoint réel s'est révélé peu fiable ici : la toute première
                 // requête HTTP initialise le DispatcherServlet à la volée, et ce délai suffit parfois à
                 // faire échouer/reset la connexion de probe. La ligne de log de démarrage de Spring Boot

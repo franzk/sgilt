@@ -8,3 +8,8 @@ spring:
       - classpath:db/migration
       - classpath:db/seed
     ignore-migration-patterns: "*:missing"
+
+sgilt:
+  admin:
+    # En local, les mails finissent dans MailHog : pas besoin d'une vraie adresse.
+    email: admin@sgilt.local

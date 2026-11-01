@@ -11,7 +11,7 @@
 | 5      | Création de la commande côté back (`POST /api/v1/commandes`), blocage des places          | Fait                  |
 | 1a     | `sgilt-pay` crée le PaymentIntent Stripe, le core renvoie son secret client au front      | Fait (2026-10-31)     |
 | 1b     | Payment Element Stripe dans l'écran de paiement, confirmation du paiement depuis le front | Fait (2026-10-31)     |
-| 2      | Webhook Stripe → `sgilt-pay` → RabbitMQ (queue `payment.succeeded`) → le core passe la commande `PAID` | Réception (2a) et passage `PAID` (2b) faits ; commande expirée (2c) à venir |
+| 2      | Webhook Stripe → `sgilt-pay` → RabbitMQ (queue `payment.succeeded`) → le core passe la commande `PAID` | Réception (2a), passage `PAID` (2b) et alerte de survente (2c, core) faits ; gabarit de l'e-mail d'alerte à venir |
 | 3      | `GET /commandes/{id}` et écran de confirmation sans état front                            | Fait (2026-11-01)     |
 
 Composants :
@@ -172,6 +172,11 @@ places restantes = capacité − Σ quantité (PAID) − Σ quantité (PENDING e
 - Une commande `PENDING` bloque ses places **10 minutes** (`CommandeService.COMMANDE_HOLD_DURATION`).
 - Au-delà, elle ne compte plus : ses places se libèrent d'elles-mêmes, sans tâche planifiée. La
   commande reste `PENDING` en base.
+- **Paiement arrivé après l'expiration** (acheteur lent, 3D Secure long) : la commande passe
+  `PAID` quand même, le paiement a eu lieu. Si ses places ont été reprises entre-temps, la jauge
+  est dépassée (survente, rarissime) : pas de remboursement automatique, un warn dans les logs et
+  un e-mail d'alerte à l'équipe Sgilt (`AdminMailerService.sendOversoldAlert`, adresse
+  `ADMIN_EMAIL`), qui décide : rembourser depuis le dashboard Stripe, ou accepter la survente.
 - Statuts (`commande_status`) : `PENDING`, `PAID`, `CANCELLED`. **`CANCELLED` n'est produit par
   aucun code aujourd'hui** : il est réservé (annulation, libération anticipée).
 
@@ -201,8 +206,6 @@ sequenceDiagram
 
 - Seule route de `sgilt-pay` exposée publiquement. En local, `stripe listen --forward-to
   localhost:5032/...` fait le pont depuis Stripe.
-- À trancher : paiement reçu pour une commande **expirée** (acheteur lent, 3D Secure long) dont
-  les places ont pu être reprises — accepter s'il reste de la place, sinon rembourser.
 - Libération anticipée des places : `payment_intent.payment_failed` n'est pas un abandon (l'acheteur
   peut réessayer sur le même PaymentIntent) et l'abandon n'émet aucun événement. Libérer plus tôt
   voudra dire annuler nous-mêmes le PaymentIntent (commande remplacée par un nouvel essai, ou
@@ -218,6 +221,7 @@ sequenceDiagram
 | `STRIPE_SECRET_KEY`                   | `sgilt-pay`   | `application-local-secrets.yml` (gitignoré, profil `local`) | variable d'environnement               |
 | `STRIPE_WEBHOOK_SECRET`               | `sgilt-pay`   | `application-local-secrets.yml`, secret de `stripe listen` (conteneur `sgilt-stripe-cli`) | secret de l'endpoint déclaré dans le dashboard |
 | `NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`  | `sgilt-front` | `sgilt-front/.env` (relancer `npm run dev` après modif)     | variable d'environnement               |
+| `ADMIN_EMAIL`                         | `sgilt-core`  | `admin@sgilt.local` (`application-local.yml`, arrive dans MailHog) | secret GitHub, propre à l'environnement, sans défaut |
 
 - Clés `sk_test` / `pk_test` en local et en staging ; clés live seulement après activation du
   compte Stripe.

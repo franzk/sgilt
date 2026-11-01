@@ -1,5 +1,6 @@
 package net.franzka.sgilt.core.evenement.billetterie.commande.service;
 
+import net.franzka.sgilt.core.admin.mailer.AdminMailerService;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.CommandeStatus;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
@@ -31,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -50,6 +52,9 @@ class CommandeServiceTest {
 
     @Mock
     private PayClient payClient;
+
+    @Mock
+    private AdminMailerService adminMailerService;
 
     @InjectMocks
     private CommandeService commandeService;
@@ -190,15 +195,44 @@ class CommandeServiceTest {
 
         private final UUID commandeId = UUID.randomUUID();
 
+        // Commande en attente de 2 billets, sur la billetterie de 10 places.
+        private Commande givenPendingCommande(List<Integer> alreadyPaid) {
+            Commande commande = Commande.builder()
+                    .id(commandeId).billetterie(billetterie).quantity(2).status(CommandeStatus.PENDING).build();
+            when(commandeRepository.findById(commandeId)).thenReturn(Optional.of(commande));
+            when(commandeRepository.findByBilletterieIdAndStatus(BILLETTERIE_ID, CommandeStatus.PAID))
+                    .thenReturn(commandes(alreadyPaid));
+            return commande;
+        }
+
         @Test
         void givenPendingCommande_whenMarkPaid_thenSavesItPaid() {
-            Commande commande = Commande.builder().id(commandeId).status(CommandeStatus.PENDING).build();
-            when(commandeRepository.findById(commandeId)).thenReturn(Optional.of(commande));
+            Commande commande = givenPendingCommande(List.of(3));
 
             commandeService.markPaid(commandeId);
 
             assertThat(commande.getStatus()).isEqualTo(CommandeStatus.PAID);
             verify(commandeRepository).save(commande);
+        }
+
+        @Test
+        void givenPaymentFillingCapacityExactly_whenMarkPaid_thenSendsNoAlert() {
+            givenPendingCommande(List.of(5, 3));
+
+            commandeService.markPaid(commandeId);
+
+            verify(adminMailerService, never()).sendOversoldAlert(any(), anyInt());
+        }
+
+        @Test
+        void givenPaymentExceedingCapacity_whenMarkPaid_thenSavesItPaidAndAlertsAdmin() {
+            Commande commande = givenPendingCommande(List.of(6, 3));
+
+            commandeService.markPaid(commandeId);
+
+            assertThat(commande.getStatus()).isEqualTo(CommandeStatus.PAID);
+            verify(commandeRepository).save(commande);
+            verify(adminMailerService).sendOversoldAlert(commande, 11);
         }
 
         @Test
@@ -210,6 +244,7 @@ class CommandeServiceTest {
 
             assertThat(commande.getStatus()).isEqualTo(CommandeStatus.PAID);
             verify(commandeRepository, never()).save(any());
+            verify(adminMailerService, never()).sendOversoldAlert(any(), anyInt());
         }
 
         @Test

@@ -80,6 +80,9 @@ sgilt:
     url: ${PAY_URL:http://localhost:5032}
   openai:
     api-key: ${OPENAI_API_KEY}
+  admin:
+    # Boîte de l'équipe Sgilt qui reçoit les alertes (survente…), propre à chaque environnement
+    email: ${ADMIN_EMAIL}
 
 server:
   port: 5027

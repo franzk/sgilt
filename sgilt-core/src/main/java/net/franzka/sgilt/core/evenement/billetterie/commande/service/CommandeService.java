@@ -2,6 +2,7 @@ package net.franzka.sgilt.core.evenement.billetterie.commande.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.franzka.sgilt.core.admin.mailer.AdminMailerService;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.CommandeStatus;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
@@ -35,6 +36,7 @@ public class CommandeService {
     private final CommandeRepository commandeRepository;
     private final CommandeMapper     commandeMapper;
     private final PayClient          payClient;
+    private final AdminMailerService adminMailerService;
 
     /**
      * Retourne le nombre de places restantes d'une billetterie : sa jauge, moins les billets des
@@ -83,7 +85,8 @@ public class CommandeService {
     /**
      * Marque une commande payée, à la réception du paiement confirmé par Stripe. Idempotent : Stripe
      * peut envoyer le même événement plusieurs fois, une commande déjà payée reste telle quelle. Une
-     * commande expirée est marquée payée elle aussi : le paiement a bien eu lieu.
+     * commande expirée est marquée payée elle aussi : le paiement a bien eu lieu. Si ses places ont
+     * été reprises entre-temps, la jauge est dépassée (survente) : l'équipe Sgilt est alertée.
      *
      * @param commandeId l'identifiant de la commande
      * @throws CommandeNotFoundException si la commande est introuvable
@@ -94,8 +97,21 @@ public class CommandeService {
             log.info("Commande déjà payée, rien à faire — commandeId={}", commandeId);
             return;
         }
+        int soldTickets = paidTickets(commande.getBilletterie()) + commande.getQuantity();
         commande.setStatus(CommandeStatus.PAID);
         commandeRepository.save(commande);
+        alertIfOversold(commande, soldTickets);
+    }
+
+    // Survente : les billets payés, cette commande comprise, dépassent la jauge.
+    private void alertIfOversold(Commande commande, int soldTickets) {
+        int capacity = commande.getBilletterie().getCapacity();
+        if (soldTickets <= capacity) {
+            return;
+        }
+        log.warn("Survente : commande payée au-delà de la jauge — commandeId={}, billets payés={}, jauge={}",
+                commande.getId(), soldTickets, capacity);
+        adminMailerService.sendOversoldAlert(commande, soldTickets);
     }
 
     private Commande findCommande(UUID commandeId) {
@@ -110,11 +126,13 @@ public class CommandeService {
 
     // Billets pris : ceux des commandes payées et des commandes en attente pas encore expirées.
     private int takenTickets(Billetterie billetterie) {
-        List<Commande> paid = commandeRepository.findByBilletterieIdAndStatus(
-                billetterie.getId(), CommandeStatus.PAID);
         List<Commande> held = commandeRepository.findByBilletterieIdAndStatusAndExpiresAtAfter(
                 billetterie.getId(), CommandeStatus.PENDING, LocalDateTime.now());
-        return sumQuantities(paid) + sumQuantities(held);
+        return paidTickets(billetterie) + sumQuantities(held);
+    }
+
+    private int paidTickets(Billetterie billetterie) {
+        return sumQuantities(commandeRepository.findByBilletterieIdAndStatus(billetterie.getId(), CommandeStatus.PAID));
     }
 
     private static int sumQuantities(List<Commande> commandes) {
