@@ -2,6 +2,19 @@ spring:
   application:
     name: sgilt-pay
 
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    template:
+      retry:
+        enabled: true
+        initial-interval: 1s
+        multiplier: 2
+        max-interval: 10s
+        max-retries: 3
+
 sgilt:
   stripe:
     # Clé secrète Stripe (sk_test_… en local et staging) : jamais commitée

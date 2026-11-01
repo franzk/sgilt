@@ -10,13 +10,17 @@ import com.stripe.model.StripeObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.pay.config.StripeProperties;
+import net.franzka.sgilt.pay.webhook.event.PaymentEventPublisher;
+import net.franzka.sgilt.pay.webhook.event.PaymentSucceededEvent;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 import static net.franzka.sgilt.pay.paymentintent.service.PaymentIntentService.METADATA_COMMANDE_ID;
 
 /**
- * Service métier des webhooks Stripe : vérifie la signature des événements et traite ceux qui
- * concernent les commandes.
+ * Service métier des webhooks Stripe : vérifie la signature des événements et signale à sgilt-core
+ * les paiements réussis des commandes.
  */
 @Service
 @RequiredArgsConstructor
@@ -27,6 +31,7 @@ public class StripeWebhookService {
 
     private final StripeClient stripeClient;
     private final StripeProperties stripeProperties;
+    private final PaymentEventPublisher paymentEventPublisher;
 
     /**
      * Vérifie la signature d'un événement Stripe puis le traite. Les événements qui ne nous
@@ -45,8 +50,9 @@ public class StripeWebhookService {
         }
     }
 
-    // Paiement réussi : retrouve la commande par les metadata du PaymentIntent. Un PaymentIntent sans
-    // commande (créé depuis le dashboard, ou par `stripe trigger`) est ignoré.
+    // Paiement réussi : retrouve la commande par les metadata du PaymentIntent et le signale à
+    // sgilt-core. Un PaymentIntent sans commande (créé depuis le dashboard, ou par `stripe trigger`)
+    // est ignoré.
     private void onPaymentIntentSucceeded(Event event) {
         if (!(toStripeObject(event) instanceof PaymentIntent paymentIntent)) {
             log.warn("Événement {} sans PaymentIntent — id={}", PAYMENT_INTENT_SUCCEEDED, event.getId());
@@ -58,6 +64,8 @@ public class StripeWebhookService {
             return;
         }
         log.info("PaymentIntent réussi — paymentIntentId={} commandeId={}", paymentIntent.getId(), commandeId);
+        paymentEventPublisher.publishPaymentSucceeded(
+                new PaymentSucceededEvent(UUID.fromString(commandeId), paymentIntent.getId()));
     }
 
     // Objet de l'événement. getObject() est vide quand la version d'API de l'événement diffère de celle

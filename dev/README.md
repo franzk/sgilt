@@ -119,8 +119,13 @@ Both files are gitignored. The Stripe CLI needs no key: it uses a `stripe login`
    (`host.docker.internal:5080/webhooks/stripe`), which routes them to `sgilt-pay`.
 
    Until the script has run, `sgilt-stripe-cli` stops with an authentication error at
-   `docker compose up`: harmless, the other services are not affected. The session expires after
-   90 days, with the same error: run the script again.
+   `docker compose up`: harmless, the other services are not affected.
+
+   If the CLI session token expires while `listen` is running, it exits with an authentication
+   error; Docker restarts it (`restart: on-failure`) and the CLI renews the session at startup. An
+   event emitted during the restart is not forwarded: resend it with
+   `docker exec sgilt-stripe-cli stripe events resend evt_…`. If the container keeps restarting
+   with an authentication error, the session itself is gone: run the script again.
 
 3. Add the publishable key to `sgilt-front/.env`, then restart `pnpm dev` (Nuxt only reads `.env` at
    startup).

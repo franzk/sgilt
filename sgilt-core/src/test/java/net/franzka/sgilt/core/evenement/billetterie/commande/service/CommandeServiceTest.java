@@ -4,6 +4,7 @@ import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.CommandeStatus;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
+import net.franzka.sgilt.core.evenement.billetterie.commande.exception.CommandeNotFoundException;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.NotEnoughTicketsException;
 import net.franzka.sgilt.core.evenement.billetterie.commande.mapper.CommandeMapper;
 import net.franzka.sgilt.core.evenement.billetterie.commande.repository.CommandeRepository;
@@ -22,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -147,6 +149,46 @@ class CommandeServiceTest {
                     .isInstanceOf(NotEnoughTicketsException.class);
             verify(commandeRepository, never()).save(any());
             verify(payClient, never()).createPaymentIntent(any());
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // markPaid
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class MarkPaid {
+
+        private final UUID commandeId = UUID.randomUUID();
+
+        @Test
+        void givenPendingCommande_whenMarkPaid_thenSavesItPaid() {
+            Commande commande = Commande.builder().id(commandeId).status(CommandeStatus.PENDING).build();
+            when(commandeRepository.findById(commandeId)).thenReturn(Optional.of(commande));
+
+            commandeService.markPaid(commandeId);
+
+            assertThat(commande.getStatus()).isEqualTo(CommandeStatus.PAID);
+            verify(commandeRepository).save(commande);
+        }
+
+        @Test
+        void givenAlreadyPaidCommande_whenMarkPaid_thenSavesNothing() {
+            Commande commande = Commande.builder().id(commandeId).status(CommandeStatus.PAID).build();
+            when(commandeRepository.findById(commandeId)).thenReturn(Optional.of(commande));
+
+            commandeService.markPaid(commandeId);
+
+            assertThat(commande.getStatus()).isEqualTo(CommandeStatus.PAID);
+            verify(commandeRepository, never()).save(any());
+        }
+
+        @Test
+        void givenUnknownCommande_whenMarkPaid_thenThrowsCommandeNotFoundException() {
+            when(commandeRepository.findById(commandeId)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> commandeService.markPaid(commandeId))
+                    .isInstanceOf(CommandeNotFoundException.class);
         }
     }
 }

@@ -1,10 +1,12 @@
 package net.franzka.sgilt.core.evenement.billetterie.commande.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.CommandeStatus;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
+import net.franzka.sgilt.core.evenement.billetterie.commande.exception.CommandeNotFoundException;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.NotEnoughTicketsException;
 import net.franzka.sgilt.core.evenement.billetterie.commande.mapper.CommandeMapper;
 import net.franzka.sgilt.core.evenement.billetterie.commande.repository.CommandeRepository;
@@ -16,12 +18,14 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Service métier pour l'entité {@link Commande}.
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CommandeService {
 
     // Durée de blocage des places d'une commande en attente de paiement.
@@ -62,6 +66,25 @@ public class CommandeService {
         LocalDateTime expiresAt = LocalDateTime.now().plus(COMMANDE_HOLD_DURATION);
         Commande commande = commandeRepository.save(commandeMapper.toCommande(request, billetterie, expiresAt));
         return commandeMapper.toCommandeDto(commande, createPaymentIntent(commande));
+    }
+
+    /**
+     * Marque une commande payée, à la réception du paiement confirmé par Stripe. Idempotent : Stripe
+     * peut envoyer le même événement plusieurs fois, une commande déjà payée reste telle quelle. Une
+     * commande expirée est marquée payée elle aussi : le paiement a bien eu lieu.
+     *
+     * @param commandeId l'identifiant de la commande
+     * @throws CommandeNotFoundException si la commande est introuvable
+     */
+    public void markPaid(UUID commandeId) {
+        Commande commande = commandeRepository.findById(commandeId)
+                .orElseThrow(() -> new CommandeNotFoundException(commandeId));
+        if (commande.getStatus() == CommandeStatus.PAID) {
+            log.info("Commande déjà payée, rien à faire — commandeId={}", commandeId);
+            return;
+        }
+        commande.setStatus(CommandeStatus.PAID);
+        commandeRepository.save(commande);
     }
 
     // Crée le PaymentIntent de la commande, au montant de la commande ; renvoie son secret client.

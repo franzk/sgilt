@@ -6,6 +6,8 @@ import com.stripe.model.Event;
 import com.stripe.model.EventDataObjectDeserializer;
 import com.stripe.model.PaymentIntent;
 import net.franzka.sgilt.pay.config.StripeProperties;
+import net.franzka.sgilt.pay.webhook.event.PaymentEventPublisher;
+import net.franzka.sgilt.pay.webhook.event.PaymentSucceededEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,9 +17,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -33,11 +37,15 @@ class StripeWebhookServiceTest {
     @Mock
     private StripeClient stripeClient;
 
+    @Mock
+    private PaymentEventPublisher paymentEventPublisher;
+
     private StripeWebhookService stripeWebhookService;
 
     @BeforeEach
     void setUp() {
-        stripeWebhookService = new StripeWebhookService(stripeClient, new StripeProperties("sk_test", WEBHOOK_SECRET));
+        stripeWebhookService = new StripeWebhookService(
+                stripeClient, new StripeProperties("sk_test", WEBHOOK_SECRET), paymentEventPublisher);
     }
 
     // -------------------------------------------------------------------------
@@ -67,19 +75,22 @@ class StripeWebhookServiceTest {
             stripeWebhookService.handleEvent(PAYLOAD, SIGNATURE);
 
             verify(event, never()).getDataObjectDeserializer();
+            verify(paymentEventPublisher, never()).publishPaymentSucceeded(any());
         }
 
         @Test
-        void givenSucceededPaymentIntentOfCommande_whenHandleEvent_thenReadsItsCommandeId()
+        void givenSucceededPaymentIntentOfCommande_whenHandleEvent_thenPublishesPaymentSucceeded()
                 throws SignatureVerificationException {
+            UUID commandeId = UUID.randomUUID();
             PaymentIntent paymentIntent = mock(PaymentIntent.class);
-            when(paymentIntent.getMetadata()).thenReturn(Map.of("commandeId", "c0ffee00-0000-0000-0000-000000000000"));
+            when(paymentIntent.getId()).thenReturn("pi_123");
+            when(paymentIntent.getMetadata()).thenReturn(Map.of("commandeId", commandeId.toString()));
             Event event = succeededEvent(paymentIntent);
             when(stripeClient.constructEvent(PAYLOAD, SIGNATURE, WEBHOOK_SECRET)).thenReturn(event);
 
             stripeWebhookService.handleEvent(PAYLOAD, SIGNATURE);
 
-            verify(paymentIntent).getMetadata();
+            verify(paymentEventPublisher).publishPaymentSucceeded(new PaymentSucceededEvent(commandeId, "pi_123"));
         }
 
         @Test
@@ -91,6 +102,7 @@ class StripeWebhookServiceTest {
             when(stripeClient.constructEvent(PAYLOAD, SIGNATURE, WEBHOOK_SECRET)).thenReturn(event);
 
             assertThatCode(() -> stripeWebhookService.handleEvent(PAYLOAD, SIGNATURE)).doesNotThrowAnyException();
+            verify(paymentEventPublisher, never()).publishPaymentSucceeded(any());
         }
 
         private Event succeededEvent(PaymentIntent paymentIntent) {

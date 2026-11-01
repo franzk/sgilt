@@ -101,6 +101,7 @@ services:
     container_name: sgilt-stripe-cli
     # Only the events sgilt-pay handles, like the endpoint declared in the dashboard for staging/prod
     command: ["listen", "--events", "payment_intent.succeeded", "--forward-to", "host.docker.internal:5080/webhooks/stripe"]
+    restart: on-failure
     volumes:
       - stripe_cli_config:/root/.config/stripe
     extra_hosts:
