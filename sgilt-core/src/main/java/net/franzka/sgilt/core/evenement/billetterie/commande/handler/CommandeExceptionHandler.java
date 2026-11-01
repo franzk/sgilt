@@ -1,6 +1,7 @@
 package net.franzka.sgilt.core.evenement.billetterie.commande.handler;
 
 import lombok.extern.slf4j.Slf4j;
+import net.franzka.sgilt.core.evenement.billetterie.commande.exception.CommandeNotFoundException;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.NotEnoughTicketsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,5 +22,17 @@ public class CommandeExceptionHandler {
     public ResponseEntity<Void> handleNotEnoughTickets(NotEnoughTicketsException ex) {
         log.warn(ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
+
+    /**
+     * Commande introuvable → 404 Not Found.
+     *
+     * @param ex l'exception levée
+     * @return 404 Not Found
+     */
+    @ExceptionHandler(CommandeNotFoundException.class)
+    public ResponseEntity<Void> handleCommandeNotFound(CommandeNotFoundException ex) {
+        log.warn(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 }

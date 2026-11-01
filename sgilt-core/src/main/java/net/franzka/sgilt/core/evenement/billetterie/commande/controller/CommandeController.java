@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.evenement.billetterie.commande.api.CommandeApi;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
+import net.franzka.sgilt.core.evenement.billetterie.commande.exception.CommandeNotFoundException;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.NotEnoughTicketsException;
 import net.franzka.sgilt.core.evenement.billetterie.commande.service.CommandeService;
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
@@ -21,8 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 
 /**
- * Controller HTTP des commandes de billets. Endpoint public, sans authentification : on achète
- * des billets sans compte. Enchaîne les trois domaines : la page (slug → événement), la
+ * Controller HTTP des commandes de billets. Endpoints publics, sans authentification : on achète
+ * des billets sans compte. La création enchaîne les trois domaines : la page (slug → événement), la
  * billetterie (verrou, statut), la commande (places restantes, création).
  */
 @RestController
@@ -51,5 +53,19 @@ public class CommandeController implements CommandeApi {
         UUID evenementId = pageEvenementService.getEvenementIdBySlug(request.slug());
         Billetterie billetterie = billetterieService.lockOpenBilletterie(evenementId);
         return ResponseEntity.status(HttpStatus.CREATED).body(commandeService.createCommande(billetterie, request));
+    }
+
+    /**
+     * Relit une commande, pour l'écran de confirmation (qui attend son passage PAID).
+     *
+     * @param id l'identifiant de la commande
+     * @return 200 OK avec la commande
+     * @throws CommandeNotFoundException si la commande est introuvable
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<CommandeSummaryDto> getCommande(UUID id) {
+        log.info("GET /commandes/{}", id);
+        return ResponseEntity.ok(commandeService.getCommande(id));
     }
 }

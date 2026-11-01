@@ -1,6 +1,7 @@
 package net.franzka.sgilt.core.evenement.billetterie.commande.controller;
 
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
 import net.franzka.sgilt.core.evenement.billetterie.commande.service.CommandeService;
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
@@ -57,6 +58,26 @@ class CommandeControllerTest {
             ResponseEntity<CommandeDto> result = controller.createCommande(request);
 
             assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+            assertThat(result.getBody()).isSameAs(dto);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // getCommande
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetCommande {
+
+        @Test
+        void givenExistingCommande_whenGetCommande_thenReturns200WithCommande() {
+            UUID id = UUID.randomUUID();
+            CommandeSummaryDto dto = mock(CommandeSummaryDto.class);
+            when(commandeService.getCommande(id)).thenReturn(dto);
+
+            ResponseEntity<CommandeSummaryDto> result = controller.getCommande(id);
+
+            assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(result.getBody()).isSameAs(dto);
         }
     }

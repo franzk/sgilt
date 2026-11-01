@@ -2,6 +2,7 @@ package net.franzka.sgilt.core.evenement.billetterie.commande.mapper;
 
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
 import org.mapstruct.Mapper;
@@ -45,4 +46,13 @@ public interface CommandeMapper {
     @Mapping(target = "expiresAt",    source = "commande.expiresAt")
     @Mapping(target = "clientSecret", source = "clientSecret")
     CommandeDto toCommandeDto(Commande commande, String clientSecret);
+
+    /**
+     * Mappe une commande vers ce qu'en relit l'écran de confirmation.
+     *
+     * @param commande la commande
+     * @return la commande, avec son statut et son montant total
+     */
+    @Mapping(target = "totalCents", expression = "java(commande.getQuantity() * commande.getUnitPriceCents())")
+    CommandeSummaryDto toCommandeSummaryDto(Commande commande);
 }

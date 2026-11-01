@@ -6,9 +6,10 @@
  *  - commande, paiement : billetterie pas encore ouverte, fermée ou complète ;
  *  - commande : pas de commande en cours pour cet événement (« Acheter mes billets » pas cliqué) ;
  *  - paiement : commande pas validée sur l'écran de commande ;
- *  - confirmation : commande de cet événement pas payée, quel que soit
- *    l'état de la billetterie — l'acheteur de la dernière place voit sa confirmation d'un
- *    événement devenu complet ;
+ *  - confirmation : pas de commande dans l'URL (?commande=), quel que soit l'état de la
+ *    billetterie — l'acheteur de la dernière place voit sa confirmation d'un événement devenu
+ *    complet. Le statut vient du back (page), pas du sessionStorage : l'URL suffit, même après
+ *    la redirection 3D Secure ou dans un autre onglet ;
  *  - toute autre URL (inexistante, attrapée par /e/[slug]/[...path]).
  */
 import { loadPublicEvent } from '~/composables/usePublicEvent'
@@ -33,7 +34,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
       if (!canPurchase(ticketing) || stage !== 'ORDERED') return toEvent()
       return
     case 'e-slug-confirmation':
-      if (stage !== 'PAID') return toEvent()
+      if (typeof to.query.commande !== 'string' || !to.query.commande) return toEvent()
       return
     default:
       return toEvent()

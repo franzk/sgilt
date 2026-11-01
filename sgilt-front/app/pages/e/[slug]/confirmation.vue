@@ -1,75 +1,91 @@
 <!--
-  Étape 3 du parcours d'achat (/e/[slug]/confirmation) : confirmation de l'achat, récapitulatif
-  des billets et informations pratiques.
+  Étape 3 du parcours d'achat (/e/[slug]/confirmation?commande={id}) : confirmation de l'achat,
+  récapitulatif des billets et informations pratiques. La commande vient du back, relue toutes les
+  2 s tant qu'elle n'est pas payée : Stripe confirme le paiement par webhook, quelques secondes
+  après le retour du widget. Au bout de 30 s, un message rassurant remplace l'attente.
 -->
 <template>
   <div class="confirmation-page">
-    <div class="success-hero">
-      <span class="success-icon" aria-hidden="true">
-        <CheckboxCircleIcon />
-      </span>
-      <h1 class="success-title">{{ $t('ticketing.confirmation.title') }}</h1>
-      <p class="success-subtitle">{{ $t('ticketing.confirmation.subtitle') }}</p>
+    <div v-if="!paidCommande" class="pending-state" role="status">
+      <template v-if="pollTimedOut">
+        <span class="pending-icon" aria-hidden="true"><TimeIcon /></span>
+        <h1 class="pending-title">{{ $t('ticketing.confirmation.pending-timeout-title') }}</h1>
+        <p class="pending-subtitle">{{ $t('ticketing.confirmation.pending-timeout-subtitle') }}</p>
+      </template>
+      <template v-else>
+        <span class="spinner" aria-hidden="true" />
+        <h1 class="pending-title">{{ $t('ticketing.confirmation.pending-title') }}</h1>
+      </template>
     </div>
 
-    <TicketingEventRecap :event="event" />
-
-    <section class="tickets-card">
-      <div class="tickets-header">
-        <h2 class="tickets-title">{{ $t('ticketing.confirmation.tickets-title') }}</h2>
-        <span class="confirmed-badge">
-          <CheckIcon class="icon" />
-          {{ $t('ticketing.confirmation.confirmed-badge') }}
+    <template v-else>
+      <div class="success-hero">
+        <span class="success-icon" aria-hidden="true">
+          <CheckboxCircleIcon />
         </span>
+        <h1 class="success-title">{{ $t('ticketing.confirmation.title') }}</h1>
+        <p class="success-subtitle">{{ $t('ticketing.confirmation.subtitle') }}</p>
       </div>
-      <div class="tickets-row">
-        <span class="label">{{ $t('ticketing.confirmation.quantity-label') }}</span>
-        <span class="value">{{ order.quantity }}</span>
-      </div>
-      <div class="tickets-row">
-        <span class="label">{{ $t('ticketing.confirmation.unit-price-label') }}</span>
-        <span class="value">{{ unitPriceLabel }}</span>
-      </div>
-      <div class="total-row">
-        <span class="label">{{ $t('ticketing.event.total-label') }}</span>
-        <span class="value">{{ totalLabel }}</span>
-      </div>
-    </section>
 
-    <div class="email-notice">
-      <TicketIcon class="icon" />
-      <div>
-        <p class="notice-title">{{ $t('ticketing.confirmation.email-notice-title') }}</p>
-        <p class="notice-sub">{{ $t('ticketing.order.email-notice-sub') }}</p>
+      <TicketingEventRecap :event="event" />
+
+      <section class="tickets-card">
+        <div class="tickets-header">
+          <h2 class="tickets-title">{{ $t('ticketing.confirmation.tickets-title') }}</h2>
+          <span class="confirmed-badge">
+            <CheckIcon class="icon" />
+            {{ $t('ticketing.confirmation.confirmed-badge') }}
+          </span>
+        </div>
+        <div class="tickets-row">
+          <span class="label">{{ $t('ticketing.confirmation.quantity-label') }}</span>
+          <span class="value">{{ paidCommande.quantity }}</span>
+        </div>
+        <div class="tickets-row">
+          <span class="label">{{ $t('ticketing.confirmation.unit-price-label') }}</span>
+          <span class="value">{{ unitPriceLabel }}</span>
+        </div>
+        <div class="total-row">
+          <span class="label">{{ $t('ticketing.event.total-label') }}</span>
+          <span class="value">{{ totalLabel }}</span>
+        </div>
+      </section>
+
+      <div class="email-notice">
+        <TicketIcon class="icon" />
+        <div>
+          <p class="notice-title">{{ $t('ticketing.confirmation.email-notice-title') }}</p>
+          <p class="notice-sub">{{ $t('ticketing.order.email-notice-sub') }}</p>
+        </div>
       </div>
-    </div>
 
-    <button type="button" class="primary-cta" @click="onViewTickets">
-      <TicketIcon class="icon" />
-      {{ $t('ticketing.confirmation.view-tickets') }}
-      <ArrowRightSIcon class="chevron" aria-hidden="true" />
-    </button>
+      <button type="button" class="primary-cta" @click="onViewTickets">
+        <TicketIcon class="icon" />
+        {{ $t('ticketing.confirmation.view-tickets') }}
+        <ArrowRightSIcon class="chevron" aria-hidden="true" />
+      </button>
 
-    <button type="button" class="secondary-cta" @click="onAddToCalendar">
-      <CalendarEventIcon class="icon" />
-      {{ $t('ticketing.confirmation.add-to-calendar') }}
-      <ArrowRightSIcon class="chevron" aria-hidden="true" />
-    </button>
+      <button type="button" class="secondary-cta" @click="onAddToCalendar">
+        <CalendarEventIcon class="icon" />
+        {{ $t('ticketing.confirmation.add-to-calendar') }}
+        <ArrowRightSIcon class="chevron" aria-hidden="true" />
+      </button>
 
-    <div v-if="event.practicalInfo.length" class="practical-info">
-      <span class="info-badge" aria-hidden="true"><InformationIcon /></span>
-      <div>
-        <p class="info-title">{{ $t('ticketing.confirmation.practical-info-title') }}</p>
-        <ul>
-          <li v-for="line in event.practicalInfo" :key="line">{{ line }}</li>
-        </ul>
+      <div v-if="event.practicalInfo.length" class="practical-info">
+        <span class="info-badge" aria-hidden="true"><InformationIcon /></span>
+        <div>
+          <p class="info-title">{{ $t('ticketing.confirmation.practical-info-title') }}</p>
+          <ul>
+            <li v-for="line in event.practicalInfo" :key="line">{{ line }}</li>
+          </ul>
+        </div>
       </div>
-    </div>
 
-    <NuxtLink :to="`/e/${slug}`" class="secondary-cta back-link">
-      <ArrowLeftSIcon class="icon" aria-hidden="true" />
-      {{ $t('ticketing.confirmation.back-to-event') }}
-    </NuxtLink>
+      <NuxtLink :to="`/e/${slug}`" class="secondary-cta back-link">
+        <ArrowLeftSIcon class="icon" aria-hidden="true" />
+        {{ $t('ticketing.confirmation.back-to-event') }}
+      </NuxtLink>
+    </template>
   </div>
 </template>
 
@@ -83,10 +99,13 @@ import {
   InformationIcon,
   ArrowLeftSIcon,
   ArrowRightSIcon,
+  TimeIcon,
 } from '@remixicons/vue/line'
 import { usePublicEvent } from '~/composables/usePublicEvent'
-import { useTicketOrder } from '~/composables/useTicketOrder'
+import { getCommande, isCommandeNotFound } from '~/data/ticketing/service/commandeService'
+import type { CommandeSummary } from '~/data/ticketing/domain/Commande'
 import { buildIcsEvent, downloadIcs } from '~/utils/icsUtils'
+import { formatPrice } from '~/utils/priceUtils'
 
 definePageMeta({ middleware: 'ticketing' })
 
@@ -94,9 +113,53 @@ const { t } = useI18n()
 const route = useRoute()
 const slug = String(route.params.slug)
 const event = await usePublicEvent(slug)
-const { order, unitPriceLabel, totalLabel } = useTicketOrder(slug, event.ticketing)
+// Garanti non vide par le middleware `ticketing`.
+const commandeId = String(route.query.commande)
 
 useHead({ title: `${t('ticketing.confirmation.title')} · ${event.title}` })
+
+// ── Attente du paiement ──
+const POLL_INTERVAL_MS = 2000
+const POLL_TIMEOUT_MS = 30000
+
+// La commande, une fois payée ; null tant qu'elle ne l'est pas.
+const paidCommande = ref<CommandeSummary | null>(null)
+const pollTimedOut = ref(false)
+let pollTimer: ReturnType<typeof setTimeout> | undefined
+let pollStartedAt = 0
+
+// Relit la commande jusqu'à PAID, ou jusqu'au délai d'attente. Une erreur passagère ne coupe pas
+// l'attente ; une commande inconnue renvoie à la fiche de l'événement.
+async function pollCommande(): Promise<void> {
+  try {
+    const commande = await getCommande(commandeId)
+    if (commande.status === 'PAID') {
+      paidCommande.value = commande
+      return
+    }
+  } catch (error) {
+    if (isCommandeNotFound(error)) {
+      await navigateTo(`/e/${slug}`, { replace: true })
+      return
+    }
+  }
+  if (Date.now() - pollStartedAt >= POLL_TIMEOUT_MS) {
+    pollTimedOut.value = true
+    return
+  }
+  pollTimer = setTimeout(pollCommande, POLL_INTERVAL_MS)
+}
+
+onMounted(() => {
+  pollStartedAt = Date.now()
+  pollCommande()
+})
+
+onBeforeUnmount(() => clearTimeout(pollTimer))
+
+// Montants de la commande payée, convertis en euros pour l'affichage seulement.
+const unitPriceLabel = computed(() => formatPrice((paidCommande.value?.unitPriceCents ?? 0) / 100))
+const totalLabel = computed(() => formatPrice((paidCommande.value?.totalCents ?? 0) / 100))
 
 // Pas de vrais billets (wallet, QR code) pour l'instant.
 function onViewTickets(): void {
@@ -130,6 +193,64 @@ function onAddToCalendar(): void {
   display: flex;
   flex-direction: column;
   gap: $spacing-l;
+}
+
+// ─── Attente du paiement ──────────────────────────────────────────────────────
+.pending-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-s;
+  text-align: center;
+  padding: $spacing-xl 0;
+
+  .spinner {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 3px solid $brand-primary;
+    border-top-color: transparent;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: $spacing-xs;
+  }
+
+  .pending-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    background: $surface-soft;
+    color: $brand-primary;
+    margin-bottom: $spacing-xs;
+
+    svg {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+  }
+
+  .pending-title {
+    margin: 0;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+  }
+
+  .pending-subtitle {
+    margin: 0;
+    max-width: 26rem;
+    font-size: $font-size-md;
+    line-height: $line-height-relaxed;
+    color: $text-secondary;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 // ─── Bloc succès ──────────────────────────────────────────────────────────────

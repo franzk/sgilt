@@ -1567,6 +1567,9 @@
       }
     },
     "confirmation": {
+      "pending-title": "Confirmation de votre paiement…",
+      "pending-timeout-title": "Votre paiement est en cours de confirmation",
+      "pending-timeout-subtitle": "La confirmation peut prendre quelques minutes. Rechargez la page dans un instant pour voir vos billets.",
       "title": "C'est confirmé !",
       "subtitle": "Vos billets ont bien été réservés et vous allez recevoir un e-mail avec tous les détails.",
       "tickets-title": "Vos billets",

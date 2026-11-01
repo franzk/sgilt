@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.CommandeStatus;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.CommandeNotFoundException;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.NotEnoughTicketsException;
@@ -69,6 +70,17 @@ public class CommandeService {
     }
 
     /**
+     * Relit une commande, pour l'écran de confirmation.
+     *
+     * @param commandeId l'identifiant de la commande
+     * @return la commande, avec son statut et son montant total
+     * @throws CommandeNotFoundException si la commande est introuvable
+     */
+    public CommandeSummaryDto getCommande(UUID commandeId) {
+        return commandeMapper.toCommandeSummaryDto(findCommande(commandeId));
+    }
+
+    /**
      * Marque une commande payée, à la réception du paiement confirmé par Stripe. Idempotent : Stripe
      * peut envoyer le même événement plusieurs fois, une commande déjà payée reste telle quelle. Une
      * commande expirée est marquée payée elle aussi : le paiement a bien eu lieu.
@@ -77,14 +89,17 @@ public class CommandeService {
      * @throws CommandeNotFoundException si la commande est introuvable
      */
     public void markPaid(UUID commandeId) {
-        Commande commande = commandeRepository.findById(commandeId)
-                .orElseThrow(() -> new CommandeNotFoundException(commandeId));
+        Commande commande = findCommande(commandeId);
         if (commande.getStatus() == CommandeStatus.PAID) {
             log.info("Commande déjà payée, rien à faire — commandeId={}", commandeId);
             return;
         }
         commande.setStatus(CommandeStatus.PAID);
         commandeRepository.save(commande);
+    }
+
+    private Commande findCommande(UUID commandeId) {
+        return commandeRepository.findById(commandeId).orElseThrow(() -> new CommandeNotFoundException(commandeId));
     }
 
     // Crée le PaymentIntent de la commande, au montant de la commande ; renvoie son secret client.

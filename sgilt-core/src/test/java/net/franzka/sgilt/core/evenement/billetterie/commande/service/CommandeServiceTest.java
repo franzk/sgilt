@@ -3,6 +3,7 @@ package net.franzka.sgilt.core.evenement.billetterie.commande.service;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.CommandeStatus;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.CommandeNotFoundException;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.NotEnoughTicketsException;
@@ -149,6 +150,34 @@ class CommandeServiceTest {
                     .isInstanceOf(NotEnoughTicketsException.class);
             verify(commandeRepository, never()).save(any());
             verify(payClient, never()).createPaymentIntent(any());
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // getCommande
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetCommande {
+
+        private final UUID commandeId = UUID.randomUUID();
+
+        @Test
+        void givenExistingCommande_whenGetCommande_thenReturnsItsSummary() {
+            Commande commande = Commande.builder().id(commandeId).build();
+            CommandeSummaryDto dto = mock(CommandeSummaryDto.class);
+            when(commandeRepository.findById(commandeId)).thenReturn(Optional.of(commande));
+            when(commandeMapper.toCommandeSummaryDto(commande)).thenReturn(dto);
+
+            assertThat(commandeService.getCommande(commandeId)).isSameAs(dto);
+        }
+
+        @Test
+        void givenUnknownCommande_whenGetCommande_thenThrowsCommandeNotFoundException() {
+            when(commandeRepository.findById(commandeId)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> commandeService.getCommande(commandeId))
+                    .isInstanceOf(CommandeNotFoundException.class);
         }
     }
 

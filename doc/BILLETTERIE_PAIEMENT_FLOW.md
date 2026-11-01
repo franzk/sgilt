@@ -12,7 +12,7 @@
 | 1a     | `sgilt-pay` crée le PaymentIntent Stripe, le core renvoie son secret client au front      | Fait (2026-10-31)     |
 | 1b     | Payment Element Stripe dans l'écran de paiement, confirmation du paiement depuis le front | Fait (2026-10-31)     |
 | 2      | Webhook Stripe → `sgilt-pay` → RabbitMQ (queue `payment.succeeded`) → le core passe la commande `PAID` | Réception (2a) et passage `PAID` (2b) faits ; commande expirée (2c) à venir |
-| 3      | `GET /commandes/{id}` et écran de confirmation sans état front                            | À venir               |
+| 3      | `GET /commandes/{id}` et écran de confirmation sans état front                            | Fait (2026-11-01)     |
 
 Composants :
 
@@ -45,7 +45,7 @@ stateDiagram-v2
 |---------------------------|---------------------------------------------------------|
 | `/e/[slug]/commande`      | billetterie achetable **et** étape `STARTED` ou `ORDERED` |
 | `/e/[slug]/paiement`      | billetterie achetable **et** étape `ORDERED`            |
-| `/e/[slug]/confirmation`  | étape `PAID` (même si l'événement est devenu complet)   |
+| `/e/[slug]/confirmation`  | `?commande={id}` dans l'URL, quelle que soit l'étape (même si l'événement est devenu complet) |
 
 L'écran de commande ne crée rien côté back : la commande n'existe qu'au clic sur « Payer ».
 
@@ -100,6 +100,32 @@ sequenceDiagram
     Front->>Front: markPaid()
     Front->>Acheteur: /e/[slug]/confirmation?commande={id}
 ```
+
+### Écran de confirmation (brique 3)
+
+Le statut vient du back, pas du sessionStorage : l'URL suffit, même au retour d'une redirection
+(`return_url`) ou dans un autre onglet. Stripe confirme le paiement au front avant le webhook : la
+commande peut encore être `PENDING` à l'arrivée sur l'écran.
+
+```mermaid
+sequenceDiagram
+    participant Front as sgilt-front (confirmation)
+    participant Core as sgilt-core
+
+    loop toutes les 2 s, 30 s au plus
+        Front->>Core: GET /api/v1/commandes/{id}
+        Core-->>Front: { id, status, quantity, unitPriceCents, totalCents }
+    end
+    alt PAID
+        Front->>Front: confirmation (billets, montants de la commande)
+    else toujours PENDING au bout de 30 s
+        Front->>Front: « la confirmation peut prendre quelques minutes, rechargez la page »
+    else 404
+        Front->>Front: retour à la fiche de l'événement
+    end
+```
+
+Une erreur passagère (réseau, 5xx) ne coupe pas l'attente.
 
 ### Points clés
 
@@ -181,16 +207,6 @@ sequenceDiagram
   peut réessayer sur le même PaymentIntent) et l'abandon n'émet aucun événement. Libérer plus tôt
   voudra dire annuler nous-mêmes le PaymentIntent (commande remplacée par un nouvel essai, ou
   expirée), et passer la commande `CANCELLED`.
-
-### Brique 3 — confirmation sans état front
-
-- `GET /api/v1/commandes/{id}` : statut de la commande.
-- L'écran de confirmation lit l'id dans l'URL (`?commande={id}`) et le statut côté back, sans
-  dépendre du sessionStorage : indispensable dès qu'un moyen de paiement redirige (la page est
-  rechargée au retour de `return_url`). Le middleware `ticketing` devra laisser passer la
-  confirmation avec seulement `?commande=`.
-- Tant que le webhook n'est pas arrivé, la commande peut encore être `PENDING` : l'écran
-  interroge le back jusqu'à `PAID`.
 
 ---
 

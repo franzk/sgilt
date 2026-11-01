@@ -2,9 +2,9 @@
  * Couche service — orchestration des appels API des commandes de billets
  */
 import { FetchError } from 'ofetch'
-import { createCommandeApi } from '../api/commandeApi'
-import { mapCommande } from '../mapper/commandeMapper'
-import type { Commande, CommandeFailure } from '../domain/Commande'
+import { createCommandeApi, getCommandeApi } from '../api/commandeApi'
+import { mapCommande, mapCommandeSummary } from '../mapper/commandeMapper'
+import type { Commande, CommandeFailure, CommandeSummary } from '../domain/Commande'
 import type { TicketBuyer } from '~/composables/useTicketOrder'
 
 /**
@@ -21,6 +21,20 @@ export async function createCommande(slug: string, quantity: number, buyer: Tick
       email: buyer.email.trim(),
     }),
   )
+}
+
+/**
+ * Relit une commande, avec son statut : PAID dès que le back a reçu la confirmation du paiement.
+ */
+export async function getCommande(id: string): Promise<CommandeSummary> {
+  return mapCommandeSummary(await getCommandeApi(id))
+}
+
+/**
+ * Commande inconnue du back (404) : l'URL de confirmation ne désigne aucune commande.
+ */
+export function isCommandeNotFound(error: unknown): boolean {
+  return error instanceof FetchError && error.statusCode === 404
 }
 
 /**

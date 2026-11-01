@@ -18,3 +18,12 @@ export interface CommandeDto {
   // Secret client du PaymentIntent de la commande, passé à Stripe.js pour confirmer le paiement.
   clientSecret: string
 }
+
+// Commande relue (GET /commandes/{id}), pour l'écran de confirmation.
+export interface CommandeSummaryDto {
+  id: string
+  status: 'PENDING' | 'PAID' | 'CANCELLED'
+  quantity: number
+  unitPriceCents: number
+  totalCents: number
+}

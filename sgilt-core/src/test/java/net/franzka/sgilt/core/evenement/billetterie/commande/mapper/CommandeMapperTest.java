@@ -3,6 +3,7 @@ package net.franzka.sgilt.core.evenement.billetterie.commande.mapper;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.CommandeStatus;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
 import org.junit.jupiter.api.Nested;
@@ -62,6 +63,24 @@ class CommandeMapperTest {
 
             assertThat(mapper.toCommandeDto(commande, "pi_123_secret_456"))
                     .isEqualTo(new CommandeDto(id, 3, 3600, expiresAt, "pi_123_secret_456"));
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // toCommandeSummaryDto
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ToCommandeSummaryDto {
+
+        @Test
+        void givenCommande_whenToCommandeSummaryDto_thenMapsItWithStatusAndTotal() {
+            UUID id = UUID.randomUUID();
+            Commande commande = Commande.builder()
+                    .id(id).status(CommandeStatus.PAID).quantity(3).unitPriceCents(1200).build();
+
+            assertThat(mapper.toCommandeSummaryDto(commande))
+                    .isEqualTo(new CommandeSummaryDto(id, CommandeStatus.PAID, 3, 1200, 3600));
         }
     }
 }
