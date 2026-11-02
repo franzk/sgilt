@@ -14,51 +14,61 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Rate limiter à fenêtre fixe, scopé aux deux entrées d'init-onboarding — {@code POST
- * /api/v1/onboarding} (événement complet) et {@code POST /api/v1/onboarding/demande} (demande
- * unique), qui partagent le même compteur — et pas aux autres routes du préfixe
- * {@code /api/v1/onboarding/**} (verify, confirm-account).
- * Rejette en {@code 429} avant tout appel au routing vers sgilt-core : en cas de dépassement,
- * aucune requête n'atteint le backend, donc aucun effet de bord (ligne DB, envoi d'email).
+ * Rate limiter par IP à fenêtre fixe, qui applique les règles de {@link RateLimitRules} : chaque
+ * règle a ses propres compteurs, une requête qui ne tombe sous aucune règle passe sans compter.
+ * Rejette en {@code 429} avant tout appel au routing vers le backend : en cas de dépassement,
+ * aucune requête ne l'atteint, donc aucun effet de bord (ligne DB, envoi d'email, PaymentIntent).
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class InitOnboardingRateLimitFilter extends OncePerRequestFilter {
+public class RateLimitFilter extends OncePerRequestFilter {
 
-    private static final Set<String> LIMITED_PATHS = Set.of("/api/v1/onboarding", "/api/v1/onboarding/demande");
-    private static final int MAX_REQUESTS_PER_WINDOW = 5;
-    private static final Duration WINDOW_DURATION = Duration.ofMinutes(10);
+    private final List<RateLimitRule> rules;
+    private final Map<CounterKey, WindowCounter> counters = new ConcurrentHashMap<>();
 
-    private final Map<String, WindowCounter> counters = new ConcurrentHashMap<>();
+    private record CounterKey(RateLimitRule rule, String ip) {}
 
     private record WindowCounter(Instant windowStart, int count) {}
 
+    /**
+     * Construit le filtre avec les règles de {@link RateLimitRules}.
+     */
+    public RateLimitFilter() {
+        this(RateLimitRules.RULES);
+    }
+
+    // règles fournies par les tests
+    RateLimitFilter(List<RateLimitRule> rules) {
+        this.rules = rules;
+    }
+
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        return !("POST".equalsIgnoreCase(request.getMethod()) && LIMITED_PATHS.contains(request.getRequestURI()));
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
+        return rules.stream().noneMatch(rule -> rule.matches(request));
     }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        String key = clientKey(request);
+        RateLimitRule rule = rules.stream().filter(r -> r.matches(request)).findFirst().orElseThrow();
+        Duration window = rule.window();
         Instant now = Instant.now();
 
-        WindowCounter updated = counters.compute(key, (k, existing) -> {
-            if (existing == null || Duration.between(existing.windowStart(), now).compareTo(WINDOW_DURATION) >= 0) {
+        WindowCounter updated = counters.compute(new CounterKey(rule, clientIp(request)), (_, existing) -> {
+            if (existing == null || Duration.between(existing.windowStart(), now).compareTo(window) >= 0) {
                 return new WindowCounter(now, 1);
             }
             return new WindowCounter(existing.windowStart(), existing.count() + 1);
         });
 
-        if (updated.count() > MAX_REQUESTS_PER_WINDOW) {
-            long retryAfterSeconds = WINDOW_DURATION.minus(Duration.between(updated.windowStart(), now)).toSeconds();
+        if (updated.count() > rule.maxRequests()) {
+            long retryAfterSeconds = window.minus(Duration.between(updated.windowStart(), now)).toSeconds();
             response.setStatus(429);
             response.setHeader("Retry-After", String.valueOf(Math.max(retryAfterSeconds, 1)));
             return;
@@ -70,12 +80,12 @@ public class InitOnboardingRateLimitFilter extends OncePerRequestFilter {
     // nginx résout l'IP réelle via le module real_ip (Cloudflare CF-Connecting-IP) et la
     // transmet en X-Real-IP — seul hop de confiance entre le client et cette gateway, donc
     // source fiable pour la clé (X-Forwarded-For serait falsifiable par le client avant nginx).
-    private String clientKey(HttpServletRequest request) {
+    private String clientIp(HttpServletRequest request) {
         String ip = request.getHeader("X-Real-IP");
         if (ip == null || ip.isBlank()) {
             ip = request.getRemoteAddr();
         }
-        return ip + ":init-onboarding";
+        return ip;
     }
 
     /**
@@ -85,6 +95,6 @@ public class InitOnboardingRateLimitFilter extends OncePerRequestFilter {
     void cleanupExpiredWindows() {
         Instant now = Instant.now();
         counters.entrySet().removeIf(entry ->
-                Duration.between(entry.getValue().windowStart(), now).compareTo(WINDOW_DURATION) >= 0);
+                Duration.between(entry.getValue().windowStart(), now).compareTo(entry.getKey().rule().window()) >= 0);
     }
 }

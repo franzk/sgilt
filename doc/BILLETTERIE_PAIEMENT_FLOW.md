@@ -232,12 +232,14 @@ sequenceDiagram
 
 ### Sécurité (avant la prod)
 
-- **Anti-abus sur `POST /api/v1/commandes`** : l'endpoint est public et sans limite, n'importe qui
-  peut bloquer toutes les places 10 minutes sans payer (la quantité n'est contrôlée que par
-  `@Positive`) et créer des PaymentIntents en masse. À faire :
-  - limite de requêtes par IP dans la gateway, sur le modèle d'`InitOnboardingRateLimitFilter`
-    (IP réelle via `X-Real-IP`) ;
-  - plafond de quantité par commande (ex. 10 billets), côté core et côté front.
+- **Anti-abus sur `POST /api/v1/commandes`** : l'endpoint est public, n'importe qui peut bloquer
+  des places 10 minutes sans payer et créer des PaymentIntents en masse.
+  - Fait : limite de **20 commandes par IP sur 10 minutes** dans la gateway (`RateLimitFilter`,
+    règle `COMMANDES` de `RateLimitRules`, IP réelle via `X-Real-IP`) ; au-delà, 429 avant le core,
+    message « trop de tentatives » côté front. Limite large : réessais après une carte refusée,
+    acheteurs derrière la même IP le soir de l'événement. Le `GET` de la confirmation n'est pas
+    limité.
+  - À faire : plafond de quantité par commande (ex. 10 billets), côté core et côté front.
 
 - **Clé restreinte** : en prod, `STRIPE_SECRET_KEY` reçoit une clé restreinte (`rk_live_…`) limitée
   aux PaymentIntents (écriture) et à ce que lit le webhook, plutôt que la clé secrète complète. Une

@@ -25,5 +25,6 @@ export interface CommandeSummary {
 }
 
 // Motif d'échec de la création d'une commande (suffixe de la clé i18n ticketing.payment.errors.*) :
-// plus assez de places, billetterie plus ouverte (ou événement introuvable), erreur technique.
-export type CommandeFailure = 'NOT_ENOUGH_TICKETS' | 'UNAVAILABLE' | 'TECHNICAL'
+// plus assez de places, billetterie plus ouverte (ou événement introuvable), trop de tentatives
+// (limite de débit de la gateway), erreur technique.
+export type CommandeFailure = 'NOT_ENOUGH_TICKETS' | 'UNAVAILABLE' | 'TOO_MANY_ATTEMPTS' | 'TECHNICAL'

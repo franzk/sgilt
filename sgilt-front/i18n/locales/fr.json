@@ -1563,6 +1563,7 @@
       "errors": {
         "NOT_ENOUGH_TICKETS": "Il ne reste plus assez de places pour ce nombre de billets.",
         "UNAVAILABLE": "La billetterie de cet événement n'est plus ouverte.",
+        "TOO_MANY_ATTEMPTS": "Trop de tentatives en peu de temps. Merci de réessayer dans quelques minutes.",
         "TECHNICAL": "Une erreur est survenue, merci de réessayer."
       }
     },

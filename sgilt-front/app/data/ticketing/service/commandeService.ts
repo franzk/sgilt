@@ -39,12 +39,13 @@ export function isCommandeNotFound(error: unknown): boolean {
 
 /**
  * Motif d'échec de la création d'une commande. Le back répond sans corps : 409 = plus assez de
- * places, 400 = billetterie pas ouverte, 404 = événement ou billetterie introuvable ; toute autre
- * erreur est TECHNICAL.
+ * places, 400 = billetterie pas ouverte, 404 = événement ou billetterie introuvable, 429 = trop de
+ * commandes depuis cette IP (gateway) ; toute autre erreur est TECHNICAL.
  */
 export function toCommandeFailure(error: unknown): CommandeFailure {
   if (!(error instanceof FetchError)) return 'TECHNICAL'
   if (error.statusCode === 409) return 'NOT_ENOUGH_TICKETS'
   if (error.statusCode === 400 || error.statusCode === 404) return 'UNAVAILABLE'
+  if (error.statusCode === 429) return 'TOO_MANY_ATTEMPTS'
   return 'TECHNICAL'
 }
