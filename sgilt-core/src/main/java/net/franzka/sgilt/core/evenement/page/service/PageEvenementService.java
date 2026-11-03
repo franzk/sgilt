@@ -107,6 +107,16 @@ public class PageEvenementService {
     }
 
     /**
+     * Retourne le slug de la page d'un événement (/e/{slug}).
+     *
+     * @param evenement l'événement
+     * @return le slug, ou vide si l'événement n'a pas de page
+     */
+    public Optional<String> getSlug(Evenement evenement) {
+        return pageEvenementRepository.findByEvenementId(evenement.getId()).map(PageEvenement::getSlug);
+    }
+
+    /**
      * Retourne le slug de la page de chaque événement qui en a une.
      *
      * @return les slugs, par identifiant d'événement

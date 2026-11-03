@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -108,19 +109,22 @@ public class CommandeService {
      * passage PAID tire le code d'entrée de la commande (contenu de son QR).
      *
      * @param commandeId l'identifiant de la commande
+     * @return la commande, si elle vient de passer payée ; vide si elle l'était déjà (événement
+     *         rejoué), pour que l'appelant n'agisse qu'une fois (e-billet à l'acheteur)
      * @throws CommandeNotFoundException si la commande est introuvable
      */
-    public void markPaid(UUID commandeId) {
+    public Optional<Commande> markPaid(UUID commandeId) {
         Commande commande = findCommande(commandeId);
         if (commande.getStatus() == CommandeStatus.PAID) {
             log.info("Commande déjà payée, rien à faire — commandeId={}", commandeId);
-            return;
+            return Optional.empty();
         }
         int soldTickets = paidTickets(commande.getBilletterie()) + commande.getQuantity();
         commande.setStatus(CommandeStatus.PAID);
         commande.setCode(EntryCodeUtils.newCode());
         commandeRepository.save(commande);
         alertIfOversold(commande, soldTickets);
+        return Optional.of(commande);
     }
 
     // Survente : les places payées, cette commande comprise, dépassent la jauge.

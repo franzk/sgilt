@@ -176,6 +176,31 @@ class PageEvenementServiceTest {
     }
 
     // -------------------------------------------------------------------------
+    // getSlug
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetSlug {
+
+        private final Evenement evenement = Evenement.builder().id(EVENEMENT_ID).build();
+
+        @Test
+        void givenEventWithPage_whenGetSlug_thenReturnsSlugOfItsPage() {
+            PageEvenement page = PageEvenement.builder().evenement(evenement).slug("jeudis-taennel").build();
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(page));
+
+            assertThat(pageEvenementService.getSlug(evenement)).contains("jeudis-taennel");
+        }
+
+        @Test
+        void givenEventWithoutPage_whenGetSlug_thenReturnsEmpty() {
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.empty());
+
+            assertThat(pageEvenementService.getSlug(evenement)).isEmpty();
+        }
+    }
+
+    // -------------------------------------------------------------------------
     // getEvenementIdBySlug
     // -------------------------------------------------------------------------
 

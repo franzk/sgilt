@@ -242,10 +242,10 @@ class CommandeServiceTest {
         }
 
         @Test
-        void givenPendingCommande_whenMarkPaid_thenSavesItPaidWithEntryCode() {
+        void givenPendingCommande_whenMarkPaid_thenSavesItPaidWithEntryCodeAndReturnsIt() {
             Commande commande = givenPendingCommande(List.of(3));
 
-            commandeService.markPaid(commandeId);
+            assertThat(commandeService.markPaid(commandeId)).containsSame(commande);
 
             assertThat(commande.getStatus()).isEqualTo(CommandeStatus.PAID);
             assertThat(commande.getCode()).matches("[A-Za-z0-9_-]{22}");
@@ -273,11 +273,11 @@ class CommandeServiceTest {
         }
 
         @Test
-        void givenAlreadyPaidCommande_whenMarkPaid_thenSavesNothing() {
+        void givenAlreadyPaidCommande_whenMarkPaid_thenSavesNothingAndReturnsEmpty() {
             Commande commande = Commande.builder().id(commandeId).status(CommandeStatus.PAID).build();
             when(commandeRepository.findById(commandeId)).thenReturn(Optional.of(commande));
 
-            commandeService.markPaid(commandeId);
+            assertThat(commandeService.markPaid(commandeId)).isEmpty();
 
             assertThat(commande.getStatus()).isEqualTo(CommandeStatus.PAID);
             verify(commandeRepository, never()).save(any());

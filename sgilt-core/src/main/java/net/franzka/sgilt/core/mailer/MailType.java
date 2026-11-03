@@ -49,5 +49,11 @@ public enum MailType {
      * Alerte envoyée à l'équipe Sgilt quand un paiement fait dépasser la jauge d'une billetterie
      * (paiement arrivé après l'expiration du blocage de ses places, reprises entre-temps).
      */
-    ADMIN_OVERSOLD_ALERT_EMAIL
+    ADMIN_OVERSOLD_ALERT_EMAIL,
+
+    /**
+     * Mail envoyé à l'acheteur quand sa commande de places vient d'être payée : le lien vers son
+     * e-billet (un seul QR, valable pour toutes ses places).
+     */
+    COMMANDE_E_BILLET_EMAIL
 }
