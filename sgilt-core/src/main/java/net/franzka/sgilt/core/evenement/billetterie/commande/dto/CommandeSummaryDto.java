@@ -5,12 +5,12 @@ import net.franzka.sgilt.core.evenement.billetterie.commande.domain.CommandeStat
 import java.util.UUID;
 
 /**
- * Commande de billets telle que relue par l'écran de confirmation. Sans donnée de l'acheteur :
+ * Commande de places telle que relue par l'écran de confirmation. Sans donnée de l'acheteur :
  * l'identifiant de la commande suffit à la lire.
  *
  * @param id             l'identifiant de la commande
  * @param status         son statut (PAID une fois le paiement confirmé par Stripe)
- * @param quantity       le nombre de billets
+ * @param quantity       le nombre de places
  * @param unitPriceCents le prix d'un billet à la commande, en centimes d'euro
  * @param totalCents     le montant total, en centimes d'euro
  */

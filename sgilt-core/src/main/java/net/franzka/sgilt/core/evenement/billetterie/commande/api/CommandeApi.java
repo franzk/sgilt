@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.EBilletDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,4 +22,7 @@ public interface CommandeApi {
 
     @GetMapping("{id}")
     ResponseEntity<CommandeSummaryDto> getCommande(@PathVariable UUID id);
+
+    @GetMapping("{id}/e-billet")
+    ResponseEntity<EBilletDto> getEBillet(@PathVariable UUID id);
 }

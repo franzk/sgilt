@@ -10,6 +10,7 @@ import net.franzka.sgilt.core.evenement.page.domain.PageEvenementPicto;
 import net.franzka.sgilt.core.evenement.page.dto.AdminPageDto;
 import net.franzka.sgilt.core.evenement.page.dto.AdminEventPublicFormDto;
 import net.franzka.sgilt.core.evenement.page.dto.EventPageDto;
+import net.franzka.sgilt.core.evenement.page.dto.PracticalInfoDto;
 import net.franzka.sgilt.core.evenement.page.exception.BilletterieWithoutPageException;
 import net.franzka.sgilt.core.evenement.page.exception.PageEvenementNotFoundException;
 import net.franzka.sgilt.core.evenement.page.exception.PageSlugAlreadyUsedException;
@@ -137,6 +138,40 @@ class PageEvenementServiceTest {
 
             assertThatThrownBy(() -> pageEvenementService.getPublicPage("inconnu"))
                     .isInstanceOf(PageEvenementNotFoundException.class);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // getPracticalInfo
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetPracticalInfo {
+
+        private final Evenement evenement = Evenement.builder()
+                .id(EVENEMENT_ID).date(DATE).startTime(LocalTime.of(19, 0)).endTime(LocalTime.of(2, 0)).build();
+
+        @Test
+        void givenEventWithPage_whenGetPracticalInfo_thenMapsHoursAndLinesOfItsPage() {
+            PageEvenement page = PageEvenement.builder().evenement(evenement).practicalInfo(List.of("Vestiaire")).build();
+            PracticalInfoDto dto = mock(PracticalInfoDto.class);
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(page));
+            when(pageEvenementMapper.toPracticalInfoDto(evenement,
+                    LocalDateTime.of(2026, 3, 12, 19, 0), LocalDateTime.of(2026, 3, 13, 2, 0), List.of("Vestiaire")))
+                    .thenReturn(dto);
+
+            assertThat(pageEvenementService.getPracticalInfo(evenement)).isSameAs(dto);
+        }
+
+        @Test
+        void givenEventWithoutPage_whenGetPracticalInfo_thenMapsNoLines() {
+            PracticalInfoDto dto = mock(PracticalInfoDto.class);
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.empty());
+            when(pageEvenementMapper.toPracticalInfoDto(evenement,
+                    LocalDateTime.of(2026, 3, 12, 19, 0), LocalDateTime.of(2026, 3, 13, 2, 0), List.of()))
+                    .thenReturn(dto);
+
+            assertThat(pageEvenementService.getPracticalInfo(evenement)).isSameAs(dto);
         }
     }
 

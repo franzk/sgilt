@@ -9,6 +9,7 @@ import net.franzka.sgilt.core.evenement.page.domain.PageEvenement;
 import net.franzka.sgilt.core.evenement.page.dto.AdminPageDto;
 import net.franzka.sgilt.core.evenement.page.dto.AdminEventPublicFormDto;
 import net.franzka.sgilt.core.evenement.page.dto.EventPageDto;
+import net.franzka.sgilt.core.evenement.page.dto.PracticalInfoDto;
 import net.franzka.sgilt.core.evenement.page.exception.BilletterieWithoutPageException;
 import net.franzka.sgilt.core.evenement.page.exception.PageEvenementNotFoundException;
 import net.franzka.sgilt.core.evenement.page.exception.PageSlugAlreadyUsedException;
@@ -49,6 +50,21 @@ public class PageEvenementService {
         TicketingDto ticketing = billetterieService.getPublicTicketing(evenement.getId()).orElse(null);
         LocalDateTime startsAt = startsAt(evenement);
         return pageEvenementMapper.toEventPageDto(page, ticketing, startsAt, endsAt(evenement, startsAt));
+    }
+
+    /**
+     * Retourne les infos pratiques d'un événement : sa date, ses horaires, son lieu, et les infos
+     * pratiques saisies sur sa page (aucune s'il n'a pas de page).
+     *
+     * @param evenement l'événement
+     * @return les infos pratiques
+     */
+    public PracticalInfoDto getPracticalInfo(Evenement evenement) {
+        List<String> lines = pageEvenementRepository.findByEvenementId(evenement.getId())
+                .map(PageEvenement::getPracticalInfo)
+                .orElse(List.of());
+        LocalDateTime startsAt = startsAt(evenement);
+        return pageEvenementMapper.toPracticalInfoDto(evenement, startsAt, endsAt(evenement, startsAt), lines);
     }
 
     /**

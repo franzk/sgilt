@@ -1,16 +1,19 @@
 package net.franzka.sgilt.core.evenement.billetterie.commande.mapper;
 
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
+import net.franzka.sgilt.core.evenement.billetterie.commande.domain.EntryCodeUtils;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.EBilletDto;
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
+import net.franzka.sgilt.core.evenement.page.dto.PracticalInfoDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.time.LocalDateTime;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", imports = EntryCodeUtils.class)
 public interface CommandeMapper {
 
     /**
@@ -31,6 +34,7 @@ public interface CommandeMapper {
     @Mapping(target = "buyerEmail",     source = "request.email")
     @Mapping(target = "status",         constant = "PENDING")
     @Mapping(target = "expiresAt",      source = "expiresAt")
+    @Mapping(target = "code",           ignore = true)
     Commande toCommande(CreateCommandeRequest request, Billetterie billetterie, LocalDateTime expiresAt);
 
     /**
@@ -55,4 +59,19 @@ public interface CommandeMapper {
      */
     @Mapping(target = "totalCents", expression = "java(commande.getQuantity() * commande.getUnitPriceCents())")
     CommandeSummaryDto toCommandeSummaryDto(Commande commande);
+
+    /**
+     * Mappe une commande payée vers son e-billet.
+     *
+     * @param commande      la commande payée, avec sa billetterie et son événement
+     * @param practicalInfo les infos pratiques de l'événement
+     * @return l'événement, ses infos pratiques, le nombre de places et le QR de la commande
+     */
+    @Mapping(target = "title",         source = "commande.billetterie.evenement.title")
+    @Mapping(target = "heroImage",     source = "commande.billetterie.evenement.imagePath")
+    @Mapping(target = "eventType",     source = "commande.billetterie.evenement.eventType")
+    @Mapping(target = "practicalInfo", source = "practicalInfo")
+    @Mapping(target = "quantity",      source = "commande.quantity")
+    @Mapping(target = "qrContent",     expression = "java(EntryCodeUtils.commandeQrContent(commande.getCode()))")
+    EBilletDto toEBilletDto(Commande commande, PracticalInfoDto practicalInfo);
 }

@@ -5,11 +5,16 @@ import net.franzka.sgilt.core.evenement.billetterie.commande.domain.CommandeStat
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.EBilletDto;
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
+import net.franzka.sgilt.core.evenement.domain.Evenement;
+import net.franzka.sgilt.core.evenement.page.dto.PracticalInfoDto;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -81,6 +86,29 @@ class CommandeMapperTest {
 
             assertThat(mapper.toCommandeSummaryDto(commande))
                     .isEqualTo(new CommandeSummaryDto(id, CommandeStatus.PAID, 3, 1200, 3600));
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // toEBilletDto
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ToEBilletDto {
+
+        @Test
+        void givenPaidCommandeAndPracticalInfo_whenToEBilletDto_thenMapsEventQuantityAndQrContent() {
+            Evenement evenement = Evenement.builder()
+                    .title("Les Jeudis du Taennel").imagePath("bank/taennel.png").eventType("evenement_public").build();
+            Billetterie billetterie = Billetterie.builder().evenement(evenement).build();
+            Commande commande = Commande.builder()
+                    .billetterie(billetterie).quantity(4).status(CommandeStatus.PAID).code("q3Zx9kP2mL7vT1nR8wY4sA").build();
+            PracticalInfoDto practicalInfo = new PracticalInfoDto(LocalDate.of(2026, 12, 3),
+                    LocalDateTime.of(2026, 12, 3, 19, 0), null, "Le Taennel", "Scherwiller (67)", List.of("Vestiaire"));
+
+            assertThat(mapper.toEBilletDto(commande, practicalInfo))
+                    .isEqualTo(new EBilletDto("Les Jeudis du Taennel", "bank/taennel.png", "evenement_public",
+                            practicalInfo, 4, "SGILT:C:q3Zx9kP2mL7vT1nR8wY4sA"));
         }
     }
 }

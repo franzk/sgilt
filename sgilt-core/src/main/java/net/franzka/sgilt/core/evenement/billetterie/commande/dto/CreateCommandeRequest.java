@@ -5,11 +5,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 
 /**
- * Requête de création d'une commande de billets, depuis l'écran de commande. Le prix n'y est pas :
+ * Requête de création d'une commande de places, depuis l'écran de commande. Le prix n'y est pas :
  * c'est celui de la billetterie.
  *
  * @param slug      le slug de la page de l'événement (/e/{slug})
- * @param quantity  le nombre de billets
+ * @param quantity  le nombre de places
  * @param firstName le prénom de l'acheteur
  * @param lastName  le nom de l'acheteur
  * @param email     l'e-mail de l'acheteur

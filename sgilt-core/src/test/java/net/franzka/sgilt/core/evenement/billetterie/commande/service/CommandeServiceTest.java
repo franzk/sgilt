@@ -7,6 +7,7 @@ import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.CommandeNotFoundException;
+import net.franzka.sgilt.core.evenement.billetterie.commande.exception.CommandeNotPaidException;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.NotEnoughTicketsException;
 import net.franzka.sgilt.core.evenement.billetterie.commande.mapper.CommandeMapper;
 import net.franzka.sgilt.core.evenement.billetterie.commande.repository.CommandeRepository;
@@ -187,6 +188,41 @@ class CommandeServiceTest {
     }
 
     // -------------------------------------------------------------------------
+    // getPaidCommande
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetPaidCommande {
+
+        private final UUID commandeId = UUID.randomUUID();
+
+        @Test
+        void givenPaidCommande_whenGetPaidCommande_thenReturnsIt() {
+            Commande commande = Commande.builder().id(commandeId).status(CommandeStatus.PAID).build();
+            when(commandeRepository.findById(commandeId)).thenReturn(Optional.of(commande));
+
+            assertThat(commandeService.getPaidCommande(commandeId)).isSameAs(commande);
+        }
+
+        @Test
+        void givenPendingCommande_whenGetPaidCommande_thenThrowsCommandeNotPaidException() {
+            Commande commande = Commande.builder().id(commandeId).status(CommandeStatus.PENDING).build();
+            when(commandeRepository.findById(commandeId)).thenReturn(Optional.of(commande));
+
+            assertThatThrownBy(() -> commandeService.getPaidCommande(commandeId))
+                    .isInstanceOf(CommandeNotPaidException.class);
+        }
+
+        @Test
+        void givenUnknownCommande_whenGetPaidCommande_thenThrowsCommandeNotFoundException() {
+            when(commandeRepository.findById(commandeId)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> commandeService.getPaidCommande(commandeId))
+                    .isInstanceOf(CommandeNotFoundException.class);
+        }
+    }
+
+    // -------------------------------------------------------------------------
     // markPaid
     // -------------------------------------------------------------------------
 
@@ -195,7 +231,7 @@ class CommandeServiceTest {
 
         private final UUID commandeId = UUID.randomUUID();
 
-        // Commande en attente de 2 billets, sur la billetterie de 10 places.
+        // Commande en attente de 2 places, sur la billetterie de 10 places.
         private Commande givenPendingCommande(List<Integer> alreadyPaid) {
             Commande commande = Commande.builder()
                     .id(commandeId).billetterie(billetterie).quantity(2).status(CommandeStatus.PENDING).build();
@@ -206,12 +242,13 @@ class CommandeServiceTest {
         }
 
         @Test
-        void givenPendingCommande_whenMarkPaid_thenSavesItPaid() {
+        void givenPendingCommande_whenMarkPaid_thenSavesItPaidWithEntryCode() {
             Commande commande = givenPendingCommande(List.of(3));
 
             commandeService.markPaid(commandeId);
 
             assertThat(commande.getStatus()).isEqualTo(CommandeStatus.PAID);
+            assertThat(commande.getCode()).matches("[A-Za-z0-9_-]{22}");
             verify(commandeRepository).save(commande);
         }
 

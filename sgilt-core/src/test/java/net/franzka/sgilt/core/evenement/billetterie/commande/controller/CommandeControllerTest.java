@@ -1,11 +1,16 @@
 package net.franzka.sgilt.core.evenement.billetterie.commande.controller;
 
+import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.EBilletDto;
+import net.franzka.sgilt.core.evenement.billetterie.commande.mapper.CommandeMapper;
 import net.franzka.sgilt.core.evenement.billetterie.commande.service.CommandeService;
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
 import net.franzka.sgilt.core.evenement.billetterie.service.BilletterieService;
+import net.franzka.sgilt.core.evenement.domain.Evenement;
+import net.franzka.sgilt.core.evenement.page.dto.PracticalInfoDto;
 import net.franzka.sgilt.core.evenement.page.service.PageEvenementService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -33,6 +38,9 @@ class CommandeControllerTest {
 
     @Mock
     private CommandeService commandeService;
+
+    @Mock
+    private CommandeMapper commandeMapper;
 
     @InjectMocks
     private CommandeController controller;
@@ -76,6 +84,31 @@ class CommandeControllerTest {
             when(commandeService.getCommande(id)).thenReturn(dto);
 
             ResponseEntity<CommandeSummaryDto> result = controller.getCommande(id);
+
+            assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+            assertThat(result.getBody()).isSameAs(dto);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // getEBillet
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetEBillet {
+
+        @Test
+        void givenPaidCommande_whenGetEBillet_thenReturns200WithEBilletAndPracticalInfoOfItsEvent() {
+            UUID id = UUID.randomUUID();
+            Evenement evenement = Evenement.builder().build();
+            Commande commande = Commande.builder().billetterie(Billetterie.builder().evenement(evenement).build()).build();
+            PracticalInfoDto practicalInfo = mock(PracticalInfoDto.class);
+            EBilletDto dto = mock(EBilletDto.class);
+            when(commandeService.getPaidCommande(id)).thenReturn(commande);
+            when(pageEvenementService.getPracticalInfo(evenement)).thenReturn(practicalInfo);
+            when(commandeMapper.toEBilletDto(commande, practicalInfo)).thenReturn(dto);
+
+            ResponseEntity<EBilletDto> result = controller.getEBillet(id);
 
             assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(result.getBody()).isSameAs(dto);

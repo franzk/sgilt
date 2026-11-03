@@ -7,10 +7,12 @@ import net.franzka.sgilt.core.evenement.page.domain.PageEvenement;
 import net.franzka.sgilt.core.evenement.page.dto.AdminPageDto;
 import net.franzka.sgilt.core.evenement.page.dto.AdminEventPublicFormDto;
 import net.franzka.sgilt.core.evenement.page.dto.EventPageDto;
+import net.franzka.sgilt.core.evenement.page.dto.PracticalInfoDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface PageEvenementMapper {
@@ -85,4 +87,21 @@ public interface PageEvenementMapper {
     @Mapping(target = "practicalInfo", source = "page.practicalInfo", defaultExpression = "java(java.util.List.of())")
     @Mapping(target = "pictos",        source = "page.pictos",        defaultExpression = "java(java.util.List.of())")
     PageEvenement toPageEvenement(AdminPageDto page, Evenement evenement);
+
+    /**
+     * Mappe les infos pratiques d'un événement, pour l'e-billet d'une commande.
+     *
+     * @param evenement l'événement
+     * @param startsAt  le début de l'événement, calculé par le service, ou null
+     * @param endsAt    la fin de l'événement, calculée par le service, ou null
+     * @param lines     les infos pratiques saisies sur sa page
+     * @return les infos pratiques
+     */
+    @Mapping(source = "evenement.date",  target = "date")
+    @Mapping(source = "startsAt",        target = "startsAt")
+    @Mapping(source = "endsAt",          target = "endsAt")
+    @Mapping(source = "evenement.lieu",  target = "venue")
+    @Mapping(source = "evenement.ville", target = "city")
+    @Mapping(source = "lines",           target = "lines")
+    PracticalInfoDto toPracticalInfoDto(Evenement evenement, LocalDateTime startsAt, LocalDateTime endsAt, List<String> lines);
 }

@@ -5,10 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.admin.mailer.AdminMailerService;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.CommandeStatus;
+import net.franzka.sgilt.core.evenement.billetterie.commande.domain.EntryCodeUtils;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.CommandeNotFoundException;
+import net.franzka.sgilt.core.evenement.billetterie.commande.exception.CommandeNotPaidException;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.NotEnoughTicketsException;
 import net.franzka.sgilt.core.evenement.billetterie.commande.mapper.CommandeMapper;
 import net.franzka.sgilt.core.evenement.billetterie.commande.repository.CommandeRepository;
@@ -39,7 +41,7 @@ public class CommandeService {
     private final AdminMailerService adminMailerService;
 
     /**
-     * Retourne le nombre de places restantes d'une billetterie : sa jauge, moins les billets des
+     * Retourne le nombre de places restantes d'une billetterie : sa jauge, moins les places des
      * commandes payées et des commandes en attente pas encore expirées. Jamais négatif, même si la
      * jauge est dépassée.
      *
@@ -83,10 +85,27 @@ public class CommandeService {
     }
 
     /**
+     * Retourne une commande payée, pour son e-billet.
+     *
+     * @param commandeId l'identifiant de la commande
+     * @return la commande payée
+     * @throws CommandeNotFoundException si la commande est introuvable
+     * @throws CommandeNotPaidException  si la commande n'est pas payée
+     */
+    public Commande getPaidCommande(UUID commandeId) {
+        Commande commande = findCommande(commandeId);
+        if (commande.getStatus() != CommandeStatus.PAID) {
+            throw new CommandeNotPaidException(commandeId);
+        }
+        return commande;
+    }
+
+    /**
      * Marque une commande payée, à la réception du paiement confirmé par Stripe. Idempotent : Stripe
      * peut envoyer le même événement plusieurs fois, une commande déjà payée reste telle quelle. Une
      * commande expirée est marquée payée elle aussi : le paiement a bien eu lieu. Si ses places ont
-     * été reprises entre-temps, la jauge est dépassée (survente) : l'équipe Sgilt est alertée.
+     * été reprises entre-temps, la jauge est dépassée (survente) : l'équipe Sgilt est alertée. Le
+     * passage PAID tire le code d'entrée de la commande (contenu de son QR).
      *
      * @param commandeId l'identifiant de la commande
      * @throws CommandeNotFoundException si la commande est introuvable
@@ -99,17 +118,18 @@ public class CommandeService {
         }
         int soldTickets = paidTickets(commande.getBilletterie()) + commande.getQuantity();
         commande.setStatus(CommandeStatus.PAID);
+        commande.setCode(EntryCodeUtils.newCode());
         commandeRepository.save(commande);
         alertIfOversold(commande, soldTickets);
     }
 
-    // Survente : les billets payés, cette commande comprise, dépassent la jauge.
+    // Survente : les places payées, cette commande comprise, dépassent la jauge.
     private void alertIfOversold(Commande commande, int soldTickets) {
         int capacity = commande.getBilletterie().getCapacity();
         if (soldTickets <= capacity) {
             return;
         }
-        log.warn("Survente : commande payée au-delà de la jauge — commandeId={}, billets payés={}, jauge={}",
+        log.warn("Survente : commande payée au-delà de la jauge — commandeId={}, places payées={}, jauge={}",
                 commande.getId(), soldTickets, capacity);
         adminMailerService.sendOversoldAlert(commande, soldTickets);
     }
@@ -124,7 +144,7 @@ public class CommandeService {
         return payClient.createPaymentIntent(new PaymentIntentRequest(commande.getId(), amountCents)).clientSecret();
     }
 
-    // Billets pris : ceux des commandes payées et des commandes en attente pas encore expirées.
+    // Places prises : celles des commandes payées et des commandes en attente pas encore expirées.
     private int takenTickets(Billetterie billetterie) {
         List<Commande> held = commandeRepository.findByBilletterieIdAndStatusAndExpiresAtAfter(
                 billetterie.getId(), CommandeStatus.PENDING, LocalDateTime.now());

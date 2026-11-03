@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * Entité JPA représentant une commande de billets d'une billetterie. Créée PENDING, elle bloque
+ * Entité JPA représentant une commande de places d'une billetterie. Créée PENDING, elle bloque
  * ses places jusqu'à {@code expiresAt} ; au-delà, non payée, elle ne compte plus dans les places
  * prises. Le prix d'un billet y est figé à la commande.
  */
@@ -55,6 +55,10 @@ public class Commande {
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    /** Code d'entrée de la commande, contenu du QR de son e-billet (fait entrer toutes ses places) ; tiré au passage PAID. */
+    @Column(unique = true)
+    private String code;
 
     /** Fin du blocage des places d'une commande PENDING. */
     @Column(nullable = false)
