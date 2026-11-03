@@ -46,7 +46,7 @@ class PageEvenementMapperTest {
                     .practicalInfo(List.of("Billet sur smartphone."))
                     .pictos(List.of(new PageEvenementPicto("music", "Concert live", "À partir de 20h")))
                     .build();
-            TicketingDto ticketing = new TicketingDto(BilletterieStatus.OPEN, 1200, 150);
+            TicketingDto ticketing = new TicketingDto(BilletterieStatus.OPEN, 1200, 150, 10);
             LocalDateTime startsAt = LocalDateTime.of(2026, 3, 12, 19, 0);
             LocalDateTime endsAt = LocalDateTime.of(2026, 3, 13, 2, 0);
 

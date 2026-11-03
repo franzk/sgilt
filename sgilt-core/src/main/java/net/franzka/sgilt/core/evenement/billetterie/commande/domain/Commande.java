@@ -23,6 +23,12 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Commande {
 
+    /**
+     * Plafond de places par commande (anti-abus : une seule commande ne bloque pas toute la jauge
+     * pendant le paiement). Vérifié à la création, et servi au front avec la billetterie publique.
+     */
+    public static final int MAX_PLACES_PER_COMMANDE = 10;
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(updatable = false, nullable = false)

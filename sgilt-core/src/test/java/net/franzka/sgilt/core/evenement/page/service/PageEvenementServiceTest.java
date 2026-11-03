@@ -81,7 +81,7 @@ class PageEvenementServiceTest {
         @Test
         void givenPageWithBilletterie_whenGetPublicPage_thenMapsPageTicketingAndHours() {
             PageEvenement page = givenPage(LocalTime.of(19, 0), LocalTime.of(23, 0));
-            TicketingDto ticketing = new TicketingDto(BilletterieStatus.OPEN, 1200, 150);
+            TicketingDto ticketing = new TicketingDto(BilletterieStatus.OPEN, 1200, 150, 10);
             EventPageDto dto = mock(EventPageDto.class);
             when(billetterieService.getPublicTicketing(EVENEMENT_ID)).thenReturn(Optional.of(ticketing));
             when(pageEvenementMapper.toEventPageDto(page, ticketing,

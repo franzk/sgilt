@@ -5,6 +5,7 @@ export interface EventPageTicketingDto {
   status: 'NOT_OPEN' | 'OPEN' | 'CLOSED'
   unitPriceCents: number
   remainingTickets: number
+  maxPlacesPerCommande: number
 }
 
 export interface EventPagePictoDto {

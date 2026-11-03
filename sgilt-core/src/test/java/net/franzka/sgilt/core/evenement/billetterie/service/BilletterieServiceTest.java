@@ -57,7 +57,7 @@ class BilletterieServiceTest {
         @Test
         void givenBilletterie_whenGetPublicTicketing_thenMapsItWithRemainingTickets() {
             Billetterie billetterie = Billetterie.builder().status(BilletterieStatus.OPEN).unitPriceCents(1200).capacity(150).build();
-            TicketingDto dto = new TicketingDto(BilletterieStatus.OPEN, 1200, 42);
+            TicketingDto dto = new TicketingDto(BilletterieStatus.OPEN, 1200, 42, 10);
             when(billetterieRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(billetterie));
             when(commandeService.getRemainingTickets(billetterie)).thenReturn(42);
             when(billetterieMapper.toTicketingDto(billetterie, 42)).thenReturn(dto);

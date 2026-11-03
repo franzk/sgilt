@@ -24,13 +24,13 @@ class BilletterieMapperTest {
     class ToTicketingDto {
 
         @Test
-        void givenBilletterieAndRemainingTickets_whenToTicketingDto_thenMapsAllFields() {
+        void givenBilletterieAndRemainingTickets_whenToTicketingDto_thenMapsAllFieldsWithMaxPlacesPerCommande() {
             Billetterie billetterie = Billetterie.builder()
                     .status(BilletterieStatus.OPEN).unitPriceCents(1200).capacity(150).build();
 
             TicketingDto dto = mapper.toTicketingDto(billetterie, 7);
 
-            assertThat(dto).isEqualTo(new TicketingDto(BilletterieStatus.OPEN, 1200, 7));
+            assertThat(dto).isEqualTo(new TicketingDto(BilletterieStatus.OPEN, 1200, 7, 10));
         }
     }
 

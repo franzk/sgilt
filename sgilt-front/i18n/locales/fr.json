@@ -1520,6 +1520,7 @@
       },
       "decrement-aria": "Retirer une place",
       "limit-reached": "Il ne reste qu'une place pour cet événement. | Il ne reste que {n} places pour cet événement.",
+      "max-per-commande": "Vous pouvez réserver jusqu'à {n} places par commande.",
       "increment-aria": "Ajouter une place",
       "total-label": "Total",
       "cta": "Acheter mes billets",

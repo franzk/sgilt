@@ -131,12 +131,16 @@ if (import.meta.client) {
 
 // ── Composable ────────────────────────────────────────────────────────────────
 
+// Limite atteinte au dernier clic sur « + » : plus assez de places, ou plafond par commande.
+export type QuantityLimit = 'REMAINING_TICKETS' | 'MAX_PER_COMMANDE'
+
 // ticketing : billetterie de l'événement (usePublicEvent), pour le prix et le plafond.
 export function useTicketOrder(slug: string, ticketing: PublicEventTicketing | undefined) {
   // Sans billetterie, aucun écran d'achat n'est atteint (middleware `ticketing`) : les valeurs
   // par défaut ne servent jamais.
   const unitPriceCents = ticketing?.unitPriceCents ?? 0
   const remainingTickets = ticketing?.remainingTickets ?? 0
+  const maxPlacesPerCommande = ticketing?.maxPlacesPerCommande ?? 0
 
   const order = computed<TicketOrder>(() =>
     storedOrder.value?.slug === slug ? storedOrder.value : newOrder(slug, 'NONE'),
@@ -150,20 +154,25 @@ export function useTicketOrder(slug: string, ticketing: PublicEventTicketing | u
   }
 
   // ── Quantité (écran de commande) ──
-  // Plafonnée par le nombre de places restantes (domaine), pas par une limite UI arbitraire ; ce
-  // nombre n'est montré qu'à qui atteint le plafond. limitReached est propre à l'écran : il n'est
-  // pas enregistré avec la commande.
-  const limitReached = ref(false)
+  // Plafonnée par le nombre de places restantes et par le plafond par commande, tous deux venus du
+  // back ; ils ne sont montrés qu'à qui les atteint. Les places restantes priment : à égalité, c'est
+  // le message qui renseigne le plus. limitReached est propre à l'écran : il n'est pas enregistré
+  // avec la commande.
+  const limitReached = ref<QuantityLimit | null>(null)
 
   function decrement(): void {
-    limitReached.value = false
+    limitReached.value = null
     order.value.quantity = Math.max(MIN_QUANTITY, order.value.quantity - 1)
   }
 
   // Au plafond, le « + » reste cliquable : le clic signale la limite au lieu de ne rien faire.
   function increment(): void {
     if (order.value.quantity >= remainingTickets) {
-      limitReached.value = true
+      limitReached.value = 'REMAINING_TICKETS'
+      return
+    }
+    if (order.value.quantity >= maxPlacesPerCommande) {
+      limitReached.value = 'MAX_PER_COMMANDE'
       return
     }
     order.value.quantity += 1
@@ -193,6 +202,7 @@ export function useTicketOrder(slug: string, ticketing: PublicEventTicketing | u
     order,
     buy,
     remainingTickets,
+    maxPlacesPerCommande,
     limitReached,
     decrement,
     increment,

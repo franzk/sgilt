@@ -1,5 +1,6 @@
 package net.franzka.sgilt.core.evenement.billetterie.mapper;
 
+import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
 import net.franzka.sgilt.core.evenement.billetterie.dto.AdminTicketingDto;
 import net.franzka.sgilt.core.evenement.billetterie.dto.TicketingDto;
@@ -7,7 +8,7 @@ import net.franzka.sgilt.core.evenement.domain.Evenement;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", imports = Commande.class)
 public interface BilletterieMapper {
 
     /**
@@ -20,6 +21,7 @@ public interface BilletterieMapper {
     @Mapping(source = "billetterie.status",         target = "status")
     @Mapping(source = "billetterie.unitPriceCents", target = "unitPriceCents")
     @Mapping(source = "remainingTickets",           target = "remainingTickets")
+    @Mapping(target = "maxPlacesPerCommande",       expression = "java(Commande.MAX_PLACES_PER_COMMANDE)")
     TicketingDto toTicketingDto(Billetterie billetterie, int remainingTickets);
 
     /**

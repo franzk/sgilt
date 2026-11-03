@@ -25,6 +25,8 @@ export interface PublicEventTicketing {
   // Disponibilité ET plafond du sélecteur de quantité en découlent tous les deux, pas de champ
   // `available` séparé à faire diverger.
   remainingTickets: number
+  // Plafond de places par commande (anti-abus), fixé par le back qui le vérifie à la création.
+  maxPlacesPerCommande: number
 }
 
 export interface PublicEvent {

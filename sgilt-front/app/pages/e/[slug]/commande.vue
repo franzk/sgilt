@@ -20,8 +20,11 @@
         @decrement="decrement"
         @increment="increment"
       />
-      <p v-if="limitReached" class="limit-message">
+      <p v-if="limitReached === 'REMAINING_TICKETS'" class="limit-message">
         {{ $t('ticketing.event.limit-reached', { n: remainingTickets }, remainingTickets) }}
+      </p>
+      <p v-if="limitReached === 'MAX_PER_COMMANDE'" class="limit-message neutral">
+        {{ $t('ticketing.event.max-per-commande', { n: maxPlacesPerCommande }) }}
       </p>
       <div class="total-row">
         <span class="label">{{ $t('ticketing.event.total-label') }}</span>
@@ -133,6 +136,7 @@ const event = await usePublicEvent(slug)
 const {
   order,
   remainingTickets,
+  maxPlacesPerCommande,
   limitReached,
   decrement,
   increment,
@@ -229,6 +233,10 @@ function onSubmit(): void {
   font-size: $font-size-sm;
   color: $state-error;
   text-align: center;
+
+  &.neutral {
+    color: $text-secondary;
+  }
 }
 
 .total-row {
