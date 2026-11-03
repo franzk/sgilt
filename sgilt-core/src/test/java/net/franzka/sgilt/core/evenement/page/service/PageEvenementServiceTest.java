@@ -9,8 +9,8 @@ import net.franzka.sgilt.core.evenement.page.domain.PageEvenement;
 import net.franzka.sgilt.core.evenement.page.domain.PageEvenementPicto;
 import net.franzka.sgilt.core.evenement.page.dto.AdminPageDto;
 import net.franzka.sgilt.core.evenement.page.dto.AdminEventPublicFormDto;
+import net.franzka.sgilt.core.evenement.page.dto.EvenementInfosDto;
 import net.franzka.sgilt.core.evenement.page.dto.EventPageDto;
-import net.franzka.sgilt.core.evenement.page.dto.PracticalInfoDto;
 import net.franzka.sgilt.core.evenement.page.exception.BilletterieWithoutPageException;
 import net.franzka.sgilt.core.evenement.page.exception.PageEvenementNotFoundException;
 import net.franzka.sgilt.core.evenement.page.exception.PageSlugAlreadyUsedException;
@@ -142,36 +142,36 @@ class PageEvenementServiceTest {
     }
 
     // -------------------------------------------------------------------------
-    // getPracticalInfo
+    // getEvenementInfos
     // -------------------------------------------------------------------------
 
     @Nested
-    class GetPracticalInfo {
+    class GetEvenementInfos {
 
         private final Evenement evenement = Evenement.builder()
                 .id(EVENEMENT_ID).date(DATE).startTime(LocalTime.of(19, 0)).endTime(LocalTime.of(2, 0)).build();
 
         @Test
-        void givenEventWithPage_whenGetPracticalInfo_thenMapsHoursAndLinesOfItsPage() {
-            PageEvenement page = PageEvenement.builder().evenement(evenement).practicalInfo(List.of("Vestiaire")).build();
-            PracticalInfoDto dto = mock(PracticalInfoDto.class);
+        void givenEventWithPage_whenGetEvenementInfos_thenMapsHoursAndItsPage() {
+            PageEvenement page = PageEvenement.builder().evenement(evenement).build();
+            EvenementInfosDto dto = mock(EvenementInfosDto.class);
             when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(page));
-            when(pageEvenementMapper.toPracticalInfoDto(evenement,
-                    LocalDateTime.of(2026, 3, 12, 19, 0), LocalDateTime.of(2026, 3, 13, 2, 0), List.of("Vestiaire")))
+            when(pageEvenementMapper.toEvenementInfosDto(evenement, page,
+                    LocalDateTime.of(2026, 3, 12, 19, 0), LocalDateTime.of(2026, 3, 13, 2, 0)))
                     .thenReturn(dto);
 
-            assertThat(pageEvenementService.getPracticalInfo(evenement)).isSameAs(dto);
+            assertThat(pageEvenementService.getEvenementInfos(evenement)).isSameAs(dto);
         }
 
         @Test
-        void givenEventWithoutPage_whenGetPracticalInfo_thenMapsNoLines() {
-            PracticalInfoDto dto = mock(PracticalInfoDto.class);
+        void givenEventWithoutPage_whenGetEvenementInfos_thenMapsHoursWithoutPage() {
+            EvenementInfosDto dto = mock(EvenementInfosDto.class);
             when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.empty());
-            when(pageEvenementMapper.toPracticalInfoDto(evenement,
-                    LocalDateTime.of(2026, 3, 12, 19, 0), LocalDateTime.of(2026, 3, 13, 2, 0), List.of()))
+            when(pageEvenementMapper.toEvenementInfosDto(evenement, null,
+                    LocalDateTime.of(2026, 3, 12, 19, 0), LocalDateTime.of(2026, 3, 13, 2, 0)))
                     .thenReturn(dto);
 
-            assertThat(pageEvenementService.getPracticalInfo(evenement)).isSameAs(dto);
+            assertThat(pageEvenementService.getEvenementInfos(evenement)).isSameAs(dto);
         }
     }
 

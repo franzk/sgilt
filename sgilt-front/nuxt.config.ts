@@ -119,7 +119,9 @@ export default defineNuxtConfig({
     },
 
     // Parcours d'achat de billets = SPA (commande gardée en sessionStorage, données personnelles),
-    // pas de SEO. La fiche /e/:slug reste en SSR + SEO.
+    // pas de SEO. La fiche /e/:slug reste en SSR + SEO. Confirmation et e-billet portent l'id de
+    // la commande dans l'URL, qui donne accès à l'e-billet : jamais transmise en Referer (images,
+    // liens sortants), jamais indexée ni archivée.
     '/e/*/commande': {
       ssr: false,
       headers: {
@@ -136,6 +138,14 @@ export default defineNuxtConfig({
       ssr: false,
       headers: {
         'X-Robots-Tag': 'noindex, nofollow',
+        'Referrer-Policy': 'no-referrer',
+      },
+    },
+    '/e/*/e-billet': {
+      ssr: false,
+      headers: {
+        'X-Robots-Tag': 'noindex, nofollow, noarchive',
+        'Referrer-Policy': 'no-referrer',
       },
     },
 

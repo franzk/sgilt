@@ -2,9 +2,9 @@
  * Couche service — orchestration des appels API des commandes de billets
  */
 import { FetchError } from 'ofetch'
-import { createCommandeApi, getCommandeApi } from '../api/commandeApi'
-import { mapCommande, mapCommandeSummary } from '../mapper/commandeMapper'
-import type { Commande, CommandeFailure, CommandeSummary } from '../domain/Commande'
+import { createCommandeApi, getCommandeApi, getEBilletApi } from '../api/commandeApi'
+import { mapCommande, mapCommandeSummary, mapEBillet } from '../mapper/commandeMapper'
+import type { Commande, CommandeFailure, CommandeSummary, EBillet } from '../domain/Commande'
 import type { TicketBuyer } from '~/composables/useTicketOrder'
 
 /**
@@ -31,7 +31,16 @@ export async function getCommande(id: string): Promise<CommandeSummary> {
 }
 
 /**
- * Commande inconnue du back (404) : l'URL de confirmation ne désigne aucune commande.
+ * Relit l'e-billet d'une commande payée : l'événement, ses infos pratiques, le nombre de places et
+ * le contenu du QR.
+ */
+export async function getEBillet(id: string): Promise<EBillet> {
+  return mapEBillet(await getEBilletApi(id))
+}
+
+/**
+ * Commande inconnue du back (404) : l'URL de confirmation ne désigne aucune commande. Pour
+ * l'e-billet, aussi une commande pas (encore) payée.
  */
 export function isCommandeNotFound(error: unknown): boolean {
   return error instanceof FetchError && error.statusCode === 404

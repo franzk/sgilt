@@ -27,3 +27,31 @@ export interface CommandeSummaryDto {
   unitPriceCents: number
   totalCents: number
 }
+
+// Infos de l'événement d'une commande, pour son e-billet : le bandeau de sa page, quand, où, et les
+// infos pratiques.
+export interface EvenementInfosDto {
+  // null : pas saisi, ou pas de page.
+  tag: string | null
+  subtitle: string | null
+  // 'YYYY-MM-DD'
+  date: string
+  // Heure locale du lieu, sans fuseau ('YYYY-MM-DDTHH:mm') ; null si l'événement n'en a pas.
+  startsAt: string | null
+  endsAt: string | null
+  venue: string
+  city: string
+  practicalInfo: string[]
+}
+
+// E-billet d'une commande payée (GET /commandes/{id}/e-billet).
+export interface EBilletDto {
+  title: string
+  heroImage: string | null
+  // Type de l'événement (mariage, evenement_public…), null s'il n'en a pas.
+  eventType: string | null
+  evenementInfos: EvenementInfosDto
+  quantity: number
+  // Contenu du QR, présenté à l'entrée (SGILT:C:<code>).
+  qrContent: string
+}

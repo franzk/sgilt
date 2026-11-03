@@ -6,13 +6,12 @@ import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.page.domain.PageEvenement;
 import net.franzka.sgilt.core.evenement.page.dto.AdminPageDto;
 import net.franzka.sgilt.core.evenement.page.dto.AdminEventPublicFormDto;
+import net.franzka.sgilt.core.evenement.page.dto.EvenementInfosDto;
 import net.franzka.sgilt.core.evenement.page.dto.EventPageDto;
-import net.franzka.sgilt.core.evenement.page.dto.PracticalInfoDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface PageEvenementMapper {
@@ -89,19 +88,23 @@ public interface PageEvenementMapper {
     PageEvenement toPageEvenement(AdminPageDto page, Evenement evenement);
 
     /**
-     * Mappe les infos pratiques d'un événement, pour l'e-billet d'une commande.
+     * Mappe les infos d'un événement, pour l'e-billet d'une commande.
      *
      * @param evenement l'événement
+     * @param page      sa page, ou null s'il n'en a pas
      * @param startsAt  le début de l'événement, calculé par le service, ou null
      * @param endsAt    la fin de l'événement, calculée par le service, ou null
-     * @param lines     les infos pratiques saisies sur sa page
-     * @return les infos pratiques
+     * @return les infos de l'événement
      */
-    @Mapping(source = "evenement.date",  target = "date")
-    @Mapping(source = "startsAt",        target = "startsAt")
-    @Mapping(source = "endsAt",          target = "endsAt")
-    @Mapping(source = "evenement.lieu",  target = "venue")
-    @Mapping(source = "evenement.ville", target = "city")
-    @Mapping(source = "lines",           target = "lines")
-    PracticalInfoDto toPracticalInfoDto(Evenement evenement, LocalDateTime startsAt, LocalDateTime endsAt, List<String> lines);
+    @Mapping(source = "page.tag",           target = "tag")
+    @Mapping(source = "page.subtitle",      target = "subtitle")
+    @Mapping(source = "evenement.date",     target = "date")
+    @Mapping(source = "startsAt",           target = "startsAt")
+    @Mapping(source = "endsAt",             target = "endsAt")
+    @Mapping(source = "evenement.lieu",     target = "venue")
+    @Mapping(source = "evenement.ville",    target = "city")
+    // Sans page, aucune info pratique (et pas null) : un defaultExpression ne s'applique pas quand
+    // c'est la page elle-même qui manque.
+    @Mapping(target = "practicalInfo", expression = "java(page != null ? page.getPracticalInfo() : java.util.List.of())")
+    EvenementInfosDto toEvenementInfosDto(Evenement evenement, PageEvenement page, LocalDateTime startsAt, LocalDateTime endsAt);
 }

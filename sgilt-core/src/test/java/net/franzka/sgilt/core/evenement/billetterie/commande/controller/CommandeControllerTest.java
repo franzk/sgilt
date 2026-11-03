@@ -10,7 +10,7 @@ import net.franzka.sgilt.core.evenement.billetterie.commande.service.CommandeSer
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
 import net.franzka.sgilt.core.evenement.billetterie.service.BilletterieService;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
-import net.franzka.sgilt.core.evenement.page.dto.PracticalInfoDto;
+import net.franzka.sgilt.core.evenement.page.dto.EvenementInfosDto;
 import net.franzka.sgilt.core.evenement.page.service.PageEvenementService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -98,15 +98,15 @@ class CommandeControllerTest {
     class GetEBillet {
 
         @Test
-        void givenPaidCommande_whenGetEBillet_thenReturns200WithEBilletAndPracticalInfoOfItsEvent() {
+        void givenPaidCommande_whenGetEBillet_thenReturns200WithEBilletAndInfosOfItsEvent() {
             UUID id = UUID.randomUUID();
             Evenement evenement = Evenement.builder().build();
             Commande commande = Commande.builder().billetterie(Billetterie.builder().evenement(evenement).build()).build();
-            PracticalInfoDto practicalInfo = mock(PracticalInfoDto.class);
+            EvenementInfosDto evenementInfos = mock(EvenementInfosDto.class);
             EBilletDto dto = mock(EBilletDto.class);
             when(commandeService.getPaidCommande(id)).thenReturn(commande);
-            when(pageEvenementService.getPracticalInfo(evenement)).thenReturn(practicalInfo);
-            when(commandeMapper.toEBilletDto(commande, practicalInfo)).thenReturn(dto);
+            when(pageEvenementService.getEvenementInfos(evenement)).thenReturn(evenementInfos);
+            when(commandeMapper.toEBilletDto(commande, evenementInfos)).thenReturn(dto);
 
             ResponseEntity<EBilletDto> result = controller.getEBillet(id);
 

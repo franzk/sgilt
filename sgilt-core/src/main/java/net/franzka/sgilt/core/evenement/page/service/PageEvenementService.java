@@ -8,8 +8,8 @@ import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.page.domain.PageEvenement;
 import net.franzka.sgilt.core.evenement.page.dto.AdminPageDto;
 import net.franzka.sgilt.core.evenement.page.dto.AdminEventPublicFormDto;
+import net.franzka.sgilt.core.evenement.page.dto.EvenementInfosDto;
 import net.franzka.sgilt.core.evenement.page.dto.EventPageDto;
-import net.franzka.sgilt.core.evenement.page.dto.PracticalInfoDto;
 import net.franzka.sgilt.core.evenement.page.exception.BilletterieWithoutPageException;
 import net.franzka.sgilt.core.evenement.page.exception.PageEvenementNotFoundException;
 import net.franzka.sgilt.core.evenement.page.exception.PageSlugAlreadyUsedException;
@@ -53,18 +53,17 @@ public class PageEvenementService {
     }
 
     /**
-     * Retourne les infos pratiques d'un événement : sa date, ses horaires, son lieu, et les infos
-     * pratiques saisies sur sa page (aucune s'il n'a pas de page).
+     * Retourne les infos d'un événement : le tag et le sous-titre de sa page, sa date, ses horaires,
+     * son lieu, et les infos pratiques saisies sur sa page (ni tag, ni sous-titre, ni infos pratiques
+     * s'il n'a pas de page).
      *
      * @param evenement l'événement
-     * @return les infos pratiques
+     * @return les infos de l'événement
      */
-    public PracticalInfoDto getPracticalInfo(Evenement evenement) {
-        List<String> lines = pageEvenementRepository.findByEvenementId(evenement.getId())
-                .map(PageEvenement::getPracticalInfo)
-                .orElse(List.of());
+    public EvenementInfosDto getEvenementInfos(Evenement evenement) {
+        PageEvenement page = pageEvenementRepository.findByEvenementId(evenement.getId()).orElse(null);
         LocalDateTime startsAt = startsAt(evenement);
-        return pageEvenementMapper.toPracticalInfoDto(evenement, startsAt, endsAt(evenement, startsAt), lines);
+        return pageEvenementMapper.toEvenementInfosDto(evenement, page, startsAt, endsAt(evenement, startsAt));
     }
 
     /**

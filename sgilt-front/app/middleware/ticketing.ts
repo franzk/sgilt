@@ -10,6 +10,8 @@
  *    billetterie — l'acheteur de la dernière place voit sa confirmation d'un événement devenu
  *    complet. Le statut vient du back (page), pas du sessionStorage : l'URL suffit, même après
  *    la redirection 3D Secure ou dans un autre onglet ;
+ *  - e-billet : pas de commande dans l'URL, même règle que la confirmation (commande inconnue ou
+ *    pas payée : c'est la page qui renvoie à la fiche, sur le 404 du back) ;
  *  - toute autre URL (inexistante, attrapée par /e/[slug]/[...path]).
  */
 import { loadPublicEvent } from '~/composables/usePublicEvent'
@@ -34,6 +36,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
       if (!canPurchase(ticketing) || stage !== 'ORDERED') return toEvent()
       return
     case 'e-slug-confirmation':
+    case 'e-slug-e-billet':
       if (typeof to.query.commande !== 'string' || !to.query.commande) return toEvent()
       return
     default:

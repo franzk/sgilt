@@ -2,7 +2,7 @@
  * Couche API — appels HTTP bruts vers /commandes, sans logique métier
  */
 import { apiFetch } from '~/composables/useApi'
-import type { CommandeDto, CommandeSummaryDto, CreateCommandeRequestDto } from '../dto/CommandeDto'
+import type { CommandeDto, CommandeSummaryDto, CreateCommandeRequestDto, EBilletDto } from '../dto/CommandeDto'
 
 export async function createCommandeApi(body: CreateCommandeRequestDto): Promise<CommandeDto> {
   return apiFetch<CommandeDto>('/commandes', { method: 'POST', body })
@@ -10,4 +10,8 @@ export async function createCommandeApi(body: CreateCommandeRequestDto): Promise
 
 export async function getCommandeApi(id: string): Promise<CommandeSummaryDto> {
   return apiFetch<CommandeSummaryDto>(`/commandes/${id}`)
+}
+
+export async function getEBilletApi(id: string): Promise<EBilletDto> {
+  return apiFetch<EBilletDto>(`/commandes/${id}/e-billet`)
 }

@@ -51,17 +51,9 @@
         </div>
       </section>
 
-      <div class="email-notice">
+      <button type="button" class="primary-cta" @click="onViewEBillet">
         <TicketIcon class="icon" />
-        <div>
-          <p class="notice-title">{{ $t('ticketing.confirmation.email-notice-title') }}</p>
-          <p class="notice-sub">{{ $t('ticketing.order.email-notice-sub') }}</p>
-        </div>
-      </div>
-
-      <button type="button" class="primary-cta" @click="onViewTickets">
-        <TicketIcon class="icon" />
-        {{ $t('ticketing.confirmation.view-tickets') }}
+        {{ $t('ticketing.confirmation.view-e-billet') }}
         <ArrowRightSIcon class="chevron" aria-hidden="true" />
       </button>
 
@@ -161,9 +153,8 @@ onBeforeUnmount(() => clearTimeout(pollTimer))
 const unitPriceLabel = computed(() => formatPrice((paidCommande.value?.unitPriceCents ?? 0) / 100))
 const totalLabel = computed(() => formatPrice((paidCommande.value?.totalCents ?? 0) / 100))
 
-// Pas de vrais billets (wallet, QR code) pour l'instant.
-function onViewTickets(): void {
-  console.log(`Voir mes billets pour "${event.title}" (slug=${slug})`)
+function onViewEBillet(): void {
+  navigateTo({ path: `/e/${slug}/e-billet`, query: { commande: commandeId } })
 }
 
 function onAddToCalendar(): void {
@@ -374,37 +365,6 @@ function onAddToCalendar(): void {
     font-size: $font-size-2xl;
     font-weight: $font-weight-bold;
     color: $text-primary;
-  }
-}
-
-// ─── Bandeau e-mail ──────────────────────────────────────────────────────────
-.email-notice {
-  display: flex;
-  align-items: flex-start;
-  gap: $spacing-s;
-  padding: $spacing-m;
-  background: rgba($state-success, 0.08);
-  border-radius: $radius-md;
-  color: $state-success;
-
-  .icon {
-    flex-shrink: 0;
-    width: 1.25rem;
-    height: 1.25rem;
-    margin-top: 0.1rem;
-  }
-
-  .notice-title {
-    margin: 0;
-    font-size: $font-size-sm;
-    font-weight: $font-weight-semibold;
-    color: $text-primary;
-  }
-
-  .notice-sub {
-    margin: 0;
-    font-size: $font-size-xs;
-    color: $text-secondary;
   }
 }
 

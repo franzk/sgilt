@@ -28,3 +28,27 @@ export interface CommandeSummary {
 // plus assez de places, billetterie plus ouverte (ou événement introuvable), trop de tentatives
 // (limite de débit de la gateway), erreur technique.
 export type CommandeFailure = 'NOT_ENOUGH_TICKETS' | 'UNAVAILABLE' | 'TOO_MANY_ATTEMPTS' | 'TECHNICAL'
+
+// Infos de l'événement, montrées sur l'e-billet.
+export interface EBilletEvenementInfos {
+  tag?: string
+  subtitle?: string
+  // 'YYYY-MM-DD'
+  date: string
+  // Heure locale du lieu, sans fuseau ('YYYY-MM-DDTHH:mm') ; absente si l'événement n'en a pas.
+  startsAt?: string
+  endsAt?: string
+  venue: string
+  city: string
+  practicalInfo: string[]
+}
+
+// E-billet d'une commande payée : un seul QR, qui fait entrer toutes ses places.
+export interface EBillet {
+  title: string
+  // Clé R2, ou l'image par défaut de son type d'événement.
+  heroImage: string
+  evenementInfos: EBilletEvenementInfos
+  quantity: number
+  qrContent: string
+}

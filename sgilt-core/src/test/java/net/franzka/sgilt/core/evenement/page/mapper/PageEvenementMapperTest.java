@@ -8,8 +8,8 @@ import net.franzka.sgilt.core.evenement.page.domain.PageEvenement;
 import net.franzka.sgilt.core.evenement.page.domain.PageEvenementPicto;
 import net.franzka.sgilt.core.evenement.page.dto.AdminPageDto;
 import net.franzka.sgilt.core.evenement.page.dto.AdminEventPublicFormDto;
+import net.franzka.sgilt.core.evenement.page.dto.EvenementInfosDto;
 import net.franzka.sgilt.core.evenement.page.dto.EventPageDto;
-import net.franzka.sgilt.core.evenement.page.dto.PracticalInfoDto;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -153,22 +153,33 @@ class PageEvenementMapperTest {
     }
 
     // -------------------------------------------------------------------------
-    // toPracticalInfoDto
+    // toEvenementInfosDto
     // -------------------------------------------------------------------------
 
     @Nested
-    class ToPracticalInfoDto {
+    class ToEvenementInfosDto {
+
+        private final Evenement evenement = Evenement.builder()
+                .date(LocalDate.of(2026, 3, 12)).lieu("Le Taennel").ville("Scherwiller (67)").build();
+        private final LocalDateTime startsAt = LocalDateTime.of(2026, 3, 12, 19, 0);
+        private final LocalDateTime endsAt = LocalDateTime.of(2026, 3, 13, 2, 0);
 
         @Test
-        void givenEventHoursAndLines_whenToPracticalInfoDto_thenMapsAllFields() {
-            Evenement evenement = Evenement.builder()
-                    .date(LocalDate.of(2026, 3, 12)).lieu("Le Taennel").ville("Scherwiller (67)").build();
-            LocalDateTime startsAt = LocalDateTime.of(2026, 3, 12, 19, 0);
-            LocalDateTime endsAt = LocalDateTime.of(2026, 3, 13, 2, 0);
+        void givenEventWithPage_whenToEvenementInfosDto_thenMapsEventHoursAndPageFields() {
+            PageEvenement page = PageEvenement.builder()
+                    .tag("Édition du 12 mars").subtitle("Concert et apéro").practicalInfo(List.of("Vestiaire")).build();
 
-            assertThat(mapper.toPracticalInfoDto(evenement, startsAt, endsAt, List.of("Vestiaire")))
-                    .isEqualTo(new PracticalInfoDto(LocalDate.of(2026, 3, 12), startsAt, endsAt,
-                            "Le Taennel", "Scherwiller (67)", List.of("Vestiaire")));
+            assertThat(mapper.toEvenementInfosDto(evenement, page, startsAt, endsAt))
+                    .isEqualTo(new EvenementInfosDto("Édition du 12 mars", "Concert et apéro",
+                            LocalDate.of(2026, 3, 12), startsAt, endsAt, "Le Taennel", "Scherwiller (67)",
+                            List.of("Vestiaire")));
+        }
+
+        @Test
+        void givenEventWithoutPage_whenToEvenementInfosDto_thenMapsNoTagNoSubtitleNoPracticalInfo() {
+            assertThat(mapper.toEvenementInfosDto(evenement, null, startsAt, endsAt))
+                    .isEqualTo(new EvenementInfosDto(null, null, LocalDate.of(2026, 3, 12), startsAt, endsAt,
+                            "Le Taennel", "Scherwiller (67)", List.of()));
         }
     }
 }

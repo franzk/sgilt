@@ -8,7 +8,7 @@ import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeR
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.EBilletDto;
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
-import net.franzka.sgilt.core.evenement.page.dto.PracticalInfoDto;
+import net.franzka.sgilt.core.evenement.page.dto.EvenementInfosDto;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -97,18 +97,19 @@ class CommandeMapperTest {
     class ToEBilletDto {
 
         @Test
-        void givenPaidCommandeAndPracticalInfo_whenToEBilletDto_thenMapsEventQuantityAndQrContent() {
+        void givenPaidCommandeAndEvenementInfos_whenToEBilletDto_thenMapsEventQuantityAndQrContent() {
             Evenement evenement = Evenement.builder()
                     .title("Les Jeudis du Taennel").imagePath("bank/taennel.png").eventType("evenement_public").build();
             Billetterie billetterie = Billetterie.builder().evenement(evenement).build();
             Commande commande = Commande.builder()
                     .billetterie(billetterie).quantity(4).status(CommandeStatus.PAID).code("q3Zx9kP2mL7vT1nR8wY4sA").build();
-            PracticalInfoDto practicalInfo = new PracticalInfoDto(LocalDate.of(2026, 12, 3),
-                    LocalDateTime.of(2026, 12, 3, 19, 0), null, "Le Taennel", "Scherwiller (67)", List.of("Vestiaire"));
+            EvenementInfosDto evenementInfos = new EvenementInfosDto("Édition du 3 décembre", "Concert et apéro",
+                    LocalDate.of(2026, 12, 3), LocalDateTime.of(2026, 12, 3, 19, 0), null,
+                    "Le Taennel", "Scherwiller (67)", List.of("Vestiaire"));
 
-            assertThat(mapper.toEBilletDto(commande, practicalInfo))
+            assertThat(mapper.toEBilletDto(commande, evenementInfos))
                     .isEqualTo(new EBilletDto("Les Jeudis du Taennel", "bank/taennel.png", "evenement_public",
-                            practicalInfo, 4, "SGILT:C:q3Zx9kP2mL7vT1nR8wY4sA"));
+                            evenementInfos, 4, "SGILT:C:q3Zx9kP2mL7vT1nR8wY4sA"));
         }
     }
 }

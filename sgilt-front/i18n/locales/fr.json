@@ -1575,13 +1575,23 @@
       "subtitle": "Vos billets ont bien été réservés et vous allez recevoir un e-mail avec tous les détails.",
       "tickets-title": "Vos billets",
       "confirmed-badge": "Confirmé",
-      "quantity-label": "Nombre de billets",
+      "quantity-label": "Nombre de places",
       "unit-price-label": "Prix unitaire",
-      "email-notice-title": "Vos billets sont envoyés par e-mail",
-      "view-tickets": "Voir mes billets",
+      "view-e-billet": "Voir mon e-billet",
       "add-to-calendar": "Ajouter à mon calendrier",
       "practical-info-title": "Informations pratiques",
       "back-to-event": "Retour à l'événement"
+    },
+    "e-billet": {
+      "title": "Mon e-billet",
+      "qr-alt": "QR code de votre e-billet",
+      "valid-for": "Valable pour {n} personne | Valable pour {n} personnes",
+      "show-at-entry": "À présenter à l'entrée",
+      "practical-info-title": "Informations pratiques",
+      "contact": "Une question concernant votre e-billet ? Contactez-nous à",
+      "back-to-event": "Retour à l'événement",
+      "error": "Impossible d'afficher votre e-billet pour le moment.",
+      "retry": "Réessayer"
     }
   }
 }

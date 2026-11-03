@@ -17,7 +17,7 @@ import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
 import net.franzka.sgilt.core.evenement.billetterie.exception.BilletterieNotFoundException;
 import net.franzka.sgilt.core.evenement.billetterie.exception.BilletterieNotOpenException;
 import net.franzka.sgilt.core.evenement.billetterie.service.BilletterieService;
-import net.franzka.sgilt.core.evenement.page.dto.PracticalInfoDto;
+import net.franzka.sgilt.core.evenement.page.dto.EvenementInfosDto;
 import net.franzka.sgilt.core.evenement.page.exception.PageEvenementNotFoundException;
 import net.franzka.sgilt.core.evenement.page.service.PageEvenementService;
 import org.springframework.http.HttpStatus;
@@ -80,7 +80,7 @@ public class CommandeController implements CommandeApi {
      * Retourne l'e-billet d'une commande payée, pour sa page publique.
      *
      * @param id l'identifiant de la commande
-     * @return 200 OK avec l'événement, ses infos pratiques, le nombre de places et le QR de la commande
+     * @return 200 OK avec l'événement, ses infos, le nombre de places et le QR de la commande
      * @throws CommandeNotFoundException si la commande est introuvable
      * @throws CommandeNotPaidException  si la commande n'est pas payée
      */
@@ -89,7 +89,7 @@ public class CommandeController implements CommandeApi {
     public ResponseEntity<EBilletDto> getEBillet(UUID id) {
         log.info("GET /commandes/{}/e-billet", id);
         Commande commande = commandeService.getPaidCommande(id);
-        PracticalInfoDto practicalInfo = pageEvenementService.getPracticalInfo(commande.getBilletterie().getEvenement());
-        return ResponseEntity.ok(commandeMapper.toEBilletDto(commande, practicalInfo));
+        EvenementInfosDto evenementInfos = pageEvenementService.getEvenementInfos(commande.getBilletterie().getEvenement());
+        return ResponseEntity.ok(commandeMapper.toEBilletDto(commande, evenementInfos));
     }
 }
