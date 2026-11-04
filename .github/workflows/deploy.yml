@@ -57,6 +57,10 @@ jobs:
           S_RABBITMQ_PASSWORD:           ${{ secrets.RABBITMQ_PASSWORD }}
           S_R2_ACCESS_KEY_ID:            ${{ secrets.R2_ACCESS_KEY_ID }}
           S_R2_SECRET_ACCESS_KEY:        ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          S_ADMIN_EMAIL:                 ${{ secrets.ADMIN_EMAIL }}
+          S_STRIPE_SECRET_KEY:           ${{ secrets.STRIPE_SECRET_KEY }}
+          S_STRIPE_WEBHOOK_SECRET:       ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          S_STRIPE_PUBLISHABLE_KEY:      ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
           V_APP_URL:                     ${{ vars.APP_URL }}
           V_APP_DOMAIN:                  ${{ vars.APP_DOMAIN }}
           V_AUTH_URL:                    ${{ vars.AUTH_URL }}
@@ -93,6 +97,10 @@ jobs:
           [[ -z "$S_RABBITMQ_PASSWORD" ]]           && missing+=("secret: RABBITMQ_PASSWORD")
           [[ -z "$S_R2_ACCESS_KEY_ID" ]]            && missing+=("secret: R2_ACCESS_KEY_ID")
           [[ -z "$S_R2_SECRET_ACCESS_KEY" ]]        && missing+=("secret: R2_SECRET_ACCESS_KEY")
+          [[ -z "$S_ADMIN_EMAIL" ]]                 && missing+=("secret: ADMIN_EMAIL")
+          [[ -z "$S_STRIPE_SECRET_KEY" ]]           && missing+=("secret: STRIPE_SECRET_KEY")
+          [[ -z "$S_STRIPE_WEBHOOK_SECRET" ]]       && missing+=("secret: STRIPE_WEBHOOK_SECRET")
+          [[ -z "$S_STRIPE_PUBLISHABLE_KEY" ]]      && missing+=("secret: STRIPE_PUBLISHABLE_KEY")
           [[ -z "$V_APP_URL" ]]                     && missing+=("var: APP_URL")
           [[ -z "$V_APP_DOMAIN" ]]                  && missing+=("var: APP_DOMAIN")
           [[ -z "$V_AUTH_URL" ]]                    && missing+=("var: AUTH_URL")
@@ -146,6 +154,7 @@ jobs:
           echo "SGILT_CORE_VERSION=$(cat sgilt-core/VERSION)" >> $GITHUB_ENV
           echo "SGILT_GATEWAY_VERSION=$(cat sgilt-gateway/VERSION)" >> $GITHUB_ENV
           echo "SGILT_NOTIFICATIONS_VERSION=$(cat sgilt-notifications/VERSION)" >> $GITHUB_ENV
+          echo "SGILT_PAY_VERSION=$(cat sgilt-pay/VERSION)" >> $GITHUB_ENV
 
       - name: Build and push sgilt-front
         run: |
@@ -227,6 +236,17 @@ jobs:
             echo "✅ Pushed $IMAGE_TAG"
           fi
 
+      - name: Build and push sgilt-pay
+        run: |
+          IMAGE_TAG="${{ env.IMAGE_PREFIX }}/sgilt-pay:${{ env.SGILT_PAY_VERSION }}"
+          if docker manifest inspect $IMAGE_TAG > /dev/null 2>&1; then
+            echo "⏭️ $IMAGE_TAG already exists, skipping build"
+          else
+            docker build -t $IMAGE_TAG sgilt-pay
+            docker push $IMAGE_TAG
+            echo "✅ Pushed $IMAGE_TAG"
+          fi
+
   # =====================
   # DEPLOY
   # =====================
@@ -248,6 +268,7 @@ jobs:
           echo "SGILT_CORE_VERSION=$(cat sgilt-core/VERSION)" >> $GITHUB_ENV
           echo "SGILT_GATEWAY_VERSION=$(cat sgilt-gateway/VERSION)" >> $GITHUB_ENV
           echo "SGILT_NOTIFICATIONS_VERSION=$(cat sgilt-notifications/VERSION)" >> $GITHUB_ENV
+          echo "SGILT_PAY_VERSION=$(cat sgilt-pay/VERSION)" >> $GITHUB_ENV
 
       - name: Generate .env
         run: |
@@ -263,6 +284,7 @@ jobs:
           SGILT_CORE_VERSION=${{ env.SGILT_CORE_VERSION }}
           SGILT_GATEWAY_VERSION=${{ env.SGILT_GATEWAY_VERSION }}
           SGILT_NOTIFICATIONS_VERSION=${{ env.SGILT_NOTIFICATIONS_VERSION }}
+          SGILT_PAY_VERSION=${{ env.SGILT_PAY_VERSION }}
 
           # URLs
           APP_URL=${{ vars.APP_URL }}
@@ -298,6 +320,14 @@ jobs:
           # Core app
           MAILER_FROM=${{ vars.MAILER_FROM }}
           OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+
+          # Admin (adresse de l'équipe Sgilt : alertes techniques)
+          ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}
+
+          # Stripe (sk_test / whsec / pk_test en staging, sandbox dédiée)
+          STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY }}
 
           # Uploads (valeur fixe, pas de variable GitHub dédiée)
           MAX_UPLOAD_SIZE_MB=10
