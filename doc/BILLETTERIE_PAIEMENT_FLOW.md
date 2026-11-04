@@ -320,8 +320,16 @@ sans payer et créerait des PaymentIntents en masse.
   compte Stripe.
 - Avant la prod : déclarer le domaine pour Apple Pay, libellé de relevé bancaire, intégrer
   `sgilt-pay` aux docker-compose et à la CI de déploiement.
-- Staging garde des clés de test en permanence, sur une sandbox Stripe dédiée (séparée de celle du
-  poste de dev, pour que les webhooks ne se mélangent pas).
+- Staging garde des clés de test en permanence. Cible : une sandbox Stripe dédiée (séparée du poste
+  de dev, pour que les webhooks ne se mélangent pas). **Pour l'instant**, le compte n'étant pas
+  activé (pas de sandbox possible), staging utilise le **Test mode** du compte, partagé avec le
+  local : un paiement local est aussi envoyé à staging et inversement ; le core qui ne connaît pas
+  la commande lève « commande introuvable » et le message finit dans `payment.succeeded.dlq` (bruit
+  sans effet). Après activation : créer la sandbox « Sgilt staging » et remplacer les trois secrets
+  Stripe de l'environnement GitHub `staging`.
+- Secrets GitHub de l'environnement (vérifiés par le job `validate` de `deploy.yml`) :
+  `ADMIN_EMAIL`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PUBLISHABLE_KEY` (cf.
+  `deploy/docs/SETUP.md`, 4.3).
 
 ### Sécurité (avant la prod)
 
