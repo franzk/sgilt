@@ -16,6 +16,7 @@ services:
       NUXT_PUBLIC_KC_REALM: ${KC_REALM}
       NUXT_PUBLIC_KC_CLIENT_ID: ${KC_FRONT_CLIENT_ID}
       NUXT_PUBLIC_IMAGE_BASE_URL: ${R2_DELIVERY_URL}
+      NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
     depends_on:
       - sgilt-keycloak
     networks:
