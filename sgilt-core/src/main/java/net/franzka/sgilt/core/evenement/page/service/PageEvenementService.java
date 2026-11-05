@@ -1,16 +1,22 @@
 package net.franzka.sgilt.core.evenement.page.service;
 
+import net.franzka.sgilt.core.evenement.page.domain.PublicPageStatus;
 import lombok.RequiredArgsConstructor;
-import net.franzka.sgilt.core.evenement.billetterie.dto.AdminTicketingDto;
+import net.franzka.sgilt.core.evenement.billetterie.exception.BilletterieNotFoundException;
+import net.franzka.sgilt.core.evenement.billetterie.exception.BilletterieOpenWithoutPublishedPageException;
+import net.franzka.sgilt.core.evenement.billetterie.exception.CapacityBelowSoldTicketsException;
+import net.franzka.sgilt.core.evenement.page.dto.OrganizerPageDto;
+import net.franzka.sgilt.core.evenement.page.dto.OrganizerPublicPageDto;
+import net.franzka.sgilt.core.evenement.page.exception.PageNotCreatedException;
+import net.franzka.sgilt.core.evenement.page.exception.PageSlugLockedException;
+import net.franzka.sgilt.core.evenement.billetterie.dto.TicketingSettingsDto;
 import net.franzka.sgilt.core.evenement.billetterie.dto.TicketingDto;
 import net.franzka.sgilt.core.evenement.billetterie.service.BilletterieService;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.page.domain.PageEvenement;
-import net.franzka.sgilt.core.evenement.page.dto.AdminPageDto;
-import net.franzka.sgilt.core.evenement.page.dto.AdminEventPublicFormDto;
+import net.franzka.sgilt.core.evenement.page.dto.PageContentDto;
 import net.franzka.sgilt.core.evenement.page.dto.EvenementInfosDto;
 import net.franzka.sgilt.core.evenement.page.dto.EventPageDto;
-import net.franzka.sgilt.core.evenement.page.exception.BilletterieWithoutPageException;
 import net.franzka.sgilt.core.evenement.page.exception.PageEvenementNotFoundException;
 import net.franzka.sgilt.core.evenement.page.exception.PageSlugAlreadyUsedException;
 import net.franzka.sgilt.core.evenement.page.mapper.PageEvenementMapper;
@@ -41,15 +47,24 @@ public class PageEvenementService {
      *
      * @param slug le slug de la page (/e/{slug})
      * @return la page publique
-     * @throws PageEvenementNotFoundException si aucune page ne correspond au slug
+     * @throws PageEvenementNotFoundException si aucune page en ligne ne correspond au slug
      */
     public EventPageDto getPublicPage(String slug) {
-        PageEvenement page = pageEvenementRepository.findBySlug(slug)
-                .orElseThrow(() -> new PageEvenementNotFoundException(slug));
-        Evenement evenement = page.getEvenement();
-        TicketingDto ticketing = billetterieService.getPublicTicketing(evenement.getId()).orElse(null);
-        LocalDateTime startsAt = startsAt(evenement);
-        return pageEvenementMapper.toEventPageDto(page, ticketing, startsAt, endsAt(evenement, startsAt));
+        PageEvenement page = getOnlinePage(slug);
+        TicketingDto ticketing = billetterieService.getPublicTicketing(page.getEvenement().getId()).orElse(null);
+        return toEventPageDto(page, ticketing);
+    }
+
+    /**
+     * Retourne l'aperçu de la page publique d'un événement, pour son organisateur : la page telle
+     * que la verront les visiteurs, publiée ou non, sans billetterie (pas d'achat depuis un aperçu).
+     *
+     * @param evenement l'événement, dont le back-office a activé la page publique
+     * @return la page, comme sur /e/{slug}
+     * @throws PageNotCreatedException si l'organisateur n'a pas encore créé la page
+     */
+    public EventPageDto getPreview(Evenement evenement) {
+        return toEventPageDto(getCreatedPage(evenement), null);
     }
 
     /**
@@ -71,39 +86,115 @@ public class PageEvenementService {
      *
      * @param slug le slug de la page (/e/{slug})
      * @return l'identifiant de l'événement
-     * @throws PageEvenementNotFoundException si aucune page ne correspond au slug
+     * @throws PageEvenementNotFoundException si aucune page en ligne ne correspond au slug
      */
     public UUID getEvenementIdBySlug(String slug) {
-        return pageEvenementRepository.findBySlug(slug)
-                .map(page -> page.getEvenement().getId())
-                .orElseThrow(() -> new PageEvenementNotFoundException(slug));
+        return getOnlinePage(slug).getEvenement().getId();
     }
 
     /**
-     * Retourne les horaires, la page et la billetterie d'un événement, tels que les saisit l'admin.
+     * Retourne la page publique d'un événement telle que l'administre son organisateur : sa page,
+     * et sa billetterie avec ses ventes si le back-office l'a activée.
      *
-     * @param evenement l'événement
-     * @return la face publique, page et billetterie à null si l'événement n'en a pas
+     * @param evenement l'événement, dont le back-office a activé la page publique
+     * @return la page publique de l'organisateur
      */
-    public AdminEventPublicFormDto getAdminPublicPage(Evenement evenement) {
-        PageEvenement page = pageEvenementRepository.findByEvenementId(evenement.getId()).orElse(null);
-        AdminTicketingDto ticketing = billetterieService.getAdminTicketing(evenement.getId()).orElse(null);
-        return pageEvenementMapper.toAdminEventPublicFormDto(evenement, page, ticketing);
+    public OrganizerPublicPageDto getOrganizerPublicPage(Evenement evenement) {
+        OrganizerPageDto page = pageEvenementRepository.findByEvenementId(evenement.getId())
+                .map(pageEvenementMapper::toOrganizerPageDto)
+                .orElse(null);
+        return new OrganizerPublicPageDto(
+                evenement.isBilletterieEnabled(),
+                page,
+                billetterieService.getOrganizerTicketing(evenement.getId()).orElse(null),
+                billetterieService.getSales(evenement.getId()).orElse(null));
     }
 
     /**
-     * Crée, met à jour ou supprime (saisie null) la page et la billetterie d'un événement.
+     * Enregistre le contenu de la page d'un événement, saisi par son organisateur. Le premier
+     * enregistrement crée la page, en brouillon.
+     *
+     * @param evenement l'événement, dont le back-office a activé la page publique
+     * @param content   le contenu saisi
+     * @throws PageSlugAlreadyUsedException si le slug est celui de la page d'un autre événement
+     * @throws PageSlugLockedException      si le slug change alors que la page a déjà été publiée
+     */
+    public void putOrganizerContent(Evenement evenement, PageContentDto content) {
+        Optional<PageEvenement> existing = pageEvenementRepository.findByEvenementId(evenement.getId());
+        existing.filter(page -> page.getFirstPublishedAt() != null && !page.getSlug().equals(content.slug()))
+                .ifPresent(page -> { throw new PageSlugLockedException(evenement.getId()); });
+        if (!isSlugAvailable(content.slug(), evenement)) throw new PageSlugAlreadyUsedException(content.slug());
+        PageEvenement pageEvenement = existing
+                .map(value -> applyPage(value, content))
+                .orElseGet(() -> pageEvenementMapper.toPageEvenement(content, evenement));
+        pageEvenementRepository.save(pageEvenement);
+    }
+
+    /**
+     * Publie la page d'un événement : elle est en ligne sur /e/{slug}. La première publication
+     * verrouille le slug. Republier une page publiée ne change rien.
+     *
+     * @param evenement l'événement, dont le back-office a activé la page publique
+     * @throws PageNotCreatedException si l'organisateur n'a pas encore créé la page
+     */
+    public void publish(Evenement evenement) {
+        PageEvenement page = getCreatedPage(evenement);
+        if (page.getPublishedAt() != null) return;
+        markPublished(page);
+        pageEvenementRepository.save(page);
+    }
+
+    /**
+     * Dépublie la page d'un événement : elle redevient un brouillon, introuvable sur /e/{slug}, et
+     * plus rien ne s'y vend. Le statut de sa billetterie ne change pas ; le slug reste verrouillé.
+     *
+     * @param evenement l'événement, dont le back-office a activé la page publique
+     * @throws PageNotCreatedException si l'organisateur n'a pas encore créé la page
+     */
+    public void unpublish(Evenement evenement) {
+        PageEvenement page = getCreatedPage(evenement);
+        page.setPublishedAt(null);
+        pageEvenementRepository.save(page);
+    }
+
+    /**
+     * Enregistre les réglages de la billetterie d'un événement, saisis par son organisateur.
+     *
+     * @param evenement l'événement, dont le back-office a activé la page publique
+     * @param ticketing les réglages saisis
+     * @throws BilletterieNotFoundException                  si le back-office n'a pas activé la billetterie
+     * @throws BilletterieOpenWithoutPublishedPageException si on l'ouvre alors que la page n'est pas publiée
+     * @throws CapacityBelowSoldTicketsException             si la jauge passe sous les places vendues
+     */
+    public void putOrganizerTicketing(Evenement evenement, TicketingSettingsDto ticketing) {
+        boolean pagePublished = pageEvenementRepository.findByEvenementId(evenement.getId())
+                .map(page -> page.getPublishedAt() != null)
+                .orElse(false);
+        billetterieService.putOrganizerTicketing(evenement, ticketing, pagePublished);
+    }
+
+    /**
+     * Retourne l'état de la page publique d'un événement, pour son organisateur.
      *
      * @param evenement l'événement
-     * @param page      la page saisie, ou null pour qu'il n'en ait plus
-     * @param ticketing la billetterie saisie, ou null pour qu'il n'en ait plus
-     * @throws BilletterieWithoutPageException si une billetterie est saisie sans page
-     * @throws PageSlugAlreadyUsedException    si le slug est celui de la page d'un autre événement
+     * @return pas encore créée, brouillon ou publiée ; null si le back-office ne l'a pas activée
      */
-    public void putPublicPage(Evenement evenement, AdminPageDto page, AdminTicketingDto ticketing) {
-        if (page == null && ticketing != null) throw new BilletterieWithoutPageException(evenement.getId());
-        putPage(evenement, page);
-        billetterieService.putTicketing(evenement, ticketing);
+    public PublicPageStatus getPublicPageStatus(Evenement evenement) {
+        if (!evenement.isPagePubliqueEnabled()) return null;
+        return pageEvenementRepository.findByEvenementId(evenement.getId())
+                .map(page -> page.getPublishedAt() != null ? PublicPageStatus.PUBLISHED : PublicPageStatus.DRAFT)
+                .orElse(PublicPageStatus.NOT_CREATED);
+    }
+
+    /**
+     * Indique si la page d'un événement est en ligne : publiée, et page publique activée par le
+     * back-office.
+     *
+     * @param evenement l'événement
+     * @return false si l'événement n'a pas de page, ou qu'elle est hors ligne
+     */
+    public boolean isOnline(Evenement evenement) {
+        return pageEvenementRepository.findByEvenementId(evenement.getId()).filter(this::isOnline).isPresent();
     }
 
     /**
@@ -126,24 +217,43 @@ public class PageEvenementService {
                 .collect(Collectors.toMap(page -> page.getEvenement().getId(), PageEvenement::getSlug));
     }
 
+    // Met la page en ligne maintenant ; la première fois, verrouille son slug.
+    private PageEvenement markPublished(PageEvenement pageEvenement) {
+        LocalDateTime now = LocalDateTime.now();
+        pageEvenement.setPublishedAt(now);
+        if (pageEvenement.getFirstPublishedAt() == null) pageEvenement.setFirstPublishedAt(now);
+        return pageEvenement;
+    }
+
+    // Page telle qu'affichée sur /e/{slug}, horaires calculés depuis l'événement.
+    private EventPageDto toEventPageDto(PageEvenement page, TicketingDto ticketing) {
+        LocalDateTime startsAt = startsAt(page.getEvenement());
+        return pageEvenementMapper.toEventPageDto(page, ticketing, startsAt, endsAt(page.getEvenement(), startsAt));
+    }
+
+    // Page de l'événement, que l'organisateur doit avoir créée.
+    private PageEvenement getCreatedPage(Evenement evenement) {
+        return pageEvenementRepository.findByEvenementId(evenement.getId())
+                .orElseThrow(() -> new PageNotCreatedException(evenement.getId()));
+    }
+
+    // En ligne : publiée, et page publique de son événement activée par le back-office.
+    private boolean isOnline(PageEvenement page) {
+        return page.getPublishedAt() != null && page.getEvenement().isPagePubliqueEnabled();
+    }
+
     /**
-     * Crée, met à jour ou supprime (saisie null) la page d'un événement.
+     * Charge une page en ligne : publiée, et page publique de son événement activée par le
+     * back-office. Un brouillon ou une page désactivée est introuvable pour le public.
      *
-     * @param evenement l'événement
-     * @param page      la page saisie, ou null pour qu'il n'en ait plus
-     * @throws PageSlugAlreadyUsedException si le slug est celui de la page d'un autre événement
+     * @param slug le slug de la page (/e/{slug})
+     * @return la page
+     * @throws PageEvenementNotFoundException si aucune page en ligne ne correspond au slug
      */
-    private void putPage(Evenement evenement, AdminPageDto page) {
-        Optional<PageEvenement> existing = pageEvenementRepository.findByEvenementId(evenement.getId());
-        if (page == null) {
-            existing.ifPresent(pageEvenementRepository::delete);
-            return;
-        }
-        if (!isSlugAvailable(page.slug(), evenement)) throw new PageSlugAlreadyUsedException(page.slug());
-        PageEvenement pageEvenement = existing
-                .map(value -> applyPage(value, page))
-                .orElseGet(() -> pageEvenementMapper.toPageEvenement(page, evenement));
-        pageEvenementRepository.save(pageEvenement);
+    private PageEvenement getOnlinePage(String slug) {
+        return pageEvenementRepository.findBySlug(slug)
+                .filter(this::isOnline)
+                .orElseThrow(() -> new PageEvenementNotFoundException(slug));
     }
 
     /**
@@ -153,7 +263,7 @@ public class PageEvenementService {
      * @param page          la page saisie
      * @return la page mise à jour
      */
-    private PageEvenement applyPage(PageEvenement pageEvenement, AdminPageDto page) {
+    private PageEvenement applyPage(PageEvenement pageEvenement, PageContentDto page) {
         pageEvenement.setSlug(page.slug());
         pageEvenement.setTag(page.tag());
         pageEvenement.setSubtitle(page.subtitle());

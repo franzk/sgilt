@@ -107,9 +107,9 @@ class CommandeMapperTest {
                     LocalDate.of(2026, 12, 3), LocalDateTime.of(2026, 12, 3, 19, 0), null,
                     "Le Taennel", "Scherwiller (67)", List.of("Vestiaire"));
 
-            assertThat(mapper.toEBilletDto(commande, evenementInfos))
+            assertThat(mapper.toEBilletDto(commande, evenementInfos, true))
                     .isEqualTo(new EBilletDto("Les Jeudis du Taennel", "bank/taennel.png", "evenement_public",
-                            evenementInfos, 4, "SGILT:C:q3Zx9kP2mL7vT1nR8wY4sA"));
+                            evenementInfos, 4, "SGILT:C:q3Zx9kP2mL7vT1nR8wY4sA", true));
         }
     }
 }

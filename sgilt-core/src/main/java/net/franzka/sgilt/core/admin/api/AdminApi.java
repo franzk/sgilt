@@ -3,8 +3,8 @@ package net.franzka.sgilt.core.admin.api;
 import jakarta.validation.Valid;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireRequest;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireResponse;
+import net.franzka.sgilt.core.evenement.dto.AdminEvenementFeaturesDto;
 import net.franzka.sgilt.core.evenement.dto.AdminEvenementListItemDto;
-import net.franzka.sgilt.core.evenement.page.dto.AdminEventPublicFormDto;
 import net.franzka.sgilt.core.onboarding.dto.OnboardingPendingDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireAdminListItemDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireOnboardingPendingDto;
@@ -54,9 +54,6 @@ public interface AdminApi {
     @GetMapping("/evenements")
     ResponseEntity<List<AdminEvenementListItemDto>> listEvenements();
 
-    @GetMapping("/evenements/{id}/page-publique")
-    ResponseEntity<AdminEventPublicFormDto> getPublicPage(@PathVariable UUID id);
-
-    @PutMapping("/evenements/{id}/page-publique")
-    ResponseEntity<AdminEventPublicFormDto> putPublicPage(@PathVariable UUID id, @RequestBody @Valid AdminEventPublicFormDto request);
+    @PutMapping("/evenements/{id}/fonctionnalites")
+    ResponseEntity<AdminEvenementListItemDto> putFeatures(@PathVariable UUID id, @RequestBody AdminEvenementFeaturesDto request);
 }

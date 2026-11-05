@@ -54,4 +54,6 @@ export interface EBilletDto {
   quantity: number
   // Contenu du QR, présenté à l'entrée (SGILT:C:<code>).
   qrContent: string
+  // Page de l'événement en ligne : sinon, pas de lien vers elle.
+  pageOnline: boolean
 }

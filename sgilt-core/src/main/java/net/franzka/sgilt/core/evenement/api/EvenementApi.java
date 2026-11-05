@@ -1,5 +1,7 @@
 package net.franzka.sgilt.core.evenement.api;
 
+import net.franzka.sgilt.core.evenement.dto.EventHorairesDto;
+import org.springframework.web.bind.annotation.PutMapping;
 import jakarta.validation.Valid;
 import net.franzka.sgilt.core.evenement.dto.AddReservationRequest;
 import net.franzka.sgilt.core.evenement.dto.CoverSelectDto;
@@ -41,6 +43,9 @@ public interface EvenementApi {
 
     @PatchMapping("/{eventId}")
     ResponseEntity<EventMetaDto> patchEvent(@PathVariable UUID eventId, @RequestBody EventMetaPatchDto patch);
+
+    @PutMapping("/{eventId}/horaires")
+    ResponseEntity<EventMetaDto> putHoraires(@PathVariable UUID eventId, @RequestBody EventHorairesDto horaires);
 
     @GetMapping("/{eventId}/journal")
     ResponseEntity<Page<JournalEvenementDto>> getJournal(

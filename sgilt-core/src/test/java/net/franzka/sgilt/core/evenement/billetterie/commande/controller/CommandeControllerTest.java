@@ -106,7 +106,8 @@ class CommandeControllerTest {
             EBilletDto dto = mock(EBilletDto.class);
             when(commandeService.getPaidCommande(id)).thenReturn(commande);
             when(pageEvenementService.getEvenementInfos(evenement)).thenReturn(evenementInfos);
-            when(commandeMapper.toEBilletDto(commande, evenementInfos)).thenReturn(dto);
+            when(pageEvenementService.isOnline(evenement)).thenReturn(true);
+            when(commandeMapper.toEBilletDto(commande, evenementInfos, true)).thenReturn(dto);
 
             ResponseEntity<EBilletDto> result = controller.getEBillet(id);
 

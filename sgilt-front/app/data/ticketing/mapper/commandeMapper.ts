@@ -45,5 +45,6 @@ export function mapEBillet(dto: EBilletDto): EBillet {
     evenementInfos: mapEvenementInfos(dto.evenementInfos),
     quantity: dto.quantity,
     qrContent: dto.qrContent,
+    pageOnline: dto.pageOnline,
   }
 }

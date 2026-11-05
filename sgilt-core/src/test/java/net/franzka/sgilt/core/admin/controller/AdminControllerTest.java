@@ -4,13 +4,8 @@ import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireRequest;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireResponse;
 import net.franzka.sgilt.core.admin.exception.SlugAlreadyExistsException;
 import net.franzka.sgilt.core.admin.service.AdminOnboardingService;
-import net.franzka.sgilt.core.evenement.billetterie.domain.BilletterieStatus;
-import net.franzka.sgilt.core.evenement.billetterie.dto.AdminTicketingDto;
-import net.franzka.sgilt.core.evenement.domain.Evenement;
+import net.franzka.sgilt.core.evenement.dto.AdminEvenementFeaturesDto;
 import net.franzka.sgilt.core.evenement.dto.AdminEvenementListItemDto;
-import net.franzka.sgilt.core.evenement.page.dto.AdminPageDto;
-import net.franzka.sgilt.core.evenement.page.dto.AdminEventPublicFormDto;
-import net.franzka.sgilt.core.evenement.page.service.PageEvenementService;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.keycloak.KeycloakAdminService;
 import net.franzka.sgilt.core.onboarding.dto.OnboardingPendingDto;
@@ -34,7 +29,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
-import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -66,9 +60,6 @@ class AdminControllerTest {
 
     @Mock
     private EvenementService evenementService;
-
-    @Mock
-    private PageEvenementService pageEvenementService;
 
     @Mock
     private PlatformTransactionManager transactionManager;
@@ -323,46 +314,22 @@ class AdminControllerTest {
     }
 
     // -------------------------------------------------------------------------
-    // getPublicPage
+    // putFeatures
     // -------------------------------------------------------------------------
 
     @Nested
-    class GetPublicPage {
+    class PutFeatures {
 
         @Test
-        void givenEvenement_whenGetPublicPage_thenReturnsItsPublicPage() {
+        void givenRequest_whenPutFeatures_thenReplacesThemAndReturnsUpdatedEvenement() {
             UUID id = UUID.randomUUID();
-            Evenement evenement = Evenement.builder().id(id).build();
-            AdminEventPublicFormDto dto = mock(AdminEventPublicFormDto.class);
-            when(evenementService.getById(id)).thenReturn(evenement);
-            when(pageEvenementService.getAdminPublicPage(evenement)).thenReturn(dto);
+            AdminEvenementFeaturesDto request = new AdminEvenementFeaturesDto(true, false);
+            AdminEvenementListItemDto updated = mock(AdminEvenementListItemDto.class);
+            when(evenementService.replacePublicFeatures(id, request)).thenReturn(updated);
 
-            assertThat(controller.getPublicPage(id).getBody()).isSameAs(dto);
-        }
-    }
+            ResponseEntity<AdminEvenementListItemDto> response = controller.putFeatures(id, request);
 
-    // -------------------------------------------------------------------------
-    // putPublicPage
-    // -------------------------------------------------------------------------
-
-    @Nested
-    class PutPublicPage {
-
-        @Test
-        void givenRequest_whenPutPublicPage_thenReplacesHoursThenPageAndReturnsSavedState() {
-            UUID id = UUID.randomUUID();
-            Evenement evenement = Evenement.builder().id(id).build();
-            AdminPageDto page = new AdminPageDto("slug", null, null, null, null, List.of(), List.of(), List.of());
-            AdminTicketingDto ticketing = new AdminTicketingDto(BilletterieStatus.OPEN, 1200, 150);
-            AdminEventPublicFormDto request = new AdminEventPublicFormDto(LocalTime.of(19, 0), null, page, ticketing);
-            AdminEventPublicFormDto saved = mock(AdminEventPublicFormDto.class);
-            when(evenementService.replaceHoraires(id, LocalTime.of(19, 0), null)).thenReturn(evenement);
-            when(pageEvenementService.getAdminPublicPage(evenement)).thenReturn(saved);
-
-            ResponseEntity<AdminEventPublicFormDto> response = controller.putPublicPage(id, request);
-
-            verify(pageEvenementService).putPublicPage(evenement, page, ticketing);
-            assertThat(response.getBody()).isSameAs(saved);
+            assertThat(response.getBody()).isSameAs(updated);
         }
     }
 }

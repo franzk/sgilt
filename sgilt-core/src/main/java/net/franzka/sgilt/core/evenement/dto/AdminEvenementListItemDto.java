@@ -12,11 +12,15 @@ import java.util.UUID;
  * @param date       la date de l'événement
  * @param ownerEmail l'e-mail de son propriétaire
  * @param slug       le slug de sa page publique, ou null s'il n'en a pas
+ * @param pagePubliqueEnabled interrupteur : la page publique est activée
+ * @param billetterieEnabled  interrupteur : la billetterie est activée
  */
 public record AdminEvenementListItemDto(
         UUID id,
         String title,
         LocalDate date,
         String ownerEmail,
-        String slug
+        String slug,
+        boolean pagePubliqueEnabled,
+        boolean billetterieEnabled
 ) {}

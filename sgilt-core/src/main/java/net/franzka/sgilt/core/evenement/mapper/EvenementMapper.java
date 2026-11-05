@@ -1,5 +1,6 @@
 package net.franzka.sgilt.core.evenement.mapper;
 
+import net.franzka.sgilt.core.evenement.page.domain.PublicPageStatus;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.domain.EvenementRubrique;
 import net.franzka.sgilt.core.evenement.dto.AdminEvenementListItemDto;
@@ -42,6 +43,8 @@ public interface EvenementMapper {
     @Mapping(source = "evenement.date",              target = "date")
     @Mapping(source = "evenement.utilisateur.email", target = "ownerEmail")
     @Mapping(source = "slug",                        target = "slug")
+    @Mapping(source = "evenement.pagePubliqueEnabled", target = "pagePubliqueEnabled")
+    @Mapping(source = "evenement.billetterieEnabled",  target = "billetterieEnabled")
     AdminEvenementListItemDto toAdminListItemDto(Evenement evenement, String slug);
 
     @Mapping(source = "evenement.notePartagee", target = "sharedNote")
@@ -50,7 +53,10 @@ public interface EvenementMapper {
     @Mapping(source = "evenement.utilisateur",  target = "clientInfo")
     @Mapping(source = "evenement.imagePath",    target = "imagePath")
     @Mapping(source = "lastUpdateDate",         target = "lastUpdateDate")
-    EventMetaDto toMetaDto(Evenement evenement, LocalDateTime lastUpdateDate);
+    @Mapping(source = "publicPageStatus",       target = "publicPageStatus")
+    @Mapping(source = "evenement.startTime",    target = "startTime")
+    @Mapping(source = "evenement.endTime",      target = "endTime")
+    EventMetaDto toMetaDto(Evenement evenement, LocalDateTime lastUpdateDate, PublicPageStatus publicPageStatus);
 
     /**
      * Mappe un événement complet (pas encore créé) vers l'entité, en statut ACTIVE, avec les

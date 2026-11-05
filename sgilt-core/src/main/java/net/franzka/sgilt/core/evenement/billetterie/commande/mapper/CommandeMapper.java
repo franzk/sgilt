@@ -65,6 +65,7 @@ public interface CommandeMapper {
      *
      * @param commande       la commande payée, avec sa billetterie et son événement
      * @param evenementInfos les infos de l'événement
+     * @param pageOnline     la page de l'événement est en ligne
      * @return l'événement, ses infos, le nombre de places et le QR de la commande
      */
     @Mapping(target = "title",          source = "commande.billetterie.evenement.title")
@@ -73,5 +74,6 @@ public interface CommandeMapper {
     @Mapping(target = "evenementInfos", source = "evenementInfos")
     @Mapping(target = "quantity",       source = "commande.quantity")
     @Mapping(target = "qrContent",      expression = "java(EntryCodeUtils.commandeQrContent(commande.getCode()))")
-    EBilletDto toEBilletDto(Commande commande, EvenementInfosDto evenementInfos);
+    @Mapping(target = "pageOnline",     source = "pageOnline")
+    EBilletDto toEBilletDto(Commande commande, EvenementInfosDto evenementInfos, boolean pageOnline);
 }

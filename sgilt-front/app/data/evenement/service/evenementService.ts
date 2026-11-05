@@ -6,6 +6,7 @@ import {
   getEventApi,
   getEventJournalApi,
   patchEventApi,
+  putEventHorairesApi,
   uploadEventCoverApi,
   selectEventCoverApi,
   addReservationApi,
@@ -47,6 +48,19 @@ export async function fetchEventJournal(
 
 export async function patchEvent(eventId: string, patch: EventMetaPatch): Promise<EventMeta> {
   const dto = await patchEventApi(eventId, patch)
+  return mapEventMeta(dto).event
+}
+
+// Remplace les deux horaires ('HH:mm') à la fois ; une heure vide est effacée.
+export async function putEventHoraires(
+  eventId: string,
+  startTime: string,
+  endTime: string,
+): Promise<EventMeta> {
+  const dto = await putEventHorairesApi(eventId, {
+    startTime: startTime || null,
+    endTime: endTime || null,
+  })
   return mapEventMeta(dto).event
 }
 

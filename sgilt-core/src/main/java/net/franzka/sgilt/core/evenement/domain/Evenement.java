@@ -63,6 +63,12 @@ public class Evenement {
 
     private String notePartagee;
 
+    /** Interrupteur du back-office : l'événement a une page publique (/e/{slug}). */
+    private boolean pagePubliqueEnabled;
+
+    /** Interrupteur du back-office : la page vend des billets ; jamais sans {@link #pagePubliqueEnabled}. */
+    private boolean billetterieEnabled;
+
     /** Rubriques de l'événement, dans l'ordre d'affichage (copiées du template à la création). */
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", nullable = false)

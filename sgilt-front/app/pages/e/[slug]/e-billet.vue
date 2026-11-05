@@ -3,6 +3,8 @@
   commande (un seul, qui fait entrer toutes ses places), à présenter à l'entrée, et les infos
   pratiques. Même hero que la fiche (SgiltHero), sans le bouton partager : il partagerait l'URL,
   donc l'e-billet. Ouvert par l'id de la commande seul, sans compte ; jamais indexé (cf. routeRules).
+  Ne dépend pas de la fiche (cf. middleware ticketing) : le slug de l'URL ne sert qu'au lien retour,
+  affiché seulement si la page de l'événement est en ligne.
   Commande inconnue ou pas payée (404 du back) : renvoi à la fiche de l'événement. Toute autre
   erreur laisse l'acheteur réessayer sur place : son e-billet existe, il est peut-être à l'entrée.
 -->
@@ -54,7 +56,7 @@
           <a href="mailto:contact@sgilt.alsace">contact@sgilt.alsace</a>
         </p>
 
-        <NuxtLink :to="`/e/${slug}`" class="secondary-cta">
+        <NuxtLink v-if="eBillet.pageOnline" :to="`/e/${slug}`" class="secondary-cta">
           <ArrowLeftSIcon class="icon" aria-hidden="true" />
           {{ $t('ticketing.e-billet.back-to-event') }}
         </NuxtLink>

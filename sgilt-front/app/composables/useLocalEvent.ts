@@ -57,13 +57,19 @@ export type EventInfoFields = Pick<
   | 'ambiance'
   | 'momentCle'
   | 'description'
->
+> & {
+  // Horaires ('HH:mm', '' sans horaire) : seulement pour un événement en base (paramètres).
+  startTime?: string
+  endTime?: string
+}
 
-// Information modifiable une à une (une carte de EventInfoCards) : 'lieu' couvre la ville et le lieu.
+// Information modifiable une à une (une carte de EventInfoCards) : 'lieu' couvre la ville et le lieu,
+// 'horaires' le début et la fin.
 export type EventInfoFieldKey =
   | 'title'
   | 'eventType'
   | 'date'
+  | 'horaires'
   | 'lieu'
   | 'nbInvites'
   | 'ambiance'
@@ -74,10 +80,13 @@ export type EventInfoFieldKey =
 export const ESSENTIAL_EVENT_INFO: EventInfoFieldKey[] = ['eventType', 'date', 'lieu']
 
 // Information essentielle non renseignée. Le lieu compte par sa ville (le nom du lieu reste
-// facultatif).
+// facultatif). Les horaires ne sont pas essentiels : leur branche ne sert qu'au typage (ils ne
+// sont pas un champ unique de EventInfoFields).
 export function isEssentialInfoMissing(event: EventInfoFields, key: EventInfoFieldKey): boolean {
   if (!ESSENTIAL_EVENT_INFO.includes(key)) return false
-  return !(key === 'lieu' ? event.ville : event[key])
+  if (key === 'lieu') return !event.ville
+  if (key === 'horaires') return !event.startTime
+  return !event[key]
 }
 
 function defaultLocalEvent(): LocalEvent {

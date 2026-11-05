@@ -39,6 +39,16 @@ export function formatTimeOfDay(d: Date | string | null | undefined): string {
 }
 
 /**
+ * Formate une heure 'HH:mm' en français. Ex : "19h", "19h30"
+ * Retourne '' si absente.
+ */
+export function formatClockTime(time: string | null | undefined): string {
+  if (!time) return ''
+  const [hours = '', minutes = ''] = time.split(':')
+  return `${Number(hours)}h${minutes && minutes !== '00' ? minutes : ''}`
+}
+
+/**
  * Formate une date en français avec le jour de la semaine. Ex : "Samedi 12 juin 2027"
  * Accepte Date, ISO string, null ou undefined. Retourne '' si absent.
  */

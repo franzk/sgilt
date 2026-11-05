@@ -60,6 +60,12 @@ public class PageEvenement {
     @Column(columnDefinition = "jsonb", nullable = false)
     private List<PageEvenementPicto> pictos;
 
+    /** Date de publication ; null tant que la page est un brouillon, introuvable sur /e/{slug}. */
+    private LocalDateTime publishedAt;
+
+    /** Date de la première publication, qui verrouille le slug ; null si jamais publiée. */
+    private LocalDateTime firstPublishedAt;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

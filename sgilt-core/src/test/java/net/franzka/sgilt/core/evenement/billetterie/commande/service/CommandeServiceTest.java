@@ -120,6 +120,57 @@ class CommandeServiceTest {
     }
 
     // -------------------------------------------------------------------------
+    // getSoldTickets / getHeldTickets
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetSoldTickets {
+
+        @Test
+        void givenPaidCommandes_whenGetSoldTickets_thenSumsTheirPlaces() {
+            when(commandeRepository.findByBilletterieIdAndStatus(BILLETTERIE_ID, CommandeStatus.PAID))
+                    .thenReturn(commandes(List.of(2, 3)));
+
+            assertThat(commandeService.getSoldTickets(billetterie)).isEqualTo(5);
+        }
+    }
+
+    @Nested
+    class GetHeldTickets {
+
+        @Test
+        void givenPendingCommandesNotYetExpired_whenGetHeldTickets_thenSumsTheirPlaces() {
+            when(commandeRepository.findByBilletterieIdAndStatusAndExpiresAtAfter(
+                    eq(BILLETTERIE_ID), eq(CommandeStatus.PENDING), any(LocalDateTime.class)))
+                    .thenReturn(commandes(List.of(1, 4)));
+
+            assertThat(commandeService.getHeldTickets(billetterie)).isEqualTo(5);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // hasSales
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class HasSales {
+
+        @Test
+        void givenPaidCommande_whenHasSales_thenReturnsTrue() {
+            when(commandeRepository.existsByBilletterieIdAndStatus(BILLETTERIE_ID, CommandeStatus.PAID)).thenReturn(true);
+
+            assertThat(commandeService.hasSales(billetterie)).isTrue();
+        }
+
+        @Test
+        void givenNoPaidCommande_whenHasSales_thenReturnsFalse() {
+            when(commandeRepository.existsByBilletterieIdAndStatus(BILLETTERIE_ID, CommandeStatus.PAID)).thenReturn(false);
+
+            assertThat(commandeService.hasSales(billetterie)).isFalse();
+        }
+    }
+
+    // -------------------------------------------------------------------------
     // createCommande
     // -------------------------------------------------------------------------
 

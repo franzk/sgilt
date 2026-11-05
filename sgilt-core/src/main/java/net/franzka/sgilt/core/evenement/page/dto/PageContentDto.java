@@ -1,12 +1,13 @@
 package net.franzka.sgilt.core.evenement.page.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import net.franzka.sgilt.core.evenement.page.domain.PageEvenementPicto;
 
 import java.util.List;
 
 /**
- * Page d'un événement telle que la saisit le back-office admin.
+ * Contenu de la page d'un événement, tel que le saisit son organisateur.
  *
  * @param slug          le slug de la page (/e/{slug}), unique
  * @param tag           le libellé libre au-dessus du titre, ou null
@@ -17,8 +18,9 @@ import java.util.List;
  * @param practicalInfo les infos pratiques, montrées après l'achat (null = aucune)
  * @param pictos        les points forts de la page (null = aucun)
  */
-public record AdminPageDto(
-        @NotBlank String slug,
+public record PageContentDto(
+        // En kebab-case : minuscules, chiffres, tirets simples (ex. les-jeudis-du-taennel).
+        @NotBlank @Pattern(regexp = "^[a-z0-9]+(-[a-z0-9]+)*$") String slug,
         String tag,
         String subtitle,
         String sectionTitle,

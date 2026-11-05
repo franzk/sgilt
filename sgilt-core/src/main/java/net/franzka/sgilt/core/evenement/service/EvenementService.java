@@ -1,8 +1,12 @@
 package net.franzka.sgilt.core.evenement.service;
 
+import net.franzka.sgilt.core.evenement.dto.EventHorairesDto;
 import lombok.RequiredArgsConstructor;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.domain.EvenementRubrique;
+import net.franzka.sgilt.core.evenement.billetterie.exception.BilletterieWithSalesException;
+import net.franzka.sgilt.core.evenement.billetterie.service.BilletterieService;
+import net.franzka.sgilt.core.evenement.dto.AdminEvenementFeaturesDto;
 import net.franzka.sgilt.core.evenement.dto.AdminEvenementListItemDto;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
 import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
@@ -19,6 +23,8 @@ import net.franzka.sgilt.core.evenement.dto.RubriqueDto;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotAllowedException;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotFoundException;
 import net.franzka.sgilt.core.evenement.mapper.EvenementMapper;
+import net.franzka.sgilt.core.evenement.page.exception.BilletterieWithoutPageException;
+import net.franzka.sgilt.core.evenement.page.exception.PagePubliqueDisabledException;
 import net.franzka.sgilt.core.evenement.page.service.PageEvenementService;
 import net.franzka.sgilt.core.evenement.repository.EvenementRepository;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
@@ -65,6 +71,7 @@ public class EvenementService {
     private final FileStorageService fileStorageService;
     private final TemplateService templateService;
     private final PageEvenementService pageEvenementService;
+    private final BilletterieService billetterieService;
 
     /**
      * Retourne la liste des événements de l'utilisateur identifié par son id.
@@ -92,30 +99,45 @@ public class EvenementService {
     }
 
     /**
-     * Charge un événement par son identifiant, sans contrôle d'accès (back-office admin).
+     * Active ou désactive la page publique et la billetterie d'un événement (back-office admin).
+     * Désactiver ne supprime ni la page ni la billetterie.
      *
-     * @param eventId l'identifiant de l'événement
-     * @return l'événement
-     * @throws EvenementNotFoundException si l'événement n'existe pas
+     * @param eventId  l'identifiant de l'événement
+     * @param features les interrupteurs saisis
+     * @return l'événement mis à jour, tel que le liste le back-office
+     * @throws EvenementNotFoundException      si l'événement n'existe pas
+     * @throws BilletterieWithoutPageException si la billetterie est activée sans la page publique
+     * @throws BilletterieWithSalesException   si on désactive une billetterie qui a des ventes
      */
-    public Evenement getById(UUID eventId) {
-        return chargerEvenement(eventId);
+    public AdminEvenementListItemDto replacePublicFeatures(UUID eventId, AdminEvenementFeaturesDto features) {
+        if (features.billetterieEnabled() && !features.pagePubliqueEnabled()) {
+            throw new BilletterieWithoutPageException(eventId);
+        }
+        Evenement event = chargerEvenement(eventId);
+        if (event.isBilletterieEnabled() && !features.billetterieEnabled()) {
+            billetterieService.checkCanBeDisabled(eventId);
+        }
+        event.setPagePubliqueEnabled(features.pagePubliqueEnabled());
+        event.setBilletterieEnabled(features.billetterieEnabled());
+        Evenement saved = evenementRepository.save(event);
+        return evenementMapper.toAdminListItemDto(saved, pageEvenementService.getSlug(saved).orElse(null));
     }
 
     /**
-     * Remplace les horaires d'un événement (back-office admin) ; une heure à null n'existe pas.
+     * Charge un événement dont l'organisateur administre la page publique : il doit en être le
+     * propriétaire, et le back-office doit avoir activé sa page publique.
      *
-     * @param eventId   l'identifiant de l'événement
-     * @param startTime l'heure de début, ou null
-     * @param endTime   l'heure de fin, ou null
-     * @return l'événement mis à jour
-     * @throws EvenementNotFoundException si l'événement n'existe pas
+     * @param eventId       l'identifiant de l'événement
+     * @param utilisateurId l'identifiant de l'utilisateur connecté
+     * @return l'événement
+     * @throws EvenementNotFoundException    si l'événement n'existe pas
+     * @throws EvenementNotAllowedException  si l'événement n'appartient pas à l'utilisateur connecté
+     * @throws PagePubliqueDisabledException si le back-office n'a pas activé sa page publique
      */
-    public Evenement replaceHoraires(UUID eventId, LocalTime startTime, LocalTime endTime) {
-        Evenement event = chargerEvenement(eventId);
-        event.setStartTime(startTime);
-        event.setEndTime(endTime);
-        return evenementRepository.save(event);
+    public Evenement getOwnedEventWithPagePublique(UUID eventId, UUID utilisateurId) {
+        Evenement event = getOwnedEvent(eventId, utilisateurId);
+        if (!event.isPagePubliqueEnabled()) throw new PagePubliqueDisabledException(eventId);
+        return event;
     }
 
     /**
@@ -131,7 +153,7 @@ public class EvenementService {
     public EventDto getEvent(UUID eventId, UUID utilisateurId) {
         Evenement event = getOwnedEvent(eventId, utilisateurId);
         LocalDateTime lastUpdateDate = journalEvenementService.derniereModification(eventId).orElse(null);
-        EventMetaDto meta = evenementMapper.toMetaDto(event, lastUpdateDate);
+        EventMetaDto meta = evenementMapper.toMetaDto(event, lastUpdateDate, pageEvenementService.getPublicPageStatus(event));
         return new EventDto(meta, rubriquesWithReservations(event));
     }
 
@@ -266,7 +288,36 @@ public class EvenementService {
         evenementRepository.save(event);
         journalEvenementService.save(event, modifications);
         LocalDateTime lastUpdateDate = journalEvenementService.derniereModification(eventId).orElse(null);
-        return evenementMapper.toMetaDto(event, lastUpdateDate);
+        return evenementMapper.toMetaDto(event, lastUpdateDate, pageEvenementService.getPublicPageStatus(event));
+    }
+
+    /**
+     * Remplace les horaires d'un événement, saisis par son organisateur : les deux à la fois, une
+     * heure à null étant effacée. Le changement est inscrit au journal de l'événement.
+     *
+     * @param eventId       l'identifiant de l'événement
+     * @param utilisateurId l'identifiant de l'utilisateur connecté
+     * @param horaires      les horaires saisis
+     * @return les métadonnées mises à jour
+     * @throws EvenementNotFoundException   si l'événement n'existe pas
+     * @throws EvenementNotAllowedException si l'événement n'appartient pas à l'utilisateur connecté
+     */
+    public EventMetaDto replaceOwnedHoraires(UUID eventId, UUID utilisateurId, EventHorairesDto horaires) {
+        Evenement event = getOwnedEvent(eventId, utilisateurId);
+        List<ModificationChamp> modifications = new ArrayList<>();
+        addIfUpdated(modifications, "heureDebut", timeLabel(event.getStartTime()), timeLabel(horaires.startTime()));
+        addIfUpdated(modifications, "heureFin",   timeLabel(event.getEndTime()),   timeLabel(horaires.endTime()));
+        event.setStartTime(horaires.startTime());
+        event.setEndTime(horaires.endTime());
+        evenementRepository.save(event);
+        journalEvenementService.save(event, modifications);
+        LocalDateTime lastUpdateDate = journalEvenementService.derniereModification(eventId).orElse(null);
+        return evenementMapper.toMetaDto(event, lastUpdateDate, pageEvenementService.getPublicPageStatus(event));
+    }
+
+    // Heure telle qu'inscrite au journal (« 19:00 »), ou null.
+    private static String timeLabel(LocalTime time) {
+        return time == null ? null : time.toString();
     }
 
     private List<ModificationChamp> computeModifications(Evenement event, EventMetaPatchDto patch) {

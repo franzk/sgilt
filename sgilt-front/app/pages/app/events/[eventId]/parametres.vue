@@ -1,3 +1,9 @@
+<!--
+  Paramètres d'un événement en base (/app/events/{eventId}/parametres) : ses informations en cartes
+  (EventInfoCards, horaires compris), enregistrées à chaque validation, la note partagée, les
+  coordonnées de l'organisateur, la couverture et le journal des modifications. Ouverte depuis le
+  board, ou depuis la fiche d'une réservation (?from=reservation : le retour y ramène).
+-->
 <template>
   <div class="parametres">
     <div v-if="fields && clientInfo" class="column">
@@ -13,6 +19,7 @@
         with-title
         date-locked
         essentials-required
+        with-hours
         @update="saveFields"
       />
 
@@ -76,7 +83,7 @@ import Sk from '~/components/basics/Sk.vue'
 import EventInfoCards from '~/components/evenement/EventInfoCards.vue'
 import type { EventInfoFields } from '~/composables/useLocalEvent'
 import type { EventMetaPatch } from '~/data/evenement/domain/EventMetaPatch'
-import { patchEvent } from '~/data/evenement/service/evenementService'
+import { patchEvent, putEventHoraires } from '~/data/evenement/service/evenementService'
 import { useEventContext } from '~/data/evenement/useEventContext'
 import { useEventJournal } from '~/data/evenement/useEventJournal'
 
@@ -102,14 +109,21 @@ const fields = computed<EventInfoFields | null>(() => {
     ambiance: loaded.ambiance ?? null,
     momentCle: loaded.momentCle ?? null,
     description: loaded.description ?? '',
+    startTime: loaded.startTime ?? '',
+    endTime: loaded.endTime ?? '',
   }
 })
 
-// La date n'est pas envoyée : elle ne se modifie pas sur un événement en base. « Autre » sans
-// précision n'est pas enregistré, comme à la création de l'événement (toEvenementRequest).
+// Les horaires ont leur propre enregistrement (les deux heures à la fois) ; le reste passe par le
+// PATCH. La date n'est pas envoyée : elle ne se modifie pas sur un événement en base. « Autre »
+// sans précision n'est pas enregistré, comme à la création de l'événement (toEvenementRequest).
 async function saveFields(update: Partial<EventInfoFields>) {
   if (!fields.value) return
   const updated = { ...fields.value, ...update }
+  if (updated.startTime !== fields.value.startTime || updated.endTime !== fields.value.endTime) {
+    event.value = await putEventHoraires(eventId, updated.startTime ?? '', updated.endTime ?? '')
+    return
+  }
   const withoutBareAutre = (value: string | null) => (!value || value === 'autre' ? '' : value)
   event.value = await patchEvent(eventId, {
     title: updated.title,

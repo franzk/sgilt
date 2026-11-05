@@ -1,13 +1,12 @@
 package net.franzka.sgilt.core.evenement.page.mapper;
 
-import net.franzka.sgilt.core.evenement.billetterie.dto.AdminTicketingDto;
 import net.franzka.sgilt.core.evenement.billetterie.dto.TicketingDto;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.page.domain.PageEvenement;
-import net.franzka.sgilt.core.evenement.page.dto.AdminPageDto;
-import net.franzka.sgilt.core.evenement.page.dto.AdminEventPublicFormDto;
+import net.franzka.sgilt.core.evenement.page.dto.PageContentDto;
 import net.franzka.sgilt.core.evenement.page.dto.EvenementInfosDto;
 import net.franzka.sgilt.core.evenement.page.dto.EventPageDto;
+import net.franzka.sgilt.core.evenement.page.dto.OrganizerPageDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -45,37 +44,37 @@ public interface PageEvenementMapper {
     EventPageDto toEventPageDto(PageEvenement page, TicketingDto ticketing, LocalDateTime startsAt, LocalDateTime endsAt);
 
     /**
-     * Mappe la face publique d'un événement vers sa saisie dans le back-office admin : ses
-     * horaires, sa page et sa billetterie.
-     *
-     * @param evenement l'événement
-     * @param page      sa page, ou null s'il n'en a pas
-     * @param ticketing sa billetterie, ou null s'il n'en a pas
-     * @return la face publique telle que saisie
-     */
-    @Mapping(source = "evenement.startTime", target = "startTime")
-    @Mapping(source = "evenement.endTime",   target = "endTime")
-    @Mapping(source = "page",                target = "page")
-    @Mapping(source = "ticketing",           target = "ticketing")
-    AdminEventPublicFormDto toAdminEventPublicFormDto(Evenement evenement, PageEvenement page, AdminTicketingDto ticketing);
-
-    /**
-     * Mappe une page d'événement vers sa saisie dans le back-office admin.
+     * Mappe une page d'événement vers son contenu, tel que le saisit son organisateur.
      *
      * @param page la page
-     * @return la page telle que saisie
+     * @return le contenu de la page
      */
-    AdminPageDto toAdminPageDto(PageEvenement page);
+    PageContentDto toPageContentDto(PageEvenement page);
 
     /**
-     * Mappe la saisie admin d'une page vers une nouvelle entité, rattachée à son événement.
+     * Mappe une page d'événement vers ce qu'en administre son organisateur : son contenu et son
+     * état (publiée, slug verrouillé).
+     *
+     * @param page la page
+     * @return la page de l'organisateur
+     */
+    @Mapping(target = "content",    source = "page")
+    @Mapping(target = "published",  expression = "java(page.getPublishedAt() != null)")
+    @Mapping(target = "slugLocked", expression = "java(page.getFirstPublishedAt() != null)")
+    OrganizerPageDto toOrganizerPageDto(PageEvenement page);
+
+    /**
+     * Mappe le contenu d'une page saisi par l'organisateur vers une nouvelle entité, en brouillon,
+     * rattachée à son événement.
      *
      * @param page      la page saisie
      * @param evenement son événement
      * @return l'entité à enregistrer
      */
     @Mapping(target = "id",            ignore = true)
-    @Mapping(target = "createdAt",     ignore = true)
+    @Mapping(target = "createdAt",        ignore = true)
+    @Mapping(target = "publishedAt",      ignore = true)
+    @Mapping(target = "firstPublishedAt", ignore = true)
     @Mapping(target = "evenement",     source = "evenement")
     @Mapping(target = "slug",          source = "page.slug")
     @Mapping(target = "tag",           source = "page.tag")
@@ -85,7 +84,7 @@ public interface PageEvenementMapper {
     @Mapping(target = "importantInfo", source = "page.importantInfo", defaultExpression = "java(java.util.List.of())")
     @Mapping(target = "practicalInfo", source = "page.practicalInfo", defaultExpression = "java(java.util.List.of())")
     @Mapping(target = "pictos",        source = "page.pictos",        defaultExpression = "java(java.util.List.of())")
-    PageEvenement toPageEvenement(AdminPageDto page, Evenement evenement);
+    PageEvenement toPageEvenement(PageContentDto page, Evenement evenement);
 
     /**
      * Mappe les infos d'un événement, pour l'e-billet d'une commande.

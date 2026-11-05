@@ -1,17 +1,20 @@
 package net.franzka.sgilt.core.evenement.page.service;
 
+import net.franzka.sgilt.core.evenement.page.domain.PublicPageStatus;
+import net.franzka.sgilt.core.evenement.billetterie.dto.TicketingSalesDto;
+import net.franzka.sgilt.core.evenement.page.dto.OrganizerPageDto;
+import net.franzka.sgilt.core.evenement.page.dto.OrganizerPublicPageDto;
+import net.franzka.sgilt.core.evenement.page.exception.PageNotCreatedException;
+import net.franzka.sgilt.core.evenement.page.exception.PageSlugLockedException;
 import net.franzka.sgilt.core.evenement.billetterie.domain.BilletterieStatus;
-import net.franzka.sgilt.core.evenement.billetterie.dto.AdminTicketingDto;
+import net.franzka.sgilt.core.evenement.billetterie.dto.TicketingSettingsDto;
 import net.franzka.sgilt.core.evenement.billetterie.dto.TicketingDto;
 import net.franzka.sgilt.core.evenement.billetterie.service.BilletterieService;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.page.domain.PageEvenement;
-import net.franzka.sgilt.core.evenement.page.domain.PageEvenementPicto;
-import net.franzka.sgilt.core.evenement.page.dto.AdminPageDto;
-import net.franzka.sgilt.core.evenement.page.dto.AdminEventPublicFormDto;
+import net.franzka.sgilt.core.evenement.page.dto.PageContentDto;
 import net.franzka.sgilt.core.evenement.page.dto.EvenementInfosDto;
 import net.franzka.sgilt.core.evenement.page.dto.EventPageDto;
-import net.franzka.sgilt.core.evenement.page.exception.BilletterieWithoutPageException;
 import net.franzka.sgilt.core.evenement.page.exception.PageEvenementNotFoundException;
 import net.franzka.sgilt.core.evenement.page.exception.PageSlugAlreadyUsedException;
 import net.franzka.sgilt.core.evenement.page.mapper.PageEvenementMapper;
@@ -46,9 +49,9 @@ class PageEvenementServiceTest {
     private static final String SLUG = "les-jeudis-du-taennel";
     private static final UUID EVENEMENT_ID = UUID.randomUUID();
     private static final LocalDate DATE = LocalDate.of(2026, 3, 12);
-    private static final AdminPageDto PAGE =
-            new AdminPageDto(SLUG, null, null, null, null, List.of(), List.of(), List.of());
-    private static final AdminTicketingDto TICKETING = new AdminTicketingDto(BilletterieStatus.OPEN, 1200, 150);
+    private static final PageContentDto PAGE =
+            new PageContentDto(SLUG, null, null, null, null, List.of(), List.of(), List.of());
+    private static final TicketingSettingsDto TICKETING = new TicketingSettingsDto(BilletterieStatus.OPEN, 1200, 150);
 
     @Mock
     private PageEvenementRepository pageEvenementRepository;
@@ -64,11 +67,22 @@ class PageEvenementServiceTest {
 
     private final Evenement evenement = Evenement.builder().id(EVENEMENT_ID).build();
 
+    // Page en ligne : publiée, page publique de l'événement activée.
     private PageEvenement givenPage(LocalTime startTime, LocalTime endTime) {
-        Evenement evenement = Evenement.builder().id(EVENEMENT_ID).date(DATE).startTime(startTime).endTime(endTime).build();
-        PageEvenement page = PageEvenement.builder().evenement(evenement).slug(SLUG).build();
+        Evenement evenement = Evenement.builder().id(EVENEMENT_ID).date(DATE).startTime(startTime).endTime(endTime)
+                .pagePubliqueEnabled(true).build();
+        PageEvenement page = PageEvenement.builder().evenement(evenement).slug(SLUG)
+                .publishedAt(LocalDateTime.of(2026, 1, 5, 10, 0)).build();
         when(pageEvenementRepository.findBySlug(SLUG)).thenReturn(Optional.of(page));
         return page;
+    }
+
+    // Page hors ligne : brouillon, ou page publique de l'événement désactivée.
+    private void givenOfflinePage(boolean published, boolean pagePubliqueEnabled) {
+        Evenement evenement = Evenement.builder().id(EVENEMENT_ID).pagePubliqueEnabled(pagePubliqueEnabled).build();
+        PageEvenement page = PageEvenement.builder().evenement(evenement).slug(SLUG)
+                .publishedAt(published ? LocalDateTime.of(2026, 1, 5, 10, 0) : null).build();
+        when(pageEvenementRepository.findBySlug(SLUG)).thenReturn(Optional.of(page));
     }
 
     // -------------------------------------------------------------------------
@@ -138,6 +152,24 @@ class PageEvenementServiceTest {
 
             assertThatThrownBy(() -> pageEvenementService.getPublicPage("inconnu"))
                     .isInstanceOf(PageEvenementNotFoundException.class);
+        }
+
+        @Test
+        void givenDraftPage_whenGetPublicPage_thenThrowsNotFound() {
+            givenOfflinePage(false, true);
+
+            assertThatThrownBy(() -> pageEvenementService.getPublicPage(SLUG))
+                    .isInstanceOf(PageEvenementNotFoundException.class);
+            verifyNoInteractions(billetterieService);
+        }
+
+        @Test
+        void givenPagePubliqueDisabled_whenGetPublicPage_thenThrowsNotFound() {
+            givenOfflinePage(true, false);
+
+            assertThatThrownBy(() -> pageEvenementService.getPublicPage(SLUG))
+                    .isInstanceOf(PageEvenementNotFoundException.class);
+            verifyNoInteractions(billetterieService);
         }
     }
 
@@ -221,111 +253,343 @@ class PageEvenementServiceTest {
             assertThatThrownBy(() -> pageEvenementService.getEvenementIdBySlug("inconnu"))
                     .isInstanceOf(PageEvenementNotFoundException.class);
         }
+
+        @Test
+        void givenDraftPage_whenGetEvenementIdBySlug_thenThrowsNotFound() {
+            givenOfflinePage(false, true);
+
+            assertThatThrownBy(() -> pageEvenementService.getEvenementIdBySlug(SLUG))
+                    .isInstanceOf(PageEvenementNotFoundException.class);
+        }
+
+        @Test
+        void givenPagePubliqueDisabled_whenGetEvenementIdBySlug_thenThrowsNotFound() {
+            givenOfflinePage(true, false);
+
+            assertThatThrownBy(() -> pageEvenementService.getEvenementIdBySlug(SLUG))
+                    .isInstanceOf(PageEvenementNotFoundException.class);
+        }
     }
 
     // -------------------------------------------------------------------------
-    // getAdminPublicPage
+    // getOrganizerPublicPage
     // -------------------------------------------------------------------------
 
     @Nested
-    class GetAdminPublicPage {
+    class GetOrganizerPublicPage {
 
         @Test
-        void givenPageAndBilletterie_whenGetAdminPublicPage_thenMapsEvenementPageAndTicketing() {
+        void givenPageAndBilletterie_whenGetOrganizerPublicPage_thenAssemblesPageTicketingAndSales() {
+            Evenement enabled = Evenement.builder().id(EVENEMENT_ID).pagePubliqueEnabled(true).billetterieEnabled(true).build();
             PageEvenement page = PageEvenement.builder().build();
-            AdminEventPublicFormDto dto = mock(AdminEventPublicFormDto.class);
+            OrganizerPageDto pageDto = new OrganizerPageDto(PAGE, true, true);
+            TicketingSalesDto sales = new TicketingSalesDto(42, 3, 150);
             when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(page));
-            when(billetterieService.getAdminTicketing(EVENEMENT_ID)).thenReturn(Optional.of(TICKETING));
-            when(pageEvenementMapper.toAdminEventPublicFormDto(evenement, page, TICKETING)).thenReturn(dto);
+            when(pageEvenementMapper.toOrganizerPageDto(page)).thenReturn(pageDto);
+            when(billetterieService.getOrganizerTicketing(EVENEMENT_ID)).thenReturn(Optional.of(TICKETING));
+            when(billetterieService.getSales(EVENEMENT_ID)).thenReturn(Optional.of(sales));
 
-            assertThat(pageEvenementService.getAdminPublicPage(evenement)).isSameAs(dto);
+            assertThat(pageEvenementService.getOrganizerPublicPage(enabled))
+                    .isEqualTo(new OrganizerPublicPageDto(true, pageDto, TICKETING, sales));
         }
 
         @Test
-        void givenNoPageNorBilletterie_whenGetAdminPublicPage_thenMapsThemAsNull() {
-            AdminEventPublicFormDto dto = mock(AdminEventPublicFormDto.class);
+        void givenNoPageNorBilletterie_whenGetOrganizerPublicPage_thenTheyAreNull() {
             when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.empty());
-            when(billetterieService.getAdminTicketing(EVENEMENT_ID)).thenReturn(Optional.empty());
-            when(pageEvenementMapper.toAdminEventPublicFormDto(evenement, null, null)).thenReturn(dto);
+            when(billetterieService.getOrganizerTicketing(EVENEMENT_ID)).thenReturn(Optional.empty());
+            when(billetterieService.getSales(EVENEMENT_ID)).thenReturn(Optional.empty());
 
-            assertThat(pageEvenementService.getAdminPublicPage(evenement)).isSameAs(dto);
+            assertThat(pageEvenementService.getOrganizerPublicPage(evenement))
+                    .isEqualTo(new OrganizerPublicPageDto(false, null, null, null));
         }
     }
 
     // -------------------------------------------------------------------------
-    // putPublicPage
+    // putOrganizerContent
     // -------------------------------------------------------------------------
 
     @Nested
-    class PutPublicPage {
+    class PutOrganizerContent {
 
         @Test
-        void givenTicketingWithoutPage_whenPutPublicPage_thenThrowsWithoutTouchingAnything() {
-            assertThatThrownBy(() -> pageEvenementService.putPublicPage(evenement, null, TICKETING))
-                    .isInstanceOf(BilletterieWithoutPageException.class);
-            verifyNoInteractions(pageEvenementRepository, billetterieService);
-        }
-
-        @Test
-        void givenNoPage_whenPutPublicPage_thenCreatesPageAndReplacesTicketing() {
+        void givenNoPage_whenPutOrganizerContent_thenCreatesDraft() {
             PageEvenement created = PageEvenement.builder().build();
             when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.empty());
             when(pageEvenementRepository.findBySlug(SLUG)).thenReturn(Optional.empty());
             when(pageEvenementMapper.toPageEvenement(PAGE, evenement)).thenReturn(created);
 
-            pageEvenementService.putPublicPage(evenement, PAGE, TICKETING);
+            pageEvenementService.putOrganizerContent(evenement, PAGE);
 
             verify(pageEvenementRepository).save(created);
-            verify(billetterieService).putTicketing(evenement, TICKETING);
+            assertThat(created.getPublishedAt()).isNull();
+            assertThat(created.getFirstPublishedAt()).isNull();
         }
 
         @Test
-        void givenPageWithSameSlug_whenPutPublicPage_thenReplacesItsFields() {
+        void givenDraftPage_whenPutOrganizerContentWithNewSlug_thenReplacesItsFields() {
+            PageEvenement existing = PageEvenement.builder().evenement(evenement).slug("ancien-slug").build();
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(existing));
+            when(pageEvenementRepository.findBySlug(SLUG)).thenReturn(Optional.empty());
+
+            pageEvenementService.putOrganizerContent(evenement, PAGE);
+
+            verify(pageEvenementRepository).save(existing);
+            assertThat(existing.getSlug()).isEqualTo(SLUG);
+        }
+
+        @Test
+        void givenPublishedOnce_whenPutOrganizerContentWithSameSlug_thenReplacesItsFields() {
             PageEvenement existing = PageEvenement.builder().evenement(evenement).slug(SLUG)
-                    .tag("Ancien tag").importantInfo(List.of("Ancienne info")).build();
-            AdminPageDto page = new AdminPageDto(SLUG, null, "Sous-titre", "Section", "Description",
-                    List.of("Nouvelle info"), null, List.of(new PageEvenementPicto("team", "Ambiance", "Locale")));
+                    .firstPublishedAt(LocalDateTime.of(2026, 1, 5, 10, 0)).build();
             when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(existing));
             when(pageEvenementRepository.findBySlug(SLUG)).thenReturn(Optional.of(existing));
 
-            pageEvenementService.putPublicPage(evenement, page, null);
+            pageEvenementService.putOrganizerContent(evenement, PAGE);
 
-            assertThat(existing.getSlug()).isEqualTo(SLUG);
-            assertThat(existing.getTag()).isNull();
-            assertThat(existing.getSubtitle()).isEqualTo("Sous-titre");
-            assertThat(existing.getSectionTitle()).isEqualTo("Section");
-            assertThat(existing.getDescription()).isEqualTo("Description");
-            assertThat(existing.getImportantInfo()).containsExactly("Nouvelle info");
-            assertThat(existing.getPracticalInfo()).isEmpty();
-            assertThat(existing.getPictos()).containsExactly(new PageEvenementPicto("team", "Ambiance", "Locale"));
             verify(pageEvenementRepository).save(existing);
-            verify(pageEvenementMapper, never()).toPageEvenement(any(), any());
-            verify(billetterieService).putTicketing(evenement, null);
         }
 
         @Test
-        void givenSlugOfAnotherEvenement_whenPutPublicPage_thenThrowsSlugAlreadyUsed() {
+        void givenPublishedOnce_whenPutOrganizerContentWithNewSlug_thenThrowsSlugLocked() {
+            PageEvenement existing = PageEvenement.builder().evenement(evenement).slug("ancien-slug")
+                    .firstPublishedAt(LocalDateTime.of(2026, 1, 5, 10, 0)).build();
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(existing));
+
+            assertThatThrownBy(() -> pageEvenementService.putOrganizerContent(evenement, PAGE))
+                    .isInstanceOf(PageSlugLockedException.class);
+            verify(pageEvenementRepository, never()).save(any());
+            assertThat(existing.getSlug()).isEqualTo("ancien-slug");
+        }
+
+        @Test
+        void givenSlugOfAnotherEvenement_whenPutOrganizerContent_thenThrowsSlugAlreadyUsed() {
             PageEvenement other = PageEvenement.builder()
                     .evenement(Evenement.builder().id(UUID.randomUUID()).build()).slug(SLUG).build();
             when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.empty());
             when(pageEvenementRepository.findBySlug(SLUG)).thenReturn(Optional.of(other));
 
-            assertThatThrownBy(() -> pageEvenementService.putPublicPage(evenement, PAGE, null))
-                    .isInstanceOf(PageSlugAlreadyUsedException.class)
-                    .hasMessageContaining(SLUG);
+            assertThatThrownBy(() -> pageEvenementService.putOrganizerContent(evenement, PAGE))
+                    .isInstanceOf(PageSlugAlreadyUsedException.class);
             verify(pageEvenementRepository, never()).save(any());
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // publish / unpublish
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class Publish {
+
+        @Test
+        void givenDraftNeverPublished_whenPublish_thenPublishesAndLocksSlug() {
+            PageEvenement page = PageEvenement.builder().evenement(evenement).slug(SLUG).build();
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(page));
+
+            pageEvenementService.publish(evenement);
+
+            verify(pageEvenementRepository).save(page);
+            assertThat(page.getPublishedAt()).isNotNull();
+            assertThat(page.getFirstPublishedAt()).isEqualTo(page.getPublishedAt());
         }
 
         @Test
-        void givenPageAndNullPage_whenPutPublicPage_thenDeletesPageAndTicketing() {
-            PageEvenement existing = PageEvenement.builder().evenement(evenement).slug(SLUG).build();
-            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(existing));
+        void givenDraftPublishedBefore_whenPublish_thenKeepsFirstPublicationDate() {
+            LocalDateTime firstPublishedAt = LocalDateTime.of(2026, 1, 5, 10, 0);
+            PageEvenement page = PageEvenement.builder().evenement(evenement).slug(SLUG).firstPublishedAt(firstPublishedAt).build();
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(page));
 
-            pageEvenementService.putPublicPage(evenement, null, null);
+            pageEvenementService.publish(evenement);
 
-            verify(pageEvenementRepository).delete(existing);
+            assertThat(page.getPublishedAt()).isAfter(firstPublishedAt);
+            assertThat(page.getFirstPublishedAt()).isEqualTo(firstPublishedAt);
+        }
+
+        @Test
+        void givenPublishedPage_whenPublish_thenChangesNothing() {
+            LocalDateTime publishedAt = LocalDateTime.of(2026, 1, 5, 10, 0);
+            PageEvenement page = PageEvenement.builder().evenement(evenement).slug(SLUG)
+                    .publishedAt(publishedAt).firstPublishedAt(publishedAt).build();
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(page));
+
+            pageEvenementService.publish(evenement);
+
             verify(pageEvenementRepository, never()).save(any());
-            verify(billetterieService).putTicketing(evenement, null);
+            assertThat(page.getPublishedAt()).isEqualTo(publishedAt);
+        }
+
+        @Test
+        void givenNoPage_whenPublish_thenThrowsNotCreated() {
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> pageEvenementService.publish(evenement))
+                    .isInstanceOf(PageNotCreatedException.class);
+        }
+    }
+
+    @Nested
+    class GetPreview {
+
+        @Test
+        void givenDraftPage_whenGetPreview_thenMapsItWithoutTicketing() {
+            Evenement event = Evenement.builder().id(EVENEMENT_ID).date(DATE)
+                    .startTime(LocalTime.of(19, 0)).endTime(LocalTime.of(2, 0)).build();
+            PageEvenement page = PageEvenement.builder().evenement(event).slug(SLUG).build();
+            EventPageDto dto = mock(EventPageDto.class);
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(page));
+            when(pageEvenementMapper.toEventPageDto(page, null,
+                    LocalDateTime.of(2026, 3, 12, 19, 0), LocalDateTime.of(2026, 3, 13, 2, 0))).thenReturn(dto);
+
+            assertThat(pageEvenementService.getPreview(event)).isSameAs(dto);
+            verifyNoInteractions(billetterieService);
+        }
+
+        @Test
+        void givenNoPage_whenGetPreview_thenThrowsNotCreated() {
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> pageEvenementService.getPreview(evenement))
+                    .isInstanceOf(PageNotCreatedException.class);
+        }
+    }
+
+    @Nested
+    class Unpublish {
+
+        @Test
+        void givenPublishedPage_whenUnpublish_thenBecomesDraftWithSlugStillLocked() {
+            LocalDateTime publishedAt = LocalDateTime.of(2026, 1, 5, 10, 0);
+            PageEvenement page = PageEvenement.builder().evenement(evenement).slug(SLUG)
+                    .publishedAt(publishedAt).firstPublishedAt(publishedAt).build();
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(page));
+
+            pageEvenementService.unpublish(evenement);
+
+            verify(pageEvenementRepository).save(page);
+            assertThat(page.getPublishedAt()).isNull();
+            assertThat(page.getFirstPublishedAt()).isEqualTo(publishedAt);
+            verifyNoInteractions(billetterieService);
+        }
+
+        @Test
+        void givenNoPage_whenUnpublish_thenThrowsNotCreated() {
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> pageEvenementService.unpublish(evenement))
+                    .isInstanceOf(PageNotCreatedException.class);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // putOrganizerTicketing
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class PutOrganizerTicketing {
+
+        @Test
+        void givenPublishedPage_whenPutOrganizerTicketing_thenSavesItAsPublished() {
+            PageEvenement page = PageEvenement.builder().publishedAt(LocalDateTime.of(2026, 1, 5, 10, 0)).build();
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(page));
+
+            pageEvenementService.putOrganizerTicketing(evenement, TICKETING);
+
+            verify(billetterieService).putOrganizerTicketing(evenement, TICKETING, true);
+        }
+
+        @Test
+        void givenDraftPage_whenPutOrganizerTicketing_thenSavesItAsNotPublished() {
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(PageEvenement.builder().build()));
+
+            pageEvenementService.putOrganizerTicketing(evenement, TICKETING);
+
+            verify(billetterieService).putOrganizerTicketing(evenement, TICKETING, false);
+        }
+
+        @Test
+        void givenNoPage_whenPutOrganizerTicketing_thenSavesItAsNotPublished() {
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.empty());
+
+            pageEvenementService.putOrganizerTicketing(evenement, TICKETING);
+
+            verify(billetterieService).putOrganizerTicketing(evenement, TICKETING, false);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // getPublicPageStatus
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetPublicPageStatus {
+
+        private final Evenement enabled = Evenement.builder().id(EVENEMENT_ID).pagePubliqueEnabled(true).build();
+
+        @Test
+        void givenPagePubliqueDisabled_whenGetPublicPageStatus_thenNull() {
+            assertThat(pageEvenementService.getPublicPageStatus(evenement)).isNull();
+            verifyNoInteractions(pageEvenementRepository);
+        }
+
+        @Test
+        void givenNoPage_whenGetPublicPageStatus_thenNotCreated() {
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.empty());
+
+            assertThat(pageEvenementService.getPublicPageStatus(enabled)).isEqualTo(PublicPageStatus.NOT_CREATED);
+        }
+
+        @Test
+        void givenDraftPage_whenGetPublicPageStatus_thenDraft() {
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(PageEvenement.builder().build()));
+
+            assertThat(pageEvenementService.getPublicPageStatus(enabled)).isEqualTo(PublicPageStatus.DRAFT);
+        }
+
+        @Test
+        void givenPublishedPage_whenGetPublicPageStatus_thenPublished() {
+            PageEvenement page = PageEvenement.builder().publishedAt(LocalDateTime.of(2026, 1, 5, 10, 0)).build();
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(page));
+
+            assertThat(pageEvenementService.getPublicPageStatus(enabled)).isEqualTo(PublicPageStatus.PUBLISHED);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // isOnline
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class IsOnline {
+
+        // Page de l'événement, publiée ou non, page publique activée ou non.
+        private Evenement givenPageOf(boolean published, boolean pagePubliqueEnabled) {
+            Evenement event = Evenement.builder().id(EVENEMENT_ID).pagePubliqueEnabled(pagePubliqueEnabled).build();
+            PageEvenement page = PageEvenement.builder().evenement(event)
+                    .publishedAt(published ? LocalDateTime.of(2026, 1, 5, 10, 0) : null).build();
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(page));
+            return event;
+        }
+
+        @Test
+        void givenPublishedPageEnabled_whenIsOnline_thenTrue() {
+            assertThat(pageEvenementService.isOnline(givenPageOf(true, true))).isTrue();
+        }
+
+        @Test
+        void givenDraftPage_whenIsOnline_thenFalse() {
+            assertThat(pageEvenementService.isOnline(givenPageOf(false, true))).isFalse();
+        }
+
+        @Test
+        void givenPagePubliqueDisabled_whenIsOnline_thenFalse() {
+            assertThat(pageEvenementService.isOnline(givenPageOf(true, false))).isFalse();
+        }
+
+        @Test
+        void givenNoPage_whenIsOnline_thenFalse() {
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.empty());
+
+            assertThat(pageEvenementService.isOnline(evenement)).isFalse();
         }
     }
 

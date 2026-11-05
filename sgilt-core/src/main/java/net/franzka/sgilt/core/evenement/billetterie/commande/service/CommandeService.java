@@ -54,6 +54,16 @@ public class CommandeService {
     }
 
     /**
+     * Indique si une billetterie a vendu des billets : au moins une commande payée.
+     *
+     * @param billetterie la billetterie
+     * @return true si elle a des ventes
+     */
+    public boolean hasSales(Billetterie billetterie) {
+        return commandeRepository.existsByBilletterieIdAndStatus(billetterie.getId(), CommandeStatus.PAID);
+    }
+
+    /**
      * Crée une commande en attente de paiement, qui bloque ses places pendant
      * {@link #COMMANDE_HOLD_DURATION}, et son PaymentIntent Stripe (via sgilt-pay). La billetterie
      * doit avoir été verrouillée par l'appelant : deux commandes simultanées ne peuvent pas prendre
@@ -119,7 +129,7 @@ public class CommandeService {
             log.info("Commande déjà payée, rien à faire — commandeId={}", commandeId);
             return Optional.empty();
         }
-        int soldTickets = paidTickets(commande.getBilletterie()) + commande.getQuantity();
+        int soldTickets = getSoldTickets(commande.getBilletterie()) + commande.getQuantity();
         commande.setStatus(CommandeStatus.PAID);
         commande.setCode(EntryCodeUtils.newCode());
         commandeRepository.save(commande);
@@ -150,13 +160,29 @@ public class CommandeService {
 
     // Places prises : celles des commandes payées et des commandes en attente pas encore expirées.
     private int takenTickets(Billetterie billetterie) {
-        List<Commande> held = commandeRepository.findByBilletterieIdAndStatusAndExpiresAtAfter(
-                billetterie.getId(), CommandeStatus.PENDING, LocalDateTime.now());
-        return paidTickets(billetterie) + sumQuantities(held);
+        return getSoldTickets(billetterie) + getHeldTickets(billetterie);
     }
 
-    private int paidTickets(Billetterie billetterie) {
+    /**
+     * Retourne le nombre de places vendues d'une billetterie : celles de ses commandes payées.
+     *
+     * @param billetterie la billetterie
+     * @return le nombre de places vendues
+     */
+    public int getSoldTickets(Billetterie billetterie) {
         return sumQuantities(commandeRepository.findByBilletterieIdAndStatus(billetterie.getId(), CommandeStatus.PAID));
+    }
+
+    /**
+     * Retourne le nombre de places bloquées par un paiement en cours : celles des commandes en
+     * attente pas encore expirées.
+     *
+     * @param billetterie la billetterie
+     * @return le nombre de places bloquées
+     */
+    public int getHeldTickets(Billetterie billetterie) {
+        return sumQuantities(commandeRepository.findByBilletterieIdAndStatusAndExpiresAtAfter(
+                billetterie.getId(), CommandeStatus.PENDING, LocalDateTime.now()));
     }
 
     private static int sumQuantities(List<Commande> commandes) {

@@ -1,13 +1,12 @@
 package net.franzka.sgilt.core.evenement.page.mapper;
 
+import net.franzka.sgilt.core.evenement.page.dto.OrganizerPageDto;
 import net.franzka.sgilt.core.evenement.billetterie.domain.BilletterieStatus;
-import net.franzka.sgilt.core.evenement.billetterie.dto.AdminTicketingDto;
 import net.franzka.sgilt.core.evenement.billetterie.dto.TicketingDto;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.page.domain.PageEvenement;
 import net.franzka.sgilt.core.evenement.page.domain.PageEvenementPicto;
-import net.franzka.sgilt.core.evenement.page.dto.AdminPageDto;
-import net.franzka.sgilt.core.evenement.page.dto.AdminEventPublicFormDto;
+import net.franzka.sgilt.core.evenement.page.dto.PageContentDto;
 import net.franzka.sgilt.core.evenement.page.dto.EvenementInfosDto;
 import net.franzka.sgilt.core.evenement.page.dto.EventPageDto;
 import org.junit.jupiter.api.Nested;
@@ -15,7 +14,6 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -77,38 +75,38 @@ class PageEvenementMapperTest {
     }
 
     // -------------------------------------------------------------------------
-    // toAdminEventPublicFormDto
+    // toOrganizerPageDto
     // -------------------------------------------------------------------------
 
     @Nested
-    class ToAdminEventPublicFormDto {
+    class ToOrganizerPageDto {
+
+        private PageEvenement.PageEvenementBuilder page() {
+            return PageEvenement.builder().slug("les-jeudis-du-taennel")
+                    .importantInfo(List.of()).practicalInfo(List.of()).pictos(List.of());
+        }
+
+        private final PageContentDto content =
+                new PageContentDto("les-jeudis-du-taennel", null, null, null, null, List.of(), List.of(), List.of());
 
         @Test
-        void givenEvenementPageAndTicketing_whenToAdminEventPublicFormDto_thenMapsHoursPageAndTicketing() {
-            Evenement evenement = Evenement.builder().startTime(LocalTime.of(19, 0)).endTime(LocalTime.of(2, 0)).build();
-            PageEvenement page = PageEvenement.builder()
-                    .slug("les-jeudis-du-taennel").tag("Édition du 12 mars").subtitle("Concert")
-                    .sectionTitle("Une soirée").description("Le jeudi.")
-                    .importantInfo(List.of("Places debout.")).practicalInfo(List.of("Billet sur smartphone."))
-                    .pictos(List.of(new PageEvenementPicto("music", "Concert live", "À partir de 20h")))
-                    .build();
-            AdminTicketingDto ticketing = new AdminTicketingDto(BilletterieStatus.OPEN, 1200, 150);
-
-            AdminEventPublicFormDto dto = mapper.toAdminEventPublicFormDto(evenement, page, ticketing);
-
-            assertThat(dto).isEqualTo(new AdminEventPublicFormDto(
-                    LocalTime.of(19, 0), LocalTime.of(2, 0),
-                    new AdminPageDto("les-jeudis-du-taennel", "Édition du 12 mars", "Concert", "Une soirée",
-                            "Le jeudi.", List.of("Places debout."), List.of("Billet sur smartphone."),
-                            List.of(new PageEvenementPicto("music", "Concert live", "À partir de 20h"))),
-                    ticketing));
+        void givenDraftNeverPublished_whenToOrganizerPageDto_thenNotPublishedAndSlugFree() {
+            assertThat(mapper.toOrganizerPageDto(page().build()))
+                    .isEqualTo(new OrganizerPageDto(content, false, false));
         }
 
         @Test
-        void givenNoHoursNorPageNorTicketing_whenToAdminEventPublicFormDto_thenAllAreNull() {
-            AdminEventPublicFormDto dto = mapper.toAdminEventPublicFormDto(Evenement.builder().build(), null, null);
+        void givenPublishedPage_whenToOrganizerPageDto_thenPublishedAndSlugLocked() {
+            LocalDateTime publishedAt = LocalDateTime.of(2026, 1, 5, 10, 0);
 
-            assertThat(dto).isEqualTo(new AdminEventPublicFormDto(null, null, null, null));
+            assertThat(mapper.toOrganizerPageDto(page().publishedAt(publishedAt).firstPublishedAt(publishedAt).build()))
+                    .isEqualTo(new OrganizerPageDto(content, true, true));
+        }
+
+        @Test
+        void givenUnpublishedPage_whenToOrganizerPageDto_thenNotPublishedButSlugLocked() {
+            assertThat(mapper.toOrganizerPageDto(page().firstPublishedAt(LocalDateTime.of(2026, 1, 5, 10, 0)).build()))
+                    .isEqualTo(new OrganizerPageDto(content, false, true));
         }
     }
 
@@ -122,7 +120,7 @@ class PageEvenementMapperTest {
         @Test
         void givenPageAndEvenement_whenToPageEvenement_thenMapsAllFields() {
             Evenement evenement = Evenement.builder().id(UUID.randomUUID()).build();
-            AdminPageDto page = new AdminPageDto("les-jeudis-du-taennel", "Tag", "Sous-titre", "Section",
+            PageContentDto page = new PageContentDto("les-jeudis-du-taennel", "Tag", "Sous-titre", "Section",
                     "Description", List.of("Important"), List.of("Pratique"),
                     List.of(new PageEvenementPicto("leaf", "Cadre", "Vignoble")));
 
@@ -142,7 +140,7 @@ class PageEvenementMapperTest {
 
         @Test
         void givenNullLists_whenToPageEvenement_thenListsAreEmpty() {
-            AdminPageDto page = new AdminPageDto("slug", null, null, null, null, null, null, null);
+            PageContentDto page = new PageContentDto("slug", null, null, null, null, null, null, null);
 
             PageEvenement pageEvenement = mapper.toPageEvenement(page, Evenement.builder().build());
 

@@ -23,6 +23,15 @@ public interface CommandeRepository extends JpaRepository<Commande, UUID> {
     List<Commande> findByBilletterieIdAndStatus(UUID billetterieId, CommandeStatus status);
 
     /**
+     * Indique si une billetterie a au moins une commande dans un statut donné.
+     *
+     * @param billetterieId l'identifiant de la billetterie
+     * @param status        le statut
+     * @return true si une commande existe
+     */
+    boolean existsByBilletterieIdAndStatus(UUID billetterieId, CommandeStatus status);
+
+    /**
      * Retourne les commandes d'une billetterie dans un statut donné, qui expirent après un instant.
      *
      * @param billetterieId l'identifiant de la billetterie

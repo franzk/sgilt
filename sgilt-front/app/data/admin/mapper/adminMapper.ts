@@ -15,16 +15,8 @@ import type { OnboardingPendingDto } from '../dto/OnboardingPendingDto'
 import type { OnboardingPending } from '../domain/OnboardingPending'
 import type { CategorieAdminDto, SousCategorieAdminDto } from '../dto/CategorieAdminDto'
 import type { CategorieAdmin, SousCategorieAdmin } from '../domain/CategorieAdmin'
-import type {
-  AdminEvenementListItemDto,
-  AdminEventPublicFormDto,
-  AdminPageDto,
-} from '../dto/AdminEvenementDto'
-import type {
-  AdminEvenementListItem,
-  AdminEventPublicForm,
-  AdminPageForm,
-} from '../domain/AdminEvenement'
+import type { AdminEvenementListItemDto } from '../dto/AdminEvenementDto'
+import type { AdminEvenementListItem } from '../domain/AdminEvenement'
 
 export function mapPrestataireAdminFormat(dto: PrestataireAdminListItemDto): PrestataireAdminFormat {
   return {
@@ -121,52 +113,9 @@ export function mapAdminEvenementListItem(dto: AdminEvenementListItemDto): Admin
     date: dto.date,
     ownerEmail: dto.ownerEmail,
     slug: dto.slug ?? undefined,
-  }
-}
-
-function mapAdminPageForm(dto: AdminPageDto): AdminPageForm {
-  return {
-    slug: dto.slug,
-    tag: dto.tag ?? '',
-    subtitle: dto.subtitle ?? '',
-    sectionTitle: dto.sectionTitle ?? '',
-    description: dto.description ?? '',
-    importantInfo: dto.importantInfo,
-    practicalInfo: dto.practicalInfo,
-    pictos: dto.pictos,
-  }
-}
-
-export function mapAdminEventPublicForm(dto: AdminEventPublicFormDto): AdminEventPublicForm {
-  return {
-    startTime: dto.startTime ?? '',
-    endTime: dto.endTime ?? '',
-    page: dto.page ? mapAdminPageForm(dto.page) : null,
-    ticketing: dto.ticketing,
-  }
-}
-
-// Champ texte vide → null, comme l'attend le back.
-const emptyToNull = (value: string): string | null => value.trim() || null
-
-function mapAdminPageRequest(form: AdminPageForm): AdminPageDto {
-  return {
-    slug: form.slug.trim(),
-    tag: emptyToNull(form.tag),
-    subtitle: emptyToNull(form.subtitle),
-    sectionTitle: emptyToNull(form.sectionTitle),
-    description: emptyToNull(form.description),
-    importantInfo: form.importantInfo,
-    practicalInfo: form.practicalInfo,
-    pictos: form.pictos,
-  }
-}
-
-export function mapAdminEventPublicFormRequest(form: AdminEventPublicForm): AdminEventPublicFormDto {
-  return {
-    startTime: form.startTime || null,
-    endTime: form.endTime || null,
-    page: form.page ? mapAdminPageRequest(form.page) : null,
-    ticketing: form.ticketing,
+    features: {
+      pagePubliqueEnabled: dto.pagePubliqueEnabled,
+      billetterieEnabled: dto.billetterieEnabled,
+    },
   }
 }

@@ -1,3 +1,8 @@
+<!--
+  Sidebar desktop d'un événement : carte de l'événement (nom, date, lieu, invités, lien vers ses
+  paramètres) et navigation (Accueil, Prestataires, Page publique, rubriques), l'entrée active
+  déduite de l'URL. Partagée par l'événement en base (/app/events/{eventId}) et l'événement local.
+-->
 <template>
   <aside class="event-sidebar">
     <!-- ── Carte de l'événement ─────────────────────────────────────────────────── -->
@@ -33,6 +38,15 @@
         <TeamIcon class="item-icon" />
         <span class="label">{{ $t('nav.prestataires') }}</span>
       </NuxtLink>
+      <NuxtLink
+        v-if="showPublicPage"
+        :to="`${boardPath}/${PUBLIC_PAGE_KEY}`"
+        class="item"
+        :class="{ active: activeKey === PUBLIC_PAGE_KEY }"
+      >
+        <GlobalIcon class="item-icon" />
+        <span class="label">{{ $t('evenement.page-publique.title') }}</span>
+      </NuxtLink>
 
       <h3 class="section-title">{{ $t('evenement.rubriques-title') }}</h3>
       <!-- Même élément que la liste des rubriques du board mobile. -->
@@ -50,11 +64,12 @@
 
 <script setup lang="ts">
 // Sidebar desktop d'un événement : carte de l'événement (« Modifier » → paramètres), accueil,
-// prestataires et rubriques. Commune à l'espace connecté (événement en base, sous
+// prestataires, page publique (si le back-office l'a activée) et rubriques. Commune à l'espace connecté (événement en base, sous
 // /app/events/:eventId) et au parcours public (événement local, sous /evenement) : les liens
 // partent du chemin du board.
 import {
   CalendarEventIcon,
+  GlobalIcon,
   GroupIcon,
   Home2Icon,
   MapPin2Icon,
@@ -70,6 +85,8 @@ const { nbInvitesLabel } = useNbInvitesLabel()
 
 const HOME_KEY = 'accueil'
 const PRESTATAIRES_KEY = 'prestataires'
+// Aussi le segment d'URL de l'écran (/page-publique).
+const PUBLIC_PAGE_KEY = 'page-publique'
 
 // Ce que la carte affiche, commun à l'événement en base et à l'événement local.
 type SidebarEventMeta = Pick<EventMeta, 'title' | 'date' | 'ville' | 'lieu' | 'nbInvites'>
@@ -80,6 +97,8 @@ const props = defineProps<{
   event: SidebarEventMeta
   // Entrée « Prestataires » (liste des réservations) : absente quand l'événement n'en a jamais (public).
   showPrestataires?: boolean
+  // Entrée « Page publique » : seulement dans l'espace connecté, si le back-office l'a activée.
+  showPublicPage?: boolean
   // Rubriques dans l'ordre d'affichage.
   rubriques: EventRubrique[]
   coverImage: string
@@ -91,11 +110,13 @@ const place = computed(() => [props.event.lieu, props.event.ville].filter(Boolea
 
 // Entrée en surbrillance, d'après le premier segment de l'URL :
 // Prestataires sur la liste des réservations (/reservations, /reservations/:id),
+// Page publique sur son écran (/page-publique),
 // la rubrique ouverte (/:rubrique, /:rubrique/:id),
 // Accueil sinon.
 const activeKey = computed(() => {
   const [section] = route.path.slice(props.boardPath.length + 1).split('/')
   if (section === 'reservations') return PRESTATAIRES_KEY
+  if (section === PUBLIC_PAGE_KEY) return PUBLIC_PAGE_KEY
   if (props.rubriques.some((rubrique) => rubrique.key === section)) return section
   return HOME_KEY
 })

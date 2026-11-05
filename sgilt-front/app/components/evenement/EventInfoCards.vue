@@ -3,7 +3,7 @@
   description…), chacune avec son bouton Modifier / Ajouter qui ouvre son éditeur
   (EventInfoFieldEditor) : déroulé sous la carte sur desktop, en bottom sheet sur mobile.
   Ne modifie rien elle-même : émet `update`, au parent de l'appliquer. Utilisée par les paramètres
-  de l'événement (public et connecté) et le récap de la demande.
+  de l'événement (public et connecté, ce dernier avec ses horaires) et le récap de la demande.
 -->
 <template>
   <div class="event-info-cards">
@@ -81,6 +81,7 @@ import {
   Music2Icon,
   PencilIcon,
   Sparkling2Icon,
+  TimeIcon,
 } from '@remixicons/vue/line'
 import SgiltInlinePanel from '~/components/basics/sheets/SgiltInlinePanel.vue'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
@@ -95,6 +96,7 @@ import { AMBIANCE_OPTIONS, EVENT_TYPE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/type
 import { formatDateWithWeekday } from '~/utils/dateUtils'
 import { eventTypeIcon } from '~/utils/eventTypes'
 import { useNbInvitesLabel } from '~/composables/useNbInvitesLabel'
+import { useEventHoursLabel } from '~/composables/useEventHoursLabel'
 
 const props = defineProps<{
   // Informations affichées. Le composant ne les modifie pas : chaque validation de panneau
@@ -107,6 +109,8 @@ const props = defineProps<{
   essentialsRequired?: boolean
   // Date non modifiable (événement en base : en changer demande l'accord des prestataires).
   dateLocked?: boolean
+  // Ajoute la carte « Horaires » après la date (événement en base).
+  withHours?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -115,6 +119,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const { nbInvitesLabel } = useNbInvitesLabel()
+const { clockHoursLabel } = useEventHoursLabel()
 
 // ── Cartes ────────────────────────────────────────────────────────────────────
 
@@ -146,6 +151,7 @@ const cards = computed<InfoCard[]>(() => {
       value: formatDateWithWeekday(event.date) || null,
       editable: !props.dateLocked,
     },
+    ...(props.withHours ? [hoursCard(event)] : []),
     {
       key: 'lieu',
       label: t('event-info.fields.lieu'),
@@ -194,6 +200,16 @@ const cards = computed<InfoCard[]>(() => {
     ...infoCards,
   ]
 })
+
+function hoursCard(event: EventInfoFields): InfoCard {
+  return {
+    key: 'horaires',
+    label: t('event-info.fields.horaires'),
+    icon: markRaw(TimeIcon),
+    value: clockHoursLabel(event.startTime, event.endTime),
+    editable: true,
+  }
+}
 
 // Information essentielle exigée (envoi d'une demande) et non renseignée : fait échouer validate().
 function isMissing(key: EventInfoFieldKey): boolean {

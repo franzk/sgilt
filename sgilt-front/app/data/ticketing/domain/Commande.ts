@@ -51,4 +51,6 @@ export interface EBillet {
   evenementInfos: EBilletEvenementInfos
   quantity: number
   qrContent: string
+  // Page de l'événement en ligne : sinon, pas de lien vers elle.
+  pageOnline: boolean
 }

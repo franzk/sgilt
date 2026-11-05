@@ -16,8 +16,7 @@ import {
   moveSousCategorieApi,
   deleteSousCategorieApi,
   listAdminEvenementsApi,
-  getAdminEventPublicFormApi,
-  putAdminEventPublicFormApi,
+  putAdminEvenementFeaturesApi,
 } from '../api/adminApi'
 import {
   mapPrestataireAdminFormat,
@@ -29,8 +28,6 @@ import {
   mapCategorieAdmin,
   mapSousCategorieAdmin,
   mapAdminEvenementListItem,
-  mapAdminEventPublicForm,
-  mapAdminEventPublicFormRequest,
 } from '../mapper/adminMapper'
 import type { PrestataireAdminFormat } from '../domain/PrestataireAdminFormat'
 import type { PrestataireOnboardingPending } from '../domain/PrestataireOnboardingPending'
@@ -40,7 +37,7 @@ import type { AdminReservationListItem } from '../domain/AdminReservationListIte
 import type { AdminReservationStatus } from '../domain/AdminReservationStatus'
 import type { OnboardingPending } from '../domain/OnboardingPending'
 import type { CategorieAdmin, MoveDirection, SousCategorieAdmin } from '../domain/CategorieAdmin'
-import type { AdminEvenementListItem, AdminEventPublicForm } from '../domain/AdminEvenement'
+import type { AdminEvenementFeatures, AdminEvenementListItem } from '../domain/AdminEvenement'
 import { FetchError } from 'ofetch'
 
 /**
@@ -163,15 +160,21 @@ export async function fetchAdminEvenements(): Promise<AdminEvenementListItem[]> 
 }
 
 /**
- * Récupère la face publique d'un événement : horaires, page et billetterie.
+ * Active ou désactive la page publique et la billetterie d'un événement ; renvoie l'événement
+ * mis à jour.
  */
-export async function fetchAdminEventPublicForm(id: string): Promise<AdminEventPublicForm> {
-  return mapAdminEventPublicForm(await getAdminEventPublicFormApi(id))
+export async function saveAdminEvenementFeatures(
+  id: string,
+  features: AdminEvenementFeatures,
+): Promise<AdminEvenementListItem> {
+  return mapAdminEvenementListItem(await putAdminEvenementFeaturesApi(id, features))
 }
 
 /**
- * Enregistre d'un bloc la face publique d'un événement et renvoie l'état enregistré.
+ * Traduit l'échec d'un changement d'interrupteurs en motif d'erreur (suffixe de clé i18n) : une
+ * billetterie qui a des ventes ne se coupe pas (409) ; tout le reste est technique (la billetterie
+ * sans page est empêchée par l'écran).
  */
-export async function saveAdminEventPublicForm(id: string, form: AdminEventPublicForm): Promise<AdminEventPublicForm> {
-  return mapAdminEventPublicForm(await putAdminEventPublicFormApi(id, mapAdminEventPublicFormRequest(form)))
+export function toFeaturesFailure(error: unknown): string {
+  return error instanceof FetchError && error.statusCode === 409 ? 'BILLETTERIE_WITH_SALES' : 'TECHNICAL'
 }

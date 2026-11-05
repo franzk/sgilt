@@ -2,7 +2,7 @@ package net.franzka.sgilt.core.evenement.billetterie.mapper;
 
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
 import net.franzka.sgilt.core.evenement.billetterie.domain.BilletterieStatus;
-import net.franzka.sgilt.core.evenement.billetterie.dto.AdminTicketingDto;
+import net.franzka.sgilt.core.evenement.billetterie.dto.TicketingSettingsDto;
 import net.franzka.sgilt.core.evenement.billetterie.dto.TicketingDto;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import org.junit.jupiter.api.Nested;
@@ -35,19 +35,19 @@ class BilletterieMapperTest {
     }
 
     // -------------------------------------------------------------------------
-    // toAdminTicketingDto
+    // toTicketingSettingsDto
     // -------------------------------------------------------------------------
 
     @Nested
-    class ToAdminTicketingDto {
+    class ToTicketingSettingsDto {
 
         @Test
-        void givenBilletterie_whenToAdminTicketingDto_thenMapsAllFields() {
+        void givenBilletterie_whenToTicketingSettingsDto_thenMapsAllFields() {
             Billetterie billetterie = Billetterie.builder()
                     .status(BilletterieStatus.NOT_OPEN).unitPriceCents(1200).capacity(150).build();
 
-            assertThat(mapper.toAdminTicketingDto(billetterie))
-                    .isEqualTo(new AdminTicketingDto(BilletterieStatus.NOT_OPEN, 1200, 150));
+            assertThat(mapper.toTicketingSettingsDto(billetterie))
+                    .isEqualTo(new TicketingSettingsDto(BilletterieStatus.NOT_OPEN, 1200, 150));
         }
     }
 
@@ -63,7 +63,7 @@ class BilletterieMapperTest {
             Evenement evenement = Evenement.builder().id(UUID.randomUUID()).build();
 
             Billetterie billetterie = mapper.toBilletterie(
-                    new AdminTicketingDto(BilletterieStatus.OPEN, 1200, 150), evenement);
+                    new TicketingSettingsDto(BilletterieStatus.OPEN, 1200, 150), evenement);
 
             assertThat(billetterie.getId()).isNull();
             assertThat(billetterie.getEvenement()).isSameAs(evenement);

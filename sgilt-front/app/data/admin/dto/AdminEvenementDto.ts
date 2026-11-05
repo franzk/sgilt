@@ -1,8 +1,7 @@
 /**
- * DTO — contrat API admin des événements : liste, et face publique (horaires, page, billetterie)
- * lue et remplacée d'un bloc par /admin/evenements/{id}/page-publique
+ * DTO — contrat API admin des événements : liste, et interrupteurs (page publique, billetterie) de
+ * /admin/evenements/{id}/fonctionnalites
  */
-import type { PublicEventPictoIcon, TicketingStatus } from '~/data/ticketing/domain/PublicEvent'
 
 export interface AdminEvenementListItemDto {
   id: string
@@ -12,37 +11,13 @@ export interface AdminEvenementListItemDto {
   ownerEmail: string
   // Slug de sa page publique, null s'il n'en a pas.
   slug: string | null
+  pagePubliqueEnabled: boolean
+  billetterieEnabled: boolean
 }
 
-export interface AdminPagePictoDto {
-  icon: PublicEventPictoIcon
-  label: string
-  sublabel: string
-}
-
-export interface AdminPageDto {
-  slug: string
-  tag: string | null
-  subtitle: string | null
-  sectionTitle: string | null
-  description: string | null
-  importantInfo: string[]
-  practicalInfo: string[]
-  pictos: AdminPagePictoDto[]
-}
-
-export interface AdminTicketingDto {
-  status: TicketingStatus
-  unitPriceCents: number
-  capacity: number
-}
-
-export interface AdminEventPublicFormDto {
-  // 'HH:mm', null si l'événement n'en a pas.
-  startTime: string | null
-  endTime: string | null
-  // null : pas de page (envoyé à null, elle est supprimée).
-  page: AdminPageDto | null
-  // null : pas de billetterie (envoyé à null, elle est supprimée) ; exige une page.
-  ticketing: AdminTicketingDto | null
+// Interrupteurs : pas de billetterie sans page publique (400) ; couper une billetterie qui a des
+// ventes est refusé (409).
+export interface AdminEvenementFeaturesDto {
+  pagePubliqueEnabled: boolean
+  billetterieEnabled: boolean
 }

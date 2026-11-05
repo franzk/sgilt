@@ -159,6 +159,110 @@
         "autre": "Une belle idée prend forme !"
       }
     },
+    "page-publique": {
+      "page-title": "Page publique - Sgilt",
+      "title": "Page publique",
+      "back": "Retour à mon événement",
+      "retry": "Réessayer",
+      "card": {
+        "name": "Votre page publique"
+      },
+      "preview": {
+        "open": "Prévisualiser",
+        "page-title": "Aperçu de la page publique - Sgilt",
+        "back": "Retour à ma page publique",
+        "banner": "Aperçu : votre page telle que les visiteurs la verront, avec le contenu enregistré."
+      },
+      "status": {
+        "NOT_CREATED": {
+          "label": "À créer",
+          "text": "Renseignez le contenu de votre page, puis publiez-la."
+        },
+        "DRAFT": {
+          "label": "Brouillon",
+          "text": "Votre page n'est pas encore visible du public."
+        },
+        "PUBLISHED": {
+          "label": "Publiée",
+          "text": "Votre page est en ligne :"
+        }
+      },
+      "publish": "Publier",
+      "unpublish": "Dépublier",
+      "content": {
+        "title": "Contenu de la page",
+        "slug": "Adresse de la page",
+        "slug-hint": "Minuscules, chiffres et tirets (ex. les-jeudis-du-taennel). Elle ne pourra plus changer une fois la page publiée.",
+        "slug-locked": "L'adresse ne change plus une fois la page publiée, pour que les liens partagés restent valides. Pour la modifier, contactez l'équipe Sgilt.",
+        "tag": "Étiquette (au-dessus du titre)",
+        "subtitle": "Sous-titre",
+        "section-title": "Titre de la présentation",
+        "description": "Présentation",
+        "important-info": "Infos importantes (montrées avant l'achat)",
+        "practical-info": "Infos pratiques (montrées après l'achat)",
+        "lines-hint": "Une info par ligne.",
+        "pictos": "Points forts",
+        "picto-icon": "Icône",
+        "picto-label": "Libellé (ex. Concert live)",
+        "picto-sublabel": "Précision (ex. À partir de 20h)",
+        "picto-add": "Ajouter un point fort",
+        "picto-remove": "Retirer ce point fort",
+        "icons": {
+          "music": "Musique",
+          "goblet": "Verre",
+          "leaf": "Feuille",
+          "team": "Groupe"
+        },
+        "save": "Enregistrer",
+        "saved": "Contenu enregistré."
+      },
+      "sales": {
+        "title": "Ventes",
+        "sold": "place vendue sur {capacity} | places vendues sur {capacity}",
+        "remaining": "Aucune place restante | {n} place restante | {n} places restantes",
+        "held": "{n} place en cours de paiement | {n} places en cours de paiement"
+      },
+      "ticketing": {
+        "title": "Billetterie",
+        "status": "Statut",
+        "statuses": {
+          "NOT_OPEN": {
+            "label": "Pas encore ouverte",
+            "description": "La page annonce l'événement, sans vente."
+          },
+          "OPEN": {
+            "label": "Ouverte",
+            "description": "Les visiteurs peuvent acheter leurs billets."
+          },
+          "CLOSED": {
+            "label": "Fermée",
+            "description": "Plus aucune vente ; les billets vendus restent valables."
+          }
+        },
+        "price": "Prix d'un billet (€)",
+        "capacity": "Jauge (places en vente)",
+        "capacity-hint": "{n} place déjà vendue : la jauge ne peut pas descendre en dessous. | {n} places déjà vendues : la jauge ne peut pas descendre en dessous.",
+        "auto-close": "La billetterie se ferme d'elle-même une fois l'événement passé. Un changement de prix ne touche pas les billets déjà vendus.",
+        "save": "Enregistrer",
+        "saved": "Billetterie enregistrée."
+      },
+      "errors": {
+        "LOAD": "Impossible d'afficher votre page publique pour le moment.",
+        "SLUG_REQUIRED": "Renseignez l'adresse de la page.",
+        "INVALID_SLUG": "L'adresse ne peut contenir que des minuscules, des chiffres et des tirets (ex. les-jeudis-du-taennel).",
+        "SLUG_ALREADY_USED": "Cette adresse est déjà prise par une autre page. Choisissez-en une autre.",
+        "SLUG_LOCKED": "L'adresse de la page ne peut plus être modifiée.",
+        "PICTO_INCOMPLETE": "Chaque point fort doit avoir un libellé.",
+        "NOT_CREATED": "Enregistrez d'abord le contenu de la page, puis publiez-la.",
+        "PREVIEW_NOT_CREATED": "Enregistrez d'abord le contenu de la page pour la prévisualiser.",
+        "INVALID_PRICE": "Le prix doit être un montant positif.",
+        "INVALID_CAPACITY": "La jauge doit être un nombre entier positif.",
+        "CAPACITY_BELOW_SOLD": "La jauge ne peut pas descendre sous le nombre de places déjà vendues.",
+        "OPEN_WITHOUT_PUBLISHED_PAGE": "Publiez d'abord votre page : c'est là que les billets se vendent.",
+        "BILLETTERIE_DISABLED": "La billetterie de cet événement n'est plus active. Contactez l'équipe Sgilt.",
+        "TECHNICAL": "Une erreur est survenue. Réessayez."
+      }
+    },
     "settings": {
       "page-title": "Paramètres de l'événement - Sgilt",
       "back": "Retour à mon événement",
@@ -550,6 +654,7 @@
       "title": "Nom de l'événement",
       "event-type": "Type d'événement",
       "date": "Date",
+      "horaires": "Horaires",
       "lieu": "Lieu",
       "nb-invites": "Nombre d'invités",
       "ambiance": "Ambiance",
@@ -566,6 +671,11 @@
     "essential-required": "Cette information est obligatoire.",
     "date-placeholder": "Choisir une date",
     "event-type-autre-placeholder": "Quel événement préparez-vous ?",
+    "hours": {
+      "start": "Début",
+      "end": "Fin",
+      "next-day": "La fin tombe le lendemain."
+    },
     "validate": "Valider"
   },
   "tunnel": {
@@ -1014,7 +1124,9 @@
       "ville": "Ville",
       "nbInvites": "Nombre d'invités",
       "description": "Description",
-      "momentCle": "Moment clé"
+      "momentCle": "Moment clé",
+      "heureDebut": "Heure de début",
+      "heureFin": "Heure de fin"
     }
   },
   "profile": {
@@ -1316,10 +1428,15 @@
     "reduce": "Réduire"
   },
   "errors": {
-    "404": {
-      "title": "Oups !!",
-      "message": "La page que vous recherchez n'existe pas."
-    }
+    "not-found": {
+      "title": "Page introuvable",
+      "message": "Cette page n'existe pas ou n'est plus disponible."
+    },
+    "generic": {
+      "title": "Une erreur est survenue",
+      "message": "Réessayez dans un instant."
+    },
+    "back-home": "Retour à l'accueil"
   },
   "engagement": {
     "REPONSE_48H": { "label": "48h", "description": "Réponse sous 48h" },
@@ -1364,57 +1481,17 @@
     },
     "evenements-publics": {
       "title": "Pages événement",
-      "choose": "Choisir un événement",
+      "features": {
+        "page": "Page publique",
+        "billetterie": "Billetterie",
+        "errors": {
+          "PAGE_REQUIRED": "Activez d’abord la page publique.",
+          "BILLETTERIE_WITH_SALES": "Cette billetterie a déjà des ventes : impossible de la désactiver.",
+          "TECHNICAL": "Une erreur est survenue. Réessayez."
+        }
+      },
       "loading": "Chargement…",
-      "hours": {
-        "title": "Horaires",
-        "start": "Début",
-        "end": "Fin",
-        "hint": "Facultatifs. Une fin avant le début tombe le lendemain (ex. 19h – 2h)."
-      },
-      "page": {
-        "title": "Page publique",
-        "slug": "Slug (adresse /e/…)",
-        "tag": "Tag (au-dessus du titre)",
-        "subtitle": "Sous-titre",
-        "section-title": "Titre de la présentation",
-        "description": "Présentation",
-        "important-info": "Infos importantes (avant l’achat)",
-        "practical-info": "Infos pratiques (après l’achat)",
-        "lines-hint": "Une info par ligne.",
-        "pictos": "Points forts",
-        "picto-icon": "Pictogramme",
-        "picto-label": "Libellé",
-        "picto-sublabel": "Sous-libellé",
-        "picto-add": "Ajouter un point fort",
-        "picto-remove": "Retirer"
-      },
-      "icons": {
-        "music": "Musique",
-        "goblet": "Verre",
-        "leaf": "Feuille",
-        "team": "Groupe"
-      },
-      "ticketing": {
-        "title": "Billetterie",
-        "status": "Statut",
-        "statuses": {
-          "NOT_OPEN": "Pas encore ouverte",
-          "OPEN": "Ouverte",
-          "CLOSED": "Fermée"
-        },
-        "price": "Prix d’un billet (€)",
-        "capacity": "Jauge (places en vente)"
-      },
-      "save": "Enregistrer",
-      "saved": "Enregistré.",
       "errors": {
-        "SLUG_REQUIRED": "Renseignez le slug de la page.",
-        "INVALID_SLUG": "Le slug ne peut contenir que des minuscules, des chiffres et des tirets (ex. les-jeudis-du-taennel).",
-        "SLUG_ALREADY_USED": "Ce slug est déjà celui de la page d’un autre événement.",
-        "PICTO_INCOMPLETE": "Chaque point fort doit avoir un libellé.",
-        "INVALID_PRICE": "Le prix doit être un montant positif.",
-        "INVALID_CAPACITY": "La jauge doit être un nombre entier positif.",
         "TECHNICAL": "Une erreur est survenue. Réessayez."
       }
     },

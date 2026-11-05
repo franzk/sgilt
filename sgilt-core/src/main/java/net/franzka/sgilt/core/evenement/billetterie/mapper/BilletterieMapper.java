@@ -2,7 +2,7 @@ package net.franzka.sgilt.core.evenement.billetterie.mapper;
 
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
-import net.franzka.sgilt.core.evenement.billetterie.dto.AdminTicketingDto;
+import net.franzka.sgilt.core.evenement.billetterie.dto.TicketingSettingsDto;
 import net.franzka.sgilt.core.evenement.billetterie.dto.TicketingDto;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import org.mapstruct.Mapper;
@@ -25,15 +25,16 @@ public interface BilletterieMapper {
     TicketingDto toTicketingDto(Billetterie billetterie, int remainingTickets);
 
     /**
-     * Mappe une billetterie vers sa saisie dans le back-office admin.
+     * Mappe une billetterie vers ses réglages, tels que les saisit son organisateur.
      *
      * @param billetterie la billetterie
-     * @return la billetterie telle que saisie
+     * @return les réglages de la billetterie
      */
-    AdminTicketingDto toAdminTicketingDto(Billetterie billetterie);
+    TicketingSettingsDto toTicketingSettingsDto(Billetterie billetterie);
 
     /**
-     * Mappe la saisie admin d'une billetterie vers une nouvelle entité, rattachée à son événement.
+     * Mappe les réglages saisis par l'organisateur vers une nouvelle billetterie, rattachée à son
+     * événement.
      *
      * @param ticketing la billetterie saisie
      * @param evenement son événement
@@ -45,5 +46,5 @@ public interface BilletterieMapper {
     @Mapping(target = "status",         source = "ticketing.status")
     @Mapping(target = "unitPriceCents", source = "ticketing.unitPriceCents")
     @Mapping(target = "capacity",       source = "ticketing.capacity")
-    Billetterie toBilletterie(AdminTicketingDto ticketing, Evenement evenement);
+    Billetterie toBilletterie(TicketingSettingsDto ticketing, Evenement evenement);
 }

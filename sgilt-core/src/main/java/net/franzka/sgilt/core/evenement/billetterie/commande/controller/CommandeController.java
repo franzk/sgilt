@@ -2,6 +2,7 @@ package net.franzka.sgilt.core.evenement.billetterie.commande.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.billetterie.commande.api.CommandeApi;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
@@ -89,7 +90,8 @@ public class CommandeController implements CommandeApi {
     public ResponseEntity<EBilletDto> getEBillet(UUID id) {
         log.info("GET /commandes/{}/e-billet", id);
         Commande commande = commandeService.getPaidCommande(id);
-        EvenementInfosDto evenementInfos = pageEvenementService.getEvenementInfos(commande.getBilletterie().getEvenement());
-        return ResponseEntity.ok(commandeMapper.toEBilletDto(commande, evenementInfos));
+        Evenement evenement = commande.getBilletterie().getEvenement();
+        EvenementInfosDto evenementInfos = pageEvenementService.getEvenementInfos(evenement);
+        return ResponseEntity.ok(commandeMapper.toEBilletDto(commande, evenementInfos, pageEvenementService.isOnline(evenement)));
     }
 }

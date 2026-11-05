@@ -1,5 +1,11 @@
 package net.franzka.sgilt.core.evenement.service;
 
+import net.franzka.sgilt.core.evenement.dto.EventHorairesDto;
+import net.franzka.sgilt.core.evenement.page.exception.PagePubliqueDisabledException;
+import net.franzka.sgilt.core.evenement.billetterie.exception.BilletterieWithSalesException;
+import net.franzka.sgilt.core.evenement.billetterie.service.BilletterieService;
+import net.franzka.sgilt.core.evenement.dto.AdminEvenementFeaturesDto;
+import net.franzka.sgilt.core.evenement.page.exception.BilletterieWithoutPageException;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.domain.EvenementRubrique;
 import net.franzka.sgilt.core.evenement.dto.AdminEvenementListItemDto;
@@ -66,6 +72,7 @@ class EvenementServiceTest {
     @Mock private FileStorageService      fileStorageService;
     @Mock private TemplateService         templateService;
     @Mock private PageEvenementService    pageEvenementService;
+    @Mock private BilletterieService      billetterieService;
 
     @InjectMocks
     private EvenementService evenementService;
@@ -83,7 +90,7 @@ class EvenementServiceTest {
     private void whenEventFound(Evenement event) {
         when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
         when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
-        when(evenementMapper.toMetaDto(any(), any())).thenReturn(mock(EventMetaDto.class));
+        when(evenementMapper.toMetaDto(any(), any(), any())).thenReturn(mock(EventMetaDto.class));
     }
 
     @SuppressWarnings("unchecked")
@@ -153,11 +160,11 @@ class EvenementServiceTest {
             Evenement event = ownerEvent(b -> b);
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
             when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
-            when(evenementMapper.toMetaDto(any(), any())).thenReturn(mock(EventMetaDto.class));
+            when(evenementMapper.toMetaDto(any(), any(), any())).thenReturn(mock(EventMetaDto.class));
 
             evenementService.getEvent(EVENT_ID, USER_ID);
 
-            verify(evenementMapper).toMetaDto(eq(event), isNull());
+            verify(evenementMapper).toMetaDto(eq(event), isNull(), isNull());
         }
 
         @Test
@@ -166,11 +173,11 @@ class EvenementServiceTest {
             Evenement event = ownerEvent(b -> b);
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
             when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.of(lastUpdate));
-            when(evenementMapper.toMetaDto(any(), any())).thenReturn(mock(EventMetaDto.class));
+            when(evenementMapper.toMetaDto(any(), any(), any())).thenReturn(mock(EventMetaDto.class));
 
             evenementService.getEvent(EVENT_ID, USER_ID);
 
-            verify(evenementMapper).toMetaDto(eq(event), eq(lastUpdate));
+            verify(evenementMapper).toMetaDto(eq(event), eq(lastUpdate), isNull());
         }
 
         @Test
@@ -184,7 +191,7 @@ class EvenementServiceTest {
             ReservationSummaryDto salle = summary("salle", "lieu");
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
             when(journalEvenementService.derniereModification(EVENT_ID)).thenReturn(Optional.empty());
-            when(evenementMapper.toMetaDto(any(), any())).thenReturn(meta);
+            when(evenementMapper.toMetaDto(any(), any(), any())).thenReturn(meta);
             when(reservationService.getReservationSummaries(EVENT_ID)).thenReturn(List.of(dj, salle, chanteur));
 
             EventDto detail = evenementService.getEvent(EVENT_ID, USER_ID);
@@ -822,51 +829,163 @@ class EvenementServiceTest {
         }
     }
 
-    // ── GetById ──────────────────────────────────────────────────────────────────
+    // ── GetOwnedEventWithPagePublique ────────────────────────────────────────────
 
     @Nested
-    class GetById {
+    class GetOwnedEventWithPagePublique {
 
         @Test
-        void givenExistingEvent_whenGetById_thenReturnsIt() {
-            Evenement event = Evenement.builder().id(EVENT_ID).build();
+        void givenOwnedEventWithPagePublique_whenGetOwnedEventWithPagePublique_thenReturnsIt() {
+            Evenement event = ownerEvent(b -> b.pagePubliqueEnabled(true));
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
 
-            assertThat(evenementService.getById(EVENT_ID)).isSameAs(event);
+            assertThat(evenementService.getOwnedEventWithPagePublique(EVENT_ID, USER_ID)).isSameAs(event);
         }
 
         @Test
-        void givenUnknownEvent_whenGetById_thenThrowsNotFound() {
-            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.empty());
+        void givenPagePubliqueDisabled_whenGetOwnedEventWithPagePublique_thenThrowsDisabled() {
+            Evenement event = ownerEvent(b -> b);
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
 
-            assertThatThrownBy(() -> evenementService.getById(EVENT_ID))
-                    .isInstanceOf(EvenementNotFoundException.class);
+            assertThatThrownBy(() -> evenementService.getOwnedEventWithPagePublique(EVENT_ID, USER_ID))
+                    .isInstanceOf(PagePubliqueDisabledException.class);
+        }
+
+        @Test
+        void givenEventOfAnotherUser_whenGetOwnedEventWithPagePublique_thenThrowsNotAllowed() {
+            Evenement event = ownerEvent(b -> b.pagePubliqueEnabled(true));
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
+
+            assertThatThrownBy(() -> evenementService.getOwnedEventWithPagePublique(EVENT_ID, UUID.randomUUID()))
+                    .isInstanceOf(EvenementNotAllowedException.class);
         }
     }
 
-    // ── ReplaceHoraires ──────────────────────────────────────────────────────────
+    // ── ReplaceOwnedHoraires ─────────────────────────────────────────────────────
 
     @Nested
-    class ReplaceHoraires {
+    class ReplaceOwnedHoraires {
 
         @Test
-        void givenEvent_whenReplaceHoraires_thenSetsBothHoursAndSaves() {
-            Evenement event = Evenement.builder().id(EVENT_ID).startTime(LocalTime.of(18, 0)).build();
-            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
-            when(evenementRepository.save(event)).thenReturn(event);
+        void givenHoursChanged_whenReplaceOwnedHoraires_thenSetsBothLogsThemAndReturnsMeta() {
+            Evenement event = ownerEvent(b -> b.startTime(LocalTime.of(18, 0)));
+            EventMetaDto meta = mock(EventMetaDto.class);
+            whenEventFound(event);
+            when(evenementMapper.toMetaDto(any(), any(), any())).thenReturn(meta);
 
-            Evenement result = evenementService.replaceHoraires(EVENT_ID, null, LocalTime.of(2, 0));
+            EventMetaDto result = evenementService.replaceOwnedHoraires(EVENT_ID, USER_ID,
+                    new EventHorairesDto(LocalTime.of(19, 30), LocalTime.of(2, 0)));
 
-            assertThat(result).isSameAs(event);
-            assertThat(event.getStartTime()).isNull();
+            assertThat(result).isSameAs(meta);
+            assertThat(event.getStartTime()).isEqualTo(LocalTime.of(19, 30));
             assertThat(event.getEndTime()).isEqualTo(LocalTime.of(2, 0));
+            verify(evenementRepository).save(event);
+            assertThat(captureModifications(event)).containsExactly(
+                    new ModificationChamp("heureDebut", "18:00", "19:30"),
+                    new ModificationChamp("heureFin", null, "02:00"));
         }
 
         @Test
-        void givenUnknownEvent_whenReplaceHoraires_thenThrowsNotFound() {
+        void givenNullHours_whenReplaceOwnedHoraires_thenClearsThem() {
+            Evenement event = ownerEvent(b -> b.startTime(LocalTime.of(18, 0)).endTime(LocalTime.of(23, 0)));
+            whenEventFound(event);
+
+            evenementService.replaceOwnedHoraires(EVENT_ID, USER_ID, new EventHorairesDto(null, null));
+
+            assertThat(event.getStartTime()).isNull();
+            assertThat(event.getEndTime()).isNull();
+            assertThat(captureModifications(event)).containsExactly(
+                    new ModificationChamp("heureDebut", "18:00", null),
+                    new ModificationChamp("heureFin", "23:00", null));
+        }
+
+        @Test
+        void givenSameHours_whenReplaceOwnedHoraires_thenNothingLogged() {
+            Evenement event = ownerEvent(b -> b.startTime(LocalTime.of(18, 0)));
+            whenEventFound(event);
+
+            evenementService.replaceOwnedHoraires(EVENT_ID, USER_ID, new EventHorairesDto(LocalTime.of(18, 0), null));
+
+            assertThat(captureModifications(event)).isEmpty();
+        }
+
+        @Test
+        void givenEventOfAnotherUser_whenReplaceOwnedHoraires_thenThrowsNotAllowedWithoutSaving() {
+            Evenement event = ownerEvent(b -> b);
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
+
+            assertThatThrownBy(() -> evenementService.replaceOwnedHoraires(EVENT_ID, UUID.randomUUID(),
+                    new EventHorairesDto(null, null)))
+                    .isInstanceOf(EvenementNotAllowedException.class);
+            verify(evenementRepository, never()).save(any());
+        }
+    }
+
+    // ── ReplacePublicFeatures ────────────────────────────────────────────────────
+
+    @Nested
+    class ReplacePublicFeatures {
+
+        // Événement chargé et sauvegardé tel quel.
+        private void givenEvent(Evenement event) {
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
+            when(evenementRepository.save(event)).thenReturn(event);
+        }
+
+        @Test
+        void givenEventWithoutFeatures_whenEnableBoth_thenSetsBothSwitchesAndReturnsListItemWithSlug() {
+            Evenement event = Evenement.builder().id(EVENT_ID).build();
+            AdminEvenementListItemDto dto = mock(AdminEvenementListItemDto.class);
+            givenEvent(event);
+            when(pageEvenementService.getSlug(event)).thenReturn(Optional.of("les-jeudis-du-taennel"));
+            when(evenementMapper.toAdminListItemDto(event, "les-jeudis-du-taennel")).thenReturn(dto);
+
+            AdminEvenementListItemDto result = evenementService.replacePublicFeatures(EVENT_ID, new AdminEvenementFeaturesDto(true, true));
+
+            assertThat(result).isSameAs(dto);
+            assertThat(event.isPagePubliqueEnabled()).isTrue();
+            assertThat(event.isBilletterieEnabled()).isTrue();
+            verifyNoInteractions(billetterieService);
+        }
+
+        @Test
+        void givenBilletterieEnabled_whenDisableIt_thenChecksItCanBeDisabledThenSaves() {
+            Evenement event = Evenement.builder().id(EVENT_ID).pagePubliqueEnabled(true).billetterieEnabled(true).build();
+            givenEvent(event);
+            when(pageEvenementService.getSlug(event)).thenReturn(Optional.empty());
+
+            evenementService.replacePublicFeatures(EVENT_ID, new AdminEvenementFeaturesDto(true, false));
+
+            verify(billetterieService).checkCanBeDisabled(EVENT_ID);
+            assertThat(event.isPagePubliqueEnabled()).isTrue();
+            assertThat(event.isBilletterieEnabled()).isFalse();
+        }
+
+        @Test
+        void givenBilletterieWithSales_whenDisablePage_thenThrowsWithoutSaving() {
+            Evenement event = Evenement.builder().id(EVENT_ID).pagePubliqueEnabled(true).billetterieEnabled(true).build();
+            when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.of(event));
+            doThrow(new BilletterieWithSalesException(EVENT_ID)).when(billetterieService).checkCanBeDisabled(EVENT_ID);
+
+            assertThatThrownBy(() -> evenementService.replacePublicFeatures(EVENT_ID, new AdminEvenementFeaturesDto(false, false)))
+                    .isInstanceOf(BilletterieWithSalesException.class);
+            assertThat(event.isPagePubliqueEnabled()).isTrue();
+            assertThat(event.isBilletterieEnabled()).isTrue();
+            verify(evenementRepository, never()).save(any());
+        }
+
+        @Test
+        void givenBilletterieWithoutPage_whenReplacePublicFeatures_thenThrowsWithoutLoading() {
+            assertThatThrownBy(() -> evenementService.replacePublicFeatures(EVENT_ID, new AdminEvenementFeaturesDto(false, true)))
+                    .isInstanceOf(BilletterieWithoutPageException.class);
+            verifyNoInteractions(evenementRepository, billetterieService);
+        }
+
+        @Test
+        void givenUnknownEvent_whenReplacePublicFeatures_thenThrowsNotFound() {
             when(evenementRepository.findById(EVENT_ID)).thenReturn(Optional.empty());
 
-            assertThatThrownBy(() -> evenementService.replaceHoraires(EVENT_ID, null, null))
+            assertThatThrownBy(() -> evenementService.replacePublicFeatures(EVENT_ID, new AdminEvenementFeaturesDto(true, true)))
                     .isInstanceOf(EvenementNotFoundException.class);
         }
     }
