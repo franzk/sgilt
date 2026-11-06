@@ -1,8 +1,8 @@
 /**
  * Mapper — conversions entre DTOs et domain de la page publique d'un événement
  */
-import type { EventPageDto, EventPagePictoDto } from '../dto/EventPageDto'
-import type { PublicEvent, PublicEventPicto } from '../domain/PublicEvent'
+import type { EventPageDto, EventPagePictoDto, EventPageTicketingDto } from '../dto/EventPageDto'
+import type { PublicEvent, PublicEventPicto, PublicEventTicketing } from '../domain/PublicEvent'
 import { defaultCoverPath } from '~/utils/eventCovers'
 
 function mapPicto(dto: EventPagePictoDto): PublicEventPicto {
@@ -10,6 +10,16 @@ function mapPicto(dto: EventPagePictoDto): PublicEventPicto {
     icon: dto.icon,
     label: dto.label,
     sublabel: dto.sublabel,
+  }
+}
+
+function mapTicketing(dto: EventPageTicketingDto): PublicEventTicketing {
+  return {
+    status: dto.status,
+    unitPriceCents: dto.unitPriceCents,
+    priceNote: dto.priceNote ?? undefined,
+    remainingTickets: dto.remainingTickets,
+    maxPlacesPerCommande: dto.maxPlacesPerCommande,
   }
 }
 
@@ -27,7 +37,7 @@ export function mapPublicEvent(dto: EventPageDto): PublicEvent {
     city: dto.city,
     sectionTitle: dto.sectionTitle ?? undefined,
     description: dto.description ?? undefined,
-    ticketing: dto.ticketing ?? undefined,
+    ticketing: dto.ticketing ? mapTicketing(dto.ticketing) : undefined,
     importantInfo: dto.importantInfo,
     pictos: dto.pictos.map(mapPicto),
     practicalInfo: dto.practicalInfo,

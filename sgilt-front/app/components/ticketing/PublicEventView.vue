@@ -86,6 +86,7 @@ import {
   GobletIcon,
   LeafIcon,
   TeamIcon,
+  RestaurantIcon,
   ArrowRightSIcon,
 } from '@remixicons/vue/line'
 import type { PublicEvent, PublicEventPictoIcon } from '~/data/ticketing/domain/PublicEvent'
@@ -117,6 +118,7 @@ const PICTO_ICONS: Record<PublicEventPictoIcon, Component> = {
   goblet: markRaw(GobletIcon),
   leaf: markRaw(LeafIcon),
   team: markRaw(TeamIcon),
+  restaurant: markRaw(RestaurantIcon),
 }
 </script>
 
@@ -318,6 +320,8 @@ const PICTO_ICONS: Record<PublicEventPictoIcon, Component> = {
     font-size: $font-size-md;
     line-height: $line-height-relaxed;
     color: $text-primary;
+    // Garde les retours à la ligne saisis par l'organisateur (paragraphes).
+    white-space: pre-line;
   }
 }
 

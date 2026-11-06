@@ -4,7 +4,7 @@
 
 // Pictogrammes des points forts, par clé : la fiche fait la correspondance clé → icône, le
 // back-office les propose à la saisie.
-export const PUBLIC_EVENT_PICTO_ICONS = ['music', 'goblet', 'leaf', 'team'] as const
+export const PUBLIC_EVENT_PICTO_ICONS = ['music', 'goblet', 'leaf', 'team', 'restaurant'] as const
 export type PublicEventPictoIcon = (typeof PUBLIC_EVENT_PICTO_ICONS)[number]
 
 export interface PublicEventPicto {
@@ -22,6 +22,8 @@ export interface PublicEventTicketing {
   // En centimes : les calculs de montant restent entiers, la conversion en euros se fait à
   // l'affichage.
   unitPriceCents: number
+  // Mention affichée après « par place » (« Tout compris »…), saisie par l'organisateur.
+  priceNote?: string
   // Disponibilité ET plafond du sélecteur de quantité en découlent tous les deux, pas de champ
   // `available` séparé à faire diverger.
   remainingTickets: number

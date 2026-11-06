@@ -26,11 +26,11 @@ class BilletterieMapperTest {
         @Test
         void givenBilletterieAndRemainingTickets_whenToTicketingDto_thenMapsAllFieldsWithMaxPlacesPerCommande() {
             Billetterie billetterie = Billetterie.builder()
-                    .status(BilletterieStatus.OPEN).unitPriceCents(1200).capacity(150).build();
+                    .status(BilletterieStatus.OPEN).unitPriceCents(1200).priceNote("Tout compris").capacity(150).build();
 
             TicketingDto dto = mapper.toTicketingDto(billetterie, 7);
 
-            assertThat(dto).isEqualTo(new TicketingDto(BilletterieStatus.OPEN, 1200, 7, 10));
+            assertThat(dto).isEqualTo(new TicketingDto(BilletterieStatus.OPEN, 1200, "Tout compris", 7, 10));
         }
     }
 
@@ -44,10 +44,10 @@ class BilletterieMapperTest {
         @Test
         void givenBilletterie_whenToTicketingSettingsDto_thenMapsAllFields() {
             Billetterie billetterie = Billetterie.builder()
-                    .status(BilletterieStatus.NOT_OPEN).unitPriceCents(1200).capacity(150).build();
+                    .status(BilletterieStatus.NOT_OPEN).unitPriceCents(1200).priceNote("Tout compris").capacity(150).build();
 
             assertThat(mapper.toTicketingSettingsDto(billetterie))
-                    .isEqualTo(new TicketingSettingsDto(BilletterieStatus.NOT_OPEN, 1200, 150));
+                    .isEqualTo(new TicketingSettingsDto(BilletterieStatus.NOT_OPEN, 1200, "Tout compris", 150));
         }
     }
 
@@ -63,12 +63,13 @@ class BilletterieMapperTest {
             Evenement evenement = Evenement.builder().id(UUID.randomUUID()).build();
 
             Billetterie billetterie = mapper.toBilletterie(
-                    new TicketingSettingsDto(BilletterieStatus.OPEN, 1200, 150), evenement);
+                    new TicketingSettingsDto(BilletterieStatus.OPEN, 1200, "Tout compris", 150), evenement);
 
             assertThat(billetterie.getId()).isNull();
             assertThat(billetterie.getEvenement()).isSameAs(evenement);
             assertThat(billetterie.getStatus()).isEqualTo(BilletterieStatus.OPEN);
             assertThat(billetterie.getUnitPriceCents()).isEqualTo(1200);
+            assertThat(billetterie.getPriceNote()).isEqualTo("Tout compris");
             assertThat(billetterie.getCapacity()).isEqualTo(150);
         }
     }

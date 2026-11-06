@@ -148,6 +148,7 @@ public class BilletterieService {
     private Billetterie applyTicketing(Billetterie billetterie, TicketingSettingsDto ticketing) {
         billetterie.setStatus(ticketing.status());
         billetterie.setUnitPriceCents(ticketing.unitPriceCents());
+        billetterie.setPriceNote(ticketing.priceNote());
         billetterie.setCapacity(ticketing.capacity());
         return billetterie;
     }

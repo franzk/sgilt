@@ -10,7 +10,10 @@
     <div class="price-row">
       <div v-if="state !== 'CLOSED'" class="price">
         <span class="amount">{{ unitPriceLabel }}</span>
-        <span class="unit">{{ $t('ticketing.event.per-ticket') }}</span>
+        <span class="unit"
+          >{{ $t('ticketing.event.per-ticket')
+          }}<template v-if="ticketing.priceNote"> · {{ ticketing.priceNote }}</template></span
+        >
       </div>
       <span class="status-badge" :class="stateKey">
         <span class="dot" aria-hidden="true" />

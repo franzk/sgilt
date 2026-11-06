@@ -20,6 +20,7 @@ public interface BilletterieMapper {
      */
     @Mapping(source = "billetterie.status",         target = "status")
     @Mapping(source = "billetterie.unitPriceCents", target = "unitPriceCents")
+    @Mapping(source = "billetterie.priceNote",      target = "priceNote")
     @Mapping(source = "remainingTickets",           target = "remainingTickets")
     @Mapping(target = "maxPlacesPerCommande",       expression = "java(Commande.MAX_PLACES_PER_COMMANDE)")
     TicketingDto toTicketingDto(Billetterie billetterie, int remainingTickets);
@@ -45,6 +46,7 @@ public interface BilletterieMapper {
     @Mapping(target = "evenement",      source = "evenement")
     @Mapping(target = "status",         source = "ticketing.status")
     @Mapping(target = "unitPriceCents", source = "ticketing.unitPriceCents")
+    @Mapping(target = "priceNote",      source = "ticketing.priceNote")
     @Mapping(target = "capacity",       source = "ticketing.capacity")
     Billetterie toBilletterie(TicketingSettingsDto ticketing, Evenement evenement);
 }

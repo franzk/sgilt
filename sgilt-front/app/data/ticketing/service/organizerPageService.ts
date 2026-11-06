@@ -12,7 +12,7 @@ import {
   putOrganizerTicketingApi,
   unpublishOrganizerPageApi,
 } from '../api/organizerPageApi'
-import { mapOrganizerPublicPage, mapPageContentRequest } from '../mapper/organizerPageMapper'
+import { mapOrganizerPublicPage, mapPageContentRequest, mapTicketingSettingsRequest } from '../mapper/organizerPageMapper'
 import { mapPublicEvent } from '../mapper/eventPageMapper'
 import type { OrganizerPublicPage, PageContentForm, TicketingSettings } from '../domain/OrganizerPublicPage'
 import type { PublicEvent } from '../domain/PublicEvent'
@@ -39,7 +39,7 @@ export async function unpublishOrganizerPage(eventId: string): Promise<Organizer
 }
 
 export async function saveOrganizerTicketing(eventId: string, settings: TicketingSettings): Promise<OrganizerPublicPage> {
-  return mapOrganizerPublicPage(await putOrganizerTicketingApi(eventId, settings))
+  return mapOrganizerPublicPage(await putOrganizerTicketingApi(eventId, mapTicketingSettingsRequest(settings)))
 }
 
 /**
