@@ -3,13 +3,15 @@ package net.franzka.sgilt.core;
 import net.franzka.sgilt.core.config.ConfirmationTokenProperties;
 import net.franzka.sgilt.core.config.KeycloakProperties;
 import net.franzka.sgilt.core.config.OpenAiProperties;
+import net.franzka.sgilt.core.config.PayProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-@EnableConfigurationProperties({ConfirmationTokenProperties.class, KeycloakProperties.class, OpenAiProperties.class})
+@EnableConfigurationProperties({ConfirmationTokenProperties.class, KeycloakProperties.class, OpenAiProperties.class,
+		PayProperties.class})
 @EnableScheduling
 public class SgiltCoreApplication {
 

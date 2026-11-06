@@ -7,6 +7,7 @@ import type { EventDto } from '../dto/EventDto'
 import type { CreateEventRequestDto } from '../dto/CreateEventRequestDto'
 import type { EventMetaDto } from '../dto/EventMetaDto'
 import type { EventMetaPatchRequestDto } from '../dto/EventMetaPatchRequestDto'
+import type { EventHorairesRequestDto } from '../dto/EventHorairesRequestDto'
 import type { JournalEvenementPageDto } from '../dto/JournalEvenementDto'
 
 export interface CoverUrlResponseDto {
@@ -26,6 +27,13 @@ export async function patchEventApi(
   patch: EventMetaPatchRequestDto,
 ): Promise<EventMetaDto> {
   return apiFetch<EventMetaDto>(`/user/events/${eventId}`, { method: 'PATCH', body: patch })
+}
+
+export async function putEventHorairesApi(
+  eventId: string,
+  horaires: EventHorairesRequestDto,
+): Promise<EventMetaDto> {
+  return apiFetch<EventMetaDto>(`/user/events/${eventId}/horaires`, { method: 'PUT', body: horaires })
 }
 
 export async function getEventJournalApi(

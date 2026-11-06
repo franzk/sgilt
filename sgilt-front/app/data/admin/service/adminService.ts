@@ -15,6 +15,8 @@ import {
   updateSousCategorieApi,
   moveSousCategorieApi,
   deleteSousCategorieApi,
+  listAdminEvenementsApi,
+  putAdminEvenementFeaturesApi,
 } from '../api/adminApi'
 import {
   mapPrestataireAdminFormat,
@@ -25,6 +27,7 @@ import {
   mapOnboardingPending,
   mapCategorieAdmin,
   mapSousCategorieAdmin,
+  mapAdminEvenementListItem,
 } from '../mapper/adminMapper'
 import type { PrestataireAdminFormat } from '../domain/PrestataireAdminFormat'
 import type { PrestataireOnboardingPending } from '../domain/PrestataireOnboardingPending'
@@ -34,6 +37,7 @@ import type { AdminReservationListItem } from '../domain/AdminReservationListIte
 import type { AdminReservationStatus } from '../domain/AdminReservationStatus'
 import type { OnboardingPending } from '../domain/OnboardingPending'
 import type { CategorieAdmin, MoveDirection, SousCategorieAdmin } from '../domain/CategorieAdmin'
+import type { AdminEvenementFeatures, AdminEvenementListItem } from '../domain/AdminEvenement'
 import { FetchError } from 'ofetch'
 
 /**
@@ -146,4 +150,31 @@ export async function deleteSousCategorie(key: string): Promise<void> {
  */
 export function toSousCategorieFailure(error: unknown, refusal: string): string {
   return error instanceof FetchError && error.statusCode === 400 ? refusal : 'TECHNICAL'
+}
+
+/**
+ * Récupère tous les événements, du plus lointain au plus ancien, pour le back-office admin.
+ */
+export async function fetchAdminEvenements(): Promise<AdminEvenementListItem[]> {
+  return (await listAdminEvenementsApi()).map(mapAdminEvenementListItem)
+}
+
+/**
+ * Active ou désactive la page publique et la billetterie d'un événement ; renvoie l'événement
+ * mis à jour.
+ */
+export async function saveAdminEvenementFeatures(
+  id: string,
+  features: AdminEvenementFeatures,
+): Promise<AdminEvenementListItem> {
+  return mapAdminEvenementListItem(await putAdminEvenementFeaturesApi(id, features))
+}
+
+/**
+ * Traduit l'échec d'un changement d'interrupteurs en motif d'erreur (suffixe de clé i18n) : une
+ * billetterie qui a des ventes ne se coupe pas (409) ; tout le reste est technique (la billetterie
+ * sans page est empêchée par l'écran).
+ */
+export function toFeaturesFailure(error: unknown): string {
+  return error instanceof FetchError && error.statusCode === 409 ? 'BILLETTERIE_WITH_SALES' : 'TECHNICAL'
 }

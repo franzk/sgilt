@@ -1,7 +1,9 @@
 package net.franzka.sgilt.core.evenement.mapper;
 
+import net.franzka.sgilt.core.evenement.page.domain.PublicPageStatus;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.domain.EvenementRubrique;
+import net.franzka.sgilt.core.evenement.dto.AdminEvenementListItemDto;
 import net.franzka.sgilt.core.evenement.dto.ClientInfoDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
@@ -29,13 +31,32 @@ public interface EvenementMapper {
 
     ClientInfoDto toClientInfo(Utilisateur utilisateur);
 
+    /**
+     * Mappe un événement vers la liste du back-office admin.
+     *
+     * @param evenement l'événement, avec son propriétaire
+     * @param slug      le slug de sa page publique, ou null s'il n'en a pas
+     * @return l'élément de liste
+     */
+    @Mapping(source = "evenement.id",                target = "id")
+    @Mapping(source = "evenement.title",             target = "title")
+    @Mapping(source = "evenement.date",              target = "date")
+    @Mapping(source = "evenement.utilisateur.email", target = "ownerEmail")
+    @Mapping(source = "slug",                        target = "slug")
+    @Mapping(source = "evenement.pagePubliqueEnabled", target = "pagePubliqueEnabled")
+    @Mapping(source = "evenement.billetterieEnabled",  target = "billetterieEnabled")
+    AdminEvenementListItemDto toAdminListItemDto(Evenement evenement, String slug);
+
     @Mapping(source = "evenement.notePartagee", target = "sharedNote")
     @Mapping(source = "evenement.description",  target = "description")
     @Mapping(source = "evenement.momentCle",    target = "momentCle")
     @Mapping(source = "evenement.utilisateur",  target = "clientInfo")
     @Mapping(source = "evenement.imagePath",    target = "imagePath")
     @Mapping(source = "lastUpdateDate",         target = "lastUpdateDate")
-    EventMetaDto toMetaDto(Evenement evenement, LocalDateTime lastUpdateDate);
+    @Mapping(source = "publicPageStatus",       target = "publicPageStatus")
+    @Mapping(source = "evenement.startTime",    target = "startTime")
+    @Mapping(source = "evenement.endTime",      target = "endTime")
+    EventMetaDto toMetaDto(Evenement evenement, LocalDateTime lastUpdateDate, PublicPageStatus publicPageStatus);
 
     /**
      * Mappe un événement complet (pas encore créé) vers l'entité, en statut ACTIVE, avec les
@@ -50,6 +71,8 @@ public interface EvenementMapper {
     @Mapping(target = "imagePath",    ignore = true)
     @Mapping(target = "notePartagee", ignore = true)
     @Mapping(target = "createdAt",    ignore = true)
+    @Mapping(target = "startTime",    ignore = true)
+    @Mapping(target = "endTime",      ignore = true)
     @Mapping(target = "status",       constant = "ACTIVE")
     @Mapping(target = "utilisateur",  source = "utilisateur")
     @Mapping(target = "date",         source = "evenement.date")

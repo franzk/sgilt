@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: sgilt-pay
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    template:
+      retry:
+        enabled: true
+        initial-interval: 1s
+        multiplier: 2
+        max-interval: 10s
+        max-retries: 3
+
+sgilt:
+  stripe:
+    # Clé secrète Stripe (sk_test_… en local et staging) : jamais commitée
+    secret-key: ${STRIPE_SECRET_KEY}
+    # Secret de signature des webhooks (whsec_…) : celui de l'endpoint déclaré chez Stripe, ou celui
+    # affiché par `stripe listen` en local. Jamais commité
+    webhook-secret: ${STRIPE_WEBHOOK_SECRET}
+
+server:
+  port: 5032

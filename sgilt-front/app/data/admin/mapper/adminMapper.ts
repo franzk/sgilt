@@ -15,6 +15,8 @@ import type { OnboardingPendingDto } from '../dto/OnboardingPendingDto'
 import type { OnboardingPending } from '../domain/OnboardingPending'
 import type { CategorieAdminDto, SousCategorieAdminDto } from '../dto/CategorieAdminDto'
 import type { CategorieAdmin, SousCategorieAdmin } from '../domain/CategorieAdmin'
+import type { AdminEvenementListItemDto } from '../dto/AdminEvenementDto'
+import type { AdminEvenementListItem } from '../domain/AdminEvenement'
 
 export function mapPrestataireAdminFormat(dto: PrestataireAdminListItemDto): PrestataireAdminFormat {
   return {
@@ -101,5 +103,19 @@ export function mapCategorieAdmin(dto: CategorieAdminDto): CategorieAdmin {
     key: dto.key,
     name: dto.name,
     subcategories: dto.subcategories.map(mapSousCategorieAdmin),
+  }
+}
+
+export function mapAdminEvenementListItem(dto: AdminEvenementListItemDto): AdminEvenementListItem {
+  return {
+    id: dto.id,
+    title: dto.title,
+    date: dto.date,
+    ownerEmail: dto.ownerEmail,
+    slug: dto.slug ?? undefined,
+    features: {
+      pagePubliqueEnabled: dto.pagePubliqueEnabled,
+      billetterieEnabled: dto.billetterieEnabled,
+    },
   }
 }

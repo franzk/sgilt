@@ -52,6 +52,8 @@ services:
       R2_BUCKET: ${R2_BUCKET}
       R2_DOCUMENTS_BUCKET: ${R2_DOCUMENTS_BUCKET}
       MAX_UPLOAD_SIZE_MB: ${MAX_UPLOAD_SIZE_MB}
+      PAY_URL: http://sgilt-pay-${ENV}:5032
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
     depends_on:
       sgilt-core-db:
         condition: service_healthy
@@ -59,6 +61,8 @@ services:
         condition: service_healthy
     networks:
       - sgilt-network
+      # Création des PaymentIntents (sgilt-pay)
+      - sgilt-payment-network
     restart: unless-stopped
 
   # =====================
@@ -71,14 +75,18 @@ services:
     environment:
       BACK_URL: http://sgilt-core-${ENV}:5027
       NOTIFICATIONS_URL: http://sgilt-notifications-${ENV}:5031
+      PAY_URL: http://sgilt-pay-${ENV}:5032
       KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER}
       APP_URL: ${APP_URL}
       MAX_UPLOAD_SIZE_MB: ${MAX_UPLOAD_SIZE_MB}
     depends_on:
       - sgilt-core
       - sgilt-notifications
+      - sgilt-pay
     networks:
       - sgilt-network
+      # Uniquement pour faire suivre /webhooks/stripe à sgilt-pay (jamais /internal/...)
+      - sgilt-payment-network
     restart: unless-stopped
 
   # =====================
@@ -169,6 +177,29 @@ services:
     restart: unless-stopped
 
   # =====================
+  # SGILT-PAY (Spring Boot)
+  # =====================
+  # Seul service à parler à Stripe. Branché uniquement sur le réseau payment : joignable par
+  # sgilt-core (PaymentIntents), sgilt-gateway (webhook Stripe) et RabbitMQ (payment.succeeded).
+  sgilt-pay:
+    image: ghcr.io/franzk/sgilt/sgilt-pay:${SGILT_PAY_VERSION}
+    container_name: sgilt-pay-${ENV}
+    pull_policy: always
+    environment:
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      RABBITMQ_HOST: rabbitmq-${ENV}
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - sgilt-payment-network
+    restart: unless-stopped
+
+  # =====================
   # RABBITMQ
   # =====================
   rabbitmq:
@@ -181,6 +212,8 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
       - sgilt-network
+      # sgilt-pay y publie payment.succeeded
+      - sgilt-payment-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
@@ -197,3 +230,6 @@ volumes:
 networks:
   sgilt-network:
     name: sgilt-network-${ENV}
+  # Réseau du paiement : sgilt-pay seul dessus, plus core, gateway et RabbitMQ
+  sgilt-payment-network:
+    name: sgilt-payment-network-${ENV}

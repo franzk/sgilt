@@ -22,6 +22,8 @@ Internet
 
 `sgilt-gateway` is the single entry point for the API — it proxies to `sgilt-core` and
 `sgilt-notifications`, neither of which is reachable directly from outside the Docker network.
+It also forwards the Stripe webhook (`/webhooks/stripe`) to `sgilt-pay`, the only service that
+talks to Stripe (ticketing payments — see [BILLETTERIE_PAIEMENT_FLOW.md](BILLETTERIE_PAIEMENT_FLOW.md)).
 
 Object storage (media uploads, documents) is Cloudflare R2, called directly by `sgilt-core`
 (S3 SDK) and served publicly through its own custom domain (`media-staging.sgilt.fr` /
@@ -39,6 +41,9 @@ image Transformations. In local dev, `sgilt-r2-mock` stands in for R2 (see
 Each environment runs in its own isolated Docker network:
 - `sgilt-network-staging`
 - `sgilt-network-production`
+
+plus a dedicated payment network (`sgilt-payment-network-staging` / `-production`): `sgilt-pay` is
+attached **only** to it; `sgilt-core`, `sgilt-gateway` and RabbitMQ are on both.
 
 On the staging server, ka-proxy runs in parallel on port 443 for other projects (POC).
 SGILT does not use ka-proxy — each SGILT nginx container exposes its port directly on the host.
@@ -66,6 +71,7 @@ Cloudflare is the single entry point for all SGILT traffic.
 | Message broker     | RabbitMQ 4                          |
 | Object storage     | Cloudflare R2 (S3-compatible)       |
 | Mailer             | Spring Boot                         |
+| Payment            | Spring Boot + Stripe                |
 | SMTP Bridge        | Node.js                             |
 | Reverse proxy      | nginx:alpine                        |
 | Container registry | GitHub Container Registry (ghcr.io) |
@@ -88,6 +94,7 @@ Cloudflare is the single entry point for all SGILT traffic.
 | RabbitMQ      | `rabbitmq-staging`             | `rabbitmq-production`             |
 | Mailer        | `sgilt-mailer-staging`         | `sgilt-mailer-production`         |
 | SMTP Bridge   | `sgilt-smtp-bridge-staging`    | `sgilt-smtp-bridge-production`    |
+| Payment       | `sgilt-pay-staging`            | `sgilt-pay-production`            |
 
 ## Host ports
 
@@ -109,10 +116,10 @@ The deployment is split into multiple compose files that are merged at runtime:
 
 | File                              | Contents                                                     |
 |-------------------------------------|--------------------------------------------------------------------|
-| `docker-compose.base.yml`         | Docker network and volumes                                   |
+| `docker-compose.base.yml`         | Docker networks (main + payment) and volumes                 |
 | `docker-compose.front.yml`        | sgilt-front + nginx-front                                    |
 | `docker-compose.keycloak.yml`     | sgilt-keycloak + postgres + nginx-auth                       |
-| `docker-compose.back.yml`         | sgilt-core + sgilt-core-db + sgilt-gateway + nginx-api + sgilt-notifications + RabbitMQ + sgilt-mailer + sgilt-smtp-bridge |
+| `docker-compose.back.yml`         | sgilt-core + sgilt-core-db + sgilt-gateway + nginx-api + sgilt-notifications + RabbitMQ + sgilt-mailer + sgilt-smtp-bridge + sgilt-pay |
 | `docker-compose.overlay-init.yml` | Keycloak --import-realm flag (init mode only)                |
 
 ## GitHub Actions secrets and variables
@@ -147,6 +154,10 @@ Full setup procedure (how to generate/obtain each value) is in
 | `RABBITMQ_PASSWORD`           | RabbitMQ password (user is hardcoded to `sgilt`)                            |
 | `R2_ACCESS_KEY_ID`            | Cloudflare R2 API token access key ID                                        |
 | `R2_SECRET_ACCESS_KEY`        | Cloudflare R2 API token secret access key                                    |
+| `ADMIN_EMAIL`                 | Sgilt team address for technical alerts (overselling)                       |
+| `STRIPE_SECRET_KEY`           | Stripe restricted key for sgilt-pay (Payment Intents write only)            |
+| `STRIPE_WEBHOOK_SECRET`       | Signing secret of the Stripe webhook endpoint                               |
+| `STRIPE_PUBLISHABLE_KEY`      | Stripe publishable key for the front                                        |
 
 ### Environment variables (per environment, non-sensitive)
 | Variable              | Staging                          | Production                    |

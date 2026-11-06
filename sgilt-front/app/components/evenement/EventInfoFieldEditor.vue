@@ -1,3 +1,8 @@
+<!--
+  Éditeur d'une information de l'événement (une carte de EventInfoCards) : choix par cartes,
+  nom, lieu, horaires (début et fin, facultatifs) ou description. Travaille sur son propre
+  brouillon ; la validation émet les informations, au parent de les appliquer.
+-->
 <template>
   <div class="field-editor">
     <!-- Les choix par cartes valident au clic, comme dans le tunnel /organisation. -->
@@ -41,6 +46,17 @@
         />
         <p v-if="titleError" class="error">{{ $t('event-info.title-required') }}</p>
       </template>
+      <div v-else-if="field === 'horaires'" class="hours">
+        <label class="hour">
+          <span class="hour-label">{{ $t('event-info.hours.start') }}</span>
+          <input v-model="draft.startTime" class="hour-input" type="time" />
+        </label>
+        <label class="hour">
+          <span class="hour-label">{{ $t('event-info.hours.end') }}</span>
+          <input v-model="draft.endTime" class="hour-input" type="time" />
+        </label>
+        <p v-if="endsNextDay" class="hint">{{ $t('event-info.hours.next-day') }}</p>
+      </div>
       <OrganisationLieuStep
         v-else-if="field === 'lieu'"
         v-model:ville="draft.ville"
@@ -91,7 +107,12 @@ const draft = reactive<EventInfoFields>({
   ambiance: props.event.ambiance,
   momentCle: props.event.momentCle,
   description: props.event.description,
+  startTime: props.event.startTime ?? '',
+  endTime: props.event.endTime ?? '',
 })
+
+// Fin avant (ou à) l'heure du début : elle tombe le lendemain ('HH:mm' se compare comme du texte).
+const endsNextDay = computed(() => !!draft.startTime && !!draft.endTime && draft.endTime <= draft.startTime)
 const titleError = ref(false)
 const essentialError = ref(false)
 
@@ -145,6 +166,47 @@ function validate() {
     &::placeholder {
       color: $text-secondary;
       opacity: 0.6;
+    }
+  }
+
+  .hours {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-s;
+
+    .hour {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+
+      .hour-label {
+        font-size: $font-size-sm;
+        font-weight: 600;
+        color: $text-primary;
+      }
+
+      .hour-input {
+        height: 3.25rem;
+        padding: 0 $spacing-m;
+        border: 1.5px solid $divider-color;
+        border-radius: $radius-lg;
+        background: $surface-white;
+        color: $text-primary;
+        font-family: inherit;
+        font-size: 1rem;
+        outline: none;
+        transition: border-color 180ms ease;
+
+        &:focus {
+          border-color: $brand-accent;
+        }
+      }
+    }
+
+    .hint {
+      margin: 0;
+      color: $text-secondary;
+      font-size: $font-size-xs;
     }
   }
 

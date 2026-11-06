@@ -8,6 +8,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,6 +38,12 @@ public class Evenement {
     @Column(nullable = false)
     private LocalDate date;
 
+    /** Heure locale du lieu, le jour de {@link #date} ; facultative. */
+    private LocalTime startTime;
+
+    /** Heure locale du lieu ; avant {@link #startTime}, elle tombe le lendemain. Facultative. */
+    private LocalTime endTime;
+
     @Column(name = "image_path")
     private String imagePath;
 
@@ -55,6 +62,12 @@ public class Evenement {
     private String lieu;
 
     private String notePartagee;
+
+    /** Interrupteur du back-office : l'événement a une page publique (/e/{slug}). */
+    private boolean pagePubliqueEnabled;
+
+    /** Interrupteur du back-office : la page vend des billets ; jamais sans {@link #pagePubliqueEnabled}. */
+    private boolean billetterieEnabled;
 
     /** Rubriques de l'événement, dans l'ordre d'affichage (copiées du template à la création). */
     @JdbcTypeCode(SqlTypes.JSON)

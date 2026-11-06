@@ -1,5 +1,6 @@
 package net.franzka.sgilt.core.evenement.controller;
 
+import net.franzka.sgilt.core.evenement.dto.EventHorairesDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.evenement.api.EvenementApi;
@@ -68,6 +69,14 @@ public class EvenementController implements EvenementApi {
         UUID userId = currentUserService.getId();
         log.info("PATCH /events/{}", eventId);
         return ResponseEntity.ok(evenementService.patchEvent(eventId, userId, patch));
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<EventMetaDto> putHoraires(UUID eventId, EventHorairesDto horaires) {
+        UUID userId = currentUserService.getId();
+        log.info("PUT /events/{}/horaires", eventId);
+        return ResponseEntity.ok(evenementService.replaceOwnedHoraires(eventId, userId, horaires));
     }
 
     @Override

@@ -1,0 +1,5 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+    import: optional:classpath:application-local-secrets.yml

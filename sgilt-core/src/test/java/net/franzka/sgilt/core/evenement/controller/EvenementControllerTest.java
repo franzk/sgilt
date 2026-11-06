@@ -1,5 +1,6 @@
 package net.franzka.sgilt.core.evenement.controller;
 
+import net.franzka.sgilt.core.evenement.dto.EventHorairesDto;
 import net.franzka.sgilt.core.evenement.dto.AddReservationRequest;
 import net.franzka.sgilt.core.evenement.dto.CoverSelectDto;
 import net.franzka.sgilt.core.evenement.dto.CoverUrlDto;
@@ -26,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.util.List;
+import java.time.LocalTime;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -199,6 +201,24 @@ class EvenementControllerTest {
 
             assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
             verify(evenementService).addReservation(eventId, utilisateur, prestataireId, "Bonjour");
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // putHoraires
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class PutHoraires {
+
+        @Test
+        void givenHoraires_whenPutHoraires_thenReplacesThemForCurrentUser() {
+            EventHorairesDto horaires = new EventHorairesDto(LocalTime.of(19, 0), null);
+            EventMetaDto meta = mock(EventMetaDto.class);
+            when(currentUserService.getId()).thenReturn(userId);
+            when(evenementService.replaceOwnedHoraires(eventId, userId, horaires)).thenReturn(meta);
+
+            assertThat(controller.putHoraires(eventId, horaires).getBody()).isSameAs(meta);
         }
     }
 }

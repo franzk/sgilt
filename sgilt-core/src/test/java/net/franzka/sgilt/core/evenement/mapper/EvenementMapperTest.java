@@ -1,8 +1,10 @@
 package net.franzka.sgilt.core.evenement.mapper;
 
+import net.franzka.sgilt.core.evenement.page.domain.PublicPageStatus;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.domain.EvenementRubrique;
 import net.franzka.sgilt.core.evenement.domain.EvenementStatus;
+import net.franzka.sgilt.core.evenement.dto.AdminEvenementListItemDto;
 import net.franzka.sgilt.core.evenement.dto.ClientInfoDto;
 import net.franzka.sgilt.core.evenement.dto.DemandeInitieeDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementDto;
@@ -16,6 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -80,25 +83,28 @@ class EvenementMapperTest {
                     .id(UUID.randomUUID()).title("Anniversaire de Paul").date(LocalDate.of(2027, 6, 15))
                     .eventType("Anniversaire").ambiance("Champetre").ville("Lyon").lieu("Domaine des fleurs")
                     .nbInvites("80").imagePath("cover.jpg").notePartagee("Note partagee")
-                    .description("Description").momentCle("Vin d'honneur").utilisateur(utilisateur).build();
+                    .description("Description").momentCle("Vin d'honneur").utilisateur(utilisateur)
+                    .startTime(LocalTime.of(19, 0)).endTime(LocalTime.of(2, 0)).build();
             LocalDateTime lastUpdate = LocalDateTime.of(2027, 5, 1, 10, 0);
 
-            EventMetaDto dto = mapper.toMetaDto(evenement, lastUpdate);
+            EventMetaDto dto = mapper.toMetaDto(evenement, lastUpdate, PublicPageStatus.DRAFT);
 
             assertThat(dto).isEqualTo(new EventMetaDto(
                     evenement.getId(), "Anniversaire de Paul", LocalDate.of(2027, 6, 15), "Anniversaire",
                     "Champetre", "Lyon", "Domaine des fleurs", "80", "cover.jpg", "Note partagee",
                     "Description", "Vin d'honneur", lastUpdate,
-                    new ClientInfoDto("Sophie", "Leroy", "0102030405", "sophie@sgilt.fr")));
+                    new ClientInfoDto("Sophie", "Leroy", "0102030405", "sophie@sgilt.fr"), PublicPageStatus.DRAFT,
+                    LocalTime.of(19, 0), LocalTime.of(2, 0)));
         }
 
         @Test
         void givenNoLastUpdateDate_whenToMetaDto_thenLastUpdateDateIsNull() {
             Evenement evenement = Evenement.builder().id(UUID.randomUUID()).title("Anniversaire").build();
 
-            EventMetaDto dto = mapper.toMetaDto(evenement, null);
+            EventMetaDto dto = mapper.toMetaDto(evenement, null, null);
 
             assertThat(dto.lastUpdateDate()).isNull();
+            assertThat(dto.publicPageStatus()).isNull();
         }
     }
 
@@ -134,6 +140,28 @@ class EvenementMapperTest {
                     null, "mariage", null, null, null, null, null, null, null, null);
 
             assertThat(mapper.toEvenement(evenementDto, Utilisateur.builder().build()).getRubriques()).isEmpty();
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // toAdminListItemDto
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ToAdminListItemDto {
+
+        @Test
+        void givenEvenementAndSlug_whenToAdminListItemDto_thenMapsAllFields() {
+            Evenement evenement = Evenement.builder()
+                    .id(UUID.randomUUID()).title("Les Jeudis du Taennel").date(LocalDate.of(2026, 3, 12))
+                    .utilisateur(Utilisateur.builder().email("equipe@sgilt.fr").build())
+                    .pagePubliqueEnabled(true).build();
+
+            AdminEvenementListItemDto dto = mapper.toAdminListItemDto(evenement, "les-jeudis-du-taennel");
+
+            assertThat(dto).isEqualTo(new AdminEvenementListItemDto(
+                    evenement.getId(), "Les Jeudis du Taennel", LocalDate.of(2026, 3, 12),
+                    "equipe@sgilt.fr", "les-jeudis-du-taennel", true, false));
         }
     }
 }

@@ -28,6 +28,22 @@ spring:
               predicates:
                 - Path=/api/v1/prestataires/**
 
+            - id: eventpages-public
+              uri: ${BACK_URL:http://localhost:5027}
+              predicates:
+                - Path=/api/v1/eventpages/**
+
+            - id: commandes-public
+              uri: ${BACK_URL:http://localhost:5027}
+              predicates:
+                - Path=/api/v1/commandes/**
+
+            # Webhooks Stripe : seule route vers sgilt-pay (jamais /internal), protégée par la signature
+            - id: stripe-webhook-public
+              uri: ${PAY_URL:http://localhost:5032}
+              predicates:
+                - Path=/webhooks/stripe
+
             - id: templates-public
               uri: ${BACK_URL:http://localhost:5027}
               predicates:

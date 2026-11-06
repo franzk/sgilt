@@ -43,6 +43,17 @@ spring:
         multiplier: 2
         max-interval: 10s
         max-retries: 3
+    # Consommation (paiements réussis de sgilt-pay) : même politique que sgilt-notifications,
+    # retry puis dead-letter
+    listener:
+      simple:
+        default-requeue-rejected: false
+        retry:
+          enabled: true
+          initial-interval: 1s
+          multiplier: 2
+          max-interval: 10s
+          max-retries: 3
 
 sgilt:
   r2:
@@ -64,8 +75,14 @@ sgilt:
     admin-client-secret: ${KC_ADMIN_CLIENT_SECRET}
     front-client-id: sgilt-front
     magic-link-secret: ${MAGIC_LINK_SECRET:dev-magic-secret-change-in-prod}
+  pay:
+    # sgilt-pay, sur le réseau interne (sans route dans la gateway)
+    url: ${PAY_URL:http://localhost:5032}
   openai:
     api-key: ${OPENAI_API_KEY}
+  admin:
+    # Boîte de l'équipe Sgilt qui reçoit les alertes (survente…), propre à chaque environnement
+    email: ${ADMIN_EMAIL}
 
 server:
   port: 5027

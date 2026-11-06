@@ -1,3 +1,8 @@
+<!--
+  Route parente des pages d'un événement (/app/events/{eventId}/…) : charge l'événement et le
+  partage avec elles (useEventContext), le recharge à chaque navigation. Sur desktop, ajoute la
+  sidebar à gauche de la page ; ailleurs, la page seule.
+-->
 <template>
   <div class="event-shell">
     <EventSidebar
@@ -5,6 +10,7 @@
       class="sidebar"
       :board-path="`/app/events/${eventId}`"
       show-prestataires
+      :show-public-page="!!event.publicPageStatus"
       :event="event"
       :rubriques="rubriques"
       :cover-image="coverImage"
@@ -16,8 +22,6 @@
 </template>
 
 <script setup lang="ts">
-// Route parente des pages d'un événement : charge l'événement et le partage avec elles
-// (useEventContext). Sur desktop, ajoute la sidebar à gauche de la page ; ailleurs, la page seule.
 import EventSidebar from '~/components/evenement/EventSidebar.vue'
 import { provideEventContext } from '~/data/evenement/useEventContext'
 import { defaultCoverPath } from '~/utils/eventCovers'

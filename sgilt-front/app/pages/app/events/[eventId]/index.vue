@@ -2,7 +2,8 @@
   Accueil d'un événement de l'espace connecté (/app/events/{eventId}).
   Desktop : titre de l'événement, invitation, grille des rubriques,
   choix libre (recherche dans tout le catalogue) et idées de prestataires sans filtre.
-  Mobile : le board (couverture, réglages, rubriques), suivi du choix libre et des idées en carrousel.
+  Mobile : le board (couverture, réglages, rubriques), la carte « Page publique » si le back-office
+  l'a activée, puis le choix libre et les idées en carrousel.
   La recherche et les idées démarrent le parcours d'ajout d'un prestataire à l'événement.
 -->
 <template>
@@ -57,6 +58,12 @@
         @settings="navigateTo(`/app/events/${eventId}/parametres`)"
         @rubrique="(rubriqueKey) => navigateTo(`/app/events/${eventId}/${rubriqueKey}`)"
       >
+        <PublicPageCard
+          v-if="event.publicPageStatus"
+          :status="event.publicPageStatus"
+          @open="navigateTo(`/app/events/${eventId}/page-publique`)"
+        />
+
         <EventFreeSearch @search="startAddPrestataireFlow()" />
 
         <PrestataireSuggestions
@@ -81,6 +88,7 @@
 import Sk from '~/components/basics/Sk.vue'
 import EventBoard from '~/components/evenement/EventBoard.vue'
 import EventFreeSearch from '~/components/evenement/EventFreeSearch.vue'
+import PublicPageCard from '~/components/evenement/PublicPageCard.vue'
 import PrestataireSuggestions from '~/components/prestataire/PrestataireSuggestions.vue'
 import { rubriqueAccent, rubriqueIcon } from '~/constants/event-rubriques'
 import { useEventContext } from '~/data/evenement/useEventContext'

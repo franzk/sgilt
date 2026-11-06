@@ -46,6 +46,9 @@ export function mapEventMeta(dto: EventMetaDto): {
       coverImage: dto.imagePath ?? null,
       sharedNote: dto.sharedNote,
       lastUpdateDate: dto.lastUpdateDate ? new Date(dto.lastUpdateDate) : null,
+      publicPageStatus: dto.publicPageStatus ?? undefined,
+      startTime: dto.startTime ?? undefined,
+      endTime: dto.endTime ?? undefined,
     },
     clientInfo: {
       firstName: dto.clientInfo.firstName,

@@ -44,6 +44,8 @@ Les tags sont dérivés des fichiers `VERSION` à la racine de chaque service :
 | `sgilt-gateway`     | `sgilt-gateway/VERSION`     | `{version}`               |
 | `sgilt-mailer`      | `sgilt-mailer/VERSION`      | `{version}`               |
 | `sgilt-smtp-bridge` | `sgilt-smtp-bridge/VERSION` | `{version}`               |
+| `sgilt-notifications` | `sgilt-notifications/VERSION` | `{version}`             |
+| `sgilt-pay`         | `sgilt-pay/VERSION`         | `{version}`               |
 | `sgilt-keycloak`    | `sgilt-keycloak/VERSION`    | `{environment}-{version}` |
 
 > Keycloak est taggué avec l'environnement car son image embarque le realm configuré pour cet environnement.

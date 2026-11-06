@@ -1,0 +1,15 @@
+{
+  "subjectTemplate": "[Sgilt] Survente — {eventTitle} ({soldTickets}/{capacity})",
+  "htmlTemplate": "<p>Bonjour,</p>\n<p><strong>Survente sur la billetterie de « {eventTitle} » ({eventDate}).</strong></p>\n<p>Un paiement vient d’être confirmé par Stripe alors que les places de la commande avaient été reprises entre-temps (paiement arrivé après l’expiration du blocage). La commande est payée : la jauge est dépassée.</p>\n<ul>\n<li>Commande : {commandeId}</li>\n<li>Acheteur : {buyerName} ({buyerEmail})</li>\n<li>Billets de la commande : {quantity}</li>\n<li>Billets payés : {soldTickets} pour une jauge de {capacity}</li>\n</ul>\n<p>À décider : accepter la survente, ou rembourser l’acheteur depuis le dashboard Stripe (le paiement porte l’id de la commande dans ses métadonnées, clé <code>commandeId</code>).</p>\n<p>L’équipe Sgilt.</p>\n",
+  "requiredVariables": [
+    "eventTitle",
+    "eventDate",
+    "commandeId",
+    "buyerName",
+    "buyerEmail",
+    "quantity",
+    "soldTickets",
+    "capacity"
+  ],
+  "htmlSafeVariables": []
+}

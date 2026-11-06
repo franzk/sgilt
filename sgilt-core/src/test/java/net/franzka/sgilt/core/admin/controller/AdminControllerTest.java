@@ -4,6 +4,9 @@ import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireRequest;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireResponse;
 import net.franzka.sgilt.core.admin.exception.SlugAlreadyExistsException;
 import net.franzka.sgilt.core.admin.service.AdminOnboardingService;
+import net.franzka.sgilt.core.evenement.dto.AdminEvenementFeaturesDto;
+import net.franzka.sgilt.core.evenement.dto.AdminEvenementListItemDto;
+import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.keycloak.KeycloakAdminService;
 import net.franzka.sgilt.core.onboarding.dto.OnboardingPendingDto;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
@@ -54,6 +57,9 @@ class AdminControllerTest {
 
     @Mock
     private ReservationService reservationService;
+
+    @Mock
+    private EvenementService evenementService;
 
     @Mock
     private PlatformTransactionManager transactionManager;
@@ -288,6 +294,42 @@ class AdminControllerTest {
             when(adminOnboardingService.listPendingUserOnboardings()).thenReturn(items);
 
             assertThat(controller.listPendingUserOnboardings().getBody()).isEqualTo(items);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // listEvenements
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ListEvenements {
+
+        @Test
+        void givenEvenements_whenListEvenements_thenReturnsThem() {
+            List<AdminEvenementListItemDto> items = List.of(mock(AdminEvenementListItemDto.class));
+            when(evenementService.getAdminEvenements()).thenReturn(items);
+
+            assertThat(controller.listEvenements().getBody()).isEqualTo(items);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // putFeatures
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class PutFeatures {
+
+        @Test
+        void givenRequest_whenPutFeatures_thenReplacesThemAndReturnsUpdatedEvenement() {
+            UUID id = UUID.randomUUID();
+            AdminEvenementFeaturesDto request = new AdminEvenementFeaturesDto(true, false);
+            AdminEvenementListItemDto updated = mock(AdminEvenementListItemDto.class);
+            when(evenementService.replacePublicFeatures(id, request)).thenReturn(updated);
+
+            ResponseEntity<AdminEvenementListItemDto> response = controller.putFeatures(id, request);
+
+            assertThat(response.getBody()).isSameAs(updated);
         }
     }
 }

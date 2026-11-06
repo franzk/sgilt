@@ -7,6 +7,12 @@ import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireRequest;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireResponse;
 import net.franzka.sgilt.core.admin.exception.SlugAlreadyExistsException;
 import net.franzka.sgilt.core.admin.service.AdminOnboardingService;
+import net.franzka.sgilt.core.evenement.billetterie.exception.BilletterieWithSalesException;
+import net.franzka.sgilt.core.evenement.dto.AdminEvenementFeaturesDto;
+import net.franzka.sgilt.core.evenement.dto.AdminEvenementListItemDto;
+import net.franzka.sgilt.core.evenement.exception.EvenementNotFoundException;
+import net.franzka.sgilt.core.evenement.page.exception.BilletterieWithoutPageException;
+import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.keycloak.KeycloakAdminService;
 import net.franzka.sgilt.core.onboarding.dto.OnboardingPendingDto;
 import net.franzka.sgilt.core.prestataire.dto.PrestataireAdminListItemDto;
@@ -45,6 +51,7 @@ public class AdminController implements AdminApi {
     private final KeycloakAdminService keycloakAdminService;
     private final AdminOnboardingService adminOnboardingService;
     private final ReservationService reservationService;
+    private final EvenementService evenementService;
     private final TransactionTemplate transactionTemplate;
 
     /**
@@ -55,6 +62,7 @@ public class AdminController implements AdminApi {
      * @param keycloakAdminService le service métier des interactions Keycloak
      * @param adminOnboardingService le service de suivi et de relance des onboardings en attente
      * @param reservationService  le service métier des réservations
+     * @param evenementService    le service métier des événements
      * @param transactionManager   le gestionnaire de transaction Spring, utilisé pour construire le {@link TransactionTemplate}
      */
     public AdminController(
@@ -63,12 +71,14 @@ public class AdminController implements AdminApi {
             KeycloakAdminService keycloakAdminService,
             AdminOnboardingService adminOnboardingService,
             ReservationService reservationService,
+            EvenementService evenementService,
             PlatformTransactionManager transactionManager) {
         this.prestataireService = prestataireService;
         this.utilisateurService = utilisateurService;
         this.keycloakAdminService = keycloakAdminService;
         this.adminOnboardingService = adminOnboardingService;
         this.reservationService = reservationService;
+        this.evenementService = evenementService;
         this.transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
@@ -104,7 +114,7 @@ public class AdminController implements AdminApi {
         // 3. On ouvre une courte transaction pour créer les entités en BDD
         try {
             PrestataireService.CreationResult result =
-                    transactionTemplate.execute(status -> {
+                    transactionTemplate.execute(_ -> {
 
                         Utilisateur utilisateur = utilisateurService.createUtilisateur(
                                 request.firstName(), request.lastName(), request.email(), null
@@ -235,5 +245,35 @@ public class AdminController implements AdminApi {
     public ResponseEntity<List<OnboardingPendingDto>> listPendingUserOnboardings() {
         log.info("GET /admin/onboarding-pending");
         return ResponseEntity.ok(adminOnboardingService.listPendingUserOnboardings());
+    }
+
+    /**
+     * Liste tous les événements, avec les interrupteurs de leur page publique et de leur
+     * billetterie.
+     *
+     * @return la liste des événements
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<List<AdminEvenementListItemDto>> listEvenements() {
+        log.info("GET /admin/evenements");
+        return ResponseEntity.ok(evenementService.getAdminEvenements());
+    }
+
+    /**
+     * Active ou désactive la page publique et la billetterie d'un événement.
+     *
+     * @param id      identifiant de l'événement
+     * @param request les interrupteurs saisis
+     * @return l'événement mis à jour, tel que le liste le back-office
+     * @throws EvenementNotFoundException      si l'événement n'existe pas
+     * @throws BilletterieWithoutPageException si la billetterie est activée sans la page publique
+     * @throws BilletterieWithSalesException   si on désactive une billetterie qui a des ventes
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<AdminEvenementListItemDto> putFeatures(UUID id, AdminEvenementFeaturesDto request) {
+        log.info("PUT /admin/evenements/{}/fonctionnalites", id);
+        return ResponseEntity.ok(evenementService.replacePublicFeatures(id, request));
     }
 }
