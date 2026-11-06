@@ -42,6 +42,9 @@ public class Billetterie {
     @Column(nullable = false)
     private Integer unitPriceCents;
 
+    /** Mention facultative affichée après le prix (« Tout compris »…), null sans mention. */
+    private String priceNote;
+
     /** Nombre total de places mises en vente. */
     @Column(nullable = false)
     private Integer capacity;

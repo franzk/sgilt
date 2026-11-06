@@ -4,12 +4,13 @@
 export interface EventPageTicketingDto {
   status: 'NOT_OPEN' | 'OPEN' | 'CLOSED'
   unitPriceCents: number
+  priceNote: string | null
   remainingTickets: number
   maxPlacesPerCommande: number
 }
 
 export interface EventPagePictoDto {
-  icon: 'music' | 'goblet' | 'leaf' | 'team'
+  icon: 'music' | 'goblet' | 'leaf' | 'team' | 'restaurant'
   label: string
   sublabel: string
 }

@@ -25,6 +25,7 @@ export interface OrganizerPageDto {
 export interface TicketingSettingsDto {
   status: TicketingStatus
   unitPriceCents: number
+  priceNote: string | null
   capacity: number
 }
 

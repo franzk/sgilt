@@ -51,7 +51,7 @@ class PageEvenementServiceTest {
     private static final LocalDate DATE = LocalDate.of(2026, 3, 12);
     private static final PageContentDto PAGE =
             new PageContentDto(SLUG, null, null, null, null, List.of(), List.of(), List.of());
-    private static final TicketingSettingsDto TICKETING = new TicketingSettingsDto(BilletterieStatus.OPEN, 1200, 150);
+    private static final TicketingSettingsDto TICKETING = new TicketingSettingsDto(BilletterieStatus.OPEN, 1200, "Tout compris", 150);
 
     @Mock
     private PageEvenementRepository pageEvenementRepository;
@@ -95,7 +95,7 @@ class PageEvenementServiceTest {
         @Test
         void givenPageWithBilletterie_whenGetPublicPage_thenMapsPageTicketingAndHours() {
             PageEvenement page = givenPage(LocalTime.of(19, 0), LocalTime.of(23, 0));
-            TicketingDto ticketing = new TicketingDto(BilletterieStatus.OPEN, 1200, 150, 10);
+            TicketingDto ticketing = new TicketingDto(BilletterieStatus.OPEN, 1200, "Tout compris", 150, 10);
             EventPageDto dto = mock(EventPageDto.class);
             when(billetterieService.getPublicTicketing(EVENEMENT_ID)).thenReturn(Optional.of(ticketing));
             when(pageEvenementMapper.toEventPageDto(page, ticketing,

@@ -12,7 +12,8 @@
       <div class="quantity-header">
         <span class="label">{{ $t('ticketing.order.quantity-label') }}</span>
         <span class="unit-price"
-          ><strong>{{ unitPriceLabel }}</strong> {{ $t('ticketing.event.per-ticket') }}</span
+          ><strong>{{ unitPriceLabel }}</strong> {{ $t('ticketing.event.per-ticket')
+          }}<template v-if="event.ticketing?.priceNote"> · {{ event.ticketing.priceNote }}</template></span
         >
       </div>
       <TicketingQuantityStepper

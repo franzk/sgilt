@@ -172,7 +172,7 @@ class OrganizerPageControllerTest {
 
         @Test
         void givenSettings_whenPutTicketing_thenSavesThemThenReturnsState() {
-            TicketingSettingsDto ticketing = new TicketingSettingsDto(BilletterieStatus.OPEN, 1200, 150);
+            TicketingSettingsDto ticketing = new TicketingSettingsDto(BilletterieStatus.OPEN, 1200, "Tout compris", 150);
             givenOwnedEvent();
 
             ResponseEntity<OrganizerPublicPageDto> response = controller.putTicketing(EVENT_ID, ticketing);

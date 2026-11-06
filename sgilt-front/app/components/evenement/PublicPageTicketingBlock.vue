@@ -1,6 +1,6 @@
 <!--
   Bloc « Billetterie » de l'écran Page publique du board : statut (pas encore ouverte, ouverte,
-  fermée), prix d'un billet et jauge, enregistrés par son propre bouton ; le premier enregistrement
+  fermée), prix d'un billet, mention facultative après le prix (« Tout compris ») et jauge, enregistrés par son propre bouton ; le premier enregistrement
   crée la billetterie. Affiché seulement si le back-office l'a activée. Vérifie avant d'émettre
   `save` : montants valides, ouverture seulement sur une page publiée (une billetterie restée
   ouverte après une dépublication garde son statut), jauge pas sous les places vendues ; les refus
@@ -24,6 +24,12 @@
     <label class="field">
       <span class="label">{{ $t('evenement.page-publique.ticketing.price') }}</span>
       <input v-model.number="unitPriceEuros" type="number" inputmode="decimal" min="0" step="0.01" />
+    </label>
+
+    <label class="field">
+      <span class="label">{{ $t('evenement.page-publique.ticketing.price-note') }}</span>
+      <input v-model="priceNote" type="text" :placeholder="$t('evenement.page-publique.ticketing.price-note-placeholder')" />
+      <span class="hint">{{ $t('evenement.page-publique.ticketing.price-note-hint') }}</span>
     </label>
 
     <label class="field">
@@ -76,6 +82,7 @@ const TICKETING_STATUSES: TicketingStatus[] = ['NOT_OPEN', 'OPEN', 'CLOSED']
 // nombre vidé vaut '' (v-model.number).
 const status = ref<TicketingStatus>('NOT_OPEN')
 const unitPriceEuros = ref<number | ''>('')
+const priceNote = ref('')
 const capacity = ref<number | ''>('')
 
 watch(
@@ -83,6 +90,7 @@ watch(
   (ticketing) => {
     status.value = ticketing?.status ?? 'NOT_OPEN'
     unitPriceEuros.value = ticketing ? ticketing.unitPriceCents / 100 : ''
+    priceNote.value = ticketing?.priceNote ?? ''
     capacity.value = ticketing?.capacity ?? ''
   },
   { immediate: true },
@@ -99,7 +107,12 @@ function onSave() {
   if (seats < props.soldTickets) return emit('fail', 'CAPACITY_BELOW_SOLD')
   const opening = status.value === 'OPEN' && props.ticketing?.status !== 'OPEN'
   if (opening && !props.pagePublished) return emit('fail', 'OPEN_WITHOUT_PUBLISHED_PAGE')
-  emit('save', { status: status.value, unitPriceCents: Math.round(euros * 100), capacity: seats })
+  emit('save', {
+    status: status.value,
+    unitPriceCents: Math.round(euros * 100),
+    priceNote: priceNote.value.trim(),
+    capacity: seats,
+  })
 }
 </script>
 

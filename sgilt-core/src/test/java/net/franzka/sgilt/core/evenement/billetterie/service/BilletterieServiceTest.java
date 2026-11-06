@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
 class BilletterieServiceTest {
 
     private static final UUID EVENEMENT_ID = UUID.randomUUID();
-    private static final TicketingSettingsDto TICKETING = new TicketingSettingsDto(BilletterieStatus.OPEN, 1200, 150);
+    private static final TicketingSettingsDto TICKETING = new TicketingSettingsDto(BilletterieStatus.OPEN, 1200, "Tout compris", 150);
 
     @Mock
     private BilletterieRepository billetterieRepository;
@@ -72,7 +72,7 @@ class BilletterieServiceTest {
         void givenBilletterie_whenGetPublicTicketing_thenMapsItWithRemainingTickets() {
             Billetterie billetterie = Billetterie.builder().evenement(billetterieEnabledEvenement)
                     .status(BilletterieStatus.OPEN).unitPriceCents(1200).capacity(150).build();
-            TicketingDto dto = new TicketingDto(BilletterieStatus.OPEN, 1200, 42, 10);
+            TicketingDto dto = new TicketingDto(BilletterieStatus.OPEN, 1200, "Tout compris", 42, 10);
             when(billetterieRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(billetterie));
             when(commandeService.getRemainingTickets(billetterie)).thenReturn(42);
             when(billetterieMapper.toTicketingDto(billetterie, 42)).thenReturn(dto);
@@ -221,6 +221,7 @@ class BilletterieServiceTest {
             verify(billetterieRepository).save(existing);
             assertThat(existing.getStatus()).isEqualTo(BilletterieStatus.OPEN);
             assertThat(existing.getUnitPriceCents()).isEqualTo(1200);
+            assertThat(existing.getPriceNote()).isEqualTo("Tout compris");
             assertThat(existing.getCapacity()).isEqualTo(150);
         }
 
@@ -271,7 +272,7 @@ class BilletterieServiceTest {
 
         @Test
         void givenPageNotPublished_whenPutOrganizerTicketingNotOpen_thenSaves() {
-            TicketingSettingsDto notOpen = new TicketingSettingsDto(BilletterieStatus.NOT_OPEN, 1200, 150);
+            TicketingSettingsDto notOpen = new TicketingSettingsDto(BilletterieStatus.NOT_OPEN, 1200, "Tout compris", 150);
             Billetterie created = Billetterie.builder().build();
             when(billetterieRepository.findForUpdateByEvenementId(EVENEMENT_ID)).thenReturn(Optional.empty());
             when(billetterieMapper.toBilletterie(notOpen, billetterieEnabledEvenement)).thenReturn(created);

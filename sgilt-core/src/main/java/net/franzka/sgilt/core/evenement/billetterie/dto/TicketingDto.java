@@ -7,7 +7,8 @@ import net.franzka.sgilt.core.evenement.billetterie.domain.BilletterieStatus;
  *
  * @param status               le statut de la billetterie (« complet » s'en déduit : ouverte sans place)
  * @param unitPriceCents       le prix d'un billet, en centimes d'euro
+ * @param priceNote            la mention affichée après le prix (« Tout compris »…), null sans mention
  * @param remainingTickets     le nombre de places restantes
  * @param maxPlacesPerCommande le plafond de places par commande
  */
-public record TicketingDto(BilletterieStatus status, int unitPriceCents, int remainingTickets, int maxPlacesPerCommande) {}
+public record TicketingDto(BilletterieStatus status, int unitPriceCents, String priceNote, int remainingTickets, int maxPlacesPerCommande) {}

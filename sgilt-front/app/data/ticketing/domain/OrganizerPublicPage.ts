@@ -30,6 +30,8 @@ export interface TicketingSettings {
   status: TicketingStatus
   // En centimes, comme la fiche.
   unitPriceCents: number
+  // Mention affichée après « par place » ; '' sans mention.
+  priceNote: string
   capacity: number
 }
 

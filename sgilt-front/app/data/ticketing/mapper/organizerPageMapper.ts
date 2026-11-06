@@ -1,8 +1,8 @@
 /**
  * Mapper — page publique de l'organisateur : DTO ↔ domaine
  */
-import type { OrganizerPublicPageDto, PageContentDto } from '../dto/OrganizerPublicPageDto'
-import type { OrganizerPublicPage, PageContentForm } from '../domain/OrganizerPublicPage'
+import type { OrganizerPublicPageDto, PageContentDto, TicketingSettingsDto } from '../dto/OrganizerPublicPageDto'
+import type { OrganizerPublicPage, PageContentForm, TicketingSettings } from '../domain/OrganizerPublicPage'
 
 function mapPageContent(dto: PageContentDto): PageContentForm {
   return {
@@ -17,13 +17,22 @@ function mapPageContent(dto: PageContentDto): PageContentForm {
   }
 }
 
+function mapTicketingSettings(dto: TicketingSettingsDto): TicketingSettings {
+  return {
+    status: dto.status,
+    unitPriceCents: dto.unitPriceCents,
+    priceNote: dto.priceNote ?? '',
+    capacity: dto.capacity,
+  }
+}
+
 export function mapOrganizerPublicPage(dto: OrganizerPublicPageDto): OrganizerPublicPage {
   return {
     billetterieEnabled: dto.billetterieEnabled,
     page: dto.page
       ? { content: mapPageContent(dto.page.content), published: dto.page.published, slugLocked: dto.page.slugLocked }
       : undefined,
-    ticketing: dto.ticketing ?? undefined,
+    ticketing: dto.ticketing ? mapTicketingSettings(dto.ticketing) : undefined,
     sales: dto.sales ?? undefined,
   }
 }
@@ -41,5 +50,14 @@ export function mapPageContentRequest(form: PageContentForm): PageContentDto {
     importantInfo: form.importantInfo,
     practicalInfo: form.practicalInfo,
     pictos: form.pictos,
+  }
+}
+
+export function mapTicketingSettingsRequest(settings: TicketingSettings): TicketingSettingsDto {
+  return {
+    status: settings.status,
+    unitPriceCents: settings.unitPriceCents,
+    priceNote: emptyToNull(settings.priceNote),
+    capacity: settings.capacity,
   }
 }

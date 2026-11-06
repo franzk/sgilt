@@ -211,7 +211,8 @@
           "music": "Musique",
           "goblet": "Verre",
           "leaf": "Feuille",
-          "team": "Groupe"
+          "team": "Groupe",
+          "restaurant": "Restauration"
         },
         "save": "Enregistrer",
         "saved": "Contenu enregistré."
@@ -240,6 +241,9 @@
           }
         },
         "price": "Prix d'un billet (€)",
+        "price-note": "Mention après le prix (facultatif)",
+        "price-note-placeholder": "Tout compris",
+        "price-note-hint": "Affichée à la suite du prix : « 60 € par place · Tout compris ».",
         "capacity": "Jauge (places en vente)",
         "capacity-hint": "{n} place déjà vendue : la jauge ne peut pas descendre en dessous. | {n} places déjà vendues : la jauge ne peut pas descendre en dessous.",
         "auto-close": "La billetterie se ferme d'elle-même une fois l'événement passé. Un changement de prix ne touche pas les billets déjà vendus.",
