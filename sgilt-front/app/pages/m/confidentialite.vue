@@ -1,3 +1,8 @@
+<!--
+  Politique de confidentialité (/m/confidentialite) : données traitées par Sgilt (organisateurs,
+  prestataires, acheteurs de places de la billetterie), finalités, sous-traitants, conservation,
+  droits. Liée depuis les CGU, les CGV, les mentions légales et le pied de page.
+-->
 <template>
   <div class="confidentialite">
     <section class="hero">
@@ -12,7 +17,7 @@
         <div class="meta">
           <span><strong>Responsable&nbsp;:</strong> ALGM (SAS)</span>
           <span><strong>Contact&nbsp;:</strong> privacy@sgilt.alsace</span>
-          <span><strong>Dernière mise à jour&nbsp;:</strong> juin 2026</span>
+          <span><strong>Dernière mise à jour&nbsp;:</strong> novembre 2026</span>
         </div>
       </div>
     </section>
@@ -61,7 +66,7 @@
           <h2><span class="num">02</span> Données collectées</h2>
           <p>
             Nous collectons uniquement les données nécessaires au fonctionnement du service. Elles
-            varient selon que vous êtes organisateur ou prestataire.
+            varient selon que vous êtes organisateur, prestataire ou acheteur de places.
           </p>
 
           <h3>Si vous êtes organisateur</h3>
@@ -84,6 +89,17 @@
             <li>Les notes que vous rédigez, personnelles ou partagées</li>
             <li>Les documents que vous échangez (PDF, images)</li>
           </ul>
+
+          <h3>Si vous achetez des places</h3>
+          <ul>
+            <li>Votre identité&nbsp;: nom, prénom</li>
+            <li>Votre adresse email, à laquelle votre e-billet est envoyé</li>
+            <li>Votre commande&nbsp;: événement, nombre de places, montant, date, statut</li>
+          </ul>
+          <p>
+            L'achat se fait sans compte. Vos données de carte bancaire sont saisies directement
+            chez notre prestataire de paiement, Stripe&nbsp;: nous n'y avons jamais accès.
+          </p>
 
           <h3>Données techniques</h3>
           <p>
@@ -121,6 +137,19 @@
                   <td>Envoi d'emails</td>
                   <td>Confirmation, validation, notifications de la mise en relation</td>
                   <td>Exécution du service</td>
+                </tr>
+                <tr>
+                  <td>Achat de places</td>
+                  <td>
+                    Traiter la commande et le paiement, envoyer l'e-billet, contrôler l'entrée,
+                    prévenir en cas d'annulation ou de report
+                  </td>
+                  <td>Exécution du contrat de vente</td>
+                </tr>
+                <tr>
+                  <td>Conservation des commandes</td>
+                  <td>Justifier les ventes</td>
+                  <td>Obligation légale (comptabilité)</td>
                 </tr>
               </tbody>
             </table>
@@ -185,6 +214,11 @@
                   <td>Diffusion (CDN), stockage des fichiers, DNS</td>
                   <td>Stockage en région UE</td>
                 </tr>
+                <tr>
+                  <td>Stripe</td>
+                  <td>Paiement des places (carte bancaire, Apple Pay, Google Pay)</td>
+                  <td>UE (Irlande), transferts hors UE encadrés</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -197,6 +231,10 @@
               <strong>Votre compte et les données associées</strong> (événements, notes, documents)
               sont conservés tant que votre compte est actif, pour vous donner accès à votre
               historique. Ils sont supprimés après <strong>3 ans sans connexion</strong>.
+            </li>
+            <li>
+              <strong>Vos commandes de places</strong> (nom, prénom, email, détail de la commande)
+              sont conservées <strong>10 ans</strong>, durée de conservation des pièces comptables.
             </li>
             <li>
               <strong>Les journaux techniques</strong> sont conservés <strong>1 mois</strong>, par
