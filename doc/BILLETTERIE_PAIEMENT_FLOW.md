@@ -19,6 +19,8 @@
 | —      | Anti-abus : limite de débit par IP (gateway), plafond de 10 places par commande           | Fait (2026-11-03/04)  |
 | —      | E-billet : code d'entrée au passage `PAID`, `GET /commandes/{id}/e-billet`, page « Mon e-billet » avec QR | Fait (2026-11-03)     |
 | —      | E-mail à l'acheteur au passage `PAID`, avec le lien vers son e-billet                     | Fait (2026-11-03)     |
+| —      | Interrupteurs BO (page publique, billetterie) ; page publique administrée par l'organisateur dans son board (contenu, publication, billetterie, ventes, aperçu) | Fait (2026-11-05/06)  |
+| —      | Horaires de l'événement dans Paramètres (`PUT /user/events/{id}/horaires`), pour tous les événements | Fait (2026-11-06)     |
 
 Composants :
 
@@ -164,7 +166,7 @@ Une erreur passagère (réseau, 5xx) ne coupe pas l'attente.
 | Plus assez de places                  | core, 409              | « Il ne reste plus assez de places… »                          | aucune                         |
 | Plus de 10 places                     | front (core : 400)     | « Vous pouvez réserver jusqu'à 10 places par commande. » au clic sur « + » | aucune               |
 | Trop de commandes depuis cette IP     | gateway, 429           | « Trop de tentatives… réessayer dans quelques minutes. »       | aucune                         |
-| Billetterie fermée / introuvable      | core, 400 / 404        | « La billetterie de cet événement n'est plus ouverte. »        | aucune                         |
+| Billetterie fermée / introuvable / coupée | core, 400 / 404    | « La billetterie de cet événement n'est plus ouverte. »        | aucune                         |
 | Core ou `sgilt-pay` en erreur         | 5xx                    | « Une erreur est survenue, merci de réessayer. »               | aucune (rollback)              |
 | Carte refusée                         | `confirmPayment`       | message Stripe (en français) sous le bouton                    | reste `PENDING`                |
 | 3D Secure échoué                      | `confirmPayment`       | message générique                                              | reste `PENDING`                |
@@ -266,8 +268,45 @@ ses places.
     l'autre sans recharger : c'est l'en-tête de la confirmation qui s'applique) ;
   - pas de `Disallow` dans `robots.txt` (il empêcherait les moteurs de lire le `noindex`) ; page
     absente du sitemap (route dynamique) et liée nulle part publiquement.
-- **Limite** : le middleware exige une fiche avec billetterie ; si l'événement perd sa page ou sa
-  billetterie, ses e-billets ne s'affichent plus.
+- **Indépendant de la fiche** : le middleware laisse passer l'e-billet avant de charger la fiche ;
+  il ne dépend que de la commande. L'acheteur garde son e-billet si la page est dépubliée ou perd
+  sa billetterie ; le lien « retour à l'événement » n'apparaît que si la page est en ligne
+  (`EBilletDto.pageOnline`).
+
+---
+
+## Page publique et billetterie : qui fait quoi
+
+- **L'équipe Sgilt active** (BO `/admin/evenements-publics`, `PUT /admin/evenements/{id}/fonctionnalites`) :
+  deux interrupteurs par événement, page publique et billetterie, enregistrés à chaque clic. Pas
+  de billetterie sans page ; couper la page coupe la billetterie ; une billetterie qui a des ventes
+  ne se coupe pas (409). L'ancien formulaire de saisie admin a été retiré.
+- **L'organisateur administre** depuis son board (onglet Page publique,
+  `/api/v1/user/events/{eventId}/page-publique`) :
+
+  | Route                         | Rôle                                                                 |
+  |-------------------------------|----------------------------------------------------------------------|
+  | `GET`                         | état de la page (non créée / brouillon / publiée), contenu, billetterie, ventes |
+  | `PUT /contenu`                | contenu de la page (brouillon tant qu'elle n'est pas publiée)        |
+  | `POST /publier`, `/depublier` | mise en ligne / hors ligne de `/e/[slug]`                            |
+  | `PUT /billetterie`            | statut (`NOT_OPEN`, `OPEN`, `CLOSED`), prix, jauge                   |
+  | `GET /apercu`                 | la fiche telle qu'elle sera publiée, sans billetterie (écran « Aperçu », `noindex`) |
+
+- **Règles** (core) :
+
+  | Règle                                                                           | Réponse |
+  |---------------------------------------------------------------------------------|---------|
+  | Interrupteur page publique coupé                                                | 404     |
+  | Aperçu d'une page jamais créée                                                  | 404     |
+  | Billetterie sans page                                                           | 400     |
+  | Passage à `OPEN` sur une page non publiée (une billetterie déjà `OPEN` le reste) | 400     |
+  | Jauge inférieure aux places vendues                                             | 409     |
+  | Slug modifié après la première publication (verrouillé)                         | 409     |
+  | Slug déjà pris                                                                  | 400     |
+  | Fiche publique d'une page non publiée (`GET /eventpages/{slug}`)                | 404     |
+
+- **Horaires** : saisis dans Paramètres pour tous les événements (`PUT /user/events/{id}/horaires`,
+  `HH:mm`, journalisés) ; la fiche publique les affiche.
 
 ---
 
@@ -316,27 +355,24 @@ sans payer et créerait des PaymentIntents en masse.
 | `ADMIN_EMAIL`                         | `sgilt-core`  | `admin@sgilt.local` (`application-local.yml`, arrive dans MailHog) | secret GitHub, propre à l'environnement, sans défaut |
 | `PUBLIC_SITE_URL`                     | `sgilt-core`  | défaut `http://localhost:3000`                              | déjà en place (liens des e-mails)      |
 
-- Clés `sk_test` / `pk_test` en local et en staging ; clés live seulement après activation du
-  compte Stripe.
-- Avant la prod : déclarer le domaine pour Apple Pay, libellé de relevé bancaire, intégrer
-  `sgilt-pay` aux docker-compose et à la CI de déploiement.
-- Staging garde des clés de test en permanence. Cible : une sandbox Stripe dédiée (séparée du poste
-  de dev, pour que les webhooks ne se mélangent pas). **Pour l'instant**, le compte n'étant pas
-  activé (pas de sandbox possible), staging utilise le **Test mode** du compte, partagé avec le
-  local : un paiement local est aussi envoyé à staging et inversement ; le core qui ne connaît pas
-  la commande lève « commande introuvable » et le message finit dans `payment.succeeded.dlq` (bruit
-  sans effet). Après activation : créer la sandbox « Sgilt staging » et remplacer les trois secrets
-  Stripe de l'environnement GitHub `staging`.
+- Local : Test mode du compte (`sk_test` / `pk_test`). Staging : sandbox Stripe dédiée « Sgilt
+  staging » (clés de test, webhooks séparés du poste de dev). Prod : clés live (compte activé).
+- Domaine Apple Pay (`sgilt.alsace`) déclaré dans le dashboard (Settings → Payment method
+  domains, sans fichier à héberger) ; libellé de relevé bancaire configuré ; `sgilt-pay` est dans
+  les docker-compose et la CI de déploiement.
 - Secrets GitHub de l'environnement (vérifiés par le job `validate` de `deploy.yml`) :
   `ADMIN_EMAIL`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PUBLISHABLE_KEY` (cf.
   `deploy/docs/SETUP.md`, 4.3).
 
-### Sécurité (avant la prod)
+### Sécurité
 
 - **Anti-abus** : fait, voir [Anti-abus](#anti-abus).
-- **Clé restreinte** : en prod, `STRIPE_SECRET_KEY` reçoit une clé restreinte (`rk_live_…`) limitée
-  aux PaymentIntents (écriture) et à ce que lit le webhook, plutôt que la clé secrète complète. Une
-  fuite ne permet alors ni remboursement ni lecture des clients.
+- **Clé restreinte** : `STRIPE_SECRET_KEY` reçoit une clé restreinte (`rk_test_…` en staging,
+  `rk_live_…` en prod) avec **une seule permission : Payment Intents en écriture** — `sgilt-pay`
+  n'appelle que `paymentIntents().create`. 3D Secure et les wallets (Apple Pay, Google Pay) passent
+  côté navigateur avec la clé publique ; le webhook est vérifié par sa signature (`whsec_…`), sans
+  appel à l'API. Une fuite ne permet ni remboursement ni lecture des clients. Un appel refusé
+  (permission manquante) se voit dans Developers → Logs.
 - **Réseau Docker dédié au paiement** : les services existants gardent leur réseau à plat
   (`sgilt-network-${ENV}`) ; un second réseau `payment` relie :
   - `sgilt-pay`, branché **uniquement** sur `payment` ;

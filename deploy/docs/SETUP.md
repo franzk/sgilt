@@ -229,11 +229,11 @@ In Settings → Secrets and variables → Actions → Repository secrets:
 | `R2_ACCESS_KEY_ID`            | Cloudflare R2 API token access key ID                                               |
 | `R2_SECRET_ACCESS_KEY`        | Cloudflare R2 API token secret access key                                           |
 | `ADMIN_EMAIL`                 | Adresse de l'équipe Sgilt qui reçoit les alertes techniques (survente) — sans valeur par défaut, sgilt-core ne démarre pas sans |
-| `STRIPE_SECRET_KEY`           | Clé secrète Stripe de sgilt-pay : `sk_test_…` en staging, clé restreinte `rk_live_…` en prod (Developers → API keys) |
+| `STRIPE_SECRET_KEY`           | Clé restreinte Stripe de sgilt-pay, seule permission Payment Intents en écriture : `rk_test_…` en staging (sandbox « Sgilt staging »), `rk_live_…` en prod (Developers → API keys → Create restricted key) |
 | `STRIPE_WEBHOOK_SECRET`       | Signing secret `whsec_…` de l'endpoint webhook `https://<API_DOMAIN>/webhooks/stripe` (événement `payment_intent.succeeded`), propre à chaque endpoint |
-| `STRIPE_PUBLISHABLE_KEY`      | Clé publique Stripe du front : `pk_test_…` en staging, `pk_live_…` en prod          |
+| `STRIPE_PUBLISHABLE_KEY`      | Clé publique Stripe du front : `pk_test_…` en staging (sandbox), `pk_live_…` en prod |
 
-> Stripe : staging utilise pour l'instant le Test mode du compte, partagé avec le poste de dev (pas de sandbox dédiée tant que le compte n'est pas activé). Voir `doc/BILLETTERIE_PAIEMENT_FLOW.md`, section Configuration.
+> Stripe : staging a sa propre sandbox (« Sgilt staging »), séparée du Test mode du poste de dev ; prod utilise les clés live. Les trois valeurs viennent du même environnement Stripe (sandbox ou live). Voir `doc/BILLETTERIE_PAIEMENT_FLOW.md`, section Configuration.
 
 ### 4.4 Add Environment variables
 
