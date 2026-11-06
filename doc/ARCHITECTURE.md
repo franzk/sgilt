@@ -17,7 +17,7 @@ Internet
             +-- api-staging.sgilt.fr   :2096 --> nginx-api-staging    --> sgilt-gateway
             +-- sgilt.alsace            :443 --> nginx-front-prod     --> sgilt-front:3000
             +-- auth.sgilt.alsace      :2053 --> nginx-auth-prod      --> sgilt-keycloak:8080
-            +-- api.sgilt.fr           :2096 --> nginx-api-prod       --> sgilt-gateway
+            +-- api.sgilt.alsace       :2096 --> nginx-api-prod       --> sgilt-gateway
 ```
 
 `sgilt-gateway` is the single entry point for the API — it proxies to `sgilt-core` and
@@ -105,7 +105,7 @@ Cloudflare is the single entry point for all SGILT traffic.
 | Staging     | nginx-api   | 2096      | api-staging.sgilt.fr/* --> 2096   |
 | Production  | nginx-front | 443       | sgilt.alsace/* --> 443            |
 | Production  | nginx-auth  | 2053      | auth.sgilt.alsace/* --> 2053      |
-| Production  | nginx-api   | 2096      | api.sgilt.fr/* --> 2096           |
+| Production  | nginx-api   | 2096      | api.sgilt.alsace/* --> 2096       |
 
 These ports must be open in the Ionos firewall and configured as Origin Rules in Cloudflare.
 See [SETUP.md](../deploy/docs/SETUP.md) for the full provisioning procedure.
@@ -166,8 +166,8 @@ Full setup procedure (how to generate/obtain each value) is in
 | `APP_DOMAIN`          | staging.sgilt.fr                 | sgilt.alsace                  |
 | `AUTH_URL`            | https://auth-staging.sgilt.fr    | https://auth.sgilt.alsace     |
 | `AUTH_DOMAIN`         | auth-staging.sgilt.fr            | auth.sgilt.alsace             |
-| `API_URL`             | https://api-staging.sgilt.fr     | https://api.sgilt.fr          |
-| `API_DOMAIN`          | api-staging.sgilt.fr             | api.sgilt.fr                  |
+| `API_URL`             | https://api-staging.sgilt.fr     | https://api.sgilt.alsace      |
+| `API_DOMAIN`          | api-staging.sgilt.fr             | api.sgilt.alsace              |
 | `NGINX_FRONT_PORT`    | 8443                              | 443                            |
 | `NGINX_AUTH_PORT`     | 2053                              | 2053                           |
 | `NGINX_API_PORT`      | 2096                              | 2096                           |

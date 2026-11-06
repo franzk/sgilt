@@ -159,7 +159,7 @@ In Cloudflare → Rules → Origin Rules, create the following rules:
 | Staging API      | `https://api-staging.sgilt.fr/*`  | Rewrite port to `2096` |
 | Production Front | `https://sgilt.alsace/*`          | Rewrite port to `443`  |
 | Production Auth  | `https://auth.sgilt.alsace/*`     | Rewrite port to `2053` |
-| Production API   | `https://api.sgilt.fr/*`          | Rewrite port to `2096` |
+| Production API   | `https://api.sgilt.alsace/*`      | Rewrite port to `2096` |
 
 > Note: Production port 443 does not need an Origin Rule since it is the default HTTPS port.
 
@@ -243,8 +243,8 @@ In Settings → Secrets and variables → Actions → Repository secrets:
 | `APP_DOMAIN`         | `staging.sgilt.fr`              | `sgilt.alsace`              |
 | `AUTH_URL`           | `https://auth-staging.sgilt.fr` | `https://auth.sgilt.alsace` |
 | `AUTH_DOMAIN`        | `auth-staging.sgilt.fr`         | `auth.sgilt.alsace`         |
-| `API_URL`            | `https://api-staging.sgilt.fr`  | `https://api.sgilt.fr`      |
-| `API_DOMAIN`         | `api-staging.sgilt.fr`          | `api.sgilt.fr`              |
+| `API_URL`            | `https://api-staging.sgilt.fr`  | `https://api.sgilt.alsace`  |
+| `API_DOMAIN`         | `api-staging.sgilt.fr`          | `api.sgilt.alsace`          |
 | `NGINX_FRONT_PORT`   | `8443`                          | `443`                       |
 | `NGINX_AUTH_PORT`    | `2053`                          | `2053`                      |
 | `NGINX_API_PORT`     | `2096`                          | `2096`                      |

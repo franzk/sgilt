@@ -73,4 +73,4 @@ Object storage (uploads, images) is Cloudflare R2 directly in staging/prod — s
 | Environment | Frontend                 | Auth                          | API                           |
 |-------------|---------------------------|--------------------------------|--------------------------------|
 | Staging     | https://staging.sgilt.fr | https://auth-staging.sgilt.fr | https://api-staging.sgilt.fr  |
-| Production  | https://sgilt.alsace     | https://auth.sgilt.alsace     | https://api.sgilt.fr          |
+| Production  | https://sgilt.alsace     | https://auth.sgilt.alsace     | https://api.sgilt.alsace      |
