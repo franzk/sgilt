@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>E-billet — {title}</title>
+    <style>
+        @page { size: A4; margin: 2cm; }
+        body { font-family: sans-serif; color: #222222; }
+        h1 { font-size: 22pt; margin: 0 0 8pt 0; }
+        .info { font-size: 12pt; margin: 2pt 0; }
+        .valid-for { font-size: 14pt; font-weight: bold; margin-top: 16pt; }
+        .qr { text-align: center; margin-top: 24pt; }
+        .qr img { width: 7cm; height: 7cm; }
+        .hint { text-align: center; font-size: 10pt; color: #666666; }
+    </style>
+</head>
+<body>
+    <h1>{title}</h1>
+    <p class="info">{date}</p>
+    <p class="info">{place}</p>
+    <p class="valid-for">Valable pour {validFor}</p>
+    <div class="qr"><img src="{qrImage}" alt="QR code de l'e-billet" /></div>
+    <p class="hint">Présentez ce QR code à l'entrée, imprimé ou sur votre téléphone.</p>
+</body>
+</html>
