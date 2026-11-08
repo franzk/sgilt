@@ -2,6 +2,7 @@ package net.franzka.sgilt.core.evenement.billetterie.commande.mailer;
 
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
+import net.franzka.sgilt.core.evenement.billetterie.commande.ebillet.EBilletLabelUtils;
 import net.franzka.sgilt.core.evenement.page.dto.EvenementInfosDto;
 import net.franzka.sgilt.core.mailer.MailRequest;
 import net.franzka.sgilt.core.mailer.MailType;
@@ -54,7 +55,7 @@ public class CommandeMailerService {
                     Map.of(
                             "firstName", commande.getBuyerFirstName(),
                             "eventTitle", commande.getBilletterie().getEvenement().getTitle(),
-                            "validFor", validFor(commande.getQuantity()),
+                            "validFor", EBilletLabelUtils.validFor(commande.getQuantity()),
                             "eventDate", EventDateLabelUtils.eventDateLabel(
                                     evenementInfos.date(), evenementInfos.startsAt(), evenementInfos.endsAt()),
                             // Lieu et ville facultatifs sur l'événement ; Map.of refuse null.
@@ -65,10 +66,5 @@ public class CommandeMailerService {
         } catch (AmqpException e) {
             log.error("Échec de l'envoi de l'e-billet pour {} — commandeId={}", commande.getBuyerEmail(), commande.getId(), e);
         }
-    }
-
-    // « 1 personne », « 4 personnes » : le gabarit ne gère pas le pluriel.
-    private String validFor(int quantity) {
-        return quantity + (quantity > 1 ? " personnes" : " personne");
     }
 }

@@ -15,3 +15,12 @@ export async function getCommandeApi(id: string): Promise<CommandeSummaryDto> {
 export async function getEBilletApi(id: string): Promise<EBilletDto> {
   return apiFetch<EBilletDto>(`/commandes/${id}/e-billet`)
 }
+
+// URL absolue du PDF de l'e-billet, pour un simple lien : route publique, le navigateur la
+// télécharge sans header d'authentification (Content-Disposition: attachment côté back).
+export function eBilletPdfUrlApi(id: string): string {
+  const {
+    public: { apiUrl },
+  } = useRuntimeConfig()
+  return `${apiUrl}/api/v1/commandes/${id}/e-billet.pdf`
+}

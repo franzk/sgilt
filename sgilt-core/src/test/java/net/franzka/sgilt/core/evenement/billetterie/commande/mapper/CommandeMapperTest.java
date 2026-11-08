@@ -97,19 +97,19 @@ class CommandeMapperTest {
     class ToEBilletDto {
 
         @Test
-        void givenPaidCommandeAndEvenementInfos_whenToEBilletDto_thenMapsEventQuantityAndQrContent() {
+        void givenPaidCommandeAndEvenementInfos_whenToEBilletDto_thenMapsEventQuantityAndQr() {
             Evenement evenement = Evenement.builder()
                     .title("Les Jeudis du Taennel").imagePath("bank/taennel.png").eventType("evenement_public").build();
             Billetterie billetterie = Billetterie.builder().evenement(evenement).build();
             Commande commande = Commande.builder()
-                    .billetterie(billetterie).quantity(4).status(CommandeStatus.PAID).code("q3Zx9kP2mL7vT1nR8wY4sA").build();
+                    .billetterie(billetterie).quantity(4).status(CommandeStatus.PAID).build();
             EvenementInfosDto evenementInfos = new EvenementInfosDto("Édition du 3 décembre", "Concert et apéro",
                     LocalDate.of(2026, 12, 3), LocalDateTime.of(2026, 12, 3, 19, 0), null,
                     "Le Taennel", "Scherwiller (67)", List.of("Vestiaire"));
 
-            assertThat(mapper.toEBilletDto(commande, evenementInfos, true))
+            assertThat(mapper.toEBilletDto(commande, evenementInfos, true, "data:image/png;base64,QR"))
                     .isEqualTo(new EBilletDto("Les Jeudis du Taennel", "bank/taennel.png", "evenement_public",
-                            evenementInfos, 4, "SGILT:C:q3Zx9kP2mL7vT1nR8wY4sA", true));
+                            evenementInfos, 4, "data:image/png;base64,QR", true));
         }
     }
 }

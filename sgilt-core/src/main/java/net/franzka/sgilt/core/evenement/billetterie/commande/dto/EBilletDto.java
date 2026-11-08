@@ -11,7 +11,7 @@ import net.franzka.sgilt.core.evenement.page.dto.EvenementInfosDto;
  * @param eventType      le type de l'événement, ou null (le front en tire l'image par défaut)
  * @param evenementInfos les infos de l'événement (tag, sous-titre, quand, où, infos pratiques)
  * @param quantity       le nombre de places de la commande
- * @param qrContent      le contenu du QR de la commande ({@code SGILT:C:<code>})
+ * @param qrImage        le QR de la commande, en PNG data URI (dessiné par le back, seul à le dessiner)
  * @param pageOnline     la page de l'événement est en ligne (sinon, pas de lien vers elle)
  */
 public record EBilletDto(
@@ -20,6 +20,6 @@ public record EBilletDto(
         String eventType,
         EvenementInfosDto evenementInfos,
         int quantity,
-        String qrContent,
+        String qrImage,
         boolean pageOnline
 ) {}

@@ -1,7 +1,7 @@
 <!--
   E-billet d'une commande payée (/e/[slug]/e-billet?commande={id}) : l'événement, le QR de la
-  commande (un seul, qui fait entrer toutes ses places), à présenter à l'entrée, et les infos
-  pratiques. Même hero que la fiche (SgiltHero), sans le bouton partager : il partagerait l'URL,
+  commande (un seul, qui fait entrer toutes ses places, dessiné par le back), à présenter à l'entrée,
+  le lien de téléchargement de son PDF, et les infos pratiques. Même hero que la fiche (SgiltHero), sans le bouton partager : il partagerait l'URL,
   donc l'e-billet. Ouvert par l'id de la commande seul, sans compte ; jamais indexé (cf. routeRules).
   Ne dépend pas de la fiche (cf. middleware ticketing) : le slug de l'URL ne sert qu'au lien retour,
   affiché seulement si la page de l'événement est en ligne.
@@ -31,9 +31,13 @@
 
       <template v-else-if="eBillet">
         <section class="qr-card">
-          <img class="qr" :src="qrDataUrl" :alt="$t('ticketing.e-billet.qr-alt')" />
+          <img class="qr" :src="eBillet.qrImage" :alt="$t('ticketing.e-billet.qr-alt')" />
           <p class="valid-for">{{ $t('ticketing.e-billet.valid-for', eBillet.quantity) }}</p>
           <p class="show-at-entry">{{ $t('ticketing.e-billet.show-at-entry') }}</p>
+          <a :href="pdfUrl" class="secondary-cta">
+            <DownloadIcon class="icon" aria-hidden="true" />
+            {{ $t('ticketing.e-billet.download-pdf') }}
+          </a>
         </section>
 
         <section class="practical-info">
@@ -67,10 +71,9 @@
 
 <script setup lang="ts">
 import SgiltHero, { type HeroMedia } from '~/components/basics/media/SgiltHero.vue'
-import { ArrowLeftSIcon, CalendarEventIcon, MapPin2Icon, RefreshIcon } from '@remixicons/vue/line'
-import { toDataURL, type QRCodeToDataURLOptions } from 'qrcode'
+import { ArrowLeftSIcon, CalendarEventIcon, DownloadIcon, MapPin2Icon, RefreshIcon } from '@remixicons/vue/line'
 import { useEventHoursLabel } from '~/composables/useEventHoursLabel'
-import { getEBillet, isCommandeNotFound } from '~/data/ticketing/service/commandeService'
+import { getEBillet, getEBilletPdfUrl, isCommandeNotFound } from '~/data/ticketing/service/commandeService'
 import type { EBillet } from '~/data/ticketing/domain/Commande'
 import { formatDateWithWeekday } from '~/utils/dateUtils'
 
@@ -82,12 +85,10 @@ const slug = String(route.params.slug)
 // Garanti non vide par le middleware `ticketing`.
 const commandeId = String(route.query.commande)
 
-// Correction d'erreur M : le QR reste lisible sur un écran rayé ou peu lumineux. La marge blanche
-// (4 modules) est nécessaire aux lecteurs pour détecter le QR.
-const QR_OPTIONS: QRCodeToDataURLOptions = { errorCorrectionLevel: 'M', margin: 4, width: 512 }
+// Lien direct vers le PDF (route publique) : le navigateur le télécharge, sans JavaScript.
+const pdfUrl = getEBilletPdfUrl(commandeId)
 
 const eBillet = ref<EBillet | null>(null)
-const qrDataUrl = ref('')
 const loading = ref(true)
 const failed = ref(false)
 
@@ -101,9 +102,7 @@ async function loadEBillet(): Promise<void> {
   loading.value = true
   failed.value = false
   try {
-    const loaded = await getEBillet(commandeId)
-    qrDataUrl.value = await toDataURL(loaded.qrContent, QR_OPTIONS)
-    eBillet.value = loaded
+    eBillet.value = await getEBillet(commandeId)
   } catch (error) {
     if (isCommandeNotFound(error)) {
       await navigateTo(`/e/${slug}`, { replace: true })
@@ -222,6 +221,10 @@ const dateLabel = computed(() => {
     margin: 0;
     font-size: $font-size-md;
     color: $text-secondary;
+  }
+
+  .secondary-cta {
+    margin-top: $spacing-s;
   }
 }
 

@@ -1,16 +1,14 @@
 package net.franzka.sgilt.core.evenement.billetterie.commande.controller;
 
-import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.EBilletDto;
-import net.franzka.sgilt.core.evenement.billetterie.commande.mapper.CommandeMapper;
+import net.franzka.sgilt.core.evenement.billetterie.commande.ebillet.EBilletPdf;
+import net.franzka.sgilt.core.evenement.billetterie.commande.ebillet.EBilletService;
 import net.franzka.sgilt.core.evenement.billetterie.commande.service.CommandeService;
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
 import net.franzka.sgilt.core.evenement.billetterie.service.BilletterieService;
-import net.franzka.sgilt.core.evenement.domain.Evenement;
-import net.franzka.sgilt.core.evenement.page.dto.EvenementInfosDto;
 import net.franzka.sgilt.core.evenement.page.service.PageEvenementService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import java.util.UUID;
@@ -40,7 +39,7 @@ class CommandeControllerTest {
     private CommandeService commandeService;
 
     @Mock
-    private CommandeMapper commandeMapper;
+    private EBilletService eBilletService;
 
     @InjectMocks
     private CommandeController controller;
@@ -98,21 +97,40 @@ class CommandeControllerTest {
     class GetEBillet {
 
         @Test
-        void givenPaidCommande_whenGetEBillet_thenReturns200WithEBilletAndInfosOfItsEvent() {
+        void givenPaidCommande_whenGetEBillet_thenReturns200WithEBillet() {
             UUID id = UUID.randomUUID();
-            Evenement evenement = Evenement.builder().build();
-            Commande commande = Commande.builder().billetterie(Billetterie.builder().evenement(evenement).build()).build();
-            EvenementInfosDto evenementInfos = mock(EvenementInfosDto.class);
             EBilletDto dto = mock(EBilletDto.class);
-            when(commandeService.getPaidCommande(id)).thenReturn(commande);
-            when(pageEvenementService.getEvenementInfos(evenement)).thenReturn(evenementInfos);
-            when(pageEvenementService.isOnline(evenement)).thenReturn(true);
-            when(commandeMapper.toEBilletDto(commande, evenementInfos, true)).thenReturn(dto);
+            when(eBilletService.getEBillet(id)).thenReturn(dto);
 
             ResponseEntity<EBilletDto> result = controller.getEBillet(id);
 
             assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(result.getBody()).isSameAs(dto);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // getEBilletPdf
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetEBilletPdf {
+
+        @Test
+        void givenPaidCommande_whenGetEBilletPdf_thenReturns200WithPdfAsUncachedNonIndexedAttachment() {
+            UUID id = UUID.randomUUID();
+            byte[] content = {1, 2, 3};
+            when(eBilletService.getEBilletPdf(id)).thenReturn(new EBilletPdf(content, "e-billet.pdf"));
+
+            ResponseEntity<byte[]> result = controller.getEBilletPdf(id);
+
+            assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+            assertThat(result.getBody()).isSameAs(content);
+            assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_PDF);
+            assertThat(result.getHeaders().getContentDisposition().isAttachment()).isTrue();
+            assertThat(result.getHeaders().getContentDisposition().getFilename()).isEqualTo("e-billet.pdf");
+            assertThat(result.getHeaders().getCacheControl()).isEqualTo("no-store");
+            assertThat(result.getHeaders().getFirst("X-Robots-Tag")).isEqualTo("noindex, nofollow, noarchive");
         }
     }
 }

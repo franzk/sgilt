@@ -5,6 +5,7 @@ import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.EBilletDto;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,4 +26,7 @@ public interface CommandeApi {
 
     @GetMapping("{id}/e-billet")
     ResponseEntity<EBilletDto> getEBillet(@PathVariable UUID id);
+
+    @GetMapping(value = "{id}/e-billet.pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+    ResponseEntity<byte[]> getEBilletPdf(@PathVariable UUID id);
 }

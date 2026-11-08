@@ -1,6 +1,6 @@
 {
   "subjectTemplate": "Votre e-billet pour {eventTitle}",
-  "htmlTemplate": "<p>Bonjour {firstName},</p>\n<p>Merci pour votre commande ! Votre e-billet pour <strong>{eventTitle}</strong> est prêt. Il est valable pour <strong>{validFor}</strong>.</p>\n<p>📅 {eventDate}<br>\n📍 {venue}, {city}</p>\n<p><a href=\"{eBilletUrl}\">Voir mon e-billet</a></p>\n<p>Présentez-le à l’entrée, sur votre téléphone.</p>\n<p>Une question concernant votre e-billet ? Contactez-nous à <a href=\"mailto:contact@sgilt.alsace\">contact@sgilt.alsace</a></p>\n<p>À bientôt,</p>\n<p>L’équipe Sgilt.</p>\n",
+  "htmlTemplate": "<p>Bonjour {firstName},</p>\n<p>Merci pour votre commande ! Votre e-billet pour <strong>{eventTitle}</strong> est prêt. Il est valable pour <strong>{validFor}</strong>.</p>\n<p>📅 {eventDate}<br>\n📍 {venue}, {city}</p>\n<p><a href=\"{eBilletUrl}\">Voir mon e-billet</a></p>\n<p>Présentez-le à l’entrée, sur votre téléphone. Depuis cette page, vous pouvez aussi le télécharger en PDF pour l’imprimer.</p>\n<p>Une question concernant votre e-billet ? Contactez-nous à <a href=\"mailto:contact@sgilt.alsace\">contact@sgilt.alsace</a></p>\n<p>À bientôt,</p>\n<p>L’équipe Sgilt.</p>\n",
   "requiredVariables": [
     "firstName",
     "eventTitle",
