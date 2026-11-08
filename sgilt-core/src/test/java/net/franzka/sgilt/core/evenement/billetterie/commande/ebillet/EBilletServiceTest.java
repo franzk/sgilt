@@ -17,10 +17,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -77,15 +79,25 @@ class EBilletServiceTest {
     class GetEBilletPdf {
 
         @Test
-        void givenPaidCommande_whenGetEBilletPdf_thenReturnsPdfOfItsEBilletWithFileName() {
+        void givenPaidCommandeOfEventWithPage_whenGetEBilletPdf_thenReturnsPdfNamedAfterSlug() {
             EBilletDto eBillet = givenPaidCommandeMappedToEBillet();
             byte[] content = {1, 2, 3};
             when(eBilletPdfService.generate(eBillet)).thenReturn(content);
+            when(pageEvenementService.getSlug(any(Evenement.class))).thenReturn(Optional.of("jeudis-du-taennel"));
 
             EBilletPdf pdf = service.getEBilletPdf(COMMANDE_ID);
 
             assertThat(pdf.content()).isSameAs(content);
-            assertThat(pdf.fileName()).isEqualTo("e-billet.pdf");
+            assertThat(pdf.fileName()).isEqualTo("e-billet-jeudis-du-taennel.pdf");
+        }
+
+        @Test
+        void givenPaidCommandeOfEventWithoutPage_whenGetEBilletPdf_thenReturnsPdfWithDefaultName() {
+            EBilletDto eBillet = givenPaidCommandeMappedToEBillet();
+            when(eBilletPdfService.generate(eBillet)).thenReturn(new byte[] {1});
+            when(pageEvenementService.getSlug(any(Evenement.class))).thenReturn(Optional.empty());
+
+            assertThat(service.getEBilletPdf(COMMANDE_ID).fileName()).isEqualTo("e-billet.pdf");
         }
 
         @Test

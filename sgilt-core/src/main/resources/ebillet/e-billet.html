@@ -3,23 +3,56 @@
 <head>
     <meta charset="UTF-8" />
     <title>E-billet — {title}</title>
+    <!-- Couleurs de la charte Sgilt (sgilt-front/app/assets/styles/colors.scss). XHTML parsé en XML :
+         pas d'entité nommée (&nbsp;…), balises toutes fermées. CSS 2.1 (pas de flexbox). -->
     <style>
-        @page { size: A4; margin: 2cm; }
-        body { font-family: sans-serif; color: #222222; }
-        h1 { font-size: 22pt; margin: 0 0 8pt 0; }
-        .info { font-size: 12pt; margin: 2pt 0; }
-        .valid-for { font-size: 14pt; font-weight: bold; margin-top: 16pt; }
-        .qr { text-align: center; margin-top: 24pt; }
-        .qr img { width: 7cm; height: 7cm; }
-        .hint { text-align: center; font-size: 10pt; color: #666666; }
+        @page { size: A4 portrait; margin: 1.5cm 1.8cm; }
+        body { font-family: 'Inter', sans-serif; font-size: 10.5pt; color: #2f2a25; margin: 0; }
+
+        .header { padding-bottom: 10pt; border-bottom: 3pt solid #ffbf00; }
+        .logo { height: 1.3cm; }
+
+        .event { margin-top: 18pt; }
+        .tag { font-weight: 600; font-size: 9pt; text-transform: uppercase; letter-spacing: 1pt; color: #6b635c; margin: 0 0 4pt 0; }
+        h1 { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 30pt; line-height: 1.1; margin: 0; }
+        .subtitle { font-size: 12pt; color: #6b635c; margin: 6pt 0 0 0; }
+
+        .qr-card { margin-top: 20pt; padding: 16pt; border: 1pt solid #e5dfd8; border-radius: 8pt; text-align: center; }
+        .qr { width: 6.5cm; height: 6.5cm; }
+        .valid-for { font-weight: 600; font-size: 15pt; margin: 6pt 0 2pt 0; }
+        .show-at-entry { font-size: 11pt; color: #6b635c; margin: 0; }
+
+        .practical-info { margin-top: 16pt; padding: 12pt 14pt; background-color: #fbf8f4; border-radius: 6pt; }
+        .info-title { font-weight: 600; font-size: 11pt; margin: 0 0 6pt 0; }
+        .meta-row { margin: 0 0 3pt 0; }
+        ul { margin: 6pt 0 0 0; padding-left: 14pt; }
+        li { margin-bottom: 2pt; }
+
+        .contact { margin-top: 16pt; font-size: 9.5pt; color: #6b635c; }
     </style>
 </head>
 <body>
-    <h1>{title}</h1>
-    <p class="info">{date}</p>
-    <p class="info">{place}</p>
-    <p class="valid-for">Valable pour {validFor}</p>
-    <div class="qr"><img src="{qrImage}" alt="QR code de l'e-billet" /></div>
-    <p class="hint">Présentez ce QR code à l'entrée, imprimé ou sur votre téléphone.</p>
+    <div class="header"><img class="logo" src="{logo}" alt="Sgilt" /></div>
+
+    <div class="event">
+        {tagBlock}
+        <h1>{title}</h1>
+        {subtitleBlock}
+    </div>
+
+    <div class="qr-card">
+        <img class="qr" src="{qrImage}" alt="QR code de votre e-billet" />
+        <p class="valid-for">Valable pour {validFor}</p>
+        <p class="show-at-entry">À présenter à l'entrée</p>
+    </div>
+
+    <div class="practical-info">
+        <p class="info-title">Informations pratiques</p>
+        <p class="meta-row">{date}</p>
+        <p class="meta-row">{place}</p>
+        {practicalInfoBlock}
+    </div>
+
+    <p class="contact">Une question concernant votre e-billet ? Contactez-nous à contact@sgilt.alsace</p>
 </body>
 </html>

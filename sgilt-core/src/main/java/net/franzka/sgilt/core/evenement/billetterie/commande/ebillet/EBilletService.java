@@ -26,7 +26,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class EBilletService {
 
-    private static final String EBILLET_PDF_FILENAME = "e-billet.pdf";
+    private static final String EBILLET_PDF_FILENAME_PREFIX = "e-billet";
+    private static final String PDF_EXTENSION = ".pdf";
 
     private final CommandeService      commandeService;
     private final PageEvenementService pageEvenementService;
@@ -42,15 +43,12 @@ public class EBilletService {
      * @throws CommandeNotPaidException  si la commande n'est pas payée
      */
     public EBilletDto getEBillet(UUID commandeId) {
-        Commande commande = commandeService.getPaidCommande(commandeId);
-        Evenement evenement = commande.getBilletterie().getEvenement();
-        EvenementInfosDto evenementInfos = pageEvenementService.getEvenementInfos(evenement);
-        String qrImage = QrCodeUtils.pngDataUri(EntryCodeUtils.commandeQrContent(commande.getCode()));
-        return commandeMapper.toEBilletDto(commande, evenementInfos, pageEvenementService.isOnline(evenement), qrImage);
+        return toEBillet(commandeService.getPaidCommande(commandeId));
     }
 
     /**
-     * Retourne le PDF de l'e-billet d'une commande payée.
+     * Retourne le PDF de l'e-billet d'une commande payée, nommé d'après le slug de son événement
+     * ({@code e-billet-<slug>.pdf}) pour ne pas se confondre avec ceux d'autres événements.
      *
      * @param commandeId l'identifiant de la commande
      * @return le PDF et son nom de fichier
@@ -59,6 +57,23 @@ public class EBilletService {
      * @throws EBilletPdfException       si la génération du PDF échoue
      */
     public EBilletPdf getEBilletPdf(UUID commandeId) {
-        return new EBilletPdf(eBilletPdfService.generate(getEBillet(commandeId)), EBILLET_PDF_FILENAME);
+        Commande commande = commandeService.getPaidCommande(commandeId);
+        byte[] content = eBilletPdfService.generate(toEBillet(commande));
+        return new EBilletPdf(content, pdfFileName(commande.getBilletterie().getEvenement()));
+    }
+
+    private EBilletDto toEBillet(Commande commande) {
+        Evenement evenement = commande.getBilletterie().getEvenement();
+        EvenementInfosDto evenementInfos = pageEvenementService.getEvenementInfos(evenement);
+        String qrImage = QrCodeUtils.pngDataUri(EntryCodeUtils.commandeQrContent(commande.getCode()));
+        return commandeMapper.toEBilletDto(commande, evenementInfos, pageEvenementService.isOnline(evenement), qrImage);
+    }
+
+    // « e-billet-jeudis-du-taennel.pdf » ; sans page (impossible en pratique : on commande depuis
+    // /e/{slug}), « e-billet.pdf ». Le slug est déjà sûr pour un nom de fichier (minuscules, tirets).
+    private String pdfFileName(Evenement evenement) {
+        return pageEvenementService.getSlug(evenement)
+                .map(slug -> EBILLET_PDF_FILENAME_PREFIX + "-" + slug + PDF_EXTENSION)
+                .orElse(EBILLET_PDF_FILENAME_PREFIX + PDF_EXTENSION);
     }
 }
