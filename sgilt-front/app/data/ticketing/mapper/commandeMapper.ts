@@ -44,7 +44,7 @@ export function mapEBillet(dto: EBilletDto): EBillet {
     heroImage: dto.heroImage ?? defaultCoverPath(dto.eventType),
     evenementInfos: mapEvenementInfos(dto.evenementInfos),
     quantity: dto.quantity,
-    qrContent: dto.qrContent,
+    qrImage: dto.qrImage,
     pageOnline: dto.pageOnline,
   }
 }

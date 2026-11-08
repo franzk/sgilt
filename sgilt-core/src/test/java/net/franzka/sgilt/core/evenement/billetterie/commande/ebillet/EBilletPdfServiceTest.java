@@ -111,7 +111,7 @@ class EBilletPdfServiceTest {
             EvenementInfosDto infos = new EvenementInfosDto("<b>Tag</b>", "Soirée \"spéciale\"", LocalDate.of(2026, 12, 3),
                     null, null, "Le Taennel", "Scherwiller (67)", List.of("Bière & <vin>"));
             EBilletDto eBillet = new EBilletDto("Rock & <Roll>", null, null, infos,
-                    1, QR_CONTENT, QrCodeUtils.pngDataUri(QR_CONTENT), true);
+                    1, QrCodeUtils.pngDataUri(QR_CONTENT), true);
 
             String text = text(service.generate(eBillet));
 
@@ -131,7 +131,7 @@ class EBilletPdfServiceTest {
 
     private EBilletDto eBillet(EvenementInfosDto infos, int quantity) {
         return new EBilletDto("Les Jeudis du Taennel", "bank/taennel.png", "evenement_public", infos,
-                quantity, QR_CONTENT, QrCodeUtils.pngDataUri(QR_CONTENT), true);
+                quantity, QrCodeUtils.pngDataUri(QR_CONTENT), true);
     }
 
     private EvenementInfosDto infos(String venue, String city) {

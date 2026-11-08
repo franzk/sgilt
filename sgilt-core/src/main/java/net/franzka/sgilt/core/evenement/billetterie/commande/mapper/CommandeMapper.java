@@ -1,7 +1,6 @@
 package net.franzka.sgilt.core.evenement.billetterie.commande.mapper;
 
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
-import net.franzka.sgilt.core.evenement.billetterie.commande.domain.EntryCodeUtils;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
@@ -13,7 +12,7 @@ import org.mapstruct.Mapping;
 
 import java.time.LocalDateTime;
 
-@Mapper(componentModel = "spring", imports = EntryCodeUtils.class)
+@Mapper(componentModel = "spring")
 public interface CommandeMapper {
 
     /**
@@ -74,7 +73,6 @@ public interface CommandeMapper {
     @Mapping(target = "eventType",      source = "commande.billetterie.evenement.eventType")
     @Mapping(target = "evenementInfos", source = "evenementInfos")
     @Mapping(target = "quantity",       source = "commande.quantity")
-    @Mapping(target = "qrContent",      expression = "java(EntryCodeUtils.commandeQrContent(commande.getCode()))")
     @Mapping(target = "qrImage",        source = "qrImage")
     @Mapping(target = "pageOnline",     source = "pageOnline")
     EBilletDto toEBilletDto(Commande commande, EvenementInfosDto evenementInfos, boolean pageOnline, String qrImage);

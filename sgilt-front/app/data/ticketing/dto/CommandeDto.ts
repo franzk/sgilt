@@ -52,8 +52,8 @@ export interface EBilletDto {
   eventType: string | null
   evenementInfos: EvenementInfosDto
   quantity: number
-  // Contenu du QR, présenté à l'entrée (SGILT:C:<code>).
-  qrContent: string
+  // QR présenté à l'entrée, dessiné par le back : PNG en data URI (data:image/png;base64,…).
+  qrImage: string
   // Page de l'événement en ligne : sinon, pas de lien vers elle.
   pageOnline: boolean
 }

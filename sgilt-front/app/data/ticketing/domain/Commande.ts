@@ -50,7 +50,8 @@ export interface EBillet {
   heroImage: string
   evenementInfos: EBilletEvenementInfos
   quantity: number
-  qrContent: string
+  // PNG en data URI, affichable tel quel dans un <img>.
+  qrImage: string
   // Page de l'événement en ligne : sinon, pas de lien vers elle.
   pageOnline: boolean
 }

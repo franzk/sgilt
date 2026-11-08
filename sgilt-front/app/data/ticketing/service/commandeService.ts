@@ -2,7 +2,7 @@
  * Couche service — orchestration des appels API des commandes de billets
  */
 import { FetchError } from 'ofetch'
-import { createCommandeApi, getCommandeApi, getEBilletApi } from '../api/commandeApi'
+import { createCommandeApi, eBilletPdfUrlApi, getCommandeApi, getEBilletApi } from '../api/commandeApi'
 import { mapCommande, mapCommandeSummary, mapEBillet } from '../mapper/commandeMapper'
 import type { Commande, CommandeFailure, CommandeSummary, EBillet } from '../domain/Commande'
 import type { TicketBuyer } from '~/composables/useTicketOrder'
@@ -32,10 +32,18 @@ export async function getCommande(id: string): Promise<CommandeSummary> {
 
 /**
  * Relit l'e-billet d'une commande payée : l'événement, ses infos pratiques, le nombre de places et
- * le contenu du QR.
+ * le QR, déjà dessiné par le back.
  */
 export async function getEBillet(id: string): Promise<EBillet> {
   return mapEBillet(await getEBilletApi(id))
+}
+
+/**
+ * URL de téléchargement du PDF de l'e-billet d'une commande payée (nommé e-billet-<slug>.pdf par
+ * le back).
+ */
+export function getEBilletPdfUrl(id: string): string {
+  return eBilletPdfUrlApi(id)
 }
 
 /**
