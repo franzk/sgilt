@@ -19,6 +19,7 @@
 | —      | Anti-abus : limite de débit par IP (gateway), plafond de 10 places par commande           | Fait (2026-11-03/04)  |
 | —      | E-billet : code d'entrée au passage `PAID`, `GET /commandes/{id}/e-billet`, page « Mon e-billet » avec QR | Fait (2026-11-03)     |
 | —      | E-mail à l'acheteur au passage `PAID`, avec le lien vers son e-billet                     | Fait (2026-11-03)     |
+| —      | E-billet en PDF (`GET /commandes/{id}/e-billet.pdf`, bouton sur la page) ; QR dessiné par le back pour la page et le PDF | Fait (2026-11-08)     |
 | —      | Interrupteurs BO (page publique, billetterie) ; page publique administrée par l'organisateur dans son board (contenu, publication, billetterie, ventes, aperçu) | Fait (2026-11-05/06)  |
 | —      | Horaires de l'événement dans Paramètres (`PUT /user/events/{id}/horaires`), pour tous les événements | Fait (2026-11-06)     |
 
@@ -26,9 +27,9 @@ Composants :
 
 | Composant       | Rôle                                                                                                       |
 |-----------------|------------------------------------------------------------------------------------------------------------|
-| `sgilt-front`   | Parcours d'achat (`/e/[slug]/commande`, `/paiement`, `/confirmation`, `/e-billet`, tous en `ssr: false`), widget Stripe, QR code |
+| `sgilt-front`   | Parcours d'achat (`/e/[slug]/commande`, `/paiement`, `/confirmation`, `/e-billet`, tous en `ssr: false`), widget Stripe, affichage du QR |
 | `sgilt-gateway` | Routes publiques `/api/v1/commandes/**` (`permitAll` : on achète sans compte) et `/webhooks/stripe`, limite de débit par IP |
-| `sgilt-core`    | Commandes, blocage des places, appel à `sgilt-pay`, passage `PAID`, code d'entrée, e-billet, e-mails        |
+| `sgilt-core`    | Commandes, blocage des places, appel à `sgilt-pay`, passage `PAID`, code d'entrée, e-billet (QR, PDF), e-mails |
 | `sgilt-pay`     | Seul service à parler à Stripe (clé secrète). Port 5032, réseau interne, sans base                         |
 | RabbitMQ        | `payment.succeeded` (`sgilt-pay` → core), `mail.send` (core → `sgilt-mailer`)                              |
 | `sgilt-mailer`  | E-mail d'e-billet à l'acheteur, alerte de survente à l'équipe Sgilt                                        |
@@ -234,7 +235,8 @@ sequenceDiagram
 - **E-mail d'e-billet** (`COMMANDE_E_BILLET_EMAIL`) : prénom, titre, « valable pour N
   personne(s) » (accordé par le core), date et horaires (`EventDateLabelUtils`, même rendu que le
   front — doublon assumé), lieu, ville, lien `${PUBLIC_SITE_URL}/e/{slug}/e-billet?commande={id}`.
-  Pas de QR dans l'e-mail : il est derrière le lien.
+  Pas de QR ni de PDF dans l'e-mail : ils sont derrière le lien (le texte dit que l'e-billet se
+  télécharge en PDF depuis la page).
 - **Échec d'envoi** : journalisé, pas relancé ; la commande reste payée. Un événement sans page
   (impossible en pratique) n'envoie rien, avec une erreur dans les logs. Lieu ou ville absents :
   envoyés vides.
@@ -251,15 +253,19 @@ ses places.
   base64url sans padding, 22 caractères), colonne `commandes.code` (unique, V124).
 - **Contenu du QR** : `SGILT:C:<code>` (préfixe de type, **sans lien**), fabriqué par le back
   (`EntryCodeUtils.commandeQrContent`). Le futur lecteur sera une page Sgilt.
+- **Dessin du QR** : par le back seulement (`QrCodeUtils`, ZXing), pour la page comme pour le PDF :
+  PNG 512 px, correction d'erreur M, marge de 4 modules, servi en data URI
+  (`data:image/png;base64,…`). Le front ne dessine rien (plus de lib `qrcode`) et ne reçoit pas le
+  contenu du QR.
 - **Route** : `GET /api/v1/commandes/{id}/e-billet` (publique) → `EBilletDto` : titre, image,
   type d'événement (image par défaut côté front), `evenementInfos` (tag et sous-titre de la page,
-  date, horaires, lieu, ville, infos pratiques), nombre de places, contenu du QR. 404 si la
-  commande est inconnue **ou pas payée**.
+  date, horaires, lieu, ville, infos pratiques), nombre de places, QR dessiné (`qrImage`). 404 si
+  la commande est inconnue **ou pas payée**. Orchestration commande + page dans `EBilletService`.
 - **Page** `/e/[slug]/e-billet?commande={id}` : même hero que la fiche (`SgiltHero`), **sans** le
-  bouton partager (il partagerait l'URL, donc l'e-billet) ; QR dessiné dans le navigateur
-  (`qrcode`, correction d'erreur M, 12rem) ; « Valable pour N personne(s) » ; infos pratiques ;
-  contact. Commande inconnue ou pas payée → fiche ; toute autre erreur → « Réessayer » (l'acheteur
-  est peut-être à l'entrée).
+  bouton partager (il partagerait l'URL, donc l'e-billet) ; QR (`<img>`, 12rem) ; « Valable pour N
+  personne(s) » ; bouton « Télécharger mon e-billet (PDF) » ; infos pratiques ; contact. Commande
+  inconnue ou pas payée → fiche ; toute autre erreur → « Réessayer » (l'acheteur est peut-être à
+  l'entrée).
 - **Accès** : l'id de la commande seul (UUID v4, non devinable), sans compte. L'URL ne doit pas
   fuiter :
   - `X-Robots-Tag: noindex, nofollow, noarchive` (routeRule de `nuxt.config.ts`) — un en-tête, la
@@ -272,6 +278,30 @@ ses places.
   il ne dépend que de la commande. L'acheteur garde son e-billet si la page est dépubliée ou perd
   sa billetterie ; le lien « retour à l'événement » n'apparaît que si la page est en ligne
   (`EBilletDto.pageOnline`).
+
+### PDF
+
+- **Route** : `GET /api/v1/commandes/{id}/e-billet.pdf` (publique, mêmes règles : 404 si inconnue ou
+  pas payée) → `application/pdf` en pièce jointe, nommé `e-billet-<slug>.pdf` (`e-billet.pdf` si
+  l'événement n'a pas de page). En-têtes `Cache-Control: no-store` et
+  `X-Robots-Tag: noindex, nofollow, noarchive`. La gateway la couvre déjà (`/api/v1/commandes/**`).
+- **Front** : un simple lien (`<a href>`) vers la route, sans JavaScript : le navigateur télécharge
+  grâce au `Content-Disposition`. Possible parce que la route est publique (pas d'en-tête
+  `Authorization`, contrairement aux documents du feed des réservations).
+- **Contenu** : le même que la page, **sans le nom de l'acheteur** (la route n'est protégée que par
+  l'UUID de la commande) ni l'image de l'événement (WebP sur R2 : décodage, redimensionnement et
+  appel réseau jugés disproportionnés). A4 portrait : en-tête blanc avec le logo Sgilt en couleurs
+  et une ligne d'accent, tag, titre, sous-titre, carte QR (6,5 cm) avec « Valable pour N
+  personne(s) », infos pratiques, contact.
+- **Génération** : à la volée à chaque demande, **jamais stockée** (le PDF reflète toujours
+  l'événement à jour : horaires, lieu). `EBilletPdfService` remplit le gabarit XHTML
+  `resources/ebillet/e-billet.html` (valeurs échappées, blocs facultatifs omis s'ils sont vides) et le
+  rend avec **openhtmltopdf** (moteur PDFBox, CSS 2.1, LGPL). ~80 Ko par billet.
+- **Ressources** (`sgilt-core/src/main/resources/ebillet/`) : `sgilt-logo.png` (1200 × 611, généré
+  depuis `sgilt-front/public/sgilt-logo.svg` : à refaire si le logo change) ; polices de la charte
+  embarquées en sous-ensemble, Inter Regular/SemiBold et Cormorant Garamond Bold, en TTF statiques
+  (PDFBox n'embarque ni polices variables ni OTF CFF) — origine, licences OFL et commande de
+  génération dans `fonts/README.md`.
 
 ---
 
@@ -336,7 +366,11 @@ sans payer et créerait des PaymentIntents en masse.
   (l'acheteur peut réessayer sur le même PaymentIntent) et l'abandon n'émet aucun événement.
   Libérer plus tôt voudra dire annuler nous-mêmes le PaymentIntent (commande remplacée ou expirée)
   et passer la commande `CANCELLED`.
-- **PDF et billets individuels** (un QR par place) : avec le PDF joint à l'e-mail.
+- **PDF joint à l'e-mail d'e-billet** : design prêt — `MailAttachment(fileName, contentType,
+  byte[] content)` dans `MailRequest` (mailer et core, base64 géré par Jackson) ; le convertisseur
+  AMQP ignore les champs inconnus, donc pas d'ordre de déploiement imposé. Le PDF vient de
+  `EBilletService.getEBilletPdf` ; en cas d'échec de génération, l'e-mail part sans pièce jointe.
+- **Billets individuels** (un QR par place) : un code par place en base, à concevoir avec le scan.
 - **E-mail admin « nouvelle réservation »**, sur le socle `AdminMailerService`.
 - **E-mails publiés avant le commit** : l'alerte de survente et l'e-billet partent dans la
   transaction du listener ; si elle échouait après l'envoi, Rabbit rejouerait le message et un
