@@ -25,8 +25,9 @@
         <span class="text-line">
           <strong class="label">{{ $t('landing-page.hero.featured-label') }}</strong>
           {{ $t('landing-page.hero.featured-event') }}
+          <ArrowRightIcon class="arrow arrow-inline" />
         </span>
-        <ArrowRightIcon class="arrow" />
+        <ArrowRightIcon class="arrow arrow-end" />
       </NuxtLink>
     </div>
 
@@ -82,7 +83,7 @@ const titleParts = computed(() => {
     justify-content: center;
     gap: $spacing-m;
     // Sans ça, la colonne de grille s'élargit à la longueur du lien « À l'affiche »
-    // (texte en nowrap) au lieu de le laisser se tronquer.
+    // (une seule ligne en mobile) au lieu de le laisser se tronquer.
     min-width: 0;
     padding: $spacing-xxl $section-padding-x 0;
 
@@ -143,9 +144,11 @@ const titleParts = computed(() => {
     color: $text-secondary;
     font-size: $font-size-md;
     text-decoration: none;
-    // Toujours sur une seule ligne : le texte est tronqué (…) quand l'écran est trop
-    // étroit, l'icône et la flèche restent visibles.
     max-width: 100%;
+
+    @media (min-width: $breakpoint-desktop) {
+      margin-top: $spacing-l;
+    }
 
     .icon {
       width: 1.1rem;
@@ -154,23 +157,49 @@ const titleParts = computed(() => {
       flex-shrink: 0;
     }
 
+    // Mobile : une seule ligne, tronquée (…), la flèche .arrow-end juste derrière.
+    // Desktop : deux lignes au plus, la flèche .arrow-inline suit le dernier mot.
     .text-line {
       min-width: 0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
 
+      @media (min-width: $breakpoint-desktop) {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        white-space: normal;
+      }
+
       .label {
         color: $brand-primary;
         font-weight: $font-weight-semibold;
+      }
+
+      .arrow-inline {
+        display: none;
+        vertical-align: -0.15em;
+
+        @media (min-width: $breakpoint-desktop) {
+          display: inline-block;
+        }
       }
     }
 
     .arrow {
       width: 1rem;
       height: 1rem;
-      flex-shrink: 0;
       transition: transform 0.2s ease;
+    }
+
+    .arrow-end {
+      flex-shrink: 0;
+
+      @media (min-width: $breakpoint-desktop) {
+        display: none;
+      }
     }
 
     &:hover {
