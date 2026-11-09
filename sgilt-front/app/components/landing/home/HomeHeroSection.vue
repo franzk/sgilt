@@ -1,3 +1,7 @@
+<!--
+  Hero de la landing (page d'accueil) : accroche, sous-titre, CTA de création d'événement,
+  lien vers l'événement public du moment (en dur, temporaire) et photo d'ambiance.
+-->
 <template>
   <section class="home-hero">
     <div class="text">
@@ -15,10 +19,16 @@
 
       <HomeCtaButton />
 
-      <p class="tagline-mini">
-        <MapPin2Icon class="icon" />
-        {{ $t('landing-page.hero.tagline-mini') }}
-      </p>
+      <!-- Lien en dur vers l'événement public du moment — à retirer une fois l'événement passé. -->
+      <NuxtLink :to="FEATURED_EVENT_PATH" class="featured-event">
+        <SparklingIcon class="icon" />
+        <span class="text-line">
+          <strong class="label">{{ $t('landing-page.hero.featured-label') }}</strong>
+          {{ $t('landing-page.hero.featured-event') }}
+          <ArrowRightIcon class="arrow arrow-inline" />
+        </span>
+        <ArrowRightIcon class="arrow arrow-end" />
+      </NuxtLink>
     </div>
 
     <div class="photo" role="img" :aria-label="$t('landing-page.hero.photo-caption')">
@@ -29,8 +39,11 @@
 </template>
 
 <script setup lang="ts">
-import { MapPin2Icon } from '@remixicons/vue/line'
+import { SparklingIcon, ArrowRightIcon } from '@remixicons/vue/line'
 import HomeCtaButton from './HomeCtaButton.vue'
+
+// Événement public mis en avant sous le CTA — en dur tant qu'il n'y en a qu'un à la fois.
+const FEATURED_EVENT_PATH = '/e/5-cremants-5-histoires'
 
 const { t } = useI18n()
 
@@ -69,6 +82,9 @@ const titleParts = computed(() => {
     align-items: flex-start;
     justify-content: center;
     gap: $spacing-m;
+    // Sans ça, la colonne de grille s'élargit à la longueur du lien « À l'affiche »
+    // (une seule ligne en mobile) au lieu de le laisser se tronquer.
+    min-width: 0;
     padding: $spacing-xxl $section-padding-x 0;
 
     @media (min-width: $breakpoint-desktop) {
@@ -120,19 +136,78 @@ const titleParts = computed(() => {
     line-height: $line-height-relaxed;
   }
 
-  .tagline-mini {
+  .featured-event {
     margin: $spacing-xs 0 0;
     display: flex;
     align-items: center;
     gap: $spacing-xs;
     color: $text-secondary;
     font-size: $font-size-md;
+    text-decoration: none;
+    max-width: 100%;
+
+    @media (min-width: $breakpoint-desktop) {
+      margin-top: $spacing-l;
+    }
 
     .icon {
       width: 1.1rem;
       height: 1.1rem;
       color: $brand-accent;
       flex-shrink: 0;
+    }
+
+    // Mobile : une seule ligne, tronquée (…), la flèche .arrow-end juste derrière.
+    // Desktop : deux lignes au plus, la flèche .arrow-inline suit le dernier mot.
+    .text-line {
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      @media (min-width: $breakpoint-desktop) {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        white-space: normal;
+      }
+
+      .label {
+        color: $brand-primary;
+        font-weight: $font-weight-semibold;
+      }
+
+      .arrow-inline {
+        display: none;
+        vertical-align: -0.15em;
+
+        @media (min-width: $breakpoint-desktop) {
+          display: inline-block;
+        }
+      }
+    }
+
+    .arrow {
+      width: 1rem;
+      height: 1rem;
+      transition: transform 0.2s ease;
+    }
+
+    .arrow-end {
+      flex-shrink: 0;
+
+      @media (min-width: $breakpoint-desktop) {
+        display: none;
+      }
+    }
+
+    &:hover {
+      color: $brand-primary;
+
+      .arrow {
+        transform: translateX(0.2rem);
+      }
     }
   }
 
