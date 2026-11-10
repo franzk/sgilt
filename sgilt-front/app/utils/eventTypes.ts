@@ -14,6 +14,7 @@ import {
   SparklingIcon,
   UserHeartIcon,
   Building4Icon,
+  PresentationIcon,
 } from '@remixicons/vue/line'
 
 /**
@@ -29,7 +30,7 @@ export interface EventTypeGroup {
 
 export const EVENT_TYPE_GROUPS: EventTypeGroup[] = [
   { key: 'proches', icon: markRaw(UserHeartIcon), types: ['mariage', 'anniversaire', 'soiree_privee'] },
-  { key: 'structure', icon: markRaw(Building4Icon), types: ['fete_entreprise', 'evenement_public'] },
+  { key: 'structure', icon: markRaw(Building4Icon), types: ['fete_entreprise', 'seminaire', 'evenement_public'] },
 ]
 
 /** Groupe d'un type d'événement (clé de eventTypeKey), ou null si aucun type n'est choisi ou pour « autre ». */
@@ -42,6 +43,7 @@ const EVENT_TYPE_ICONS: Record<string, Component> = {
   soiree_privee: markRaw(Goblet2Icon),
   anniversaire: markRaw(CakeIcon),
   fete_entreprise: markRaw(BriefcaseIcon),
+  seminaire: markRaw(PresentationIcon),
   evenement_public: markRaw(TentIcon),
   autre: markRaw(SparklingIcon),
 }
@@ -67,6 +69,7 @@ export const EVENT_TYPE_IMAGES: Record<string, string> = {
   anniversaire: '/images/sgilt-anniversaire.png',
   soiree_privee: '/images/sgilt-soiree-privee.png',
   fete_entreprise: '/images/sgilt-soiree-entreprise.png',
+  seminaire: '/images/sgilt-seminaire.png',
   evenement_public: '/images/sgilt-evenement-public.png',
   autre: '/images/sgilt-autre.png',
 }
@@ -81,6 +84,7 @@ export const EVENT_TYPE_COVERS: Record<string, string> = {
   anniversaire: 'bank/anniversaire.webp',
   soiree_privee: 'bank/soiree-privee.jpg',
   fete_entreprise: 'bank/fete-entreprise.webp',
+  seminaire: 'bank/seminaire.png',
   evenement_public: 'bank/evenement-public.webp',
   autre: 'bank/autre.webp',
 }

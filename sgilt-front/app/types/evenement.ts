@@ -26,6 +26,7 @@ export const EVENT_TYPE_OPTIONS: EvenementOption[] = [
   { value: 'soiree_privee', label: 'Soirée privée', emoji: '🥂' },
   { value: 'anniversaire', label: 'Anniversaire', emoji: '🎂' },
   { value: 'fete_entreprise', label: "Fête d'entreprise", emoji: '🏢' },
+  { value: 'seminaire', label: 'Séminaire', emoji: '💼' },
   { value: 'evenement_public', label: 'Événement public', emoji: '🎪' },
   { value: 'autre', label: 'Autre', emoji: '•••' },
 ]

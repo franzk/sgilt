@@ -79,6 +79,7 @@
       "anniversaire": { "label": "Anniversaire", "tagline": "Un an de plus à célébrer", "default-title": "Votre anniversaire" },
       "soiree_privee": { "label": "Soirée privée", "tagline": "Entre amis ou en famille", "default-title": "Votre soirée privée" },
       "fete_entreprise": { "label": "Fête d'entreprise", "tagline": "Vos équipes à l'honneur", "default-title": "Votre fête d'entreprise" },
+      "seminaire": { "label": "Séminaire", "tagline": "Une journée d'équipe", "default-title": "Votre séminaire" },
       "evenement_public": { "label": "Événement public", "tagline": "Ouvert à tous", "default-title": "Votre événement public" },
       "autre": { "label": "Autre", "tagline": "Dites-nous en plus", "default-title": "Votre événement" }
     }
@@ -102,6 +103,7 @@
       "anniversaire": "Une grande fête, un dîner entre proches ou une surprise mémorable ? Sgilt vous aide à organiser votre anniversaire, poser les bonnes bases et trouver tout ce qu'il vous faut pour en faire un vrai moment à part.",
       "soiree_privee": "Vous savez déjà qui inviter, ou tout reste encore à imaginer ? Sgilt vous aide à construire votre soirée, penser aux détails qui comptent et trouver les bonnes personnes pour lui donner vie.",
       "fete_entreprise": "Un moment pour réunir l'équipe, célébrer ou simplement sortir du cadre ? Sgilt vous aide à structurer votre événement, avancer sans rien oublier et trouver les prestataires adaptés à votre projet.",
+      "seminaire": "Une journée hors les murs pour faire le point, réfléchir ensemble ou souder l'équipe ? Sgilt vous aide à trouver le lieu, organiser la journée et réunir les prestataires qui la feront tourner sans accroc.",
       "evenement_public": "Concert, festival, rendez-vous associatif ou événement local : Sgilt vous aide à donner forme à votre projet, organiser les prochaines étapes et réunir les bons partenaires pour le faire vivre.",
       "autre": "Même si votre événement ne rentre dans aucune case, Sgilt vous aide à poser les bases, avancer étape par étape et rassembler tout ce qu'il vous faut au même endroit."
     }
@@ -164,6 +166,7 @@
         "anniversaire": "Ça se fête, et ça se prépare !",
         "soiree_privee": "Une belle soirée en perspective !",
         "fete_entreprise": "Un beau moment à partager !",
+        "seminaire": "Une belle journée d'équipe se prépare !",
         "evenement_public": "Un événement qui rassemble !",
         "autre": "Une belle idée prend forme !"
       }
@@ -291,6 +294,7 @@
           "anniversaire": "Votre anniversaire prend forme ! 🎉",
           "soiree_privee": "Votre soirée prend forme ! 🎉",
           "fete_entreprise": "Votre fête d'entreprise prend forme ! 🎉",
+          "seminaire": "Votre séminaire prend forme ! 🎉",
           "evenement_public": "Votre événement prend forme ! 🎉",
           "autre": "Votre événement prend forme ! 🎉"
         },
