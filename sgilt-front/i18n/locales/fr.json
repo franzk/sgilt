@@ -314,6 +314,10 @@
           "title": "Découvrir les animations",
           "description": "DJ, groupes, animateurs et bien plus encore."
         },
+        "animation": {
+          "title": "Animer la journée",
+          "description": "Team building, ateliers, activités pour souder l'équipe."
+        },
         "decoration": {
           "title": "Imaginer la décoration",
           "description": "Fleurs, mobilier, mises en scène à votre image."
@@ -363,6 +367,7 @@
       "lieu": "Lieu",
       "restauration": "Restauration",
       "musique-animation": "Musique / Animation",
+      "animation": "Animation",
       "decoration": "Décoration",
       "photo-video": "Photo / Vidéo",
       "hebergement": "Hébergement",
@@ -388,6 +393,10 @@
         },
         "musique-animation": {
           "tagline": "DJ, musiciens, animations… Donnez le rythme à votre fête.",
+          "already": "J'ai déjà mon animation"
+        },
+        "animation": {
+          "tagline": "Team building, ateliers, jeux… Faites vivre la journée à vos équipes.",
           "already": "J'ai déjà mon animation"
         },
         "decoration": {

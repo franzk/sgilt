@@ -5,6 +5,7 @@ import {
   FlowerIcon,
   FolderIcon,
   HotelBedIcon,
+  MagicIcon,
   Music2Icon,
   RestaurantIcon,
 } from '@remixicons/vue/line'
@@ -18,6 +19,7 @@ const RUBRIQUE_ICONS: Partial<Record<string, Component>> = {
   lieu: markRaw(Building2Icon),
   restauration: markRaw(RestaurantIcon),
   'musique-animation': markRaw(Music2Icon),
+  animation: markRaw(MagicIcon),
   decoration: markRaw(FlowerIcon),
   'photo-video': markRaw(CameraIcon),
   hebergement: markRaw(HotelBedIcon),
@@ -30,6 +32,7 @@ const RUBRIQUE_ACCENTS: Partial<Record<string, string>> = {
   lieu: '#a3334a',
   restauration: '#d68c00',
   'musique-animation': '#b0447e',
+  animation: '#8a5cb8',
   decoration: '#5a8f6b',
   'photo-video': '#4a6fa5',
   hebergement: '#2f6f73',

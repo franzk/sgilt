@@ -14,7 +14,7 @@ import {
   SparklingIcon,
   UserHeartIcon,
   Building4Icon,
-  PresentationIcon,
+  TeamIcon,
 } from '@remixicons/vue/line'
 
 /**
@@ -43,7 +43,7 @@ const EVENT_TYPE_ICONS: Record<string, Component> = {
   soiree_privee: markRaw(Goblet2Icon),
   anniversaire: markRaw(CakeIcon),
   fete_entreprise: markRaw(BriefcaseIcon),
-  seminaire: markRaw(PresentationIcon),
+  seminaire: markRaw(TeamIcon),
   evenement_public: markRaw(TentIcon),
   autre: markRaw(SparklingIcon),
 }
