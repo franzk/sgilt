@@ -1,6 +1,6 @@
 /**
- * Types d'événement côté front, ce qui en dépend à l'affichage : icônes, illustrations de /fete et
- * photos de /commencer. Les textes par type (libellé, titre par défaut de l'événement, accroche du
+ * Types d'événement côté front, ce qui en dépend à l'affichage : groupes (onglets de /fete), icônes,
+ * illustrations de /fete et photos de /commencer. Les textes par type (libellé, titre par défaut de l'événement, accroche du
  * board) sont dans i18n.
  */
 
@@ -12,7 +12,30 @@ import {
   BriefcaseIcon,
   TentIcon,
   SparklingIcon,
+  UserHeartIcon,
+  Building4Icon,
 } from '@remixicons/vue/line'
+
+/**
+ * Groupes de types d'événement, onglets de l'écran "Qu'est-ce qu'on fête ?" (fete.vue) : chaque
+ * groupe liste ses types dans l'ordre d'affichage. Libellés dans i18n (event-picker.groups.*). Le
+ * type « autre » n'est dans aucun groupe : fete.vue le propose par un lien sous les tuiles.
+ */
+export interface EventTypeGroup {
+  key: string
+  icon: Component
+  types: string[]
+}
+
+export const EVENT_TYPE_GROUPS: EventTypeGroup[] = [
+  { key: 'proches', icon: markRaw(UserHeartIcon), types: ['mariage', 'anniversaire', 'soiree_privee'] },
+  { key: 'structure', icon: markRaw(Building4Icon), types: ['fete_entreprise', 'evenement_public'] },
+]
+
+/** Groupe d'un type d'événement (clé de eventTypeKey), ou null si aucun type n'est choisi ou pour « autre ». */
+export function eventTypeGroup(key: string | null | undefined): EventTypeGroup | null {
+  return EVENT_TYPE_GROUPS.find((group) => group.types.includes(key ?? '')) ?? null
+}
 
 const EVENT_TYPE_ICONS: Record<string, Component> = {
   mariage: markRaw(HeartsIcon),
