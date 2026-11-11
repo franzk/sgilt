@@ -9,7 +9,7 @@
     <OrganisationChoiceStep
       v-if="field === 'eventType'"
       v-model="draft.eventType"
-      :options="EVENT_TYPE_OPTIONS"
+      :options="eventTypeOptions"
       :autre-placeholder="$t('event-info.event-type-autre-placeholder')"
       @next="validate"
     />
@@ -83,7 +83,8 @@ import {
   type EventInfoFieldKey,
   type EventInfoFields,
 } from '~/composables/useLocalEvent'
-import { AMBIANCE_OPTIONS, EVENT_TYPE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/evenement'
+import { AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/evenement'
+import { useEventTypeLabel } from '~/composables/useEventTypeLabel'
 
 const props = defineProps<{
   field: EventInfoFieldKey
@@ -95,6 +96,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   validate: [fields: EventInfoFields]
 }>()
+
+const { eventTypeOptions } = useEventTypeLabel()
 
 // Brouillon : copie des seules informations modifiables, faite à l'ouverture.
 const draft = reactive<EventInfoFields>({

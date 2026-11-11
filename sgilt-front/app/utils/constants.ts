@@ -6,20 +6,6 @@
 // Clé de la catégorie « Tous » : aucun filtre. Partagée avec le back (countsByCategory).
 export const ALL_CATEGORY_KEY = 'all'
 
-// ______________ Types d'événements ______________
-export type EventType = {
-  value: string
-  label: string
-}
-
-export const eventTypes: EventType[] = [
-  { value: '-1', label: 'Votre événement' },
-  { value: '0', label: 'Mariage' },
-  { value: '1', label: 'Anniversaire' },
-  { value: '2', label: "Fête d'entreprise" },
-  { value: '3', label: 'Autre' },
-]
-
 // ______________ Badges d'engagement ______________
 export type EngagementKey =
   | 'REPONSE_48H'

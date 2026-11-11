@@ -63,7 +63,7 @@
 import { SearchIcon, TaskIcon, ArrowRightSIcon, SparklingIcon } from '@remixicons/vue/line'
 import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
 import PhotoCurveClipPath from '~/components/commencer/PhotoCurveClipPath.vue'
-import { EVENT_TYPE_IMAGES, EVENT_TYPE_COVERS } from '~/utils/eventTypes'
+import { eventTypeDefinition } from '~/utils/eventTypes'
 import { eventTypeKey } from '~/types/evenement'
 
 useHead({ title: "Vous avez l'idée - Sgilt" })
@@ -80,13 +80,10 @@ onMounted(() => {
 })
 
 const typeKey = computed(() => eventTypeKey(localEvent.eventType) ?? 'autre')
-const eventTypeImage = computed(() => EVENT_TYPE_IMAGES[typeKey.value])
+const eventTypeImage = computed(() => eventTypeDefinition(typeKey.value).illustration)
 const eventTypeLabel = computed(() => t(`event-picker.types.${typeKey.value}.label`))
 const paragraph = computed(() => t(`commencer-picker.paragraphs.${typeKey.value}`))
-const coverImage = computed(() => {
-  const imagePath = EVENT_TYPE_COVERS[typeKey.value]
-  return imagePath ? toUrl(imagePath) : undefined
-})
+const coverImage = computed(() => toUrl(eventTypeDefinition(typeKey.value).commencerCover))
 const photoAlt = computed(() => t(`commencer-picker.photo-alt.${typeKey.value}`))
 
 // Visiteur ou connecté (flow « Nouvel événement ») : même parcours, l'événement n'est créé qu'à

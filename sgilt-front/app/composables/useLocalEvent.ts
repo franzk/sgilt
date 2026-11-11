@@ -17,7 +17,6 @@ import { fetchNewEventRubriques } from '~/data/template/service/templateService'
 import { toISODate } from '~/utils/dateUtils'
 import {
   AMBIANCE_OPTIONS,
-  EVENT_TYPE_OPTIONS,
   MOMENT_CLE_OPTIONS,
   eventTypeKey,
   type EvenementOption,
@@ -270,8 +269,6 @@ export function useLocalEvent() {
     return eventId
   }
 
-  const eventTypeLabel = computed(() => choiceLabel(EVENT_TYPE_OPTIONS, localEvent.eventType))
-  const eventTypeEmoji = computed(() => choiceEmoji(EVENT_TYPE_OPTIONS, localEvent.eventType))
   const ambianceLabel = computed(() => choiceLabel(AMBIANCE_OPTIONS, localEvent.ambiance))
   const ambianceEmoji = computed(() => choiceEmoji(AMBIANCE_OPTIONS, localEvent.ambiance))
   const momentCleLabel = computed(() => choiceLabel(MOMENT_CLE_OPTIONS, localEvent.momentCle))
@@ -284,8 +281,6 @@ export function useLocalEvent() {
     initRubriques,
     toEvenementRequest,
     create,
-    eventTypeLabel,
-    eventTypeEmoji,
     ambianceLabel,
     ambianceEmoji,
     momentCleLabel,

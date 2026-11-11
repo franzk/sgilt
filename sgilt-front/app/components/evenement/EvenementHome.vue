@@ -115,7 +115,8 @@ defineProps<{
 const INSPIRATIONS_COUNT = 4
 
 const { isMobile, isDesktop } = useDevice()
-const { localEvent, eventTypeLabel } = useLocalEvent()
+const { localEvent } = useLocalEvent()
+const { eventTypeLabel } = useEventTypeLabel()
 const { nbInvitesLabel } = useNbInvitesLabel()
 
 const typeKey = computed(() => eventTypeKey(localEvent.eventType) ?? 'autre')
@@ -124,7 +125,7 @@ const typeKey = computed(() => eventTypeKey(localEvent.eventType) ?? 'autre')
 const infos = computed(() => [
   { key: 'date', icon: CalendarEventIcon, value: formatDate(localEvent.date) },
   { key: 'nb-invites', icon: GroupIcon, value: nbInvitesLabel(localEvent.nbInvites) },
-  { key: 'type', icon: Heart3Icon, value: eventTypeLabel.value },
+  { key: 'type', icon: Heart3Icon, value: eventTypeLabel(localEvent.eventType) },
   {
     key: 'lieu',
     icon: MapPin2Icon,

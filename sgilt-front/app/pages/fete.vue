@@ -99,8 +99,8 @@ import SgiltConfirmDialog from '~/components/basics/dialogs/SgiltConfirmDialog.v
 import { eventTypeKey } from '~/types/evenement'
 import {
   EVENT_TYPE_GROUPS,
-  EVENT_TYPE_IMAGES,
-  eventTypeGroup,
+  eventTypeDefinition,
+  eventTypesOfGroup,
   type EventTypeGroup,
 } from '~/utils/eventTypes'
 
@@ -117,7 +117,7 @@ const { isMobile, isDesktop } = useDevice()
 // l'onglet du type déjà choisi ne s'ouvre qu'une fois monté, pour ne pas casser l'hydratation.
 const selectedGroupKey = ref<string | null>(null)
 onMounted(() => {
-  selectedGroupKey.value = eventTypeGroup(eventTypeKey(localEvent.eventType))?.key ?? null
+  selectedGroupKey.value = eventTypeDefinition(eventTypeKey(localEvent.eventType)).group
 })
 
 const selectedGroup = computed(() =>
@@ -132,11 +132,11 @@ interface EventTypeTile {
 }
 
 function typesOf(group: EventTypeGroup): EventTypeTile[] {
-  return group.types.map((key) => ({
-    key,
-    label: t(`event-picker.types.${key}.label`),
-    tagline: t(`event-picker.types.${key}.tagline`),
-    image: EVENT_TYPE_IMAGES[key] ?? '',
+  return eventTypesOfGroup(group.key).map((type) => ({
+    key: type.key,
+    label: t(`event-picker.types.${type.key}.label`),
+    tagline: t(`event-picker.types.${type.key}.tagline`),
+    image: type.illustration,
   }))
 }
 

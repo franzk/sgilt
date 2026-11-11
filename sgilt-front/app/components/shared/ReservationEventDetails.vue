@@ -101,7 +101,8 @@ import { choiceLabel } from '~/composables/useLocalEvent'
 import type { EventMeta } from '~/data/evenement/domain/EventMeta'
 import { useEventJournal } from '~/data/evenement/useEventJournal'
 import type { ClientContactInfo } from '~/data/reservation/domain/ClientContactInfo'
-import { AMBIANCE_OPTIONS, EVENT_TYPE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/evenement'
+import { AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/evenement'
+import { useEventTypeLabel } from '~/composables/useEventTypeLabel'
 import { formatDate, formatDateTime } from '~/utils/dateUtils'
 
 const props = defineProps<{
@@ -112,6 +113,7 @@ const props = defineProps<{
 }>()
 
 const { nbInvitesLabel } = useNbInvitesLabel()
+const { eventTypeLabel } = useEventTypeLabel()
 
 // ── Contenu ───────────────────────────────────────────────────────────────────
 // Valeur vide : « À définir ».
@@ -123,7 +125,7 @@ const practicalInfos = computed(() => [
 ])
 
 const eventFields = computed(() => [
-  { key: 'type', value: choiceLabel(EVENT_TYPE_OPTIONS, props.event.eventType ?? null) },
+  { key: 'type', value: eventTypeLabel(props.event.eventType) },
   { key: 'ambiance', value: choiceLabel(AMBIANCE_OPTIONS, props.event.ambiance ?? null) },
   { key: 'moment-cle', value: choiceLabel(MOMENT_CLE_OPTIONS, props.event.momentCle ?? null) },
   { key: 'description', value: props.event.description },

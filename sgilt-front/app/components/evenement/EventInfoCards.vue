@@ -92,10 +92,11 @@ import {
   type EventInfoFieldKey,
   type EventInfoFields,
 } from '~/composables/useLocalEvent'
-import { AMBIANCE_OPTIONS, EVENT_TYPE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/evenement'
+import { AMBIANCE_OPTIONS, MOMENT_CLE_OPTIONS } from '~/types/evenement'
 import { formatDateWithWeekday } from '~/utils/dateUtils'
 import { eventTypeIcon } from '~/utils/eventTypes'
 import { useNbInvitesLabel } from '~/composables/useNbInvitesLabel'
+import { useEventTypeLabel } from '~/composables/useEventTypeLabel'
 import { useEventHoursLabel } from '~/composables/useEventHoursLabel'
 
 const props = defineProps<{
@@ -119,6 +120,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const { nbInvitesLabel } = useNbInvitesLabel()
+const { eventTypeLabel } = useEventTypeLabel()
 const { clockHoursLabel } = useEventHoursLabel()
 
 // ── Cartes ────────────────────────────────────────────────────────────────────
@@ -140,7 +142,7 @@ const cards = computed<InfoCard[]>(() => {
       key: 'eventType',
       label: t('event-info.fields.event-type'),
       icon: typeIcon.value,
-      value: choiceLabel(EVENT_TYPE_OPTIONS, event.eventType),
+      value: eventTypeLabel(event.eventType),
       // Le type n'est plus modifiable une fois choisi : en changer revient à repartir de zéro.
       editable: !event.eventType,
     },
