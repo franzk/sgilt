@@ -2,6 +2,7 @@ package net.franzka.sgilt.core.evenement.page.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import net.franzka.sgilt.core.evenement.page.domain.PageEvenementPicto;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
  * @param importantInfo les infos importantes, montrées avant l'achat (null = aucune)
  * @param practicalInfo les infos pratiques, montrées après l'achat (null = aucune)
  * @param pictos        les points forts de la page (null = aucun)
+ * @param localisation  le lien de partage Google Maps, l'adresse ou le point GPS du lieu, ou null
  */
 public record PageContentDto(
         // En kebab-case : minuscules, chiffres, tirets simples (ex. les-jeudis-du-taennel).
@@ -27,5 +29,6 @@ public record PageContentDto(
         String description,
         List<String> importantInfo,
         List<String> practicalInfo,
-        List<PageEvenementPicto> pictos
+        List<PageEvenementPicto> pictos,
+        @Size(max = 255) String localisation
 ) {}

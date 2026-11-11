@@ -207,6 +207,8 @@
         "slug-locked": "L'adresse ne change plus une fois la page publiée, pour que les liens partagés restent valides. Pour la modifier, contactez l'équipe Sgilt.",
         "tag": "Étiquette (au-dessus du titre)",
         "subtitle": "Sous-titre",
+        "localisation": "Localisation du lieu (Google Maps)",
+        "localisation-hint": "Collez le lien de partage Google Maps, une adresse ou des coordonnées GPS. Le lieu devient cliquable sur la page publique.",
         "section-title": "Titre de la présentation",
         "description": "Présentation",
         "important-info": "Infos importantes (montrées avant l'achat)",
@@ -1630,6 +1632,7 @@
       "cta": "Acheter mes billets",
       "reassurance": "Paiement sécurisé par",
       "share-text": "Découvrez {name} sur Sgilt",
+      "maps-link": "Voir le lieu sur Google Maps",
       "time-label": "{start} – {end}",
       "time-label-until": "jusqu'à {end}"
     },

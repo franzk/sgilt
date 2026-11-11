@@ -45,6 +45,9 @@ public class PageEvenement {
     /** Texte de présentation au public, distinct de la description de l'événement. */
     private String description;
 
+    /** Lien de partage Google Maps, adresse ou point GPS du lieu ; la page publique en tire son lien Google Maps. */
+    private String localisation;
+
     /** Infos importantes, montrées avant l'achat (écran de commande). */
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", nullable = false)

@@ -1,6 +1,6 @@
 <!--
   Bloc « Contenu de la page » de l'écran Page publique du board : ce que l'organisateur saisit pour
-  sa page /e/[slug] (adresse, étiquette, sous-titre, présentation, infos, points forts), enregistré
+  sa page /e/[slug] (adresse, étiquette, sous-titre, localisation du lieu, présentation, infos, points forts), enregistré
   par son propre bouton. Le premier enregistrement crée la page, en brouillon. Une fois la page
   publiée, son adresse ne change plus : elle s'affiche sans champ. Vérifie le format avant
   d'émettre `save` ; les refus du back arrivent par `failure`.
@@ -31,6 +31,11 @@
     <label class="field">
       <span class="label">{{ $t('evenement.page-publique.content.subtitle') }}</span>
       <input v-model="form.subtitle" type="text" />
+    </label>
+    <label class="field">
+      <span class="label">{{ $t('evenement.page-publique.content.localisation') }}</span>
+      <input v-model="form.localisation" type="text" maxlength="255" autocapitalize="off" />
+      <span class="hint">{{ $t('evenement.page-publique.content.localisation-hint') }}</span>
     </label>
     <label class="field">
       <span class="label">{{ $t('evenement.page-publique.content.section-title') }}</span>
@@ -118,6 +123,7 @@ const emptyForm = (): PageContentForm => ({
   importantInfo: [],
   practicalInfo: [],
   pictos: [],
+  localisation: '',
 })
 
 // Copie de travail, réinitialisée à chaque page reçue (chargement, enregistrement).

@@ -24,6 +24,7 @@ import java.util.List;
  *                      l'événement n'a pas d'heure de fin
  * @param venue         le lieu de l'événement
  * @param city          la ville de l'événement
+ * @param mapsUrl       le lien Google Maps du lieu, ou null si la page n'a pas de localisation
  * @param sectionTitle  le titre de la présentation, ou null
  * @param description   le texte de présentation, ou null
  * @param ticketing     la billetterie, ou null si l'événement n'en a pas
@@ -44,6 +45,7 @@ public record EventPageDto(
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime endsAt,
         String venue,
         String city,
+        String mapsUrl,
         String sectionTitle,
         String description,
         TicketingDto ticketing,

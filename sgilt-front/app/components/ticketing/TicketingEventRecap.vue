@@ -14,7 +14,7 @@
       </div>
       <div class="meta-row">
         <MapPin2Icon class="icon" />
-        <span>{{ event.venue }} · {{ event.city }}</span>
+        <span>{{ placeLabel(event.venue, event.city) }}</span>
       </div>
     </div>
   </section>
@@ -26,6 +26,7 @@ import { CalendarEventIcon, MapPin2Icon } from '@remixicons/vue/line'
 import type { PublicEvent } from '~/data/ticketing/domain/PublicEvent'
 import { useEventHoursLabel } from '~/composables/useEventHoursLabel'
 import { formatDateWithWeekday } from '~/utils/dateUtils'
+import { placeLabel } from '~/utils/placeUtils'
 
 const props = defineProps<{ event: PublicEvent }>()
 

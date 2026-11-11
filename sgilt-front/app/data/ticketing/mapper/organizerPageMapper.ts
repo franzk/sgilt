@@ -14,6 +14,7 @@ function mapPageContent(dto: PageContentDto): PageContentForm {
     importantInfo: dto.importantInfo,
     practicalInfo: dto.practicalInfo,
     pictos: dto.pictos,
+    localisation: dto.localisation ?? '',
   }
 }
 
@@ -50,6 +51,7 @@ export function mapPageContentRequest(form: PageContentForm): PageContentDto {
     importantInfo: form.importantInfo,
     practicalInfo: form.practicalInfo,
     pictos: form.pictos,
+    localisation: emptyToNull(form.localisation),
   }
 }
 

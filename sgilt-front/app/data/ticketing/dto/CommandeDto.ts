@@ -39,8 +39,8 @@ export interface EvenementInfosDto {
   // Heure locale du lieu, sans fuseau ('YYYY-MM-DDTHH:mm') ; null si l'événement n'en a pas.
   startsAt: string | null
   endsAt: string | null
-  venue: string
-  city: string
+  venue: string | null
+  city: string | null
   practicalInfo: string[]
 }
 

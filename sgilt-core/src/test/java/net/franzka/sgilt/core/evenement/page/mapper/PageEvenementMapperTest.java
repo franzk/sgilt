@@ -38,7 +38,7 @@ class PageEvenementMapperTest {
                     .lieu("Le Taennel").ville("Scherwiller (67)").build();
             PageEvenement page = PageEvenement.builder()
                     .evenement(evenement).slug("les-jeudis-du-taennel").tag("Édition du 12 mars")
-                    .subtitle("Concert & bar éphémère").sectionTitle("Une soirée musicale")
+                    .subtitle("Concert & bar éphémère").sectionTitle("Une soirée musicale").localisation("Le Taennel, Scherwiller")
                     .description("Le jeudi, le Taennel se transforme.")
                     .importantInfo(List.of("Places debout."))
                     .practicalInfo(List.of("Billet sur smartphone."))
@@ -54,7 +54,7 @@ class PageEvenementMapperTest {
                     "les-jeudis-du-taennel", "Édition du 12 mars", "Les Jeudis du Taennel",
                     "Concert & bar éphémère", "bank/taennel.png", "evenement_public", LocalDate.of(2026, 3, 12), startsAt, endsAt,
                     "Le Taennel",
-                    "Scherwiller (67)", "Une soirée musicale", "Le jeudi, le Taennel se transforme.",
+                    "Scherwiller (67)", "https://www.google.com/maps/search/?api=1&query=Le+Taennel%2C+Scherwiller", "Une soirée musicale", "Le jeudi, le Taennel se transforme.",
                     ticketing, List.of("Places debout."),
                     List.of(new PageEvenementPicto("music", "Concert live", "À partir de 20h")),
                     List.of("Billet sur smartphone.")));
@@ -87,7 +87,7 @@ class PageEvenementMapperTest {
         }
 
         private final PageContentDto content =
-                new PageContentDto("les-jeudis-du-taennel", null, null, null, null, List.of(), List.of(), List.of());
+                new PageContentDto("les-jeudis-du-taennel", null, null, null, null, List.of(), List.of(), List.of(), null);
 
         @Test
         void givenDraftNeverPublished_whenToOrganizerPageDto_thenNotPublishedAndSlugFree() {
@@ -122,7 +122,7 @@ class PageEvenementMapperTest {
             Evenement evenement = Evenement.builder().id(UUID.randomUUID()).build();
             PageContentDto page = new PageContentDto("les-jeudis-du-taennel", "Tag", "Sous-titre", "Section",
                     "Description", List.of("Important"), List.of("Pratique"),
-                    List.of(new PageEvenementPicto("leaf", "Cadre", "Vignoble")));
+                    List.of(new PageEvenementPicto("leaf", "Cadre", "Vignoble")), "48.5839,7.7455");
 
             PageEvenement pageEvenement = mapper.toPageEvenement(page, evenement);
 
@@ -133,6 +133,7 @@ class PageEvenementMapperTest {
             assertThat(pageEvenement.getSubtitle()).isEqualTo("Sous-titre");
             assertThat(pageEvenement.getSectionTitle()).isEqualTo("Section");
             assertThat(pageEvenement.getDescription()).isEqualTo("Description");
+            assertThat(pageEvenement.getLocalisation()).isEqualTo("48.5839,7.7455");
             assertThat(pageEvenement.getImportantInfo()).containsExactly("Important");
             assertThat(pageEvenement.getPracticalInfo()).containsExactly("Pratique");
             assertThat(pageEvenement.getPictos()).containsExactly(new PageEvenementPicto("leaf", "Cadre", "Vignoble"));
@@ -140,7 +141,7 @@ class PageEvenementMapperTest {
 
         @Test
         void givenNullLists_whenToPageEvenement_thenListsAreEmpty() {
-            PageContentDto page = new PageContentDto("slug", null, null, null, null, null, null, null);
+            PageContentDto page = new PageContentDto("slug", null, null, null, null, null, null, null, null);
 
             PageEvenement pageEvenement = mapper.toPageEvenement(page, Evenement.builder().build());
 

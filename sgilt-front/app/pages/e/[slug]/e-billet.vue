@@ -48,7 +48,7 @@
           </div>
           <div class="meta-row">
             <MapPin2Icon class="icon" />
-            <span>{{ eBillet.evenementInfos.venue }} · {{ eBillet.evenementInfos.city }}</span>
+            <span>{{ placeLabel(eBillet.evenementInfos.venue, eBillet.evenementInfos.city) }}</span>
           </div>
           <ul v-if="eBillet.evenementInfos.practicalInfo.length">
             <li v-for="line in eBillet.evenementInfos.practicalInfo" :key="line">{{ line }}</li>
@@ -76,6 +76,7 @@ import { useEventHoursLabel } from '~/composables/useEventHoursLabel'
 import { getEBillet, getEBilletPdfUrl, isCommandeNotFound } from '~/data/ticketing/service/commandeService'
 import type { EBillet } from '~/data/ticketing/domain/Commande'
 import { formatDateWithWeekday } from '~/utils/dateUtils'
+import { placeLabel } from '~/utils/placeUtils'
 
 definePageMeta({ middleware: 'ticketing' })
 

@@ -17,6 +17,8 @@ export interface PageContentForm {
   importantInfo: string[]
   practicalInfo: string[]
   pictos: PublicEventPicto[]
+  // Lien de partage Google Maps, adresse ou point GPS du lieu.
+  localisation: string
 }
 
 export interface OrganizerPage {

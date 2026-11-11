@@ -45,8 +45,11 @@ export interface PublicEvent {
   // La fin tombe le lendemain si elle passe minuit (calculé par le back).
   startsAt?: string
   endsAt?: string
-  venue: string
-  city: string
+  // Lieu et ville : facultatifs sur l'événement.
+  venue?: string
+  city?: string
+  // Lien Google Maps du lieu ; absent si la page n'a pas de localisation (le lieu n'est alors pas cliquable).
+  mapsUrl?: string
   // Titre de la présentation, au-dessus de la description.
   sectionTitle?: string
   description?: string
