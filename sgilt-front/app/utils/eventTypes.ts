@@ -94,7 +94,7 @@ export const EVENT_TYPES: EventTypeDefinition[] = [
   },
   {
     key: 'seminaire',
-    emoji: '💼',
+    emoji: '👥',
     group: 'structure',
     icon: markRaw(TeamIcon),
     illustration: '/images/sgilt-seminaire.png',
