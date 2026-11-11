@@ -2,9 +2,9 @@
   Écran « Qu'est-ce qu'on fête ? » (/fete), première étape du parcours public : le choix du type
   d'événement. Les types sont rangés en deux groupes (pour moi et mes proches / pour une structure),
   suivis du lien « Projet personnalisé » (type Autre, hors groupe).
-  - Mobile : une barre d'onglets toujours visible, qui affiche les tuiles du groupe choisi. À
-    l'arrivée, aucun onglet n'est sélectionné, sauf si un type est déjà choisi : l'onglet de son
-    groupe s'ouvre.
+  - Mobile : une barre d'onglets toujours visible, qui affiche les tuiles du groupe choisi. Un
+    onglet est toujours sélectionné : à l'arrivée, le premier, ou celui du groupe du type déjà
+    choisi.
   - Desktop : les deux groupes en sections titrées, l'une sous l'autre.
   Un clic
   sur une tuile démarre l'événement local (type et titre par défaut) et passe à /date ; changer de
@@ -38,7 +38,7 @@
           </button>
         </div>
 
-        <div v-if="selectedGroup" class="grid" role="tabpanel">
+        <div class="grid" role="tabpanel">
           <EventTypeCard
               v-for="eventType in typesOf(selectedGroup)"
               :key="eventType.key"
@@ -48,7 +48,6 @@
               @select="selectType(eventType.key)"
           />
         </div>
-        <p v-if="!selectedGroup" class="invite">{{ $t('event-picker.choose-group') }}</p>
       </template>
 
       <template v-if="isDesktop">
@@ -71,7 +70,7 @@
         </section>
       </template>
 
-      <p v-if="isDesktop || selectedGroup" class="custom">
+      <p class="custom">
         {{ $t('event-picker.custom.question') }}
         <button class="link" type="button" @click="selectType(EVENT_TYPE_AUTRE)">
           {{ $t('event-picker.custom.link') }}
@@ -113,15 +112,17 @@ const { t } = useI18n()
 const { localEvent, start } = useLocalEvent()
 const { isMobile, isDesktop } = useDevice()
 
-// Onglet ouvert (mobile). L'événement local vient du localStorage, absent au rendu serveur :
-// l'onglet du type déjà choisi ne s'ouvre qu'une fois monté, pour ne pas casser l'hydratation.
-const selectedGroupKey = ref<string | null>(null)
+// Onglet ouvert (mobile), toujours un : le premier par défaut. L'événement local vient du
+// localStorage, absent au rendu serveur : l'onglet du type déjà choisi ne s'ouvre qu'une fois
+// monté, pour ne pas casser l'hydratation. « Autre » n'a pas de groupe : le premier reste ouvert.
+const selectedGroupKey = ref<string>(EVENT_TYPE_GROUPS[0]!.key)
 onMounted(() => {
-  selectedGroupKey.value = eventTypeDefinition(eventTypeKey(localEvent.eventType)).group
+  const group = eventTypeDefinition(eventTypeKey(localEvent.eventType)).group
+  if (group) selectedGroupKey.value = group
 })
 
-const selectedGroup = computed(() =>
-    EVENT_TYPE_GROUPS.find((group) => group.key === selectedGroupKey.value) ?? null,
+const selectedGroup = computed<EventTypeGroup>(
+    () => EVENT_TYPE_GROUPS.find((group) => group.key === selectedGroupKey.value) ?? EVENT_TYPE_GROUPS[0]!,
 )
 
 interface EventTypeTile {
@@ -275,13 +276,6 @@ function chooseType(key: string) {
     text-decoration: underline;
     cursor: pointer;
   }
-}
-
-.invite {
-  margin: $spacing-l 0 0;
-  text-align: center;
-  color: $text-secondary;
-  font-size: $font-size-sm;
 }
 
 // Mobile : 2 colonnes, cartes carrées (aspect-ratio, voir EventTypeCard.vue). Desktop : 3 colonnes,
