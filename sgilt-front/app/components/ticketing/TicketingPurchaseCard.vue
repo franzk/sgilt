@@ -4,16 +4,19 @@
   « complet » en est déduit (billetterie ouverte sans place restante). Hors billetterie ouverte,
   pas de bouton : aucune action possible, un message explique pourquoi. La quantité se choisit sur
   l'écran de commande, pas ici. Absent quand l'événement n'a pas de billetterie (géré par la fiche).
+  Deux rendus : carte en colonne sur desktop ; sur mobile, barre compacte fixée en bas de l'écran
+  par PublicEventView (billetterie ouverte : prix à gauche, bouton à droite, sans badge ; sinon
+  prix + badge, puis le message).
 -->
 <template>
-  <section class="purchase-card">
+  <section class="purchase-card" :class="stateKey">
     <div class="price-row">
       <div v-if="state !== 'CLOSED'" class="price">
         <span class="amount">{{ unitPriceLabel }}</span>
-        <span class="unit"
-          >{{ $t('ticketing.event.per-ticket')
-          }}<template v-if="ticketing.priceNote"> · {{ ticketing.priceNote }}</template></span
-        >
+        <span class="details">
+          <span class="unit">{{ $t('ticketing.event.per-ticket') }}</span>
+          <span v-if="ticketing.priceNote" class="note">{{ ticketing.priceNote }}</span>
+        </span>
       </div>
       <span class="status-badge" :class="stateKey">
         <span class="dot" aria-hidden="true" />
@@ -21,25 +24,18 @@
       </span>
     </div>
 
-    <template v-if="state === 'OPEN'">
-      <button type="button" class="cta" @click="onBuyClick">
-        <TicketIcon class="icon" />
-        {{ $t('ticketing.event.cta') }}
-        <ArrowRightSIcon class="chevron" aria-hidden="true" />
-      </button>
-
-      <p class="reassurance">
-        <LockIcon class="icon" aria-hidden="true" />
-        {{ $t('ticketing.event.reassurance') }} <span class="brand">Sgilt</span>
-      </p>
-    </template>
+    <button v-if="state === 'OPEN'" type="button" class="cta" @click="onBuyClick">
+      <TicketIcon class="icon" />
+      {{ $t('ticketing.event.cta') }}
+      <ArrowRightSIcon class="chevron" aria-hidden="true" />
+    </button>
 
     <p v-else class="status-message">{{ $t(`ticketing.event.status-message.${stateKey}`) }}</p>
   </section>
 </template>
 
 <script setup lang="ts">
-import { TicketIcon, ArrowRightSIcon, LockIcon } from '@remixicons/vue/line'
+import { TicketIcon, ArrowRightSIcon } from '@remixicons/vue/line'
 import type { PublicEventTicketing } from '~/data/ticketing/domain/PublicEvent'
 import { useTicketOrder } from '~/composables/useTicketOrder'
 import { isSoldOut } from '~/utils/ticketingUtils'
@@ -73,31 +69,127 @@ function onBuyClick(): void {
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
+// Mobile d'abord : barre compacte (cf. PublicEventView) ; desktop : carte en colonne.
 .purchase-card {
   display: flex;
   flex-direction: column;
-  gap: $spacing-m;
+  gap: $spacing-xs;
 
+  @media (min-width: $breakpoint-desktop) {
+    gap: $spacing-m;
+  }
+
+  // Billetterie ouverte sur mobile : prix à gauche, bouton à droite, sur une ligne.
+  &.open {
+    flex-direction: row;
+    align-items: center;
+    gap: $spacing-m;
+
+    .price-row {
+      flex: 1;
+      min-width: 0;
+      justify-content: center;
+
+      // Bloc prix centré dans la zone à gauche du bouton : montant, « par place », puis la
+      // mention de prix (ex. « tout compris »), une ligne chacun.
+      .price {
+        align-items: center;
+        text-align: center;
+
+        .details {
+          flex-direction: column;
+          align-items: center;
+
+          .note::before {
+            content: none;
+          }
+        }
+      }
+
+      .status-badge {
+        display: none;
+      }
+    }
+
+    @media (min-width: $breakpoint-desktop) {
+      flex-direction: column;
+      align-items: stretch;
+      gap: $spacing-m;
+
+      .price-row {
+        flex: none;
+        justify-content: space-between;
+
+        .price {
+          align-items: flex-start;
+          text-align: left;
+
+          .details {
+            flex-direction: row;
+            align-items: baseline;
+
+            .note::before {
+              content: '·';
+            }
+          }
+        }
+
+        .status-badge {
+          display: inline-flex;
+        }
+      }
+
+    }
+  }
+
+  // Badge aligné sur la ligne du montant, pas centré sur tout le bloc prix.
   .price-row {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     gap: $spacing-s;
 
+    // Montant seul sur sa ligne, puis « par place · tout compris » en dessous.
     .price {
       display: flex;
-      align-items: baseline;
-      gap: 0.4rem;
+      flex-direction: column;
+      min-width: 0;
 
-      .amount {
-        font-size: $font-size-2xl;
-        font-weight: $font-weight-bold;
-        color: $text-primary;
+      .details {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0 0.3rem;
+
+        .unit {
+          white-space: nowrap;
+        }
+
+        .note::before {
+          content: '·';
+          margin-right: 0.3rem;
+        }
       }
 
-      .unit {
-        font-size: $font-size-sm;
+      .amount {
+        font-size: $font-size-xl;
+        font-weight: $font-weight-bold;
+        line-height: 1.2;
+        color: $text-primary;
+
+        @media (min-width: $breakpoint-desktop) {
+          font-size: $font-size-2xl;
+        }
+      }
+
+      .unit,
+      .note {
+        font-size: $font-size-xs;
         color: $text-secondary;
+
+        @media (min-width: $breakpoint-desktop) {
+          font-size: $font-size-sm;
+        }
       }
     }
 
@@ -110,6 +202,11 @@ function onBuyClick(): void {
       font-size: $font-size-xs;
       font-weight: $font-weight-semibold;
       white-space: nowrap;
+
+      // Centré sur la ligne du montant (plus haute sur desktop).
+      @media (min-width: $breakpoint-desktop) {
+        margin-top: 0.3rem;
+      }
 
       .dot {
         width: 0.375rem;
@@ -142,12 +239,13 @@ function onBuyClick(): void {
   }
 
   .cta {
-    width: 100%;
+    flex-shrink: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5em;
-    height: 3.25rem;
+    height: 3rem;
+    padding: 0 $spacing-l;
     border: none;
     border-radius: 9999px;
     background: $brand-accent;
@@ -171,38 +269,35 @@ function onBuyClick(): void {
       outline-offset: 4px;
     }
 
+    @media (min-width: $breakpoint-desktop) {
+      width: 100%;
+      height: 3.25rem;
+    }
+
     .icon,
     .chevron {
       width: 1.1rem;
       height: 1.1rem;
     }
-  }
 
-  .reassurance {
-    margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: $spacing-xs;
-    color: $text-secondary;
-    font-size: $font-size-xs;
+    // Barre mobile : bouton compact, sans chevron.
+    .chevron {
+      display: none;
 
-    .icon {
-      width: 0.9rem;
-      height: 0.9rem;
-      flex-shrink: 0;
-    }
-
-    .brand {
-      text-decoration: underline;
-      font-weight: $font-weight-medium;
+      @media (min-width: $breakpoint-desktop) {
+        display: inline;
+      }
     }
   }
 
   .status-message {
     margin: 0;
-    font-size: $font-size-md;
+    font-size: $font-size-sm;
     color: $text-secondary;
+
+    @media (min-width: $breakpoint-desktop) {
+      font-size: $font-size-md;
+    }
   }
 }
 </style>
