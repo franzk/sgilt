@@ -32,8 +32,8 @@ function mapEvenementInfos(dto: EvenementInfosDto): EBilletEvenementInfos {
     date: dto.date,
     startsAt: dto.startsAt ?? undefined,
     endsAt: dto.endsAt ?? undefined,
-    venue: dto.venue,
-    city: dto.city,
+    venue: dto.venue ?? undefined,
+    city: dto.city ?? undefined,
     practicalInfo: dto.practicalInfo,
   }
 }

@@ -98,6 +98,7 @@ import { getCommande, isCommandeNotFound } from '~/data/ticketing/service/comman
 import type { CommandeSummary } from '~/data/ticketing/domain/Commande'
 import { buildIcsEvent, downloadIcs } from '~/utils/icsUtils'
 import { formatPrice } from '~/utils/priceUtils'
+import { placeLabel } from '~/utils/placeUtils'
 
 definePageMeta({ middleware: 'ticketing' })
 
@@ -162,7 +163,7 @@ function onAddToCalendar(): void {
     uid: `${slug}-${event.date}@sgilt.alsace`,
     title: event.title,
     description: event.subtitle ?? '',
-    location: `${event.venue}, ${event.city}`,
+    location: placeLabel(event.venue, event.city, ', '),
     url: `${window.location.origin}/e/${slug}`,
     date: event.date,
     startsAt: event.startsAt,

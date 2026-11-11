@@ -28,8 +28,8 @@ export interface EventPageDto {
   // Heure locale du lieu, sans fuseau ('YYYY-MM-DDTHH:mm') ; null si l'événement n'en a pas.
   startsAt: string | null
   endsAt: string | null
-  venue: string
-  city: string
+  venue: string | null
+  city: string | null
   // Lien Google Maps du lieu, construit par le back ; null si la page n'a pas de localisation.
   mapsUrl: string | null
   sectionTitle: string | null

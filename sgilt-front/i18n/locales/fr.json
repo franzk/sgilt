@@ -1632,7 +1632,7 @@
       "cta": "Acheter mes billets",
       "reassurance": "Paiement sécurisé par",
       "share-text": "Découvrez {name} sur Sgilt",
-      "maps-link": "Voir {venue} sur Google Maps",
+      "maps-link": "Voir le lieu sur Google Maps",
       "time-label": "{start} – {end}",
       "time-label-until": "jusqu'à {end}"
     },

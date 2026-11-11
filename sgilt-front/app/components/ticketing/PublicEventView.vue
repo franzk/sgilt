@@ -35,7 +35,7 @@
         v-bind="mapsLinkAttrs"
       >
         <span class="badge"><MapPin2Icon /></span>
-        <p class="venue">{{ event.venue }} · {{ event.city }}</p>
+        <p class="venue">{{ placeLabel(event.venue, event.city) }}</p>
         <ArrowRightSIcon v-if="event.mapsUrl" class="chevron" aria-hidden="true" />
       </component>
     </div>
@@ -57,8 +57,8 @@
       >
         <MapPin2Icon class="icon" />
         <div class="text">
-          <p class="main">{{ event.venue }}</p>
-          <p class="sub">{{ event.city }}</p>
+          <p class="main">{{ event.venue || event.city }}</p>
+          <p v-if="event.venue && event.city" class="sub">{{ event.city }}</p>
         </div>
         <ExternalLinkIcon v-if="event.mapsUrl" class="external" aria-hidden="true" />
       </component>
@@ -105,6 +105,7 @@ import {
 import type { PublicEvent, PublicEventPictoIcon } from '~/data/ticketing/domain/PublicEvent'
 import { useEventHoursLabel } from '~/composables/useEventHoursLabel'
 import { formatDateWithWeekday } from '~/utils/dateUtils'
+import { placeLabel } from '~/utils/placeUtils'
 
 const props = defineProps<{
   event: PublicEvent
@@ -133,7 +134,7 @@ const mapsLinkAttrs = computed(() =>
         href: props.event.mapsUrl,
         target: '_blank',
         rel: 'noopener',
-        'aria-label': t('ticketing.event.maps-link', { venue: props.event.venue }),
+        'aria-label': t('ticketing.event.maps-link'),
       }
     : {},
 )

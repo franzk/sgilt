@@ -38,8 +38,9 @@ export interface EBilletEvenementInfos {
   // Heure locale du lieu, sans fuseau ('YYYY-MM-DDTHH:mm') ; absente si l'événement n'en a pas.
   startsAt?: string
   endsAt?: string
-  venue: string
-  city: string
+  // Lieu et ville : facultatifs sur l'événement.
+  venue?: string
+  city?: string
   practicalInfo: string[]
 }
 
