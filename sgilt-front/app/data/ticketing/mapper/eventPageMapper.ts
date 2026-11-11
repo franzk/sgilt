@@ -35,6 +35,7 @@ export function mapPublicEvent(dto: EventPageDto): PublicEvent {
     endsAt: dto.endsAt ?? undefined,
     venue: dto.venue,
     city: dto.city,
+    mapsUrl: dto.mapsUrl ?? undefined,
     sectionTitle: dto.sectionTitle ?? undefined,
     description: dto.description ?? undefined,
     ticketing: dto.ticketing ? mapTicketing(dto.ticketing) : undefined,

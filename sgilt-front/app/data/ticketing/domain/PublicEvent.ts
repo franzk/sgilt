@@ -47,6 +47,8 @@ export interface PublicEvent {
   endsAt?: string
   venue: string
   city: string
+  // Lien Google Maps du lieu ; absent si la page n'a pas de localisation (le lieu n'est alors pas cliquable).
+  mapsUrl?: string
   // Titre de la présentation, au-dessus de la description.
   sectionTitle?: string
   description?: string

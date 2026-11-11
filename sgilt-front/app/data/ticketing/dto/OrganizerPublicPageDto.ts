@@ -13,6 +13,8 @@ export interface PageContentDto {
   importantInfo: string[]
   practicalInfo: string[]
   pictos: PublicEventPicto[]
+  // Lien de partage Google Maps, adresse ou point GPS du lieu ; la fiche en tire son lien Google Maps.
+  localisation: string | null
 }
 
 export interface OrganizerPageDto {

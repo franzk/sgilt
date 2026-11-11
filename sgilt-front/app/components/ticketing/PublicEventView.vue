@@ -2,7 +2,8 @@
   Rendu de la fiche publique d'un événement : hero, date et lieu, présentation et points forts,
   et la colonne du bloc d'achat si la page en fournit un (slot `purchase`). Partagé par la fiche
   /e/[slug] et l'aperçu de l'organisateur (/app/events/[eventId]/page-publique/apercu), pour que
-  l'aperçu reste fidèle à la fiche.
+  l'aperçu reste fidèle à la fiche. Le lieu est un lien Google Maps quand la page a une localisation
+  (`mapsUrl`, construit par le back) ; sans elle, il n'est pas cliquable.
 -->
 <template>
   <div class="ticket-event-page">
@@ -27,11 +28,16 @@
           <p v-if="timeLabel" class="sub">{{ timeLabel }}</p>
         </div>
       </div>
-      <div class="info-card-item">
+      <component
+        :is="event.mapsUrl ? 'a' : 'div'"
+        class="info-card-item"
+        :class="{ link: !!event.mapsUrl }"
+        v-bind="mapsLinkAttrs"
+      >
         <span class="badge"><MapPin2Icon /></span>
         <p class="venue">{{ event.venue }} · {{ event.city }}</p>
-        <ArrowRightSIcon class="chevron" aria-hidden="true" />
-      </div>
+        <ArrowRightSIcon v-if="event.mapsUrl" class="chevron" aria-hidden="true" />
+      </component>
     </div>
 
     <!-- Desktop : ligne classique sous la photo — date et lieu alignés. -->
@@ -43,13 +49,19 @@
           <p v-if="timeLabel" class="sub">{{ timeLabel }}</p>
         </div>
       </div>
-      <div class="info-item">
+      <component
+        :is="event.mapsUrl ? 'a' : 'div'"
+        class="info-item"
+        :class="{ link: !!event.mapsUrl }"
+        v-bind="mapsLinkAttrs"
+      >
         <MapPin2Icon class="icon" />
         <div class="text">
           <p class="main">{{ event.venue }}</p>
           <p class="sub">{{ event.city }}</p>
         </div>
-      </div>
+        <ExternalLinkIcon v-if="event.mapsUrl" class="external" aria-hidden="true" />
+      </component>
     </div>
 
     <div class="layout" :class="{ 'with-ticketing': !!$slots.purchase }">
@@ -88,6 +100,7 @@ import {
   TeamIcon,
   RestaurantIcon,
   ArrowRightSIcon,
+  ExternalLinkIcon,
 } from '@remixicons/vue/line'
 import type { PublicEvent, PublicEventPictoIcon } from '~/data/ticketing/domain/PublicEvent'
 import { useEventHoursLabel } from '~/composables/useEventHoursLabel'
@@ -112,6 +125,18 @@ const timeLabel = computed(() => eventHoursLabel(props.event.startsAt, props.eve
 const eventMedias = computed<HeroMedia[]>(() => [{ type: 'IMAGE', ref: props.event.heroImage, position: 0 }])
 
 const shareText = computed(() => t('ticketing.event.share-text', { name: props.event.title }))
+
+// Lieu cliquable vers Google Maps (nouvel onglet, ou l'appli sur mobile) ; sans lien, aucun attribut.
+const mapsLinkAttrs = computed(() =>
+  props.event.mapsUrl
+    ? {
+        href: props.event.mapsUrl,
+        target: '_blank',
+        rel: 'noopener',
+        'aria-label': t('ticketing.event.maps-link', { venue: props.event.venue }),
+      }
+    : {},
+)
 
 const PICTO_ICONS: Record<PublicEventPictoIcon, Component> = {
   music: markRaw(MusicIcon),
@@ -169,6 +194,15 @@ const PICTO_ICONS: Record<PublicEventPictoIcon, Component> = {
 
     &:not(:last-child) {
       border-bottom: 1px solid $divider-color;
+    }
+
+    &.link {
+      text-decoration: none;
+      color: inherit;
+
+      &:active {
+        opacity: 0.7;
+      }
     }
   }
 
@@ -243,6 +277,22 @@ const PICTO_ICONS: Record<PublicEventPictoIcon, Component> = {
     display: flex;
     align-items: center;
     gap: $spacing-s;
+
+    &.link {
+      text-decoration: none;
+      color: inherit;
+
+      &:hover .main {
+        text-decoration: underline;
+      }
+    }
+
+    .external {
+      flex-shrink: 0;
+      width: 1rem;
+      height: 1rem;
+      color: $text-secondary;
+    }
   }
 
   .icon {

@@ -30,6 +30,8 @@ export interface EventPageDto {
   endsAt: string | null
   venue: string
   city: string
+  // Lien Google Maps du lieu, construit par le back ; null si la page n'a pas de localisation.
+  mapsUrl: string | null
   sectionTitle: string | null
   description: string | null
   ticketing: EventPageTicketingDto | null

@@ -50,7 +50,7 @@ class PageEvenementServiceTest {
     private static final UUID EVENEMENT_ID = UUID.randomUUID();
     private static final LocalDate DATE = LocalDate.of(2026, 3, 12);
     private static final PageContentDto PAGE =
-            new PageContentDto(SLUG, null, null, null, null, List.of(), List.of(), List.of());
+            new PageContentDto(SLUG, null, null, null, null, List.of(), List.of(), List.of(), null);
     private static final TicketingSettingsDto TICKETING = new TicketingSettingsDto(BilletterieStatus.OPEN, 1200, "Tout compris", 150);
 
     @Mock
@@ -335,6 +335,21 @@ class PageEvenementServiceTest {
 
             verify(pageEvenementRepository).save(existing);
             assertThat(existing.getSlug()).isEqualTo(SLUG);
+        }
+
+        @Test
+        void givenDraftPage_whenPutOrganizerContentWithLocalisation_thenReplacesItsLocalisation() {
+            PageEvenement existing = PageEvenement.builder().evenement(evenement).slug(SLUG)
+                    .localisation("12 rue des Juifs, Strasbourg").build();
+            PageContentDto content =
+                    new PageContentDto(SLUG, null, null, null, null, List.of(), List.of(), List.of(), "48.5839,7.7455");
+            when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(existing));
+            when(pageEvenementRepository.findBySlug(SLUG)).thenReturn(Optional.of(existing));
+
+            pageEvenementService.putOrganizerContent(evenement, content);
+
+            verify(pageEvenementRepository).save(existing);
+            assertThat(existing.getLocalisation()).isEqualTo("48.5839,7.7455");
         }
 
         @Test

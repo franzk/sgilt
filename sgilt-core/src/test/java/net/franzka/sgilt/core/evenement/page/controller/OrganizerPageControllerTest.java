@@ -48,8 +48,10 @@ class OrganizerPageControllerTest {
     @InjectMocks
     private OrganizerPageController controller;
 
+    @Mock
+    private OrganizerPublicPageDto state;
+
     private final Evenement evenement = Evenement.builder().id(EVENT_ID).build();
-    private final OrganizerPublicPageDto state = mock(OrganizerPublicPageDto.class);
 
     @BeforeEach
     void givenOwnedEventWithPagePublique() {
@@ -115,7 +117,7 @@ class OrganizerPageControllerTest {
 
         @Test
         void givenContent_whenPutContent_thenSavesItThenReturnsState() {
-            PageContentDto content = new PageContentDto("slug", null, null, null, null, List.of(), List.of(), List.of());
+            PageContentDto content = new PageContentDto("slug", null, null, null, null, List.of(), List.of(), List.of(), null);
             givenOwnedEvent();
 
             ResponseEntity<OrganizerPublicPageDto> response = controller.putContent(EVENT_ID, content);

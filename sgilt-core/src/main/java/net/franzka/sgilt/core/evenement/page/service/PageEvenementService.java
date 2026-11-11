@@ -269,6 +269,7 @@ public class PageEvenementService {
         pageEvenement.setSubtitle(page.subtitle());
         pageEvenement.setSectionTitle(page.sectionTitle());
         pageEvenement.setDescription(page.description());
+        pageEvenement.setLocalisation(page.localisation());
         pageEvenement.setImportantInfo(Objects.requireNonNullElse(page.importantInfo(), List.of()));
         pageEvenement.setPracticalInfo(Objects.requireNonNullElse(page.practicalInfo(), List.of()));
         pageEvenement.setPictos(Objects.requireNonNullElse(page.pictos(), List.of()));
