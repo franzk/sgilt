@@ -35,6 +35,7 @@
 import DemandeCoordonnees from '~/components/demande/DemandeCoordonnees.vue'
 import DemandeRecapEvenement from '~/components/demande/DemandeRecapEvenement.vue'
 import { useDemande } from '~/composables/useDemande'
+import { useEventTypeLabel } from '~/composables/useEventTypeLabel'
 import { usePrestataire } from '~/data/prestataire/usePrestataire'
 import type { DemandeSummary } from '~/types/demande'
 
@@ -55,7 +56,8 @@ watch(
 
 useHead({ title: 'Votre demande' })
 
-const { localEvent, eventTypeLabel, reset: resetLocalEvent } = useLocalEvent()
+const { localEvent, reset: resetLocalEvent } = useLocalEvent()
+const { eventTypeLabel } = useEventTypeLabel()
 const { categoryName, subcategoryName } = useCategories()
 const { currentFlow, onFlowSuccess } = useFlow()
 const { isAuthenticated } = useKeycloak()
@@ -87,7 +89,7 @@ const summary = computed<DemandeSummary | null>(() => {
     // « Restauration · Traiteur » : catégorie puis sous-catégorie.
     prestataireCategoryLine: [categoryName(p.categoryKey), subcategoryName(p.subcatKey)].join(' · '),
     evenement: {
-      eventTypeLabel: eventTypeLabel.value,
+      eventTypeLabel: eventTypeLabel(localEvent.eventType),
       date: localEvent.date,
       nbInvites: localEvent.nbInvites,
       ville: localEvent.ville,

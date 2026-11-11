@@ -1,14 +1,14 @@
 /**
- * Chemins des images par défaut.
+ * Couvertures par défaut des événements (banque d'images), par type d'événement : dérivées de la
+ * liste unique des types (utils/eventTypes.ts). Aussi la liste des couvertures proposées dans le
+ * choix de la couverture (EventEditDialog.vue).
  */
-export const BANK_IMAGE_PATHS: Record<string, string> = {
-  mariage: 'bank/mariage.jpg',
-  anniversaire: 'bank/anniversaire.webp',
-  soiree_privee: 'bank/soiree-privee.jpg',
-  fete_entreprise: 'bank/fete-entreprise.webp',
-  evenement_public: 'bank/evenement-public.webp',
-  autre: 'bank/autre.webp',
-}
+
+import { EVENT_TYPES } from '~/utils/eventTypes'
+
+export const BANK_IMAGE_PATHS: Record<string, string> = Object.fromEntries(
+  EVENT_TYPES.map((type) => [type.key, type.defaultCover]),
+)
 
 /**
  * Chemin de la couverture par défaut d'un type d'événement (banque d'images).

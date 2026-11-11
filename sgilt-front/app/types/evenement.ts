@@ -1,5 +1,7 @@
 // app/types/evenement.ts
 
+import { EVENT_TYPES } from '~/utils/eventTypes'
+
 // Champs de l'événement envoyés au serveur.
 export interface EvenementRequest {
   title: string | null
@@ -21,20 +23,12 @@ export interface EvenementOption {
   emoji: string
 }
 
-export const EVENT_TYPE_OPTIONS: EvenementOption[] = [
-  { value: 'mariage', label: 'Mariage', emoji: '💍' },
-  { value: 'soiree_privee', label: 'Soirée privée', emoji: '🥂' },
-  { value: 'anniversaire', label: 'Anniversaire', emoji: '🎂' },
-  { value: 'fete_entreprise', label: "Fête d'entreprise", emoji: '🏢' },
-  { value: 'evenement_public', label: 'Événement public', emoji: '🎪' },
-  { value: 'autre', label: 'Autre', emoji: '•••' },
-]
 
 // Clé du type d'événement (template, illustrations, libellés) : la valeur si elle fait partie de
 // la liste, sinon 'autre' (texte libre).
 export function eventTypeKey(eventType: string | null | undefined): string | null {
   if (!eventType) return null
-  return EVENT_TYPE_OPTIONS.some((option) => option.value === eventType) ? eventType : 'autre'
+  return EVENT_TYPES.some((type) => type.key === eventType) ? eventType : 'autre'
 }
 
 export const AMBIANCE_OPTIONS: EvenementOption[] = [

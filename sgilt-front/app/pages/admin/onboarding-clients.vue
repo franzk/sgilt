@@ -35,7 +35,7 @@
 import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
 import AdminOnboardingTabs from '~/components/admin/AdminOnboardingTabs.vue'
 import { formatDate, formatDateTime } from '~/utils/dateUtils'
-import { EVENT_TYPE_OPTIONS } from '~/types/evenement'
+import { useEventTypeLabel } from '~/composables/useEventTypeLabel'
 import type { OnboardingPending } from '~/data/admin/domain/OnboardingPending'
 
 definePageMeta({ layout: 'admin' })
@@ -43,10 +43,11 @@ definePageMeta({ layout: 'admin' })
 const { rows, loading, load } = useAdminUserOnboarding()
 
 const { t } = useI18n()
+const { eventTypeLabel } = useEventTypeLabel()
 
 // Type, date et nombre de demandes de l'événement en cours de création
 function eventSummary(row: OnboardingPending): string {
-  const type = EVENT_TYPE_OPTIONS.find((o) => o.value === row.eventType)?.label ?? row.eventType
+  const type = eventTypeLabel(row.eventType)
   const demandes = t('admin.onboarding-clients.demandes', { n: row.demandeCount }, row.demandeCount)
   return [type, row.eventDate ? formatDate(row.eventDate) : null, demandes].filter(Boolean).join(' · ')
 }
