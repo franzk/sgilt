@@ -1663,14 +1663,12 @@
     "payment": {
       "title": "Paiement",
       "summary-title": "Récapitulatif de votre commande",
-      "tickets-label": "Billets",
+      "tickets-label": "Places",
       "method-title": "Moyen de paiement",
       "method-subtitle": "Carte bancaire, Apple Pay ou Google Pay.",
-      "security-notice": "Les paiements sur Sgilt sont sécurisés.",
       "cta": "Payer {amount}",
-      "reassurance": "Votre paiement sera sécurisé et traité par notre prestataire de paiement.",
       "errors": {
-        "NOT_ENOUGH_TICKETS": "Il ne reste plus assez de places pour ce nombre de billets.",
+        "NOT_ENOUGH_TICKETS": "Il ne reste plus assez de places disponibles.",
         "UNAVAILABLE": "La billetterie de cet événement n'est plus ouverte.",
         "TOO_MANY_ATTEMPTS": "Trop de tentatives en peu de temps. Merci de réessayer dans quelques minutes.",
         "TECHNICAL": "Une erreur est survenue, merci de réessayer."
