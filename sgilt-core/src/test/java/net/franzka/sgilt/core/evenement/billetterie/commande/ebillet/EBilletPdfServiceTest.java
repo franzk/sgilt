@@ -59,7 +59,7 @@ class EBilletPdfServiceTest {
                     .contains("Le Taennel · Scherwiller (67)")
                     .contains("Vestiaire")
                     .contains("Parking gratuit")
-                    .contains("contact@sgilt.alsace");
+                    .doesNotContain("contact@sgilt.alsace");
         }
 
         @Test
