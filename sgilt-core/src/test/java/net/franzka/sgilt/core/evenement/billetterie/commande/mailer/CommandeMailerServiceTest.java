@@ -52,7 +52,7 @@ class CommandeMailerServiceTest {
 
     private EvenementInfosDto evenementInfos(String venue, String city) {
         return new EvenementInfosDto(null, null, LocalDate.of(2026, 12, 3),
-                LocalDateTime.of(2026, 12, 3, 19, 0), LocalDateTime.of(2026, 12, 4, 2, 0), venue, city, List.of());
+                LocalDateTime.of(2026, 12, 3, 19, 0), LocalDateTime.of(2026, 12, 4, 2, 0), venue, city, null, List.of());
     }
 
     // -------------------------------------------------------------------------

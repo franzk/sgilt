@@ -41,6 +41,8 @@ export interface EBilletEvenementInfos {
   // Lieu et ville : facultatifs sur l'événement.
   venue?: string
   city?: string
+  // Lien Google Maps du lieu, construit par le back ; absent sans localisation.
+  mapsUrl?: string
   practicalInfo: string[]
 }
 

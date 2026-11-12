@@ -1,8 +1,9 @@
 <!--
   E-billet d'une commande payée (/e/[slug]/e-billet?commande={id}) : l'événement, le QR de la
   commande (un seul, qui fait entrer toutes ses places, dessiné par le back), à présenter à l'entrée,
-  le lien de téléchargement de son PDF, et les infos pratiques. Même hero que la fiche (SgiltHero), sans le bouton partager : il partagerait l'URL,
-  donc l'e-billet. Ouvert par l'id de la commande seul, sans compte ; jamais indexé (cf. routeRules).
+  le lien de téléchargement de son PDF, et les infos pratiques. En tête, la carte récapitulative
+  compacte du parcours d'achat (TicketingEventRecap) plutôt que le hero : le QR doit être visible dès
+  l'ouverture, sans défiler. Ouvert par l'id de la commande seul, sans compte ; jamais indexé (cf. routeRules).
   Ne dépend pas de la fiche (cf. middleware ticketing) : le slug de l'URL ne sert qu'au lien retour,
   affiché seulement si la page de l'événement est en ligne.
   Commande inconnue ou pas payée (404 du back) : renvoi à la fiche de l'événement. Toute autre
@@ -10,12 +11,6 @@
 -->
 <template>
   <div class="e-billet-page">
-    <SgiltHero v-if="eBillet" :medias="heroMedias" :tag="eBillet.evenementInfos.tag" :title="eBillet.title">
-      <template #subtitle>
-        <p>{{ eBillet.evenementInfos.subtitle }}</p>
-      </template>
-    </SgiltHero>
-
     <div class="content">
       <div v-if="loading" class="loading-state" role="status">
         <span class="spinner" aria-hidden="true" />
@@ -29,7 +24,9 @@
         </button>
       </div>
 
-      <template v-else-if="eBillet">
+      <template v-else-if="eBillet && recap">
+        <TicketingEventRecap :event="recap" :maps-url="eBillet.evenementInfos.mapsUrl" />
+
         <section class="qr-card">
           <img class="qr" :src="eBillet.qrImage" :alt="$t('ticketing.e-billet.qr-alt')" />
           <p class="valid-for">{{ $t('ticketing.e-billet.valid-for', eBillet.quantity) }}</p>
@@ -40,17 +37,9 @@
           </a>
         </section>
 
-        <section class="practical-info">
+        <section v-if="eBillet.evenementInfos.practicalInfo.length" class="practical-info">
           <h2 class="info-title">{{ $t('ticketing.e-billet.practical-info-title') }}</h2>
-          <div class="meta-row">
-            <CalendarEventIcon class="icon" />
-            <span>{{ dateLabel }}</span>
-          </div>
-          <div class="meta-row">
-            <MapPin2Icon class="icon" />
-            <span>{{ placeLabel(eBillet.evenementInfos.venue, eBillet.evenementInfos.city) }}</span>
-          </div>
-          <ul v-if="eBillet.evenementInfos.practicalInfo.length">
+          <ul>
             <li v-for="line in eBillet.evenementInfos.practicalInfo" :key="line">{{ line }}</li>
           </ul>
         </section>
@@ -70,13 +59,10 @@
 </template>
 
 <script setup lang="ts">
-import SgiltHero, { type HeroMedia } from '~/components/basics/media/SgiltHero.vue'
-import { ArrowLeftSIcon, CalendarEventIcon, DownloadIcon, MapPin2Icon, RefreshIcon } from '@remixicons/vue/line'
-import { useEventHoursLabel } from '~/composables/useEventHoursLabel'
+import TicketingEventRecap, { type EventRecap } from '~/components/ticketing/TicketingEventRecap.vue'
+import { ArrowLeftSIcon, DownloadIcon, RefreshIcon } from '@remixicons/vue/line'
 import { getEBillet, getEBilletPdfUrl, isCommandeNotFound } from '~/data/ticketing/service/commandeService'
 import type { EBillet } from '~/data/ticketing/domain/Commande'
-import { formatDateWithWeekday } from '~/utils/dateUtils'
-import { placeLabel } from '~/utils/placeUtils'
 
 definePageMeta({ middleware: 'ticketing' })
 
@@ -117,26 +103,27 @@ async function loadEBillet(): Promise<void> {
 
 onMounted(loadEBillet)
 
-const heroMedias = computed<HeroMedia[]>(() =>
-  eBillet.value ? [{ type: 'IMAGE', ref: eBillet.value.heroImage, position: 0 }] : [],
-)
-
-const { eventHoursLabel } = useEventHoursLabel()
-
-// « Jeudi 12 mars 2026 · 19h – 2h », ou la date seule sans horaires.
-const dateLabel = computed(() => {
-  if (!eBillet.value) return ''
-  const { date: day, startsAt, endsAt } = eBillet.value.evenementInfos
-  const date = formatDateWithWeekday(day)
-  const hours = eventHoursLabel(startsAt, endsAt)
-  return hours ? `${date} · ${hours}` : date
+// L'événement de l'e-billet, sous la forme qu'attend la carte récapitulative.
+const recap = computed<EventRecap | null>(() => {
+  if (!eBillet.value) return null
+  const { title, heroImage, evenementInfos } = eBillet.value
+  return {
+    title,
+    subtitle: evenementInfos.subtitle,
+    heroImage,
+    date: evenementInfos.date,
+    startsAt: evenementInfos.startsAt,
+    endsAt: evenementInfos.endsAt,
+    venue: evenementInfos.venue,
+    city: evenementInfos.city,
+  }
 })
 </script>
 
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
-// Hero en plein bord, comme sur la fiche ; le contenu dessous, en colonne centrée.
+// Contenu en colonne centrée, la carte récapitulative en tête.
 .e-billet-page {
   display: flex;
   flex-direction: column;
@@ -243,21 +230,6 @@ const dateLabel = computed(() => {
     font-size: $font-size-md;
     font-weight: $font-weight-semibold;
     color: $text-primary;
-  }
-
-  .meta-row {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: $font-size-sm;
-    color: $text-primary;
-
-    .icon {
-      flex-shrink: 0;
-      width: 1rem;
-      height: 1rem;
-      color: $text-secondary;
-    }
   }
 
   ul {

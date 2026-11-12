@@ -1,6 +1,7 @@
 <!--
   Carte récapitulative de l'événement (photo, titre, date, lieu) en tête des écrans du
-  parcours d'achat de billets : commande, paiement, confirmation.
+  parcours d'achat de billets : commande, paiement, confirmation, et de l'e-billet. Avec `mapsUrl`
+  (l'e-billet seulement), le lieu est un lien Google Maps.
 -->
 <template>
   <section class="recap-card">
@@ -12,7 +13,19 @@
         <CalendarEventIcon class="icon" />
         <span>{{ dateLabel }}</span>
       </div>
-      <div class="meta-row">
+      <a
+        v-if="mapsUrl"
+        :href="mapsUrl"
+        target="_blank"
+        rel="noopener"
+        class="meta-row link"
+        :aria-label="$t('ticketing.event.maps-link')"
+      >
+        <MapPin2Icon class="icon" />
+        <span>{{ placeLabel(event.venue, event.city) }}</span>
+        <ExternalLinkIcon class="external" aria-hidden="true" />
+      </a>
+      <div v-else class="meta-row">
         <MapPin2Icon class="icon" />
         <span>{{ placeLabel(event.venue, event.city) }}</span>
       </div>
@@ -22,13 +35,20 @@
 
 <script setup lang="ts">
 import SgiltImage from '~/components/basics/media/SgiltImage.vue'
-import { CalendarEventIcon, MapPin2Icon } from '@remixicons/vue/line'
+import { CalendarEventIcon, ExternalLinkIcon, MapPin2Icon } from '@remixicons/vue/line'
 import type { PublicEvent } from '~/data/ticketing/domain/PublicEvent'
 import { useEventHoursLabel } from '~/composables/useEventHoursLabel'
 import { formatDateWithWeekday } from '~/utils/dateUtils'
 import { placeLabel } from '~/utils/placeUtils'
 
-const props = defineProps<{ event: PublicEvent }>()
+// Ce que la carte montre de l'événement : la fiche publique (PublicEvent) en est un, l'e-billet
+// construit le sien à partir de la commande.
+export type EventRecap = Pick<
+  PublicEvent,
+  'title' | 'subtitle' | 'heroImage' | 'date' | 'startsAt' | 'endsAt' | 'venue' | 'city'
+>
+
+const props = defineProps<{ event: EventRecap; mapsUrl?: string }>()
 
 const { eventHoursLabel } = useEventHoursLabel()
 
@@ -86,11 +106,20 @@ const dateLabel = computed(() => {
     font-size: $font-size-sm;
     color: $text-primary;
 
-    .icon {
+    .icon,
+    .external {
       flex-shrink: 0;
       width: 1rem;
       height: 1rem;
       color: $text-secondary;
+    }
+
+    &.link {
+      text-decoration: none;
+
+      &:hover span {
+        text-decoration: underline;
+      }
     }
   }
 }

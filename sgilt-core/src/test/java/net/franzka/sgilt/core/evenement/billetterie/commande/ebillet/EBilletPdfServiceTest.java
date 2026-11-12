@@ -99,7 +99,7 @@ class EBilletPdfServiceTest {
         @Test
         void givenEBilletWithoutTagSubtitleNorPracticalInfo_whenGenerate_thenOmitsThem() throws IOException {
             EvenementInfosDto infos = new EvenementInfosDto(null, null, LocalDate.of(2026, 12, 3),
-                    LocalDateTime.of(2026, 12, 3, 19, 0), null, "Le Taennel", "Scherwiller (67)", List.of());
+                    LocalDateTime.of(2026, 12, 3, 19, 0), null, "Le Taennel", "Scherwiller (67)", null, List.of());
 
             String text = text(service.generate(eBillet(infos, 1)));
 
@@ -109,7 +109,7 @@ class EBilletPdfServiceTest {
         @Test
         void givenTextsWithHtmlSpecialChars_whenGenerate_thenRendersThemVerbatim() throws IOException {
             EvenementInfosDto infos = new EvenementInfosDto("<b>Tag</b>", "Soirée \"spéciale\"", LocalDate.of(2026, 12, 3),
-                    null, null, "Le Taennel", "Scherwiller (67)", List.of("Bière & <vin>"));
+                    null, null, "Le Taennel", "Scherwiller (67)", null, List.of("Bière & <vin>"));
             EBilletDto eBillet = new EBilletDto("Rock & <Roll>", null, null, infos,
                     1, QrCodeUtils.pngDataUri(QR_CONTENT), true);
 
@@ -137,6 +137,6 @@ class EBilletPdfServiceTest {
     private EvenementInfosDto infos(String venue, String city) {
         return new EvenementInfosDto("Édition du 3 décembre", "Concert et apéro", LocalDate.of(2026, 12, 3),
                 LocalDateTime.of(2026, 12, 3, 19, 0), LocalDateTime.of(2026, 12, 4, 2, 0),
-                venue, city, List.of("Vestiaire", "Parking gratuit"));
+                venue, city, null, List.of("Vestiaire", "Parking gratuit"));
     }
 }

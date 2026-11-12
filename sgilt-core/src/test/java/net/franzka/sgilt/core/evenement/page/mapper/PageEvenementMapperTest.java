@@ -166,19 +166,20 @@ class PageEvenementMapperTest {
         @Test
         void givenEventWithPage_whenToEvenementInfosDto_thenMapsEventHoursAndPageFields() {
             PageEvenement page = PageEvenement.builder()
-                    .tag("Édition du 12 mars").subtitle("Concert et apéro").practicalInfo(List.of("Vestiaire")).build();
+                    .tag("Édition du 12 mars").subtitle("Concert et apéro").localisation("48.5839,7.7455")
+                    .practicalInfo(List.of("Vestiaire")).build();
 
             assertThat(mapper.toEvenementInfosDto(evenement, page, startsAt, endsAt))
                     .isEqualTo(new EvenementInfosDto("Édition du 12 mars", "Concert et apéro",
                             LocalDate.of(2026, 3, 12), startsAt, endsAt, "Le Taennel", "Scherwiller (67)",
-                            List.of("Vestiaire")));
+                            "https://www.google.com/maps/search/?api=1&query=48.5839%2C7.7455", List.of("Vestiaire")));
         }
 
         @Test
-        void givenEventWithoutPage_whenToEvenementInfosDto_thenMapsNoTagNoSubtitleNoPracticalInfo() {
+        void givenEventWithoutPage_whenToEvenementInfosDto_thenMapsNoTagNoSubtitleNoMapsUrlNoPracticalInfo() {
             assertThat(mapper.toEvenementInfosDto(evenement, null, startsAt, endsAt))
                     .isEqualTo(new EvenementInfosDto(null, null, LocalDate.of(2026, 3, 12), startsAt, endsAt,
-                            "Le Taennel", "Scherwiller (67)", List.of()));
+                            "Le Taennel", "Scherwiller (67)", null, List.of()));
         }
     }
 }

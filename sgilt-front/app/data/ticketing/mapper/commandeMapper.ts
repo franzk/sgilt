@@ -34,6 +34,7 @@ function mapEvenementInfos(dto: EvenementInfosDto): EBilletEvenementInfos {
     endsAt: dto.endsAt ?? undefined,
     venue: dto.venue ?? undefined,
     city: dto.city ?? undefined,
+    mapsUrl: dto.mapsUrl ?? undefined,
     practicalInfo: dto.practicalInfo,
   }
 }

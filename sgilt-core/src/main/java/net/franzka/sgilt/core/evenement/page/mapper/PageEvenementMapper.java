@@ -104,6 +104,7 @@ public interface PageEvenementMapper {
     @Mapping(source = "endsAt",             target = "endsAt")
     @Mapping(source = "evenement.lieu",     target = "venue")
     @Mapping(source = "evenement.ville",    target = "city")
+    @Mapping(target = "mapsUrl", expression = "java(page != null ? MapsUrlUtils.mapsUrl(page.getLocalisation()) : null)")
     // Sans page, aucune info pratique (et pas null) : un defaultExpression ne s'applique pas quand
     // c'est la page elle-même qui manque.
     @Mapping(target = "practicalInfo", expression = "java(page != null ? page.getPracticalInfo() : java.util.List.of())")
