@@ -3,7 +3,9 @@
   et la colonne du bloc d'achat si la page en fournit un (slot `purchase`). Partagé par la fiche
   /e/[slug] et l'aperçu de l'organisateur (/app/events/[eventId]/page-publique/apercu), pour que
   l'aperçu reste fidèle à la fiche. Le lieu est un lien Google Maps quand la page a une localisation
-  (`mapsUrl`, construit par le back) ; sans elle, il n'est pas cliquable.
+  (`mapsUrl`, construit par le back) ; sans elle, il n'est pas cliquable. Sous les pictos, un lien
+  mailto vers contact@sgilt.alsace pour toute question. Sur mobile, le bloc d'achat est une barre
+  fixée en bas de l'écran (la page réserve la place en bas) ; sur desktop, une carte en colonne.
 -->
 <template>
   <div class="ticket-event-page">
@@ -79,6 +81,15 @@
             <p class="sublabel">{{ picto.sublabel }}</p>
           </div>
         </section>
+
+        <a :href="`mailto:${CONTACT_EMAIL}`" class="contact">
+          <span class="badge"><MailIcon /></span>
+          <span class="text">
+            <span class="main">{{ $t('ticketing.event.contact-title') }}</span>
+            <span class="sub">{{ $t('ticketing.event.contact-text', { email: CONTACT_EMAIL }) }}</span>
+          </span>
+          <ArrowRightSIcon class="chevron" aria-hidden="true" />
+        </a>
       </div>
 
       <aside v-if="$slots.purchase" class="sidebar">
@@ -101,6 +112,7 @@ import {
   RestaurantIcon,
   ArrowRightSIcon,
   ExternalLinkIcon,
+  MailIcon,
 } from '@remixicons/vue/line'
 import type { PublicEvent, PublicEventPictoIcon } from '~/data/ticketing/domain/PublicEvent'
 import { useEventHoursLabel } from '~/composables/useEventHoursLabel'
@@ -138,6 +150,9 @@ const mapsLinkAttrs = computed(() =>
       }
     : {},
 )
+
+// Adresse de contact Sgilt pour toute question sur l'événement (lien mailto sous les pictos).
+const CONTACT_EMAIL = 'contact@sgilt.alsace'
 
 const PICTO_ICONS: Record<PublicEventPictoIcon, Component> = {
   music: markRaw(MusicIcon),
@@ -343,6 +358,15 @@ const PICTO_ICONS: Record<PublicEventPictoIcon, Component> = {
       grid-template-columns: 1fr 380px;
     }
   }
+
+  // Mobile : place réservée sous le contenu pour la barre d'achat fixée en bas.
+  &.with-ticketing {
+    padding-bottom: 7rem;
+
+    @media (min-width: $breakpoint-desktop) {
+      padding-bottom: $spacing-xxl;
+    }
+  }
 }
 
 .content-col {
@@ -419,9 +443,90 @@ const PICTO_ICONS: Record<PublicEventPictoIcon, Component> = {
   }
 }
 
-// ─── Carte tarif (sidebar desktop) ────────────────────────────────────────────
+// ─── Lien de contact (mailto) ───────────────────────────────────────────────────
+.contact {
+  display: flex;
+  align-items: center;
+  gap: $spacing-s;
+  padding: $spacing-m;
+  border: 1px solid $divider-color;
+  border-radius: $radius-lg;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 160ms ease;
+
+  &:hover {
+    border-color: $text-secondary;
+  }
+
+  &:active {
+    opacity: 0.7;
+  }
+
+  .badge {
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba($state-success, 0.12);
+    color: $state-success;
+
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+
+  .text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+
+    .main {
+      font-size: $font-size-md;
+      font-weight: $font-weight-semibold;
+      color: $text-primary;
+    }
+
+    .sub {
+      font-size: $font-size-sm;
+      color: $text-secondary;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  .chevron {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: $text-secondary;
+  }
+}
+
+// ─── Bloc d'achat : barre fixée en bas (mobile), carte en colonne (desktop) ─────
 .sidebar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: $z-sticky-bar;
+  padding: $spacing-s $spacing-m calc(#{$spacing-s} + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid $divider-color;
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.06);
+
   @media (min-width: $breakpoint-desktop) {
+    position: static;
+    z-index: auto;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-top: none;
     margin-top: -$spacing-xl;
     background: $surface-white;
     border-radius: $radius-lg;

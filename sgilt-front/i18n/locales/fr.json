@@ -1630,9 +1630,10 @@
       "increment-aria": "Ajouter une place",
       "total-label": "Total",
       "cta": "Acheter mes billets",
-      "reassurance": "Paiement sécurisé par",
       "share-text": "Découvrez {name} sur Sgilt",
       "maps-link": "Voir le lieu sur Google Maps",
+      "contact-title": "Une question sur l'événement ?",
+      "contact-text": "Écrivez-nous à {email}",
       "time-label": "{start} – {end}",
       "time-label-until": "jusqu'à {end}"
     },
