@@ -1,6 +1,6 @@
 /**
  * Composable — commande de billets d'un événement, sur tout le parcours d'achat : fiche (/e/[slug],
- * « Acheter mes billets »), écrans commande, paiement, confirmation, et middleware `ticketing`.
+ * « Réserver mes places »), écrans commande, paiement, confirmation, et middleware `ticketing`.
  * Une seule commande en mémoire à la fois, comme un panier : en démarrer une écrase la précédente,
  * quel que soit son événement. Gardée dans le sessionStorage : elle survit au rechargement, pas à
  * la fermeture de l'onglet.
@@ -20,7 +20,7 @@ const TICKET_ORDER_STORAGE_KEY = 'sgilt:ticket-order'
 const TICKET_ORDER_VERSION = 2
 const MIN_QUANTITY = 1
 
-// Étape atteinte : NONE (pas de commande), STARTED à « Acheter mes billets », ORDERED à la
+// Étape atteinte : NONE (pas de commande), STARTED à « Réserver mes places », ORDERED à la
 // validation de l'écran de commande, PAID au paiement. Le middleware `ticketing` n'ouvre chaque
 // écran qu'à la sienne.
 export type TicketOrderStage = 'NONE' | 'STARTED' | 'ORDERED' | 'PAID'
@@ -146,7 +146,7 @@ export function useTicketOrder(slug: string, ticketing: PublicEventTicketing | u
     storedOrder.value?.slug === slug ? storedOrder.value : newOrder(slug, 'NONE'),
   )
 
-  // « Acheter mes billets » : reprend la commande en cours de l'événement (démarrée ou validée),
+  // « Réserver mes places » : reprend la commande en cours de l'événement (démarrée ou validée),
   // sinon en démarre une nouvelle qui écrase celle en mémoire.
   function buy(): void {
     if (order.value.stage === 'STARTED' || order.value.stage === 'ORDERED') return

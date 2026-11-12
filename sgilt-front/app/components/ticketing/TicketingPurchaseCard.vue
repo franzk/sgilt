@@ -25,9 +25,8 @@
     </div>
 
     <button v-if="state === 'OPEN'" type="button" class="cta" @click="onBuyClick">
-      <TicketIcon class="icon" />
       {{ $t('ticketing.event.cta') }}
-      <ArrowRightSIcon class="chevron" aria-hidden="true" />
+      <ArrowRightIcon class="icon" aria-hidden="true" />
     </button>
 
     <p v-else class="status-message">{{ $t(`ticketing.event.status-message.${stateKey}`) }}</p>
@@ -35,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { TicketIcon, ArrowRightSIcon } from '@remixicons/vue/line'
+import { ArrowRightIcon } from '@remixicons/vue/line'
 import type { PublicEventTicketing } from '~/data/ticketing/domain/PublicEvent'
 import { useTicketOrder } from '~/composables/useTicketOrder'
 import { isSoldOut } from '~/utils/ticketingUtils'
@@ -274,19 +273,9 @@ function onBuyClick(): void {
       height: 3.25rem;
     }
 
-    .icon,
-    .chevron {
+    .icon {
       width: 1.1rem;
       height: 1.1rem;
-    }
-
-    // Barre mobile : bouton compact, sans chevron.
-    .chevron {
-      display: none;
-
-      @media (min-width: $breakpoint-desktop) {
-        display: inline;
-      }
     }
   }
 

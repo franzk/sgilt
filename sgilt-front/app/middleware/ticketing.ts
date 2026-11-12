@@ -4,7 +4,7 @@
  * vivent ; il passe avant la page, qui peut donc compter sur une billetterie.
  *  - événement inconnu ou sans billetterie (sauf e-billet, cf. plus bas) ;
  *  - commande, paiement : billetterie pas encore ouverte, fermée ou complète ;
- *  - commande : pas de commande en cours pour cet événement (« Acheter mes billets » pas cliqué) ;
+ *  - commande : pas de commande en cours pour cet événement (« Réserver mes places » pas cliqué) ;
  *  - paiement : commande pas validée sur l'écran de commande ;
  *  - confirmation : pas de commande dans l'URL (?commande=), quel que soit l'état de la
  *    billetterie — l'acheteur de la dernière place voit sa confirmation d'un événement devenu

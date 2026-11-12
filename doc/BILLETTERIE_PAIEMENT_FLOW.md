@@ -1,7 +1,7 @@
 # Billetterie — flow technique de l'achat
 
 > Documentation technique de l'achat de places pour un événement public (`/e/[slug]`), du clic
-> sur « Acheter mes billets » jusqu'à l'e-billet. Le paiement passe par Stripe, derrière le
+> sur « Réserver mes places » jusqu'à l'e-billet. Le paiement passe par Stripe, derrière le
 > service `sgilt-pay`.
 >
 > Vocabulaire : on achète des **places** (ce que compte la jauge) ; une commande payée donne **un
@@ -46,7 +46,7 @@ Le brouillon de commande (événement, quantité, acheteur, étape) vit dans le 
 ```mermaid
 stateDiagram-v2
     [*] --> NONE
-    NONE --> STARTED: « Acheter mes billets » (fiche /e/[slug])
+    NONE --> STARTED: « Réserver mes places » (fiche /e/[slug])
     STARTED --> ORDERED: validation de l'écran de commande (front seul, aucun appel back)
     ORDERED --> PAID: paiement confirmé par Stripe (écran de paiement)
     PAID --> STARTED: nouvel achat
