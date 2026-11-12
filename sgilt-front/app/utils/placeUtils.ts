@@ -1,6 +1,6 @@
 /**
  * Libellé du lieu d'un événement à partir de son lieu et de sa ville, tous deux facultatifs : la
- * fiche (/e/[slug]), le récapitulatif du parcours d'achat, l'e-billet et l'export calendrier.
+ * fiche (/e/[slug]), le récapitulatif du parcours d'achat et l'e-billet.
  */
 
 /**
