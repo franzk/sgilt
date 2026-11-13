@@ -11,6 +11,7 @@
       :board-path="`/app/events/${eventId}`"
       show-prestataires
       :show-public-page="!!event.publicPageStatus"
+      :show-billetterie="!!event.billetterieEnabled"
       :event="event"
       :rubriques="rubriques"
       :cover-image="coverImage"

@@ -1,5 +1,5 @@
 <!--
-  Bloc « Billetterie » de l'écran Page publique du board : statut (pas encore ouverte, ouverte,
+  Bloc « Réglages » de l'écran Billetterie du board : statut (pas encore ouverte, ouverte,
   fermée), prix d'un billet, mention facultative après le prix (« Tout compris ») et jauge, enregistrés par son propre bouton ; le premier enregistrement
   crée la billetterie. Affiché seulement si le back-office l'a activée. Vérifie avant d'émettre
   `save` : montants valides, ouverture seulement sur une page publiée (une billetterie restée

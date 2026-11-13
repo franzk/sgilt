@@ -237,7 +237,7 @@
         "held": "{n} place en cours de paiement | {n} places en cours de paiement"
       },
       "ticketing": {
-        "title": "Billetterie",
+        "title": "Réglages",
         "status": "Statut",
         "statuses": {
           "NOT_OPEN": {
@@ -275,9 +275,22 @@
         "INVALID_PRICE": "Le prix doit être un montant positif.",
         "INVALID_CAPACITY": "La jauge doit être un nombre entier positif.",
         "CAPACITY_BELOW_SOLD": "La jauge ne peut pas descendre sous le nombre de places déjà vendues.",
-        "OPEN_WITHOUT_PUBLISHED_PAGE": "Publiez d'abord votre page : c'est là que les billets se vendent.",
+        "OPEN_WITHOUT_PUBLISHED_PAGE": "Publiez d'abord votre page publique : c'est là que les billets se vendent.",
         "BILLETTERIE_DISABLED": "La billetterie de cet événement n'est plus active. Contactez l'équipe Sgilt.",
         "TECHNICAL": "Une erreur est survenue. Réessayez."
+      }
+    },
+    "billetterie": {
+      "page-title": "Billetterie - Sgilt",
+      "title": "Billetterie",
+      "back": "Retour à mon événement",
+      "retry": "Réessayer",
+      "card": {
+        "name": "Votre billetterie",
+        "detail": "Ventes et réglages"
+      },
+      "errors": {
+        "LOAD": "Impossible d'afficher votre billetterie pour le moment."
       }
     },
     "settings": {

@@ -2,10 +2,9 @@
   Page publique d'un événement administrée par son organisateur (/app/events/{eventId}/page-publique),
   ouverte depuis la carte de l'accueil du board. N'existe que si le back-office a activé la page
   publique (sinon, retour au board). De haut en bas : bandeau d'état (à créer, brouillon :
-  Prévisualiser, Publier ; publiée : lien public, Prévisualiser, Dépublier), ventes (si la
-  billetterie existe), billetterie (si le back-office l'a activée), puis le contenu de la page ;
-  chaque bloc a son propre bouton. « Prévisualiser » et « Publier » restent cliquables sur une page
-  pas encore créée : le clic dit quoi faire d'abord.
+  Prévisualiser, Publier ; publiée : lien public, Prévisualiser, Dépublier), puis le contenu de la
+  page et son bouton (ventes et réglages de la billetterie : écran Billetterie). « Prévisualiser »
+  et « Publier » restent cliquables sur une page pas encore créée : le clic dit quoi faire d'abord.
 -->
 <template>
   <div class="page-publique">
@@ -47,21 +46,6 @@
           </p>
         </section>
 
-        <!-- ── Ventes et billetterie ───────────────────────────────────────────── -->
-        <PublicPageSalesBlock v-if="publicPage.sales" :sales="publicPage.sales" />
-
-        <PublicPageTicketingBlock
-          v-if="publicPage.billetterieEnabled"
-          :ticketing="publicPage.ticketing"
-          :sold-tickets="publicPage.sales?.soldTickets ?? 0"
-          :page-published="status === 'PUBLISHED'"
-          :saving="savingTicketing"
-          :saved="ticketingSaved"
-          :failure="ticketingFailure"
-          @save="saveTicketing"
-          @fail="failTicketing"
-        />
-
         <!-- ── Contenu ─────────────────────────────────────────────────────────── -->
         <PublicPageContentBlock
           :page="publicPage.page"
@@ -81,8 +65,6 @@ import { ArrowLeftIcon, ExternalLinkIcon } from '@remixicons/vue/line'
 import Sk from '~/components/basics/Sk.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import PublicPageContentBlock from '~/components/evenement/PublicPageContentBlock.vue'
-import PublicPageSalesBlock from '~/components/evenement/PublicPageSalesBlock.vue'
-import PublicPageTicketingBlock from '~/components/evenement/PublicPageTicketingBlock.vue'
 import type { PublicPageStatus } from '~/data/ticketing/domain/OrganizerPublicPage'
 import { useOrganizerPublicPage } from '~/data/ticketing/useOrganizerPublicPage'
 import { useEventContext } from '~/data/evenement/useEventContext'
@@ -105,16 +87,11 @@ const {
   contentFailure,
   publishing,
   publicationFailure,
-  savingTicketing,
-  ticketingSaved,
-  ticketingFailure,
   load,
   saveContent,
   failContent,
   setPublished,
   failPublication,
-  saveTicketing,
-  failTicketing,
 } = useOrganizerPublicPage(eventId)
 
 onMounted(load)
