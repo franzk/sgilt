@@ -41,6 +41,8 @@ export interface EvenementInfosDto {
   endsAt: string | null
   venue: string | null
   city: string | null
+  // Lien Google Maps du lieu ; null si la page n'a pas de localisation (ou pas de page).
+  mapsUrl: string | null
   practicalInfo: string[]
 }
 

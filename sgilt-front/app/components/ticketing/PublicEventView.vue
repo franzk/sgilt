@@ -82,14 +82,14 @@
           </div>
         </section>
 
-        <a :href="`mailto:${CONTACT_EMAIL}`" class="contact">
-          <span class="badge"><MailIcon /></span>
-          <span class="text">
-            <span class="main">{{ $t('ticketing.event.contact-title') }}</span>
-            <span class="sub">{{ $t('ticketing.event.contact-text', { email: CONTACT_EMAIL }) }}</span>
-          </span>
-          <ArrowRightSIcon class="chevron" aria-hidden="true" />
-        </a>
+        <p class="contact">
+          <span class="title">{{ $t('ticketing.event.contact-title') }}</span>
+          <i18n-t keypath="ticketing.event.contact-text" tag="span" scope="global">
+            <template #email>
+              <a :href="`mailto:${CONTACT_EMAIL}`" class="email">{{ CONTACT_EMAIL }}</a>
+            </template>
+          </i18n-t>
+        </p>
       </div>
 
       <aside v-if="$slots.purchase" class="sidebar">
@@ -112,7 +112,6 @@ import {
   RestaurantIcon,
   ArrowRightSIcon,
   ExternalLinkIcon,
-  MailIcon,
 } from '@remixicons/vue/line'
 import type { PublicEvent, PublicEventPictoIcon } from '~/data/ticketing/domain/PublicEvent'
 import { useEventHoursLabel } from '~/composables/useEventHoursLabel'
@@ -443,67 +442,22 @@ const PICTO_ICONS: Record<PublicEventPictoIcon, Component> = {
   }
 }
 
-// ─── Lien de contact (mailto) ───────────────────────────────────────────────────
+// ─── Contact (discret : deux lignes de texte, l'adresse en lien mailto) ─────────
 .contact {
   display: flex;
-  align-items: center;
-  gap: $spacing-s;
-  padding: $spacing-m;
-  border: 1px solid $divider-color;
-  border-radius: $radius-lg;
-  text-decoration: none;
-  color: inherit;
-  transition: border-color 160ms ease;
+  flex-direction: column;
+  margin: 0;
+  font-size: $font-size-sm;
+  color: $text-secondary;
 
-  &:hover {
-    border-color: $text-secondary;
-  }
+  .email {
+    color: inherit;
+    text-decoration: underline;
+    overflow-wrap: anywhere;
 
-  &:active {
-    opacity: 0.7;
-  }
-
-  .badge {
-    flex-shrink: 0;
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba($state-success, 0.12);
-    color: $state-success;
-
-    svg {
-      width: 1.25rem;
-      height: 1.25rem;
-    }
-  }
-
-  .text {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-
-    .main {
-      font-size: $font-size-md;
-      font-weight: $font-weight-semibold;
+    &:hover {
       color: $text-primary;
     }
-
-    .sub {
-      font-size: $font-size-sm;
-      color: $text-secondary;
-      overflow-wrap: anywhere;
-    }
-  }
-
-  .chevron {
-    flex-shrink: 0;
-    width: 1.25rem;
-    height: 1.25rem;
-    color: $text-secondary;
   }
 }
 

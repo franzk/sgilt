@@ -31,11 +31,6 @@
 
       <div ref="paymentElementRef" class="payment-element" />
 
-      <div class="security-notice">
-        <InformationIcon class="icon" />
-        <p>{{ $t('ticketing.payment.security-notice') }}</p>
-      </div>
-
       <TicketingCgvCheckbox v-model="acceptCgv" :error="cgvError" />
 
       <button
@@ -54,8 +49,6 @@
       <Transition name="fade">
         <p v-if="payError" class="submit-error">{{ payError }}</p>
       </Transition>
-
-      <p class="reassurance">{{ $t('ticketing.payment.reassurance') }}</p>
     </section>
   </div>
 </template>
@@ -64,7 +57,7 @@
 import TicketingOrderHeader from '~/components/ticketing/TicketingOrderHeader.vue'
 import TicketingEventRecap from '~/components/ticketing/TicketingEventRecap.vue'
 import TicketingCgvCheckbox from '~/components/ticketing/TicketingCgvCheckbox.vue'
-import { InformationIcon, ArrowRightSIcon, LockIcon } from '@remixicons/vue/line'
+import { ArrowRightSIcon, LockIcon } from '@remixicons/vue/line'
 import { usePublicEvent } from '~/composables/usePublicEvent'
 import { useTicketOrder } from '~/composables/useTicketOrder'
 import { createCommande, toCommandeFailure } from '~/data/ticketing/service/commandeService'
@@ -287,29 +280,6 @@ async function onPay(): Promise<void> {
   min-height: 12rem;
 }
 
-.security-notice {
-  display: flex;
-  align-items: flex-start;
-  gap: $spacing-s;
-  padding: $spacing-m;
-  background: $surface-soft;
-  border-radius: $radius-md;
-
-  .icon {
-    flex-shrink: 0;
-    width: 1.25rem;
-    height: 1.25rem;
-    color: $text-secondary;
-    margin-top: 0.1rem;
-  }
-
-  p {
-    margin: 0;
-    font-size: $font-size-sm;
-    color: $text-secondary;
-  }
-}
-
 // ─── CTA ─────────────────────────────────────────────────────────────────────
 .submit-cta {
   width: 100%;
@@ -372,13 +342,6 @@ async function onPay(): Promise<void> {
   font-size: $font-size-sm;
   color: $state-error;
   text-align: center;
-}
-
-.reassurance {
-  margin: 0;
-  text-align: center;
-  font-size: $font-size-sm;
-  color: $text-secondary;
 }
 
 @keyframes spin {

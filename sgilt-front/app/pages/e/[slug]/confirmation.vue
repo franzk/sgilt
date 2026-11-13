@@ -57,12 +57,6 @@
         <ArrowRightSIcon class="chevron" aria-hidden="true" />
       </button>
 
-      <button type="button" class="secondary-cta" @click="onAddToCalendar">
-        <CalendarEventIcon class="icon" />
-        {{ $t('ticketing.confirmation.add-to-calendar') }}
-        <ArrowRightSIcon class="chevron" aria-hidden="true" />
-      </button>
-
       <div v-if="event.practicalInfo.length" class="practical-info">
         <span class="info-badge" aria-hidden="true"><InformationIcon /></span>
         <div>
@@ -87,7 +81,6 @@ import {
   CheckboxCircleIcon,
   CheckIcon,
   TicketIcon,
-  CalendarEventIcon,
   InformationIcon,
   ArrowLeftSIcon,
   ArrowRightSIcon,
@@ -96,9 +89,7 @@ import {
 import { usePublicEvent } from '~/composables/usePublicEvent'
 import { getCommande, isCommandeNotFound } from '~/data/ticketing/service/commandeService'
 import type { CommandeSummary } from '~/data/ticketing/domain/Commande'
-import { buildIcsEvent, downloadIcs } from '~/utils/icsUtils'
 import { formatPrice } from '~/utils/priceUtils'
-import { placeLabel } from '~/utils/placeUtils'
 
 definePageMeta({ middleware: 'ticketing' })
 
@@ -156,20 +147,6 @@ const totalLabel = computed(() => formatPrice((paidCommande.value?.totalCents ??
 
 function onViewEBillet(): void {
   navigateTo({ path: `/e/${slug}/e-billet`, query: { commande: commandeId } })
-}
-
-function onAddToCalendar(): void {
-  const ics = buildIcsEvent({
-    uid: `${slug}-${event.date}@sgilt.alsace`,
-    title: event.title,
-    description: event.subtitle ?? '',
-    location: placeLabel(event.venue, event.city, ', '),
-    url: `${window.location.origin}/e/${slug}`,
-    date: event.date,
-    startsAt: event.startsAt,
-    endsAt: event.endsAt,
-  })
-  downloadIcs(`${slug}.ics`, ics)
 }
 </script>
 
