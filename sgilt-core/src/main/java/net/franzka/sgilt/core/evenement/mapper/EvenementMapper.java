@@ -54,6 +54,7 @@ public interface EvenementMapper {
     @Mapping(source = "evenement.imagePath",    target = "imagePath")
     @Mapping(source = "lastUpdateDate",         target = "lastUpdateDate")
     @Mapping(source = "publicPageStatus",       target = "publicPageStatus")
+    @Mapping(source = "evenement.billetterieEnabled", target = "billetterieEnabled")
     @Mapping(source = "evenement.startTime",    target = "startTime")
     @Mapping(source = "evenement.endTime",      target = "endTime")
     EventMetaDto toMetaDto(Evenement evenement, LocalDateTime lastUpdateDate, PublicPageStatus publicPageStatus);

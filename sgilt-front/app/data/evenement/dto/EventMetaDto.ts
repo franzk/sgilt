@@ -25,6 +25,8 @@ export interface EventMetaDto {
   }
   // État de la page publique, null si le back-office ne l'a pas activée.
   publicPageStatus?: PublicPageStatus | null
+  // Interrupteur du back-office : la billetterie est activée.
+  billetterieEnabled: boolean
   // Horaires ('HH:mm'), null sans horaire.
   startTime?: string | null
   endTime?: string | null

@@ -1,5 +1,5 @@
 <!--
-  Bloc « Billetterie » de l'écran Page publique du board : statut (pas encore ouverte, ouverte,
+  Contenu de l'onglet Réglages de l'écran Billetterie du board : statut (pas encore ouverte, ouverte,
   fermée), prix d'un billet, mention facultative après le prix (« Tout compris ») et jauge, enregistrés par son propre bouton ; le premier enregistrement
   crée la billetterie. Affiché seulement si le back-office l'a activée. Vérifie avant d'émettre
   `save` : montants valides, ouverture seulement sur une page publiée (une billetterie restée
@@ -8,8 +8,6 @@
 -->
 <template>
   <section class="ticketing-block">
-    <h2 class="section-title">{{ $t('evenement.page-publique.ticketing.title') }}</h2>
-
     <fieldset class="statuses">
       <legend class="label">{{ $t('evenement.page-publique.ticketing.status') }}</legend>
       <label v-for="option in TICKETING_STATUSES" :key="option" class="status" :class="{ selected: status === option }">
@@ -123,15 +121,6 @@ function onSave() {
   display: flex;
   flex-direction: column;
   gap: $spacing-m;
-
-  .section-title {
-    margin: 0;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: $text-secondary;
-  }
 
   .label {
     font-size: $font-size-sm;

@@ -84,7 +84,7 @@ class EvenementMapperTest {
                     .eventType("Anniversaire").ambiance("Champetre").ville("Lyon").lieu("Domaine des fleurs")
                     .nbInvites("80").imagePath("cover.jpg").notePartagee("Note partagee")
                     .description("Description").momentCle("Vin d'honneur").utilisateur(utilisateur)
-                    .startTime(LocalTime.of(19, 0)).endTime(LocalTime.of(2, 0)).build();
+                    .startTime(LocalTime.of(19, 0)).endTime(LocalTime.of(2, 0)).billetterieEnabled(true).build();
             LocalDateTime lastUpdate = LocalDateTime.of(2027, 5, 1, 10, 0);
 
             EventMetaDto dto = mapper.toMetaDto(evenement, lastUpdate, PublicPageStatus.DRAFT);
@@ -93,7 +93,7 @@ class EvenementMapperTest {
                     evenement.getId(), "Anniversaire de Paul", LocalDate.of(2027, 6, 15), "Anniversaire",
                     "Champetre", "Lyon", "Domaine des fleurs", "80", "cover.jpg", "Note partagee",
                     "Description", "Vin d'honneur", lastUpdate,
-                    new ClientInfoDto("Sophie", "Leroy", "0102030405", "sophie@sgilt.fr"), PublicPageStatus.DRAFT,
+                    new ClientInfoDto("Sophie", "Leroy", "0102030405", "sophie@sgilt.fr"), PublicPageStatus.DRAFT, true,
                     LocalTime.of(19, 0), LocalTime.of(2, 0)));
         }
 

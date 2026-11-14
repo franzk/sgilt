@@ -2,10 +2,12 @@ package net.franzka.sgilt.core.evenement.billetterie.commande.mapper;
 
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.CommandeStatus;
+import net.franzka.sgilt.core.evenement.billetterie.commande.domain.OrganizerCommandeStatus;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.EBilletDto;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.OrganizerCommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.page.dto.EvenementInfosDto;
@@ -86,6 +88,28 @@ class CommandeMapperTest {
 
             assertThat(mapper.toCommandeSummaryDto(commande))
                     .isEqualTo(new CommandeSummaryDto(id, CommandeStatus.PAID, 3, 1200, 3600));
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // toOrganizerCommandeDto
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ToOrganizerCommandeDto {
+
+        @Test
+        void givenCommandeAndStatus_whenToOrganizerCommandeDto_thenMapsBuyerTotalAndGivenStatus() {
+            UUID id = UUID.randomUUID();
+            LocalDateTime createdAt = LocalDateTime.of(2026, 11, 12, 18, 42);
+            Commande commande = Commande.builder()
+                    .id(id).status(CommandeStatus.PENDING).quantity(3).unitPriceCents(1200)
+                    .buyerFirstName("Jeanne").buyerLastName("Martin").buyerEmail("jeanne@example.com")
+                    .createdAt(createdAt).build();
+
+            assertThat(mapper.toOrganizerCommandeDto(commande, OrganizerCommandeStatus.EXPIRED))
+                    .isEqualTo(new OrganizerCommandeDto(id, OrganizerCommandeStatus.EXPIRED, "Jeanne", "Martin",
+                            "jeanne@example.com", 3, 3600, createdAt));
         }
     }
 

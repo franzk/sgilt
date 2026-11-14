@@ -47,6 +47,7 @@ export function mapEventMeta(dto: EventMetaDto): {
       sharedNote: dto.sharedNote,
       lastUpdateDate: dto.lastUpdateDate ? new Date(dto.lastUpdateDate) : null,
       publicPageStatus: dto.publicPageStatus ?? undefined,
+      billetterieEnabled: dto.billetterieEnabled,
       startTime: dto.startTime ?? undefined,
       endTime: dto.endTime ?? undefined,
     },

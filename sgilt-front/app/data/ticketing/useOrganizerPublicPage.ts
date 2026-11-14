@@ -1,7 +1,8 @@
 /**
  * Composable — page publique d'un événement administrée par son organisateur
- * (/app/events/[eventId]/page-publique) : chargée une fois, puis remplacée par l'état renvoyé à
- * chaque modification (contenu, publication, billetterie). Chaque bloc de l'écran a son
+ * (/app/events/[eventId]/page-publique) et sa billetterie (/app/events/[eventId]/billetterie),
+ * servies par le même appel : chargées une fois, puis remplacées par l'état renvoyé à
+ * chaque modification (contenu, publication, billetterie). Chaque bloc d'écran a son
  * enregistrement et son motif d'échec (suffixe de clé i18n evenement.page-publique.errors.*).
  */
 import type { OrganizerPublicPage, PageContentForm, TicketingSettings } from './domain/OrganizerPublicPage'
@@ -16,7 +17,7 @@ import {
   unpublishOrganizerPage,
 } from './service/organizerPageService'
 
-// État propre à chaque appel (un seul écran l'utilise).
+// État propre à chaque appel (chaque écran a le sien).
 export function useOrganizerPublicPage(eventId: string) {
   const publicPage = ref<OrganizerPublicPage | null>(null)
   const loading = ref(true)

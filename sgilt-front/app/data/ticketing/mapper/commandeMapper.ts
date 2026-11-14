@@ -1,8 +1,14 @@
 /**
  * Mapper — conversions entre DTOs et domain des commandes de billets
  */
-import type { CommandeDto, CommandeSummaryDto, EBilletDto, EvenementInfosDto } from '../dto/CommandeDto'
-import type { Commande, CommandeSummary, EBillet, EBilletEvenementInfos } from '../domain/Commande'
+import type {
+  CommandeDto,
+  CommandeSummaryDto,
+  EBilletDto,
+  EvenementInfosDto,
+  OrganizerCommandeDto,
+} from '../dto/CommandeDto'
+import type { Commande, CommandeSummary, EBillet, EBilletEvenementInfos, OrganizerCommande } from '../domain/Commande'
 import { defaultCoverPath } from '~/utils/eventCovers'
 
 export function mapCommande(dto: CommandeDto): Commande {
@@ -22,6 +28,19 @@ export function mapCommandeSummary(dto: CommandeSummaryDto): CommandeSummary {
     quantity: dto.quantity,
     unitPriceCents: dto.unitPriceCents,
     totalCents: dto.totalCents,
+  }
+}
+
+export function mapOrganizerCommande(dto: OrganizerCommandeDto): OrganizerCommande {
+  return {
+    id: dto.id,
+    status: dto.status,
+    buyerFirstName: dto.buyerFirstName,
+    buyerLastName: dto.buyerLastName,
+    buyerEmail: dto.buyerEmail,
+    quantity: dto.quantity,
+    totalCents: dto.totalCents,
+    createdAt: new Date(dto.createdAt),
   }
 }
 

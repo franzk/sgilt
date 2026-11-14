@@ -1,7 +1,7 @@
 <!--
   Sidebar desktop d'un événement : carte de l'événement (nom, date, lieu, invités, lien vers ses
-  paramètres) et navigation (Accueil, Prestataires, Page publique, rubriques), l'entrée active
-  déduite de l'URL. Partagée par l'événement en base (/app/events/{eventId}) et l'événement local.
+  paramètres) et navigation (Accueil, Prestataires, Page publique, Billetterie, rubriques),
+  l'entrée active déduite de l'URL. Partagée par l'événement en base (/app/events/{eventId}) et l'événement local.
 -->
 <template>
   <aside class="event-sidebar">
@@ -47,6 +47,15 @@
         <GlobalIcon class="item-icon" />
         <span class="label">{{ $t('evenement.page-publique.title') }}</span>
       </NuxtLink>
+      <NuxtLink
+        v-if="showBilletterie"
+        :to="`${boardPath}/${BILLETTERIE_KEY}`"
+        class="item"
+        :class="{ active: activeKey === BILLETTERIE_KEY }"
+      >
+        <TicketIcon class="item-icon" />
+        <span class="label">{{ $t('evenement.billetterie.title') }}</span>
+      </NuxtLink>
 
       <h3 class="section-title">{{ $t('evenement.rubriques-title') }}</h3>
       <!-- Même élément que la liste des rubriques du board mobile. -->
@@ -64,9 +73,9 @@
 
 <script setup lang="ts">
 // Sidebar desktop d'un événement : carte de l'événement (« Modifier » → paramètres), accueil,
-// prestataires, page publique (si le back-office l'a activée) et rubriques. Commune à l'espace connecté (événement en base, sous
-// /app/events/:eventId) et au parcours public (événement local, sous /evenement) : les liens
-// partent du chemin du board.
+// prestataires, page publique et billetterie (si le back-office les a activées) et rubriques.
+// Commune à l'espace connecté (événement en base, sous /app/events/:eventId) et au parcours public
+// (événement local, sous /evenement) : les liens partent du chemin du board.
 import {
   CalendarEventIcon,
   GlobalIcon,
@@ -74,6 +83,7 @@ import {
   Home2Icon,
   MapPin2Icon,
   TeamIcon,
+  TicketIcon,
 } from '@remixicons/vue/line'
 import EventRubriqueItem from '~/components/evenement/EventRubriqueItem.vue'
 import type { EventMeta } from '~/data/evenement/domain/EventMeta'
@@ -87,6 +97,8 @@ const HOME_KEY = 'accueil'
 const PRESTATAIRES_KEY = 'prestataires'
 // Aussi le segment d'URL de l'écran (/page-publique).
 const PUBLIC_PAGE_KEY = 'page-publique'
+// Aussi le segment d'URL de l'écran (/billetterie).
+const BILLETTERIE_KEY = 'billetterie'
 
 // Ce que la carte affiche, commun à l'événement en base et à l'événement local.
 type SidebarEventMeta = Pick<EventMeta, 'title' | 'date' | 'ville' | 'lieu' | 'nbInvites'>
@@ -99,6 +111,8 @@ const props = defineProps<{
   showPrestataires?: boolean
   // Entrée « Page publique » : seulement dans l'espace connecté, si le back-office l'a activée.
   showPublicPage?: boolean
+  // Entrée « Billetterie » : seulement dans l'espace connecté, si le back-office l'a activée.
+  showBilletterie?: boolean
   // Rubriques dans l'ordre d'affichage.
   rubriques: EventRubrique[]
   coverImage: string
@@ -110,13 +124,14 @@ const place = computed(() => [props.event.lieu, props.event.ville].filter(Boolea
 
 // Entrée en surbrillance, d'après le premier segment de l'URL :
 // Prestataires sur la liste des réservations (/reservations, /reservations/:id),
-// Page publique sur son écran (/page-publique),
+// Page publique sur son écran (/page-publique), Billetterie sur le sien (/billetterie),
 // la rubrique ouverte (/:rubrique, /:rubrique/:id),
 // Accueil sinon.
 const activeKey = computed(() => {
   const [section] = route.path.slice(props.boardPath.length + 1).split('/')
   if (section === 'reservations') return PRESTATAIRES_KEY
   if (section === PUBLIC_PAGE_KEY) return PUBLIC_PAGE_KEY
+  if (section === BILLETTERIE_KEY) return BILLETTERIE_KEY
   if (props.rubriques.some((rubrique) => rubrique.key === section)) return section
   return HOME_KEY
 })

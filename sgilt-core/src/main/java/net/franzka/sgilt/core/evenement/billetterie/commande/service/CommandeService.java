@@ -6,9 +6,11 @@ import net.franzka.sgilt.core.admin.mailer.AdminMailerService;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.CommandeStatus;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.EntryCodeUtils;
+import net.franzka.sgilt.core.evenement.billetterie.commande.domain.OrganizerCommandeStatus;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.OrganizerCommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.CommandeNotFoundException;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.CommandeNotPaidException;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.NotEnoughTicketsException;
@@ -93,6 +95,31 @@ public class CommandeService {
      */
     public CommandeSummaryDto getCommande(UUID commandeId) {
         return commandeMapper.toCommandeSummaryDto(findCommande(commandeId));
+    }
+
+    /**
+     * Retourne toutes les commandes d'une billetterie, pour l'organisateur de l'événement, les plus
+     * récentes d'abord. Une commande en attente dont le blocage est passé y est EXPIRED.
+     *
+     * @param billetterie la billetterie
+     * @return les commandes, quel que soit leur statut
+     */
+    public List<OrganizerCommandeDto> getOrganizerCommandes(Billetterie billetterie) {
+        LocalDateTime now = LocalDateTime.now();
+        return commandeRepository.findByBilletterieIdOrderByCreatedAtDesc(billetterie.getId()).stream()
+                .map(commande -> commandeMapper.toOrganizerCommandeDto(commande, organizerStatus(commande, now)))
+                .toList();
+    }
+
+    // Statut vu par l'organisateur : une commande en attente expirée (sans paiement) est abandonnée.
+    private static OrganizerCommandeStatus organizerStatus(Commande commande, LocalDateTime now) {
+        return switch (commande.getStatus()) {
+            case PAID -> OrganizerCommandeStatus.PAID;
+            case CANCELLED -> OrganizerCommandeStatus.CANCELLED;
+            case PENDING -> commande.getExpiresAt().isAfter(now)
+                    ? OrganizerCommandeStatus.PENDING
+                    : OrganizerCommandeStatus.EXPIRED;
+        };
     }
 
     /**

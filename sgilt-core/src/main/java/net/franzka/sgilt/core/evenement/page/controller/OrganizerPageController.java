@@ -3,10 +3,12 @@ package net.franzka.sgilt.core.evenement.page.controller;
 import net.franzka.sgilt.core.evenement.page.dto.EventPageDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.OrganizerCommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.dto.TicketingSettingsDto;
 import net.franzka.sgilt.core.evenement.billetterie.exception.BilletterieNotFoundException;
 import net.franzka.sgilt.core.evenement.billetterie.exception.BilletterieOpenWithoutPublishedPageException;
 import net.franzka.sgilt.core.evenement.billetterie.exception.CapacityBelowSoldTicketsException;
+import net.franzka.sgilt.core.evenement.billetterie.service.BilletterieService;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotAllowedException;
 import net.franzka.sgilt.core.evenement.exception.EvenementNotFoundException;
@@ -25,11 +27,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
  * Controller HTTP de la page publique d'un événement administrée par son organisateur, dans son
- * board : contenu, publication, billetterie et ventes. Réservé au propriétaire de l'événement, et
+ * board : contenu, publication, billetterie, ventes et commandes. Réservé au propriétaire de l'événement, et
  * seulement si le back-office a activé sa page publique. Chaque modification renvoie tout l'état,
  * comme le GET.
  */
@@ -41,6 +44,7 @@ public class OrganizerPageController implements OrganizerPageApi {
 
     private final EvenementService     evenementService;
     private final PageEvenementService pageEvenementService;
+    private final BilletterieService   billetterieService;
     private final CurrentUserService   currentUserService;
 
     /**
@@ -156,6 +160,23 @@ public class OrganizerPageController implements OrganizerPageApi {
         Evenement evenement = ownedEvent(eventId);
         pageEvenementService.putOrganizerTicketing(evenement, ticketing);
         return ResponseEntity.ok(pageEvenementService.getOrganizerPublicPage(evenement));
+    }
+
+    /**
+     * Retourne les commandes de la billetterie, les plus récentes d'abord, quel que soit leur
+     * statut ; vide sans billetterie (pas encore créée ou désactivée).
+     *
+     * @param eventId l'identifiant de l'événement
+     * @return les commandes, avec leur acheteur
+     * @throws EvenementNotFoundException    si l'événement n'existe pas
+     * @throws EvenementNotAllowedException  si l'événement n'appartient pas à l'utilisateur connecté
+     * @throws PagePubliqueDisabledException si le back-office n'a pas activé sa page publique
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<List<OrganizerCommandeDto>> getCommandes(UUID eventId) {
+        log.info("GET /user/events/{}/page-publique/billetterie/commandes", eventId);
+        return ResponseEntity.ok(billetterieService.getOrganizerCommandes(ownedEvent(eventId).getId()));
     }
 
     // Événement de l'utilisateur connecté, dont le back-office a activé la page publique.

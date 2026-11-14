@@ -28,6 +28,21 @@ export interface CommandeSummaryDto {
   totalCents: number
 }
 
+// Commande de la billetterie d'un événement, pour son organisateur
+// (GET /user/events/{id}/page-publique/billetterie/commandes). EXPIRED : PENDING dont le blocage des
+// places est passé, calculé par le back.
+export interface OrganizerCommandeDto {
+  id: string
+  status: 'PAID' | 'PENDING' | 'EXPIRED' | 'CANCELLED'
+  buyerFirstName: string
+  buyerLastName: string
+  buyerEmail: string
+  quantity: number
+  totalCents: number
+  // Heure locale du serveur (yyyy-MM-ddTHH:mm:ss).
+  createdAt: string
+}
+
 // Infos de l'événement d'une commande, pour son e-billet : le bandeau de sa page, quand, où, et les
 // infos pratiques.
 export interface EvenementInfosDto {

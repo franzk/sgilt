@@ -237,7 +237,6 @@
         "held": "{n} place en cours de paiement | {n} places en cours de paiement"
       },
       "ticketing": {
-        "title": "Billetterie",
         "status": "Statut",
         "statuses": {
           "NOT_OPEN": {
@@ -275,9 +274,47 @@
         "INVALID_PRICE": "Le prix doit être un montant positif.",
         "INVALID_CAPACITY": "La jauge doit être un nombre entier positif.",
         "CAPACITY_BELOW_SOLD": "La jauge ne peut pas descendre sous le nombre de places déjà vendues.",
-        "OPEN_WITHOUT_PUBLISHED_PAGE": "Publiez d'abord votre page : c'est là que les billets se vendent.",
+        "OPEN_WITHOUT_PUBLISHED_PAGE": "Publiez d'abord votre page publique : c'est là que les billets se vendent.",
         "BILLETTERIE_DISABLED": "La billetterie de cet événement n'est plus active. Contactez l'équipe Sgilt.",
         "TECHNICAL": "Une erreur est survenue. Réessayez."
+      }
+    },
+    "billetterie": {
+      "page-title": "Billetterie - Sgilt",
+      "title": "Billetterie",
+      "back": "Retour à mon événement",
+      "retry": "Réessayer",
+      "tabs": {
+        "reglages": "Réglages",
+        "commandes": "Commandes"
+      },
+      "card": {
+        "name": "Votre billetterie",
+        "detail": "Ventes et réglages"
+      },
+      "errors": {
+        "LOAD": "Impossible d'afficher votre billetterie pour le moment."
+      },
+      "commandes": {
+        "filters": {
+          "ALL": "Toutes",
+          "PAID": "Payées",
+          "PENDING": "Paiement en cours",
+          "EXPIRED": "Abandonnées",
+          "CANCELLED": "Annulées"
+        },
+        "status": {
+          "PAID": "Payée",
+          "PENDING": "Paiement en cours",
+          "EXPIRED": "Abandonnée",
+          "CANCELLED": "Annulée"
+        },
+        "tickets": "{n} billet | {n} billets",
+        "empty": "Aucune commande pour le moment.",
+        "empty-status": "Aucune commande avec ce statut.",
+        "errors": {
+          "LOAD": "Impossible d'afficher les commandes pour le moment."
+        }
       }
     },
     "settings": {

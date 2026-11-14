@@ -1,5 +1,5 @@
 <!--
-  Bloc « Ventes » de l'écran Page publique du board : places vendues sur la jauge (avec une barre),
+  Bloc « Ventes » de l'écran Billetterie du board, au-dessus des onglets : places vendues sur la jauge (avec une barre),
   places bloquées par un paiement en cours, places restantes. Lecture seule ; affiché seulement si
   la billetterie existe.
 -->
