@@ -1,10 +1,12 @@
 package net.franzka.sgilt.core.evenement.billetterie.commande.mapper;
 
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
+import net.franzka.sgilt.core.evenement.billetterie.commande.domain.OrganizerCommandeStatus;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.EBilletDto;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.OrganizerCommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
 import net.franzka.sgilt.core.evenement.page.dto.EvenementInfosDto;
 import org.mapstruct.Mapper;
@@ -58,6 +60,23 @@ public interface CommandeMapper {
      */
     @Mapping(target = "totalCents", expression = "java(commande.getQuantity() * commande.getUnitPriceCents())")
     CommandeSummaryDto toCommandeSummaryDto(Commande commande);
+
+    /**
+     * Mappe une commande vers la liste de l'organisateur de l'événement.
+     *
+     * @param commande la commande
+     * @param status   son statut vu par l'organisateur, calculé par le service
+     * @return la commande, avec son acheteur et son montant total
+     */
+    @Mapping(target = "id",             source = "commande.id")
+    @Mapping(target = "status",         source = "status")
+    @Mapping(target = "buyerFirstName", source = "commande.buyerFirstName")
+    @Mapping(target = "buyerLastName",  source = "commande.buyerLastName")
+    @Mapping(target = "buyerEmail",     source = "commande.buyerEmail")
+    @Mapping(target = "quantity",       source = "commande.quantity")
+    @Mapping(target = "totalCents",     expression = "java(commande.getQuantity() * commande.getUnitPriceCents())")
+    @Mapping(target = "createdAt",      source = "commande.createdAt")
+    OrganizerCommandeDto toOrganizerCommandeDto(Commande commande, OrganizerCommandeStatus status);
 
     /**
      * Mappe une commande payée vers son e-billet.

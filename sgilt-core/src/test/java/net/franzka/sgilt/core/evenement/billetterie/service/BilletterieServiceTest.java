@@ -1,5 +1,6 @@
 package net.franzka.sgilt.core.evenement.billetterie.service;
 
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.OrganizerCommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.dto.TicketingSalesDto;
 import net.franzka.sgilt.core.evenement.billetterie.exception.BilletterieOpenWithoutPublishedPageException;
 import net.franzka.sgilt.core.evenement.billetterie.exception.CapacityBelowSoldTicketsException;
@@ -21,6 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -188,6 +191,36 @@ class BilletterieServiceTest {
 
             assertThat(billetterieService.getSales(EVENEMENT_ID)).isEmpty();
             verifyNoInteractions(commandeService);
+        }
+    }
+
+    @Nested
+    class GetOrganizerCommandes {
+
+        @Test
+        void givenEnabledBilletterie_whenGetOrganizerCommandes_thenReturnsItsCommandes() {
+            Billetterie billetterie = Billetterie.builder().evenement(billetterieEnabledEvenement).build();
+            List<OrganizerCommandeDto> commandes = List.of(mock(OrganizerCommandeDto.class));
+            when(billetterieRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(billetterie));
+            when(commandeService.getOrganizerCommandes(billetterie)).thenReturn(commandes);
+
+            assertThat(billetterieService.getOrganizerCommandes(EVENEMENT_ID)).isSameAs(commandes);
+        }
+
+        @Test
+        void givenDisabledBilletterie_whenGetOrganizerCommandes_thenReturnsEmpty() {
+            Billetterie billetterie = Billetterie.builder().evenement(billetterieDisabledEvenement).build();
+            when(billetterieRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(billetterie));
+
+            assertThat(billetterieService.getOrganizerCommandes(EVENEMENT_ID)).isEmpty();
+            verifyNoInteractions(commandeService);
+        }
+
+        @Test
+        void givenNoBilletterie_whenGetOrganizerCommandes_thenReturnsEmpty() {
+            when(billetterieRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.empty());
+
+            assertThat(billetterieService.getOrganizerCommandes(EVENEMENT_ID)).isEmpty();
         }
     }
 

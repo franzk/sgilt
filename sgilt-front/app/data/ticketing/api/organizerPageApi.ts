@@ -5,6 +5,7 @@
 import { apiFetch } from '~/composables/useApi'
 import type { OrganizerPublicPageDto, PageContentDto, TicketingSettingsDto } from '../dto/OrganizerPublicPageDto'
 import type { EventPageDto } from '../dto/EventPageDto'
+import type { OrganizerCommandeDto } from '../dto/CommandeDto'
 
 const basePath = (eventId: string) => `/user/events/${eventId}/page-publique`
 
@@ -37,4 +38,9 @@ export async function putOrganizerTicketingApi(
   body: TicketingSettingsDto,
 ): Promise<OrganizerPublicPageDto> {
   return apiFetch<OrganizerPublicPageDto>(`${basePath(eventId)}/billetterie`, { method: 'PUT', body })
+}
+
+// Commandes de la billetterie, les plus récentes d'abord.
+export async function getOrganizerCommandesApi(eventId: string): Promise<OrganizerCommandeDto[]> {
+  return apiFetch<OrganizerCommandeDto[]>(`${basePath(eventId)}/billetterie/commandes`)
 }

@@ -1,6 +1,7 @@
 package net.franzka.sgilt.core.evenement.billetterie.service;
 
 import lombok.RequiredArgsConstructor;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.OrganizerCommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.service.CommandeService;
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
 import net.franzka.sgilt.core.evenement.billetterie.domain.BilletterieStatus;
@@ -17,6 +18,7 @@ import net.franzka.sgilt.core.evenement.billetterie.repository.BilletterieReposi
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -87,6 +89,21 @@ public class BilletterieService {
                         commandeService.getSoldTickets(billetterie),
                         commandeService.getHeldTickets(billetterie),
                         billetterie.getCapacity()));
+    }
+
+    /**
+     * Retourne les commandes de la billetterie d'un événement, pour son organisateur, les plus
+     * récentes d'abord.
+     *
+     * @param evenementId l'identifiant de l'événement
+     * @return les commandes, quel que soit leur statut ; vide si l'événement n'a pas de billetterie
+     *         ou qu'elle est désactivée
+     */
+    public List<OrganizerCommandeDto> getOrganizerCommandes(UUID evenementId) {
+        return billetterieRepository.findByEvenementId(evenementId)
+                .filter(this::isEnabled)
+                .map(commandeService::getOrganizerCommandes)
+                .orElse(List.of());
     }
 
     /**

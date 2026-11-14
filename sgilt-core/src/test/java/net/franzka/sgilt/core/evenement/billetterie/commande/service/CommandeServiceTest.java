@@ -3,9 +3,11 @@ package net.franzka.sgilt.core.evenement.billetterie.commande.service;
 import net.franzka.sgilt.core.admin.mailer.AdminMailerService;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.CommandeStatus;
+import net.franzka.sgilt.core.evenement.billetterie.commande.domain.OrganizerCommandeStatus;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.OrganizerCommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.CommandeNotFoundException;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.CommandeNotPaidException;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.NotEnoughTicketsException;
@@ -116,6 +118,63 @@ class CommandeServiceTest {
             verify(commandeRepository).findByBilletterieIdAndStatusAndExpiresAtAfter(
                     eq(BILLETTERIE_ID), eq(CommandeStatus.PENDING), instant.capture());
             assertThat(instant.getValue()).isCloseTo(LocalDateTime.now(), within(5, ChronoUnit.SECONDS));
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // getOrganizerCommandes
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetOrganizerCommandes {
+
+        // Commande dans un statut donné, dont le blocage finit dans minutesToExpiry minutes.
+        private Commande commande(CommandeStatus status, long minutesToExpiry) {
+            return Commande.builder().status(status).expiresAt(LocalDateTime.now().plusMinutes(minutesToExpiry)).build();
+        }
+
+        // Statut passé au mapper pour une commande seule.
+        private OrganizerCommandeStatus organizerStatusOf(Commande commande) {
+            OrganizerCommandeDto dto = mock(OrganizerCommandeDto.class);
+            when(commandeRepository.findByBilletterieIdOrderByCreatedAtDesc(BILLETTERIE_ID)).thenReturn(List.of(commande));
+            ArgumentCaptor<OrganizerCommandeStatus> status = ArgumentCaptor.forClass(OrganizerCommandeStatus.class);
+            when(commandeMapper.toOrganizerCommandeDto(eq(commande), status.capture())).thenReturn(dto);
+
+            assertThat(commandeService.getOrganizerCommandes(billetterie)).containsExactly(dto);
+            return status.getValue();
+        }
+
+        @Test
+        void givenCommandes_whenGetOrganizerCommandes_thenMapsThemInRepositoryOrder() {
+            Commande recent = commande(CommandeStatus.PAID, -60);
+            Commande older = commande(CommandeStatus.PAID, -120);
+            OrganizerCommandeDto recentDto = mock(OrganizerCommandeDto.class);
+            OrganizerCommandeDto olderDto = mock(OrganizerCommandeDto.class);
+            when(commandeRepository.findByBilletterieIdOrderByCreatedAtDesc(BILLETTERIE_ID)).thenReturn(List.of(recent, older));
+            when(commandeMapper.toOrganizerCommandeDto(recent, OrganizerCommandeStatus.PAID)).thenReturn(recentDto);
+            when(commandeMapper.toOrganizerCommandeDto(older, OrganizerCommandeStatus.PAID)).thenReturn(olderDto);
+
+            assertThat(commandeService.getOrganizerCommandes(billetterie)).containsExactly(recentDto, olderDto);
+        }
+
+        @Test
+        void givenPaidCommande_whenGetOrganizerCommandes_thenStatusIsPaid() {
+            assertThat(organizerStatusOf(commande(CommandeStatus.PAID, -60))).isEqualTo(OrganizerCommandeStatus.PAID);
+        }
+
+        @Test
+        void givenPendingCommandeNotYetExpired_whenGetOrganizerCommandes_thenStatusIsPending() {
+            assertThat(organizerStatusOf(commande(CommandeStatus.PENDING, 5))).isEqualTo(OrganizerCommandeStatus.PENDING);
+        }
+
+        @Test
+        void givenPendingCommandeExpired_whenGetOrganizerCommandes_thenStatusIsExpired() {
+            assertThat(organizerStatusOf(commande(CommandeStatus.PENDING, -5))).isEqualTo(OrganizerCommandeStatus.EXPIRED);
+        }
+
+        @Test
+        void givenCancelledCommande_whenGetOrganizerCommandes_thenStatusIsCancelled() {
+            assertThat(organizerStatusOf(commande(CommandeStatus.CANCELLED, -60))).isEqualTo(OrganizerCommandeStatus.CANCELLED);
         }
     }
 

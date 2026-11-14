@@ -1,9 +1,11 @@
 package net.franzka.sgilt.core.evenement.page.controller;
 
-import net.franzka.sgilt.core.evenement.page.dto.EventPageDto;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.OrganizerCommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.domain.BilletterieStatus;
 import net.franzka.sgilt.core.evenement.billetterie.dto.TicketingSettingsDto;
+import net.franzka.sgilt.core.evenement.billetterie.service.BilletterieService;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
+import net.franzka.sgilt.core.evenement.page.dto.EventPageDto;
 import net.franzka.sgilt.core.evenement.page.dto.OrganizerPublicPageDto;
 import net.franzka.sgilt.core.evenement.page.dto.PageContentDto;
 import net.franzka.sgilt.core.evenement.page.exception.PagePubliqueDisabledException;
@@ -41,6 +43,9 @@ class OrganizerPageControllerTest {
 
     @Mock
     private PageEvenementService pageEvenementService;
+
+    @Mock
+    private BilletterieService billetterieService;
 
     @Mock
     private CurrentUserService currentUserService;
@@ -183,6 +188,25 @@ class OrganizerPageControllerTest {
             order.verify(pageEvenementService).putOrganizerTicketing(evenement, ticketing);
             order.verify(pageEvenementService).getOrganizerPublicPage(evenement);
             assertThat(response.getBody()).isSameAs(state);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // getCommandes
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetCommandes {
+
+        @Test
+        void givenOwnedEvent_whenGetCommandes_thenReturnsItsBilletterieCommandes() {
+            List<OrganizerCommandeDto> commandes = List.of(mock(OrganizerCommandeDto.class));
+            when(evenementService.getOwnedEventWithPagePublique(EVENT_ID, USER_ID)).thenReturn(evenement);
+            when(billetterieService.getOrganizerCommandes(EVENT_ID)).thenReturn(commandes);
+
+            ResponseEntity<List<OrganizerCommandeDto>> response = controller.getCommandes(EVENT_ID);
+
+            assertThat(response.getBody()).isSameAs(commandes);
         }
     }
 }

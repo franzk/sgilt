@@ -24,6 +24,25 @@ export interface CommandeSummary {
   totalCents: number
 }
 
+// Statut d'une commande vu par l'organisateur : EXPIRED (abandonnée) n'est pas un statut en base,
+// c'est une commande PENDING dont le blocage des places est passé, sans paiement.
+export type OrganizerCommandeStatus = 'PAID' | 'PENDING' | 'EXPIRED' | 'CANCELLED'
+
+// Ordre des statuts dans le filtre de la liste des commandes.
+export const ORGANIZER_COMMANDE_STATUSES: OrganizerCommandeStatus[] = ['PAID', 'CANCELLED', 'PENDING', 'EXPIRED']
+
+// Commande de la billetterie d'un événement, dans la liste de son organisateur.
+export interface OrganizerCommande {
+  id: string
+  status: OrganizerCommandeStatus
+  buyerFirstName: string
+  buyerLastName: string
+  buyerEmail: string
+  quantity: number
+  totalCents: number
+  createdAt: Date
+}
+
 // Motif d'échec de la création d'une commande (suffixe de la clé i18n ticketing.payment.errors.*) :
 // plus assez de places, billetterie plus ouverte (ou événement introuvable), trop de tentatives
 // (limite de débit de la gateway), erreur technique.

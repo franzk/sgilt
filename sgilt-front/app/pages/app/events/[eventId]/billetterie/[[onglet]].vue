@@ -1,8 +1,11 @@
 <!--
-  Billetterie d'un événement administrée par son organisateur (/app/events/{eventId}/billetterie),
-  ouverte depuis la sidebar (desktop) ou la carte de l'accueil du board (mobile). N'existe que si le
-  back-office a activé la billetterie (sinon, retour au board). De haut en bas : ventes (si la
-  billetterie existe), puis ses réglages (statut, prix, jauge) avec leur bouton.
+  BILLETTERIE d'un événement administrée par son organisateur, ouverte depuis la sidebar (desktop)
+  ou la carte de l'accueil du board (mobile). Exemple : événement 42.
+    /app/events/42/billetterie             onglet Réglages (statut, prix, jauge, avec leur bouton)
+    /app/events/42/billetterie/commandes   onglet Commandes (liste filtrable par statut)
+  [[onglet]] (doubles crochets) = segment facultatif ; un segment inconnu ramène sur Réglages.
+  Au-dessus des onglets, toujours visibles : les ventes (si la billetterie existe). N'existe que si
+  le back-office a activé la billetterie (sinon, retour au board).
 -->
 <template>
   <div class="billetterie">
@@ -24,7 +27,10 @@
       <template v-else-if="publicPage?.billetterieEnabled">
         <PublicPageSalesBlock v-if="publicPage.sales" :sales="publicPage.sales" />
 
+        <BilletterieTabs v-if="tab" :billetterie-path="billetteriePath" :active="tab" />
+
         <PublicPageTicketingBlock
+          v-if="tab === 'reglages'"
           :ticketing="publicPage.ticketing"
           :sold-tickets="publicPage.sales?.soldTickets ?? 0"
           :page-published="!!publicPage.page?.published"
@@ -33,6 +39,14 @@
           :failure="ticketingFailure"
           @save="saveTicketing"
           @fail="failTicketing"
+        />
+
+        <BilletterieCommandesBlock
+          v-else-if="tab === 'commandes'"
+          :commandes="commandes"
+          :loading="commandesLoading"
+          :load-failed="commandesLoadFailed"
+          @retry="loadCommandes"
         />
       </template>
     </div>
@@ -44,18 +58,38 @@
 import { ArrowLeftIcon } from '@remixicons/vue/line'
 import Sk from '~/components/basics/Sk.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
+import BilletterieCommandesBlock from '~/components/evenement/BilletterieCommandesBlock.vue'
+import BilletterieTabs from '~/components/evenement/BilletterieTabs.vue'
 import PublicPageSalesBlock from '~/components/evenement/PublicPageSalesBlock.vue'
 import PublicPageTicketingBlock from '~/components/evenement/PublicPageTicketingBlock.vue'
+import { useOrganizerCommandes } from '~/data/ticketing/useOrganizerCommandes'
 import { useOrganizerPublicPage } from '~/data/ticketing/useOrganizerPublicPage'
 import { useEventContext } from '~/data/evenement/useEventContext'
+import { billetterieTabOf } from '~/constants/billetterie-tabs'
 
 definePageMeta({ layout: 'app' })
 
 const { t } = useI18n()
 useHead({ title: t('evenement.billetterie.page-title') })
 
+const route = useRoute()
 const { eventId } = useEventContext()
 const boardPath = `/app/events/${eventId}`
+const billetteriePath = `${boardPath}/billetterie`
+
+// Segment après la billetterie : un onglet, ou rien (Réglages). Inconnu (URL tapée à la main) :
+// retour sur Réglages.
+const segment = computed(() =>
+  typeof route.params.onglet === 'string' ? route.params.onglet : undefined,
+)
+const tab = computed(() => billetterieTabOf(segment.value))
+watch(
+  segment,
+  () => {
+    if (!tab.value) navigateTo(billetteriePath, { replace: true })
+  },
+  { immediate: true },
+)
 
 const {
   publicPage,
@@ -70,7 +104,22 @@ const {
   failTicketing,
 } = useOrganizerPublicPage(eventId)
 
-onMounted(load)
+const {
+  commandes,
+  loading: commandesLoading,
+  loadFailed: commandesLoadFailed,
+  load: loadCommandes,
+} = useOrganizerCommandes(eventId)
+
+// Tout est rechargé à chaque ouverture d'un onglet : ventes, réglages et commandes restent cohérents.
+// Segment inconnu : rien, la redirection vers Réglages rechargera.
+function refresh() {
+  if (!tab.value) return
+  load()
+  if (tab.value === 'commandes') loadCommandes()
+}
+onMounted(refresh)
+watch(tab, refresh)
 
 // Page publique ou billetterie pas (ou plus) activée par le back-office : rien à administrer ici.
 watch([notFound, publicPage], ([pageNotFound, page]) => {

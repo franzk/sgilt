@@ -1,10 +1,11 @@
 /**
  * Couche service — page publique d'un événement administrée par son organisateur : lecture,
- * aperçu, contenu, publication, billetterie. Chaque modification renvoie toute la page publique,
+ * aperçu, contenu, publication, billetterie et ses commandes. Chaque modification renvoie toute la page publique,
  * à jour.
  */
 import { FetchError } from 'ofetch'
 import {
+  getOrganizerCommandesApi,
   getOrganizerPagePreviewApi,
   getOrganizerPublicPageApi,
   publishOrganizerPageApi,
@@ -14,8 +15,10 @@ import {
 } from '../api/organizerPageApi'
 import { mapOrganizerPublicPage, mapPageContentRequest, mapTicketingSettingsRequest } from '../mapper/organizerPageMapper'
 import { mapPublicEvent } from '../mapper/eventPageMapper'
+import { mapOrganizerCommande } from '../mapper/commandeMapper'
 import type { OrganizerPublicPage, PageContentForm, TicketingSettings } from '../domain/OrganizerPublicPage'
 import type { PublicEvent } from '../domain/PublicEvent'
+import type { OrganizerCommande } from '../domain/Commande'
 
 export async function fetchOrganizerPublicPage(eventId: string): Promise<OrganizerPublicPage> {
   return mapOrganizerPublicPage(await getOrganizerPublicPageApi(eventId))
@@ -24,6 +27,11 @@ export async function fetchOrganizerPublicPage(eventId: string): Promise<Organiz
 // Page pas encore créée ou page publique désactivée : 404 (voir isPublicPageNotFound).
 export async function fetchOrganizerPagePreview(eventId: string): Promise<PublicEvent> {
   return mapPublicEvent(await getOrganizerPagePreviewApi(eventId))
+}
+
+// Toutes les commandes de la billetterie, quel que soit leur statut, les plus récentes d'abord.
+export async function fetchOrganizerCommandes(eventId: string): Promise<OrganizerCommande[]> {
+  return (await getOrganizerCommandesApi(eventId)).map(mapOrganizerCommande)
 }
 
 export async function saveOrganizerPageContent(eventId: string, form: PageContentForm): Promise<OrganizerPublicPage> {

@@ -237,7 +237,6 @@
         "held": "{n} place en cours de paiement | {n} places en cours de paiement"
       },
       "ticketing": {
-        "title": "Réglages",
         "status": "Statut",
         "statuses": {
           "NOT_OPEN": {
@@ -285,12 +284,37 @@
       "title": "Billetterie",
       "back": "Retour à mon événement",
       "retry": "Réessayer",
+      "tabs": {
+        "reglages": "Réglages",
+        "commandes": "Commandes"
+      },
       "card": {
         "name": "Votre billetterie",
         "detail": "Ventes et réglages"
       },
       "errors": {
         "LOAD": "Impossible d'afficher votre billetterie pour le moment."
+      },
+      "commandes": {
+        "filters": {
+          "ALL": "Toutes",
+          "PAID": "Payées",
+          "PENDING": "Paiement en cours",
+          "EXPIRED": "Abandonnées",
+          "CANCELLED": "Annulées"
+        },
+        "status": {
+          "PAID": "Payée",
+          "PENDING": "Paiement en cours",
+          "EXPIRED": "Abandonnée",
+          "CANCELLED": "Annulée"
+        },
+        "tickets": "{n} billet | {n} billets",
+        "empty": "Aucune commande pour le moment.",
+        "empty-status": "Aucune commande avec ce statut.",
+        "errors": {
+          "LOAD": "Impossible d'afficher les commandes pour le moment."
+        }
       }
     },
     "settings": {

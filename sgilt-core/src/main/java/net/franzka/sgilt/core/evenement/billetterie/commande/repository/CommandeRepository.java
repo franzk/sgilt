@@ -23,6 +23,14 @@ public interface CommandeRepository extends JpaRepository<Commande, UUID> {
     List<Commande> findByBilletterieIdAndStatus(UUID billetterieId, CommandeStatus status);
 
     /**
+     * Retourne toutes les commandes d'une billetterie, les plus récentes d'abord.
+     *
+     * @param billetterieId l'identifiant de la billetterie
+     * @return les commandes
+     */
+    List<Commande> findByBilletterieIdOrderByCreatedAtDesc(UUID billetterieId);
+
+    /**
      * Indique si une billetterie a au moins une commande dans un statut donné.
      *
      * @param billetterieId l'identifiant de la billetterie
