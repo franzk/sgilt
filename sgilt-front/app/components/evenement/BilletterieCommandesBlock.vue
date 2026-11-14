@@ -1,7 +1,8 @@
 <!--
-  Contenu de l'onglet Commandes de l'écran Billetterie du board : toutes les commandes de la billetterie, les
+  Contenu de l'onglet Commandes de l'écran Billetterie du board, et de l'onglet Récap du scan des
+  e-billets : toutes les commandes de la billetterie, les
   plus récentes d'abord (ordre du back), filtrables par statut (Toutes, Payées, Annulées, Paiement en
-  cours, Abandonnées, chacun avec son nombre). Une carte par commande : acheteur, email, nombre
+  cours, Abandonnées, chacun avec son nombre), Payées par défaut. Une carte par commande : acheteur, email, nombre
   de billets, montant, date et heure, badge de statut. Lecture seule.
 -->
 <template>
@@ -83,8 +84,8 @@ defineEmits<{
 
 const { t } = useI18n()
 
-// null : toutes les commandes.
-const activeStatus = ref<OrganizerCommandeStatus | null>(null)
+// null : toutes les commandes. Payées par défaut : ce sont elles qui comptent (ventes, entrées).
+const activeStatus = ref<OrganizerCommandeStatus | null>('PAID')
 
 const filters = computed<{ status: OrganizerCommandeStatus | null; label: string; count: number }[]>(() => [
   { status: null, label: t('evenement.billetterie.commandes.filters.ALL'), count: props.commandes.length },
