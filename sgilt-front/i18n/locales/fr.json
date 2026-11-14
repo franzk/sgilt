@@ -284,6 +284,7 @@
       "title": "Billetterie",
       "back": "Retour à mon événement",
       "retry": "Réessayer",
+      "scan": "Scanner les e-billets",
       "tabs": {
         "reglages": "Réglages",
         "commandes": "Commandes"
@@ -316,6 +317,16 @@
           "LOAD": "Impossible d'afficher les commandes pour le moment."
         }
       }
+    },
+    "scan": {
+      "page-title": "Scanner les e-billets - Sgilt",
+      "title": "Scanner les e-billets",
+      "close": "Fermer le scan et revenir à la billetterie",
+      "tabs": {
+        "scan": "Scan",
+        "recap": "Récap"
+      },
+      "placeholder": "Le lecteur de QR code arrive à la prochaine étape."
     },
     "settings": {
       "page-title": "Paramètres de l'événement - Sgilt",

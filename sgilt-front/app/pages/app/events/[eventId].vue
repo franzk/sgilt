@@ -1,12 +1,13 @@
 <!--
   Route parente des pages d'un événement (/app/events/{eventId}/…) : charge l'événement et le
   partage avec elles (useEventContext), le recharge à chaque navigation. Sur desktop, ajoute la
-  sidebar à gauche de la page ; ailleurs, la page seule.
+  sidebar à gauche de la page ; ailleurs, la page seule. Une page plein écran (meta `fullscreen`,
+  ex. le scan des e-billets) n'a jamais la sidebar.
 -->
 <template>
   <div class="event-shell">
     <EventSidebar
-      v-if="isDesktop && event"
+      v-if="isDesktop && event && !route.meta.fullscreen"
       class="sidebar"
       :board-path="`/app/events/${eventId}`"
       show-prestataires
