@@ -326,7 +326,18 @@
         "scan": "Scan",
         "recap": "Récap"
       },
-      "placeholder": "Le lecteur de QR code arrive à la prochaine étape."
+      "camera": {
+        "opening": "Ouverture de la caméra…",
+        "retry": "Réessayer",
+        "errors": {
+          "NOT_ALLOWED": "L'accès à la caméra a été refusé. Autorisez-le dans les réglages de votre navigateur, puis réessayez.",
+          "NOT_FOUND": "Aucune caméra n'a été trouvée sur cet appareil.",
+          "NOT_READABLE": "La caméra est déjà utilisée par une autre application. Fermez-la, puis réessayez.",
+          "INSECURE_CONTEXT": "La caméra n'est accessible que sur une connexion sécurisée (https).",
+          "NOT_SUPPORTED": "Ce navigateur ne permet pas d'utiliser la caméra. Essayez avec Chrome ou Safari.",
+          "TECHNICAL": "Impossible d'ouvrir la caméra. Réessayez."
+        }
+      }
     },
     "settings": {
       "page-title": "Paramètres de l'événement - Sgilt",

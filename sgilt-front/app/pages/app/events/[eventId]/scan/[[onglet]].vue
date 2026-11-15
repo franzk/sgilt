@@ -1,7 +1,7 @@
 <!--
   SCAN des e-billets d'un événement par son organisateur, à l'entrée : écran plein écran (ni
   en-tête, ni navigation, ni sidebar du board), ouvert depuis la billetterie. Exemple : événement 42.
-    /app/events/42/scan         onglet Scan (lecteur de QR)
+    /app/events/42/scan         onglet Scan (lecteur de QR ; affiche pour l'instant le texte brut lu)
     /app/events/42/scan/recap   onglet Récap (les commandes, comme l'onglet Commandes de la billetterie)
   [[onglet]] (doubles crochets) = segment facultatif ; un segment inconnu ramène sur Scan. La croix
   ramène à la billetterie. N'existe que si le back-office a activé la billetterie (sinon, retour au board).
@@ -21,7 +21,10 @@
     <ScanTabs v-if="tab" :scan-path="scanPath" :active="tab" />
 
     <div class="content">
-      <p v-if="tab === 'scan'" class="placeholder">{{ $t('evenement.scan.placeholder') }}</p>
+      <div v-if="tab === 'scan'" class="scan">
+        <TicketScanner @detect="lastRead = $event" />
+        <p v-if="lastRead" class="last-read">{{ lastRead }}</p>
+      </div>
 
       <BilletterieCommandesBlock
         v-else-if="tab === 'recap'"
@@ -38,6 +41,7 @@
 import { CloseLargeIcon } from '@remixicons/vue/line'
 import BilletterieCommandesBlock from '~/components/evenement/BilletterieCommandesBlock.vue'
 import ScanTabs from '~/components/evenement/ScanTabs.vue'
+import TicketScanner from '~/components/evenement/TicketScanner.vue'
 import { useOrganizerCommandes } from '~/data/ticketing/useOrganizerCommandes'
 import { useEventContext } from '~/data/evenement/useEventContext'
 import { scanTabOf } from '~/constants/scan-tabs'
@@ -66,6 +70,9 @@ watch(
   },
   { immediate: true },
 )
+
+// Texte brut du dernier QR lu (en attendant l'écran de résultat).
+const lastRead = ref<string | null>(null)
 
 const {
   commandes,
@@ -157,13 +164,21 @@ watch(
     margin: 0 auto;
     padding: $spacing-m $section-padding-x $spacing-xl;
 
-    .placeholder {
-      margin: 0;
-      padding: $spacing-m;
-      border-radius: $radius-lg;
-      background: $surface-soft;
-      font-size: $font-size-sm;
-      color: $text-secondary;
+    .scan {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-m;
+
+      .last-read {
+        margin: 0;
+        padding: $spacing-s $spacing-m;
+        border-radius: $radius-lg;
+        background: $surface-soft;
+        font-family: monospace;
+        font-size: $font-size-sm;
+        color: $text-primary;
+        overflow-wrap: anywhere;
+      }
     }
   }
 }
