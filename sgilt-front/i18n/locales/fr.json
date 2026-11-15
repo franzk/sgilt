@@ -326,6 +326,21 @@
         "scan": "Scan",
         "recap": "Récap"
       },
+      "counters": "Entrées : {entered} / {sold} places",
+      "result": {
+        "VALIDATED": "Entrée validée",
+        "ALREADY_USED": "Déjà utilisé",
+        "CANCELLED": "E-billet annulé",
+        "NOT_PAID": "E-billet non payé",
+        "UNKNOWN": "E-billet inconnu",
+        "FAILED": "Vérification impossible",
+        "buyer": "Commande de {name}",
+        "places": "{n} place | {n} places",
+        "entered-at": "Entrée à {time}",
+        "unknown-detail": "Ce QR code n'est pas un e-billet de cet événement.",
+        "failed-detail": "Vérifiez la connexion, puis scannez à nouveau.",
+        "next": "Scanner le suivant"
+      },
       "camera": {
         "opening": "Ouverture de la caméra…",
         "retry": "Réessayer",

@@ -1,10 +1,13 @@
 <!--
   SCAN des e-billets d'un événement par son organisateur, à l'entrée : écran plein écran (ni
   en-tête, ni navigation, ni sidebar du board), ouvert depuis la billetterie. Exemple : événement 42.
-    /app/events/42/scan         onglet Scan (lecteur de QR ; affiche pour l'instant le texte brut lu)
+    /app/events/42/scan         onglet Scan (places entrées / vendues, lecteur de QR, résultat du scan)
     /app/events/42/scan/recap   onglet Récap (les commandes, comme l'onglet Commandes de la billetterie)
   [[onglet]] (doubles crochets) = segment facultatif ; un segment inconnu ramène sur Scan. La croix
   ramène à la billetterie. N'existe que si le back-office a activé la billetterie (sinon, retour au board).
+  Scan : un QR lu fige la caméra et affiche le résultat par-dessus ; entrée validée → QR suivant
+  tout seul après RESUME_DELAY_MS, sinon au toucher « Scanner le suivant » (un refus ne doit pas
+  disparaître pendant que l'organisateur parle à la personne).
 -->
 <template>
   <div class="scan-screen">
@@ -22,8 +25,20 @@
 
     <div class="content">
       <div v-if="tab === 'scan'" class="scan">
-        <TicketScanner @detect="lastRead = $event" />
-        <p v-if="lastRead" class="last-read">{{ lastRead }}</p>
+        <p v-if="publicPage?.sales" class="counters">
+          {{ $t('evenement.scan.counters', { entered: enteredTickets, sold: publicPage.sales.soldTickets }) }}
+        </p>
+
+        <div class="stage">
+          <TicketScanner :paused="checking || showsResult" @detect="onDetect" />
+          <ScanResultCard
+            v-if="showsResult"
+            class="result"
+            :result="result"
+            :failed="scanFailed"
+            @next="next"
+          />
+        </div>
       </div>
 
       <BilletterieCommandesBlock
@@ -40,9 +55,13 @@
 <script setup lang="ts">
 import { CloseLargeIcon } from '@remixicons/vue/line'
 import BilletterieCommandesBlock from '~/components/evenement/BilletterieCommandesBlock.vue'
+import ScanResultCard from '~/components/evenement/ScanResultCard.vue'
 import ScanTabs from '~/components/evenement/ScanTabs.vue'
 import TicketScanner from '~/components/evenement/TicketScanner.vue'
 import { useOrganizerCommandes } from '~/data/ticketing/useOrganizerCommandes'
+import { useOrganizerPublicPage } from '~/data/ticketing/useOrganizerPublicPage'
+import type { ScanResult } from '~/data/ticketing/domain/Scan'
+import { scanEBillet } from '~/data/ticketing/service/scanService'
 import { useEventContext } from '~/data/evenement/useEventContext'
 import { scanTabOf } from '~/constants/scan-tabs'
 
@@ -71,8 +90,47 @@ watch(
   { immediate: true },
 )
 
-// Texte brut du dernier QR lu (en attendant l'écran de résultat).
-const lastRead = ref<string | null>(null)
+// Entrée validée : délai avant de reprendre la lecture tout seul.
+const RESUME_DELAY_MS = 2000
+
+// Les ventes (places vendues) viennent de la billetterie, comme sur son écran.
+const { publicPage, load: loadPublicPage } = useOrganizerPublicPage(eventId)
+
+// ⚠ PROVISOIRE (brique F3, service simulé) : places entrées comptées par cette page ; viendront des
+// ventes de la billetterie avec le back (brique B2).
+const enteredTickets = ref(0)
+
+const result = ref<ScanResult | null>(null)
+// Vérification impossible (réseau, serveur) : affichée comme un refus, à rescanner.
+const scanFailed = ref(false)
+// Vérification en cours : la caméra est figée, un autre QR lu est ignoré.
+const checking = ref(false)
+const showsResult = computed(() => !!result.value || scanFailed.value)
+let resumeTimer: ReturnType<typeof setTimeout> | undefined
+
+async function onDetect(qrContent: string) {
+  if (checking.value || showsResult.value) return
+  checking.value = true
+  try {
+    result.value = await scanEBillet(eventId, qrContent)
+  } catch {
+    scanFailed.value = true
+  } finally {
+    checking.value = false
+  }
+  if (result.value?.status === 'VALIDATED') {
+    enteredTickets.value += result.value.commande?.quantity ?? 0
+    resumeTimer = setTimeout(next, RESUME_DELAY_MS)
+  }
+}
+
+// Efface le résultat : la caméra reprend la lecture.
+function next() {
+  clearTimeout(resumeTimer)
+  result.value = null
+  scanFailed.value = false
+}
+onBeforeUnmount(() => clearTimeout(resumeTimer))
 
 const {
   commandes,
@@ -81,8 +139,10 @@ const {
   load: loadCommandes,
 } = useOrganizerCommandes(eventId)
 
-// Les commandes sont rechargées à chaque ouverture du Récap : il suit les entrées de la soirée.
+// Rechargés à chaque ouverture d'un onglet : les ventes pour le Scan, les commandes pour le Récap
+// (il suit les entrées de la soirée).
 function refresh() {
+  if (tab.value === 'scan') loadPublicPage()
   if (tab.value === 'recap') loadCommandes()
 }
 onMounted(refresh)
@@ -169,15 +229,22 @@ watch(
       flex-direction: column;
       gap: $spacing-m;
 
-      .last-read {
+      .counters {
         margin: 0;
-        padding: $spacing-s $spacing-m;
-        border-radius: $radius-lg;
-        background: $surface-soft;
-        font-family: monospace;
-        font-size: $font-size-sm;
+        font-size: 1.125rem;
+        font-weight: 600;
         color: $text-primary;
-        overflow-wrap: anywhere;
+        text-align: center;
+      }
+
+      // Le résultat recouvre la caméra figée, à la même taille.
+      .stage {
+        position: relative;
+
+        .result {
+          position: absolute;
+          inset: 0;
+        }
       }
     }
   }

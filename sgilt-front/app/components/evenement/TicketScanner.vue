@@ -1,7 +1,8 @@
 <!--
   Lecteur de QR code de l'onglet Scan (scan des e-billets d'un événement) : la caméra arrière du
   téléphone (la webcam sur un ordinateur), dans le navigateur. Émet le texte brut de chaque QR lu ;
-  ne sait rien des e-billets (le format SGILT:C:<code> est relu par le back).
+  ne sait rien des e-billets (le format SGILT:C:<code> est relu par le back). paused fige l'image
+  et suspend la lecture (pendant qu'un résultat est affiché).
   La caméra n'est accessible qu'en HTTPS (ou sur localhost). Si elle ne s'ouvre pas (refusée,
   absente, déjà prise…), un message dit pourquoi, avec un bouton Réessayer qui la rouvre.
   Bibliothèque : vue-qrcode-reader (détecteur natif du navigateur, ou zxing en WebAssembly sinon :
@@ -24,6 +25,7 @@
         :key="attempt"
         :constraints="CAMERA_CONSTRAINTS"
         :formats="QR_FORMATS"
+        :paused="paused"
         @camera-on="cameraOn = true"
         @detect="onDetect"
         @error="onError"
@@ -68,6 +70,10 @@ const FAILURE_BY_ERROR_NAME: Record<string, CameraFailure> = {
   StreamApiNotSupportedError: 'NOT_SUPPORTED',
   NotSupportedError: 'NOT_SUPPORTED',
 }
+
+defineProps<{
+  paused?: boolean
+}>()
 
 const emit = defineEmits<{
   detect: [rawValue: string]
