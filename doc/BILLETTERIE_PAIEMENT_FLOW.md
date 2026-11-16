@@ -1,7 +1,7 @@
 # Billetterie — flow technique de l'achat
 
 > Documentation technique de l'achat de places pour un événement public (`/e/[slug]`), du clic
-> sur « Réserver mes places » jusqu'à l'e-billet. Le paiement passe par Stripe, derrière le
+> sur « Réserver mes places » jusqu'à l'e-billet et son scan à l'entrée. Le paiement passe par Stripe, derrière le
 > service `sgilt-pay`.
 >
 > Vocabulaire : on achète des **places** (ce que compte la jauge) ; une commande payée donne **un
@@ -252,7 +252,7 @@ ses places.
 - **Code d'entrée** : tiré au passage `PAID` (`EntryCodeUtils.newCode`, 128 bits aléatoires,
   base64url sans padding, 22 caractères), colonne `commandes.code` (unique, V124).
 - **Contenu du QR** : `SGILT:C:<code>` (préfixe de type, **sans lien**), fabriqué par le back
-  (`EntryCodeUtils.commandeQrContent`). Le futur lecteur sera une page Sgilt.
+  (`EntryCodeUtils.commandeQrContent`). Relu au scan (voir Scan à l'entrée).
 - **Dessin du QR** : par le back seulement (`QrCodeUtils`, ZXing), pour la page comme pour le PDF :
   PNG 512 px, correction d'erreur M, marge de 4 modules, servi en data URI
   (`data:image/png;base64,…`). Le front ne dessine rien (plus de lib `qrcode`) et ne reçoit pas le
@@ -302,6 +302,74 @@ ses places.
   embarquées en sous-ensemble, Inter Regular/SemiBold et Cormorant Garamond Bold, en TTF statiques
   (PDFBox n'embarque ni polices variables ni OTF CFF) — origine, licences OFL et commande de
   génération dans `fonts/README.md`.
+
+---
+
+## Scan à l'entrée
+
+L'organisateur scanne les e-billets à l'entrée avec son téléphone, dans une page Sgilt (pas
+d'application). **Usage unique** : le premier scan d'un e-billet fait entrer **toutes** les places
+de sa commande ; les suivants répondent « déjà utilisé ». Pas d'entrées partielles, pas
+d'annulation d'une entrée (elle permettrait de refaire passer le même QR) : on corrigera selon le
+retour terrain.
+
+- **Qui scanne** : le propriétaire de l'événement, seul (mêmes droits que le reste de la
+  billetterie du board). Pas de `scanned_by` : il vaudrait toujours le propriétaire.
+- **Modèle** : `commandes.scanned_at` (V129), null tant que l'e-billet n'a pas été scanné.
+- **Route** : `POST /api/v1/user/events/{eventId}/page-publique/billetterie/scans`, corps
+  `{ "qrContent": "<contenu brut du QR>" }` (`@NotBlank`, sinon 400). Propriétaire de l'événement,
+  page publique et billetterie activées (sinon les erreurs habituelles : 403, 404). Couverte par la
+  route gateway `/api/v1/user/**`.
+- **Réponse** : **toujours 200** avec `ScanResultDto(status, commande)` — chaque statut est une
+  issue normale du scan, pas une erreur HTTP :
+
+  | Statut | Cas | `commande` |
+  |---|---|---|
+  | `VALIDATED` | commande payée, jamais scannée : `scanned_at` = maintenant | acheteur, places, heure |
+  | `ALREADY_USED` | commande payée déjà scannée | idem, heure du **premier** scan |
+  | `CANCELLED` | commande de cet événement, annulée (remboursée) | acheteur, places |
+  | `UNKNOWN` | pas `SGILT:C:<code>`, code inconnu, **e-billet d'un autre événement** | `null` |
+
+  Le code n'est cherché que parmi les commandes de **cette** billetterie
+  (`findForUpdateByBilletterieIdAndCode`) : rien d'une commande d'un autre événement n'est montré.
+  Pas de statut « non payé » : le code n'est tiré qu'au passage `PAID`, une commande en attente
+  n'a pas de QR (si elle était trouvée quand même : `UNKNOWN`).
+- **Concurrence** : la commande est verrouillée en écriture pendant le scan (`PESSIMISTIC_WRITE`) ;
+  deux téléphones qui scannent le même e-billet passent l'un après l'autre, un seul a le vert.
+- **Relecture du QR** : `EntryCodeUtils.parseCommandeCode`, à côté de `commandeQrContent` (le
+  format n'est connu que de cette classe ; le front envoie le texte brut).
+- **Compteurs** : `TicketingSalesDto.enteredTickets` (places des commandes payées scannées) ;
+  `OrganizerCommandeDto.scannedAt`.
+
+### Front
+
+- **Page plein écran** `/app/events/[eventId]/scan/[[onglet]]` (`layout: false` ; meta
+  `fullscreen` : la route parente masque la sidebar), ouverte par « Scanner les e-billets » dans
+  la billetterie ; la croix y ramène. Deux onglets à elle : **Scan** et **Récap**.
+- **Scan** : bandeau « Entrées : N / M places » (ventes de la billetterie, rechargées après chaque
+  vert), lecteur, résultat par-dessus la caméra figée :
+  - vert « Entrée validée · Commande de X · N places » → reprise automatique après 2 s
+    (`RESUME_DELAY_MS`, toucher pour aller plus vite) ;
+  - orange « Déjà utilisé · … · Entrée à HHhMM », rouge (annulé, inconnu, « Vérification
+    impossible » sur erreur réseau ou serveur) → restent jusqu'au toucher « Scanner le suivant » (un
+    refus ne doit pas disparaître pendant que l'organisateur parle à la personne).
+
+  Le nom affiché est celui de l'**acheteur**, pas forcément du porteur : pour l'accueil, pas un
+  contrôle d'identité.
+- **Récap** : la liste des commandes de l'onglet Commandes (`BilletterieCommandesBlock`, partagé) :
+  filtre « Entrées » (après « Payées », filtre par défaut), « Entrée à HHhMM » sur les cartes
+  scannées. Le bloc Ventes de la billetterie affiche aussi « N places entrées » dès la première.
+- **Lecteur** (`TicketScanner.vue`) : `vue-qrcode-reader` **5.7.3, version figée** ; caméra arrière
+  en préférence (`facingMode: 'environment'`), QR uniquement. Messages si la caméra ne s'ouvre pas
+  (refusée, absente, déjà utilisée, http, navigateur incompatible) avec « Réessayer ». La caméra
+  exige HTTPS ou `localhost`.
+- **Moteur WebAssembly servi par Sgilt** : sans détecteur QR natif (Safari iPhone, Firefox, Chrome
+  Windows…), la bibliothèque charge zxing en WebAssembly, par défaut depuis un CDN public. Il est
+  servi depuis `sgilt-front/public/zxing-wasm/1.1.3/zxing_reader.wasm` (`setZXingModuleOverrides`).
+  **Montée de version de vue-qrcode-reader** : `pnpm why zxing-wasm` ; si la version change,
+  recopier `node_modules/zxing-wasm/dist/reader/zxing_reader.wasm` dans
+  `public/zxing-wasm/<version>/` et mettre à jour `ZXING_WASM_VERSION` (un fichier d'une autre
+  version ne fonctionne pas). La version dans le chemin évite qu'un cache serve l'ancien fichier.
 
 ---
 
