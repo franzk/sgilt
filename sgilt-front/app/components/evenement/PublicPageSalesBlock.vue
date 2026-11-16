@@ -1,7 +1,8 @@
 <!--
   Bloc « Ventes » de l'écran Billetterie du board, au-dessus des onglets : places vendues sur la jauge (avec une barre),
-  places bloquées par un paiement en cours, places restantes. Lecture seule ; affiché seulement si
-  la billetterie existe.
+  places bloquées par un paiement en cours, places restantes, places entrées (e-billets scannés à
+  l'entrée ; ligne affichée dès la première entrée). Lecture seule ; affiché seulement si la
+  billetterie existe.
 -->
 <template>
   <section class="sales-block">
@@ -23,6 +24,9 @@
       <p class="detail">{{ $t('evenement.page-publique.sales.remaining', remaining) }}</p>
       <p v-if="sales.heldTickets" class="detail">
         {{ $t('evenement.page-publique.sales.held', sales.heldTickets) }}
+      </p>
+      <p v-if="sales.enteredTickets" class="detail">
+        {{ $t('evenement.page-publique.sales.entered', sales.enteredTickets) }}
       </p>
     </div>
   </section>

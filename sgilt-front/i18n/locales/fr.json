@@ -234,7 +234,8 @@
         "title": "Ventes",
         "sold": "place vendue sur {capacity} | places vendues sur {capacity}",
         "remaining": "Aucune place restante | {n} place restante | {n} places restantes",
-        "held": "{n} place en cours de paiement | {n} places en cours de paiement"
+        "held": "{n} place en cours de paiement | {n} places en cours de paiement",
+        "entered": "{n} place entrée | {n} places entrées"
       },
       "ticketing": {
         "status": "Statut",
