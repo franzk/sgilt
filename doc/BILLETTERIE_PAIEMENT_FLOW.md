@@ -359,8 +359,15 @@ sans payer et créerait des PaymentIntents en masse.
 
 ## Reporté
 
-- **Scan à l'entrée** : lecteur de QR dans une page Sgilt (équipe connectée). Points ouverts : qui
-  scanne, `scanned_by`, entrées partielles d'un groupe avec un seul QR.
+- **Scan à l'entrée — choix de la caméra** : le lecteur demande la caméra arrière en préférence
+  (`facingMode: 'environment'`, pas `exact`, pour que la webcam d'un PC marche aussi). À vérifier
+  sur staging avec un iPhone et un Android récent à plusieurs objectifs : le navigateur pourrait
+  ouvrir l'ultra grand-angle ou le téléobjectif (mise au point de près médiocre), voire la caméra
+  selfie. Si c'est le cas : bouton « Changer de caméra » sur l'écran de scan (liste des caméras).
+- **Scan à l'entrée — entrées partielles** : un e-billet est à usage unique (le premier scan fait
+  entrer toutes ses places). Compteur d'entrées par commande à revoir selon le retour terrain.
+- **Scan à l'entrée — `scanned_by`** : inutile tant que seul le propriétaire de l'événement peut
+  scanner ; à ajouter avec les droits d'une équipe à l'entrée.
 - **Remboursement / annulation** → commande `CANCELLED` et e-billet invalidé (avec le scan).
 - **Libération anticipée des places** : `payment_intent.payment_failed` n'est pas un abandon
   (l'acheteur peut réessayer sur le même PaymentIntent) et l'abandon n'émet aucun événement.
