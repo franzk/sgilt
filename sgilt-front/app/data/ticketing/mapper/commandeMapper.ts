@@ -41,6 +41,7 @@ export function mapOrganizerCommande(dto: OrganizerCommandeDto): OrganizerComman
     quantity: dto.quantity,
     totalCents: dto.totalCents,
     createdAt: new Date(dto.createdAt),
+    scannedAt: dto.scannedAt ? new Date(dto.scannedAt) : null,
   }
 }
 

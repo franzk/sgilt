@@ -4,9 +4,10 @@
  * toutes les places de sa commande, les suivants répondent « déjà utilisé ».
  */
 
-// VALIDATED : entrée validée par ce scan. ALREADY_USED : déjà scanné. CANCELLED, NOT_PAID : commande
-// de cet événement, mais qui ne fait pas entrer. UNKNOWN : pas un e-billet de cet événement.
-export const SCAN_STATUSES = ['VALIDATED', 'ALREADY_USED', 'CANCELLED', 'NOT_PAID', 'UNKNOWN'] as const
+// VALIDATED : entrée validée par ce scan. ALREADY_USED : déjà scanné. CANCELLED : commande de cet
+// événement, annulée (remboursée), qui ne fait pas entrer. UNKNOWN : pas un e-billet de cet événement.
+// (Pas de « non payé » : le QR d'une commande n'existe qu'une fois payée.)
+export const SCAN_STATUSES = ['VALIDATED', 'ALREADY_USED', 'CANCELLED', 'UNKNOWN'] as const
 
 export type ScanStatus = (typeof SCAN_STATUSES)[number]
 
@@ -15,8 +16,8 @@ export interface ScannedCommande {
   buyerFirstName: string
   buyerLastName: string
   quantity: number
-  // Heure du premier scan (ISO) ; pour VALIDATED, celle de ce scan. Null si jamais scannée.
-  scannedAt: string | null
+  // Heure du premier scan ; pour VALIDATED, celle de ce scan. Null si jamais scannée.
+  scannedAt: Date | null
 }
 
 export interface ScanResult {

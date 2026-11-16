@@ -43,6 +43,8 @@ export interface TicketingSales {
   // Places bloquées par un paiement en cours.
   heldTickets: number
   capacity: number
+  // Places entrées : celles des commandes payées dont l'e-billet a été scanné.
+  enteredTickets: number
 }
 
 export interface OrganizerPublicPage {

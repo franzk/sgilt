@@ -2,7 +2,7 @@
   Résultat du scan d'un e-billet (onglet Scan), en grand par-dessus la caméra figée :
     vert   VALIDATED      Entrée validée · Commande de X · N places
     orange ALREADY_USED   Déjà utilisé · Commande de X · N places · entrée à HHhMM
-    rouge  CANCELLED / NOT_PAID (avec l'acheteur : commande de cet événement), UNKNOWN (sans rien),
+    rouge  CANCELLED (avec l'acheteur : commande de cet événement), UNKNOWN (sans rien),
            ou vérification impossible (failed : réseau, serveur).
   Le nom est celui de l'acheteur, pas forcément du porteur : pour l'accueil, pas un contrôle
   d'identité. « Scanner le suivant » émet next ; sur le vert, l'écran passe aussi au suivant tout seul.

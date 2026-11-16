@@ -41,6 +41,8 @@ export interface OrganizerCommande {
   quantity: number
   totalCents: number
   createdAt: Date
+  // Heure du scan de l'e-billet à l'entrée ; null s'il n'a pas été scanné.
+  scannedAt: Date | null
 }
 
 // Motif d'échec de la création d'une commande (suffixe de la clé i18n ticketing.payment.errors.*) :

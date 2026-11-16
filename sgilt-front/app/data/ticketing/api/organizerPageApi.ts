@@ -6,6 +6,7 @@ import { apiFetch } from '~/composables/useApi'
 import type { OrganizerPublicPageDto, PageContentDto, TicketingSettingsDto } from '../dto/OrganizerPublicPageDto'
 import type { EventPageDto } from '../dto/EventPageDto'
 import type { OrganizerCommandeDto } from '../dto/CommandeDto'
+import type { ScanRequestDto, ScanResultDto } from '../dto/ScanDto'
 
 const basePath = (eventId: string) => `/user/events/${eventId}/page-publique`
 
@@ -43,4 +44,9 @@ export async function putOrganizerTicketingApi(
 // Commandes de la billetterie, les plus récentes d'abord.
 export async function getOrganizerCommandesApi(eventId: string): Promise<OrganizerCommandeDto[]> {
   return apiFetch<OrganizerCommandeDto[]>(`${basePath(eventId)}/billetterie/commandes`)
+}
+
+// Scan d'un e-billet à l'entrée : toujours 200, le résultat dit s'il fait entrer.
+export async function postScanApi(eventId: string, body: ScanRequestDto): Promise<ScanResultDto> {
+  return apiFetch<ScanResultDto>(`${basePath(eventId)}/billetterie/scans`, { method: 'POST', body })
 }

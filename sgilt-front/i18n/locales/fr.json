@@ -300,6 +300,7 @@
         "filters": {
           "ALL": "Toutes",
           "PAID": "Payées",
+          "ENTERED": "Entrées",
           "PENDING": "Paiement en cours",
           "EXPIRED": "Abandonnées",
           "CANCELLED": "Annulées"
@@ -311,8 +312,10 @@
           "CANCELLED": "Annulée"
         },
         "tickets": "{n} place | {n} places",
+        "entered-at": "Entrée à {time}",
         "empty": "Aucune commande pour le moment.",
         "empty-status": "Aucune commande avec ce statut.",
+        "empty-entered": "Aucun e-billet scanné pour le moment.",
         "errors": {
           "LOAD": "Impossible d'afficher les commandes pour le moment."
         }
@@ -331,7 +334,6 @@
         "VALIDATED": "Entrée validée",
         "ALREADY_USED": "Déjà utilisé",
         "CANCELLED": "E-billet annulé",
-        "NOT_PAID": "E-billet non payé",
         "UNKNOWN": "E-billet inconnu",
         "FAILED": "Vérification impossible",
         "buyer": "Commande de {name}",

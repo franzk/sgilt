@@ -26,7 +26,12 @@
     <div class="content">
       <div v-if="tab === 'scan'" class="scan">
         <p v-if="publicPage?.sales" class="counters">
-          {{ $t('evenement.scan.counters', { entered: enteredTickets, sold: publicPage.sales.soldTickets }) }}
+          {{
+            $t('evenement.scan.counters', {
+              entered: publicPage.sales.enteredTickets,
+              sold: publicPage.sales.soldTickets,
+            })
+          }}
         </p>
 
         <div class="stage">
@@ -93,12 +98,9 @@ watch(
 // Entrée validée : délai avant de reprendre la lecture tout seul.
 const RESUME_DELAY_MS = 2000
 
-// Les ventes (places vendues) viennent de la billetterie, comme sur son écran.
+// Places entrées et vendues : les ventes de la billetterie, comme sur son écran ; rechargées après
+// chaque entrée validée.
 const { publicPage, load: loadPublicPage } = useOrganizerPublicPage(eventId)
-
-// ⚠ PROVISOIRE (brique F3, service simulé) : places entrées comptées par cette page ; viendront des
-// ventes de la billetterie avec le back (brique B2).
-const enteredTickets = ref(0)
 
 const result = ref<ScanResult | null>(null)
 // Vérification impossible (réseau, serveur) : affichée comme un refus, à rescanner.
@@ -119,7 +121,7 @@ async function onDetect(qrContent: string) {
     checking.value = false
   }
   if (result.value?.status === 'VALIDATED') {
-    enteredTickets.value += result.value.commande?.quantity ?? 0
+    loadPublicPage()
     resumeTimer = setTimeout(next, RESUME_DELAY_MS)
   }
 }
