@@ -2,10 +2,13 @@ package net.franzka.sgilt.core.evenement.billetterie.commande.repository;
 
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.CommandeStatus;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -49,4 +52,25 @@ public interface CommandeRepository extends JpaRepository<Commande, UUID> {
      */
     List<Commande> findByBilletterieIdAndStatusAndExpiresAtAfter(UUID billetterieId, CommandeStatus status,
                                                                  LocalDateTime instant);
+
+    /**
+     * Retourne les commandes d'une billetterie dans un statut donné dont l'e-billet a été scanné.
+     *
+     * @param billetterieId l'identifiant de la billetterie
+     * @param status        le statut
+     * @return les commandes
+     */
+    List<Commande> findByBilletterieIdAndStatusAndScannedAtIsNotNull(UUID billetterieId, CommandeStatus status);
+
+    /**
+     * Retourne la commande d'une billetterie qui a ce code d'entrée, en la verrouillant en écriture
+     * jusqu'à la fin de la transaction : deux scans simultanés du même e-billet passent l'un après
+     * l'autre, un seul fait entrer.
+     *
+     * @param billetterieId l'identifiant de la billetterie
+     * @param code          le code d'entrée
+     * @return la commande, ou vide si aucune commande de cette billetterie n'a ce code
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Commande> findForUpdateByBilletterieIdAndCode(UUID billetterieId, String code);
 }

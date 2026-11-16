@@ -283,7 +283,7 @@ class PageEvenementServiceTest {
             Evenement enabled = Evenement.builder().id(EVENEMENT_ID).pagePubliqueEnabled(true).billetterieEnabled(true).build();
             PageEvenement page = PageEvenement.builder().build();
             OrganizerPageDto pageDto = new OrganizerPageDto(PAGE, true, true);
-            TicketingSalesDto sales = new TicketingSalesDto(42, 3, 150);
+            TicketingSalesDto sales = new TicketingSalesDto(42, 3, 150, 12);
             when(pageEvenementRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(page));
             when(pageEvenementMapper.toOrganizerPageDto(page)).thenReturn(pageDto);
             when(billetterieService.getOrganizerTicketing(EVENEMENT_ID)).thenReturn(Optional.of(TICKETING));

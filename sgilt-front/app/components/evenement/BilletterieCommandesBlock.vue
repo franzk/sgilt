@@ -3,7 +3,7 @@
   e-billets : toutes les commandes de la billetterie, les
   plus récentes d'abord (ordre du back), filtrables par statut (Toutes, Payées, Annulées, Paiement en
   cours, Abandonnées, chacun avec son nombre), Payées par défaut. Une carte par commande : acheteur, email, nombre
-  de billets, montant, date et heure, badge de statut. Lecture seule.
+  de places, montant, date et heure, badge de statut. Lecture seule.
 -->
 <template>
   <section class="commandes-block">

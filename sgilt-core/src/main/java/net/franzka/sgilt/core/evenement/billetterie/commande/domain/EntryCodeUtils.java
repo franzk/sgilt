@@ -2,6 +2,7 @@ package net.franzka.sgilt.core.evenement.billetterie.commande.domain;
 
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Optional;
 
 /**
  * Code d'entrée d'une commande et contenu du QR de son e-billet, présenté à l'entrée (fait entrer
@@ -37,5 +38,19 @@ public final class EntryCodeUtils {
      */
     public static String commandeQrContent(String code) {
         return COMMANDE_QR_PREFIX + code;
+    }
+
+    /**
+     * Relit le code d'une commande dans le contenu d'un QR scanné à l'entrée.
+     *
+     * @param qrContent le contenu brut du QR
+     * @return le code, ou vide si ce n'est pas le QR d'un e-billet de commande ({@code SGILT:C:<code>})
+     */
+    public static Optional<String> parseCommandeCode(String qrContent) {
+        if (qrContent == null || !qrContent.startsWith(COMMANDE_QR_PREFIX)) {
+            return Optional.empty();
+        }
+        String code = qrContent.substring(COMMANDE_QR_PREFIX.length());
+        return code.isEmpty() ? Optional.empty() : Optional.of(code);
     }
 }

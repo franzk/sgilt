@@ -16,6 +16,7 @@ import java.util.UUID;
  * @param quantity       le nombre de places
  * @param totalCents     le montant total, en centimes d'euro
  * @param createdAt      la date de la commande
+ * @param scannedAt      l'heure du scan de son e-billet à l'entrée, null s'il n'a pas été scanné
  */
 public record OrganizerCommandeDto(
         UUID id,
@@ -25,5 +26,6 @@ public record OrganizerCommandeDto(
         String buyerEmail,
         int quantity,
         int totalCents,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        LocalDateTime scannedAt
 ) {}

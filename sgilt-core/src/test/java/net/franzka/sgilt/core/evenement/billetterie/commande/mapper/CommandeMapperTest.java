@@ -3,11 +3,14 @@ package net.franzka.sgilt.core.evenement.billetterie.commande.mapper;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.CommandeStatus;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.OrganizerCommandeStatus;
+import net.franzka.sgilt.core.evenement.billetterie.commande.domain.ScanStatus;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.EBilletDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.OrganizerCommandeDto;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.ScanResultDto;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.ScannedCommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.page.dto.EvenementInfosDto;
@@ -99,17 +102,43 @@ class CommandeMapperTest {
     class ToOrganizerCommandeDto {
 
         @Test
-        void givenCommandeAndStatus_whenToOrganizerCommandeDto_thenMapsBuyerTotalAndGivenStatus() {
+        void givenCommandeAndStatus_whenToOrganizerCommandeDto_thenMapsBuyerTotalScanAndGivenStatus() {
             UUID id = UUID.randomUUID();
             LocalDateTime createdAt = LocalDateTime.of(2026, 11, 12, 18, 42);
+            LocalDateTime scannedAt = LocalDateTime.of(2026, 11, 20, 20, 14);
             Commande commande = Commande.builder()
                     .id(id).status(CommandeStatus.PENDING).quantity(3).unitPriceCents(1200)
                     .buyerFirstName("Jeanne").buyerLastName("Martin").buyerEmail("jeanne@example.com")
-                    .createdAt(createdAt).build();
+                    .createdAt(createdAt).scannedAt(scannedAt).build();
 
             assertThat(mapper.toOrganizerCommandeDto(commande, OrganizerCommandeStatus.EXPIRED))
                     .isEqualTo(new OrganizerCommandeDto(id, OrganizerCommandeStatus.EXPIRED, "Jeanne", "Martin",
-                            "jeanne@example.com", 3, 3600, createdAt));
+                            "jeanne@example.com", 3, 3600, createdAt, scannedAt));
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // toScanResultDto
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ToScanResultDto {
+
+        @Test
+        void givenStatusAndCommande_whenToScanResultDto_thenMapsBuyerPlacesAndScannedAt() {
+            LocalDateTime scannedAt = LocalDateTime.of(2026, 11, 20, 20, 14);
+            Commande commande = Commande.builder().quantity(4).buyerFirstName("Jean").buyerLastName("Dupont")
+                    .buyerEmail("jean@example.com").scannedAt(scannedAt).build();
+
+            assertThat(mapper.toScanResultDto(ScanStatus.ALREADY_USED, commande))
+                    .isEqualTo(new ScanResultDto(ScanStatus.ALREADY_USED,
+                            new ScannedCommandeDto("Jean", "Dupont", 4, scannedAt)));
+        }
+
+        @Test
+        void givenNoCommande_whenToScanResultDto_thenMapsStatusWithoutCommande() {
+            assertThat(mapper.toScanResultDto(ScanStatus.UNKNOWN, null))
+                    .isEqualTo(new ScanResultDto(ScanStatus.UNKNOWN, null));
         }
     }
 
