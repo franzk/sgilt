@@ -43,7 +43,8 @@ const ZXING_WASM_VERSION = '1.1.3'
 
 // Une seule fois, au chargement du module (pas à chaque lecteur : redéfinir les réglages oublierait
 // le moteur déjà chargé), avant le premier décodage : le fichier WebAssembly est pris chez Sgilt
-// plutôt que sur le CDN.
+// plutôt que sur le CDN. Ici plutôt que dans un plugin Nuxt : un plugin mettrait vue-qrcode-reader
+// dans le bundle de toutes les pages ; ce module n'est chargé qu'avec la page de scan.
 setZXingModuleOverrides({
   locateFile: (path: string, prefix: string) =>
     path.endsWith('.wasm') ? `/zxing-wasm/${ZXING_WASM_VERSION}/${path}` : prefix + path,
@@ -62,7 +63,7 @@ const CAMERA_CONSTRAINTS: MediaTrackConstraints = { facingMode: 'environment' }
 const QR_FORMATS: BarcodeFormat[] = ['qr_code']
 
 // Nom de l'erreur (DOMException du navigateur ou erreur de la bibliothèque) → message.
-const FAILURE_BY_ERROR_NAME: Record<string, CameraFailure> = {
+const FAILURE_BY_ERROR_NAME: Partial<Record<string, CameraFailure>> = {
   NotAllowedError: 'NOT_ALLOWED',
   NotFoundError: 'NOT_FOUND',
   NotReadableError: 'NOT_READABLE',

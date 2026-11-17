@@ -3,7 +3,7 @@
     vert   VALIDATED      Entrée validée · Commande de X · N places
     orange ALREADY_USED   Déjà utilisé · Commande de X · N places · entrée à HHhMM
     rouge  CANCELLED (avec l'acheteur : commande de cet événement), UNKNOWN (sans rien),
-           ou vérification impossible (failed : réseau, serveur).
+           ou vérification impossible (FAILED : réseau, serveur).
   Le nom est celui de l'acheteur, pas forcément du porteur : pour l'accueil, pas un contrôle
   d'identité. « Scanner le suivant » émet next ; sur le vert, l'écran passe aussi au suivant tout seul.
 -->
@@ -11,28 +11,26 @@
   <div class="scan-result" :class="tone" role="status">
     <component :is="TONE_ICONS[tone]" class="icon" aria-hidden="true" />
 
-    <p class="title">
-      {{ failed ? $t('evenement.scan.result.FAILED') : $t(`evenement.scan.result.${result?.status}`) }}
-    </p>
+    <p class="title">{{ $t(`evenement.scan.result.${outcome.status}`) }}</p>
 
-    <template v-if="!failed && result?.commande">
+    <template v-if="outcome.commande">
       <p class="buyer">
         {{
           $t('evenement.scan.result.buyer', {
-            name: `${result.commande.buyerFirstName} ${result.commande.buyerLastName}`,
+            name: `${outcome.commande.buyerFirstName} ${outcome.commande.buyerLastName}`,
           })
         }}
       </p>
       <p v-if="showsPlaces" class="places">
-        {{ $t('evenement.scan.result.places', result.commande.quantity) }}
+        {{ $t('evenement.scan.result.places', outcome.commande.quantity) }}
       </p>
-      <p v-if="result.status === 'ALREADY_USED' && result.commande.scannedAt" class="detail">
-        {{ $t('evenement.scan.result.entered-at', { time: formatTimeOfDay(result.commande.scannedAt) }) }}
+      <p v-if="outcome.status === 'ALREADY_USED' && outcome.commande.scannedAt" class="detail">
+        {{ $t('evenement.scan.result.entered-at', { time: formatTimeOfDay(outcome.commande.scannedAt) }) }}
       </p>
     </template>
 
-    <p v-else-if="failed" class="detail">{{ $t('evenement.scan.result.failed-detail') }}</p>
-    <p v-else-if="result?.status === 'UNKNOWN'" class="detail">{{ $t('evenement.scan.result.unknown-detail') }}</p>
+    <p v-else-if="outcome.status === 'FAILED'" class="detail">{{ $t('evenement.scan.result.failed-detail') }}</p>
+    <p v-else-if="outcome.status === 'UNKNOWN'" class="detail">{{ $t('evenement.scan.result.unknown-detail') }}</p>
 
     <button type="button" class="next" @click="$emit('next')">{{ $t('evenement.scan.result.next') }}</button>
   </div>
@@ -41,7 +39,7 @@
 <script setup lang="ts">
 import { CheckboxCircleIcon, CloseCircleIcon, ErrorWarningIcon } from '@remixicons/vue/line'
 import type { Component } from 'vue'
-import type { ScanResult } from '~/data/ticketing/domain/Scan'
+import type { ScanOutcome } from '~/data/ticketing/domain/Scan'
 import { formatTimeOfDay } from '~/utils/dateUtils'
 
 type Tone = 'success' | 'warning' | 'danger'
@@ -53,9 +51,7 @@ const TONE_ICONS: Record<Tone, Component> = {
 }
 
 const props = defineProps<{
-  // Null quand la vérification a échoué (failed).
-  result: ScanResult | null
-  failed: boolean
+  outcome: ScanOutcome
 }>()
 
 defineEmits<{
@@ -63,15 +59,14 @@ defineEmits<{
 }>()
 
 const tone = computed<Tone>(() => {
-  if (props.failed) return 'danger'
-  if (props.result?.status === 'VALIDATED') return 'success'
-  if (props.result?.status === 'ALREADY_USED') return 'warning'
+  if (props.outcome.status === 'VALIDATED') return 'success'
+  if (props.outcome.status === 'ALREADY_USED') return 'warning'
   return 'danger'
 })
 
 // Le nombre de places ne compte que pour une commande qui fait (ou a fait) entrer.
 const showsPlaces = computed(
-  () => props.result?.status === 'VALIDATED' || props.result?.status === 'ALREADY_USED',
+  () => props.outcome.status === 'VALIDATED' || props.outcome.status === 'ALREADY_USED',
 )
 </script>
 

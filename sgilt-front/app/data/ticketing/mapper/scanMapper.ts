@@ -14,6 +14,6 @@ export function mapScanResult(dto: ScanResultDto): ScanResult {
           quantity: dto.commande.quantity,
           scannedAt: dto.commande.scannedAt ? new Date(dto.commande.scannedAt) : null,
         }
-      : undefined,
+      : null,
   }
 }

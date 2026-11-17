@@ -7,11 +7,9 @@
 // VALIDATED : entrée validée par ce scan. ALREADY_USED : déjà scanné. CANCELLED : commande de cet
 // événement, annulée (remboursée), qui ne fait pas entrer. UNKNOWN : pas un e-billet de cet événement.
 // (Pas de « non payé » : le QR d'une commande n'existe qu'une fois payée.)
-export const SCAN_STATUSES = ['VALIDATED', 'ALREADY_USED', 'CANCELLED', 'UNKNOWN'] as const
+export type ScanStatus = 'VALIDATED' | 'ALREADY_USED' | 'CANCELLED' | 'UNKNOWN'
 
-export type ScanStatus = (typeof SCAN_STATUSES)[number]
-
-// Commande du QR scanné. Absente pour UNKNOWN : rien d'une commande d'un autre événement n'est montré.
+// Commande du QR scanné.
 export interface ScannedCommande {
   buyerFirstName: string
   buyerLastName: string
@@ -22,5 +20,10 @@ export interface ScannedCommande {
 
 export interface ScanResult {
   status: ScanStatus
-  commande?: ScannedCommande
+  // Null pour UNKNOWN : rien d'une commande d'un autre événement n'est montré.
+  commande: ScannedCommande | null
 }
+
+// Issue d'un scan affichée à l'entrée : le résultat du back, ou FAILED si la vérification a
+// échoué (réseau, serveur).
+export type ScanOutcome = ScanResult | { status: 'FAILED'; commande: null }

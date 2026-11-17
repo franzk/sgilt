@@ -312,7 +312,7 @@
           "EXPIRED": "Abandonnée",
           "CANCELLED": "Annulée"
         },
-        "tickets": "{n} place | {n} places",
+        "places": "{n} place | {n} places",
         "entered-at": "Entrée à {time}",
         "empty": "Aucune commande pour le moment.",
         "empty-status": "Aucune commande avec ce statut.",

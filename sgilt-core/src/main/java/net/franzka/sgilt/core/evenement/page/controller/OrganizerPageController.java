@@ -34,9 +34,9 @@ import java.util.UUID;
 
 /**
  * Controller HTTP de la page publique d'un événement administrée par son organisateur, dans son
- * board : contenu, publication, billetterie, ventes, commandes et scan des e-billets à l'entrée. Réservé au propriétaire de l'événement, et
- * seulement si le back-office a activé sa page publique. Chaque modification renvoie tout l'état,
- * comme le GET.
+ * board : contenu, publication, billetterie, ventes, commandes et scan des e-billets à l'entrée.
+ * Réservé au propriétaire de l'événement, et seulement si le back-office a activé sa page publique.
+ * Chaque modification renvoie tout l'état, comme le GET.
  */
 @RestController
 @RequiredArgsConstructor

@@ -171,7 +171,8 @@ public class CommandeService {
      * d'une commande payée fait entrer toutes ses places (heure du scan enregistrée), les suivants
      * répondent ALREADY_USED. La commande est verrouillée pendant le scan : si deux téléphones
      * scannent le même e-billet en même temps, un seul le valide. Seules les commandes de cette
-     * billetterie sont cherchées : l'e-billet d'un autre événement est inconnu.
+     * billetterie sont cherchées : l'e-billet d'un autre événement est inconnu. À appeler dans une
+     * transaction (celle de l'appelant) : le verrou de la commande l'exige et tient jusqu'à sa fin.
      *
      * @param billetterie la billetterie de l'événement
      * @param qrContent   le contenu brut du QR lu
@@ -180,12 +181,17 @@ public class CommandeService {
     public ScanResultDto scan(Billetterie billetterie, String qrContent) {
         Optional<Commande> found = EntryCodeUtils.parseCommandeCode(qrContent)
                 .flatMap(code -> commandeRepository.findForUpdateByBilletterieIdAndCode(billetterie.getId(), code));
-        ScanStatus status = found.map(CommandeService::scanStatus).orElse(ScanStatus.UNKNOWN);
-        if (status == ScanStatus.UNKNOWN) {
+        if (found.isEmpty()) {
             log.info("Scan : e-billet inconnu — billetterieId={}", billetterie.getId());
-            return commandeMapper.toScanResultDto(status, null);
+            return commandeMapper.toScanResultDto(ScanStatus.UNKNOWN, null);
         }
         Commande commande = found.get();
+        if (commande.getStatus() == CommandeStatus.PENDING) {
+            // Anomalie : le code n'est tiré qu'au passage PAID. Inconnue par sécurité, rien n'est montré.
+            log.warn("Scan : commande en attente trouvée par son code d'entrée — commandeId={}", commande.getId());
+            return commandeMapper.toScanResultDto(ScanStatus.UNKNOWN, null);
+        }
+        ScanStatus status = scanStatus(commande);
         if (status == ScanStatus.VALIDATED) {
             commande.setScannedAt(LocalDateTime.now());
             commandeRepository.save(commande);
@@ -194,14 +200,12 @@ public class CommandeService {
         return commandeMapper.toScanResultDto(status, commande);
     }
 
-    // Résultat du scan d'une commande trouvée par son code. Le code n'est tiré qu'au passage PAID :
-    // une commande en attente n'en a pas, et ne peut pas être trouvée (inconnue, par sécurité).
+    // Résultat du scan d'une commande payée ou annulée, trouvée par son code.
     private static ScanStatus scanStatus(Commande commande) {
-        return switch (commande.getStatus()) {
-            case PAID -> commande.getScannedAt() == null ? ScanStatus.VALIDATED : ScanStatus.ALREADY_USED;
-            case CANCELLED -> ScanStatus.CANCELLED;
-            case PENDING -> ScanStatus.UNKNOWN;
-        };
+        if (commande.getStatus() == CommandeStatus.CANCELLED) {
+            return ScanStatus.CANCELLED;
+        }
+        return commande.getScannedAt() == null ? ScanStatus.VALIDATED : ScanStatus.ALREADY_USED;
     }
 
     // Survente : les places payées, cette commande comprise, dépassent la jauge.

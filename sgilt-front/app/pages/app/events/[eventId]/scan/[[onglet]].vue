@@ -5,9 +5,8 @@
     /app/events/42/scan/recap   onglet Récap (les commandes, comme l'onglet Commandes de la billetterie)
   [[onglet]] (doubles crochets) = segment facultatif ; un segment inconnu ramène sur Scan. La croix
   ramène à la billetterie. N'existe que si le back-office a activé la billetterie (sinon, retour au board).
-  Scan : un QR lu fige la caméra et affiche le résultat par-dessus ; entrée validée → QR suivant
-  tout seul après RESUME_DELAY_MS, sinon au toucher « Scanner le suivant » (un refus ne doit pas
-  disparaître pendant que l'organisateur parle à la personne).
+  Scan : un QR lu fige la caméra et affiche le résultat par-dessus (règles d'enchaînement dans
+  useTicketScan) ; les compteurs sont rechargés après chaque entrée validée.
 -->
 <template>
   <div class="scan-screen">
@@ -35,14 +34,8 @@
         </p>
 
         <div class="stage">
-          <TicketScanner :paused="checking || showsResult" @detect="onDetect" />
-          <ScanResultCard
-            v-if="showsResult"
-            class="result"
-            :result="result"
-            :failed="scanFailed"
-            @next="next"
-          />
+          <TicketScanner :paused="checking || !!outcome" @detect="scan" />
+          <ScanResultCard v-if="outcome" class="result" :outcome="outcome" @next="next" />
         </div>
       </div>
 
@@ -65,8 +58,7 @@ import ScanTabs from '~/components/evenement/ScanTabs.vue'
 import TicketScanner from '~/components/evenement/TicketScanner.vue'
 import { useOrganizerCommandes } from '~/data/ticketing/useOrganizerCommandes'
 import { useOrganizerPublicPage } from '~/data/ticketing/useOrganizerPublicPage'
-import type { ScanResult } from '~/data/ticketing/domain/Scan'
-import { scanEBillet } from '~/data/ticketing/service/scanService'
+import { useTicketScan } from '~/data/ticketing/useTicketScan'
 import { useEventContext } from '~/data/evenement/useEventContext'
 import { scanTabOf } from '~/constants/scan-tabs'
 
@@ -95,44 +87,11 @@ watch(
   { immediate: true },
 )
 
-// Entrée validée : délai avant de reprendre la lecture tout seul.
-const RESUME_DELAY_MS = 2000
-
-// Places entrées et vendues : les ventes de la billetterie, comme sur son écran ; rechargées après
-// chaque entrée validée.
+// Places entrées et vendues : les ventes de la billetterie, comme sur son écran.
 const { publicPage, load: loadPublicPage } = useOrganizerPublicPage(eventId)
 
-const result = ref<ScanResult | null>(null)
-// Vérification impossible (réseau, serveur) : affichée comme un refus, à rescanner.
-const scanFailed = ref(false)
-// Vérification en cours : la caméra est figée, un autre QR lu est ignoré.
-const checking = ref(false)
-const showsResult = computed(() => !!result.value || scanFailed.value)
-let resumeTimer: ReturnType<typeof setTimeout> | undefined
-
-async function onDetect(qrContent: string) {
-  if (checking.value || showsResult.value) return
-  checking.value = true
-  try {
-    result.value = await scanEBillet(eventId, qrContent)
-  } catch {
-    scanFailed.value = true
-  } finally {
-    checking.value = false
-  }
-  if (result.value?.status === 'VALIDATED') {
-    loadPublicPage()
-    resumeTimer = setTimeout(next, RESUME_DELAY_MS)
-  }
-}
-
-// Efface le résultat : la caméra reprend la lecture.
-function next() {
-  clearTimeout(resumeTimer)
-  result.value = null
-  scanFailed.value = false
-}
-onBeforeUnmount(() => clearTimeout(resumeTimer))
+// La caméra est figée pendant la vérification et tant qu'une issue est affichée.
+const { outcome, checking, scan, next } = useTicketScan(eventId, loadPublicPage)
 
 const {
   commandes,

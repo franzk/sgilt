@@ -29,15 +29,7 @@
         </button>
       </div>
 
-      <p v-if="!filteredCommandes.length" class="empty">
-        {{
-          activeFilter === ENTERED_FILTER
-            ? $t('evenement.billetterie.commandes.empty-entered')
-            : activeFilter
-              ? $t('evenement.billetterie.commandes.empty-status')
-              : $t('evenement.billetterie.commandes.empty')
-        }}
-      </p>
+      <p v-if="!filteredCommandes.length" class="empty">{{ emptyMessage }}</p>
 
       <ul v-else class="list">
         <li v-for="commande in filteredCommandes" :key="commande.id" class="card">
@@ -53,7 +45,7 @@
           </span>
           <div class="foot">
             <span class="amount">
-              {{ $t('evenement.billetterie.commandes.tickets', commande.quantity) }}
+              {{ $t('evenement.billetterie.commandes.places', commande.quantity) }}
               · {{ formatPrice(commande.totalCents / 100) }}
             </span>
             <span class="date">{{ formatDateTime(commande.createdAt) }}</span>
@@ -80,17 +72,17 @@ const ALL_FILTER_KEY = 'ALL'
 // Filtre « Entrées » : les commandes dont l'e-billet a été scanné (pas un statut de commande).
 const ENTERED_FILTER = 'ENTERED'
 
-// Filtre de la liste : un statut, les entrées, ou null pour toutes.
-type CommandeFilter = OrganizerCommandeStatus | typeof ENTERED_FILTER | null
+// Filtre de la liste autre que « Toutes » : un statut, ou les entrées.
+type CommandeFilterKey = OrganizerCommandeStatus | typeof ENTERED_FILTER
 
 // Ordre des filtres après « Toutes » : les entrées juste après les payées, dont elles font partie.
-const FILTERS: Exclude<CommandeFilter, null>[] = [
+const FILTERS: CommandeFilterKey[] = [
   'PAID',
   ENTERED_FILTER,
   ...ORGANIZER_COMMANDE_STATUSES.filter((status) => status !== 'PAID'),
 ]
 
-function matches(commande: OrganizerCommande, filter: Exclude<CommandeFilter, null>): boolean {
+function matches(commande: OrganizerCommande, filter: CommandeFilterKey): boolean {
   return filter === ENTERED_FILTER ? !!commande.scannedAt : commande.status === filter
 }
 
@@ -107,9 +99,9 @@ defineEmits<{
 const { t } = useI18n()
 
 // null : toutes les commandes. Payées par défaut : ce sont elles qui comptent (ventes, entrées).
-const activeFilter = ref<CommandeFilter>('PAID')
+const activeFilter = ref<CommandeFilterKey | null>('PAID')
 
-const filters = computed<{ key: CommandeFilter; label: string; count: number }[]>(() => [
+const filters = computed<{ key: CommandeFilterKey | null; label: string; count: number }[]>(() => [
   { key: null, label: t('evenement.billetterie.commandes.filters.ALL'), count: props.commandes.length },
   ...FILTERS.map((filter) => ({
     key: filter,
@@ -121,6 +113,13 @@ const filters = computed<{ key: CommandeFilter; label: string; count: number }[]
 const filteredCommandes = computed(() => {
   const filter = activeFilter.value
   return filter === null ? props.commandes : props.commandes.filter((commande) => matches(commande, filter))
+})
+
+// Liste vide : aucune commande du tout, aucune avec ce statut, ou aucun e-billet scanné.
+const emptyMessage = computed(() => {
+  if (activeFilter.value === ENTERED_FILTER) return t('evenement.billetterie.commandes.empty-entered')
+  if (activeFilter.value) return t('evenement.billetterie.commandes.empty-status')
+  return t('evenement.billetterie.commandes.empty')
 })
 </script>
 

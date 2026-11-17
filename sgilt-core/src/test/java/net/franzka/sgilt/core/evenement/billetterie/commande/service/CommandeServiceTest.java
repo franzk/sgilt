@@ -43,7 +43,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -472,10 +471,13 @@ class CommandeServiceTest {
 
         @Test
         void givenPendingCommande_whenScan_thenUnknownWithoutCommande() {
-            givenCommandeOfCode(CommandeStatus.PENDING, null);
+            Commande commande = givenCommandeOfCode(CommandeStatus.PENDING, null);
             when(commandeMapper.toScanResultDto(ScanStatus.UNKNOWN, null)).thenReturn(result);
 
             assertThat(commandeService.scan(billetterie, QR_CONTENT)).isSameAs(result);
+            // Rien de la commande n'est montré : le résultat est construit sans elle.
+            verify(commandeMapper).toScanResultDto(ScanStatus.UNKNOWN, null);
+            verify(commandeMapper, never()).toScanResultDto(any(), eq(commande));
             verify(commandeRepository, never()).save(any());
         }
 
