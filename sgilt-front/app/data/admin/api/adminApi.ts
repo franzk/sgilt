@@ -20,6 +20,7 @@ import type {
   AdminEvenementFeaturesDto,
   AdminEvenementListItemDto,
 } from '../dto/AdminEvenementDto'
+import type { ClientInvitationDto, CreateClientInvitationRequestDto } from '../dto/ClientInvitationDto'
 
 /**
  * Liste tous les prestataires actifs avec leur statut, pour le back-office admin.
@@ -133,6 +134,30 @@ export async function moveSousCategorieApi(key: string, direction: MoveDirection
  */
 export async function deleteSousCategorieApi(key: string): Promise<void> {
   return apiFetch<void>(`/admin/sous-categories/${key}`, { method: 'DELETE' })
+}
+
+/**
+ * Crée un client invité (compte sans mot de passe), son événement et sa réservation confirmée chez
+ * un prestataire. Aucun mail n'est envoyé au client à ce stade.
+ */
+export async function createClientInvitationApi(body: CreateClientInvitationRequestDto): Promise<ClientInvitationDto> {
+  return apiFetch<ClientInvitationDto>('/admin/invitations', { method: 'POST', body })
+}
+
+/**
+ * Liste les invitations client, avec leur statut.
+ */
+export async function listClientInvitationsApi(): Promise<ClientInvitationDto[]> {
+  return apiFetch<ClientInvitationDto[]>('/admin/invitations')
+}
+
+/**
+ * Envoie le mail d'invitation au client, ou le relance avec un nouveau lien d'activation.
+ *
+ * @param id identifiant de l'invitation
+ */
+export async function sendClientInvitationApi(id: string): Promise<void> {
+  return apiFetch<void>(`/admin/invitations/${id}/send`, { method: 'POST' })
 }
 
 /**

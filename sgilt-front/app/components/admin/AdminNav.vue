@@ -18,6 +18,7 @@ const { t } = useI18n()
 const tabs = computed(() => [
   { to: '/admin', label: t('admin.nav.prestataires') },
   { to: '/admin/onboarding', label: t('admin.nav.onboarding') },
+  { to: '/admin/invitations', label: t('admin.nav.invitations') },
   { to: '/admin/reservations', label: t('admin.nav.reservations') },
   { to: '/admin/sous-categories', label: t('admin.nav.sous-categories') },
   { to: '/admin/evenements-publics', label: t('admin.nav.evenements-publics') },

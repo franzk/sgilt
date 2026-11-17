@@ -17,6 +17,8 @@ import type { CategorieAdminDto, SousCategorieAdminDto } from '../dto/CategorieA
 import type { CategorieAdmin, SousCategorieAdmin } from '../domain/CategorieAdmin'
 import type { AdminEvenementListItemDto } from '../dto/AdminEvenementDto'
 import type { AdminEvenementListItem } from '../domain/AdminEvenement'
+import type { ClientInvitationDto, CreateClientInvitationRequestDto } from '../dto/ClientInvitationDto'
+import type { ClientInvitation, ClientInvitationCreation } from '../domain/ClientInvitation'
 
 export function mapPrestataireAdminFormat(dto: PrestataireAdminListItemDto): PrestataireAdminFormat {
   return {
@@ -117,5 +119,31 @@ export function mapAdminEvenementListItem(dto: AdminEvenementListItemDto): Admin
       pagePubliqueEnabled: dto.pagePubliqueEnabled,
       billetterieEnabled: dto.billetterieEnabled,
     },
+  }
+}
+
+export function mapClientInvitation(dto: ClientInvitationDto): ClientInvitation {
+  return {
+    id: dto.id,
+    firstName: dto.firstName,
+    lastName: dto.lastName,
+    email: dto.email,
+    eventType: dto.eventType,
+    eventDate: dto.eventDate,
+    prestataireName: dto.prestataireName,
+    status: dto.status,
+    linkSentAt: dto.linkSentAt,
+    linkExpiresAt: dto.linkExpiresAt,
+  }
+}
+
+export function mapClientInvitationRequest(creation: ClientInvitationCreation): CreateClientInvitationRequestDto {
+  return {
+    firstName: creation.firstName,
+    lastName: creation.lastName,
+    email: creation.email,
+    eventType: creation.eventType,
+    eventDate: creation.eventDate,
+    prestataireId: creation.prestataireId,
   }
 }

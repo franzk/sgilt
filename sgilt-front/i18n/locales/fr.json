@@ -1581,9 +1581,50 @@
     "nav": {
       "prestataires": "Prestataires",
       "onboarding": "Onboardings",
+      "invitations": "Invitations",
       "reservations": "Réservations",
       "sous-categories": "Sous-catégories",
       "evenements-publics": "Pages événement"
+    },
+    "invitations": {
+      "title": "Invitations clients",
+      "loading": "Chargement…",
+      "empty": "Aucune invitation.",
+      "errors": {
+        "TECHNICAL": "Impossible de charger les invitations. Réessayez."
+      },
+      "tabs": {
+        "list": "Liste",
+        "create": "Inviter un client"
+      },
+      "status": {
+        "NOT_SENT": "Non envoyée",
+        "SENT": "Envoyée",
+        "ACTIVATED": "Compte activé"
+      },
+      "sent-at": "Envoyée le {date}",
+      "expires-at": "expire le {date}",
+      "send": "Envoyer l'invitation",
+      "resend": "Relancer",
+      "send-success": "Invitation envoyée.",
+      "send-error": "Échec de l'envoi du mail.",
+      "form": {
+        "title": "Inviter un client",
+        "first-name": "Prénom",
+        "last-name": "Nom",
+        "email": "Email",
+        "event-type": "Type d'événement",
+        "event-date": "Date de l'événement",
+        "prestataire": "Prestataire",
+        "hint": "Crée le compte du client, son événement et sa réservation confirmée chez le prestataire. Aucun mail n'est envoyé au client : le prestataire dépose ses documents, puis envoyez l'invitation depuis la liste.",
+        "submit": "Créer",
+        "success": "Client {email} créé. Envoyez l'invitation depuis la liste une fois les documents déposés.",
+        "errors": {
+          "MISSING_FIELDS": "Renseignez tous les champs.",
+          "EMAIL_ALREADY_EXISTS": "Cet email a déjà un compte Sgilt.",
+          "TECHNICAL": "Une erreur est survenue. Réessayez."
+        }
+      }
     },
     "evenements-publics": {
       "title": "Pages événement",
