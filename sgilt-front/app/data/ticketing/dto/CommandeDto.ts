@@ -41,6 +41,8 @@ export interface OrganizerCommandeDto {
   totalCents: number
   // Heure locale du serveur (yyyy-MM-ddTHH:mm:ss).
   createdAt: string
+  // Heure du scan de l'e-billet à l'entrée (même format) ; null s'il n'a pas été scanné.
+  scannedAt: string | null
 }
 
 // Infos de l'événement d'une commande, pour son e-billet : le bandeau de sa page, quand, où, et les

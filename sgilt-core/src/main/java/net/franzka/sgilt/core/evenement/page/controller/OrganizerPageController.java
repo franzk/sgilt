@@ -4,6 +4,8 @@ import net.franzka.sgilt.core.evenement.page.dto.EventPageDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.OrganizerCommandeDto;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.ScanRequest;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.ScanResultDto;
 import net.franzka.sgilt.core.evenement.billetterie.dto.TicketingSettingsDto;
 import net.franzka.sgilt.core.evenement.billetterie.exception.BilletterieNotFoundException;
 import net.franzka.sgilt.core.evenement.billetterie.exception.BilletterieOpenWithoutPublishedPageException;
@@ -32,9 +34,9 @@ import java.util.UUID;
 
 /**
  * Controller HTTP de la page publique d'un événement administrée par son organisateur, dans son
- * board : contenu, publication, billetterie, ventes et commandes. Réservé au propriétaire de l'événement, et
- * seulement si le back-office a activé sa page publique. Chaque modification renvoie tout l'état,
- * comme le GET.
+ * board : contenu, publication, billetterie, ventes, commandes et scan des e-billets à l'entrée.
+ * Réservé au propriétaire de l'événement, et seulement si le back-office a activé sa page publique.
+ * Chaque modification renvoie tout l'état, comme le GET.
  */
 @RestController
 @RequiredArgsConstructor
@@ -177,6 +179,26 @@ public class OrganizerPageController implements OrganizerPageApi {
     public ResponseEntity<List<OrganizerCommandeDto>> getCommandes(UUID eventId) {
         log.info("GET /user/events/{}/page-publique/billetterie/commandes", eventId);
         return ResponseEntity.ok(billetterieService.getOrganizerCommandes(ownedEvent(eventId).getId()));
+    }
+
+    /**
+     * Scanne un e-billet à l'entrée de l'événement : usage unique, le premier scan fait entrer toutes
+     * les places de sa commande. Toujours 200 quand la billetterie existe : chaque résultat (validé,
+     * déjà utilisé, annulé, inconnu) est une issue normale du scan.
+     *
+     * @param eventId l'identifiant de l'événement
+     * @param request le contenu du QR lu
+     * @return le résultat du scan
+     * @throws EvenementNotFoundException    si l'événement n'existe pas
+     * @throws EvenementNotAllowedException  si l'événement n'appartient pas à l'utilisateur connecté
+     * @throws PagePubliqueDisabledException si le back-office n'a pas activé sa page publique
+     * @throws BilletterieNotFoundException  si l'événement n'a pas de billetterie ou qu'elle est désactivée
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<ScanResultDto> scan(UUID eventId, ScanRequest request) {
+        log.info("POST /user/events/{}/page-publique/billetterie/scans", eventId);
+        return ResponseEntity.ok(billetterieService.scan(ownedEvent(eventId).getId(), request.qrContent()));
     }
 
     // Événement de l'utilisateur connecté, dont le back-office a activé la page publique.

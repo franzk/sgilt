@@ -35,6 +35,7 @@ export interface TicketingSalesDto {
   soldTickets: number
   heldTickets: number
   capacity: number
+  enteredTickets: number
 }
 
 export interface OrganizerPublicPageDto {

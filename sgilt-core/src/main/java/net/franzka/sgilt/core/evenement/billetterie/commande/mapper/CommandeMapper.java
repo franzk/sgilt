@@ -2,11 +2,14 @@ package net.franzka.sgilt.core.evenement.billetterie.commande.mapper;
 
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.OrganizerCommandeStatus;
+import net.franzka.sgilt.core.evenement.billetterie.commande.domain.ScanStatus;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.EBilletDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.OrganizerCommandeDto;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.ScanResultDto;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.ScannedCommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
 import net.franzka.sgilt.core.evenement.page.dto.EvenementInfosDto;
 import org.mapstruct.Mapper;
@@ -36,6 +39,7 @@ public interface CommandeMapper {
     @Mapping(target = "status",         constant = "PENDING")
     @Mapping(target = "expiresAt",      source = "expiresAt")
     @Mapping(target = "code",           ignore = true)
+    @Mapping(target = "scannedAt",      ignore = true)
     Commande toCommande(CreateCommandeRequest request, Billetterie billetterie, LocalDateTime expiresAt);
 
     /**
@@ -76,7 +80,27 @@ public interface CommandeMapper {
     @Mapping(target = "quantity",       source = "commande.quantity")
     @Mapping(target = "totalCents",     expression = "java(commande.getQuantity() * commande.getUnitPriceCents())")
     @Mapping(target = "createdAt",      source = "commande.createdAt")
+    @Mapping(target = "scannedAt",      source = "commande.scannedAt")
     OrganizerCommandeDto toOrganizerCommandeDto(Commande commande, OrganizerCommandeStatus status);
+
+    /**
+     * Mappe le résultat du scan d'un e-billet, pour l'organisateur à l'entrée.
+     *
+     * @param status   le résultat, calculé par le service
+     * @param commande la commande de l'e-billet, null pour UNKNOWN
+     * @return le résultat, avec l'acheteur, les places et l'heure du scan (sans commande si null)
+     */
+    @Mapping(target = "status",   source = "status")
+    @Mapping(target = "commande", source = "commande")
+    ScanResultDto toScanResultDto(ScanStatus status, Commande commande);
+
+    /**
+     * Mappe la commande d'un e-billet scanné.
+     *
+     * @param commande la commande
+     * @return l'acheteur, les places et l'heure du scan
+     */
+    ScannedCommandeDto toScannedCommandeDto(Commande commande);
 
     /**
      * Mappe une commande payée vers son e-billet.

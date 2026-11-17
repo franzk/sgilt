@@ -4,7 +4,8 @@
     /app/events/42/billetterie             onglet Réglages (statut, prix, jauge, avec leur bouton)
     /app/events/42/billetterie/commandes   onglet Commandes (liste filtrable par statut)
   [[onglet]] (doubles crochets) = segment facultatif ; un segment inconnu ramène sur Réglages.
-  Au-dessus des onglets, toujours visibles : les ventes (si la billetterie existe). N'existe que si
+  Au-dessus des onglets, toujours visibles : les ventes (si la billetterie existe) et le bouton qui
+  ouvre le scan des e-billets en plein écran (/app/events/42/scan). N'existe que si
   le back-office a activé la billetterie (sinon, retour au board).
 -->
 <template>
@@ -26,6 +27,11 @@
 
       <template v-else-if="publicPage?.billetterieEnabled">
         <PublicPageSalesBlock v-if="publicPage.sales" :sales="publicPage.sales" />
+
+        <SgiltButton variant="primary" class="scan-button" @click="navigateTo(`${boardPath}/scan`)">
+          <QrScan2Icon class="icon" aria-hidden="true" />
+          {{ $t('evenement.billetterie.scan') }}
+        </SgiltButton>
 
         <BilletterieTabs v-if="tab" :billetterie-path="billetteriePath" :active="tab" />
 
@@ -55,7 +61,7 @@
 
 <script setup lang="ts">
 // La billetterie est chargée avec la page publique dont elle dépend (même appel, même état).
-import { ArrowLeftIcon } from '@remixicons/vue/line'
+import { ArrowLeftIcon, QrScan2Icon } from '@remixicons/vue/line'
 import Sk from '~/components/basics/Sk.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import BilletterieCommandesBlock from '~/components/evenement/BilletterieCommandesBlock.vue'
@@ -166,6 +172,15 @@ watch([notFound, publicPage], ([pageNotFound, page]) => {
       font-size: 1.75rem;
       font-weight: 600;
       color: $brand-primary;
+    }
+
+    .scan-button {
+      gap: $spacing-xs;
+
+      .icon {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
     }
 
     .skeleton {

@@ -4,6 +4,7 @@
  * servies par le même appel : chargées une fois, puis remplacées par l'état renvoyé à
  * chaque modification (contenu, publication, billetterie). Chaque bloc d'écran a son
  * enregistrement et son motif d'échec (suffixe de clé i18n evenement.page-publique.errors.*).
+ * Le scan des e-billets (/app/events/[eventId]/scan) n'en lit que les ventes, pour ses compteurs.
  */
 import type { OrganizerPublicPage, PageContentForm, TicketingSettings } from './domain/OrganizerPublicPage'
 import {

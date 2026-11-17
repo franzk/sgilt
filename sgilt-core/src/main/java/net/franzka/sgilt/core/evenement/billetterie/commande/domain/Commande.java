@@ -66,6 +66,9 @@ public class Commande {
     @Column(unique = true)
     private String code;
 
+    /** Heure du scan de son e-billet à l'entrée (usage unique) ; null tant qu'il n'a pas été scanné. */
+    private LocalDateTime scannedAt;
+
     /** Fin du blocage des places d'une commande PENDING. */
     @Column(nullable = false)
     private LocalDateTime expiresAt;

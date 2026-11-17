@@ -1,8 +1,10 @@
 <!--
-  Contenu de l'onglet Commandes de l'écran Billetterie du board : toutes les commandes de la billetterie, les
-  plus récentes d'abord (ordre du back), filtrables par statut (Toutes, Payées, Annulées, Paiement en
-  cours, Abandonnées, chacun avec son nombre). Une carte par commande : acheteur, email, nombre
-  de billets, montant, date et heure, badge de statut. Lecture seule.
+  Contenu de l'onglet Commandes de l'écran Billetterie du board, et de l'onglet Récap du scan des
+  e-billets : toutes les commandes de la billetterie, les plus récentes d'abord (ordre du back),
+  filtrables (Toutes, Payées, Entrées, Annulées, Paiement en cours, Abandonnées, chacun avec son
+  nombre), Payées par défaut. Entrées : les commandes dont l'e-billet a été scanné à l'entrée. Une
+  carte par commande : acheteur, email, nombre de places, montant, date et heure, badge de statut,
+  et l'heure d'entrée si l'e-billet a été scanné. Lecture seule.
 -->
 <template>
   <section class="commandes-block">
@@ -17,23 +19,17 @@
       <div class="filters">
         <button
           v-for="filter in filters"
-          :key="filter.status ?? ALL_FILTER_KEY"
+          :key="filter.key ?? ALL_FILTER_KEY"
           type="button"
           class="filter"
-          :class="{ active: activeStatus === filter.status }"
-          @click="activeStatus = filter.status"
+          :class="{ active: activeFilter === filter.key }"
+          @click="activeFilter = filter.key"
         >
           {{ filter.label }} · {{ filter.count }}
         </button>
       </div>
 
-      <p v-if="!filteredCommandes.length" class="empty">
-        {{
-          activeStatus
-            ? $t('evenement.billetterie.commandes.empty-status')
-            : $t('evenement.billetterie.commandes.empty')
-        }}
-      </p>
+      <p v-if="!filteredCommandes.length" class="empty">{{ emptyMessage }}</p>
 
       <ul v-else class="list">
         <li v-for="commande in filteredCommandes" :key="commande.id" class="card">
@@ -44,9 +40,12 @@
             </span>
           </div>
           <span class="email">{{ commande.buyerEmail }}</span>
+          <span v-if="commande.scannedAt" class="entered">
+            {{ $t('evenement.billetterie.commandes.entered-at', { time: formatTimeOfDay(commande.scannedAt) }) }}
+          </span>
           <div class="foot">
             <span class="amount">
-              {{ $t('evenement.billetterie.commandes.tickets', commande.quantity) }}
+              {{ $t('evenement.billetterie.commandes.places', commande.quantity) }}
               · {{ formatPrice(commande.totalCents / 100) }}
             </span>
             <span class="date">{{ formatDateTime(commande.createdAt) }}</span>
@@ -65,11 +64,27 @@ import {
   type OrganizerCommande,
   type OrganizerCommandeStatus,
 } from '~/data/ticketing/domain/Commande'
-import { formatDateTime } from '~/utils/dateUtils'
+import { formatDateTime, formatTimeOfDay } from '~/utils/dateUtils'
 import { formatPrice } from '~/utils/priceUtils'
 
 // Clé du filtre « Toutes » (pas de statut).
 const ALL_FILTER_KEY = 'ALL'
+// Filtre « Entrées » : les commandes dont l'e-billet a été scanné (pas un statut de commande).
+const ENTERED_FILTER = 'ENTERED'
+
+// Filtre de la liste autre que « Toutes » : un statut, ou les entrées.
+type CommandeFilterKey = OrganizerCommandeStatus | typeof ENTERED_FILTER
+
+// Ordre des filtres après « Toutes » : les entrées juste après les payées, dont elles font partie.
+const FILTERS: CommandeFilterKey[] = [
+  'PAID',
+  ENTERED_FILTER,
+  ...ORGANIZER_COMMANDE_STATUSES.filter((status) => status !== 'PAID'),
+]
+
+function matches(commande: OrganizerCommande, filter: CommandeFilterKey): boolean {
+  return filter === ENTERED_FILTER ? !!commande.scannedAt : commande.status === filter
+}
 
 const props = defineProps<{
   commandes: OrganizerCommande[]
@@ -83,23 +98,29 @@ defineEmits<{
 
 const { t } = useI18n()
 
-// null : toutes les commandes.
-const activeStatus = ref<OrganizerCommandeStatus | null>(null)
+// null : toutes les commandes. Payées par défaut : ce sont elles qui comptent (ventes, entrées).
+const activeFilter = ref<CommandeFilterKey | null>('PAID')
 
-const filters = computed<{ status: OrganizerCommandeStatus | null; label: string; count: number }[]>(() => [
-  { status: null, label: t('evenement.billetterie.commandes.filters.ALL'), count: props.commandes.length },
-  ...ORGANIZER_COMMANDE_STATUSES.map((status) => ({
-    status,
-    label: t(`evenement.billetterie.commandes.filters.${status}`),
-    count: props.commandes.filter((commande) => commande.status === status).length,
+const filters = computed<{ key: CommandeFilterKey | null; label: string; count: number }[]>(() => [
+  { key: null, label: t('evenement.billetterie.commandes.filters.ALL'), count: props.commandes.length },
+  ...FILTERS.map((filter) => ({
+    key: filter,
+    label: t(`evenement.billetterie.commandes.filters.${filter}`),
+    count: props.commandes.filter((commande) => matches(commande, filter)).length,
   })),
 ])
 
-const filteredCommandes = computed(() =>
-  activeStatus.value === null
-    ? props.commandes
-    : props.commandes.filter((commande) => commande.status === activeStatus.value),
-)
+const filteredCommandes = computed(() => {
+  const filter = activeFilter.value
+  return filter === null ? props.commandes : props.commandes.filter((commande) => matches(commande, filter))
+})
+
+// Liste vide : aucune commande du tout, aucune avec ce statut, ou aucun e-billet scanné.
+const emptyMessage = computed(() => {
+  if (activeFilter.value === ENTERED_FILTER) return t('evenement.billetterie.commandes.empty-entered')
+  if (activeFilter.value) return t('evenement.billetterie.commandes.empty-status')
+  return t('evenement.billetterie.commandes.empty')
+})
 </script>
 
 <style scoped lang="scss">
@@ -234,6 +255,12 @@ const filteredCommandes = computed(() =>
         font-size: $font-size-sm;
         color: $text-secondary;
         overflow-wrap: anywhere;
+      }
+
+      .entered {
+        font-size: $font-size-sm;
+        font-weight: 600;
+        color: $state-success;
       }
 
       .foot {

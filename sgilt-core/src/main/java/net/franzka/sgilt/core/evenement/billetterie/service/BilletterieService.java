@@ -2,6 +2,7 @@ package net.franzka.sgilt.core.evenement.billetterie.service;
 
 import lombok.RequiredArgsConstructor;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.OrganizerCommandeDto;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.ScanResultDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.service.CommandeService;
 import net.franzka.sgilt.core.evenement.billetterie.domain.Billetterie;
 import net.franzka.sgilt.core.evenement.billetterie.domain.BilletterieStatus;
@@ -88,7 +89,24 @@ public class BilletterieService {
                 .map(billetterie -> new TicketingSalesDto(
                         commandeService.getSoldTickets(billetterie),
                         commandeService.getHeldTickets(billetterie),
-                        billetterie.getCapacity()));
+                        billetterie.getCapacity(),
+                        commandeService.getEnteredTickets(billetterie)));
+    }
+
+    /**
+     * Scanne un e-billet à l'entrée d'un événement, pour son organisateur. Voir
+     * {@link CommandeService#scan}.
+     *
+     * @param evenementId l'identifiant de l'événement
+     * @param qrContent   le contenu brut du QR lu
+     * @return le résultat du scan
+     * @throws BilletterieNotFoundException si l'événement n'a pas de billetterie ou qu'elle est désactivée
+     */
+    public ScanResultDto scan(UUID evenementId, String qrContent) {
+        Billetterie billetterie = billetterieRepository.findByEvenementId(evenementId)
+                .filter(this::isEnabled)
+                .orElseThrow(() -> new BilletterieNotFoundException(evenementId));
+        return commandeService.scan(billetterie, qrContent);
     }
 
     /**

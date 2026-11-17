@@ -4,10 +4,12 @@ import net.franzka.sgilt.core.admin.mailer.AdminMailerService;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.CommandeStatus;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.OrganizerCommandeStatus;
+import net.franzka.sgilt.core.evenement.billetterie.commande.domain.ScanStatus;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.OrganizerCommandeDto;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.ScanResultDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.CommandeNotFoundException;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.CommandeNotPaidException;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.NotEnoughTicketsException;
@@ -36,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -191,6 +194,18 @@ class CommandeServiceTest {
                     .thenReturn(commandes(List.of(2, 3)));
 
             assertThat(commandeService.getSoldTickets(billetterie)).isEqualTo(5);
+        }
+    }
+
+    @Nested
+    class GetEnteredTickets {
+
+        @Test
+        void givenScannedPaidCommandes_whenGetEnteredTickets_thenSumsTheirPlaces() {
+            when(commandeRepository.findByBilletterieIdAndStatusAndScannedAtIsNotNull(BILLETTERIE_ID, CommandeStatus.PAID))
+                    .thenReturn(commandes(List.of(4, 2)));
+
+            assertThat(commandeService.getEnteredTickets(billetterie)).isEqualTo(6);
         }
     }
 
@@ -400,6 +415,86 @@ class CommandeServiceTest {
 
             assertThatThrownBy(() -> commandeService.markPaid(commandeId))
                     .isInstanceOf(CommandeNotFoundException.class);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // scan
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class Scan {
+
+        private static final String CODE = "abc123";
+        private static final String QR_CONTENT = "SGILT:C:" + CODE;
+
+        private final ScanResultDto result = mock(ScanResultDto.class);
+
+        // La commande de cette billetterie qui a le code du QR.
+        private Commande givenCommandeOfCode(CommandeStatus status, LocalDateTime scannedAt) {
+            Commande commande = Commande.builder().id(UUID.randomUUID()).status(status).scannedAt(scannedAt).build();
+            when(commandeRepository.findForUpdateByBilletterieIdAndCode(BILLETTERIE_ID, CODE))
+                    .thenReturn(Optional.of(commande));
+            return commande;
+        }
+
+        @Test
+        void givenPaidCommandeNotScanned_whenScan_thenValidatesAndRecordsScanTime() {
+            Commande commande = givenCommandeOfCode(CommandeStatus.PAID, null);
+            when(commandeMapper.toScanResultDto(ScanStatus.VALIDATED, commande)).thenReturn(result);
+
+            assertThat(commandeService.scan(billetterie, QR_CONTENT)).isSameAs(result);
+            assertThat(commande.getScannedAt()).isCloseTo(LocalDateTime.now(), within(5, ChronoUnit.SECONDS));
+            verify(commandeRepository).save(commande);
+        }
+
+        @Test
+        void givenPaidCommandeAlreadyScanned_whenScan_thenAlreadyUsedAndKeepsFirstScanTime() {
+            LocalDateTime firstScan = LocalDateTime.of(2026, 11, 20, 20, 14);
+            Commande commande = givenCommandeOfCode(CommandeStatus.PAID, firstScan);
+            when(commandeMapper.toScanResultDto(ScanStatus.ALREADY_USED, commande)).thenReturn(result);
+
+            assertThat(commandeService.scan(billetterie, QR_CONTENT)).isSameAs(result);
+            assertThat(commande.getScannedAt()).isEqualTo(firstScan);
+            verify(commandeRepository, never()).save(any());
+        }
+
+        @Test
+        void givenCancelledCommande_whenScan_thenCancelledWithoutEntering() {
+            Commande commande = givenCommandeOfCode(CommandeStatus.CANCELLED, null);
+            when(commandeMapper.toScanResultDto(ScanStatus.CANCELLED, commande)).thenReturn(result);
+
+            assertThat(commandeService.scan(billetterie, QR_CONTENT)).isSameAs(result);
+            assertThat(commande.getScannedAt()).isNull();
+            verify(commandeRepository, never()).save(any());
+        }
+
+        @Test
+        void givenPendingCommande_whenScan_thenUnknownWithoutCommande() {
+            Commande commande = givenCommandeOfCode(CommandeStatus.PENDING, null);
+            when(commandeMapper.toScanResultDto(ScanStatus.UNKNOWN, null)).thenReturn(result);
+
+            assertThat(commandeService.scan(billetterie, QR_CONTENT)).isSameAs(result);
+            // Rien de la commande n'est montré : le résultat est construit sans elle.
+            verify(commandeMapper).toScanResultDto(ScanStatus.UNKNOWN, null);
+            verify(commandeMapper, never()).toScanResultDto(any(), eq(commande));
+            verify(commandeRepository, never()).save(any());
+        }
+
+        @Test
+        void givenCodeOfNoCommandeOfThisBilletterie_whenScan_thenUnknownWithoutCommande() {
+            when(commandeRepository.findForUpdateByBilletterieIdAndCode(BILLETTERIE_ID, CODE)).thenReturn(Optional.empty());
+            when(commandeMapper.toScanResultDto(ScanStatus.UNKNOWN, null)).thenReturn(result);
+
+            assertThat(commandeService.scan(billetterie, QR_CONTENT)).isSameAs(result);
+        }
+
+        @Test
+        void givenQrNotOfACommande_whenScan_thenUnknownWithoutLookingUp() {
+            when(commandeMapper.toScanResultDto(ScanStatus.UNKNOWN, null)).thenReturn(result);
+
+            assertThat(commandeService.scan(billetterie, "https://example.com")).isSameAs(result);
+            verify(commandeRepository, never()).findForUpdateByBilletterieIdAndCode(any(), anyString());
         }
     }
 }

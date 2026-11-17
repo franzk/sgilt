@@ -1,6 +1,7 @@
 package net.franzka.sgilt.core.evenement.billetterie.service;
 
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.OrganizerCommandeDto;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.ScanResultDto;
 import net.franzka.sgilt.core.evenement.billetterie.dto.TicketingSalesDto;
 import net.franzka.sgilt.core.evenement.billetterie.exception.BilletterieOpenWithoutPublishedPageException;
 import net.franzka.sgilt.core.evenement.billetterie.exception.CapacityBelowSoldTicketsException;
@@ -175,13 +176,14 @@ class BilletterieServiceTest {
     class GetSales {
 
         @Test
-        void givenEnabledBilletterie_whenGetSales_thenReturnsSoldHeldAndCapacity() {
+        void givenEnabledBilletterie_whenGetSales_thenReturnsSoldHeldCapacityAndEntered() {
             Billetterie billetterie = Billetterie.builder().evenement(billetterieEnabledEvenement).capacity(150).build();
             when(billetterieRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(billetterie));
             when(commandeService.getSoldTickets(billetterie)).thenReturn(42);
             when(commandeService.getHeldTickets(billetterie)).thenReturn(3);
+            when(commandeService.getEnteredTickets(billetterie)).thenReturn(12);
 
-            assertThat(billetterieService.getSales(EVENEMENT_ID)).contains(new TicketingSalesDto(42, 3, 150));
+            assertThat(billetterieService.getSales(EVENEMENT_ID)).contains(new TicketingSalesDto(42, 3, 150, 12));
         }
 
         @Test
@@ -354,6 +356,39 @@ class BilletterieServiceTest {
             when(billetterieRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.empty());
 
             assertThatCode(() -> billetterieService.checkCanBeDisabled(EVENEMENT_ID)).doesNotThrowAnyException();
+            verifyNoInteractions(commandeService);
+        }
+    }
+
+    @Nested
+    class Scan {
+
+        @Test
+        void givenEnabledBilletterie_whenScan_thenDelegatesToCommandeService() {
+            Billetterie billetterie = Billetterie.builder().evenement(billetterieEnabledEvenement).build();
+            ScanResultDto result = mock(ScanResultDto.class);
+            when(billetterieRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(billetterie));
+            when(commandeService.scan(billetterie, "SGILT:C:abc")).thenReturn(result);
+
+            assertThat(billetterieService.scan(EVENEMENT_ID, "SGILT:C:abc")).isSameAs(result);
+        }
+
+        @Test
+        void givenDisabledBilletterie_whenScan_thenThrowsNotFound() {
+            Billetterie billetterie = Billetterie.builder().evenement(billetterieDisabledEvenement).build();
+            when(billetterieRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.of(billetterie));
+
+            assertThatThrownBy(() -> billetterieService.scan(EVENEMENT_ID, "SGILT:C:abc"))
+                    .isInstanceOf(BilletterieNotFoundException.class);
+            verifyNoInteractions(commandeService);
+        }
+
+        @Test
+        void givenNoBilletterie_whenScan_thenThrowsNotFound() {
+            when(billetterieRepository.findByEvenementId(EVENEMENT_ID)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> billetterieService.scan(EVENEMENT_ID, "SGILT:C:abc"))
+                    .isInstanceOf(BilletterieNotFoundException.class);
             verifyNoInteractions(commandeService);
         }
     }

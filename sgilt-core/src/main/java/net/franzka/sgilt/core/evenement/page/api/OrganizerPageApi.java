@@ -2,6 +2,8 @@ package net.franzka.sgilt.core.evenement.page.api;
 
 import jakarta.validation.Valid;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.OrganizerCommandeDto;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.ScanRequest;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.ScanResultDto;
 import net.franzka.sgilt.core.evenement.billetterie.dto.TicketingSettingsDto;
 import net.franzka.sgilt.core.evenement.page.dto.EventPageDto;
 import net.franzka.sgilt.core.evenement.page.dto.OrganizerPublicPageDto;
@@ -40,4 +42,7 @@ public interface OrganizerPageApi {
 
     @GetMapping("/billetterie/commandes")
     ResponseEntity<List<OrganizerCommandeDto>> getCommandes(@PathVariable UUID eventId);
+
+    @PostMapping("/billetterie/scans")
+    ResponseEntity<ScanResultDto> scan(@PathVariable UUID eventId, @RequestBody @Valid ScanRequest request);
 }

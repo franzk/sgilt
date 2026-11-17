@@ -1,6 +1,8 @@
 package net.franzka.sgilt.core.evenement.page.controller;
 
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.OrganizerCommandeDto;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.ScanRequest;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.ScanResultDto;
 import net.franzka.sgilt.core.evenement.billetterie.domain.BilletterieStatus;
 import net.franzka.sgilt.core.evenement.billetterie.dto.TicketingSettingsDto;
 import net.franzka.sgilt.core.evenement.billetterie.service.BilletterieService;
@@ -207,6 +209,26 @@ class OrganizerPageControllerTest {
             ResponseEntity<List<OrganizerCommandeDto>> response = controller.getCommandes(EVENT_ID);
 
             assertThat(response.getBody()).isSameAs(commandes);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // scan
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class Scan {
+
+        @Test
+        void givenOwnedEvent_whenScan_thenReturnsTheScanResult() {
+            ScanResultDto result = mock(ScanResultDto.class);
+            when(evenementService.getOwnedEventWithPagePublique(EVENT_ID, USER_ID)).thenReturn(evenement);
+            when(billetterieService.scan(EVENT_ID, "SGILT:C:abc")).thenReturn(result);
+
+            ResponseEntity<ScanResultDto> response = controller.scan(EVENT_ID, new ScanRequest("SGILT:C:abc"));
+
+            assertThat(response.getStatusCode().value()).isEqualTo(200);
+            assertThat(response.getBody()).isSameAs(result);
         }
     }
 }

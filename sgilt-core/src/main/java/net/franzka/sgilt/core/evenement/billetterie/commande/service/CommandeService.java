@@ -7,10 +7,12 @@ import net.franzka.sgilt.core.evenement.billetterie.commande.domain.Commande;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.CommandeStatus;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.EntryCodeUtils;
 import net.franzka.sgilt.core.evenement.billetterie.commande.domain.OrganizerCommandeStatus;
+import net.franzka.sgilt.core.evenement.billetterie.commande.domain.ScanStatus;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CommandeSummaryDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.CreateCommandeRequest;
 import net.franzka.sgilt.core.evenement.billetterie.commande.dto.OrganizerCommandeDto;
+import net.franzka.sgilt.core.evenement.billetterie.commande.dto.ScanResultDto;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.CommandeNotFoundException;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.CommandeNotPaidException;
 import net.franzka.sgilt.core.evenement.billetterie.commande.exception.NotEnoughTicketsException;
@@ -164,6 +166,48 @@ public class CommandeService {
         return Optional.of(commande);
     }
 
+    /**
+     * Scanne un e-billet à l'entrée de l'événement d'une billetterie. Usage unique : le premier scan
+     * d'une commande payée fait entrer toutes ses places (heure du scan enregistrée), les suivants
+     * répondent ALREADY_USED. La commande est verrouillée pendant le scan : si deux téléphones
+     * scannent le même e-billet en même temps, un seul le valide. Seules les commandes de cette
+     * billetterie sont cherchées : l'e-billet d'un autre événement est inconnu. À appeler dans une
+     * transaction (celle de l'appelant) : le verrou de la commande l'exige et tient jusqu'à sa fin.
+     *
+     * @param billetterie la billetterie de l'événement
+     * @param qrContent   le contenu brut du QR lu
+     * @return le résultat du scan, avec la commande sauf pour UNKNOWN
+     */
+    public ScanResultDto scan(Billetterie billetterie, String qrContent) {
+        Optional<Commande> found = EntryCodeUtils.parseCommandeCode(qrContent)
+                .flatMap(code -> commandeRepository.findForUpdateByBilletterieIdAndCode(billetterie.getId(), code));
+        if (found.isEmpty()) {
+            log.info("Scan : e-billet inconnu — billetterieId={}", billetterie.getId());
+            return commandeMapper.toScanResultDto(ScanStatus.UNKNOWN, null);
+        }
+        Commande commande = found.get();
+        if (commande.getStatus() == CommandeStatus.PENDING) {
+            // Anomalie : le code n'est tiré qu'au passage PAID. Inconnue par sécurité, rien n'est montré.
+            log.warn("Scan : commande en attente trouvée par son code d'entrée — commandeId={}", commande.getId());
+            return commandeMapper.toScanResultDto(ScanStatus.UNKNOWN, null);
+        }
+        ScanStatus status = scanStatus(commande);
+        if (status == ScanStatus.VALIDATED) {
+            commande.setScannedAt(LocalDateTime.now());
+            commandeRepository.save(commande);
+        }
+        log.info("Scan : {} — commandeId={}", status, commande.getId());
+        return commandeMapper.toScanResultDto(status, commande);
+    }
+
+    // Résultat du scan d'une commande payée ou annulée, trouvée par son code.
+    private static ScanStatus scanStatus(Commande commande) {
+        if (commande.getStatus() == CommandeStatus.CANCELLED) {
+            return ScanStatus.CANCELLED;
+        }
+        return commande.getScannedAt() == null ? ScanStatus.VALIDATED : ScanStatus.ALREADY_USED;
+    }
+
     // Survente : les places payées, cette commande comprise, dépassent la jauge.
     private void alertIfOversold(Commande commande, int soldTickets) {
         int capacity = commande.getBilletterie().getCapacity();
@@ -198,6 +242,18 @@ public class CommandeService {
      */
     public int getSoldTickets(Billetterie billetterie) {
         return sumQuantities(commandeRepository.findByBilletterieIdAndStatus(billetterie.getId(), CommandeStatus.PAID));
+    }
+
+    /**
+     * Retourne le nombre de places entrées d'une billetterie : celles de ses commandes payées dont
+     * l'e-billet a été scanné.
+     *
+     * @param billetterie la billetterie
+     * @return le nombre de places entrées
+     */
+    public int getEnteredTickets(Billetterie billetterie) {
+        return sumQuantities(commandeRepository.findByBilletterieIdAndStatusAndScannedAtIsNotNull(
+                billetterie.getId(), CommandeStatus.PAID));
     }
 
     /**
