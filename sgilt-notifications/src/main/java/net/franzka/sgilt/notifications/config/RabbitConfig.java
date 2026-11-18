@@ -1,5 +1,6 @@
 package net.franzka.sgilt.notifications.config;
 
+import net.franzka.sgilt.notifications.notification.event.ReservationAddedBySgiltEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationContactReminderDueEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationCreatedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationFeedItemAddedEvent;
@@ -59,6 +60,12 @@ public class RabbitConfig {
      * depuis 7 jours — rappel au client.
      */
     public static final String RESERVATION_CONTACT_REMINDER_DUE_RK = "reservation.contact_reminder_due";
+
+    /**
+     * Routing key publiée par {@code sgilt-core} quand Sgilt crée depuis le BO une réservation
+     * directement confirmée pour un client invité — notification au prestataire.
+     */
+    public static final String RESERVATION_ADDED_BY_SGILT_RK = "reservation.added_by_sgilt";
 
     private static final String DOMAIN_EVENTS_DLQ = "notifications.domain-events.dlq";
 
@@ -151,6 +158,19 @@ public class RabbitConfig {
     }
 
     /**
+     * Lie la queue partagée à l'exchange des évènements de domaine sur la routing key
+     * {@value #RESERVATION_ADDED_BY_SGILT_RK}.
+     *
+     * @return le binding
+     */
+    @Bean
+    public Binding reservationAddedBySgiltBinding() {
+        return BindingBuilder.bind(domainEventsQueue())
+                .to(domainEventsExchange())
+                .with(RESERVATION_ADDED_BY_SGILT_RK);
+    }
+
+    /**
      * Convertisseur JSON pour les messages RabbitMQ. Le dispatch se fait manuellement sur la routing
      * key dans {@code DomainEventListener.onMessage(Message, ...)}, qui reçoit un {@code Message} brut
      * — Spring ne peut donc pas déduire de type depuis la signature de la méthode et retombe sur le
@@ -181,7 +201,8 @@ public class RabbitConfig {
                 RESERVATION_CREATED_RK, ReservationCreatedEvent.class,
                 RESERVATION_STATUS_CHANGED_RK, ReservationStatusChangedEvent.class,
                 RESERVATION_FEED_ITEM_ADDED_RK, ReservationFeedItemAddedEvent.class,
-                RESERVATION_CONTACT_REMINDER_DUE_RK, ReservationContactReminderDueEvent.class));
+                RESERVATION_CONTACT_REMINDER_DUE_RK, ReservationContactReminderDueEvent.class,
+                RESERVATION_ADDED_BY_SGILT_RK, ReservationAddedBySgiltEvent.class));
         return typeMapper;
     }
 }

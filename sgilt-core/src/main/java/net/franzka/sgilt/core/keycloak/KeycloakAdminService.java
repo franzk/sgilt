@@ -79,8 +79,25 @@ public class KeycloakAdminService {
     }
 
     /**
+     * Crée un compte client dans Keycloak, sans credential (aucun mot de passe utilisable), et lui
+     * assigne le rôle {@code USER}. Cas du client invité depuis le BO : il définira son mot de passe
+     * via le lien de l'invitation.
+     *
+     * @param email     l'adresse email (également utilisée comme username)
+     * @param firstName le prénom de l'utilisateur
+     * @param lastName  le nom de l'utilisateur
+     * @return l'UUID Keycloak du compte créé, à conserver pour compensation en cas d'échec DB
+     * @throws KeycloakException en cas d'erreur lors des appels Keycloak
+     */
+    public String createClientUserWithoutPassword(String email, String firstName, String lastName) {
+        return createUser(email, firstName, lastName, List.of(), "USER",
+                "Erreur lors de la création du compte client dans Keycloak.");
+    }
+
+    /**
      * Crée un utilisateur Keycloak avec les credentials et le rôle donné.
-     * Appelé par {@link #createClientUser} et {@link #createProUserWithoutPassword}.
+     * Appelé par {@link #createClientUser}, {@link #createClientUserWithoutPassword} et
+     * {@link #createProUserWithoutPassword}.
      *
      * @param email        l'adresse email (également utilisée comme username)
      * @param firstName    le prénom de l'utilisateur

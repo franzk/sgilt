@@ -1,6 +1,8 @@
 package net.franzka.sgilt.core.admin.api;
 
 import jakarta.validation.Valid;
+import net.franzka.sgilt.core.admin.dto.ClientInvitationDto;
+import net.franzka.sgilt.core.admin.dto.CreateClientInvitationRequest;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireRequest;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireResponse;
 import net.franzka.sgilt.core.evenement.dto.AdminEvenementFeaturesDto;
@@ -43,6 +45,12 @@ public interface AdminApi {
 
     @PostMapping("/prestataires/{id}/resend-onboarding-email")
     ResponseEntity<Void> resendOnboardingEmail(@PathVariable UUID id);
+
+    @PostMapping("/invitations")
+    ResponseEntity<ClientInvitationDto> createClientInvitation(@RequestBody @Valid CreateClientInvitationRequest request);
+
+    @GetMapping("/invitations")
+    ResponseEntity<List<ClientInvitationDto>> listClientInvitations();
 
     @GetMapping("/reservations")
     ResponseEntity<List<AdminReservationListItemDto>> listReservations(

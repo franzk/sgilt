@@ -1,8 +1,12 @@
 package net.franzka.sgilt.core.admin.controller;
 
+import net.franzka.sgilt.core.admin.dto.ClientInvitationDto;
+import net.franzka.sgilt.core.admin.dto.CreateClientInvitationRequest;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireRequest;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireResponse;
+import net.franzka.sgilt.core.admin.exception.EmailAlreadyUsedException;
 import net.franzka.sgilt.core.admin.exception.SlugAlreadyExistsException;
+import net.franzka.sgilt.core.admin.service.AdminInvitationService;
 import net.franzka.sgilt.core.admin.service.AdminOnboardingService;
 import net.franzka.sgilt.core.evenement.dto.AdminEvenementFeaturesDto;
 import net.franzka.sgilt.core.evenement.dto.AdminEvenementListItemDto;
@@ -29,6 +33,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,6 +59,9 @@ class AdminControllerTest {
 
     @Mock
     private AdminOnboardingService adminOnboardingService;
+
+    @Mock
+    private AdminInvitationService adminInvitationService;
 
     @Mock
     private ReservationService reservationService;
@@ -156,6 +164,72 @@ class AdminControllerTest {
 
         private void stubTransactionExecution() {
             when(transactionManager.getTransaction(any())).thenReturn(mock(TransactionStatus.class));
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // createClientInvitation
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class CreateClientInvitation {
+
+        private final CreateClientInvitationRequest request = new CreateClientInvitationRequest(
+                "julie@example.com", "Julie", "Martin", "mariage", LocalDate.of(2027, 6, 12), UUID.randomUUID());
+
+        @Test
+        void givenEmailAlreadyUsed_whenCreateClientInvitation_thenThrowsWithoutCreatingKeycloakUser() {
+            when(utilisateurService.existsByEmail("julie@example.com")).thenReturn(true);
+
+            assertThatThrownBy(() -> controller.createClientInvitation(request))
+                    .isInstanceOf(EmailAlreadyUsedException.class);
+            verify(keycloakAdminService, never()).createClientUserWithoutPassword(any(), any(), any());
+        }
+
+        @Test
+        void givenNewEmail_whenCreateClientInvitation_thenCreatesKeycloakUserWithoutPasswordAndReturns201() {
+            stubTransactionExecution();
+            when(keycloakAdminService.createClientUserWithoutPassword("julie@example.com", "Julie", "Martin"))
+                    .thenReturn("kc-user-id");
+            ClientInvitationDto invitation = mock(ClientInvitationDto.class);
+            when(adminInvitationService.createInvitation(request)).thenReturn(invitation);
+
+            ResponseEntity<ClientInvitationDto> response = controller.createClientInvitation(request);
+
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+            assertThat(response.getBody()).isSameAs(invitation);
+            verify(keycloakAdminService, never()).deleteUser(any());
+        }
+
+        @Test
+        void givenDbCreationFails_whenCreateClientInvitation_thenCompensatesByDeletingKeycloakUserAndRethrows() {
+            stubTransactionExecution();
+            when(keycloakAdminService.createClientUserWithoutPassword(any(), any(), any())).thenReturn("kc-user-id");
+            when(adminInvitationService.createInvitation(request)).thenThrow(new RuntimeException("erreur DB"));
+
+            assertThatThrownBy(() -> controller.createClientInvitation(request))
+                    .isInstanceOf(RuntimeException.class);
+            verify(keycloakAdminService).deleteUser("kc-user-id");
+        }
+
+        private void stubTransactionExecution() {
+            when(transactionManager.getTransaction(any())).thenReturn(mock(TransactionStatus.class));
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // listClientInvitations
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ListClientInvitations {
+
+        @Test
+        void givenInvitations_whenListClientInvitations_thenReturnsThem() {
+            List<ClientInvitationDto> invitations = List.of(mock(ClientInvitationDto.class));
+            when(adminInvitationService.listInvitations()).thenReturn(invitations);
+
+            assertThat(controller.listClientInvitations().getBody()).isEqualTo(invitations);
         }
     }
 

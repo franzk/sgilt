@@ -6,6 +6,7 @@ import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.event.ActorRole;
 import net.franzka.sgilt.core.reservation.event.FeedItemType;
+import net.franzka.sgilt.core.reservation.event.reservationaddedbysgilt.ReservationAddedBySgiltEvent;
 import net.franzka.sgilt.core.reservation.event.reservationcontactreminderdue.ReservationContactReminderDueEvent;
 import net.franzka.sgilt.core.reservation.event.reservationcreated.ReservationCreatedEvent;
 import net.franzka.sgilt.core.reservation.event.reservationfeeditemadded.ReservationFeedItemAddedEvent;
@@ -64,6 +65,33 @@ class ReservationEventMapperTest {
             assertThat(event.clientLastName()).isEqualTo("Leroy");
             assertThat(event.eventTitle()).isEqualTo("Anniversaire de Paul");
             assertThat(event.eventDate()).isEqualTo(date);
+        }
+    }
+
+    @Nested
+    class ToReservationAddedBySgiltEvent {
+
+        @Test
+        void givenConfirmedReservation_whenToReservationAddedBySgiltEvent_thenMapsAllFields() {
+            UUID reservationId = UUID.randomUUID();
+            UUID prestataireUserId = UUID.randomUUID();
+            LocalDate date = LocalDate.of(2027, 6, 12);
+            Prestataire prestataire = Prestataire.builder()
+                    .utilisateur(Utilisateur.builder().id(prestataireUserId).email("presta@example.com").build())
+                    .build();
+            Utilisateur client = Utilisateur.builder().firstName("Julie").lastName("Martin").build();
+            Reservation reservation = Reservation.builder()
+                    .id(reservationId)
+                    .prestataire(prestataire)
+                    .utilisateur(client)
+                    .date(date)
+                    .status(ReservationStatus.CONFIRMED)
+                    .build();
+
+            ReservationAddedBySgiltEvent event = mapper.toReservationAddedBySgiltEvent(reservation);
+
+            assertThat(event).isEqualTo(new ReservationAddedBySgiltEvent(
+                    reservationId, prestataireUserId, "presta@example.com", "Julie", "Martin", date));
         }
     }
 

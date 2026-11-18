@@ -3,6 +3,7 @@ package net.franzka.sgilt.core.reservation.service;
 import net.franzka.sgilt.core.evenement.service.JournalEvenementService;
 import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.reservation.event.ActorRole;
+import net.franzka.sgilt.core.reservation.event.reservationaddedbysgilt.ReservationAddedBySgiltEvent;
 import net.franzka.sgilt.core.reservation.event.reservationcreated.ReservationCreatedEvent;
 import net.franzka.sgilt.core.reservation.event.reservationstatuschanged.ReservationStatusChangedEvent;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
@@ -873,5 +874,49 @@ class ReservationServiceTest {
 
     private Reservation reservationWith(ReservationStatus status) {
         return Reservation.builder().id(UUID.randomUUID()).status(status).build();
+    }
+
+    // -------------------------------------------------------------------------
+    // createConfirmed
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class CreateConfirmed {
+
+        @Test
+        void givenInvitedClient_whenCreateConfirmed_thenSavesConfirmedReservationAndNotifiesThePro() {
+            Prestataire prestataire = Prestataire.builder().id(UUID.randomUUID()).build();
+            Utilisateur client = Utilisateur.builder().id(UUID.randomUUID()).build();
+            Evenement evenement = Evenement.builder().id(EVENT_ID).build();
+            LocalDate date = LocalDate.of(2027, 6, 12);
+            when(reservationRepository.save(any(Reservation.class))).thenAnswer(invocation -> invocation.getArgument(0));
+            ReservationAddedBySgiltEvent mappedEvent = mock(ReservationAddedBySgiltEvent.class);
+            when(reservationEventMapper.toReservationAddedBySgiltEvent(any(Reservation.class))).thenReturn(mappedEvent);
+
+            Reservation reservation = reservationService.createConfirmed(evenement, prestataire, client, date, "lieu");
+
+            assertThat(reservation.getStatus()).isEqualTo(ReservationStatus.CONFIRMED);
+            assertThat(reservation.getPrestataire()).isEqualTo(prestataire);
+            assertThat(reservation.getUtilisateur()).isEqualTo(client);
+            assertThat(reservation.getEvenement()).isEqualTo(evenement);
+            assertThat(reservation.getDate()).isEqualTo(date);
+            assertThat(reservation.getRubriqueKey()).isEqualTo("lieu");
+            verify(applicationEventPublisher).publishEvent(mappedEvent);
+            verify(reservationEventMapper, never()).toReservationCreatedEvent(any());
+            verify(reservationEventMapper, never()).toStatusChangedEventForPro(any(), any());
+        }
+
+        @Test
+        void givenInvitedClient_whenCreateConfirmed_thenAddsTheConfirmedSystemNoteToTheFeed() {
+            when(reservationRepository.save(any(Reservation.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+            reservationService.createConfirmed(Evenement.builder().build(), Prestataire.builder().build(),
+                    Utilisateur.builder().build(), LocalDate.of(2027, 6, 12), "lieu");
+
+            ArgumentCaptor<Note> noteCaptor = ArgumentCaptor.forClass(Note.class);
+            verify(noteRepository).save(noteCaptor.capture());
+            assertThat(noteCaptor.getValue().getGeneratedKey()).isEqualTo("feed.system.confirmed");
+            assertThat(noteCaptor.getValue().getIsPersonal()).isFalse();
+        }
     }
 }

@@ -1169,6 +1169,10 @@
         "title": "Une nouvelle demande ✨",
         "body": "{clientFirstName} souhaite vous parler de {eventTitle}."
       },
+      "added_by_sgilt": {
+        "title": "Une réservation confirmée vous attend",
+        "body": "Sgilt a ajouté la réservation de {clientFirstName} {clientLastName} pour le {eventDate}. Déposez-y vos documents."
+      },
       "status": {
         "in_discussion": {
           "title": "Premier contact confirmé",

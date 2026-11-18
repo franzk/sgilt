@@ -138,15 +138,7 @@ public class ReservationService {
                               String initialMessage,
                               String rubriqueKey
     ) {
-        Reservation reservation = Reservation.builder()
-                .evenement(evenement)
-                .prestataire(prestataire)
-                .utilisateur(utilisateur)
-                .date(date)
-                .status(ReservationStatus.NEW)
-                .rubriqueKey(rubriqueKey)
-                .build();
-        reservation = reservationRepository.save(reservation);
+        Reservation reservation = buildAndSave(evenement, prestataire, utilisateur, date, rubriqueKey, ReservationStatus.NEW);
 
         Note note = Note.builder()
                 .reservation(reservation)
@@ -160,6 +152,53 @@ public class ReservationService {
         applicationEventPublisher.publishEvent(reservationEventMapper.toReservationCreatedEvent(reservation));
 
         return reservation;
+    }
+
+    /**
+     * Crée et persiste une réservation directement en statut CONFIRMED : le deal a été conclu hors
+     * Sgilt et le client est invité depuis le BO. Le feed reçoit la note système de confirmation et
+     * le prestataire reçoit une notification dédiée (réservation ajoutée par Sgilt) ; le client, lui,
+     * n'est pas notifié.
+     *
+     * @param evenement   l'événement associé
+     * @param prestataire le prestataire réservé
+     * @param utilisateur le client
+     * @param date        la date de la prestation
+     * @param rubriqueKey la rubrique de l'événement où la réservation est rangée
+     * @return la réservation sauvegardée
+     */
+    public Reservation createConfirmed(Evenement evenement,
+                                       Prestataire prestataire,
+                                       Utilisateur utilisateur,
+                                       LocalDate date,
+                                       String rubriqueKey
+    ) {
+        Reservation reservation = buildAndSave(evenement, prestataire, utilisateur, date, rubriqueKey, ReservationStatus.CONFIRMED);
+
+        // crée une note système pour alimenter le feed de la réservation, visible par tout le monde
+        noteRepository.save(Note.builder()
+                .reservation(reservation)
+                .utilisateur(utilisateur)
+                .generatedKey("feed.system.confirmed")
+                .isPersonal(false)
+                .build());
+
+        applicationEventPublisher.publishEvent(reservationEventMapper.toReservationAddedBySgiltEvent(reservation));
+
+        return reservation;
+    }
+
+    // Construit et persiste une réservation dans le statut initial donné.
+    private Reservation buildAndSave(Evenement evenement, Prestataire prestataire, Utilisateur utilisateur,
+                                     LocalDate date, String rubriqueKey, ReservationStatus status) {
+        return reservationRepository.save(Reservation.builder()
+                .evenement(evenement)
+                .prestataire(prestataire)
+                .utilisateur(utilisateur)
+                .date(date)
+                .status(status)
+                .rubriqueKey(rubriqueKey)
+                .build());
     }
 
     /**

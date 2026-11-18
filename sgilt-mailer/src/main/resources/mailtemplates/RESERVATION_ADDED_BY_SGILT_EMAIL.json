@@ -1,0 +1,6 @@
+{
+  "subjectTemplate": "Une réservation confirmée vous attend sur Sgilt",
+  "htmlTemplate": "<p>Bonjour,</p>\n<p>Sgilt a ajouté la réservation confirmée de {clientFirstName} {clientLastName} pour le {eventDate}.</p>\n<p>Vous pouvez déposer vos documents (contrat, factures…) dans la fiche de la réservation : votre client les retrouvera dès son arrivée sur Sgilt.</p>\n<p><a href=\"{actionUrl}\">Voir la réservation</a></p>\n<p>À bientôt,</p>\n<p>L’équipe Sgilt.</p>\n",
+  "requiredVariables": ["clientFirstName", "clientLastName", "eventDate", "actionUrl"],
+  "htmlSafeVariables": []
+}

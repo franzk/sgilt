@@ -2,6 +2,7 @@ package net.franzka.sgilt.core.utilisateur.service;
 
 import net.bytebuddy.utility.RandomString;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
+import net.franzka.sgilt.core.utilisateur.domain.UtilisateurStatus;
 import net.franzka.sgilt.core.utilisateur.dto.UtilisateurEditDto;
 import net.franzka.sgilt.core.utilisateur.dto.UtilisateurUpdateDto;
 import net.franzka.sgilt.core.utilisateur.exception.UtilisateurAlreadyExistException;
@@ -18,6 +19,7 @@ import net.franzka.sgilt.core.utilisateur.dto.UtilisateurProfileDto;
 import net.franzka.sgilt.core.utilisateur.exception.UtilisateurNotFoundException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -247,5 +249,52 @@ class UtilisateurServiceTest {
 
     private org.assertj.core.data.TemporalUnitOffset within3Seconds() {
         return org.assertj.core.api.Assertions.within(3, java.time.temporal.ChronoUnit.SECONDS);
+    }
+
+    // -------------------------------------------------------------------------
+    // createInvitedUtilisateur
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class CreateInvitedUtilisateur {
+
+        @Test
+        void givenExistingEmail_whenCreateInvitedUtilisateur_thenThrowsWithoutSaving() {
+            when(utilisateurRepository.existsByEmail(EMAIL)).thenReturn(true);
+
+            assertThatExceptionOfType(UtilisateurAlreadyExistException.class)
+                    .isThrownBy(() -> utilisateurService.createInvitedUtilisateur(FIRST_NAME, LAST_NAME, EMAIL));
+            verify(utilisateurRepository, never()).save(any());
+        }
+
+        @Test
+        void givenNewEmail_whenCreateInvitedUtilisateur_thenSavesUtilisateurInvited() {
+            when(utilisateurRepository.existsByEmail(EMAIL)).thenReturn(false);
+            when(utilisateurRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+            Utilisateur saved = utilisateurService.createInvitedUtilisateur(FIRST_NAME, LAST_NAME, EMAIL);
+
+            assertThat(saved.getFirstName()).isEqualTo(FIRST_NAME);
+            assertThat(saved.getLastName()).isEqualTo(LAST_NAME);
+            assertThat(saved.getEmail()).isEqualTo(EMAIL);
+            assertThat(saved.getPhone()).isNull();
+            assertThat(saved.getStatus()).isEqualTo(UtilisateurStatus.INVITED);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // listInvitedUtilisateurs
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ListInvitedUtilisateurs {
+
+        @Test
+        void givenInvitedUtilisateurs_whenListInvitedUtilisateurs_thenReturnsThem() {
+            List<Utilisateur> invited = List.of(Utilisateur.builder().email(EMAIL).build());
+            when(utilisateurRepository.findByStatus(UtilisateurStatus.INVITED)).thenReturn(invited);
+
+            assertThat(utilisateurService.listInvitedUtilisateurs()).isEqualTo(invited);
+        }
     }
 }

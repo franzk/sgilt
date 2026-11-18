@@ -3,6 +3,7 @@ package net.franzka.sgilt.core.reservation.event.mapper;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.event.FeedItemType;
+import net.franzka.sgilt.core.reservation.event.reservationaddedbysgilt.ReservationAddedBySgiltEvent;
 import net.franzka.sgilt.core.reservation.event.reservationcontactreminderdue.ReservationContactReminderDueEvent;
 import net.franzka.sgilt.core.reservation.event.reservationcreated.ReservationCreatedEvent;
 import net.franzka.sgilt.core.reservation.event.reservationfeeditemadded.ReservationFeedItemAddedEvent;
@@ -26,6 +27,21 @@ public interface ReservationEventMapper {
     @Mapping(source = "evenement.title",                target = "eventTitle")
     @Mapping(source = "date",                           target = "eventDate")
     ReservationCreatedEvent toReservationCreatedEvent(Reservation reservation);
+
+    /**
+     * Construit l'évènement « réservation ajoutée par Sgilt » à destination du prestataire : une
+     * réservation créée directement confirmée depuis le BO, pour un client invité.
+     *
+     * @param reservation la réservation confirmée qui vient d'être créée
+     * @return l'évènement à publier
+     */
+    @Mapping(source = "id",                            target = "reservationId")
+    @Mapping(source = "prestataire.utilisateur.id",    target = "recipientUserId")
+    @Mapping(source = "prestataire.utilisateur.email", target = "recipientEmail")
+    @Mapping(source = "utilisateur.firstName",          target = "clientFirstName")
+    @Mapping(source = "utilisateur.lastName",           target = "clientLastName")
+    @Mapping(source = "date",                           target = "eventDate")
+    ReservationAddedBySgiltEvent toReservationAddedBySgiltEvent(Reservation reservation);
 
     /**
      * Construit l'évènement générique de changement de statut à destination du client, pour toute

@@ -35,7 +35,8 @@ public class NotificationMailerService {
             Map.entry("notification.reservation.status.canceled_by_client_post_confirmation", MailType.RESERVATION_STATUS_CANCELED_BY_CLIENT_POST_CONFIRMATION_EMAIL),
             Map.entry("notification.reservation.note_added", MailType.RESERVATION_NOTE_ADDED_EMAIL),
             Map.entry("notification.reservation.document_added", MailType.RESERVATION_DOCUMENT_ADDED_EMAIL),
-            Map.entry("notification.reservation.contact_reminder", MailType.RESERVATION_CONTACT_REMINDER_EMAIL)
+            Map.entry("notification.reservation.contact_reminder", MailType.RESERVATION_CONTACT_REMINDER_EMAIL),
+            Map.entry("notification.reservation.added_by_sgilt", MailType.RESERVATION_ADDED_BY_SGILT_EMAIL)
     );
 
     private final MailerClient mailerClient;

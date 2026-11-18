@@ -11,6 +11,7 @@ import net.franzka.sgilt.core.utilisateur.repository.UtilisateurRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Service métier pour l'entité {@link Utilisateur}.
@@ -48,6 +49,35 @@ public class UtilisateurService {
      * @throws UtilisateurAlreadyExistException si un utilisateur avec cet email existe déjà
      */
     public Utilisateur createUtilisateur(String firstName, String lastName, String email, String phone) {
+        return buildAndSave(firstName, lastName, email, phone, UtilisateurStatus.ACTIVE);
+    }
+
+    /**
+     * Crée et persiste un client invité depuis le BO, en statut INVITED : son compte n'est pas
+     * encore activé (il passera ACTIVE à l'activation, via le lien de l'invitation).
+     *
+     * @param firstName le prénom du client
+     * @param lastName  le nom du client
+     * @param email     l'adresse email du client
+     * @return l'entité {@link Utilisateur} créée et persistée
+     * @throws UtilisateurAlreadyExistException si un utilisateur avec cet email existe déjà
+     */
+    public Utilisateur createInvitedUtilisateur(String firstName, String lastName, String email) {
+        return buildAndSave(firstName, lastName, email, null, UtilisateurStatus.INVITED);
+    }
+
+    /**
+     * Liste les clients invités depuis le BO qui n'ont pas encore activé leur compte.
+     *
+     * @return les utilisateurs en statut INVITED
+     */
+    public List<Utilisateur> listInvitedUtilisateurs() {
+        return utilisateurRepository.findByStatus(UtilisateurStatus.INVITED);
+    }
+
+    // Crée l'utilisateur dans le statut donné, après avoir vérifié que son email est libre.
+    private Utilisateur buildAndSave(String firstName, String lastName, String email, String phone,
+                                     UtilisateurStatus status) {
         if (utilisateurRepository.existsByEmail(email)) {
             throw new UtilisateurAlreadyExistException();
         }
@@ -57,7 +87,7 @@ public class UtilisateurService {
                 .lastName(lastName)
                 .email(email)
                 .phone(phone)
-                .status(UtilisateurStatus.ACTIVE)
+                .status(status)
                 .build();
 
         return utilisateurRepository.save(utilisateur);

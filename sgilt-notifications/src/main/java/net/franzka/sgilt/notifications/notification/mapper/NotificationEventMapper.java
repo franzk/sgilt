@@ -2,12 +2,15 @@ package net.franzka.sgilt.notifications.notification.mapper;
 
 import net.franzka.sgilt.notifications.notification.domain.Notification;
 import net.franzka.sgilt.notifications.notification.domain.NotificationType;
+import net.franzka.sgilt.notifications.notification.event.ReservationAddedBySgiltEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationContactReminderDueEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationCreatedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationFeedItemAddedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationStatusChangedEvent;
 import org.springframework.stereotype.Component;
 
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -27,6 +30,10 @@ public class NotificationEventMapper {
     private static final String MESSAGE_KEY_NOTE_ADDED = "notification.reservation.note_added";
     private static final String MESSAGE_KEY_DOCUMENT_ADDED = "notification.reservation.document_added";
     private static final String MESSAGE_KEY_CONTACT_REMINDER = "notification.reservation.contact_reminder";
+    private static final String MESSAGE_KEY_ADDED_BY_SGILT = "notification.reservation.added_by_sgilt";
+
+    // Date de prestation telle qu'affichée au prestataire, in-app comme dans le mail (« 12 juin 2027 »).
+    private static final DateTimeFormatter EVENT_DATE_FORMATTER = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.FRENCH);
 
     /**
      * Construit la notification "nouvelle demande de réservation" pour le prestataire concerné.
@@ -114,6 +121,29 @@ public class NotificationEventMapper {
                         "prestataireName", event.prestataireName(),
                         "eventTitle", event.eventTitle()))
                 .href("/app/events/" + event.eventId() + "/reservations/" + event.reservationId())
+                .read(false)
+                .build();
+    }
+
+    /**
+     * Construit la notification « réservation ajoutée par Sgilt » pour le prestataire : une
+     * réservation créée directement confirmée depuis le BO, pour un client invité, dans laquelle il
+     * peut déposer ses documents. Toujours destinée au prestataire — lien vers sa fiche de réservation.
+     *
+     * @param event les faits bruts de la réservation ajoutée
+     * @return la notification à persister
+     */
+    public Notification toNotification(ReservationAddedBySgiltEvent event) {
+        return Notification.builder()
+                .recipientEmail(event.recipientEmail())
+                .recipientUserId(event.recipientUserId())
+                .type(NotificationType.STATE_CHANGE)
+                .messageKey(MESSAGE_KEY_ADDED_BY_SGILT)
+                .params(Map.of(
+                        "clientFirstName", event.clientFirstName(),
+                        "clientLastName", event.clientLastName(),
+                        "eventDate", event.eventDate().format(EVENT_DATE_FORMATTER)))
+                .href("/pro/reservations/" + event.reservationId())
                 .read(false)
                 .build();
     }

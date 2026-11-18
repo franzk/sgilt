@@ -58,6 +58,12 @@ public enum MailType {
      */
     RESERVATION_NEW_REQUEST_EMAIL,
 
+    /**
+     * Mail envoyé au prestataire quand Sgilt lui ajoute une réservation confirmée, pour un client
+     * invité depuis le BO (deal conclu hors Sgilt). Producteur : {@code sgilt-notifications}.
+     */
+    RESERVATION_ADDED_BY_SGILT_EMAIL,
+
     /** Mail envoyé au prestataire quand le client déclare avoir été contacté (NEW → IN_DISCUSSION). */
     RESERVATION_STATUS_IN_DISCUSSION_EMAIL,
 
