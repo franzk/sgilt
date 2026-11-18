@@ -6,10 +6,9 @@ import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationReminder;
 import net.franzka.sgilt.core.reservation.domain.ReservationReminderType;
 import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
-import net.franzka.sgilt.core.reservation.event.mapper.ReservationEventMapper;
+import net.franzka.sgilt.core.reservation.event.ReservationEventPublisher;
 import net.franzka.sgilt.core.reservation.repository.ReservationReminderRepository;
 import net.franzka.sgilt.core.reservation.repository.ReservationRepository;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +31,7 @@ public class ReservationReminderService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationReminderRepository reservationReminderRepository;
-    private final ReservationEventMapper reservationEventMapper;
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final ReservationEventPublisher reservationEventPublisher;
 
     /**
      * Rappelle au client chaque réservation restée NEW (en attente de contact) depuis
@@ -62,6 +60,6 @@ public class ReservationReminderService {
                 .type(ReservationReminderType.CONTACT_PENDING)
                 .sentAt(sentAt)
                 .build());
-        applicationEventPublisher.publishEvent(reservationEventMapper.toContactReminderDueEvent(reservation));
+        reservationEventPublisher.publishContactReminderDue(reservation);
     }
 }

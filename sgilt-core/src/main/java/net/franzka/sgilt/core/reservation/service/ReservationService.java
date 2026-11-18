@@ -18,7 +18,7 @@ import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
 import net.franzka.sgilt.core.reservation.dto.ReservationMetaDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.dto.RefuseReservationRequest;
-import net.franzka.sgilt.core.reservation.event.mapper.ReservationEventMapper;
+import net.franzka.sgilt.core.reservation.event.ReservationEventPublisher;
 import net.franzka.sgilt.core.reservation.exception.InvalidStateException;
 import net.franzka.sgilt.core.reservation.exception.ReservationNotAllowedException;
 import net.franzka.sgilt.core.reservation.exception.ReservationNotFoundException;
@@ -26,7 +26,6 @@ import net.franzka.sgilt.core.reservation.mapper.ReservationMapper;
 import net.franzka.sgilt.core.reservation.repository.NoteRepository;
 import net.franzka.sgilt.core.reservation.repository.ReservationRepository;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -48,9 +47,8 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final NoteRepository noteRepository;
     private final ReservationMapper reservationMapper;
-    private final ReservationEventMapper reservationEventMapper;
     private final JournalEvenementService journalEvenementService;
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final ReservationEventPublisher reservationEventPublisher;
 
     /**
      * Retourne les demandes actives (NEW et IN_DISCUSSION) de l'utilisateur, triées NEW en premier,
@@ -149,7 +147,7 @@ public class ReservationService {
                 .build();
         noteRepository.save(note);
 
-        applicationEventPublisher.publishEvent(reservationEventMapper.toReservationCreatedEvent(reservation));
+        reservationEventPublisher.publishCreated(reservation);
 
         return reservation;
     }
@@ -183,7 +181,7 @@ public class ReservationService {
                 .isPersonal(false)
                 .build());
 
-        applicationEventPublisher.publishEvent(reservationEventMapper.toReservationAddedBySgiltEvent(reservation));
+        reservationEventPublisher.publishAddedBySgilt(reservation);
 
         return reservation;
     }
@@ -263,8 +261,7 @@ public class ReservationService {
                 .isPersonal(isPersonal)
                 .build());
 
-        applicationEventPublisher.publishEvent(
-                reservationEventMapper.toStatusChangedEventForPro(reservation, reservation.getStatus()));
+        reservationEventPublisher.publishStatusChangedToPro(reservation);
     }
 
     /**
@@ -359,8 +356,7 @@ public class ReservationService {
                 .isPersonal(false)
                 .build());
 
-        applicationEventPublisher.publishEvent(
-                reservationEventMapper.toStatusChangedEventForPro(reservation, reservation.getStatus()));
+        reservationEventPublisher.publishStatusChangedToPro(reservation);
     }
 
     /**
@@ -391,8 +387,7 @@ public class ReservationService {
                 .isPersonal(false)
                 .build());
 
-        applicationEventPublisher.publishEvent(
-                reservationEventMapper.toStatusChangedEventForPro(reservation, reservation.getStatus()));
+        reservationEventPublisher.publishStatusChangedToPro(reservation);
     }
 
     /**
@@ -425,8 +420,7 @@ public class ReservationService {
                 .isPersonal(isPersonal)
                 .build());
 
-        applicationEventPublisher.publishEvent(
-                reservationEventMapper.toStatusChangedEventForClient(reservation, reservation.getStatus()));
+        reservationEventPublisher.publishStatusChangedToClient(reservation);
     }
 
     /**
@@ -460,8 +454,7 @@ public class ReservationService {
                 .isPersonal(false)
                 .build());
 
-        applicationEventPublisher.publishEvent(
-                reservationEventMapper.toStatusChangedEventForClient(reservation, reservation.getStatus()));
+        reservationEventPublisher.publishStatusChangedToClient(reservation);
     }
 
     /**
