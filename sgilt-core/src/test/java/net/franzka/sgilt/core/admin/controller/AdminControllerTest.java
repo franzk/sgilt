@@ -4,6 +4,7 @@ import net.franzka.sgilt.core.admin.dto.ClientInvitationDto;
 import net.franzka.sgilt.core.admin.dto.CreateClientInvitationRequest;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireRequest;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireResponse;
+import net.franzka.sgilt.core.admin.exception.ClientInvitationNotSentException;
 import net.franzka.sgilt.core.admin.exception.EmailAlreadyUsedException;
 import net.franzka.sgilt.core.admin.exception.SlugAlreadyExistsException;
 import net.franzka.sgilt.core.admin.service.AdminInvitationService;
@@ -40,6 +41,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -230,6 +232,32 @@ class AdminControllerTest {
             when(adminInvitationService.listInvitations()).thenReturn(invitations);
 
             assertThat(controller.listClientInvitations().getBody()).isEqualTo(invitations);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // sendClientInvitation
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class SendClientInvitation {
+
+        @Test
+        void givenMailSent_whenSendClientInvitation_thenReturnsNoContent() {
+            UUID id = UUID.randomUUID();
+
+            assertThat(controller.sendClientInvitation(id).getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+            verify(adminInvitationService).sendInvitation(id);
+        }
+
+        @Test
+        void givenMailNotSent_whenSendClientInvitation_thenPropagatesNotSentException() {
+            UUID id = UUID.randomUUID();
+            doThrow(new ClientInvitationNotSentException("julie@example.com"))
+                    .when(adminInvitationService).sendInvitation(id);
+
+            assertThatThrownBy(() -> controller.sendClientInvitation(id))
+                    .isInstanceOf(ClientInvitationNotSentException.class);
         }
     }
 

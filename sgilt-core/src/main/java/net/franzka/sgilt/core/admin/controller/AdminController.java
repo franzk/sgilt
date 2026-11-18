@@ -204,6 +204,24 @@ public class AdminController implements AdminApi {
     }
 
     /**
+     * Envoie le mail d'invitation à un client invité, ou le relance (même lien, validité
+     * réinitialisée) s'il a déjà été envoyé. Si le mail ne part pas, la transaction est annulée
+     * (le lien n'est ni créé ni prolongé).
+     *
+     * @param id identifiant du client invité
+     * @return 204 No Content
+     * @throws net.franzka.sgilt.core.admin.exception.ClientInvitationNotSentException si l'email n'a
+     *         pas pu être envoyé (500)
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<Void> sendClientInvitation(UUID id) {
+        log.info("POST /admin/invitations/{}/send", id);
+        adminInvitationService.sendInvitation(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
      * Liste tous les prestataires actifs avec leur statut, pour le back-office admin.
      *
      * @return la liste des fiches (id, name, slug, status)

@@ -14,6 +14,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -59,7 +60,7 @@ public class ActionTokenService {
                     .hmacPayload(generated.payload())
                     .type(type)
                     .payload(objectMapper.writeValueAsString(payload))
-                    .expiresAt(LocalDateTime.now().plusHours(confirmationTokenProperties.prestataireOnboardingExpirationHours()))
+                    .expiresAt(LocalDateTime.now().plusHours(expirationHours(type)))
                     .build();
 
             return new TokenCreationResult(actionTokenRepository.save(token), generated.fullToken());
@@ -137,25 +138,45 @@ public class ActionTokenService {
      * @throws EntityNotFoundException si aucun token en attente ne correspond à cet email
      */
     public ActionToken findPendingByEmail(ActionType type, String email) {
-        return findAllByType(type).stream()
-                .filter(token -> email.equals(readPayload(token).get("email")))
-                .findFirst()
+        return findOptionalPendingByEmail(type, email)
                 .orElseThrow(EntityNotFoundException::new);
     }
 
     /**
+     * Cherche le token d'action en attente correspondant à l'email donné, pour un flow donné —
+     * variante de {@link #findPendingByEmail} pour les appelants qui traitent l'absence de token
+     * comme un cas normal (ex. premier envoi d'une invitation, à distinguer d'une relance).
+     *
+     * @param type  le type d'action recherché
+     * @param email l'email du destinataire, tel que stocké dans le payload à la création
+     * @return le token correspondant, ou vide si aucun n'est en attente
+     */
+    public Optional<ActionToken> findOptionalPendingByEmail(ActionType type, String email) {
+        return findAllByType(type).stream()
+                .filter(token -> email.equals(readPayload(token).get("email")))
+                .findFirst();
+    }
+
+    /**
      * Réinitialise la période de validité d'un token d'action existant à la durée de validité
-     * courante du flow prestataire. Le token lui-même n'est pas régénéré : le lien déjà transmis
-     * au destinataire reste valide, seule sa date d'expiration change.
+     * courante de son flow. Le token lui-même n'est pas régénéré : le lien déjà transmis au
+     * destinataire reste valide, seule sa date d'expiration change.
      *
      * @param actionToken le token dont la validité doit être réinitialisée
      * @return le token complet ({@code payload-signature}) à inclure dans le lien renvoyé
      */
     public String renewExpiration(ActionToken actionToken) {
-        actionToken.setExpiresAt(
-                LocalDateTime.now().plusHours(confirmationTokenProperties.prestataireOnboardingExpirationHours()));
+        actionToken.setExpiresAt(LocalDateTime.now().plusHours(expirationHours(actionToken.getType())));
         actionTokenRepository.save(actionToken);
         return verificationTokenHmacService.buildToken(actionToken.getHmacPayload());
+    }
+
+    // durée de validité, en heures, du lien d'un flow — propre à chaque type d'action
+    private int expirationHours(ActionType type) {
+        return switch (type) {
+            case PRESTATAIRE_ONBOARDING -> confirmationTokenProperties.prestataireOnboardingExpirationHours();
+            case CLIENT_INVITATION      -> confirmationTokenProperties.clientInvitationExpirationHours();
+        };
     }
 
     /**

@@ -66,6 +66,7 @@ sgilt:
     confirmation-secret: ${CONFIRMATION_TOKEN_SECRET}
     confirmation-expiration-hours: 24
     prestataire-onboarding-expiration-hours: 168
+    client-invitation-expiration-hours: 168
   frontend:
     url: ${PUBLIC_SITE_URL:http://localhost:3000}
   keycloak:

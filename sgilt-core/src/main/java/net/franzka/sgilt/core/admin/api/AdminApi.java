@@ -52,6 +52,9 @@ public interface AdminApi {
     @GetMapping("/invitations")
     ResponseEntity<List<ClientInvitationDto>> listClientInvitations();
 
+    @PostMapping("/invitations/{id}/send")
+    ResponseEntity<Void> sendClientInvitation(@PathVariable UUID id);
+
     @GetMapping("/reservations")
     ResponseEntity<List<AdminReservationListItemDto>> listReservations(
             @RequestParam(required = false) ReservationStatus status);

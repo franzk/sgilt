@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Service métier pour l'entité {@link Utilisateur}.
@@ -73,6 +74,20 @@ public class UtilisateurService {
      */
     public List<Utilisateur> listInvitedUtilisateurs() {
         return utilisateurRepository.findByStatus(UtilisateurStatus.INVITED);
+    }
+
+    /**
+     * Retourne le client invité depuis le BO qui n'a pas encore activé son compte.
+     *
+     * @param id l'identifiant de l'utilisateur
+     * @return l'utilisateur, en statut INVITED
+     * @throws UtilisateurNotFoundException si aucun utilisateur ne correspond, ou s'il n'est plus
+     *                                      INVITED (compte déjà activé)
+     */
+    public Utilisateur getInvitedUtilisateur(UUID id) {
+        return utilisateurRepository.findById(id)
+                .filter(utilisateur -> utilisateur.getStatus() == UtilisateurStatus.INVITED)
+                .orElseThrow(UtilisateurNotFoundException::new);
     }
 
     // Crée l'utilisateur dans le statut donné, après avoir vérifié que son email est libre.

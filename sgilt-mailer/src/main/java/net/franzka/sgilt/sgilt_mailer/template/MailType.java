@@ -107,5 +107,11 @@ public enum MailType {
      * Mail envoyé à l'acheteur quand sa commande de places vient d'être payée : le lien vers son
      * e-billet (un seul QR, valable pour toutes ses places).
      */
-    COMMANDE_E_BILLET_EMAIL
+    COMMANDE_E_BILLET_EMAIL,
+
+    /**
+     * Mail d'invitation envoyé depuis le BO à un client dont le deal s'est conclu hors Sgilt : sa
+     * réservation confirmée l'attend, avec le lien d'activation de son compte.
+     */
+    CLIENT_INVITATION_EMAIL
 }

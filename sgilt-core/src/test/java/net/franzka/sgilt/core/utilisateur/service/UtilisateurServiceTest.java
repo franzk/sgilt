@@ -21,10 +21,12 @@ import net.franzka.sgilt.core.utilisateur.exception.UtilisateurNotFoundException
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
 class UtilisateurServiceTest {
@@ -295,6 +297,42 @@ class UtilisateurServiceTest {
             when(utilisateurRepository.findByStatus(UtilisateurStatus.INVITED)).thenReturn(invited);
 
             assertThat(utilisateurService.listInvitedUtilisateurs()).isEqualTo(invited);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // getInvitedUtilisateur
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetInvitedUtilisateur {
+
+        @Test
+        void givenInvitedUtilisateur_whenGetInvitedUtilisateur_thenReturnsIt() {
+            UUID id = UUID.randomUUID();
+            Utilisateur invited = Utilisateur.builder().id(id).status(UtilisateurStatus.INVITED).build();
+            when(utilisateurRepository.findById(id)).thenReturn(Optional.of(invited));
+
+            assertThat(utilisateurService.getInvitedUtilisateur(id)).isEqualTo(invited);
+        }
+
+        @Test
+        void givenActivatedUtilisateur_whenGetInvitedUtilisateur_thenThrowsNotFound() {
+            UUID id = UUID.randomUUID();
+            Utilisateur active = Utilisateur.builder().id(id).status(UtilisateurStatus.ACTIVE).build();
+            when(utilisateurRepository.findById(id)).thenReturn(Optional.of(active));
+
+            assertThatThrownBy(() -> utilisateurService.getInvitedUtilisateur(id))
+                    .isInstanceOf(UtilisateurNotFoundException.class);
+        }
+
+        @Test
+        void givenUnknownUtilisateur_whenGetInvitedUtilisateur_thenThrowsNotFound() {
+            UUID id = UUID.randomUUID();
+            when(utilisateurRepository.findById(id)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> utilisateurService.getInvitedUtilisateur(id))
+                    .isInstanceOf(UtilisateurNotFoundException.class);
         }
     }
 }
