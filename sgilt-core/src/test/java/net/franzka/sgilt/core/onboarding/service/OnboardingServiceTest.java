@@ -2,8 +2,6 @@ package net.franzka.sgilt.core.onboarding.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
-import net.franzka.sgilt.core.admin.dto.InvitedReservation;
-import net.franzka.sgilt.core.admin.service.AdminInvitationService;
 import net.franzka.sgilt.core.evenement.dto.DemandeInitieeDto;
 import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
 import net.franzka.sgilt.core.evenement.dto.EvenementDto;
@@ -23,7 +21,11 @@ import net.franzka.sgilt.core.onboarding.dto.InitOnboardingResponse;
 import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.mailer.OnboardingMailerService;
+import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
+import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
+import net.franzka.sgilt.core.reservation.service.ReservationService;
+import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -70,7 +72,7 @@ class OnboardingServiceTest {
     @Mock private KeycloakAdminService keycloakAdminService;
     @Mock private ActionTokenService actionTokenService;
     @Mock private EvenementService evenementService;
-    @Mock private AdminInvitationService adminInvitationService;
+    @Mock private ReservationService reservationService;
 
     @InjectMocks
     private OnboardingService onboardingService;
@@ -310,7 +312,7 @@ class OnboardingServiceTest {
 
             onboardingService.confirmOnboarding(buildRequest());
 
-            verify(adminInvitationService, never()).activateInvitation(any());
+            verify(utilisateurService, never()).activateInvitedUtilisateur(any());
         }
     }
 
@@ -323,42 +325,53 @@ class OnboardingServiceTest {
 
         private final UUID eventId = UUID.randomUUID();
         private final UUID reservationId = UUID.randomUUID();
-        private final InvitedReservation invitedReservation = new InvitedReservation(eventId, reservationId);
+        private final Utilisateur invited = Utilisateur.builder().id(UUID.randomUUID()).email(EMAIL).build();
 
         @Test
-        void givenClientInvitationToken_whenConfirmAccount_thenResetsPasswordAndActivatesTheInvitation() {
+        void givenClientInvitationToken_whenConfirmAccount_thenResetsPasswordActivatesAndAcceptsCgu() {
             stubValidActionToken(ActionType.CLIENT_INVITATION);
-            when(adminInvitationService.activateInvitation(EMAIL)).thenReturn(invitedReservation);
+            stubInvitedClient();
 
             onboardingService.confirmOnboarding(buildRequest());
 
             verify(keycloakAdminService).resetPassword(KC_USER_ID, "p@ssw0rd!");
-            verify(adminInvitationService).activateInvitation(EMAIL);
+            verify(utilisateurService).activateInvitedUtilisateur(EMAIL);
+            verify(utilisateurService).acceptCgu(invited);
             verify(keycloakAdminService, never()).createClientUser(any(), any(), any(), any());
         }
 
         @Test
         void givenClientInvitationToken_whenConfirmAccount_thenConsumesActionTokenOnlyAfterActivation() {
             ActionToken actionToken = stubValidActionToken(ActionType.CLIENT_INVITATION);
-            when(adminInvitationService.activateInvitation(EMAIL)).thenReturn(invitedReservation);
+            stubInvitedClient();
 
             onboardingService.confirmOnboarding(buildRequest());
 
-            InOrder inOrder = inOrder(adminInvitationService, actionTokenService);
-            inOrder.verify(adminInvitationService).activateInvitation(EMAIL);
+            InOrder inOrder = inOrder(utilisateurService, actionTokenService);
+            inOrder.verify(utilisateurService).activateInvitedUtilisateur(EMAIL);
             inOrder.verify(actionTokenService).consume(actionToken);
         }
 
         @Test
         void givenClientInvitationToken_whenConfirmAccount_thenReturnsMagicLoginUrlToTheReservationWithBackToEventBoard() {
             stubValidActionToken(ActionType.CLIENT_INVITATION);
-            when(adminInvitationService.activateInvitation(EMAIL)).thenReturn(invitedReservation);
+            stubInvitedClient();
             String reservationPath = "/app/events/" + eventId + "/reservations/" + reservationId + "?from=invitation";
             when(keycloakAdminService.getMagicLoginUrl(EMAIL, reservationPath)).thenReturn("https://sgilt/magic");
 
             ConfirmAccountResponse response = onboardingService.confirmOnboarding(buildRequest());
 
             assertThat(response.loginUrl()).isEqualTo("https://sgilt/magic");
+        }
+
+        // client invité activable, avec son unique événement portant son unique réservation
+        private void stubInvitedClient() {
+            when(utilisateurService.activateInvitedUtilisateur(EMAIL)).thenReturn(invited);
+            when(evenementService.getUserEvents(invited.getId())).thenReturn(List.of(
+                    new EvenementSummaryDto(eventId, "Mon événement", DATE, null, null, "mariage", 1, 0)));
+            when(reservationService.getReservationSummaries(eventId)).thenReturn(List.of(
+                    new ReservationSummaryDto(reservationId, UUID.randomUUID(), "Le Taennel", null,
+                            "lieu", "salle", "lieu", "CONFIRMED", 0)));
         }
     }
 

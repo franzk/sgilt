@@ -3,10 +3,8 @@ package net.franzka.sgilt.core.admin.service;
 import net.franzka.sgilt.core.admin.domain.ClientInvitationStatus;
 import net.franzka.sgilt.core.admin.dto.ClientInvitationDto;
 import net.franzka.sgilt.core.admin.dto.CreateClientInvitationRequest;
-import net.franzka.sgilt.core.admin.dto.InvitedReservation;
 import net.franzka.sgilt.core.admin.exception.ClientInvitationNotSentException;
 import net.franzka.sgilt.core.admin.mailer.ClientInvitationMailerService;
-import net.franzka.sgilt.core.evenement.domain.Evenement;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.jwt.domain.ActionToken;
@@ -70,15 +68,13 @@ class AdminInvitationServiceTest {
     private final Utilisateur utilisateur = Utilisateur.builder()
             .id(UUID.randomUUID()).firstName("Julie").lastName("Martin").email("julie@example.com").build();
 
-    private final UUID eventId = UUID.randomUUID();
-    private final UUID reservationId = UUID.randomUUID();
-
     // l'événement du client invité, avec sa réservation chez « Le Taennel »
     private void stubInvitedEvent() {
+        UUID eventId = UUID.randomUUID();
         when(evenementService.getUserEvents(utilisateur.getId())).thenReturn(List.of(
                 new EvenementSummaryDto(eventId, "Mon événement", EVENT_DATE, null, null, "mariage", 1, 0)));
         when(reservationService.getReservationSummaries(eventId)).thenReturn(List.of(
-                new ReservationSummaryDto(reservationId, UUID.randomUUID(), "Le Taennel", null,
+                new ReservationSummaryDto(UUID.randomUUID(), UUID.randomUUID(), "Le Taennel", null,
                         "lieu", "salle", "lieu", "CONFIRMED", 0)));
     }
 
@@ -96,10 +92,7 @@ class AdminInvitationServiceTest {
                     "julie@example.com", "Julie", "Martin", "mariage", EVENT_DATE, prestataireId);
             when(utilisateurService.createInvitedUtilisateur("Julie", "Martin", "julie@example.com")).thenReturn(utilisateur);
             Reservation reservation = Reservation.builder()
-                    .id(UUID.randomUUID())
-                    .evenement(Evenement.builder().id(UUID.randomUUID()).build())
-                    .prestataire(Prestataire.builder().name("Le Taennel").build())
-                    .build();
+                    .id(UUID.randomUUID()).prestataire(Prestataire.builder().name("Le Taennel").build()).build();
             when(evenementService.createWithConfirmedReservation(utilisateur, "mariage", EVENT_DATE, prestataireId))
                     .thenReturn(reservation);
 
@@ -206,35 +199,6 @@ class AdminInvitationServiceTest {
 
             assertThatThrownBy(() -> adminInvitationService.sendInvitation(utilisateur.getId()))
                     .isInstanceOf(ClientInvitationNotSentException.class);
-        }
-    }
-
-    // -------------------------------------------------------------------------
-    // activateInvitation
-    // -------------------------------------------------------------------------
-
-    @Nested
-    class ActivateInvitation {
-
-        @Test
-        void givenInvitedClient_whenActivateInvitation_thenActivatesAndAcceptsCgu() {
-            when(utilisateurService.activateInvitedUtilisateur("julie@example.com")).thenReturn(utilisateur);
-            stubInvitedEvent();
-
-            adminInvitationService.activateInvitation("julie@example.com");
-
-            verify(utilisateurService).activateInvitedUtilisateur("julie@example.com");
-            verify(utilisateurService).acceptCgu(utilisateur);
-        }
-
-        @Test
-        void givenInvitedClient_whenActivateInvitation_thenReturnsItsReservationAndEvent() {
-            when(utilisateurService.activateInvitedUtilisateur("julie@example.com")).thenReturn(utilisateur);
-            stubInvitedEvent();
-
-            InvitedReservation result = adminInvitationService.activateInvitation("julie@example.com");
-
-            assertThat(result).isEqualTo(new InvitedReservation(eventId, reservationId));
         }
     }
 }

@@ -4,8 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.franzka.sgilt.core.admin.dto.InvitedReservation;
-import net.franzka.sgilt.core.admin.service.AdminInvitationService;
 import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
 import net.franzka.sgilt.core.evenement.dto.DemandeInitieeDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementDto;
@@ -24,6 +22,8 @@ import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.mailer.OnboardingMailerService;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
+import net.franzka.sgilt.core.reservation.service.ReservationService;
+import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +42,7 @@ public class OnboardingService {
     private final KeycloakAdminService keycloakAdminService;
     private final ActionTokenService actionTokenService;
     private final EvenementService evenementService;
-    private final AdminInvitationService adminInvitationService;
+    private final ReservationService reservationService;
 
     /**
      * Un visiteur passe par la fiche d'un prestataire : c'est aussi la création d'un événement,
@@ -187,7 +187,7 @@ public class OnboardingService {
 
         String landingPath = switch (actionToken.getType()) {
             case PRESTATAIRE_ONBOARDING -> "/pro/page-edition";
-            case CLIENT_INVITATION      -> invitedReservationPath(adminInvitationService.activateInvitation(email));
+            case CLIENT_INVITATION      -> invitedReservationPath(activateClientInvitation(email));
         };
 
         actionTokenService.consume(actionToken);
@@ -197,10 +197,21 @@ public class OnboardingService {
         return new ConfirmAccountResponse(loginUrl);
     }
 
-    // Arrivée d'un client invité : directement sa réservation, dont le retour mène exceptionnellement
-    // à l'event board (?from=invitation), qu'il découvre.
-    private String invitedReservationPath(InvitedReservation invitedReservation) {
-        return "/app/events/" + invitedReservation.eventId()
-                + "/reservations/" + invitedReservation.reservationId() + "?from=invitation";
+    // Active le compte d'un client invité depuis le BO : INVITED → ACTIVE, et acceptation des CGU
+    // (cochées sur la page d'activation).
+    private Utilisateur activateClientInvitation(String email) {
+        Utilisateur utilisateur = utilisateurService.activateInvitedUtilisateur(email);
+        utilisateurService.acceptCgu(utilisateur);
+        log.info("confirmAccount — compte du client invité {} activé", email);
+        return utilisateur;
+    }
+
+    // Arrivée d'un client invité : directement sa réservation (un seul événement portant une seule
+    // réservation, par construction), dont le retour mène exceptionnellement à l'event board
+    // (?from=invitation), qu'il découvre.
+    private String invitedReservationPath(Utilisateur utilisateur) {
+        UUID eventId = evenementService.getUserEvents(utilisateur.getId()).getFirst().id();
+        UUID reservationId = reservationService.getReservationSummaries(eventId).getFirst().id();
+        return "/app/events/" + eventId + "/reservations/" + reservationId + "?from=invitation";
     }
 }
