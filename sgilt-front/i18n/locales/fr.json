@@ -1603,8 +1603,7 @@
       },
       "status": {
         "NOT_SENT": "Non envoyée",
-        "SENT": "Envoyée",
-        "ACTIVATED": "Compte activé"
+        "SENT": "Envoyée"
       },
       "sent-at": "Envoyée le {date}",
       "expires-at": "expire le {date}",

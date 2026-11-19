@@ -1,5 +1,5 @@
 <!--
-  Pastille de statut d'une invitation client dans le BO (non envoyée, envoyée, compte activé).
+  Pastille de statut d'une invitation client dans le BO (non envoyée, envoyée).
 -->
 <template>
   <span class="status-badge" :style="{ background: config.pillBg, color: config.pillText }">
