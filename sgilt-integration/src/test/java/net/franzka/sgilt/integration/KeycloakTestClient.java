@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
  */
 final class KeycloakTestClient {
 
+    private static final Pattern USER_ID_PATTERN = Pattern.compile("\"id\"\\s*:\\s*\"([^\"]+)\"");
     private static final Pattern ACCESS_TOKEN_PATTERN = Pattern.compile("\"access_token\"\\s*:\\s*\"([^\"]+)\"");
     private static final Pattern EMAIL_CLAIM_PATTERN = Pattern.compile("\"email\"\\s*:\\s*\"([^\"]+)\"");
     private static final Pattern GIVEN_NAME_CLAIM_PATTERN = Pattern.compile("\"given_name\"\\s*:\\s*\"([^\"]+)\"");
@@ -48,6 +49,33 @@ final class KeycloakTestClient {
                 .POST(BodyPublishers.ofString(form))
                 .build());
         return extract(ACCESS_TOKEN_PATTERN, response.body());
+    }
+
+    /**
+     * Pose un mot de passe sur un compte existant, comme le ferait un « mot de passe oublié » mené
+     * jusqu'au bout côté Keycloak — via l'API Admin, avec le compte de service {@code sgilt-admin}
+     * (celui qu'utilise {@code sgilt-core} pour ses propres appels Admin).
+     */
+    void setPassword(String email, String password, String adminClientSecret) {
+        String adminToken = extract(ACCESS_TOKEN_PATTERN, send(HttpRequest.newBuilder()
+                .uri(URI.create(authServerUrl + "/realms/" + realm + "/protocol/openid-connect/token"))
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .POST(BodyPublishers.ofString("grant_type=client_credentials&client_id=sgilt-admin&client_secret="
+                        + adminClientSecret))
+                .build()).body());
+
+        String userId = extract(USER_ID_PATTERN, send(HttpRequest.newBuilder()
+                .uri(URI.create(authServerUrl + "/admin/realms/" + realm + "/users?exact=true&email=" + email))
+                .header("Authorization", "Bearer " + adminToken)
+                .GET()
+                .build()).body());
+
+        send(HttpRequest.newBuilder()
+                .uri(URI.create(authServerUrl + "/admin/realms/" + realm + "/users/" + userId + "/reset-password"))
+                .header("Authorization", "Bearer " + adminToken)
+                .header("Content-Type", "application/json")
+                .PUT(BodyPublishers.ofString("{\"type\":\"password\",\"value\":\"" + password + "\",\"temporary\":false}"))
+                .build());
     }
 
     /** Décode (sans vérifier la signature — usage test uniquement) le payload d'un JWT. */

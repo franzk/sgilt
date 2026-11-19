@@ -35,6 +35,8 @@ public abstract class IntegrationTestContext {
     private static final String SGILT_CORE_IMAGE = "sgilt-core:integration-test";
     private static final String SGILT_NOTIFICATIONS_IMAGE = "sgilt-notifications:integration-test";
     protected static final String CONFIRMATION_SECRET = "integration-test-confirmation-secret";
+    // secret du compte de service sgilt-admin déclaré dans keycloak/realm-test.json
+    private static final String KC_ADMIN_CLIENT_SECRET = "dev-admin-secret";
     private static final AtomicBoolean PROVISIONED = new AtomicBoolean(false);
 
     static final Network network = Network.newNetwork();
@@ -92,7 +94,7 @@ public abstract class IntegrationTestContext {
                 .withEnv("RABBITMQ_PASSWORD", rabbitmq.getAdminPassword())
                 .withEnv("KEYCLOAK_ISSUER", keycloakExternalUrl + "/realms/" + REALM)
                 .withEnv("KC_ADMIN_URL", keycloakExternalUrl)
-                .withEnv("KC_ADMIN_CLIENT_SECRET", "dev-admin-secret")
+                .withEnv("KC_ADMIN_CLIENT_SECRET", KC_ADMIN_CLIENT_SECRET)
                 .withEnv("CONFIRMATION_TOKEN_SECRET", CONFIRMATION_SECRET)
                 .withEnv("OPENAI_API_KEY", "unused-in-integration-tests")
                 .withEnv("ADMIN_EMAIL", "admin@integration.test")
@@ -243,6 +245,19 @@ public abstract class IntegrationTestContext {
      */
     public static String buildConfirmationTokenForPayload(String payload) {
         return ConfirmationToken.build(payload, CONFIRMATION_SECRET);
+    }
+
+    /** Fait expirer le lien d'action en attente d'un email (ex. invitation client), pour tester le 410. */
+    public static void expireActionTokenForEmail(String email) {
+        fixtures.expireActionTokenByEmail(email);
+    }
+
+    /**
+     * Pose un mot de passe sur le compte Keycloak d'un user créé en cours de scénario, sans passer par
+     * le lien Sgilt — simule un « mot de passe oublié » mené à son terme.
+     */
+    public static void setPasswordForUser(String email, String password) {
+        new KeycloakTestClient(keycloak.getAuthServerUrl(), REALM).setPassword(email, password, KC_ADMIN_CLIENT_SECRET);
     }
 
     /** Récupère un JWT réel pour un user créé en cours de scénario (ex. via le flow onboarding). */
