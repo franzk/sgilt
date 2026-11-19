@@ -181,7 +181,7 @@ class AdminControllerTest {
 
         @Test
         void givenEmailAlreadyUsed_whenCreateClientInvitation_thenThrowsWithoutCreatingKeycloakUser() {
-            when(utilisateurService.existsByEmail("julie@example.com")).thenReturn(true);
+            when(utilisateurService.existsByEmailIgnoreCase("julie@example.com")).thenReturn(true);
 
             assertThatThrownBy(() -> controller.createClientInvitation(request))
                     .isInstanceOf(EmailAlreadyUsedException.class);

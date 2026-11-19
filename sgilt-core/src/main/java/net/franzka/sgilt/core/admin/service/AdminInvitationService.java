@@ -21,6 +21,7 @@ import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -119,14 +120,22 @@ public class AdminInvitationService {
         return new InvitedEvent(evenement.eventType(), evenement.date(), prestataireName);
     }
 
-    // L'invitation est envoyée si un lien d'activation est en attente, non envoyée sinon.
     private ClientInvitationDto toDto(Utilisateur utilisateur, InvitedEvent invitedEvent,
                                       @Nullable ActionToken pendingToken) {
-        ClientInvitationStatus status = pendingToken == null ? ClientInvitationStatus.NOT_SENT : ClientInvitationStatus.SENT;
         return new ClientInvitationDto(
                 utilisateur.getId(), utilisateur.getFirstName(), utilisateur.getLastName(), utilisateur.getEmail(),
-                invitedEvent.eventType(), invitedEvent.date(), invitedEvent.prestataireName(), status,
+                invitedEvent.eventType(), invitedEvent.date(), invitedEvent.prestataireName(), statusOf(pendingToken),
                 pendingToken == null ? null : pendingToken.getCreatedAt(),
                 pendingToken == null ? null : pendingToken.getExpiresAt());
+    }
+
+    // Non envoyée sans lien d'activation en attente ; envoyée tant que le lien est valide, expirée ensuite.
+    private ClientInvitationStatus statusOf(@Nullable ActionToken pendingToken) {
+        if (pendingToken == null) {
+            return ClientInvitationStatus.NOT_SENT;
+        }
+        return pendingToken.getExpiresAt().isAfter(LocalDateTime.now())
+                ? ClientInvitationStatus.SENT
+                : ClientInvitationStatus.EXPIRED;
     }
 }

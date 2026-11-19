@@ -1,7 +1,8 @@
 <!--
   BO — /admin/invitations : liste des clients invités depuis le BO (deal conclu hors Sgilt), avec
   leur événement, le prestataire réservé et le statut de l'invitation. Le bouton envoie le mail
-  d'invitation (non envoyée) ou le relance avec un nouveau lien (envoyée, compte pas encore activé).
+  d'invitation (non envoyée) ou le relance, même lien et validité réinitialisée (envoyée ou expirée,
+  compte pas encore activé).
 -->
 <template>
   <div class="admin-page">
@@ -26,15 +27,16 @@
             <p class="meta">
               {{ eventTypeLabel(row.eventType) }} · {{ formatDate(row.eventDate) }} · {{ row.prestataireName }}
             </p>
-            <p v-if="row.status === 'SENT'" class="dates">
+            <p v-if="row.status === 'SENT' || row.status === 'EXPIRED'" class="dates">
               {{ $t('admin.invitations.sent-at', { date: formatDateTime(row.linkSentAt) }) }}
               ·
-              {{ $t('admin.invitations.expires-at', { date: formatDateTime(row.linkExpiresAt) }) }}
+              {{ $t(row.status === 'SENT' ? 'admin.invitations.expires-at' : 'admin.invitations.expired-at',
+                    { date: formatDateTime(row.linkExpiresAt) }) }}
             </p>
           </div>
           <ClientInvitationStatusBadge :status="row.status" />
         </div>
-        <template v-if="row.status === 'NOT_SENT' || row.status === 'SENT'" #cta>
+        <template #cta>
           <SgiltButton variant="secondary" :loading="sendingId === row.id" @click="send(row.id)">
             {{ row.status === 'NOT_SENT' ? $t('admin.invitations.send') : $t('admin.invitations.resend') }}
           </SgiltButton>

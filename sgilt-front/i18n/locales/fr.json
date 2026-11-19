@@ -1603,10 +1603,12 @@
       },
       "status": {
         "NOT_SENT": "Non envoyée",
-        "SENT": "Envoyée"
+        "SENT": "Envoyée",
+        "EXPIRED": "Expirée"
       },
       "sent-at": "Envoyée le {date}",
       "expires-at": "expire le {date}",
+      "expired-at": "expirée le {date}",
       "send": "Envoyer l'invitation",
       "resend": "Relancer",
       "send-success": "Invitation envoyée.",

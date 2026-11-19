@@ -179,6 +179,19 @@ public class UtilisateurService {
     }
 
     /**
+     * Vérifie si un utilisateur est déjà enregistré pour l'email donné, quelle que soit sa casse
+     * (Keycloak refuse un email qui ne diffère que par la casse). Utilisé par l'invitation client du
+     * BO ; les autres parcours passent encore par {@link #existsByEmail} (chantier global de la casse
+     * des emails, au backlog).
+     *
+     * @param email l'adresse email à vérifier
+     * @return {@code true} si un utilisateur existe pour cet email, toutes casses confondues
+     */
+    public boolean existsByEmailIgnoreCase(String email) {
+        return utilisateurRepository.existsByEmailIgnoreCase(email);
+    }
+
+    /**
      * Retourne le profil de l'utilisateur identifié par son email.
      *
      * @param email l'adresse email de l'utilisateur connecté

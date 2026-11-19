@@ -24,6 +24,8 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, UUID> 
      */
     boolean existsByEmail(String email);
 
+    boolean existsByEmailIgnoreCase(String email);
+
     /**
      * Recherche un utilisateur par son adresse email.
      *

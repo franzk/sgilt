@@ -171,7 +171,7 @@ public class AdminController implements AdminApi {
         log.info("POST /admin/invitations — email={} prestataireId={}", request.email(), request.prestataireId());
 
         // 1. vérifications
-        if (utilisateurService.existsByEmail(request.email())) {
+        if (utilisateurService.existsByEmailIgnoreCase(request.email())) {
             throw new EmailAlreadyUsedException(request.email());
         }
 

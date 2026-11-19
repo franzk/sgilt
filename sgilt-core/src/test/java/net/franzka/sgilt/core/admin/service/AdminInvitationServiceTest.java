@@ -125,8 +125,8 @@ class AdminInvitationServiceTest {
         }
 
         @Test
-        void givenInvitedClientWithPendingLink_whenListInvitations_thenReturnsSentInvitationWithLinkDates() {
-            LocalDateTime sentAt = LocalDateTime.of(2026, 11, 18, 10, 0);
+        void givenInvitedClientWithValidLink_whenListInvitations_thenReturnsSentInvitationWithLinkDates() {
+            LocalDateTime sentAt = LocalDateTime.now().minusDays(1);
             LocalDateTime expiresAt = sentAt.plusDays(7);
             ActionToken token = ActionToken.builder().type(ActionType.CLIENT_INVITATION).expiresAt(expiresAt).build();
             token.setCreatedAt(sentAt);
@@ -140,6 +140,24 @@ class AdminInvitationServiceTest {
             assertThat(result).containsExactly(new ClientInvitationDto(
                     utilisateur.getId(), "Julie", "Martin", "julie@example.com", "mariage", EVENT_DATE,
                     "Le Taennel", ClientInvitationStatus.SENT, sentAt, expiresAt));
+        }
+
+        @Test
+        void givenInvitedClientWithExpiredLink_whenListInvitations_thenReturnsExpiredInvitationWithLinkDates() {
+            LocalDateTime sentAt = LocalDateTime.now().minusDays(8);
+            LocalDateTime expiresAt = sentAt.plusDays(7);
+            ActionToken token = ActionToken.builder().type(ActionType.CLIENT_INVITATION).expiresAt(expiresAt).build();
+            token.setCreatedAt(sentAt);
+            when(actionTokenService.findAllByType(ActionType.CLIENT_INVITATION)).thenReturn(List.of(token));
+            when(actionTokenService.readPayload(token)).thenReturn(Map.of("email", "julie@example.com"));
+            when(utilisateurService.listInvitedUtilisateurs()).thenReturn(List.of(utilisateur));
+            stubInvitedEvent();
+
+            List<ClientInvitationDto> result = adminInvitationService.listInvitations();
+
+            assertThat(result).containsExactly(new ClientInvitationDto(
+                    utilisateur.getId(), "Julie", "Martin", "julie@example.com", "mariage", EVENT_DATE,
+                    "Le Taennel", ClientInvitationStatus.EXPIRED, sentAt, expiresAt));
         }
     }
 
