@@ -90,6 +90,22 @@ public class UtilisateurService {
                 .orElseThrow(UtilisateurNotFoundException::new);
     }
 
+    /**
+     * Active le compte d'un client invité depuis le BO : passe de INVITED à ACTIVE.
+     *
+     * @param email l'email du client invité
+     * @return l'utilisateur activé
+     * @throws UtilisateurNotFoundException si aucun utilisateur ne correspond, ou s'il n'est pas
+     *                                      INVITED (compte déjà activé)
+     */
+    public Utilisateur activateInvitedUtilisateur(String email) {
+        Utilisateur utilisateur = utilisateurRepository.findByEmailIgnoreCase(email)
+                .filter(found -> found.getStatus() == UtilisateurStatus.INVITED)
+                .orElseThrow(UtilisateurNotFoundException::new);
+        utilisateur.setStatus(UtilisateurStatus.ACTIVE);
+        return utilisateurRepository.save(utilisateur);
+    }
+
     // Crée l'utilisateur dans le statut donné, après avoir vérifié que son email est libre.
     private Utilisateur buildAndSave(String firstName, String lastName, String email, String phone,
                                      UtilisateurStatus status) {

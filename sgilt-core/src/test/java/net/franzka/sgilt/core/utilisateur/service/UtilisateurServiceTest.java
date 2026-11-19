@@ -335,4 +335,34 @@ class UtilisateurServiceTest {
                     .isInstanceOf(UtilisateurNotFoundException.class);
         }
     }
+
+    // -------------------------------------------------------------------------
+    // activateInvitedUtilisateur
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ActivateInvitedUtilisateur {
+
+        @Test
+        void givenInvitedUtilisateur_whenActivateInvitedUtilisateur_thenSavesItActive() {
+            Utilisateur invited = Utilisateur.builder().email(EMAIL).status(UtilisateurStatus.INVITED).build();
+            when(utilisateurRepository.findByEmailIgnoreCase(EMAIL)).thenReturn(Optional.of(invited));
+            when(utilisateurRepository.save(invited)).thenReturn(invited);
+
+            Utilisateur result = utilisateurService.activateInvitedUtilisateur(EMAIL);
+
+            assertThat(result.getStatus()).isEqualTo(UtilisateurStatus.ACTIVE);
+            verify(utilisateurRepository).save(invited);
+        }
+
+        @Test
+        void givenAlreadyActiveUtilisateur_whenActivateInvitedUtilisateur_thenThrowsNotFound() {
+            Utilisateur active = Utilisateur.builder().email(EMAIL).status(UtilisateurStatus.ACTIVE).build();
+            when(utilisateurRepository.findByEmailIgnoreCase(EMAIL)).thenReturn(Optional.of(active));
+
+            assertThatThrownBy(() -> utilisateurService.activateInvitedUtilisateur(EMAIL))
+                    .isInstanceOf(UtilisateurNotFoundException.class);
+            verify(utilisateurRepository, never()).save(any());
+        }
+    }
 }

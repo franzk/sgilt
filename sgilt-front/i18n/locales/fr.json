@@ -1481,7 +1481,7 @@
     "badge": "Dernière étape",
     "hero-title-line1": "Votre espace",
     "hero-title-line2": "est prêt 🔑",
-    "hero-sub": "Créez votre mot de passe pour sécuriser votre espace Sgilt. Une fois validé, votre demande sera envoyée au prestataire et vous pourrez la suivre depuis votre événement.",
+    "hero-sub": "Créez votre mot de passe pour sécuriser votre espace Sgilt.",
     "error": {
       "invalid": "Ce lien est invalide.",
       "already-used": "Ce lien a déjà été utilisé. Si vous avez un compte, connectez-vous.",

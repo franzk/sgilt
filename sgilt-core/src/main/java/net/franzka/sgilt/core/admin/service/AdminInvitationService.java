@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.admin.domain.ClientInvitationStatus;
 import net.franzka.sgilt.core.admin.dto.ClientInvitationDto;
 import net.franzka.sgilt.core.admin.dto.CreateClientInvitationRequest;
+import net.franzka.sgilt.core.admin.dto.InvitedReservation;
 import net.franzka.sgilt.core.admin.exception.ClientInvitationNotSentException;
 import net.franzka.sgilt.core.admin.mailer.ClientInvitationMailerService;
 import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
@@ -15,6 +16,7 @@ import net.franzka.sgilt.core.jwt.domain.ActionType;
 import net.franzka.sgilt.core.jwt.service.ActionLinkService;
 import net.franzka.sgilt.core.jwt.service.ActionTokenService;
 import net.franzka.sgilt.core.reservation.domain.Reservation;
+import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
@@ -60,7 +62,8 @@ public class AdminInvitationService {
                 utilisateur, request.eventType(), request.eventDate(), request.prestataireId());
         log.info("createInvitation — client {} invité, réservation {} confirmée", request.email(), reservation.getId());
         InvitedEvent invitedEvent = new InvitedEvent(
-                request.eventType(), request.eventDate(), reservation.getPrestataire().getName());
+                reservation.getEvenement().getId(), request.eventType(), request.eventDate(),
+                reservation.getId(), reservation.getPrestataire().getName());
         return toDto(utilisateur, invitedEvent, null);
     }
 
@@ -109,14 +112,34 @@ public class AdminInvitationService {
         }
     }
 
-    // L'événement d'un client invité, tel que l'invitation le présente.
-    private record InvitedEvent(String eventType, LocalDate date, String prestataireName) {}
+    /**
+     * Active le compte d'un client invité, au moment où il choisit son mot de passe via le lien de
+     * l'invitation : passe de INVITED à ACTIVE et enregistre son acceptation des CGU (cochée sur la
+     * page d'activation).
+     *
+     * @param email l'email du client invité
+     * @return sa réservation et son événement, ce qu'il retrouve en arrivant
+     * @throws net.franzka.sgilt.core.utilisateur.exception.UtilisateurNotFoundException si le client
+     *         n'existe pas ou a déjà activé son compte
+     */
+    public InvitedReservation activateInvitation(String email) {
+        Utilisateur utilisateur = utilisateurService.activateInvitedUtilisateur(email);
+        utilisateurService.acceptCgu(utilisateur);
+        InvitedEvent invitedEvent = loadInvitedEvent(utilisateur);
+        log.info("activateInvitation — compte de {} activé", email);
+        return new InvitedReservation(invitedEvent.eventId(), invitedEvent.reservationId());
+    }
+
+    // L'événement d'un client invité et sa réservation, tels que l'invitation les présente.
+    private record InvitedEvent(UUID eventId, String eventType, LocalDate date,
+                                UUID reservationId, String prestataireName) {}
 
     // Un client invité a, par construction, un seul événement portant une seule réservation.
     private InvitedEvent loadInvitedEvent(Utilisateur utilisateur) {
         EvenementSummaryDto evenement = evenementService.getUserEvents(utilisateur.getId()).getFirst();
-        String prestataireName = reservationService.getReservationSummaries(evenement.id()).getFirst().prestataireName();
-        return new InvitedEvent(evenement.eventType(), evenement.date(), prestataireName);
+        ReservationSummaryDto reservation = reservationService.getReservationSummaries(evenement.id()).getFirst();
+        return new InvitedEvent(evenement.id(), evenement.eventType(), evenement.date(),
+                reservation.id(), reservation.prestataireName());
     }
 
     // L'invitation est envoyée si un lien d'activation est en attente, non envoyée sinon.

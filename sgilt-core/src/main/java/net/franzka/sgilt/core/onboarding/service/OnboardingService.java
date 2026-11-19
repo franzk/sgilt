@@ -4,6 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.franzka.sgilt.core.admin.dto.InvitedReservation;
+import net.franzka.sgilt.core.admin.service.AdminInvitationService;
 import net.franzka.sgilt.core.evenement.dto.CreateEventRequest;
 import net.franzka.sgilt.core.evenement.dto.DemandeInitieeDto;
 import net.franzka.sgilt.core.evenement.dto.EvenementDto;
@@ -40,6 +42,7 @@ public class OnboardingService {
     private final KeycloakAdminService keycloakAdminService;
     private final ActionTokenService actionTokenService;
     private final EvenementService evenementService;
+    private final AdminInvitationService adminInvitationService;
 
     /**
      * Un visiteur passe par la fiche d'un prestataire : c'est aussi la création d'un événement,
@@ -121,10 +124,10 @@ public class OnboardingService {
             throw new InvalidTokenException();
         }
 
-        // 3. est-on dans le flow d'onboarding d'un prestataire ?
+        // 3. est-on dans un flow à jeton d'action (onboarding prestataire, invitation client) ?
         String actionTokenId = claims.get("actionTokenId", String.class);
         if (actionTokenId != null) {
-            return confirmPrestataireOnboarding(UUID.fromString(actionTokenId), request.password());
+            return confirmActionTokenOnboarding(UUID.fromString(actionTokenId), request.password());
         }
 
         // 4. sinon, onboarding d'un client
@@ -161,16 +164,20 @@ public class OnboardingService {
     }
 
     /**
-     * Confirme l'onboarding d'un prestataire :
-     * - définit son mot de passe sur le compte Keycloak déjà existant
-     * - consomme le token d'action seulement une fois le mot de passe posé avec succès,
-     * - puis ouvre une session SSO vers la fiche éditable.
+     * Confirme un onboarding porté par un token d'action, dont le compte Keycloak existe déjà
+     * (créé sans mot de passe) :
+     * - définit son mot de passe sur le compte Keycloak,
+     * - termine le flow propre au type du token : rien de plus pour un prestataire ; activation du
+     *   compte pour un client invité depuis le BO,
+     * - consomme le token d'action seulement une fois tout cela fait avec succès,
+     * - puis ouvre une session SSO vers la page d'arrivée du flow (fiche éditable pour un
+     *   prestataire, sa réservation pour un client invité).
      *
      * @param actionTokenId l'identifiant du token d'action extrait du JWT set-password
-     * @param password      le mot de passe choisi par le prestataire
-     * @return l'URL de connexion SSO vers l'espace pro
+     * @param password      le mot de passe choisi
+     * @return l'URL de connexion SSO vers la page d'arrivée
      */
-    private ConfirmAccountResponse confirmPrestataireOnboarding(UUID actionTokenId, String password) {
+    private ConfirmAccountResponse confirmActionTokenOnboarding(UUID actionTokenId, String password) {
         ActionToken actionToken = actionTokenService.findById(actionTokenId);
         String email = (String) actionTokenService.readPayload(actionToken).get("email");
 
@@ -178,10 +185,22 @@ public class OnboardingService {
         String userId = keycloakAdminService.getUserIdByEmail(email);
         keycloakAdminService.resetPassword(userId, password);
 
+        String landingPath = switch (actionToken.getType()) {
+            case PRESTATAIRE_ONBOARDING -> "/pro/page-edition";
+            case CLIENT_INVITATION      -> invitedReservationPath(adminInvitationService.activateInvitation(email));
+        };
+
         actionTokenService.consume(actionToken);
 
-        String loginUrl = keycloakAdminService.getMagicLoginUrl(email, "/pro/page-edition");
+        String loginUrl = keycloakAdminService.getMagicLoginUrl(email, landingPath);
         log.info("confirmAccount — session SSO créée pour {}", email);
         return new ConfirmAccountResponse(loginUrl);
+    }
+
+    // Arrivée d'un client invité : directement sa réservation, dont le retour mène exceptionnellement
+    // à l'event board (?from=invitation), qu'il découvre.
+    private String invitedReservationPath(InvitedReservation invitedReservation) {
+        return "/app/events/" + invitedReservation.eventId()
+                + "/reservations/" + invitedReservation.reservationId() + "?from=invitation";
     }
 }
