@@ -365,4 +365,42 @@ class UtilisateurServiceTest {
             verify(utilisateurRepository, never()).save(any());
         }
     }
+
+    // -------------------------------------------------------------------------
+    // activateInvitedOnLogin
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ActivateInvitedOnLogin {
+
+        @Test
+        void givenInvitedUtilisateur_whenActivateInvitedOnLogin_thenSavesItActive() {
+            Utilisateur invited = Utilisateur.builder().email(EMAIL).status(UtilisateurStatus.INVITED).build();
+            when(utilisateurRepository.findByEmailIgnoreCase(EMAIL)).thenReturn(Optional.of(invited));
+
+            utilisateurService.activateInvitedOnLogin(EMAIL);
+
+            assertThat(invited.getStatus()).isEqualTo(UtilisateurStatus.ACTIVE);
+            verify(utilisateurRepository).save(invited);
+        }
+
+        @Test
+        void givenActiveUtilisateur_whenActivateInvitedOnLogin_thenDoesNothing() {
+            Utilisateur active = Utilisateur.builder().email(EMAIL).status(UtilisateurStatus.ACTIVE).build();
+            when(utilisateurRepository.findByEmailIgnoreCase(EMAIL)).thenReturn(Optional.of(active));
+
+            utilisateurService.activateInvitedOnLogin(EMAIL);
+
+            verify(utilisateurRepository, never()).save(any());
+        }
+
+        @Test
+        void givenUnknownEmail_whenActivateInvitedOnLogin_thenDoesNothing() {
+            when(utilisateurRepository.findByEmailIgnoreCase(EMAIL)).thenReturn(Optional.empty());
+
+            utilisateurService.activateInvitedOnLogin(EMAIL);
+
+            verify(utilisateurRepository, never()).save(any());
+        }
+    }
 }

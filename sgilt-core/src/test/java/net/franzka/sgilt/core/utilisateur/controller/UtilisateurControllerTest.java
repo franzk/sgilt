@@ -51,6 +51,15 @@ class UtilisateurControllerTest {
 
             assertThat(controller.getMe().getBody()).isEqualTo(dto);
         }
+
+        @Test
+        void givenCurrentUserEmail_whenGetMe_thenActivatesInvitedClientBeforeReturningProfile() {
+            when(currentUserService.getEmail()).thenReturn("client@sgilt.fr");
+
+            controller.getMe();
+
+            verify(utilisateurService).activateInvitedOnLogin("client@sgilt.fr");
+        }
     }
 
     // -------------------------------------------------------------------------

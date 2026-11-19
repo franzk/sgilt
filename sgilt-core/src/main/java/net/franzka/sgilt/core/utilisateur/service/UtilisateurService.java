@@ -102,6 +102,25 @@ public class UtilisateurService {
         Utilisateur utilisateur = utilisateurRepository.findByEmailIgnoreCase(email)
                 .filter(found -> found.getStatus() == UtilisateurStatus.INVITED)
                 .orElseThrow(UtilisateurNotFoundException::new);
+        return activate(utilisateur);
+    }
+
+    /**
+     * Active à sa connexion un client invité depuis le BO qui n'est pas passé par le lien de son
+     * invitation (lien expiré, puis « mot de passe oublié » sur Keycloak) : passe de INVITED à ACTIVE,
+     * pour que ses notifications ne restent pas coupées. Ses CGU ne sont pas acceptées — parcours
+     * marginal, assumé. Sans effet pour tout autre utilisateur.
+     *
+     * @param email l'email de l'utilisateur qui se connecte
+     */
+    public void activateInvitedOnLogin(String email) {
+        utilisateurRepository.findByEmailIgnoreCase(email)
+                .filter(found -> found.getStatus() == UtilisateurStatus.INVITED)
+                .ifPresent(this::activate);
+    }
+
+    // Passe un client invité de INVITED à ACTIVE.
+    private Utilisateur activate(Utilisateur utilisateur) {
         utilisateur.setStatus(UtilisateurStatus.ACTIVE);
         return utilisateurRepository.save(utilisateur);
     }
