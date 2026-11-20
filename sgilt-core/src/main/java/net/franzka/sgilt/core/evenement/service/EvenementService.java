@@ -30,6 +30,7 @@ import net.franzka.sgilt.core.evenement.repository.EvenementRepository;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.exception.PrestataireNotFoundException;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
+import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
 import net.franzka.sgilt.core.storage.FileStorageException;
@@ -247,12 +248,47 @@ public class EvenementService {
      * @return l'événement sauvegardé
      */
     public Evenement createFromDto(Utilisateur utilisateur, EvenementDto evenement) {
-        Evenement created = evenementMapper.toEvenement(evenement, utilisateur);
-        created.setTitle(StringUtils.hasText(evenement.title()) ? evenement.title() : defaultName(evenement.date()));
-        created = evenementRepository.save(created);
-
+        Evenement created = save(utilisateur, evenement);
         createReservationsFromDemandesInitiees(created, evenement.rubriques());
         return created;
+    }
+
+    /**
+     * Crée l'événement d'un client invité depuis le BO (deal conclu hors Sgilt) : un événement du
+     * type et à la date donnés, avec les rubriques du template de son type, et la réservation
+     * directement confirmée chez le prestataire, rangée dans sa rubrique. Le reste de l'événement
+     * sera complété par le client.
+     *
+     * @param utilisateur   le client invité, propriétaire de l'événement
+     * @param eventType     le type d'événement
+     * @param date          la date de l'événement, aussi celle de la prestation
+     * @param prestataireId le prestataire réservé
+     * @return la réservation confirmée
+     */
+    public Reservation createWithConfirmedReservation(
+            Utilisateur utilisateur, String eventType, LocalDate date, UUID prestataireId) {
+        // l'événement est construit comme s'il naissait d'une demande au prestataire, pour que sa
+        // rubrique soit insérée à sa place ; la demande devient ici une réservation confirmée.
+        DemandeInitieeDto demande = new DemandeInitieeDto(prestataireId, null);
+        EvenementDto evenement = buildEvenement(new CreateEventRequest(
+                null, eventType, null, null, null, date, null, null, null, demande));
+        Evenement created = save(utilisateur, evenement);
+
+        String rubriqueKey = evenement.rubriques().stream()
+                .filter(rubrique -> rubrique.reservations().contains(demande))
+                .findFirst()
+                .orElseThrow()
+                .key();
+        return reservationService.createConfirmed(
+                created, prestataireService.getById(prestataireId), utilisateur, date, rubriqueKey);
+    }
+
+    // Enregistre l'événement (données et clés de ses rubriques) ; sans nom choisi, il reçoit un nom
+    // par défaut tiré de sa date.
+    private Evenement save(Utilisateur utilisateur, EvenementDto evenement) {
+        Evenement created = evenementMapper.toEvenement(evenement, utilisateur);
+        created.setTitle(StringUtils.hasText(evenement.title()) ? evenement.title() : defaultName(evenement.date()));
+        return evenementRepository.save(created);
     }
 
     /**

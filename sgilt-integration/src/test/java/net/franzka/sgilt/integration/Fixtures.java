@@ -76,6 +76,11 @@ public final class Fixtures {
         update("UPDATE onboarding SET expires_at = now() - interval '1 hour' WHERE email = ?", email);
     }
 
+    /** Force l'expiration du token d'action en attente d'un email, pour tester un lien expiré. */
+    public void expireActionTokenByEmail(String email) {
+        update("UPDATE action_tokens SET expires_at = now() - interval '1 hour' WHERE payload ->> 'email' = ?", email);
+    }
+
     /**
      * Payload HMAC du dernier {@code ActionToken} (flow onboarding prestataire) créé pour cet email
      * — même mécanisme HMAC que {@link #getOnboardingHmacPayloadByEmail}, table différente (l'email

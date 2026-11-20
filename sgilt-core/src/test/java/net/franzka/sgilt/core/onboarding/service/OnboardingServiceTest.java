@@ -8,6 +8,7 @@ import net.franzka.sgilt.core.evenement.dto.EvenementDto;
 import net.franzka.sgilt.core.evenement.service.EvenementService;
 import net.franzka.sgilt.core.evenement.dto.RubriqueDto;
 import net.franzka.sgilt.core.jwt.domain.ActionToken;
+import net.franzka.sgilt.core.jwt.domain.ActionType;
 import net.franzka.sgilt.core.jwt.service.ActionTokenService;
 import net.franzka.sgilt.core.jwt.service.TokenJwtService;
 import net.franzka.sgilt.core.keycloak.KeycloakAdminService;
@@ -20,7 +21,11 @@ import net.franzka.sgilt.core.onboarding.dto.InitOnboardingResponse;
 import net.franzka.sgilt.core.onboarding.exception.InvalidTokenException;
 import net.franzka.sgilt.core.onboarding.exception.TokenExpiredException;
 import net.franzka.sgilt.core.onboarding.mailer.OnboardingMailerService;
+import net.franzka.sgilt.core.evenement.dto.EvenementSummaryDto;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
+import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
+import net.franzka.sgilt.core.reservation.service.ReservationService;
+import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import net.franzka.sgilt.core.utilisateur.service.UtilisateurService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -54,6 +59,7 @@ class OnboardingServiceTest {
     private static final LocalDate DATE           = LocalDate.of(2025, 6, 15);
     private static final String    TELEPHONE      = "0612345678";
     private static final String    SP_TOKEN       = "sp.header.payload.signature";
+    private static final String    KC_USER_ID     = "kc-user-id";
     private static final String    MESSAGE        = "Disponible le 15 juin ?";
     private static final List<RubriqueDto> RUBRIQUES = List.of(new RubriqueDto(
             "musique-animation", List.of(new DemandeInitieeDto(PRESTATAIRE_ID, MESSAGE))));
@@ -66,6 +72,7 @@ class OnboardingServiceTest {
     @Mock private KeycloakAdminService keycloakAdminService;
     @Mock private ActionTokenService actionTokenService;
     @Mock private EvenementService evenementService;
+    @Mock private ReservationService reservationService;
 
     @InjectMocks
     private OnboardingService onboardingService;
@@ -249,11 +256,9 @@ class OnboardingServiceTest {
     @Nested
     class ConfirmPrestataireOnboarding {
 
-        private static final String KC_USER_ID = "kc-user-id";
-
         @Test
         void givenActionTokenClaim_whenConfirmAccount_thenDoesNotCreateNewKeycloakUser() {
-            stubValidActionToken(UUID.randomUUID());
+            stubValidActionToken(ActionType.PRESTATAIRE_ONBOARDING);
 
             onboardingService.confirmOnboarding(buildRequest());
 
@@ -262,7 +267,7 @@ class OnboardingServiceTest {
 
         @Test
         void givenActionTokenClaim_whenConfirmAccount_thenDoesNotCreateOnboardingEntities() {
-            stubValidActionToken(UUID.randomUUID());
+            stubValidActionToken(ActionType.PRESTATAIRE_ONBOARDING);
 
             onboardingService.confirmOnboarding(buildRequest());
 
@@ -272,7 +277,7 @@ class OnboardingServiceTest {
 
         @Test
         void givenActionTokenClaim_whenConfirmAccount_thenResetsPasswordOnExistingKeycloakUser() {
-            stubValidActionToken(UUID.randomUUID());
+            stubValidActionToken(ActionType.PRESTATAIRE_ONBOARDING);
 
             onboardingService.confirmOnboarding(buildRequest());
 
@@ -282,7 +287,7 @@ class OnboardingServiceTest {
 
         @Test
         void givenActionTokenClaim_whenConfirmAccount_thenConsumesActionTokenOnlyAfterPasswordReset() {
-            ActionToken actionToken = stubValidActionToken(UUID.randomUUID());
+            ActionToken actionToken = stubValidActionToken(ActionType.PRESTATAIRE_ONBOARDING);
 
             onboardingService.confirmOnboarding(buildRequest());
 
@@ -293,7 +298,7 @@ class OnboardingServiceTest {
 
         @Test
         void givenActionTokenClaim_whenConfirmAccount_thenReturnsMagicLoginUrlToProSpace() {
-            stubValidActionToken(UUID.randomUUID());
+            stubValidActionToken(ActionType.PRESTATAIRE_ONBOARDING);
             when(keycloakAdminService.getMagicLoginUrl(EMAIL, "/pro/page-edition")).thenReturn("https://sgilt/magic");
 
             ConfirmAccountResponse response = onboardingService.confirmOnboarding(buildRequest());
@@ -301,22 +306,92 @@ class OnboardingServiceTest {
             assertThat(response.loginUrl()).isEqualTo("https://sgilt/magic");
         }
 
-        private ActionToken stubValidActionToken(UUID actionTokenId) {
-            Claims claims = mock(Claims.class);
-            when(claims.get("actionTokenId", String.class)).thenReturn(actionTokenId.toString());
-            when(setPasswordTokenJwtService.isExpired(SP_TOKEN)).thenReturn(false);
-            when(setPasswordTokenJwtService.extractClaims(SP_TOKEN)).thenReturn(claims);
+        @Test
+        void givenPrestataireOnboardingToken_whenConfirmAccount_thenDoesNotActivateAnyInvitation() {
+            stubValidActionToken(ActionType.PRESTATAIRE_ONBOARDING);
 
-            ActionToken actionToken = ActionToken.builder().id(actionTokenId).build();
-            when(actionTokenService.findById(actionTokenId)).thenReturn(actionToken);
-            when(actionTokenService.readPayload(actionToken)).thenReturn(Map.of("email", EMAIL));
-            when(keycloakAdminService.getUserIdByEmail(EMAIL)).thenReturn(KC_USER_ID);
+            onboardingService.confirmOnboarding(buildRequest());
 
-            return actionToken;
+            verify(utilisateurService, never()).activateInvitedUtilisateur(any());
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // confirmAccount — invitation d'un client depuis le BO (claim actionTokenId, type CLIENT_INVITATION)
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ConfirmClientInvitation {
+
+        private final UUID eventId = UUID.randomUUID();
+        private final UUID reservationId = UUID.randomUUID();
+        private final Utilisateur invited = Utilisateur.builder().id(UUID.randomUUID()).email(EMAIL).build();
+
+        @Test
+        void givenClientInvitationToken_whenConfirmAccount_thenResetsPasswordActivatesAndAcceptsCgu() {
+            stubValidActionToken(ActionType.CLIENT_INVITATION);
+            stubInvitedClient();
+
+            onboardingService.confirmOnboarding(buildRequest());
+
+            verify(keycloakAdminService).resetPassword(KC_USER_ID, "p@ssw0rd!");
+            verify(utilisateurService).activateInvitedUtilisateur(EMAIL);
+            verify(utilisateurService).acceptCgu(invited);
+            verify(keycloakAdminService, never()).createClientUser(any(), any(), any(), any());
         }
 
-        private ConfirmAccountRequest buildRequest() {
-            return new ConfirmAccountRequest(SP_TOKEN, "p@ssw0rd!", true);
+        @Test
+        void givenClientInvitationToken_whenConfirmAccount_thenConsumesActionTokenOnlyAfterActivation() {
+            ActionToken actionToken = stubValidActionToken(ActionType.CLIENT_INVITATION);
+            stubInvitedClient();
+
+            onboardingService.confirmOnboarding(buildRequest());
+
+            InOrder inOrder = inOrder(utilisateurService, actionTokenService);
+            inOrder.verify(utilisateurService).activateInvitedUtilisateur(EMAIL);
+            inOrder.verify(actionTokenService).consume(actionToken);
         }
+
+        @Test
+        void givenClientInvitationToken_whenConfirmAccount_thenReturnsMagicLoginUrlToTheReservationWithBackToEventBoard() {
+            stubValidActionToken(ActionType.CLIENT_INVITATION);
+            stubInvitedClient();
+            String reservationPath = "/app/events/" + eventId + "/reservations/" + reservationId + "?from=invitation";
+            when(keycloakAdminService.getMagicLoginUrl(EMAIL, reservationPath)).thenReturn("https://sgilt/magic");
+
+            ConfirmAccountResponse response = onboardingService.confirmOnboarding(buildRequest());
+
+            assertThat(response.loginUrl()).isEqualTo("https://sgilt/magic");
+        }
+
+        // client invité activable, avec son unique événement portant son unique réservation
+        private void stubInvitedClient() {
+            when(utilisateurService.activateInvitedUtilisateur(EMAIL)).thenReturn(invited);
+            when(evenementService.getUserEvents(invited.getId())).thenReturn(List.of(
+                    new EvenementSummaryDto(eventId, "Mon événement", DATE, null, null, "mariage", 1, 0)));
+            when(reservationService.getReservationSummaries(eventId)).thenReturn(List.of(
+                    new ReservationSummaryDto(reservationId, UUID.randomUUID(), "Le Taennel", null,
+                            "lieu", "salle", "lieu", "CONFIRMED", 0)));
+        }
+    }
+
+    // JWT set-password valide portant le claim actionTokenId, et token d'action du type donné pour EMAIL
+    private ActionToken stubValidActionToken(ActionType type) {
+        UUID actionTokenId = UUID.randomUUID();
+        Claims claims = mock(Claims.class);
+        when(claims.get("actionTokenId", String.class)).thenReturn(actionTokenId.toString());
+        when(setPasswordTokenJwtService.isExpired(SP_TOKEN)).thenReturn(false);
+        when(setPasswordTokenJwtService.extractClaims(SP_TOKEN)).thenReturn(claims);
+
+        ActionToken actionToken = ActionToken.builder().id(actionTokenId).type(type).build();
+        when(actionTokenService.findById(actionTokenId)).thenReturn(actionToken);
+        when(actionTokenService.readPayload(actionToken)).thenReturn(Map.of("email", EMAIL));
+        when(keycloakAdminService.getUserIdByEmail(EMAIL)).thenReturn(KC_USER_ID);
+
+        return actionToken;
+    }
+
+    private ConfirmAccountRequest buildRequest() {
+        return new ConfirmAccountRequest(SP_TOKEN, "p@ssw0rd!", true);
     }
 }

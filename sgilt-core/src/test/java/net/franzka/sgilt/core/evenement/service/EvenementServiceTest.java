@@ -28,6 +28,7 @@ import net.franzka.sgilt.core.evenement.page.service.PageEvenementService;
 import net.franzka.sgilt.core.evenement.repository.EvenementRepository;
 import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.prestataire.service.PrestataireService;
+import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
 import net.franzka.sgilt.core.reservation.dto.ReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.service.ReservationService;
@@ -987,6 +988,38 @@ class EvenementServiceTest {
 
             assertThatThrownBy(() -> evenementService.replacePublicFeatures(EVENT_ID, new AdminEvenementFeaturesDto(true, true)))
                     .isInstanceOf(EvenementNotFoundException.class);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // createWithConfirmedReservation
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class CreateWithConfirmedReservation {
+
+        @Test
+        void givenInvitedClient_whenCreateWithConfirmedReservation_thenCreatesTheEventAndAConfirmedReservationInItsRubrique() {
+            Utilisateur utilisateur = mock(Utilisateur.class);
+            LocalDate date = LocalDate.of(2027, 6, 12);
+            UUID prestataireId = UUID.randomUUID();
+            Prestataire prestataire = mock(Prestataire.class);
+            DemandeInitieeDto demande = new DemandeInitieeDto(prestataireId, null);
+            when(templateService.getEventRubriquesFromDemande("mariage", demande)).thenReturn(List.of(
+                    new RubriqueDto("restauration", List.of()),
+                    new RubriqueDto("lieu", List.of(demande))));
+            Evenement saved = Evenement.builder().id(EVENT_ID).date(date).build();
+            when(evenementMapper.toEvenement(any(EvenementDto.class), eq(utilisateur))).thenReturn(saved);
+            when(evenementRepository.save(saved)).thenReturn(saved);
+            when(prestataireService.getById(prestataireId)).thenReturn(prestataire);
+            Reservation reservation = mock(Reservation.class);
+            when(reservationService.createConfirmed(saved, prestataire, utilisateur, date, "lieu")).thenReturn(reservation);
+
+            Reservation result = evenementService.createWithConfirmedReservation(utilisateur, "mariage", date, prestataireId);
+
+            assertThat(result).isSameAs(reservation);
+            assertThat(saved.getTitle()).isEqualTo("Mon événement du 12 Juin");
+            verify(reservationService, never()).create(any(), any(), any(), any(), any(), any());
         }
     }
 }

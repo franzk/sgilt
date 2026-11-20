@@ -34,7 +34,8 @@ public class VerifyService {
     /**
      * Vérifie le token reçu par email et génère la réponse set-password correspondante.
      * Essaie d'abord le flux client (session {@link Onboarding}) ; si le token ne correspond à
-     * aucune session, retombe sur le flux prestataire ({@link ActionToken}).
+     * aucune session, retombe sur les flux à token d'action ({@link ActionToken} : onboarding
+     * prestataire, invitation client depuis le BO).
      *
      * @param token le token {@code payload-signature} reçu par email
      * @return l'email et le JWT set-password
@@ -44,9 +45,9 @@ public class VerifyService {
             return verifyClientOnboarding(token);
         } catch (EntityNotFoundException _) {
             try {
-                return verifyPrestataireOnboarding(token);
+                return verifyActionTokenOnboarding(token);
             } catch (EntityNotFoundException e) {
-                log.warn("verify — token inconnu des deux flows (client et prestataire)");
+                log.warn("verify — token inconnu (ni session d'onboarding client, ni token d'action)");
                 throw e;
             }
         }
@@ -66,7 +67,9 @@ public class VerifyService {
         return new SetPasswordTokenDto(onboarding.getEmail(), setPasswordToken);
     }
 
-    private SetPasswordTokenDto verifyPrestataireOnboarding(String token) {
+    // Lien expiré : le compte Keycloak existe déjà, le front conseille « mot de passe oublié » —
+    // valable pour le prestataire comme pour le client invité (activé à sa connexion, GET /users/me).
+    private SetPasswordTokenDto verifyActionTokenOnboarding(String token) {
         ActionToken actionToken;
         try {
             actionToken = actionTokenService.checkToken(token);

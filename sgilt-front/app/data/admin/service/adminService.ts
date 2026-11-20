@@ -17,6 +17,9 @@ import {
   deleteSousCategorieApi,
   listAdminEvenementsApi,
   putAdminEvenementFeaturesApi,
+  createClientInvitationApi,
+  listClientInvitationsApi,
+  sendClientInvitationApi,
 } from '../api/adminApi'
 import {
   mapPrestataireAdminFormat,
@@ -28,7 +31,10 @@ import {
   mapCategorieAdmin,
   mapSousCategorieAdmin,
   mapAdminEvenementListItem,
+  mapClientInvitation,
+  mapClientInvitationRequest,
 } from '../mapper/adminMapper'
+import type { ClientInvitation, ClientInvitationCreation } from '../domain/ClientInvitation'
 import type { PrestataireAdminFormat } from '../domain/PrestataireAdminFormat'
 import type { PrestataireOnboardingPending } from '../domain/PrestataireOnboardingPending'
 import type { PrestataireProvisioning } from '../domain/PrestataireProvisioning'
@@ -177,4 +183,34 @@ export async function saveAdminEvenementFeatures(
  */
 export function toFeaturesFailure(error: unknown): string {
   return error instanceof FetchError && error.statusCode === 409 ? 'BILLETTERIE_WITH_SALES' : 'TECHNICAL'
+}
+
+/**
+ * Crée un client invité, son événement et sa réservation confirmée ; aucun mail au client.
+ */
+export async function createClientInvitation(creation: ClientInvitationCreation): Promise<ClientInvitation> {
+  return mapClientInvitation(await createClientInvitationApi(mapClientInvitationRequest(creation)))
+}
+
+/**
+ * Récupère les invitations client, avec leur statut.
+ */
+export async function fetchClientInvitations(): Promise<ClientInvitation[]> {
+  return (await listClientInvitationsApi()).map(mapClientInvitation)
+}
+
+/**
+ * Envoie (ou relance) le mail d'invitation au client.
+ */
+export async function sendClientInvitation(id: string): Promise<void> {
+  await sendClientInvitationApi(id)
+}
+
+/**
+ * Traduit l'échec de la création d'une invitation en motif d'erreur (suffixe de la clé i18n
+ * admin.invitations.form.errors.*) : un email déjà connu de Sgilt est refusé (409) ; tout le reste
+ * est technique.
+ */
+export function toClientInvitationFailure(error: unknown): string {
+  return error instanceof FetchError && error.statusCode === 409 ? 'EMAIL_ALREADY_EXISTS' : 'TECHNICAL'
 }

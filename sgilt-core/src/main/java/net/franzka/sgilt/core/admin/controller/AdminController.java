@@ -3,9 +3,13 @@ package net.franzka.sgilt.core.admin.controller;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.admin.api.AdminApi;
+import net.franzka.sgilt.core.admin.dto.ClientInvitationDto;
+import net.franzka.sgilt.core.admin.dto.CreateClientInvitationRequest;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireRequest;
 import net.franzka.sgilt.core.admin.dto.ProvisionPrestataireResponse;
+import net.franzka.sgilt.core.admin.exception.EmailAlreadyUsedException;
 import net.franzka.sgilt.core.admin.exception.SlugAlreadyExistsException;
+import net.franzka.sgilt.core.admin.service.AdminInvitationService;
 import net.franzka.sgilt.core.admin.service.AdminOnboardingService;
 import net.franzka.sgilt.core.evenement.billetterie.exception.BilletterieWithSalesException;
 import net.franzka.sgilt.core.evenement.dto.AdminEvenementFeaturesDto;
@@ -50,6 +54,7 @@ public class AdminController implements AdminApi {
     private final UtilisateurService utilisateurService;
     private final KeycloakAdminService keycloakAdminService;
     private final AdminOnboardingService adminOnboardingService;
+    private final AdminInvitationService adminInvitationService;
     private final ReservationService reservationService;
     private final EvenementService evenementService;
     private final TransactionTemplate transactionTemplate;
@@ -61,6 +66,7 @@ public class AdminController implements AdminApi {
      * @param utilisateurService   le service métier des utilisateurs
      * @param keycloakAdminService le service métier des interactions Keycloak
      * @param adminOnboardingService le service de suivi et de relance des onboardings en attente
+     * @param adminInvitationService le service des invitations client
      * @param reservationService  le service métier des réservations
      * @param evenementService    le service métier des événements
      * @param transactionManager   le gestionnaire de transaction Spring, utilisé pour construire le {@link TransactionTemplate}
@@ -70,6 +76,7 @@ public class AdminController implements AdminApi {
             UtilisateurService utilisateurService,
             KeycloakAdminService keycloakAdminService,
             AdminOnboardingService adminOnboardingService,
+            AdminInvitationService adminInvitationService,
             ReservationService reservationService,
             EvenementService evenementService,
             PlatformTransactionManager transactionManager) {
@@ -77,6 +84,7 @@ public class AdminController implements AdminApi {
         this.utilisateurService = utilisateurService;
         this.keycloakAdminService = keycloakAdminService;
         this.adminOnboardingService = adminOnboardingService;
+        this.adminInvitationService = adminInvitationService;
         this.reservationService = reservationService;
         this.evenementService = evenementService;
         this.transactionTemplate = new TransactionTemplate(transactionManager);
@@ -143,6 +151,74 @@ public class AdminController implements AdminApi {
             keycloakAdminService.deleteUser(kcUserId);
             throw e;
         }
+    }
+
+    /**
+     * Invite un client dont le deal s'est conclu hors Sgilt, sur le modèle du provisionnement
+     * prestataire :
+     * 1. compte Keycloak (rôle USER, sans mot de passe utilisable)
+     * 2. transaction courte : utilisateur INVITED, événement et réservation confirmée (voir
+     * {@link AdminInvitationService#createInvitation})
+     * Si la création DB échoue, le compte KC est supprimé (compensation). Aucun mail ne part vers le
+     * client : l'invitation s'envoie plus tard depuis le BO.
+     *
+     * @param request le client, le type et la date de l'événement, le prestataire
+     * @return 201 Created avec l'invitation créée
+     * @throws EmailAlreadyUsedException si l'email a déjà un compte Sgilt
+     */
+    @Override
+    public ResponseEntity<ClientInvitationDto> createClientInvitation(CreateClientInvitationRequest request) {
+        log.info("POST /admin/invitations — email={} prestataireId={}", request.email(), request.prestataireId());
+
+        // 1. vérifications
+        if (utilisateurService.existsByEmailIgnoreCase(request.email())) {
+            throw new EmailAlreadyUsedException(request.email());
+        }
+
+        // 2. Création du compte Keycloak sans mot de passe
+        String kcUserId = keycloakAdminService.createClientUserWithoutPassword(
+                request.email(), request.firstName(), request.lastName());
+
+        // 3. On ouvre une courte transaction pour créer les entités en BDD
+        try {
+            ClientInvitationDto response = transactionTemplate.execute(_ -> adminInvitationService.createInvitation(request));
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (RuntimeException e) {
+            log.error("Échec de la création DB après création du compte KC {} — compensation (deleteUser)", kcUserId, e);
+            // en cas d'erreur, suppression du compte KC
+            keycloakAdminService.deleteUser(kcUserId);
+            throw e;
+        }
+    }
+
+    /**
+     * Liste les invitations des clients qui n'ont pas encore activé leur compte.
+     *
+     * @return la liste des invitations en cours
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<List<ClientInvitationDto>> listClientInvitations() {
+        log.info("GET /admin/invitations");
+        return ResponseEntity.ok(adminInvitationService.listInvitations());
+    }
+
+    /**
+     * Envoie le mail d'invitation à un client invité, ou le relance (même lien, validité
+     * réinitialisée) s'il a déjà été envoyé. Si le mail ne part pas, la transaction est annulée
+     * (le lien n'est ni créé ni prolongé).
+     *
+     * @param id identifiant du client invité
+     * @return 204 No Content
+     * @throws net.franzka.sgilt.core.admin.exception.ClientInvitationNotSentException si l'email n'a
+     *         pas pu être envoyé (500)
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<Void> sendClientInvitation(UUID id) {
+        log.info("POST /admin/invitations/{}/send", id);
+        adminInvitationService.sendInvitation(id);
+        return ResponseEntity.noContent().build();
     }
 
     /**

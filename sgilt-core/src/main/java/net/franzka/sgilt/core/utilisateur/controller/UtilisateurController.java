@@ -22,12 +22,20 @@ public class UtilisateurController implements UtilisateurApi {
     private final UtilisateurService utilisateurService;
     private final CurrentUserService currentUserService;
 
+    /**
+     * Retourne le profil du client connecté. Appelé par le front à chaque connexion d'un client :
+     * c'est aussi là qu'un client invité depuis le BO, connecté sans être passé par le lien de son
+     * invitation, est activé (seul effet de bord de ce GET, d'où la transaction en écriture).
+     *
+     * @return le profil du client connecté
+     */
     @Override
     @PreAuthorize("hasAuthority('ROLE_USER')")
-    @Transactional(readOnly = true)
+    @Transactional
     public ResponseEntity<UtilisateurProfileDto> getMe() {
         String email = currentUserService.getEmail();
         log.info("GET /users/me — email={}", email);
+        utilisateurService.activateInvitedOnLogin(email);
         return ResponseEntity.ok(utilisateurService.getProfile(email));
     }
 

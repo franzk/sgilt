@@ -2,6 +2,7 @@ package net.franzka.sgilt.notifications.notification.mapper;
 
 import net.franzka.sgilt.notifications.notification.domain.Notification;
 import net.franzka.sgilt.notifications.notification.domain.NotificationType;
+import net.franzka.sgilt.notifications.notification.event.ReservationAddedBySgiltEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationContactReminderDueEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationCreatedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationFeedItemAddedEvent;
@@ -38,6 +39,31 @@ class NotificationEventMapperTest {
             assertThat(notification.getParams()).containsEntry("clientFirstName", "Sophie")
                     .containsEntry("clientLastName", "Leroy")
                     .containsEntry("eventTitle", "Anniversaire de Paul");
+            assertThat(notification.getHref()).isEqualTo("/pro/reservations/" + reservationId);
+            assertThat(notification.isRead()).isFalse();
+        }
+    }
+
+    @Nested
+    class ToNotificationFromReservationAddedBySgilt {
+
+        @Test
+        void givenEvent_whenToNotification_thenBuildsNotificationForProWithFormattedDate() {
+            UUID reservationId = UUID.randomUUID();
+            UUID recipientUserId = UUID.randomUUID();
+            ReservationAddedBySgiltEvent event = new ReservationAddedBySgiltEvent(
+                    reservationId, recipientUserId, "presta@example.com",
+                    "Julie", "Martin", LocalDate.of(2027, 6, 12));
+
+            Notification notification = mapper.toNotification(event);
+
+            assertThat(notification.getRecipientEmail()).isEqualTo("presta@example.com");
+            assertThat(notification.getRecipientUserId()).isEqualTo(recipientUserId);
+            assertThat(notification.getType()).isEqualTo(NotificationType.STATE_CHANGE);
+            assertThat(notification.getMessageKey()).isEqualTo("notification.reservation.added_by_sgilt");
+            assertThat(notification.getParams()).containsEntry("clientFirstName", "Julie")
+                    .containsEntry("clientLastName", "Martin")
+                    .containsEntry("eventDate", "12 juin 2027");
             assertThat(notification.getHref()).isEqualTo("/pro/reservations/" + reservationId);
             assertThat(notification.isRead()).isFalse();
         }

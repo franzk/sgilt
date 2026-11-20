@@ -1,6 +1,7 @@
 package net.franzka.sgilt.notifications.notification.listener;
 
 import net.franzka.sgilt.notifications.config.RabbitConfig;
+import net.franzka.sgilt.notifications.notification.event.ReservationAddedBySgiltEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationContactReminderDueEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationCreatedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationFeedItemAddedEvent;
@@ -50,6 +51,19 @@ class DomainEventListenerTest {
             when(messageConverter.fromMessage(eq(message), any())).thenReturn(event);
 
             listener.onMessage(message, RabbitConfig.RESERVATION_CREATED_RK);
+
+            verify(notificationService).createFromEvent(event);
+        }
+
+        @Test
+        void givenReservationAddedBySgiltRoutingKey_whenOnMessage_thenDelegatesToNotificationService() {
+            ReservationAddedBySgiltEvent event = new ReservationAddedBySgiltEvent(
+                    UUID.randomUUID(), UUID.randomUUID(), "presta@example.com",
+                    "Julie", "Martin", LocalDate.of(2027, 6, 12));
+            Message message = mock(Message.class);
+            when(messageConverter.fromMessage(eq(message), any())).thenReturn(event);
+
+            listener.onMessage(message, RabbitConfig.RESERVATION_ADDED_BY_SGILT_RK);
 
             verify(notificationService).createFromEvent(event);
         }

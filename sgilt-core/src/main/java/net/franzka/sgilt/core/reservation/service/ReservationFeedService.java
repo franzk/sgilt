@@ -11,13 +11,12 @@ import net.franzka.sgilt.core.reservation.domain.*;
 import net.franzka.sgilt.core.reservation.dto.AddNoteRequest;
 import net.franzka.sgilt.core.reservation.dto.FeedItemDto;
 import net.franzka.sgilt.core.reservation.event.FeedItemType;
-import net.franzka.sgilt.core.reservation.event.mapper.ReservationEventMapper;
+import net.franzka.sgilt.core.reservation.event.ReservationEventPublisher;
 import net.franzka.sgilt.core.reservation.exception.ReservationFeedItemNotFoundException;
 import net.franzka.sgilt.core.reservation.exception.ReservationNotAllowedException;
 import net.franzka.sgilt.core.reservation.mapper.ReservationFeedMapper;
 import net.franzka.sgilt.core.reservation.repository.ReservationFeedRepository;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,8 +39,7 @@ public class ReservationFeedService {
     private final ReservationFeedRepository feedRepository;
     private final ReservationFeedMapper     feedMapper;
     private final FileStorageService        fileStorageService;
-    private final ReservationEventMapper    reservationEventMapper;
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final ReservationEventPublisher reservationEventPublisher;
 
     private static final long MAX_FILE_SIZE = 10L * 1024 * 1024; // 10 MB
 
@@ -85,7 +83,7 @@ public class ReservationFeedService {
         }
         FeedItemDto item = feedMapper.toFeedItem(feedRepository.save(builder.build()), false, reservationId);
 
-        publishFeedItemAddedEvent(reservation, caller, FeedItemType.NOTE, isPersonal);
+        reservationEventPublisher.publishFeedItemAdded(reservation, caller, FeedItemType.NOTE, isPersonal);
 
         return item;
     }
@@ -127,31 +125,12 @@ public class ReservationFeedService {
             }
             FeedItemDto item = feedMapper.toFeedItem(feedRepository.save(builder.build()), false, reservationId);
 
-            publishFeedItemAddedEvent(reservation, caller, FeedItemType.DOCUMENT, isPersonal);
+            reservationEventPublisher.publishFeedItemAdded(reservation, caller, FeedItemType.DOCUMENT, isPersonal);
 
             return item;
         } catch (IOException e) {
             throw new FileStorageException("Erreur de stockage du document pour la réservation " + reservationId, e);
         }
-    }
-
-    /**
-     * Publie l'évènement de domaine correspondant à l'ajout d'un élément au feed — jamais pour un
-     * élément personnel, qui n'est visible que par son auteur.
-     *
-     * @param reservation la réservation dont le feed vient de recevoir un élément
-     * @param caller      le rôle de l'appelant (détermine qui est notifié : l'autre partie)
-     * @param itemType    le type d'élément ajouté
-     * @param isPersonal  si l'élément est personnel
-     */
-    private void publishFeedItemAddedEvent(Reservation reservation, FeedCaller caller, FeedItemType itemType, boolean isPersonal) {
-        if (isPersonal) {
-            return;
-        }
-        var event = caller == FeedCaller.PRESTATAIRE
-                ? reservationEventMapper.toFeedItemAddedEventForClient(reservation, itemType)
-                : reservationEventMapper.toFeedItemAddedEventForPro(reservation, itemType);
-        applicationEventPublisher.publishEvent(event);
     }
 
     /**

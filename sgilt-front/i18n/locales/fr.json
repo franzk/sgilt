@@ -1169,6 +1169,10 @@
         "title": "Une nouvelle demande ✨",
         "body": "{clientFirstName} souhaite vous parler de {eventTitle}."
       },
+      "added_by_sgilt": {
+        "title": "Une réservation confirmée vous attend",
+        "body": "Sgilt a ajouté la réservation de {clientFirstName} {clientLastName} pour le {eventDate}. Déposez-y vos documents."
+      },
       "status": {
         "in_discussion": {
           "title": "Premier contact confirmé",
@@ -1477,7 +1481,7 @@
     "badge": "Dernière étape",
     "hero-title-line1": "Votre espace",
     "hero-title-line2": "est prêt 🔑",
-    "hero-sub": "Créez votre mot de passe pour sécuriser votre espace Sgilt. Une fois validé, votre demande sera envoyée au prestataire et vous pourrez la suivre depuis votre événement.",
+    "hero-sub": "Créez votre mot de passe pour sécuriser votre espace Sgilt.",
     "error": {
       "invalid": "Ce lien est invalide.",
       "already-used": "Ce lien a déjà été utilisé. Si vous avez un compte, connectez-vous.",
@@ -1581,9 +1585,53 @@
     "nav": {
       "prestataires": "Prestataires",
       "onboarding": "Onboardings",
+      "invitations": "Invitations",
       "reservations": "Réservations",
       "sous-categories": "Sous-catégories",
       "evenements-publics": "Pages événement"
+    },
+    "invitations": {
+      "title": "Invitations clients",
+      "loading": "Chargement…",
+      "empty": "Aucune invitation.",
+      "errors": {
+        "TECHNICAL": "Impossible de charger les invitations. Réessayez."
+      },
+      "tabs": {
+        "list": "Liste",
+        "create": "Inviter un client"
+      },
+      "status": {
+        "NOT_SENT": "Non envoyée",
+        "SENT": "Envoyée",
+        "EXPIRED": "Expirée"
+      },
+      "sent-at": "Envoyée le {date}",
+      "expires-at": "expire le {date}",
+      "expired-at": "expirée le {date}",
+      "send": "Envoyer l'invitation",
+      "resend": "Relancer",
+      "send-success": "Invitation envoyée.",
+      "send-error": "Échec de l'envoi du mail.",
+      "form": {
+        "title": "Inviter un client",
+        "first-name": "Prénom",
+        "last-name": "Nom",
+        "email": "Email",
+        "telephone": "Téléphone (facultatif)",
+        "event-type": "Type d'événement",
+        "event-date": "Date de l'événement",
+        "prestataire": "Prestataire",
+        "hint": "Crée le compte du client, son événement et sa réservation confirmée chez le prestataire. Aucun mail n'est envoyé au client : le prestataire dépose ses documents, puis envoyez l'invitation depuis la liste.",
+        "submit": "Créer",
+        "success": "Client {email} créé. Envoyez l'invitation depuis la liste une fois les documents déposés.",
+        "errors": {
+          "MISSING_FIELDS": "Renseignez tous les champs obligatoires.",
+          "INVALID_PHONE": "Numéro de téléphone invalide.",
+          "EMAIL_ALREADY_EXISTS": "Cet email a déjà un compte Sgilt.",
+          "TECHNICAL": "Une erreur est survenue. Réessayez."
+        }
+      }
     },
     "evenements-publics": {
       "title": "Pages événement",

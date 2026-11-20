@@ -8,10 +8,8 @@ import net.franzka.sgilt.core.reservation.domain.Reservation;
 import net.franzka.sgilt.core.reservation.domain.ReservationFeed;
 import net.franzka.sgilt.core.reservation.dto.AddNoteRequest;
 import net.franzka.sgilt.core.reservation.dto.FeedItemDto;
-import net.franzka.sgilt.core.reservation.event.ActorRole;
 import net.franzka.sgilt.core.reservation.event.FeedItemType;
-import net.franzka.sgilt.core.reservation.event.mapper.ReservationEventMapper;
-import net.franzka.sgilt.core.reservation.event.reservationfeeditemadded.ReservationFeedItemAddedEvent;
+import net.franzka.sgilt.core.reservation.event.ReservationEventPublisher;
 import net.franzka.sgilt.core.reservation.exception.ReservationFeedItemNotFoundException;
 import net.franzka.sgilt.core.reservation.exception.ReservationNotAllowedException;
 import net.franzka.sgilt.core.reservation.mapper.ReservationFeedMapper;
@@ -27,13 +25,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -64,10 +60,7 @@ class ReservationFeedServiceTest {
     private FileStorageService fileStorageService;
 
     @Mock
-    private ReservationEventMapper reservationEventMapper;
-
-    @Mock
-    private ApplicationEventPublisher applicationEventPublisher;
+    private ReservationEventPublisher reservationEventPublisher;
 
     @InjectMocks
     private ReservationFeedService reservationFeedService;
@@ -82,40 +75,34 @@ class ReservationFeedServiceTest {
     class AddNote {
 
         @Test
-        void givenNonPersonalNoteFromPrestataire_whenAddNote_thenPublishesEventForClient() {
+        void givenNonPersonalNoteFromPrestataire_whenAddNote_thenDelegatesPublicationAsNonPersonalNoteFromPrestataire() {
             Reservation reservation = Reservation.builder().id(reservationId).build();
             when(reservationService.getReservationById(reservationId)).thenReturn(reservation);
             when(feedRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
             when(feedMapper.toFeedItem(any(), eq(false), eq(reservationId))).thenReturn(FeedItemDto.builder().build());
 
-            ReservationFeedItemAddedEvent mappedEvent = feedItemAddedEvent(FeedItemType.NOTE);
-            when(reservationEventMapper.toFeedItemAddedEventForClient(reservation, FeedItemType.NOTE)).thenReturn(mappedEvent);
-
             reservationFeedService.addNote(reservationId, FeedCaller.PRESTATAIRE, null,
                     new AddNoteRequest("Titre", "Contenu", false));
 
-            verify(applicationEventPublisher).publishEvent(mappedEvent);
+            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.PRESTATAIRE, FeedItemType.NOTE, false);
         }
 
         @Test
-        void givenNonPersonalNoteFromClient_whenAddNote_thenPublishesEventForPro() {
+        void givenNonPersonalNoteFromClient_whenAddNote_thenDelegatesPublicationAsNoteFromClient() {
             Reservation reservation = Reservation.builder().id(reservationId).build();
             Utilisateur client = Utilisateur.builder().id(UUID.randomUUID()).build();
             when(reservationService.getReservationById(reservationId)).thenReturn(reservation);
             when(feedRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
             when(feedMapper.toFeedItem(any(), eq(false), eq(reservationId))).thenReturn(FeedItemDto.builder().build());
 
-            ReservationFeedItemAddedEvent mappedEvent = feedItemAddedEvent(FeedItemType.NOTE);
-            when(reservationEventMapper.toFeedItemAddedEventForPro(reservation, FeedItemType.NOTE)).thenReturn(mappedEvent);
-
             reservationFeedService.addNote(reservationId, FeedCaller.CLIENT, client,
                     new AddNoteRequest("Titre", "Contenu", false));
 
-            verify(applicationEventPublisher).publishEvent(mappedEvent);
+            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.CLIENT, FeedItemType.NOTE, false);
         }
 
         @Test
-        void givenPersonalNote_whenAddNote_thenDoesNotPublishEvent() {
+        void givenPersonalNote_whenAddNote_thenDelegatesPublicationAsPersonal() {
             Reservation reservation = Reservation.builder().id(reservationId).build();
             when(reservationService.getReservationById(reservationId)).thenReturn(reservation);
             when(feedRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
@@ -124,7 +111,7 @@ class ReservationFeedServiceTest {
             reservationFeedService.addNote(reservationId, FeedCaller.PRESTATAIRE, null,
                     new AddNoteRequest("Titre", "Contenu", true));
 
-            verify(applicationEventPublisher, never()).publishEvent(any());
+            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.PRESTATAIRE, FeedItemType.NOTE, true);
         }
     }
 
@@ -136,24 +123,21 @@ class ReservationFeedServiceTest {
     class AddDocument {
 
         @Test
-        void givenNonPersonalDocumentFromPrestataire_whenAddDocument_thenPublishesEventForClient() throws Exception {
+        void givenNonPersonalDocumentFromPrestataire_whenAddDocument_thenDelegatesPublicationAsNonPersonalDocument() throws Exception {
             Reservation reservation = Reservation.builder().id(reservationId).build();
             when(reservationService.getReservationById(reservationId)).thenReturn(reservation);
             when(fileStorageService.uploadDocument(any(), any())).thenReturn("path/to/file");
             when(feedRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
             when(feedMapper.toFeedItem(any(), eq(false), eq(reservationId))).thenReturn(FeedItemDto.builder().build());
 
-            ReservationFeedItemAddedEvent mappedEvent = feedItemAddedEvent(FeedItemType.DOCUMENT);
-            when(reservationEventMapper.toFeedItemAddedEventForClient(reservation, FeedItemType.DOCUMENT)).thenReturn(mappedEvent);
-
             var file = new MockMultipartFile("file", "devis.pdf", "application/pdf", "contenu".getBytes());
             reservationFeedService.addDocument(reservationId, FeedCaller.PRESTATAIRE, null, file, false);
 
-            verify(applicationEventPublisher).publishEvent(mappedEvent);
+            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.PRESTATAIRE, FeedItemType.DOCUMENT, false);
         }
 
         @Test
-        void givenPersonalDocument_whenAddDocument_thenDoesNotPublishEvent() throws Exception {
+        void givenPersonalDocument_whenAddDocument_thenDelegatesPublicationAsPersonal() throws Exception {
             Reservation reservation = Reservation.builder().id(reservationId).build();
             when(reservationService.getReservationById(reservationId)).thenReturn(reservation);
             when(fileStorageService.uploadDocument(any(), any())).thenReturn("path/to/file");
@@ -163,7 +147,7 @@ class ReservationFeedServiceTest {
             var file = new MockMultipartFile("file", "devis.pdf", "application/pdf", "contenu".getBytes());
             reservationFeedService.addDocument(reservationId, FeedCaller.PRESTATAIRE, null, file, true);
 
-            verify(applicationEventPublisher, never()).publishEvent(any());
+            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.PRESTATAIRE, FeedItemType.DOCUMENT, true);
         }
     }
 
@@ -378,11 +362,5 @@ class ReservationFeedServiceTest {
             assertThatThrownBy(() -> reservationFeedService.deleteDocument(reservationId, documentId, userId))
                     .isInstanceOf(FileStorageException.class);
         }
-    }
-
-    private ReservationFeedItemAddedEvent feedItemAddedEvent(FeedItemType itemType) {
-        return new ReservationFeedItemAddedEvent(
-                reservationId, UUID.randomUUID(), UUID.randomUUID(), "client@example.com",
-                itemType, "Studio Fleur", ActorRole.PRO, "Anniversaire de Paul", LocalDate.now());
     }
 }

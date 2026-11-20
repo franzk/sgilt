@@ -4,6 +4,9 @@ import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import net.franzka.sgilt.core.utilisateur.domain.UtilisateurStatus;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,6 +24,8 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, UUID> 
      */
     boolean existsByEmail(String email);
 
+    boolean existsByEmailIgnoreCase(String email);
+
     /**
      * Recherche un utilisateur par son adresse email.
      *
@@ -28,4 +33,12 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, UUID> 
      * @return l'utilisateur correspondant, ou {@code empty} si introuvable
      */
     Optional<Utilisateur> findByEmailIgnoreCase(String email);
+
+    /**
+     * Liste les utilisateurs d'un statut donné.
+     *
+     * @param status le statut recherché
+     * @return les utilisateurs de ce statut
+     */
+    List<Utilisateur> findByStatus(UtilisateurStatus status);
 }

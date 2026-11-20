@@ -11,6 +11,8 @@ import net.franzka.sgilt.core.utilisateur.repository.UtilisateurRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Service métier pour l'entité {@link Utilisateur}.
@@ -48,6 +50,85 @@ public class UtilisateurService {
      * @throws UtilisateurAlreadyExistException si un utilisateur avec cet email existe déjà
      */
     public Utilisateur createUtilisateur(String firstName, String lastName, String email, String phone) {
+        return buildAndSave(firstName, lastName, email, phone, UtilisateurStatus.ACTIVE);
+    }
+
+    /**
+     * Crée et persiste un client invité depuis le BO, en statut INVITED : son compte n'est pas
+     * encore activé (il passera ACTIVE à l'activation, via le lien de l'invitation).
+     *
+     * @param firstName le prénom du client
+     * @param lastName  le nom du client
+     * @param email     l'adresse email du client
+     * @param phone     le numéro de téléphone du client (nullable)
+     * @return l'entité {@link Utilisateur} créée et persistée
+     * @throws UtilisateurAlreadyExistException si un utilisateur avec cet email existe déjà
+     */
+    public Utilisateur createInvitedUtilisateur(String firstName, String lastName, String email, String phone) {
+        return buildAndSave(firstName, lastName, email, phone, UtilisateurStatus.INVITED);
+    }
+
+    /**
+     * Liste les clients invités depuis le BO qui n'ont pas encore activé leur compte.
+     *
+     * @return les utilisateurs en statut INVITED
+     */
+    public List<Utilisateur> listInvitedUtilisateurs() {
+        return utilisateurRepository.findByStatus(UtilisateurStatus.INVITED);
+    }
+
+    /**
+     * Retourne le client invité depuis le BO qui n'a pas encore activé son compte.
+     *
+     * @param id l'identifiant de l'utilisateur
+     * @return l'utilisateur, en statut INVITED
+     * @throws UtilisateurNotFoundException si aucun utilisateur ne correspond, ou s'il n'est plus
+     *                                      INVITED (compte déjà activé)
+     */
+    public Utilisateur getInvitedUtilisateur(UUID id) {
+        return utilisateurRepository.findById(id)
+                .filter(utilisateur -> utilisateur.getStatus() == UtilisateurStatus.INVITED)
+                .orElseThrow(UtilisateurNotFoundException::new);
+    }
+
+    /**
+     * Active le compte d'un client invité depuis le BO : passe de INVITED à ACTIVE.
+     *
+     * @param email l'email du client invité
+     * @return l'utilisateur activé
+     * @throws UtilisateurNotFoundException si aucun utilisateur ne correspond, ou s'il n'est pas
+     *                                      INVITED (compte déjà activé)
+     */
+    public Utilisateur activateInvitedUtilisateur(String email) {
+        Utilisateur utilisateur = utilisateurRepository.findByEmailIgnoreCase(email)
+                .filter(found -> found.getStatus() == UtilisateurStatus.INVITED)
+                .orElseThrow(UtilisateurNotFoundException::new);
+        return activate(utilisateur);
+    }
+
+    /**
+     * Active à sa connexion un client invité depuis le BO qui n'est pas passé par le lien de son
+     * invitation (lien expiré, puis « mot de passe oublié » sur Keycloak) : passe de INVITED à ACTIVE,
+     * pour que ses notifications ne restent pas coupées. Ses CGU ne sont pas acceptées — parcours
+     * marginal, assumé. Sans effet pour tout autre utilisateur.
+     *
+     * @param email l'email de l'utilisateur qui se connecte
+     */
+    public void activateInvitedOnLogin(String email) {
+        utilisateurRepository.findByEmailIgnoreCase(email)
+                .filter(found -> found.getStatus() == UtilisateurStatus.INVITED)
+                .ifPresent(this::activate);
+    }
+
+    // Passe un client invité de INVITED à ACTIVE.
+    private Utilisateur activate(Utilisateur utilisateur) {
+        utilisateur.setStatus(UtilisateurStatus.ACTIVE);
+        return utilisateurRepository.save(utilisateur);
+    }
+
+    // Crée l'utilisateur dans le statut donné, après avoir vérifié que son email est libre.
+    private Utilisateur buildAndSave(String firstName, String lastName, String email, String phone,
+                                     UtilisateurStatus status) {
         if (utilisateurRepository.existsByEmail(email)) {
             throw new UtilisateurAlreadyExistException();
         }
@@ -57,7 +138,7 @@ public class UtilisateurService {
                 .lastName(lastName)
                 .email(email)
                 .phone(phone)
-                .status(UtilisateurStatus.ACTIVE)
+                .status(status)
                 .build();
 
         return utilisateurRepository.save(utilisateur);
@@ -96,6 +177,19 @@ public class UtilisateurService {
      */
     public boolean existsByEmail(String email) {
         return utilisateurRepository.existsByEmail(email);
+    }
+
+    /**
+     * Vérifie si un utilisateur est déjà enregistré pour l'email donné, quelle que soit sa casse
+     * (Keycloak refuse un email qui ne diffère que par la casse). Utilisé par l'invitation client du
+     * BO ; les autres parcours passent encore par {@link #existsByEmail} (chantier global de la casse
+     * des emails, au backlog).
+     *
+     * @param email l'adresse email à vérifier
+     * @return {@code true} si un utilisateur existe pour cet email, toutes casses confondues
+     */
+    public boolean existsByEmailIgnoreCase(String email) {
+        return utilisateurRepository.existsByEmailIgnoreCase(email);
     }
 
     /**

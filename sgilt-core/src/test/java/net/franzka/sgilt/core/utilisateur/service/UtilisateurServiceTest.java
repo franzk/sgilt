@@ -2,6 +2,7 @@ package net.franzka.sgilt.core.utilisateur.service;
 
 import net.bytebuddy.utility.RandomString;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
+import net.franzka.sgilt.core.utilisateur.domain.UtilisateurStatus;
 import net.franzka.sgilt.core.utilisateur.dto.UtilisateurEditDto;
 import net.franzka.sgilt.core.utilisateur.dto.UtilisateurUpdateDto;
 import net.franzka.sgilt.core.utilisateur.exception.UtilisateurAlreadyExistException;
@@ -18,11 +19,14 @@ import net.franzka.sgilt.core.utilisateur.dto.UtilisateurProfileDto;
 import net.franzka.sgilt.core.utilisateur.exception.UtilisateurNotFoundException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
 class UtilisateurServiceTest {
@@ -247,5 +251,156 @@ class UtilisateurServiceTest {
 
     private org.assertj.core.data.TemporalUnitOffset within3Seconds() {
         return org.assertj.core.api.Assertions.within(3, java.time.temporal.ChronoUnit.SECONDS);
+    }
+
+    // -------------------------------------------------------------------------
+    // createInvitedUtilisateur
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class CreateInvitedUtilisateur {
+
+        @Test
+        void givenExistingEmail_whenCreateInvitedUtilisateur_thenThrowsWithoutSaving() {
+            when(utilisateurRepository.existsByEmail(EMAIL)).thenReturn(true);
+
+            assertThatExceptionOfType(UtilisateurAlreadyExistException.class)
+                    .isThrownBy(() -> utilisateurService.createInvitedUtilisateur(FIRST_NAME, LAST_NAME, EMAIL, null));
+            verify(utilisateurRepository, never()).save(any());
+        }
+
+        @Test
+        void givenNewEmail_whenCreateInvitedUtilisateur_thenSavesUtilisateurInvited() {
+            when(utilisateurRepository.existsByEmail(EMAIL)).thenReturn(false);
+            when(utilisateurRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+            Utilisateur saved = utilisateurService.createInvitedUtilisateur(FIRST_NAME, LAST_NAME, EMAIL, "+41790000000");
+
+            assertThat(saved.getFirstName()).isEqualTo(FIRST_NAME);
+            assertThat(saved.getLastName()).isEqualTo(LAST_NAME);
+            assertThat(saved.getEmail()).isEqualTo(EMAIL);
+            assertThat(saved.getPhone()).isEqualTo("+41790000000");
+            assertThat(saved.getStatus()).isEqualTo(UtilisateurStatus.INVITED);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // listInvitedUtilisateurs
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ListInvitedUtilisateurs {
+
+        @Test
+        void givenInvitedUtilisateurs_whenListInvitedUtilisateurs_thenReturnsThem() {
+            List<Utilisateur> invited = List.of(Utilisateur.builder().email(EMAIL).build());
+            when(utilisateurRepository.findByStatus(UtilisateurStatus.INVITED)).thenReturn(invited);
+
+            assertThat(utilisateurService.listInvitedUtilisateurs()).isEqualTo(invited);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // getInvitedUtilisateur
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class GetInvitedUtilisateur {
+
+        @Test
+        void givenInvitedUtilisateur_whenGetInvitedUtilisateur_thenReturnsIt() {
+            UUID id = UUID.randomUUID();
+            Utilisateur invited = Utilisateur.builder().id(id).status(UtilisateurStatus.INVITED).build();
+            when(utilisateurRepository.findById(id)).thenReturn(Optional.of(invited));
+
+            assertThat(utilisateurService.getInvitedUtilisateur(id)).isEqualTo(invited);
+        }
+
+        @Test
+        void givenActivatedUtilisateur_whenGetInvitedUtilisateur_thenThrowsNotFound() {
+            UUID id = UUID.randomUUID();
+            Utilisateur active = Utilisateur.builder().id(id).status(UtilisateurStatus.ACTIVE).build();
+            when(utilisateurRepository.findById(id)).thenReturn(Optional.of(active));
+
+            assertThatThrownBy(() -> utilisateurService.getInvitedUtilisateur(id))
+                    .isInstanceOf(UtilisateurNotFoundException.class);
+        }
+
+        @Test
+        void givenUnknownUtilisateur_whenGetInvitedUtilisateur_thenThrowsNotFound() {
+            UUID id = UUID.randomUUID();
+            when(utilisateurRepository.findById(id)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> utilisateurService.getInvitedUtilisateur(id))
+                    .isInstanceOf(UtilisateurNotFoundException.class);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // activateInvitedUtilisateur
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ActivateInvitedUtilisateur {
+
+        @Test
+        void givenInvitedUtilisateur_whenActivateInvitedUtilisateur_thenSavesItActive() {
+            Utilisateur invited = Utilisateur.builder().email(EMAIL).status(UtilisateurStatus.INVITED).build();
+            when(utilisateurRepository.findByEmailIgnoreCase(EMAIL)).thenReturn(Optional.of(invited));
+            when(utilisateurRepository.save(invited)).thenReturn(invited);
+
+            Utilisateur result = utilisateurService.activateInvitedUtilisateur(EMAIL);
+
+            assertThat(result.getStatus()).isEqualTo(UtilisateurStatus.ACTIVE);
+            verify(utilisateurRepository).save(invited);
+        }
+
+        @Test
+        void givenAlreadyActiveUtilisateur_whenActivateInvitedUtilisateur_thenThrowsNotFound() {
+            Utilisateur active = Utilisateur.builder().email(EMAIL).status(UtilisateurStatus.ACTIVE).build();
+            when(utilisateurRepository.findByEmailIgnoreCase(EMAIL)).thenReturn(Optional.of(active));
+
+            assertThatThrownBy(() -> utilisateurService.activateInvitedUtilisateur(EMAIL))
+                    .isInstanceOf(UtilisateurNotFoundException.class);
+            verify(utilisateurRepository, never()).save(any());
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // activateInvitedOnLogin
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class ActivateInvitedOnLogin {
+
+        @Test
+        void givenInvitedUtilisateur_whenActivateInvitedOnLogin_thenSavesItActive() {
+            Utilisateur invited = Utilisateur.builder().email(EMAIL).status(UtilisateurStatus.INVITED).build();
+            when(utilisateurRepository.findByEmailIgnoreCase(EMAIL)).thenReturn(Optional.of(invited));
+
+            utilisateurService.activateInvitedOnLogin(EMAIL);
+
+            assertThat(invited.getStatus()).isEqualTo(UtilisateurStatus.ACTIVE);
+            verify(utilisateurRepository).save(invited);
+        }
+
+        @Test
+        void givenActiveUtilisateur_whenActivateInvitedOnLogin_thenDoesNothing() {
+            Utilisateur active = Utilisateur.builder().email(EMAIL).status(UtilisateurStatus.ACTIVE).build();
+            when(utilisateurRepository.findByEmailIgnoreCase(EMAIL)).thenReturn(Optional.of(active));
+
+            utilisateurService.activateInvitedOnLogin(EMAIL);
+
+            verify(utilisateurRepository, never()).save(any());
+        }
+
+        @Test
+        void givenUnknownEmail_whenActivateInvitedOnLogin_thenDoesNothing() {
+            when(utilisateurRepository.findByEmailIgnoreCase(EMAIL)).thenReturn(Optional.empty());
+
+            utilisateurService.activateInvitedOnLogin(EMAIL);
+
+            verify(utilisateurRepository, never()).save(any());
+        }
     }
 }

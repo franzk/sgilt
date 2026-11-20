@@ -43,5 +43,8 @@ public enum MailType {
     RESERVATION_DOCUMENT_ADDED_EMAIL,
 
     /** Mail envoyé au client quand sa réservation est restée en attente de contact depuis 7 jours. */
-    RESERVATION_CONTACT_REMINDER_EMAIL
+    RESERVATION_CONTACT_REMINDER_EMAIL,
+
+    /** Mail envoyé au prestataire quand Sgilt lui ajoute une réservation confirmée (client invité depuis le BO). */
+    RESERVATION_ADDED_BY_SGILT_EMAIL
 }

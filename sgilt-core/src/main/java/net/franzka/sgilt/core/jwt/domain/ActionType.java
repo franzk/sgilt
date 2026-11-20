@@ -7,7 +7,10 @@ package net.franzka.sgilt.core.jwt.domain;
  */
 public enum ActionType {
 
-    PRESTATAIRE_ONBOARDING("/onboarding/verify", "PRESTATAIRE_ONBOARDING");
+    PRESTATAIRE_ONBOARDING("/onboarding/verify", "PRESTATAIRE_ONBOARDING"),
+
+    /** Activation du compte d'un client invité depuis le BO (choix du mot de passe). */
+    CLIENT_INVITATION("/onboarding/verify", "CLIENT_INVITATION");
 
     private final String frontPath;
     private final String action;

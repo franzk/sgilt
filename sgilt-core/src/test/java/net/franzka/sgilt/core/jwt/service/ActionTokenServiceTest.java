@@ -75,6 +75,21 @@ class ActionTokenServiceTest {
         }
 
         @Test
+        void givenClientInvitation_whenCreateToken_thenExpiresAtUsesClientInvitationExpirationHours() {
+            when(verificationTokenHmacService.generate())
+                    .thenReturn(new VerificationTokenHmacService.GeneratedToken("payload", "payload-signature"));
+            when(confirmationTokenProperties.clientInvitationExpirationHours()).thenReturn(72);
+            when(objectMapper.writeValueAsString(any())).thenReturn("{\"email\":\"julie@example.com\"}");
+            ArgumentCaptor<ActionToken> captor = ArgumentCaptor.forClass(ActionToken.class);
+            when(actionTokenRepository.save(captor.capture())).thenAnswer(invocation -> invocation.getArgument(0));
+
+            actionTokenService.createToken(ActionType.CLIENT_INVITATION, Map.of("email", "julie@example.com"));
+
+            assertThat(captor.getValue().getExpiresAt())
+                    .isCloseTo(LocalDateTime.now().plusHours(72), within3Seconds());
+        }
+
+        @Test
         void givenPayloadSerializationFails_whenCreateToken_thenThrowsIllegalStateException() {
             when(verificationTokenHmacService.generate())
                     .thenReturn(new VerificationTokenHmacService.GeneratedToken("payload", "payload-signature"));
@@ -215,6 +230,32 @@ class ActionTokenServiceTest {
     }
 
     // -------------------------------------------------------------------------
+    // findOptionalPendingByEmail
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class FindOptionalPendingByEmail {
+
+        @Test
+        void givenTokenForEmail_whenFindOptionalPendingByEmail_thenReturnsIt() {
+            ActionToken token = tokenFor(EMAIL);
+            when(actionTokenRepository.findByType(ActionType.CLIENT_INVITATION)).thenReturn(List.of(token));
+            when(objectMapper.readValue(eq(token.getPayload()), eq(Map.class))).thenReturn(Map.of("email", EMAIL));
+
+            assertThat(actionTokenService.findOptionalPendingByEmail(ActionType.CLIENT_INVITATION, EMAIL))
+                    .contains(token);
+        }
+
+        @Test
+        void givenNoTokenForEmail_whenFindOptionalPendingByEmail_thenReturnsEmpty() {
+            when(actionTokenRepository.findByType(ActionType.CLIENT_INVITATION)).thenReturn(List.of());
+
+            assertThat(actionTokenService.findOptionalPendingByEmail(ActionType.CLIENT_INVITATION, EMAIL))
+                    .isEmpty();
+        }
+    }
+
+    // -------------------------------------------------------------------------
     // renewExpiration
     // -------------------------------------------------------------------------
 
@@ -233,6 +274,19 @@ class ActionTokenServiceTest {
             assertThat(hmacToken).isEqualTo("payload-signature");
             assertThat(token.getExpiresAt()).isCloseTo(LocalDateTime.now().plusHours(168), within3Seconds());
             verify(actionTokenRepository).save(token);
+        }
+
+        @Test
+        void givenClientInvitationToken_whenRenewExpiration_thenExpiresAtUsesClientInvitationExpirationHours() {
+            ActionToken token = tokenFor(EMAIL);
+            token.setType(ActionType.CLIENT_INVITATION);
+            token.setExpiresAt(LocalDateTime.now().minusDays(10));
+            when(confirmationTokenProperties.clientInvitationExpirationHours()).thenReturn(72);
+            when(verificationTokenHmacService.buildToken(token.getHmacPayload())).thenReturn("payload-signature");
+
+            actionTokenService.renewExpiration(token);
+
+            assertThat(token.getExpiresAt()).isCloseTo(LocalDateTime.now().plusHours(72), within3Seconds());
         }
     }
 

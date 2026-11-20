@@ -46,6 +46,7 @@
     - `400` — requête invalide, token malformé, mismatch de données
     - `403` — ressource existante mais accès refusé
     - `404` — ressource introuvable
+    - `409` — conflit avec l'état existant (ex. email déjà utilisé par un compte)
     - `410` — ressource expirée
     - `500` — erreur serveur inattendue
 

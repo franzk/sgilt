@@ -2,6 +2,7 @@ package net.franzka.sgilt.notifications.notification.listener;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.franzka.sgilt.notifications.notification.event.ReservationAddedBySgiltEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationContactReminderDueEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationCreatedEvent;
 import net.franzka.sgilt.notifications.notification.event.ReservationFeedItemAddedEvent;
@@ -17,6 +18,7 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
 import static net.franzka.sgilt.notifications.config.RabbitConfig.DOMAIN_EVENTS_QUEUE;
+import static net.franzka.sgilt.notifications.config.RabbitConfig.RESERVATION_ADDED_BY_SGILT_RK;
 import static net.franzka.sgilt.notifications.config.RabbitConfig.RESERVATION_CONTACT_REMINDER_DUE_RK;
 import static net.franzka.sgilt.notifications.config.RabbitConfig.RESERVATION_CREATED_RK;
 import static net.franzka.sgilt.notifications.config.RabbitConfig.RESERVATION_FEED_ITEM_ADDED_RK;
@@ -50,6 +52,7 @@ public class DomainEventListener {
             case RESERVATION_STATUS_CHANGED_RK -> notificationService.createFromEvent(convert(message, ReservationStatusChangedEvent.class));
             case RESERVATION_FEED_ITEM_ADDED_RK -> notificationService.createFromEvent(convert(message, ReservationFeedItemAddedEvent.class));
             case RESERVATION_CONTACT_REMINDER_DUE_RK -> notificationService.createFromEvent(convert(message, ReservationContactReminderDueEvent.class));
+            case RESERVATION_ADDED_BY_SGILT_RK -> notificationService.createFromEvent(convert(message, ReservationAddedBySgiltEvent.class));
             default -> throw new AmqpRejectAndDontRequeueException("Routing key inconnue : " + routingKey);
         }
     }

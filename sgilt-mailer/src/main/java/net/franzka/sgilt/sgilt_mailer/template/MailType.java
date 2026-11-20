@@ -58,6 +58,12 @@ public enum MailType {
      */
     RESERVATION_NEW_REQUEST_EMAIL,
 
+    /**
+     * Mail envoyé au prestataire quand Sgilt lui ajoute une réservation confirmée, pour un client
+     * invité depuis le BO (deal conclu hors Sgilt). Producteur : {@code sgilt-notifications}.
+     */
+    RESERVATION_ADDED_BY_SGILT_EMAIL,
+
     /** Mail envoyé au prestataire quand le client déclare avoir été contacté (NEW → IN_DISCUSSION). */
     RESERVATION_STATUS_IN_DISCUSSION_EMAIL,
 
@@ -101,5 +107,11 @@ public enum MailType {
      * Mail envoyé à l'acheteur quand sa commande de places vient d'être payée : le lien vers son
      * e-billet (un seul QR, valable pour toutes ses places).
      */
-    COMMANDE_E_BILLET_EMAIL
+    COMMANDE_E_BILLET_EMAIL,
+
+    /**
+     * Mail d'invitation envoyé depuis le BO à un client dont le deal s'est conclu hors Sgilt : sa
+     * réservation confirmée l'attend, avec le lien d'activation de son compte.
+     */
+    CLIENT_INVITATION_EMAIL
 }
