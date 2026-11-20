@@ -56,7 +56,7 @@ public class AdminInvitationService {
      */
     public ClientInvitationDto createInvitation(CreateClientInvitationRequest request) {
         Utilisateur utilisateur = utilisateurService.createInvitedUtilisateur(
-                request.firstName(), request.lastName(), request.email());
+                request.firstName(), request.lastName(), request.email(), request.telephone());
         Reservation reservation = evenementService.createWithConfirmedReservation(
                 utilisateur, request.eventType(), request.eventDate(), request.prestataireId());
         log.info("createInvitation — client {} invité, réservation {} confirmée", request.email(), reservation.getId());

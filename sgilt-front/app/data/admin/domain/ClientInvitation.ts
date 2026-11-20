@@ -25,6 +25,8 @@ export interface ClientInvitationCreation {
   firstName: string
   lastName: string
   email: string
+  /** Facultatif : chaîne vide si l'admin ne l'a pas renseigné. */
+  telephone: string
   eventType: string
   eventDate: string
   prestataireId: string

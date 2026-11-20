@@ -20,6 +20,8 @@ export interface CreateClientInvitationRequestDto {
   firstName: string
   lastName: string
   email: string
+  /** Facultatif : absent si non renseigné. */
+  telephone: string | null
   eventType: string
   eventDate: string
   prestataireId: string

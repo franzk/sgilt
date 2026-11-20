@@ -89,8 +89,9 @@ class AdminInvitationServiceTest {
         void givenRequest_whenCreateInvitation_thenCreatesInvitedClientWithConfirmedReservationAndReturnsNotSentInvitation() {
             UUID prestataireId = UUID.randomUUID();
             CreateClientInvitationRequest request = new CreateClientInvitationRequest(
-                    "julie@example.com", "Julie", "Martin", "mariage", EVENT_DATE, prestataireId);
-            when(utilisateurService.createInvitedUtilisateur("Julie", "Martin", "julie@example.com")).thenReturn(utilisateur);
+                    "julie@example.com", "Julie", "Martin", "+41790000000", "mariage", EVENT_DATE, prestataireId);
+            when(utilisateurService.createInvitedUtilisateur("Julie", "Martin", "julie@example.com", "+41790000000"))
+                    .thenReturn(utilisateur);
             Reservation reservation = Reservation.builder()
                     .id(UUID.randomUUID()).prestataire(Prestataire.builder().name("Le Taennel").build()).build();
             when(evenementService.createWithConfirmedReservation(utilisateur, "mariage", EVENT_DATE, prestataireId))

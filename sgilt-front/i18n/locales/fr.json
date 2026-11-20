@@ -1618,6 +1618,7 @@
         "first-name": "Prénom",
         "last-name": "Nom",
         "email": "Email",
+        "telephone": "Téléphone (facultatif)",
         "event-type": "Type d'événement",
         "event-date": "Date de l'événement",
         "prestataire": "Prestataire",
@@ -1625,7 +1626,8 @@
         "submit": "Créer",
         "success": "Client {email} créé. Envoyez l'invitation depuis la liste une fois les documents déposés.",
         "errors": {
-          "MISSING_FIELDS": "Renseignez tous les champs.",
+          "MISSING_FIELDS": "Renseignez tous les champs obligatoires.",
+          "INVALID_PHONE": "Numéro de téléphone invalide.",
           "EMAIL_ALREADY_EXISTS": "Cet email a déjà un compte Sgilt.",
           "TECHNICAL": "Une erreur est survenue. Réessayez."
         }

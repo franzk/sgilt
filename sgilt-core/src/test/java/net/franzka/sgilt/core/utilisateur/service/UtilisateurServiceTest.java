@@ -265,7 +265,7 @@ class UtilisateurServiceTest {
             when(utilisateurRepository.existsByEmail(EMAIL)).thenReturn(true);
 
             assertThatExceptionOfType(UtilisateurAlreadyExistException.class)
-                    .isThrownBy(() -> utilisateurService.createInvitedUtilisateur(FIRST_NAME, LAST_NAME, EMAIL));
+                    .isThrownBy(() -> utilisateurService.createInvitedUtilisateur(FIRST_NAME, LAST_NAME, EMAIL, null));
             verify(utilisateurRepository, never()).save(any());
         }
 
@@ -274,12 +274,12 @@ class UtilisateurServiceTest {
             when(utilisateurRepository.existsByEmail(EMAIL)).thenReturn(false);
             when(utilisateurRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
-            Utilisateur saved = utilisateurService.createInvitedUtilisateur(FIRST_NAME, LAST_NAME, EMAIL);
+            Utilisateur saved = utilisateurService.createInvitedUtilisateur(FIRST_NAME, LAST_NAME, EMAIL, "+41790000000");
 
             assertThat(saved.getFirstName()).isEqualTo(FIRST_NAME);
             assertThat(saved.getLastName()).isEqualTo(LAST_NAME);
             assertThat(saved.getEmail()).isEqualTo(EMAIL);
-            assertThat(saved.getPhone()).isNull();
+            assertThat(saved.getPhone()).isEqualTo("+41790000000");
             assertThat(saved.getStatus()).isEqualTo(UtilisateurStatus.INVITED);
         }
     }

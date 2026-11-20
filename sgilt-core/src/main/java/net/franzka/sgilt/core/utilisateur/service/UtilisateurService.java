@@ -60,11 +60,12 @@ public class UtilisateurService {
      * @param firstName le prénom du client
      * @param lastName  le nom du client
      * @param email     l'adresse email du client
+     * @param phone     le numéro de téléphone du client (nullable)
      * @return l'entité {@link Utilisateur} créée et persistée
      * @throws UtilisateurAlreadyExistException si un utilisateur avec cet email existe déjà
      */
-    public Utilisateur createInvitedUtilisateur(String firstName, String lastName, String email) {
-        return buildAndSave(firstName, lastName, email, null, UtilisateurStatus.INVITED);
+    public Utilisateur createInvitedUtilisateur(String firstName, String lastName, String email, String phone) {
+        return buildAndSave(firstName, lastName, email, phone, UtilisateurStatus.INVITED);
     }
 
     /**

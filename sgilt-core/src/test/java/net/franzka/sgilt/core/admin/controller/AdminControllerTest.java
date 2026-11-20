@@ -177,7 +177,7 @@ class AdminControllerTest {
     class CreateClientInvitation {
 
         private final CreateClientInvitationRequest request = new CreateClientInvitationRequest(
-                "julie@example.com", "Julie", "Martin", "mariage", LocalDate.of(2027, 6, 12), UUID.randomUUID());
+                "julie@example.com", "Julie", "Martin", null, "mariage", LocalDate.of(2027, 6, 12), UUID.randomUUID());
 
         @Test
         void givenEmailAlreadyUsed_whenCreateClientInvitation_thenThrowsWithoutCreatingKeycloakUser() {

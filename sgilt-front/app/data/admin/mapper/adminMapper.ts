@@ -142,6 +142,7 @@ export function mapClientInvitationRequest(creation: ClientInvitationCreation): 
     firstName: creation.firstName,
     lastName: creation.lastName,
     email: creation.email,
+    telephone: creation.telephone.trim() || null,
     eventType: creation.eventType,
     eventDate: creation.eventDate,
     prestataireId: creation.prestataireId,

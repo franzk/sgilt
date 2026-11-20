@@ -14,13 +14,26 @@ Feature: Parcours invitation client depuis le BO — création, silence, envoi, 
 
   Scenario: Création, silence avant activation, envoi, relance, activation et notifications
 
-    # ── 1. L'admin crée l'invitation (email saisi avec des majuscules) ─────────────────────────────
+    # ── 1. L'admin crée l'invitation (email saisi avec des majuscules, téléphone suisse) ────────────
+    # Un téléphone invalide est refusé, sans rien créer
     Given path '/api/v1/admin/invitations'
     And header Authorization = 'Bearer ' + tokenAdmin
     And request
       """
       {
-        email: 'Invite.Client@Sgilt.test', firstName: 'Inès', lastName: 'Invitée',
+        email: 'Invite.Client@Sgilt.test', firstName: 'Inès', lastName: 'Invitée', telephone: '12 34',
+        eventType: 'mariage', eventDate: '#(eventDate)', prestataireId: '#(prestataireId)'
+      }
+      """
+    When method POST
+    Then status 400
+
+    Given path '/api/v1/admin/invitations'
+    And header Authorization = 'Bearer ' + tokenAdmin
+    And request
+      """
+      {
+        email: 'Invite.Client@Sgilt.test', firstName: 'Inès', lastName: 'Invitée', telephone: '+41790000000',
         eventType: 'mariage', eventDate: '#(eventDate)', prestataireId: '#(prestataireId)'
       }
       """
@@ -159,6 +172,13 @@ Feature: Parcours invitation client depuis le BO — création, silence, envoi, 
     When method GET
     Then status 200
     And match response.status == 'confirmee'
+
+    # Son profil porte le téléphone saisi par l'admin
+    Given path '/api/v1/users/me/edit'
+    And header Authorization = 'Bearer ' + clientToken
+    When method GET
+    Then status 200
+    And match response.phone == '+41790000000'
 
     # Il voit la note déposée avant son activation...
     Given path '/api/v1/reservations/' + reservationId + '/feed'

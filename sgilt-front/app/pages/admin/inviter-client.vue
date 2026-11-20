@@ -1,8 +1,9 @@
 <!--
   BO — /admin/inviter-client : formulaire d'invitation d'un client dont le deal s'est conclu hors
-  Sgilt (ex. le Taennel). Crée le compte client (sans mot de passe), son événement et sa
-  réservation confirmée chez le prestataire choisi. Aucun mail ne part vers le client : le
-  prestataire dépose ses documents, puis l'invitation s'envoie depuis la liste (/admin/invitations).
+  Sgilt (ex. le Taennel). Crée le compte client (sans mot de passe, téléphone facultatif), son
+  événement et sa réservation confirmée chez le prestataire choisi. Aucun mail ne part vers le
+  client : le prestataire dépose ses documents, puis l'invitation s'envoie depuis la liste
+  (/admin/invitations).
 -->
 <template>
   <div class="admin-page">
@@ -19,6 +20,12 @@
         <input v-model="form.firstName" type="text" :placeholder="$t('admin.invitations.form.first-name')" />
         <input v-model="form.lastName" type="text" :placeholder="$t('admin.invitations.form.last-name')" />
         <input v-model="form.email" type="email" :placeholder="$t('admin.invitations.form.email')" />
+        <input
+          v-model="form.telephone"
+          type="tel"
+          autocomplete="off"
+          :placeholder="$t('admin.invitations.form.telephone')"
+        />
         <select v-model="form.eventType">
           <option value="" disabled>{{ $t('admin.invitations.form.event-type') }}</option>
           <option v-for="option in eventTypeOptions" :key="option.value" :value="option.value">
@@ -56,6 +63,7 @@
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
 import AdminInvitationTabs from '~/components/admin/AdminInvitationTabs.vue'
 import type { ClientInvitationCreation } from '~/data/admin/domain/ClientInvitation'
+import { validatePhone } from '~/utils/contactValidation'
 
 definePageMeta({ layout: 'admin' })
 
@@ -69,6 +77,7 @@ const emptyForm = (): ClientInvitationCreation => ({
   firstName: '',
   lastName: '',
   email: '',
+  telephone: '',
   eventType: '',
   eventDate: '',
   prestataireId: '',
@@ -94,6 +103,10 @@ const isFormComplete = computed(
 async function onCreate() {
   if (!isFormComplete.value) {
     failCreate('MISSING_FIELDS')
+    return
+  }
+  if (form.telephone.trim() && !validatePhone(form.telephone)) {
+    failCreate('INVALID_PHONE')
     return
   }
   const ok = await create({ ...form })
