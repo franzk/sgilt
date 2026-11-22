@@ -40,6 +40,9 @@ services:
       KC_HOSTNAME: ${AUTH_URL}
       KC_HOSTNAME_ADMIN: ${AUTH_URL}
       MAGIC_LINK_SECRET: ${MAGIC_LINK_SECRET}
+      # Mitigation Java4Shell (CVE-2026-114938) : l'image KC 26.6 embarque un OpenJDK 21 vulnérable.
+      # À retirer seulement après passage sur une image KC à JDK corrigé (21.0.13.1+), vérifié par java -version.
+      JAVA_OPTS_APPEND: "-XX:-UseBASE64Intrinsics"
     depends_on:
       sgilt-keycloak-db:
         condition: service_healthy
