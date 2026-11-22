@@ -449,6 +449,7 @@
       "decoration": "Décoration",
       "photo-video": "Photo / Vidéo",
       "hebergement": "Hébergement",
+      "autre": "Autre",
       "reservation-count": "{n} réservation | {n} réservations"
     },
     "rubrique": {
