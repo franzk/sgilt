@@ -489,6 +489,9 @@
         "hebergement": {
           "tagline": "Gîtes, hôtels, chambres d'hôtes… Gardez vos invités près de vous.",
           "already": "J'ai déjà mon hébergement"
+        },
+        "autre": {
+          "tagline": "Parce que chaque événement est unique, il y a toujours une place pour le reste."
         }
       }
     }
