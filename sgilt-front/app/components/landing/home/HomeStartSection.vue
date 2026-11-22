@@ -140,6 +140,11 @@ const { stop } = useIntersectionObserver(
       display: flex;
       flex-direction: column;
       gap: $spacing-xs;
+
+      // Desktop : le paragraphe (max-width en ch) se centre sous le titre, plus large que lui.
+      @media (min-width: $breakpoint-desktop) {
+        align-items: center;
+      }
     }
 
     h3 {
