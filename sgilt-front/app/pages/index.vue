@@ -1,8 +1,12 @@
+<!--
+  Landing publique (/) : enchaîne les sections de la page d'accueil, dans l'ordre d'affichage
+  (écran d'arrivée, frise des 3 étapes, idée, prestataires, ancrage local, conclusion, pied de page).
+-->
 <template>
   <div class="home-page">
     <HomeHeroSection />
-    <HomeIdeaSection />
     <HomeStartSection />
+    <HomeIdeaSection />
     <HomeProvidersSection />
     <HomeLocalSection />
     <HomeClosingSection />
@@ -12,8 +16,8 @@
 
 <script setup lang="ts">
 import HomeHeroSection from '~/components/landing/home/HomeHeroSection.vue'
-import HomeIdeaSection from '~/components/landing/home/HomeIdeaSection.vue'
 import HomeStartSection from '~/components/landing/home/HomeStartSection.vue'
+import HomeIdeaSection from '~/components/landing/home/HomeIdeaSection.vue'
 import HomeProvidersSection from '~/components/landing/home/HomeProvidersSection.vue'
 import HomeLocalSection from '~/components/landing/home/HomeLocalSection.vue'
 import HomeClosingSection from '~/components/landing/home/HomeClosingSection.vue'

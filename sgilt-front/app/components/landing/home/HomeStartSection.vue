@@ -1,30 +1,29 @@
+<!--
+  Section « frise » de la landing (2e position, sous l'écran d'arrivée) : un titre et les 3 étapes
+  du parcours.
+  Les étapes apparaissent l'une après l'autre quand la frise entre à l'écran ; sans JS ou avec
+  « réduire les animations », elles sont affichées d'emblée.
+-->
 <template>
-  <section class="home-start">
-    <div class="text">
-      <h2 class="title">{{ $t('landing-page.start.title') }}</h2>
-      <p class="lede">{{ $t('landing-page.start.lede') }}</p>
-      <p class="description">{{ $t('landing-page.start.description') }}</p>
-      <p class="hint">{{ $t('landing-page.start.hint') }}</p>
-
-      <HomeCtaButton />
-    </div>
+  <section class="home-start" :class="{ armed, revealed }">
+    <h2 class="title">{{ $t('landing-page.start.title') }}</h2>
 
     <ol class="steps">
-      <li class="step">
+      <li ref="firstStepRef" class="step" style="--step-index: 0">
         <div class="marker"><FileList3Icon class="icon" /></div>
         <div class="step-text">
           <h3>{{ $t('landing-page.start.step-1-title') }}</h3>
           <p>{{ $t('landing-page.start.step-1-description') }}</p>
         </div>
       </li>
-      <li class="step">
+      <li class="step" style="--step-index: 1">
         <div class="marker"><CalendarEventIcon class="icon" /></div>
         <div class="step-text">
           <h3>{{ $t('landing-page.start.step-2-title') }}</h3>
           <p>{{ $t('landing-page.start.step-2-description') }}</p>
         </div>
       </li>
-      <li class="step">
+      <li class="step" style="--step-index: 2">
         <div class="marker"><CheckboxCircleIcon class="icon" /></div>
         <div class="step-text">
           <h3>{{ $t('landing-page.start.step-3-title') }}</h3>
@@ -37,56 +36,48 @@
 
 <script setup lang="ts">
 import { FileList3Icon, CalendarEventIcon, CheckboxCircleIcon } from '@remixicons/vue/line'
-import HomeCtaButton from './HomeCtaButton.vue'
+import { useIntersectionObserver } from '@vueuse/core'
+
+// L'animation part dès que la première étape entre à l'écran.
+const firstStepRef = ref<HTMLElement | null>(null)
+// Armé seulement côté client : sans JS, les étapes restent visibles.
+const armed = ref<boolean>(false)
+const revealed = ref<boolean>(false)
+
+onMounted((): void => {
+  armed.value = true
+})
+
+const { stop } = useIntersectionObserver(
+  firstStepRef,
+  ([entry]) => {
+    if (!entry?.isIntersecting) return
+    revealed.value = true
+    stop()
+  },
+  { threshold: 0 },
+)
 </script>
 
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
 .home-start {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: $spacing-xxl;
-  padding: $spacing-m $section-padding-x $spacing-xxxl;
-  background: $surface-soft;
-
-  @media (min-width: $breakpoint-desktop) {
-    grid-template-columns: 1fr 1.2fr;
-    max-width: $container-max-width;
-    margin: 0 auto;
-    align-items: center;
-    padding: $spacing-xxxl $section-padding-x;
-  }
-
-  .text {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: $spacing-m;
-    max-width: 46ch;
-  }
+  padding: $spacing-xxxl $section-padding-x;
+  // Fond blanc entre le hero et la section idée (fond doux) : les sections alternent.
+  background: $surface-white;
 
   .title {
-    margin: 0;
+    margin: 0 0 $spacing-xl;
     font-family: 'Cormorant Garamond', serif;
     font-weight: $font-weight-medium;
     font-size: clamp(1.8rem, 4vw, 2.5rem);
     color: $text-primary;
-  }
 
-  .lede {
-    margin: 0;
-    color: $text-primary;
-    font-weight: $font-weight-semibold;
-    font-size: $font-size-lg;
-  }
-
-  .description,
-  .hint {
-    margin: 0;
-    color: $text-secondary;
-    font-size: $font-size-md;
-    line-height: $line-height-relaxed;
+    @media (min-width: $breakpoint-desktop) {
+      margin-bottom: $spacing-xxl;
+      text-align: center;
+    }
   }
 
   // ── 3 étapes ──────────────────────────────────────────────────────────────
@@ -96,16 +87,23 @@ import HomeCtaButton from './HomeCtaButton.vue'
     padding: 0;
     display: grid;
     grid-template-columns: 1fr;
-    gap: $spacing-xl;
+    gap: $spacing-xxl;
 
     @media (min-width: $breakpoint-desktop) {
       grid-template-columns: repeat(3, 1fr);
+      // Le fond de la section couvre toute la largeur, seules les étapes sont centrées.
+      max-width: $container-max-width;
+      margin: 0 auto;
       gap: $spacing-l;
     }
   }
 
   .step {
     position: relative;
+    transition:
+      opacity 1s ease,
+      transform 1s ease;
+    transition-delay: calc(var(--step-index) * 0.5s);
     display: flex;
     align-items: flex-start;
     text-align: left;
@@ -117,7 +115,7 @@ import HomeCtaButton from './HomeCtaButton.vue'
       content: '';
       position: absolute;
       top: 4.5rem;
-      bottom: calc(-1 * #{$spacing-xl});
+      bottom: calc(-1 * #{$spacing-xxl}); // suit le gap mobile de .steps
       left: 2.25rem;
       border-left: 2px dashed $divider-color;
     }
@@ -157,6 +155,23 @@ import HomeCtaButton from './HomeCtaButton.vue'
       color: $text-secondary;
       font-size: $font-size-sm;
       line-height: $line-height-relaxed;
+    }
+  }
+
+  // Apparition échelonnée des étapes (voir --step-index sur chaque <li>).
+  &.armed:not(.revealed) .step {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &.armed:not(.revealed) .step {
+      opacity: 1;
+      transform: none;
+    }
+
+    .step {
+      transition: none;
     }
   }
 

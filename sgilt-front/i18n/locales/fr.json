@@ -521,25 +521,21 @@
       "photo-caption": "Les beaux moments sont encore plus beaux à plusieurs"
     },
     "idea": {
-      "eyebrow": "Tout commence",
-      "title": "par une idée.",
-      "line-mariage": "Un mariage qui se prépare depuis des mois.",
+      "title": "À chaque événement, son histoire.",
+      "line-mariage": "Un mariage qui se prépare depuis des mois ou qu'on vient de décider.",
       "line-anniversaire": "Un anniversaire qu'on veut marquer.",
-      "line-soiree": "Une soirée avec ceux qu'on aime.",
-      "line-pro": "Un événement professionnel qui mérite mieux qu'une salle et trois plateaux de petits fours.",
-      "conclusion": "Quel que soit le prétexte, Sgilt vous aide à passer de l'idée à quelque chose de concret."
+      "line-pro": "Un événement professionnel qui mérite mieux qu'un bout de bureau et trois plateaux de petits fours.",
+      "line-public": "Un événement public qui rassemble bien au-delà de ceux qu'on connaît.",
+      "conclusion": "Chaque événement est différent. Sgilt s'adapte au vôtre."
     },
     "start": {
-      "title": "Commencer, c'est déjà avancer.",
-      "lede": "Vous n'avez pas besoin d'avoir toutes les réponses.",
-      "description": "Une date encore incertaine, un lieu à trouver, une idée à préciser ou simplement l'envie de réunir du monde : Sgilt vous aide à poser les premières bases de votre événement.",
-      "hint": "Quelques questions suffisent pour commencer à y voir plus clair.",
+      "title": "Une idée, et tout prend forme",
       "step-1-title": "Vous nous dites ce que vous préparez",
-      "step-1-description": "Mariage, anniversaire, soirée privée, fête d'entreprise, événement public...",
-      "step-2-title": "Vous posez les premières bases",
-      "step-2-description": "Date, lieu, nombre d'invités et quelques informations sur votre projet.",
-      "step-3-title": "Vous avancez à votre rythme",
-      "step-3-description": "Votre événement est créé. Vous pouvez le retrouver et le compléter plus tard."
+      "step-1-description": "Mariage, soirée privée, événement professionnel, événement public… Quelques informations suffisent pour commencer.",
+      "step-2-title": "On prépare la suite avec vous",
+      "step-2-description": "Selon votre événement, Sgilt vous propose les bonnes étapes, les bonnes ressources et les bonnes personnes pour avancer.",
+      "step-3-title": "Avancez au rythme de votre événement",
+      "step-3-description": "Retrouvez vos préparatifs, vos prestataires et vos réservations au même endroit. Organisez-vous à votre rythme, jusqu'au jour J."
     },
     "providers": {
       "title": "Trouvez les personnes qui vont lui donner vie.",

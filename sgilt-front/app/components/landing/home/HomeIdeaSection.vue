@@ -1,17 +1,18 @@
+<!--
+  Section « idée » de la landing (3e position, sous la frise) : le texte sur les types d'événements
+  (chacun précédé de son picto de /fete) et le visuel en polaroïds, sur fond doux pleine largeur.
+-->
 <template>
   <section class="home-idea">
     <div class="text">
-      <h2 class="title">
-        {{ $t('landing-page.idea.eyebrow') }}<br />
-        {{ $t('landing-page.idea.title') }}
-      </h2>
+      <h2 class="title">{{ $t('landing-page.idea.title') }}</h2>
 
-      <p class="lines">
-        {{ $t('landing-page.idea.line-mariage') }}<br />
-        {{ $t('landing-page.idea.line-anniversaire') }}<br />
-        {{ $t('landing-page.idea.line-soiree') }}<br />
-        {{ $t('landing-page.idea.line-pro') }}
-      </p>
+      <ul class="lines">
+        <li v-for="line in IDEA_LINES" :key="line.key" class="line">
+          <img :src="eventTypeDefinition(line.eventType).illustration" alt="" class="picto" />
+          <span>{{ $t(`landing-page.idea.${line.key}`) }}</span>
+        </li>
+      </ul>
 
       <p class="conclusion">{{ $t('landing-page.idea.conclusion') }}</p>
     </div>
@@ -33,6 +34,20 @@
 
 <script setup lang="ts">
 import { SparklingIcon } from '@remixicons/vue/line'
+import { eventTypeDefinition } from '~/utils/eventTypes'
+
+/** Une phrase de la liste et le type d'événement dont elle reprend le picto (celui de /fete). */
+interface IdeaLine {
+  key: string
+  eventType: string
+}
+
+const IDEA_LINES: IdeaLine[] = [
+  { key: 'line-mariage', eventType: 'mariage' },
+  { key: 'line-anniversaire', eventType: 'anniversaire' },
+  { key: 'line-pro', eventType: 'fete_entreprise' },
+  { key: 'line-public', eventType: 'evenement_public' },
+]
 </script>
 
 <style scoped lang="scss">
@@ -44,13 +59,13 @@ import { SparklingIcon } from '@remixicons/vue/line'
   gap: $spacing-xl;
   padding: $spacing-m $section-padding-x $spacing-xxxl;
   align-items: center;
+  // Fond doux entre la frise et les prestataires (fond blanc) : les sections alternent.
+  background: $surface-soft;
 
   @media (min-width: $breakpoint-desktop) {
     grid-template-columns: 1fr 1fr;
-    max-width: $container-max-width;
-    margin: 0 auto;
     gap: $spacing-xxxl;
-    padding: $spacing-xxxl $section-padding-x;
+    padding: $spacing-xxxl max(#{$section-padding-x}, calc((100% - #{$container-max-width}) / 2 + #{$section-padding-x}));
   }
 
   .text {
@@ -67,9 +82,27 @@ import { SparklingIcon } from '@remixicons/vue/line'
 
   .lines {
     margin: 0 0 $spacing-l;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-s;
     color: $text-secondary;
     font-size: $font-size-lg;
     line-height: $line-height-relaxed;
+
+    .line {
+      display: flex;
+      align-items: center;
+      gap: $spacing-m;
+
+      .picto {
+        flex-shrink: 0;
+        width: 2.5rem;
+        height: 2.5rem;
+        object-fit: contain;
+      }
+    }
   }
 
   p.conclusion {
