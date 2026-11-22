@@ -1,23 +1,28 @@
+<!--
+  Navigation basse de l'espace client hors événement (mobile uniquement) : deux onglets,
+  « Mes événements » (/app) et « À suivre » (/app/a-suivre). Dans un événement, EventBottomNav
+  prend le relais (cf. layouts/app.vue).
+-->
 <template>
   <nav class="bottom-nav">
-    <NuxtLink to="/app" class="item" :class="{ active: isHomeActive }">
+    <NuxtLink to="/app" class="item" :class="{ active: isEventsActive }">
       <Home2Icon class="icon" />
-      <span class="label">{{ $t('nav.home') }}</span>
+      <span class="label">{{ $t('nav.my-events') }}</span>
     </NuxtLink>
 
-    <NuxtLink to="/app/events" class="item" :class="{ active: isEventsActive }">
-      <CalendarEventIcon class="icon" />
-      <span class="label">{{ $t('nav.events') }}</span>
+    <NuxtLink to="/app/a-suivre" class="item" :class="{ active: isToFollowActive }">
+      <NotificationIcon class="icon" />
+      <span class="label">{{ $t('nav.to-follow') }}</span>
     </NuxtLink>
   </nav>
 </template>
 
 <script setup lang="ts">
-import { CalendarEventIcon, Home2Icon } from '@remixicons/vue/line'
+import { Home2Icon, NotificationIcon } from '@remixicons/vue/line'
 
 const route = useRoute()
-const isHomeActive = computed(() => route.path === '/app')
-const isEventsActive = computed(() => route.path.startsWith('/app/events'))
+const isEventsActive = computed(() => route.path === '/app')
+const isToFollowActive = computed(() => route.path === '/app/a-suivre')
 </script>
 
 <style scoped lang="scss">

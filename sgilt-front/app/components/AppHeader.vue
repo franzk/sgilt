@@ -1,3 +1,8 @@
+<!--
+  En-tête global du site, commun à tous les layouts : logo, navigation publique et bouton de
+  création sur les pages publiques, cloche de notifications et menu compte une fois connecté.
+  Gère aussi l'ombre selon la route (masquée ou affichée au scroll sur certaines pages mobiles).
+-->
 <template>
   <header class="app-header" :class="{ 'no-shadow': hideShadow }">
     <div class="left-cluster">
@@ -64,7 +69,7 @@ const accountMenuOpen = ref(false)
 const { isAuthenticated, hasRole } = useKeycloak()
 
 const ROUTES_WITHOUT_SHADOW_MOBILE = ['/fete', '/date', '/commencer', '/search']
-const ROUTES_SHADOW_ON_SCROLL = ['/app', '/app/events', '/pro/reservations']
+const ROUTES_SHADOW_ON_SCROLL = ['/app', '/app/a-suivre', '/pro/reservations']
 // Espaces authentifiés dédiés (chacun a son propre header/nav) : tout le reste
 // (landing, /fete, /date, /commencer, /search, /m/**, fiches prestataire) est public.
 const PRIVATE_ROUTE_PREFIXES = ['/app', '/pro', '/admin', '/account', '/onboarding', '/auth']

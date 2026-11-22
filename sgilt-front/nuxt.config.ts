@@ -46,6 +46,8 @@ export default defineNuxtConfig({
       ssr: false,
       headers: { 'X-Robots-Tag': 'noindex, nofollow' },
     },
+    // Ancienne liste mobile des événements, fondue dans l'accueil /app
+    '/app/events': { redirect: '/app' },
 
     // Pro = SPA, pas de SEO
     '/pro': {
