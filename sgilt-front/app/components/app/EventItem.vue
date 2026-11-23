@@ -1,48 +1,84 @@
+<!--
+  Carte d'un événement dans la liste « Mes événements » de l'accueil client (/app).
+  Deux formats : big (prochain événement, photo plein cadre, badge et résumé des réservations)
+  et small (vignette + date/lieu, badge optionnel ; sur desktop, date et lieu sur une ligne et
+  badge à droite). Le clic remonte via l'événement click.
+-->
 <template>
   <!-- ── Big ─────────────────────────────────────────────────────────────────── -->
   <SgiltCard
     v-if="format === 'big'"
     format="big"
     tag="button"
+    class="big-card"
     :image="coverUrl"
     :ratio="ratio"
     @click="$emit('click')"
   >
     <template #overlay>
+      <span v-if="badge" class="badge">
+        <CalendarEventIcon class="badge-icon" aria-hidden="true" />
+        {{ badge }}
+      </span>
       <div class="info">
         <h2 class="title">{{ title }}</h2>
-        <p class="meta">
-          <span v-if="date">{{ formatDate(date) }}</span>
-          <span v-if="date && ville" aria-hidden="true"> · </span>
-          <span v-if="ville">{{ ville }}</span>
+        <p v-if="date" class="line">
+          <CalendarEventIcon class="line-icon" aria-hidden="true" />
+          {{ formatDate(date) }}
         </p>
-        <p v-if="summary" class="summary">{{ summary }}</p>
-        <span class="cta" aria-hidden="true">{{ $t('events.see-event') }}</span>
+        <p v-if="ville" class="line">
+          <MapPin2Icon class="line-icon" aria-hidden="true" />
+          {{ ville }}
+        </p>
+        <div class="bottom">
+          <span v-if="summary" class="summary">
+            <CheckboxCircleIcon class="summary-icon" aria-hidden="true" />
+            {{ summary }}
+          </span>
+          <span class="chevron" aria-hidden="true">
+            <ArrowRightSIcon class="chevron-icon" />
+          </span>
+        </div>
       </div>
     </template>
   </SgiltCard>
 
   <!-- ── Small ────────────────────────────────────────────────────────────────── -->
-  <SgiltCard v-else format="small" tag="button" @click="$emit('click')">
+  <SgiltCard v-else format="small" tag="button" class="small-card" @click="$emit('click')">
     <template #avatar>
       <img class="cover" :src="coverUrl" :alt="title" />
     </template>
 
-    <p class="title">{{ title }}</p>
-    <p class="meta">
-      <span v-if="date">{{ formatDate(date) }}</span>
-      <span v-if="date && ville" aria-hidden="true"> · </span>
-      <span v-if="ville">{{ ville }}</span>
-    </p>
+    <div class="body">
+      <p class="title">{{ title }}</p>
+      <div class="lines">
+        <p v-if="date" class="line">
+          <CalendarEventIcon class="line-icon" aria-hidden="true" />
+          {{ formatDate(date) }}
+        </p>
+        <p v-if="ville" class="line">
+          <MapPin2Icon class="line-icon" aria-hidden="true" />
+          {{ ville }}
+        </p>
+      </div>
+      <span v-if="badge" class="small-badge">{{ badge }}</span>
+    </div>
 
     <template #cta>
-      <span class="arrow" aria-hidden="true">›</span>
+      <ArrowRightSIcon class="arrow" aria-hidden="true" />
     </template>
   </SgiltCard>
 </template>
 
 <script setup lang="ts">
+import {
+  ArrowRightSIcon,
+  CalendarEventIcon,
+  CheckboxCircleIcon,
+  MapPin2Icon,
+} from '@remixicons/vue/line'
 import SgiltCard from '~/components/basics/cards/SgiltCard.vue'
+import { RESERVATION_STATUS_CONFIG } from '~/constants/reservation-status'
 import { BANK_IMAGE_PATHS } from '~/utils/eventCovers'
 
 const props = withDefaults(
@@ -54,6 +90,7 @@ const props = withDefaults(
     eventType?: string
     format?: 'big' | 'small'
     summary?: string
+    badge?: string
     ratio?: string
   }>(),
   {
@@ -63,6 +100,9 @@ const props = withDefaults(
 )
 
 defineEmits<{ click: [] }>()
+
+// Badge des petites cartes : il compte les échanges en cours, on reprend la couleur du statut
+const SMALL_BADGE_COLORS = RESERVATION_STATUS_CONFIG.en_discussion
 
 const { toUrl } = useImageUrl()
 
@@ -74,87 +114,214 @@ const coverUrl = computed(() => {
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/base' as *;
+
 // ── Big ──────────────────────────────────────────────────────────────────────────
-.info {
-  display: contents;
-
-  .title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.375rem;
+.big-card {
+  .badge {
+    position: absolute;
+    top: $spacing-s;
+    left: $spacing-s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(255, 248, 225, 0.95);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
     font-weight: 600;
-    color: #fff;
-    margin: 0;
-    line-height: 1.2;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    color: $text-primary;
+
+    .badge-icon {
+      width: 1rem;
+      height: 1rem;
+    }
   }
 
-  .meta {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.78rem;
-    color: rgba(255, 255, 255, 0.82);
-    margin: 3px 0 0;
-  }
+  .info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    text-align: left;
 
-  .summary {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.72rem;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.75);
-    margin: 5px 0 0;
-  }
+    .title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: #fff;
+      margin: 0 0 0.25rem;
+      line-height: 1.15;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    }
 
-  .cta {
-    display: inline-block;
-    margin-top: $spacing-s;
-    padding: 6px 14px;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: $radius-xl;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #fff;
-    background: rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(4px);
-    pointer-events: none;
-    align-self: flex-start;
+    .line {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.9);
+      margin: 0;
+
+      .line-icon {
+        width: 1rem;
+        height: 1rem;
+        flex-shrink: 0;
+      }
+    }
+
+    .bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: $spacing-s;
+      margin-top: $spacing-s;
+
+      .summary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.375rem 0.75rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(4px);
+        font-family: 'Inter', sans-serif;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #fff;
+
+        .summary-icon {
+          width: 1rem;
+          height: 1rem;
+          color: $brand-accent;
+        }
+      }
+
+      .chevron {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(4px);
+        color: #fff;
+
+        .chevron-icon {
+          width: 1.25rem;
+          height: 1.25rem;
+        }
+      }
+    }
   }
 }
 
 // ── Small ─────────────────────────────────────────────────────────────────────────
-:deep(.avatar) {
-  border-radius: $radius-md;
-}
+.small-card {
+  :deep(.avatar) {
+    width: 6rem;
+    height: 4.5rem;
+    border-radius: $radius-md;
 
-.cover {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+    .cover {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
 
-.title {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: $text-primary;
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+  .body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
 
-.meta {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.75rem;
-  color: $text-secondary;
-  margin: 2px 0 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+    @media (min-width: $breakpoint-desktop) {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      column-gap: $spacing-m;
+    }
 
-.arrow {
-  font-size: 1.2rem;
-  color: $text-secondary;
-  line-height: 1;
+    .title {
+      max-width: 100%;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: $text-primary;
+      margin: 0 0 0.25rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      @media (min-width: $breakpoint-desktop) {
+        grid-column: 1;
+        font-size: 1.05rem;
+      }
+    }
+
+    .lines {
+      max-width: 100%;
+
+      @media (min-width: $breakpoint-desktop) {
+        grid-column: 1;
+        display: flex;
+        gap: $spacing-l;
+      }
+
+      .line {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.8rem;
+        color: $text-secondary;
+        margin: 0.125rem 0 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        @media (min-width: $breakpoint-desktop) {
+          font-size: 0.875rem;
+        }
+
+        .line-icon {
+          width: 0.9rem;
+          height: 0.9rem;
+          flex-shrink: 0;
+        }
+      }
+    }
+
+    .small-badge {
+      display: inline-block;
+      margin-top: 0.375rem;
+      padding: 0.125rem 0.5rem;
+      border-radius: $radius-sm;
+      background: v-bind('SMALL_BADGE_COLORS.bgColor');
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: v-bind('SMALL_BADGE_COLORS.color');
+
+      @media (min-width: $breakpoint-desktop) {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        margin-top: 0;
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+      }
+    }
+  }
+
+  .arrow {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: $text-secondary;
+  }
 }
 </style>

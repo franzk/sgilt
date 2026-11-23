@@ -449,6 +449,7 @@
       "decoration": "Décoration",
       "photo-video": "Photo / Vidéo",
       "hebergement": "Hébergement",
+      "autre": "Autre",
       "reservation-count": "{n} réservation | {n} réservations"
     },
     "rubrique": {
@@ -488,6 +489,9 @@
         "hebergement": {
           "tagline": "Gîtes, hôtels, chambres d'hôtes… Gardez vos invités près de vous.",
           "already": "J'ai déjà mon hébergement"
+        },
+        "autre": {
+          "tagline": "Votre événement a ses particularités ? C'est ici qu'elles trouvent leur place."
         }
       }
     }
@@ -958,13 +962,8 @@
     }
   },
   "events": {
-    "count": "Vous préparez {n} événement. | Vous préparez {n} événements.",
     "create": "Créer un événement",
-    "empty": "Aucun événement pour le moment.",
-    "confirmed": "{n} confirmée | {n} confirmées",
-    "in-progress": "{n} en cours",
-    "pending": "{n} en attente",
-    "see-event": "Voir l'événement"
+    "empty": "Aucun événement pour le moment."
   },
   "event": {
     "edit-dialog": {
@@ -1428,10 +1427,11 @@
   },
   "nav": {
     "home": "Accueil",
-    "events": "Événements",
     "prestataires": "Prestataires",
     "notifications": "Notifications",
-    "profile": "Profil"
+    "profile": "Profil",
+    "my-events": "Mes événements",
+    "to-follow": "À suivre"
   },
   "texts": {
     "a-partir-de": "À partir de",
@@ -1523,15 +1523,17 @@
     "welcome": "Bonjour {name} !",
     "welcome-night": "Bonsoir {name} !",
     "subtitle": "On garde le fil de vos préparatifs.",
-    "events-count": "Vous avez {n} événement en cours. | Vous avez {n} événements en cours.",
-    "section-active": "Vos préparatifs en cours",
     "all-confirmed": "Toutes vos réservations sont confirmées — bons préparatifs ! 🎉",
-    "empty-message": "Vous n'avez rien en cours. Une nouvelle idée à lancer ?",
     "new-event-flow": "Nouvel événement",
-    "section-next": "Votre prochain événement",
-    "section-events": "Vos événements",
-    "show-more": "Voir {n} autre | Voir les {n} autres",
-    "reduce": "Réduire"
+    "section-my-events": "Mes événements",
+    "next-event-badge": "Prochain événement",
+    "confirmed-summary": "{n} réservation confirmée | {n} réservations confirmées",
+    "in-progress-badge": "{n} échange en cours | {n} échanges en cours"
+  },
+  "to-follow": {
+    "title": "À suivre",
+    "subtitle": "Les réservations et demandes qui nécessitent votre attention.",
+    "empty": "Rien à suivre pour le moment."
   },
   "errors": {
     "not-found": {

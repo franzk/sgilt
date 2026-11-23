@@ -1,3 +1,8 @@
+/**
+ * Composable — parcours multi-pages en cours (création d'événement, ajout de prestataire) :
+ * démarrage, abandon et fin de parcours avec leurs redirections. L'état survit à un refresh
+ * via le sessionStorage.
+ */
 import { toISODate } from '~/utils/dateUtils'
 
 export type Flow = 'new-event' | 'add-prestataire' | null
@@ -78,7 +83,7 @@ export function useFlow() {
       },
       success: () => {
         const eventId = flowPayload.value?.id
-        navigateTo(eventId ? `/app/events/${eventId}` : '/app/events')
+        navigateTo(eventId ? `/app/events/${eventId}` : '/app')
       },
     },
 
