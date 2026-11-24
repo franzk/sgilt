@@ -56,11 +56,12 @@
           :can-add-note="canEditFeed"
           :can-upload-document="canEditFeed"
           :uploading-document="uploading"
+          :upload-failed-files="uploadFailedFiles"
           :adding-note="addingNote"
           :add-note-failed="addNoteFailed"
           :show-personal-toggle="true"
           @add-note="addNote"
-          @upload-document="(file) => uploadDocument(file, false)"
+          @upload-document="(files) => uploadDocuments(files, false)"
           @download-document="download"
           @delete-document="deleteDocument"
         />
@@ -89,7 +90,8 @@
         :loading="feedPending"
         :can-upload="canEditFeed"
         :uploading="uploading"
-        @upload="(file) => uploadDocument(file, false)"
+        :upload-failed-files="uploadFailedFiles"
+        @upload="(files) => uploadDocuments(files, false)"
         @download="download"
         @delete="deleteDocument"
       />
@@ -284,10 +286,11 @@ const {
   pending: feedPending,
   load: reloadFeed,
   uploading,
+  uploadFailedFiles,
   addingNote,
   addNoteFailed,
   addNote,
-  uploadDocument,
+  uploadDocuments,
   download,
   deleteDocument,
 } = useReservationFeed(props.reservationId)

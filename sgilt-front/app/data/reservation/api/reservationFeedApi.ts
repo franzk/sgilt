@@ -1,3 +1,7 @@
+/**
+ * Appels HTTP du fil d'une réservation (frise du Suivi) : lecture du fil, ajout de note, envoi et
+ * suppression de document. Utilisé par reservationFeedService.
+ */
 import { apiFetch } from '~/composables/useApi'
 import type { FeedItemDto } from '../dto/FeedItemDto'
 
@@ -5,6 +9,7 @@ export async function getFeedApi(reservationId: string): Promise<FeedItemDto[]> 
   return apiFetch<FeedItemDto[]>(`/reservations/${reservationId}/feed`)
 }
 
+// Un fichier par appel : un envoi de plusieurs fichiers fait un appel par fichier (voir le service).
 export async function uploadDocumentApi(
   reservationId: string,
   file: File,

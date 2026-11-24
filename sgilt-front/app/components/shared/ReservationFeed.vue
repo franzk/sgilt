@@ -1,3 +1,10 @@
+<!--
+  Frise « Notes & suivi » d'une réservation, commune au client et au prestataire : les boutons
+  « + Note » (fenêtre d'ajout) et « + Document » (un ou plusieurs fichiers = un envoi), les erreurs
+  d'envoi, puis les éléments du fil du plus récent au plus ancien (une carte FeedEntry chacun).
+  Il ne fait aucun appel au back : ReservationBoard fait l'ajout, l'envoi, le téléchargement et la
+  suppression.
+-->
 <template>
   <div class="feed">
     <!-- ── En-tête ──────────────────────────────────────────────────────────── -->
@@ -16,12 +23,16 @@
         v-if="canUploadDocument"
         class="feed__action-btn"
         :uploading="uploadingDocument"
-        @upload="(file) => $emit('upload-document', file)"
+        @upload="(files) => $emit('upload-document', files)"
         @error="(message) => (uploadError = message)"
       />
     </div>
 
+    <!-- Un seul message : le refus du dernier choix, sinon l'échec du dernier envoi. -->
     <p v-if="uploadError" class="feed__upload-error">{{ uploadError }}</p>
+    <p v-else-if="uploadFailedFiles.length > 0" class="feed__upload-error">
+      {{ $t('feed.upload-error.failed', { names: uploadFailedFiles.join(', ') }, uploadFailedFiles.length) }}
+    </p>
 
     <!-- ── Skeleton ─────────────────────────────────────────────────────────── -->
     <div v-if="loading" class="feed__skeleton">
@@ -102,6 +113,8 @@ const props = withDefaults(
     canAddNote?: boolean
     canUploadDocument?: boolean
     uploadingDocument?: boolean
+    // Fichiers du dernier envoi qui n'ont pas pu être envoyés.
+    uploadFailedFiles?: string[]
     // Note en cours d'enregistrement : la fenêtre reste ouverte, bouton en chargement.
     addingNote?: boolean
     // Échec du dernier enregistrement : la fenêtre reste ouverte avec un message.
@@ -113,6 +126,7 @@ const props = withDefaults(
     canAddNote: false,
     canUploadDocument: false,
     uploadingDocument: false,
+    uploadFailedFiles: () => [],
     addingNote: false,
     addNoteFailed: false,
     showPersonalToggle: false,
@@ -121,7 +135,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   'add-note': [title: string, content: string, isPersonal: boolean]
-  'upload-document': [file: File]
+  'upload-document': [files: File[]]
   'download-document': [url: string, fileName: string]
   'delete-document': [id: string]
 }>()

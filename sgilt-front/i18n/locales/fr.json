@@ -1391,7 +1391,9 @@
     "title": "Notes & suivi",
     "subtitle": "Ajoutez des notes, documents ou informations utiles pour le suivi de votre réservation.",
     "upload-error": {
-      "too-large": "Le fichier dépasse la taille maximale autorisée (10 Mo)."
+      "too-large": "« {name} » dépasse la taille maximale autorisée (10 Mo).",
+      "empty": "« {name} » est vide.",
+      "failed": "Le fichier {names} n'a pas pu être envoyé, réessayez. | Les fichiers {names} n'ont pas pu être envoyés, réessayez."
     },
     "you": "Vous",
     "visibility": {
@@ -1399,7 +1401,7 @@
       "private": "Note privée"
     },
     "document": {
-      "title": "Document ajouté",
+      "title": "Document ajouté | {n} documents ajoutés",
       "menu-aria": "Actions du document",
       "download": "Télécharger",
       "delete": "Supprimer",
