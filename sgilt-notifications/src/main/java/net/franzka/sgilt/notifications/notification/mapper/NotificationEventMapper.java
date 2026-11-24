@@ -29,6 +29,7 @@ public class NotificationEventMapper {
     private static final String MESSAGE_KEY_STATUS_PREFIX = "notification.reservation.status.";
     private static final String MESSAGE_KEY_NOTE_ADDED = "notification.reservation.note_added";
     private static final String MESSAGE_KEY_DOCUMENT_ADDED = "notification.reservation.document_added";
+    private static final String MESSAGE_KEY_DOCUMENTS_ADDED = "notification.reservation.documents_added";
     private static final String MESSAGE_KEY_CONTACT_REMINDER = "notification.reservation.contact_reminder";
     private static final String MESSAGE_KEY_ADDED_BY_SGILT = "notification.reservation.added_by_sgilt";
 
@@ -82,22 +83,34 @@ public class NotificationEventMapper {
     /**
      * Construit la notification d'ajout au feed (note ou document), dans les deux sens — même
      * dérivation de direction que {@link #toNotification(ReservationStatusChangedEvent)}.
-     * {@code itemType} détermine le {@link NotificationType} et la clé i18n.
+     * {@code itemType} détermine le {@link NotificationType} et la clé i18n ; un envoi de plusieurs
+     * documents a sa propre clé ({@code documents_added}), avec leur nombre en paramètre
+     * ({@code documentCount}) — pas de pluriel à gérer dans les libellés ni dans les mails.
      *
      * @param event les faits bruts de l'ajout au feed
      * @return la notification à persister
      */
     public Notification toNotification(ReservationFeedItemAddedEvent event) {
         boolean isNote = "NOTE".equals(event.itemType());
+        int documentCount = event.itemCount() != null ? event.itemCount() : 1;
+        boolean severalDocuments = !isNote && documentCount > 1;
+
+        Map<String, String> params = severalDocuments
+                ? Map.of(
+                        "actorName", event.actorName(),
+                        "eventTitle", event.eventTitle(),
+                        "documentCount", String.valueOf(documentCount))
+                : Map.of(
+                        "actorName", event.actorName(),
+                        "eventTitle", event.eventTitle());
 
         return Notification.builder()
                 .recipientEmail(event.recipientEmail())
                 .recipientUserId(event.recipientUserId())
                 .type(isNote ? NotificationType.NEW_NOTE : NotificationType.NEW_DOCUMENT)
-                .messageKey(isNote ? MESSAGE_KEY_NOTE_ADDED : MESSAGE_KEY_DOCUMENT_ADDED)
-                .params(Map.of(
-                        "actorName", event.actorName(),
-                        "eventTitle", event.eventTitle()))
+                .messageKey(isNote ? MESSAGE_KEY_NOTE_ADDED
+                        : severalDocuments ? MESSAGE_KEY_DOCUMENTS_ADDED : MESSAGE_KEY_DOCUMENT_ADDED)
+                .params(params)
                 .href(resolveHref(event.actorRole(), event.eventId(), event.reservationId()))
                 .read(false)
                 .build();

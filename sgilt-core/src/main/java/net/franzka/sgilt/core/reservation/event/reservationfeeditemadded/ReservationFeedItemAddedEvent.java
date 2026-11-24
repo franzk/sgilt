@@ -27,6 +27,8 @@ import java.util.UUID;
  * @param recipientUserId  l'identifiant {@code Utilisateur} du destinataire à notifier (traçabilité)
  * @param recipientEmail   l'email du destinataire à notifier — clé de résolution du destinataire
  * @param itemType         le type d'élément ajouté (note ou document)
+ * @param itemCount        le nombre d'éléments ajoutés : 1 pour une note, le nombre de documents
+ *                          partagés d'un envoi pour des documents (une seule notification par envoi)
  * @param actorName        le nom de la personne à l'origine de l'ajout
  * @param actorRole        le rôle de la personne à l'origine de l'ajout
  * @param eventTitle       le titre de l'évènement concerné
@@ -38,6 +40,7 @@ public record ReservationFeedItemAddedEvent(
         UUID recipientUserId,
         String recipientEmail,
         FeedItemType itemType,
+        int itemCount,
         String actorName,
         ActorRole actorRole,
         String eventTitle,

@@ -1,3 +1,10 @@
+<!--
+  Carte d'un élément du fil d'une réservation (frise « Notes & suivi »), commune au client et au
+  prestataire. Trois blocs distincts dans le template, chacun dans la coquille FeedEntryCard
+  (pastille, titre, date, auteur) : une note (de l'organisateur, du prestataire ou d'un changement de
+  statut), la demande initiale, un envoi de documents (ses fichiers, chacun avec son menu : télécharger,
+  supprimer le sien).
+-->
 <template>
   <!-- ══ Note (de l'organisateur, du prestataire, ou d'un changement de statut) ══ -->
   <FeedEntryCard
@@ -33,30 +40,30 @@
     <p v-if="item.content" class="content">{{ item.content }}</p>
   </FeedEntryCard>
 
-  <!-- ══ Document : le fichier, avec ses actions dans le menu ⋮ ══ -->
+  <!-- ══ Envoi de documents : ses fichiers, chacun avec ses actions dans le menu ⋮ ══ -->
   <FeedEntryCard
     v-else
     kind="document"
     :icon="icon"
-    :title="$t('feed.document.title')"
+    :title="$t('feed.document.title', files.length)"
     :created-at="item.createdAt"
     :author="item.author"
     :is-own="isOwn"
   >
-    <DocumentFile
-      :document="item"
-      :can-delete="isOwn"
-      @download="(url, fileName) => $emit('download', url, fileName)"
-      @delete="(id) => $emit('delete', id)"
-    />
+    <ul class="files">
+      <li v-for="file in files" :key="file.id">
+        <DocumentFile
+          :file="file"
+          :can-delete="isOwn"
+          @download="(url, fileName) => $emit('download', url, fileName)"
+          @delete="(id) => $emit('delete', id)"
+        />
+      </li>
+    </ul>
   </FeedEntryCard>
 </template>
 
 <script setup lang="ts">
-// Carte d'un élément du fil d'une réservation (frise « Notes & suivi »), commune au client et au
-// prestataire. Trois blocs distincts dans le template, chacun dans la coquille FeedEntryCard
-// (pastille, titre, date, auteur) : une note (de l'organisateur, du prestataire ou d'un changement de
-// statut), la demande initiale, un document (fichier et menu : télécharger, supprimer le sien).
 import {
   AttachmentIcon,
   ArrowRightCircleIcon,
@@ -140,6 +147,9 @@ const noteTitle = computed(() =>
     : props.item.title,
 )
 
+// Envoi de documents : ses fichiers.
+const files = computed(() => props.item.files ?? [])
+
 const isOwn = computed(() => props.item.author.role === props.currentUserRole)
 
 
@@ -161,6 +171,16 @@ const isOwn = computed(() => props.item.author.role === props.currentUserRole)
   line-height: 1.55;
   color: $text-secondary;
   white-space: pre-wrap;
+}
+
+// ── Envoi de documents : ses fichiers, les uns sous les autres ─────────────────
+.files {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 // ── Note : visibilité, dans le pied ────────────────────────────────────────────

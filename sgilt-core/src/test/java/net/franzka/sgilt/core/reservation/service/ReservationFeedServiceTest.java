@@ -12,7 +12,9 @@ import net.franzka.sgilt.core.reservation.event.FeedItemType;
 import net.franzka.sgilt.core.reservation.event.ReservationEventPublisher;
 import net.franzka.sgilt.core.reservation.exception.ReservationFeedItemNotFoundException;
 import net.franzka.sgilt.core.reservation.exception.ReservationNotAllowedException;
+import net.franzka.sgilt.core.reservation.exception.UploadConflictException;
 import net.franzka.sgilt.core.reservation.mapper.ReservationFeedMapper;
+import net.franzka.sgilt.core.reservation.repository.DocumentRepository;
 import net.franzka.sgilt.core.reservation.repository.ReservationFeedRepository;
 import net.franzka.sgilt.core.storage.FileStorageException;
 import net.franzka.sgilt.core.storage.FileStorageService;
@@ -42,6 +44,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,6 +55,9 @@ class ReservationFeedServiceTest {
 
     @Mock
     private ReservationFeedRepository feedRepository;
+
+    @Mock
+    private DocumentRepository documentRepository;
 
     @Mock
     private ReservationFeedMapper feedMapper;
@@ -84,7 +90,7 @@ class ReservationFeedServiceTest {
             reservationFeedService.addNote(reservationId, FeedCaller.PRESTATAIRE, null,
                     new AddNoteRequest("Titre", "Contenu", false));
 
-            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.PRESTATAIRE, FeedItemType.NOTE, false);
+            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.PRESTATAIRE, FeedItemType.NOTE, false, 1);
         }
 
         @Test
@@ -98,7 +104,7 @@ class ReservationFeedServiceTest {
             reservationFeedService.addNote(reservationId, FeedCaller.CLIENT, client,
                     new AddNoteRequest("Titre", "Contenu", false));
 
-            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.CLIENT, FeedItemType.NOTE, false);
+            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.CLIENT, FeedItemType.NOTE, false, 1);
         }
 
         @Test
@@ -111,7 +117,7 @@ class ReservationFeedServiceTest {
             reservationFeedService.addNote(reservationId, FeedCaller.PRESTATAIRE, null,
                     new AddNoteRequest("Titre", "Contenu", true));
 
-            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.PRESTATAIRE, FeedItemType.NOTE, true);
+            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.PRESTATAIRE, FeedItemType.NOTE, true, 1);
         }
     }
 
@@ -123,7 +129,8 @@ class ReservationFeedServiceTest {
     class AddDocument {
 
         @Test
-        void givenNonPersonalDocumentFromPrestataire_whenAddDocument_thenDelegatesPublicationAsNonPersonalDocument() throws Exception {
+        void givenDocumentFromPrestataire_whenAddDocument_thenSavesItInItsUploadWithoutNotifying() throws Exception {
+            UUID uploadId = UUID.randomUUID();
             Reservation reservation = Reservation.builder().id(reservationId).build();
             when(reservationService.getReservationById(reservationId)).thenReturn(reservation);
             when(fileStorageService.uploadDocument(any(), any())).thenReturn("path/to/file");
@@ -131,23 +138,113 @@ class ReservationFeedServiceTest {
             when(feedMapper.toFeedItem(any(), eq(false), eq(reservationId))).thenReturn(FeedItemDto.builder().build());
 
             var file = new MockMultipartFile("file", "devis.pdf", "application/pdf", "contenu".getBytes());
-            reservationFeedService.addDocument(reservationId, FeedCaller.PRESTATAIRE, null, file, false);
+            reservationFeedService.addDocument(reservationId, FeedCaller.PRESTATAIRE, null, file, false, uploadId);
 
-            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.PRESTATAIRE, FeedItemType.DOCUMENT, false);
+            var captor = org.mockito.ArgumentCaptor.forClass(Document.class);
+            verify(feedRepository).save(captor.capture());
+            assertThat(captor.getValue().getUploadId()).isEqualTo(uploadId);
+            verifyNoInteractions(reservationEventPublisher);
         }
 
         @Test
-        void givenPersonalDocument_whenAddDocument_thenDelegatesPublicationAsPersonal() throws Exception {
+        void givenUploadAlreadyHoldingCallerDocuments_whenAddDocument_thenSavesWithoutConflict() throws Exception {
+            UUID uploadId = UUID.randomUUID();
             Reservation reservation = Reservation.builder().id(reservationId).build();
+            Document firstDocument = Document.builder().reservation(reservation)
+                    .prestataire(Prestataire.builder().build()).isPersonal(false).uploadId(uploadId).build();
+            when(documentRepository.findByUploadId(uploadId)).thenReturn(List.of(firstDocument));
             when(reservationService.getReservationById(reservationId)).thenReturn(reservation);
             when(fileStorageService.uploadDocument(any(), any())).thenReturn("path/to/file");
             when(feedRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
             when(feedMapper.toFeedItem(any(), eq(false), eq(reservationId))).thenReturn(FeedItemDto.builder().build());
 
-            var file = new MockMultipartFile("file", "devis.pdf", "application/pdf", "contenu".getBytes());
-            reservationFeedService.addDocument(reservationId, FeedCaller.PRESTATAIRE, null, file, true);
+            var file = new MockMultipartFile("file", "contrat.pdf", "application/pdf", "contenu".getBytes());
+            reservationFeedService.addDocument(reservationId, FeedCaller.PRESTATAIRE, null, file, false, uploadId);
 
-            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.PRESTATAIRE, FeedItemType.DOCUMENT, true);
+            verify(feedRepository).save(any(Document.class));
+        }
+
+        @Test
+        void givenUploadStartedByOtherParty_whenAddDocument_thenThrowsWithoutStoringFile() {
+            UUID uploadId = UUID.randomUUID();
+            Reservation reservation = Reservation.builder().id(reservationId).build();
+            Document clientDocument = Document.builder().reservation(reservation)
+                    .utilisateur(Utilisateur.builder().id(UUID.randomUUID()).build()).isPersonal(false).build();
+            when(documentRepository.findByUploadId(uploadId)).thenReturn(List.of(clientDocument));
+
+            var file = new MockMultipartFile("file", "devis.pdf", "application/pdf", "contenu".getBytes());
+
+            assertThatThrownBy(() -> reservationFeedService.addDocument(reservationId, FeedCaller.PRESTATAIRE, null, file, false, uploadId))
+                    .isInstanceOf(UploadConflictException.class);
+            verifyNoInteractions(fileStorageService);
+            verify(feedRepository, never()).save(any());
+        }
+
+        @Test
+        void givenUploadOnOtherReservation_whenAddDocument_thenThrowsUploadConflict() {
+            UUID uploadId = UUID.randomUUID();
+            Reservation otherReservation = Reservation.builder().id(UUID.randomUUID()).build();
+            Document otherDocument = Document.builder().reservation(otherReservation)
+                    .prestataire(Prestataire.builder().build()).isPersonal(false).build();
+            when(documentRepository.findByUploadId(uploadId)).thenReturn(List.of(otherDocument));
+
+            var file = new MockMultipartFile("file", "devis.pdf", "application/pdf", "contenu".getBytes());
+
+            assertThatThrownBy(() -> reservationFeedService.addDocument(reservationId, FeedCaller.PRESTATAIRE, null, file, false, uploadId))
+                    .isInstanceOf(UploadConflictException.class);
+        }
+
+        @Test
+        void givenUploadWithOtherVisibility_whenAddDocument_thenThrowsUploadConflict() {
+            UUID uploadId = UUID.randomUUID();
+            Reservation reservation = Reservation.builder().id(reservationId).build();
+            Document sharedDocument = Document.builder().reservation(reservation)
+                    .prestataire(Prestataire.builder().build()).isPersonal(false).build();
+            when(documentRepository.findByUploadId(uploadId)).thenReturn(List.of(sharedDocument));
+
+            var file = new MockMultipartFile("file", "perso.pdf", "application/pdf", "contenu".getBytes());
+
+            assertThatThrownBy(() -> reservationFeedService.addDocument(reservationId, FeedCaller.PRESTATAIRE, null, file, true, uploadId))
+                    .isInstanceOf(UploadConflictException.class);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // completeUpload
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class CompleteUpload {
+
+        private final UUID uploadId = UUID.randomUUID();
+
+        @Test
+        void givenSharedDocumentsInUpload_whenCompleteUpload_thenPublishesOneDocumentNotification() {
+            Reservation reservation = Reservation.builder().id(reservationId).build();
+            Utilisateur client = Utilisateur.builder().id(UUID.randomUUID()).build();
+            when(documentRepository.findByUploadId(uploadId)).thenReturn(List.of(
+                    Document.builder().reservation(reservation).utilisateur(client).isPersonal(false).build(),
+                    Document.builder().reservation(reservation).utilisateur(client).isPersonal(false).build()));
+            when(reservationService.getReservationById(reservationId)).thenReturn(reservation);
+
+            reservationFeedService.completeUpload(reservationId, FeedCaller.CLIENT, uploadId);
+
+            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.CLIENT, FeedItemType.DOCUMENT, false, 2);
+        }
+
+        @Test
+        void givenOnlyDeletedOrPersonalDocumentsInUpload_whenCompleteUpload_thenPublishesNothing() {
+            Reservation reservation = Reservation.builder().id(reservationId).build();
+            Prestataire prestataire = Prestataire.builder().build();
+            when(documentRepository.findByUploadId(uploadId)).thenReturn(List.of(
+                    Document.builder().reservation(reservation).prestataire(prestataire).isPersonal(true).build(),
+                    Document.builder().reservation(reservation).prestataire(prestataire).isPersonal(false)
+                            .deletedAt(java.time.LocalDateTime.now()).build()));
+
+            reservationFeedService.completeUpload(reservationId, FeedCaller.PRESTATAIRE, uploadId);
+
+            verifyNoInteractions(reservationEventPublisher);
+            verify(reservationService, never()).getReservationById(any());
         }
     }
 
@@ -181,7 +278,7 @@ class ReservationFeedServiceTest {
         void givenFileTooLarge_whenAddDocument_thenThrowsFileTooLargeWithoutTouchingReservation() {
             var file = new MockMultipartFile("file", "gros.pdf", "application/pdf", new byte[11 * 1024 * 1024]);
 
-            assertThatThrownBy(() -> reservationFeedService.addDocument(reservationId, FeedCaller.CLIENT, null, file, false))
+            assertThatThrownBy(() -> reservationFeedService.addDocument(reservationId, FeedCaller.CLIENT, null, file, false, UUID.randomUUID()))
                     .isInstanceOf(FileTooLargeException.class);
             verify(reservationService, never()).getReservationById(any());
         }
@@ -194,7 +291,7 @@ class ReservationFeedServiceTest {
 
             var file = new MockMultipartFile("file", "devis.pdf", "application/pdf", "contenu".getBytes());
 
-            assertThatThrownBy(() -> reservationFeedService.addDocument(reservationId, FeedCaller.CLIENT, null, file, false))
+            assertThatThrownBy(() -> reservationFeedService.addDocument(reservationId, FeedCaller.CLIENT, null, file, false, UUID.randomUUID()))
                     .isInstanceOf(FileStorageException.class);
         }
 
@@ -212,7 +309,7 @@ class ReservationFeedServiceTest {
             when(fileStorageService.uploadDocument(any(), any())).thenReturn("path/to/file");
             when(feedMapper.toFeedItem(any(), eq(false), eq(reservationId))).thenReturn(FeedItemDto.builder().build());
 
-            reservationFeedService.addDocument(reservationId, FeedCaller.CLIENT, client, file, false);
+            reservationFeedService.addDocument(reservationId, FeedCaller.CLIENT, client, file, false, UUID.randomUUID());
 
             var captor = org.mockito.ArgumentCaptor.forClass(Document.class);
             verify(feedRepository).save(captor.capture());

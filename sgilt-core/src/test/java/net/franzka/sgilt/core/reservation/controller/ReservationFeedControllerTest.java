@@ -133,13 +133,48 @@ class ReservationFeedControllerTest {
             when(currentUserService.get()).thenReturn(utilisateur);
             var file = new MockMultipartFile("file", "devis.pdf", "application/pdf", "contenu".getBytes());
             FeedItemDto item = FeedItemDto.builder().build();
-            when(reservationFeedService.addDocument(reservationId, FeedCaller.CLIENT, utilisateur, file, false))
+            UUID uploadId = UUID.randomUUID();
+            when(reservationFeedService.addDocument(reservationId, FeedCaller.CLIENT, utilisateur, file, false, uploadId))
                     .thenReturn(item);
 
-            ResponseEntity<FeedItemDto> response = controller.addDocument(reservationId, file, false);
+            ResponseEntity<FeedItemDto> response = controller.addDocument(reservationId, file, false, uploadId);
 
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
             assertThat(response.getBody()).isEqualTo(item);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // completeUpload
+    // -------------------------------------------------------------------------
+
+    @Nested
+    class CompleteUpload {
+
+        @Test
+        void givenPrestataireCaller_whenCompleteUpload_thenVerifiesProOwnershipAndCompletes() {
+            UUID uploadId = UUID.randomUUID();
+            when(currentUserService.getId()).thenReturn(userId);
+            when(currentUserService.isPro()).thenReturn(true);
+
+            ResponseEntity<Void> response = controller.completeUpload(reservationId, uploadId);
+
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+            verify(reservationService).verifyProOwnershipByReservationId(reservationId, userId);
+            verify(reservationFeedService).completeUpload(reservationId, FeedCaller.PRESTATAIRE, uploadId);
+        }
+
+        @Test
+        void givenClientCaller_whenCompleteUpload_thenVerifiesClientOwnershipAndCompletes() {
+            UUID uploadId = UUID.randomUUID();
+            when(currentUserService.getId()).thenReturn(userId);
+            when(currentUserService.isPro()).thenReturn(false);
+
+            ResponseEntity<Void> response = controller.completeUpload(reservationId, uploadId);
+
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+            verify(reservationService).verifyOwnershipByReservationId(reservationId, userId);
+            verify(reservationFeedService).completeUpload(reservationId, FeedCaller.CLIENT, uploadId);
         }
     }
 

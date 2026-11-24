@@ -14,7 +14,9 @@ import net.franzka.sgilt.core.reservation.event.FeedItemType;
 import net.franzka.sgilt.core.reservation.event.ReservationEventPublisher;
 import net.franzka.sgilt.core.reservation.exception.ReservationFeedItemNotFoundException;
 import net.franzka.sgilt.core.reservation.exception.ReservationNotAllowedException;
+import net.franzka.sgilt.core.reservation.exception.UploadConflictException;
 import net.franzka.sgilt.core.reservation.mapper.ReservationFeedMapper;
+import net.franzka.sgilt.core.reservation.repository.DocumentRepository;
 import net.franzka.sgilt.core.reservation.repository.ReservationFeedRepository;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,7 @@ public class ReservationFeedService {
 
     private final ReservationService        reservationService;
     private final ReservationFeedRepository feedRepository;
+    private final DocumentRepository        documentRepository;
     private final ReservationFeedMapper     feedMapper;
     private final FileStorageService        fileStorageService;
     private final ReservationEventPublisher reservationEventPublisher;
@@ -83,7 +86,7 @@ public class ReservationFeedService {
         }
         FeedItemDto item = feedMapper.toFeedItem(feedRepository.save(builder.build()), false, reservationId);
 
-        reservationEventPublisher.publishFeedItemAdded(reservation, caller, FeedItemType.NOTE, isPersonal);
+        reservationEventPublisher.publishFeedItemAdded(reservation, caller, FeedItemType.NOTE, isPersonal, 1);
 
         return item;
     }
@@ -98,11 +101,24 @@ public class ReservationFeedService {
      * @param utilisateur   l'utilisateur client (ignoré si caller est PRESTATAIRE)
      * @param file          le fichier à uploader
      * @param isPersonal    true si le document est personnel
-     * @return le document créé sous forme de {@link FeedItemDto}
+     * @param uploadId      l'identifiant de l'envoi auquel appartient le document (généré par le front)
+     * @return l'envoi, avec ce seul document, sous forme de {@link FeedItemDto}
+     * @throws UploadConflictException si l'envoi est déjà utilisé sur une autre réservation, par
+     *                                 l'autre partie ou avec une autre visibilité
      */
     public FeedItemDto addDocument(UUID reservationId, FeedCaller caller,
-                                   @Nullable Utilisateur utilisateur, MultipartFile file, boolean isPersonal) {
+                                   @Nullable Utilisateur utilisateur, MultipartFile file, boolean isPersonal,
+                                   UUID uploadId) {
         if (file.getSize() > MAX_FILE_SIZE) throw new FileTooLargeException(MAX_FILE_SIZE);
+        // L'uploadId est public (id de la carte dans le feed) : sans ce contrôle, l'autre partie pourrait
+        // glisser un fichier dans la carte, qui le présenterait sous l'auteur du premier document.
+        // Les documents supprimés comptent : l'envoi garde son auteur, sa réservation et sa visibilité.
+        boolean conflicting = documentRepository.findByUploadId(uploadId).stream()
+                .anyMatch(doc -> !isFromCaller(doc, reservationId, caller)
+                        || !Boolean.valueOf(isPersonal).equals(doc.getIsPersonal()));
+        if (conflicting) {
+            throw new UploadConflictException(uploadId);
+        }
         Reservation reservation = reservationService.getReservationById(reservationId);
         try {
             String filePath = fileStorageService.uploadDocument(file, "reservation-feed");
@@ -117,20 +133,47 @@ public class ReservationFeedService {
                     .fileName(originalName)
                     .filePath(filePath)
                     .mimeType(file.getContentType())
-                    .isPersonal(isPersonal);
+                    .isPersonal(isPersonal)
+                    .uploadId(uploadId);
             if (caller == FeedCaller.CLIENT) {
                 builder.utilisateur(utilisateur);
             } else {
                 builder.prestataire(reservation.getPrestataire());
             }
-            FeedItemDto item = feedMapper.toFeedItem(feedRepository.save(builder.build()), false, reservationId);
-
-            reservationEventPublisher.publishFeedItemAdded(reservation, caller, FeedItemType.DOCUMENT, isPersonal);
-
-            return item;
+            // Pas de notification ici : elle part une seule fois pour tout l'envoi, à sa clôture.
+            return feedMapper.toFeedItem(feedRepository.save(builder.build()), false, reservationId);
         } catch (IOException e) {
             throw new FileStorageException("Erreur de stockage du document pour la réservation " + reservationId, e);
         }
+    }
+
+    /**
+     * Clôt un envoi de documents : annonce à l'autre partie, en une seule notification, les documents
+     * partagés que l'appelant y a déposés. Rien n'est publié si aucun ne l'a été (tous personnels,
+     * supprimés ou en échec).
+     *
+     * @param reservationId l'identifiant de la réservation
+     * @param caller        le rôle de l'appelant, auteur de l'envoi
+     * @param uploadId      l'identifiant de l'envoi
+     */
+    public void completeUpload(UUID reservationId, FeedCaller caller, UUID uploadId) {
+        long count = documentRepository.findByUploadId(uploadId).stream()
+                .filter(doc -> isFromCaller(doc, reservationId, caller))
+                .filter(doc -> doc.getDeletedAt() == null && !doc.getIsPersonal())
+                .count();
+        if (count == 0) {
+            log.info("Envoi {} de la réservation {} clos sans document partagé : pas de notification",
+                    uploadId, reservationId);
+            return;
+        }
+        Reservation reservation = reservationService.getReservationById(reservationId);
+        reservationEventPublisher.publishFeedItemAdded(reservation, caller, FeedItemType.DOCUMENT, false, (int) count);
+    }
+
+    // Document de cette réservation, déposé par l'appelant (le client ou le prestataire de la réservation).
+    private boolean isFromCaller(Document doc, UUID reservationId, FeedCaller caller) {
+        boolean byCallerSide = caller == FeedCaller.CLIENT ? doc.getUtilisateur() != null : doc.getPrestataire() != null;
+        return byCallerSide && doc.getReservation().getId().equals(reservationId);
     }
 
     /**

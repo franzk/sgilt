@@ -1,6 +1,7 @@
 <!--
   Onglet Documents de la fiche d'une réservation, le même pour le client et le prestataire : tous les
-  documents de la réservation, du plus récent au plus ancien (auteur et date sous chaque nom), le
+  documents de la réservation à plat, fichier par fichier (un envoi de plusieurs fichiers, groupé dans
+  la frise, est éclaté ici), du plus récent au plus ancien (auteur et date sous chaque nom), le
   bouton « + Document », le téléchargement, et la suppression de ses propres documents.
   Il reçoit les éléments du fil (ceux de la frise du Suivi) et n'en garde que les documents : un
   document ajouté ici apparaît aussi dans la frise, et inversement. Il ne fait aucun appel au back :
@@ -17,10 +18,14 @@
       v-if="canUpload"
       class="upload"
       :uploading="uploading"
-      @upload="(file) => $emit('upload', file)"
+      @upload="(files) => $emit('upload', files)"
       @error="(message) => (uploadError = message)"
     />
+    <!-- Un seul message : le refus du dernier choix, sinon l'échec du dernier envoi. -->
     <p v-if="uploadError" class="upload-error">{{ uploadError }}</p>
+    <p v-else-if="uploadFailedFiles.length > 0" class="upload-error">
+      {{ $t('feed.upload-error.failed', { names: uploadFailedFiles.join(', ') }, uploadFailedFiles.length) }}
+    </p>
 
     <div v-if="loading" class="list">
       <Sk v-for="n in 3" :key="n" height="3.5rem" radius="0.625rem" />
@@ -28,9 +33,9 @@
 
     <!-- Du plus récent au plus ancien. -->
     <ul v-else-if="sortedDocuments.length > 0" class="list">
-      <li v-for="document in sortedDocuments" :key="document.id">
+      <li v-for="document in sortedDocuments" :key="document.file.id">
         <DocumentFile
-          :document="document"
+          :file="document.file"
           :can-delete="document.author.role === currentUserRole"
           @download="(url, fileName) => $emit('download', url, fileName)"
           @delete="(id) => $emit('delete', id)"
@@ -63,17 +68,23 @@ const props = defineProps<{
   loading: boolean
   canUpload: boolean
   uploading: boolean
+  // Fichiers du dernier envoi qui n'ont pas pu être envoyés.
+  uploadFailedFiles: string[]
 }>()
 
 defineEmits<{
-  upload: [file: File]
+  upload: [files: File[]]
   download: [url: string, fileName: string]
   delete: [id: string]
 }>()
 
+// Chaque fichier des envois, avec l'auteur et la date de son envoi.
 const sortedDocuments = computed(() =>
   props.items
     .filter((item) => item.type === 'document')
+    .flatMap((item) =>
+      (item.files ?? []).map((file) => ({ file, author: item.author, createdAt: item.createdAt })),
+    )
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()),
 )
 

@@ -84,7 +84,7 @@ class NotificationServiceTest {
         void givenReservationFeedItemAddedEvent_whenCreateFromEvent_thenSavesMappedNotificationAndSendsEmail() {
             ReservationFeedItemAddedEvent event = new ReservationFeedItemAddedEvent(
                     UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "client@example.com",
-                    "NOTE", "Studio Fleur", "PRO", "Anniversaire de Paul", LocalDate.now());
+                    "NOTE", 1, "Studio Fleur", "PRO", "Anniversaire de Paul", LocalDate.now());
             Notification mapped = Notification.builder().type(NotificationType.NEW_NOTE).build();
             when(notificationEventMapper.toNotification(event)).thenReturn(mapped);
 

@@ -9,7 +9,7 @@
   <div class="document-file">
     <span class="file-icon" :class="fileKind">{{ $t(`feed.document.type.${fileKind}`) }}</span>
     <span class="file-text">
-      <span class="file-name">{{ document.name }}</span>
+      <span class="file-name">{{ file.name }}</span>
       <!-- Contexte du fichier, au choix de l'appelant (ex. auteur et date dans la liste des documents). -->
       <slot name="meta" />
     </span>
@@ -41,10 +41,10 @@
 <script setup lang="ts">
 import { onClickOutside } from '@vueuse/core'
 import { DeleteBinIcon, DownloadIcon, More2Icon } from '@remixicons/vue/line'
-import type { FeedItem } from '~/data/reservation/domain/FeedItem'
+import type { FeedFile } from '~/data/reservation/domain/FeedFile'
 
 const props = defineProps<{
-  document: FeedItem
+  file: FeedFile
   // Document de l'utilisateur courant : lui seul peut le supprimer.
   canDelete: boolean
 }>()
@@ -55,8 +55,8 @@ const emit = defineEmits<{
 }>()
 
 const fileKind = computed(() => {
-  if (props.document.fileType === 'pdf') return 'pdf'
-  if (props.document.fileType === 'image') return 'image'
+  if (props.file.fileType === 'pdf') return 'pdf'
+  if (props.file.fileType === 'image') return 'image'
   return 'other'
 })
 
@@ -67,12 +67,12 @@ onClickOutside(menuRef, () => (menuOpen.value = false))
 
 function onDownload() {
   menuOpen.value = false
-  emit('download', props.document.url ?? '', props.document.name ?? '')
+  emit('download', props.file.url, props.file.name)
 }
 
 function onDelete() {
   menuOpen.value = false
-  emit('delete', props.document.id)
+  emit('delete', props.file.id)
 }
 </script>
 

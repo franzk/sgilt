@@ -34,7 +34,14 @@ public interface ReservationFeedApi {
     ResponseEntity<FeedItemDto> addDocument(
             @PathVariable UUID reservationId,
             @RequestParam("file") MultipartFile file,
-            @RequestParam(value = "isPersonal", defaultValue = "false") boolean isPersonal
+            @RequestParam(value = "isPersonal", defaultValue = "false") boolean isPersonal,
+            @RequestParam("uploadId") UUID uploadId
+    );
+
+    @PostMapping("/uploads/{uploadId}/complete")
+    ResponseEntity<Void> completeUpload(
+            @PathVariable UUID reservationId,
+            @PathVariable UUID uploadId
     );
 
     @GetMapping("/documents/{documentId}")
