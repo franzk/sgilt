@@ -3,9 +3,9 @@ Feature: Parcours envoi de plusieurs documents — un envoi, une carte, une noti
   Le client dépose plusieurs fichiers d'un coup sur une réservation : un POST par fichier, tous
   rattachés au même uploadId, puis la clôture de l'envoi. Vérifie que le feed les regroupe en un seul
   élément (pour le client comme pour le prestataire), que le prestataire ne reçoit qu'une seule
-  notification, que la suppression d'un fichier laisse l'envoi en place avec les autres, qu'un
-  tiers ne peut pas clore l'envoi, et que l'autre partie ne peut pas glisser un fichier dans l'envoi
-  (son uploadId est public : c'est l'id de la carte dans le feed).
+  notification (« 3 nouveaux documents »), que la suppression d'un fichier laisse l'envoi en place
+  avec les autres, qu'un tiers ne peut pas clore l'envoi, et que l'autre partie ne peut pas glisser
+  un fichier dans l'envoi (son uploadId est public : c'est l'id de la carte dans le feed).
 
   Background:
     * url baseUrl
@@ -113,7 +113,7 @@ Feature: Parcours envoi de plusieurs documents — un envoi, une carte, une noti
     When method POST
     Then status 204
 
-    * def documentNotifications = function(items){ return karate.filter(items, function(n){ return n.messageKey == 'notification.reservation.document_added' && n.href.indexOf(reservationId) >= 0 }) }
+    * def documentNotifications = function(items){ return karate.filter(items, function(n){ return n.messageKey == 'notification.reservation.documents_added' && n.href.indexOf(reservationId) >= 0 }) }
 
     Given url notificationsBaseUrl
     And path '/api/v1/notifications'
@@ -130,6 +130,8 @@ Feature: Parcours envoi de plusieurs documents — un envoi, une carte, une noti
     Then status 200
     And match documentNotifications(response.items) == '#[1]'
     And match documentNotifications(response.items)[0].type == 'new_document'
+    # Le nombre de documents de l'envoi, pour le libellé « 3 nouveaux documents »
+    And match documentNotifications(response.items)[0].params.documentCount == '3'
 
     Given url baseUrl
 

@@ -96,6 +96,7 @@ public interface ReservationEventMapper {
      *
      * @param reservation la réservation dont le feed vient de recevoir un élément
      * @param itemType    le type d'élément ajouté (note ou document)
+     * @param itemCount   le nombre d'éléments ajoutés (documents d'un envoi, 1 pour une note)
      * @return l'évènement à publier
      */
     @Mapping(source = "reservation.id",                target = "reservationId")
@@ -107,7 +108,7 @@ public interface ReservationEventMapper {
     @Mapping(target = "actorRole",                     constant = "PRO")
     @Mapping(source = "reservation.evenement.title",   target = "eventTitle")
     @Mapping(source = "reservation.date",              target = "eventDate")
-    ReservationFeedItemAddedEvent toFeedItemAddedEventForClient(Reservation reservation, FeedItemType itemType);
+    ReservationFeedItemAddedEvent toFeedItemAddedEventForClient(Reservation reservation, FeedItemType itemType, int itemCount);
 
     /**
      * Construit l'évènement générique d'ajout au feed à destination du prestataire, pour un ajout
@@ -116,6 +117,7 @@ public interface ReservationEventMapper {
      *
      * @param reservation la réservation dont le feed vient de recevoir un élément
      * @param itemType    le type d'élément ajouté (note ou document)
+     * @param itemCount   le nombre d'éléments ajoutés (documents d'un envoi, 1 pour une note)
      * @return l'évènement à publier
      */
     @Mapping(source = "reservation.id",                            target = "reservationId")
@@ -127,7 +129,7 @@ public interface ReservationEventMapper {
     @Mapping(target = "actorRole",                                 constant = "USER")
     @Mapping(source = "reservation.evenement.title",               target = "eventTitle")
     @Mapping(source = "reservation.date",                          target = "eventDate")
-    ReservationFeedItemAddedEvent toFeedItemAddedEventForPro(Reservation reservation, FeedItemType itemType);
+    ReservationFeedItemAddedEvent toFeedItemAddedEventForPro(Reservation reservation, FeedItemType itemType, int itemCount);
 
     /**
      * Construit l'évènement de rappel au client d'une réservation restée en attente de contact.

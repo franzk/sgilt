@@ -131,9 +131,9 @@ class ReservationEventPublisherTest {
         void givenNonPersonalItemFromPrestataireAndActiveClient_whenPublishFeedItemAdded_thenPublishesEventForClient() {
             Reservation reservation = reservationWithClient(UtilisateurStatus.ACTIVE);
             ReservationFeedItemAddedEvent event = mock(ReservationFeedItemAddedEvent.class);
-            when(reservationEventMapper.toFeedItemAddedEventForClient(reservation, FeedItemType.DOCUMENT)).thenReturn(event);
+            when(reservationEventMapper.toFeedItemAddedEventForClient(reservation, FeedItemType.DOCUMENT, 3)).thenReturn(event);
 
-            reservationEventPublisher.publishFeedItemAdded(reservation, FeedCaller.PRESTATAIRE, FeedItemType.DOCUMENT, false);
+            reservationEventPublisher.publishFeedItemAdded(reservation, FeedCaller.PRESTATAIRE, FeedItemType.DOCUMENT, false, 3);
 
             verify(applicationEventPublisher).publishEvent(event);
         }
@@ -142,7 +142,7 @@ class ReservationEventPublisherTest {
         void givenNonPersonalItemFromPrestataireAndInvitedClient_whenPublishFeedItemAdded_thenPublishesNothing() {
             Reservation reservation = reservationWithClient(UtilisateurStatus.INVITED);
 
-            reservationEventPublisher.publishFeedItemAdded(reservation, FeedCaller.PRESTATAIRE, FeedItemType.DOCUMENT, false);
+            reservationEventPublisher.publishFeedItemAdded(reservation, FeedCaller.PRESTATAIRE, FeedItemType.DOCUMENT, false, 3);
 
             verifyNoInteractions(reservationEventMapper, applicationEventPublisher);
         }
@@ -151,9 +151,9 @@ class ReservationEventPublisherTest {
         void givenNonPersonalItemFromClient_whenPublishFeedItemAdded_thenPublishesEventForPro() {
             Reservation reservation = reservationWithClient(UtilisateurStatus.ACTIVE);
             ReservationFeedItemAddedEvent event = mock(ReservationFeedItemAddedEvent.class);
-            when(reservationEventMapper.toFeedItemAddedEventForPro(reservation, FeedItemType.NOTE)).thenReturn(event);
+            when(reservationEventMapper.toFeedItemAddedEventForPro(reservation, FeedItemType.NOTE, 1)).thenReturn(event);
 
-            reservationEventPublisher.publishFeedItemAdded(reservation, FeedCaller.CLIENT, FeedItemType.NOTE, false);
+            reservationEventPublisher.publishFeedItemAdded(reservation, FeedCaller.CLIENT, FeedItemType.NOTE, false, 1);
 
             verify(applicationEventPublisher).publishEvent(event);
         }
@@ -162,7 +162,7 @@ class ReservationEventPublisherTest {
         void givenPersonalItem_whenPublishFeedItemAdded_thenPublishesNothing() {
             Reservation reservation = reservationWithClient(UtilisateurStatus.ACTIVE);
 
-            reservationEventPublisher.publishFeedItemAdded(reservation, FeedCaller.PRESTATAIRE, FeedItemType.NOTE, true);
+            reservationEventPublisher.publishFeedItemAdded(reservation, FeedCaller.PRESTATAIRE, FeedItemType.NOTE, true, 1);
 
             verifyNoInteractions(reservationEventMapper, applicationEventPublisher);
         }

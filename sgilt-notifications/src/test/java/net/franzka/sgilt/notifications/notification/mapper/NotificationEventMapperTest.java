@@ -125,7 +125,7 @@ class NotificationEventMapperTest {
             UUID recipientUserId = UUID.randomUUID();
             ReservationFeedItemAddedEvent event = new ReservationFeedItemAddedEvent(
                     reservationId, eventId, recipientUserId, "client@example.com",
-                    "NOTE", "Studio Fleur", "PRO", "Anniversaire de Paul", LocalDate.now());
+                    "NOTE", 1, "Studio Fleur", "PRO", "Anniversaire de Paul", LocalDate.now());
 
             Notification notification = mapper.toNotification(event);
 
@@ -146,7 +146,7 @@ class NotificationEventMapperTest {
             UUID recipientUserId = UUID.randomUUID();
             ReservationFeedItemAddedEvent event = new ReservationFeedItemAddedEvent(
                     reservationId, eventId, recipientUserId, "presta@example.com",
-                    "DOCUMENT", "Sophie Leroy", "USER", "Anniversaire de Paul", LocalDate.now());
+                    "DOCUMENT", 1, "Sophie Leroy", "USER", "Anniversaire de Paul", LocalDate.now());
 
             Notification notification = mapper.toNotification(event);
 
@@ -158,6 +158,33 @@ class NotificationEventMapperTest {
                     .containsEntry("eventTitle", "Anniversaire de Paul");
             assertThat(notification.getHref()).isEqualTo("/pro/reservations/" + reservationId);
             assertThat(notification.isRead()).isFalse();
+            assertThat(notification.getParams()).doesNotContainKey("documentCount");
+        }
+
+        @Test
+        void givenSeveralDocumentsAddedInOneUpload_whenToNotification_thenBuildsDocumentsNotificationWithCount() {
+            ReservationFeedItemAddedEvent event = new ReservationFeedItemAddedEvent(
+                    UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "presta@example.com",
+                    "DOCUMENT", 3, "Sophie Leroy", "USER", "Anniversaire de Paul", LocalDate.now());
+
+            Notification notification = mapper.toNotification(event);
+
+            assertThat(notification.getType()).isEqualTo(NotificationType.NEW_DOCUMENT);
+            assertThat(notification.getMessageKey()).isEqualTo("notification.reservation.documents_added");
+            assertThat(notification.getParams()).containsEntry("documentCount", "3")
+                    .containsEntry("actorName", "Sophie Leroy")
+                    .containsEntry("eventTitle", "Anniversaire de Paul");
+        }
+
+        @Test
+        void givenDocumentEventWithoutItemCount_whenToNotification_thenBuildsSingleDocumentNotification() {
+            ReservationFeedItemAddedEvent event = new ReservationFeedItemAddedEvent(
+                    UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "presta@example.com",
+                    "DOCUMENT", null, "Sophie Leroy", "USER", "Anniversaire de Paul", LocalDate.now());
+
+            Notification notification = mapper.toNotification(event);
+
+            assertThat(notification.getMessageKey()).isEqualTo("notification.reservation.document_added");
         }
     }
 

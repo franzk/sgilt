@@ -219,13 +219,14 @@ class ReservationEventMapperTest {
                     .build();
 
             ReservationFeedItemAddedEvent event =
-                    mapper.toFeedItemAddedEventForClient(reservation, FeedItemType.NOTE);
+                    mapper.toFeedItemAddedEventForClient(reservation, FeedItemType.NOTE, 1);
 
             assertThat(event.reservationId()).isEqualTo(reservationId);
             assertThat(event.eventId()).isEqualTo(eventId);
             assertThat(event.recipientUserId()).isEqualTo(clientId);
             assertThat(event.recipientEmail()).isEqualTo("client@example.com");
             assertThat(event.itemType()).isEqualTo(FeedItemType.NOTE);
+            assertThat(event.itemCount()).isEqualTo(1);
             assertThat(event.actorName()).isEqualTo("Studio Fleur");
             assertThat(event.actorRole()).isEqualTo(ActorRole.PRO);
             assertThat(event.eventTitle()).isEqualTo("Anniversaire de Paul");
@@ -268,13 +269,14 @@ class ReservationEventMapperTest {
                     .build();
 
             ReservationFeedItemAddedEvent event =
-                    mapper.toFeedItemAddedEventForPro(reservation, FeedItemType.DOCUMENT);
+                    mapper.toFeedItemAddedEventForPro(reservation, FeedItemType.DOCUMENT, 3);
 
             assertThat(event.reservationId()).isEqualTo(reservationId);
             assertThat(event.eventId()).isEqualTo(eventId);
             assertThat(event.recipientUserId()).isEqualTo(prestataireUserId);
             assertThat(event.recipientEmail()).isEqualTo("presta@example.com");
             assertThat(event.itemType()).isEqualTo(FeedItemType.DOCUMENT);
+            assertThat(event.itemCount()).isEqualTo(3);
             assertThat(event.actorName()).isEqualTo("Sophie Leroy");
             assertThat(event.actorRole()).isEqualTo(ActorRole.USER);
             assertThat(event.eventTitle()).isEqualTo("Anniversaire de Paul");

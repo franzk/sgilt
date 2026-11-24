@@ -86,7 +86,7 @@ public class ReservationFeedService {
         }
         FeedItemDto item = feedMapper.toFeedItem(feedRepository.save(builder.build()), false, reservationId);
 
-        reservationEventPublisher.publishFeedItemAdded(reservation, caller, FeedItemType.NOTE, isPersonal);
+        reservationEventPublisher.publishFeedItemAdded(reservation, caller, FeedItemType.NOTE, isPersonal, 1);
 
         return item;
     }
@@ -167,7 +167,7 @@ public class ReservationFeedService {
             return;
         }
         Reservation reservation = reservationService.getReservationById(reservationId);
-        reservationEventPublisher.publishFeedItemAdded(reservation, caller, FeedItemType.DOCUMENT, false);
+        reservationEventPublisher.publishFeedItemAdded(reservation, caller, FeedItemType.DOCUMENT, false, (int) count);
     }
 
     // Document de cette réservation, déposé par l'appelant (le client ou le prestataire de la réservation).

@@ -85,7 +85,7 @@ class DomainEventListenerTest {
         void givenReservationFeedItemAddedRoutingKey_whenOnMessage_thenDelegatesToNotificationService() {
             ReservationFeedItemAddedEvent event = new ReservationFeedItemAddedEvent(
                     UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "client@example.com",
-                    "NOTE", "Studio Fleur", "PRO", "Anniversaire de Paul", LocalDate.now());
+                    "NOTE", 1, "Studio Fleur", "PRO", "Anniversaire de Paul", LocalDate.now());
             Message message = mock(Message.class);
             when(messageConverter.fromMessage(eq(message), any())).thenReturn(event);
 

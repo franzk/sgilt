@@ -73,15 +73,17 @@ public class ReservationEventPublisher {
      * @param caller      le rôle de l'auteur (l'autre partie est notifiée)
      * @param itemType    le type d'élément ajouté
      * @param isPersonal  si l'élément est personnel
+     * @param itemCount   le nombre d'éléments ajoutés (documents d'un envoi, 1 pour une note)
      */
-    public void publishFeedItemAdded(Reservation reservation, FeedCaller caller, FeedItemType itemType, boolean isPersonal) {
+    public void publishFeedItemAdded(Reservation reservation, FeedCaller caller, FeedItemType itemType, boolean isPersonal,
+                                     int itemCount) {
         if (isPersonal) {
             return;
         }
         if (caller == FeedCaller.PRESTATAIRE) {
-            publishToClient(reservation, () -> reservationEventMapper.toFeedItemAddedEventForClient(reservation, itemType));
+            publishToClient(reservation, () -> reservationEventMapper.toFeedItemAddedEventForClient(reservation, itemType, itemCount));
         } else {
-            applicationEventPublisher.publishEvent(reservationEventMapper.toFeedItemAddedEventForPro(reservation, itemType));
+            applicationEventPublisher.publishEvent(reservationEventMapper.toFeedItemAddedEventForPro(reservation, itemType, itemCount));
         }
     }
 

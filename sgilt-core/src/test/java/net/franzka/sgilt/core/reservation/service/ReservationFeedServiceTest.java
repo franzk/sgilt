@@ -90,7 +90,7 @@ class ReservationFeedServiceTest {
             reservationFeedService.addNote(reservationId, FeedCaller.PRESTATAIRE, null,
                     new AddNoteRequest("Titre", "Contenu", false));
 
-            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.PRESTATAIRE, FeedItemType.NOTE, false);
+            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.PRESTATAIRE, FeedItemType.NOTE, false, 1);
         }
 
         @Test
@@ -104,7 +104,7 @@ class ReservationFeedServiceTest {
             reservationFeedService.addNote(reservationId, FeedCaller.CLIENT, client,
                     new AddNoteRequest("Titre", "Contenu", false));
 
-            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.CLIENT, FeedItemType.NOTE, false);
+            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.CLIENT, FeedItemType.NOTE, false, 1);
         }
 
         @Test
@@ -117,7 +117,7 @@ class ReservationFeedServiceTest {
             reservationFeedService.addNote(reservationId, FeedCaller.PRESTATAIRE, null,
                     new AddNoteRequest("Titre", "Contenu", true));
 
-            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.PRESTATAIRE, FeedItemType.NOTE, true);
+            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.PRESTATAIRE, FeedItemType.NOTE, true, 1);
         }
     }
 
@@ -229,7 +229,7 @@ class ReservationFeedServiceTest {
 
             reservationFeedService.completeUpload(reservationId, FeedCaller.CLIENT, uploadId);
 
-            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.CLIENT, FeedItemType.DOCUMENT, false);
+            verify(reservationEventPublisher).publishFeedItemAdded(reservation, FeedCaller.CLIENT, FeedItemType.DOCUMENT, false, 2);
         }
 
         @Test

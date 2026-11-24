@@ -1210,6 +1210,10 @@
         "title": "Nouveau document",
         "body": "{actorName} a déposé un document pour {eventTitle}."
       },
+      "documents_added": {
+        "title": "{documentCount} nouveaux documents",
+        "body": "{actorName} a déposé {documentCount} documents pour {eventTitle}."
+      },
       "contact_reminder": {
         "title": "Où en est votre demande auprès de {prestataireName} ?",
         "body": "Si vous avez pu échanger avec le prestataire, pensez à mettre à jour le statut de votre réservation pour {eventTitle}."
@@ -1393,7 +1397,7 @@
     "upload-error": {
       "too-large": "« {name} » dépasse la taille maximale autorisée (10 Mo).",
       "empty": "« {name} » est vide.",
-      "failed": "Le fichier {names} n'a pas pu être envoyé, réessayez. | Les fichiers {names} n'ont pas pu être envoyés, réessayez."
+      "failed": "Le document {names} n'a pas pu être envoyé, réessayez. | Les documents {names} n'ont pas pu être envoyés, réessayez."
     },
     "you": "Vous",
     "visibility": {

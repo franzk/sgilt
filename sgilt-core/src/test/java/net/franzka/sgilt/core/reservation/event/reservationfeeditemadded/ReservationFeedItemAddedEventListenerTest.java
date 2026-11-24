@@ -31,7 +31,7 @@ class ReservationFeedItemAddedEventListenerTest {
         void givenEvent_whenHandle_thenDelegatesToDomainEventPublisher() {
             ReservationFeedItemAddedEvent event = new ReservationFeedItemAddedEvent(
                     UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "client@example.com",
-                    FeedItemType.NOTE, "Studio Fleur", ActorRole.PRO,
+                    FeedItemType.NOTE, 1, "Studio Fleur", ActorRole.PRO,
                     "Anniversaire de Paul", LocalDate.now());
 
             listener.handle(event);

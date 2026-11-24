@@ -42,6 +42,9 @@ public enum MailType {
     /** Mail envoyé à l'autre partie quand un document (non personnel) est ajouté au feed. */
     RESERVATION_DOCUMENT_ADDED_EMAIL,
 
+    /** Mail envoyé à l'autre partie quand plusieurs documents (non personnels) sont ajoutés au feed en un envoi. */
+    RESERVATION_DOCUMENTS_ADDED_EMAIL,
+
     /** Mail envoyé au client quand sa réservation est restée en attente de contact depuis 7 jours. */
     RESERVATION_CONTACT_REMINDER_EMAIL,
 
