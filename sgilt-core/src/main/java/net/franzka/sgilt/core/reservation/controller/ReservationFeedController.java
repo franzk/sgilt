@@ -62,14 +62,26 @@ public class ReservationFeedController implements ReservationFeedApi {
     @Override
     @Valid
     @Transactional
-    public ResponseEntity<FeedItemDto> addDocument(UUID reservationId, MultipartFile file, boolean isPersonal) {
+    public ResponseEntity<FeedItemDto> addDocument(UUID reservationId, MultipartFile file, boolean isPersonal,
+                                                   UUID uploadId) {
         FeedCaller caller = caller();
         UUID userId = currentUserService.getId();
         Utilisateur utilisateur = caller == FeedCaller.CLIENT ? currentUserService.get() : null;
         log.info("POST /reservations/{}/feed/documents", reservationId);
         verifyOwnership(reservationId, userId, caller);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(reservationFeedService.addDocument(reservationId, caller, utilisateur, file, isPersonal));
+                .body(reservationFeedService.addDocument(reservationId, caller, utilisateur, file, isPersonal, uploadId));
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<Void> completeUpload(UUID reservationId, UUID uploadId) {
+        FeedCaller caller = caller();
+        UUID userId = currentUserService.getId();
+        log.info("POST /reservations/{}/feed/uploads/{}/complete", reservationId, uploadId);
+        verifyOwnership(reservationId, userId, caller);
+        reservationFeedService.completeUpload(reservationId, caller, uploadId);
+        return ResponseEntity.noContent().build();
     }
 
     @Override

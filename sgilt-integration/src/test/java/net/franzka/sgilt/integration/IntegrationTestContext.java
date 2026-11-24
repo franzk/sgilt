@@ -34,6 +34,7 @@ public abstract class IntegrationTestContext {
     private static final String REALM = "sgilt";
     private static final String SGILT_CORE_IMAGE = "sgilt-core:integration-test";
     private static final String SGILT_NOTIFICATIONS_IMAGE = "sgilt-notifications:integration-test";
+    private static final String SGILT_R2_MOCK_IMAGE = "sgilt-r2-mock:integration-test";
     protected static final String CONFIRMATION_SECRET = "integration-test-confirmation-secret";
     // secret du compte de service sgilt-admin déclaré dans keycloak/realm-test.json
     private static final String KC_ADMIN_CLIENT_SECRET = "dev-admin-secret";
@@ -44,6 +45,7 @@ public abstract class IntegrationTestContext {
     static final PostgreSQLContainer<?> postgres;
     static final RabbitMQContainer rabbitmq;
     static final KeycloakContainer keycloak;
+    static final GenericContainer<?> r2Mock;
     static final GenericContainer<?> sgiltCore;
     static final GenericContainer<?> sgiltNotifications;
     protected static final Fixtures fixtures;
@@ -79,6 +81,20 @@ public abstract class IntegrationTestContext {
 
         String keycloakExternalUrl = "http://host.docker.internal:" + keycloak.getMappedPort(8080);
 
+        // Stockage des fichiers (documents du feed d'une réservation) : le mock R2 S3-compatible du
+        // dev, joint par sgilt-core sur le réseau Docker (alias "r2").
+        buildImage(SGILT_R2_MOCK_IMAGE, "../sgilt-r2-mock");
+
+        r2Mock = new GenericContainer<>(SGILT_R2_MOCK_IMAGE)
+                .withLogConsumer(frame -> System.out.print("[sgilt-r2-mock] " + frame.getUtf8String()))
+                .withNetwork(network)
+                .withNetworkAliases("r2")
+                .withExposedPorts(5029)
+                .withEnv("PORT", "5029")
+                .waitingFor(Wait.forLogMessage(".*sgilt-r2-mock listening.*\\n", 1))
+                .withStartupTimeout(Duration.ofMinutes(1));
+        r2Mock.start();
+
         buildImage(SGILT_CORE_IMAGE, "../sgilt-core");
 
         sgiltCore = new GenericContainer<>(SGILT_CORE_IMAGE)
@@ -98,6 +114,7 @@ public abstract class IntegrationTestContext {
                 .withEnv("CONFIRMATION_TOKEN_SECRET", CONFIRMATION_SECRET)
                 .withEnv("OPENAI_API_KEY", "unused-in-integration-tests")
                 .withEnv("ADMIN_EMAIL", "admin@integration.test")
+                .withEnv("R2_ENDPOINT", "http://r2:5029")
                 // Wait.forHttp() sur un endpoint réel s'est révélé peu fiable ici : la toute première
                 // requête HTTP initialise le DispatcherServlet à la volée, et ce délai suffit parfois à
                 // faire échouer/reset la connexion de probe. La ligne de log de démarrage de Spring Boot

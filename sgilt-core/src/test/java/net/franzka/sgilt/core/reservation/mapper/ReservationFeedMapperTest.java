@@ -4,6 +4,7 @@ import net.franzka.sgilt.core.prestataire.domain.Prestataire;
 import net.franzka.sgilt.core.reservation.domain.Document;
 import net.franzka.sgilt.core.reservation.domain.Note;
 import net.franzka.sgilt.core.reservation.domain.ReservationFeed;
+import net.franzka.sgilt.core.reservation.dto.FeedFileDto;
 import net.franzka.sgilt.core.reservation.dto.FeedItemDto;
 import net.franzka.sgilt.core.utilisateur.domain.Utilisateur;
 import org.junit.jupiter.api.Nested;
@@ -86,7 +87,7 @@ class ReservationFeedMapperTest {
     class ToFeedItemDocument {
 
         @Test
-        void givenDocumentFromClient_whenToFeedItem_thenMapsDocumentFieldsAndUrl() {
+        void givenDocumentWithoutUploadId_whenToFeedItem_thenMapsSingleFileUploadWithDocumentId() {
             UUID documentId = UUID.randomUUID();
             LocalDateTime createdAt = LocalDateTime.of(2027, 1, 1, 10, 0);
             Document document = Document.builder()
@@ -101,11 +102,24 @@ class ReservationFeedMapperTest {
             assertThat(dto.authorId()).isEqualTo(client.getId().toString());
             assertThat(dto.authorRole()).isEqualTo("client");
             assertThat(dto.title()).isEqualTo("devis.pdf");
-            assertThat(dto.name()).isEqualTo("devis.pdf");
-            assertThat(dto.fileType()).isEqualTo("application/pdf");
-            assertThat(dto.url()).isEqualTo("/reservations/" + reservationId + "/feed/documents/" + documentId);
+            assertThat(dto.files()).containsExactly(new FeedFileDto(
+                    documentId, "devis.pdf", "application/pdf",
+                    "/reservations/" + reservationId + "/feed/documents/" + documentId));
             assertThat(dto.isPersonal()).isTrue();
             assertThat(dto.content()).isNull();
+        }
+
+        @Test
+        void givenDocumentWithUploadId_whenToFeedItem_thenUsesUploadIdAsItemId() {
+            UUID uploadId = UUID.randomUUID();
+            Document document = Document.builder()
+                    .id(UUID.randomUUID()).utilisateur(client).createdAt(LocalDateTime.now())
+                    .fileName("devis.pdf").filePath("path/devis.pdf").uploadId(uploadId).isPersonal(false).build();
+
+            FeedItemDto dto = mapper.toFeedItem(document, false, reservationId);
+
+            assertThat(dto.id()).isEqualTo(uploadId);
+            assertThat(dto.files()).extracting(FeedFileDto::id).containsExactly(document.getId());
         }
 
         @Test
@@ -161,6 +175,39 @@ class ReservationFeedMapperTest {
             assertThat(result).hasSize(2);
             assertThat(result.get(0).isMessageInitial()).isTrue();
             assertThat(result.get(1).isMessageInitial()).isFalse();
+        }
+
+        @Test
+        void givenDocumentsOfSameUpload_whenToFeedItems_thenGroupsThemInOneItemAtFirstDocumentPosition() {
+            UUID uploadId = UUID.randomUUID();
+            Note initial = Note.builder().id(UUID.randomUUID()).utilisateur(client).createdAt(LocalDateTime.now()).isPersonal(false).build();
+            Document devis = document(uploadId, "devis.pdf");
+            Note note = Note.builder().id(UUID.randomUUID()).utilisateur(client).createdAt(LocalDateTime.now()).isPersonal(false).build();
+            Document contrat = document(uploadId, "contrat.pdf");
+
+            List<FeedItemDto> result = mapper.toFeedItems(List.of(initial, devis, note, contrat), reservationId);
+
+            assertThat(result).extracting(FeedItemDto::id).containsExactly(initial.getId(), uploadId, note.getId());
+            assertThat(result.get(1).files()).extracting(FeedFileDto::name).containsExactly("devis.pdf", "contrat.pdf");
+        }
+
+        @Test
+        void givenDocumentsWithoutUploadId_whenToFeedItems_thenEachIsItsOwnItem() {
+            Note initial = Note.builder().id(UUID.randomUUID()).utilisateur(client).createdAt(LocalDateTime.now()).isPersonal(false).build();
+            Document devis = document(null, "devis.pdf");
+            Document contrat = document(null, "contrat.pdf");
+
+            List<FeedItemDto> result = mapper.toFeedItems(List.of(initial, devis, contrat), reservationId);
+
+            assertThat(result).extracting(FeedItemDto::id).containsExactly(initial.getId(), devis.getId(), contrat.getId());
+            assertThat(result.get(1).files()).hasSize(1);
+            assertThat(result.get(2).files()).hasSize(1);
+        }
+
+        private Document document(UUID uploadId, String fileName) {
+            return Document.builder()
+                    .id(UUID.randomUUID()).utilisateur(client).createdAt(LocalDateTime.now())
+                    .fileName(fileName).filePath("path/" + fileName).uploadId(uploadId).isPersonal(false).build();
         }
     }
 }

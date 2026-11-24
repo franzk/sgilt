@@ -8,6 +8,7 @@ import {
   getFeedApi,
   addNoteApi,
   uploadDocumentApi,
+  completeUploadApi,
   deleteDocumentApi,
 } from '../api/reservationFeedApi'
 import type { FeedFile } from '../domain/FeedFile'
@@ -15,20 +16,14 @@ import type { FeedItem } from '../domain/FeedItem'
 import type { FeedItemDto } from '../dto/FeedItemDto'
 
 function mapFiles(dto: FeedItemDto): FeedFile[] | null {
-  if (dto.files) {
-    return dto.files.map((file) => ({
+  return (
+    dto.files?.map((file) => ({
       id: file.id,
       name: file.name,
       fileType: file.fileType ?? null,
       url: file.url,
-    }))
-  }
-  // TODO brique back : le back actuel renvoie un document seul, à plat ; on en fait un envoi d'un
-  // fichier. À retirer quand le fil renverra `files`.
-  if (dto.type === 'document') {
-    return [{ id: dto.id, name: dto.name ?? '', fileType: dto.fileType ?? null, url: dto.url ?? '' }]
-  }
-  return null
+    })) ?? null
+  )
 }
 
 function mapItem(dto: FeedItemDto): FeedItem {
@@ -56,29 +51,38 @@ export async function fetchFeed(reservationId: string): Promise<FeedItem[]> {
   return items.map(mapItem)
 }
 
-// Envoi de plusieurs fichiers : un appel par fichier, l'un après l'autre. Un échec n'arrête pas les
-// suivants : les fichiers passés forment l'envoi (null si aucun), ceux qui ont échoué sont rendus par
-// leur nom.
-// TODO brique back : le back ne regroupe pas encore ; on assemble ici les réponses en un seul envoi.
-// À reprendre avec l'uploadId envoyé avec chaque fichier et l'appel de clôture ; l'id de l'envoi
-// (aujourd'hui celui de son premier fichier) deviendra l'uploadId.
+// Envoi de plusieurs fichiers : un appel par fichier, l'un après l'autre, tous rattachés au même
+// uploadId, puis la clôture de l'envoi (une seule notification à l'autre partie). Un échec n'arrête
+// pas les suivants : les fichiers passés forment l'envoi (null si aucun), ceux qui ont échoué sont
+// rendus par leur nom.
 export async function uploadDocuments(
   reservationId: string,
   files: File[],
   isPersonal: boolean,
 ): Promise<{ item: FeedItem | null; failedFiles: string[] }> {
+  const uploadId = crypto.randomUUID()
   const items: FeedItem[] = []
   const failedFiles: string[] = []
   for (const file of files) {
     try {
-      items.push(mapItem(await uploadDocumentApi(reservationId, file, isPersonal)))
+      items.push(mapItem(await uploadDocumentApi(reservationId, file, isPersonal, uploadId)))
     } catch (e) {
       console.error(e)
       failedFiles.push(file.name)
     }
   }
   const first = items[0]
-  const item = first ? { ...first, files: items.flatMap((i) => i.files ?? []) } : null
+  if (!first) return { item: null, failedFiles }
+
+  // Les fichiers sont enregistrés : un échec de la clôture ne coûte que la notification, rien à
+  // signaler à l'utilisateur.
+  try {
+    await completeUploadApi(reservationId, uploadId)
+  } catch (e) {
+    console.error(e)
+  }
+  // Chaque réponse est l'envoi avec son seul fichier : on les réunit.
+  const item = { ...first, files: items.flatMap((i) => i.files ?? []) }
   return { item, failedFiles }
 }
 

@@ -22,12 +22,6 @@ export interface FeedItemDto {
   // document : les fichiers de l'envoi
   files?: FeedFileDto[] | null
 
-  // TODO brique back : champs d'un document seul, renvoyés par le back actuel ; à retirer quand le
-  // fil renverra `files`.
-  name?: string | null
-  fileType?: string | null
-  url?: string | null
-
   // note système
   generatedKey?: string | null
 }

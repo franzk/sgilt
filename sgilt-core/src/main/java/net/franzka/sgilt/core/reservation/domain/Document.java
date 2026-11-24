@@ -9,6 +9,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.UUID;
+
 @Entity
 @DiscriminatorValue("DOCUMENT")
 @Data
@@ -25,4 +27,12 @@ public class Document extends ReservationFeed {
     private String filePath;
 
     private String mimeType;
+
+    /**
+     * Identifiant de l'envoi, généré par le front et commun aux documents déposés ensemble : ils
+     * forment une seule carte du feed et une seule notification. Null pour les documents antérieurs
+     * à l'envoi multiple (chacun reste un envoi d'un seul fichier).
+     */
+    @Column(name = "upload_id")
+    private UUID uploadId;
 }

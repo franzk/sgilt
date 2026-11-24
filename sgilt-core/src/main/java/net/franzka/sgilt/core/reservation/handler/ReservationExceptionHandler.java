@@ -4,6 +4,7 @@ import net.franzka.sgilt.core.reservation.exception.InvalidStateException;
 import net.franzka.sgilt.core.reservation.exception.ReservationFeedItemNotFoundException;
 import net.franzka.sgilt.core.reservation.exception.ReservationNotAllowedException;
 import net.franzka.sgilt.core.reservation.exception.ReservationNotFoundException;
+import net.franzka.sgilt.core.reservation.exception.UploadConflictException;
 import net.franzka.sgilt.core.storage.FileTooLargeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +44,15 @@ public class ReservationExceptionHandler {
      */
     @ExceptionHandler(InvalidStateException.class)
     public ResponseEntity<Void> handleInvalidState(InvalidStateException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
+
+    /**
+     * Envoi de documents déjà utilisé ailleurs (autre réservation, autre auteur, autre visibilité)
+     * → 409 Conflict.
+     */
+    @ExceptionHandler(UploadConflictException.class)
+    public ResponseEntity<Void> handleUploadConflict(UploadConflictException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 
