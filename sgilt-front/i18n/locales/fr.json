@@ -9,8 +9,7 @@
   },
   "common": {
     "date-picker": {
-      "booked": "Réservé par Sgilt",
-      "indisponible": "Indisponible"
+      "booked": "Réservé par Sgilt"
     },
     "back": "‹ Retour",
     "back-arrow": "← Retour",
@@ -1358,11 +1357,14 @@
       }
     },
     "calendrier": {
-      "hint-mobile": "Touchez bloquer/libérer une date.",
-      "hint-desktop": "Cliquez pour bloquer/libérer une date.",
-      "list-empty": "Aucun événement ce mois-ci.",
-      "list-item-unavailable": "Indisponible",
-      "list-item-link": "Voir →"
+      "view-list": "Liste",
+      "view-month": "Mois",
+      "list-empty": "Aucune prestation à venir.",
+      "month-empty": "Aucune prestation ce mois-ci.",
+      "error": "Vos prestations n'ont pas pu être chargées. Réessayez dans un instant."
+    },
+    "ma-page": {
+      "edit": "Modifier ma page"
     },
     "reservation-detail": {
       "back": "‹ Retour",
@@ -1437,7 +1439,10 @@
     "notifications": "Notifications",
     "profile": "Profil",
     "my-events": "Mes événements",
-    "to-follow": "À suivre"
+    "to-follow": "À suivre",
+    "reservations": "Réservations",
+    "calendar": "Calendrier",
+    "my-page": "Ma page"
   },
   "texts": {
     "a-partir-de": "À partir de",

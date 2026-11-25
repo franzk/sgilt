@@ -1,3 +1,8 @@
+<!--
+  Hero de la fiche prestataire (médias, nom, baseline), en affichage public comme dans l'édition
+  (/pro/page-edition). Le bouton retour est toujours présent : sur la fiche publique comme pour
+  quitter l'édition, l'appelant décide où il mène.
+-->
 <script setup lang="ts">
 import SgiltHero from '~/components/basics/media/SgiltHero.vue'
 import EditableText from '~/components/prestataire/EditableText.vue'
@@ -16,8 +21,6 @@ const props = defineProps<{
 const { prestataire, saveField } = usePrestataire()
 const { categoryName } = useCategories()
 const isEdit = computed(() => props.displayMode === 'edit')
-/** Bouton back masqué sur les 3 onglets de page-edition (edit/preview/IA), visible uniquement sur la fiche publique. */
-const showBack = computed(() => props.displayMode === 'display')
 const heroboardOpen = ref(false)
 const hasMedia = computed(() => props.prestataire.medias.length > 0)
 
@@ -35,7 +38,7 @@ const shareText = computed(() => t('prestataire.share-text', { name: props.prest
     :medias="prestataire!.medias"
     :tag="categoryName(prestataire?.categoryKey)"
     :title="prestataire?.name ?? ''"
-    :show-back="showBack"
+    show-back
     :show-share="!isEdit && hasMedia"
     :share-text="shareText"
     @open-video="emit('openVideo', $event)"

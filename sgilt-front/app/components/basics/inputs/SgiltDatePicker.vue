@@ -1,3 +1,7 @@
+<!--
+  Sélecteur de date Sgilt (VueDatePicker), en champ ou en calendrier inline. Les `bookedDates`
+  (dates réservées via Sgilt) sont marquées d'un point, avec une légende sous le calendrier.
+-->
 <template>
   <ClientOnly>
     <VueDatePicker
@@ -24,16 +28,8 @@
     >
       <template v-if="showExtraInfo" #action-extra>
         <p class="extra-info">
-          <span v-if="props.bookedDates?.length" class="dot booked" />
-          <span v-if="props.bookedDates?.length && !props.indisponibleDates?.length">{{
-            $t('common.date-picker.indisponible')
-          }}</span>
-          <span v-else-if="props.bookedDates?.length">{{ $t('common.date-picker.booked') }}</span>
-
-          <span v-if="props.indisponibleDates?.length" class="dot indisponible" />
-          <span v-if="props.indisponibleDates?.length">{{
-            $t('common.date-picker.indisponible')
-          }}</span>
+          <span class="dot booked" />
+          <span>{{ $t('common.date-picker.booked') }}</span>
         </p>
       </template>
     </VueDatePicker>
@@ -79,7 +75,6 @@ const format = { input: (date: Date) => dayjs(date).locale('fr').format('dddd DD
 
 const props = defineProps<{
   bookedDates?: Date[]
-  indisponibleDates?: Date[]
   disabled?: boolean
   placeholder?: string
   inline?: boolean
@@ -90,15 +85,12 @@ const props = defineProps<{
 
 const getDayClass = (date: Date) => {
   if (dateArrayContains(props.bookedDates || [], date)) return 'date booked'
-  if (dateArrayContains(props.indisponibleDates || [], date)) return 'date indisponible'
   return ''
 }
 
 const uiConfig = computed(() => ({ dayClass: getDayClass }))
 
-const showExtraInfo = computed(
-  () => (props.bookedDates?.length || 0) > 0 || (props.indisponibleDates?.length || 0) > 0,
-)
+const showExtraInfo = computed(() => (props.bookedDates?.length || 0) > 0)
 
 const choiceState = computed(() => {
   if (date.value && dateArrayContains(props.bookedDates || [], date.value)) return false
@@ -318,11 +310,6 @@ $menu-background: $surface-white;
   &.booked::after {
     background: $state-booked;
   }
-
-  &.indisponible::after {
-    background: $text-secondary;
-    opacity: 0.45;
-  }
 }
 
 // ─── Légende (action-extra) ───────────────────────────────────────────────────
@@ -337,10 +324,6 @@ $menu-background: $surface-white;
 
   &.booked {
     background: $state-booked;
-  }
-  &.indisponible {
-    background: $text-secondary;
-    opacity: 0.45;
   }
 }
 

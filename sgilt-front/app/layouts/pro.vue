@@ -1,13 +1,18 @@
+<!--
+  Layout de l'espace prestataire (/pro) : header commun, contenu, et navigation basse mobile
+  (ProBottomNav). L'édition de la fiche (/pro/page-edition) est en plein écran, hors de ce layout.
+-->
 <template>
   <AppHeader />
   <main class="pro-content">
     <slot />
   </main>
-  <!--ProFooter /-->
+  <ProBottomNav />
 </template>
 
 <script setup lang="ts">
 import AppHeader from '~/components/AppHeader.vue'
+import ProBottomNav from '~/components/pro/ProBottomNav.vue'
 </script>
 
 <style lang="scss">

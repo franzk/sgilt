@@ -1,3 +1,7 @@
+<!--
+  Édition plein écran de la fiche du prestataire (/pro/page-edition, onglets edition / preview / ia),
+  ouverte depuis le récap /pro/ma-page ; le bouton retour du hero y ramène.
+-->
 <template>
   <!-- Fiche entièrement vide : fork plein écran, aucun onglet n'a de sens tant qu'elle n'existe pas. -->
   <FicheOnboardingFork v-if="prestataire && showFork" @choose-manual="manualChosen = true" />
@@ -7,7 +11,7 @@
     :prestataire="prestataire"
     :display-mode="displayMode"
     @select="() => {}"
-    @back="router.back()"
+    @back="navigateTo('/pro/ma-page', { replace: true })"
   >
     <template #tabs>
       <PageEditionTabs />
@@ -32,7 +36,6 @@ import type { DisplayMode } from '~/types/prestataire'
 
 definePageMeta({ layout: 'default' })
 
-const router = useRouter()
 const route = useRoute()
 const currentUser = useCurrentUser()
 const { prestataire, loadMaFiche } = usePrestataire()
