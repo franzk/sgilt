@@ -2,7 +2,7 @@
   Onglet « Calendrier » de l'espace prestataire (/pro/calendrier) : les réservations confirmées,
   c'est-à-dire ce à quoi le prestataire doit se préparer. Deux vues, portées par l'URL :
   liste à plat des prestations à venir (par défaut) ou calendrier mensuel (?vue=mois), où les
-  dates réservées sont pointées et la liste se limite au mois affiché.
+  dates réservées sont sélectionnées et la liste se limite au mois affiché.
 -->
 <template>
   <div class="calendrier-page">
@@ -31,6 +31,7 @@
       <SgiltDatePicker
         inline
         fullwidth
+        display-only
         :booked-dates="bookedDates"
         @update-month-year="visibleMonth = $event"
       />

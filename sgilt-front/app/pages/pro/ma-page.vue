@@ -34,8 +34,7 @@ const currentUser = useCurrentUser()
 const { prestataire, loadMaFiche } = usePrestataire()
 const { toUrl } = useImageUrl()
 
-// Image du récap = première image de la liste des médias (les vidéos sont ignorées : pas d'image
-// de fond possible). Le hero de la fiche (SgiltHero) affiche, lui, le premier média tel quel.
+// Première image des médias (une vidéo ne peut pas servir d'image de fond).
 const coverStyle = computed(() => {
   const firstImage = prestataire.value?.medias.find((m) => m.type === 'IMAGE')
   return firstImage ? { backgroundImage: `url(${toUrl(firstImage.ref)})` } : {}

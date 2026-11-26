@@ -1,11 +1,13 @@
 <!--
-  Sélecteur de date Sgilt (VueDatePicker), en champ ou en calendrier inline. Les `bookedDates`
-  (dates réservées via Sgilt) sont marquées d'un point, avec une légende sous le calendrier.
+  Sélecteur de date Sgilt (VueDatePicker), en champ ou en calendrier inline. En mode consultation
+  (`displayOnly`), les `bookedDates` sont affichées comme une sélection multiple non modifiable,
+  avec une légende sous le calendrier.
 -->
 <template>
   <ClientOnly>
     <VueDatePicker
-      v-model="date"
+      :model-value="displayOnly ? bookedDates : date"
+      :multi-dates="displayOnly"
       auto-apply
       :disabled="disabled"
       :time-config="{ enableTimePicker: false }"
@@ -15,13 +17,14 @@
       :class="{
         'sgilt-date-picker--error': props.error,
         'sgilt-date-picker--fullwidth': props.fullwidth,
+        'sgilt-date-picker--display-only': props.displayOnly,
       }"
-      :ui="uiConfig"
-      :state="choiceState"
       :placeholder="placeholder"
-      :min-date="new Date()"
+      :min-date="displayOnly ? undefined : new Date()"
+      :disabled-dates="displayOnly ? disableEveryDay : undefined"
       :teleport="inline ? false : 'body'"
       :inline="inline"
+      @update:model-value="onModelUpdate"
       @open="onOpen"
       @closed="onClosed"
       @update-month-year="emit('update-month-year', $event)"
@@ -63,7 +66,6 @@ import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
 import { fr } from 'date-fns/locale/fr'
 import { computed, nextTick } from 'vue'
-import { dateArrayContains } from '@/utils/ArrayUtils'
 
 const date = defineModel<Date>()
 
@@ -74,6 +76,7 @@ const emit = defineEmits<{
 const format = { input: (date: Date) => dayjs(date).locale('fr').format('dddd DD MMM YYYY') }
 
 const props = defineProps<{
+  /** Dates réservées via Sgilt — prises en compte uniquement en mode consultation (`displayOnly`). */
   bookedDates?: Date[]
   disabled?: boolean
   placeholder?: string
@@ -81,21 +84,21 @@ const props = defineProps<{
   error?: boolean
   /** Calendrier inline qui remplit son conteneur au lieu de garder sa taille intrinsèque fixe. */
   fullwidth?: boolean
+  /** Calendrier de consultation : les jours ne sont pas sélectionnables, seule la navigation entre mois reste active. */
+  displayOnly?: boolean
 }>()
 
-const getDayClass = (date: Date) => {
-  if (dateArrayContains(props.bookedDates || [], date)) return 'date booked'
-  return ''
+// En consultation, tous les jours sont désactivés : la lib n'en laisse sélectionner aucun (clic ou
+// clavier), tout en affichant la sélection et en gardant la navigation entre mois.
+const disableEveryDay = (): boolean => true
+
+// En consultation, la sélection n'est pas modifiable : rien n'est remonté.
+function onModelUpdate(value: unknown): void {
+  if (props.displayOnly) return
+  date.value = value instanceof Date ? value : undefined
 }
 
-const uiConfig = computed(() => ({ dayClass: getDayClass }))
-
-const showExtraInfo = computed(() => (props.bookedDates?.length || 0) > 0)
-
-const choiceState = computed(() => {
-  if (date.value && dateArrayContains(props.bookedDates || [], date.value)) return false
-  return undefined
-})
+const showExtraInfo = computed(() => props.displayOnly)
 
 // ── Focus trap pour navigation clavier ───────────────────────────────────────
 
@@ -208,6 +211,23 @@ $menu-background: $surface-white;
   }
 }
 
+// ─── Mode consultation ───────────────────────────────────────────────────────
+// Tous les jours y sont désactivés (disableEveryDay) : on retire l'apparence « désactivé » de la
+// lib (texte grisé, curseur interdit) pour garder un calendrier normal à lire.
+.sgilt-date-picker--display-only {
+  .dp__cell_disabled {
+    cursor: default;
+
+    &:not(.dp__cell_offset) {
+      color: var(--dp-text-color);
+    }
+
+    &.dp__active_date {
+      color: var(--dp-primary-text-color);
+    }
+  }
+}
+
 .dp__theme_light {
   --dp-border-radius: #{$input-border-radius};
   --dp-border-color: #{$input-border-color};
@@ -290,28 +310,6 @@ $menu-background: $surface-white;
   font-weight: bold;
 }
 
-// ─── Points colorés sur les jours ────────────────────────────────────────────
-
-.date {
-  position: relative;
-
-  // Point centré sous le chiffre du jour
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(calc(-50% + 1px));
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-  }
-
-  &.booked::after {
-    background: $state-booked;
-  }
-}
-
 // ─── Légende (action-extra) ───────────────────────────────────────────────────
 
 .dot {
@@ -323,7 +321,7 @@ $menu-background: $surface-white;
   vertical-align: middle;
 
   &.booked {
-    background: $state-booked;
+    background: var(--dp-primary-color);
   }
 }
 

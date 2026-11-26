@@ -1,7 +1,6 @@
 <!--
   Hero de la fiche prestataire (médias, nom, baseline), en affichage public comme dans l'édition
-  (/pro/page-edition). Le bouton retour est toujours présent : sur la fiche publique comme pour
-  quitter l'édition, l'appelant décide où il mène.
+  (/pro/page-edition). Le bouton retour émet `back` : l'appelant décide où il mène.
 -->
 <script setup lang="ts">
 import SgiltHero from '~/components/basics/media/SgiltHero.vue'

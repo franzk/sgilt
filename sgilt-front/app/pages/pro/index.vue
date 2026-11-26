@@ -1,6 +1,5 @@
 <!--
-  Accueil de l'espace prestataire. Vide pour l'instant : les blocs (À contacter, À conclure,
-  Vos prochaines prestations, Activité récente) arrivent dans les briques suivantes.
+  Accueil de l'espace prestataire (/pro).
 -->
 <template>
   <div class="pro-home" />

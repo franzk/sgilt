@@ -1,7 +1,7 @@
 <!--
-  Navigation basse de l'espace prestataire (mobile uniquement) : quatre onglets, « Accueil » (/pro),
+  Navigation basse de l'espace prestataire (mobile uniquement) : « Accueil » (/pro),
   « Réservations » (/pro/reservations), « Calendrier » (/pro/calendrier) et « Ma page »
-  (/pro/ma-page, récap qui ouvre l'édition plein écran). Notifications et profil passent par la cloche et l'avatar d'AppHeader.
+  (/pro/ma-page). Notifications et profil passent par la cloche et l'avatar d'AppHeader.
 -->
 <template>
   <nav class="bottom-nav">
