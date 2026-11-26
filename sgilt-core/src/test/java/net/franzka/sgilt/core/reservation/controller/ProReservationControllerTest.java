@@ -58,6 +58,36 @@ class ProReservationControllerTest {
         }
     }
 
+    @Nested
+    class GetToHandle {
+
+        @Test
+        void givenCurrentUser_whenGetToHandle_thenReturnsReservationsToHandle() {
+            when(currentUserService.getId()).thenReturn(userId);
+            List<ProReservationSummaryDto> summaries = List.of(mock(ProReservationSummaryDto.class));
+            when(reservationService.getProReservationsToHandle(userId)).thenReturn(summaries);
+
+            ResponseEntity<List<ProReservationSummaryDto>> response = controller.getToHandle();
+
+            assertThat(response.getBody()).isEqualTo(summaries);
+        }
+    }
+
+    @Nested
+    class GetConfirmed {
+
+        @Test
+        void givenCurrentUser_whenGetConfirmed_thenReturnsConfirmedReservations() {
+            when(currentUserService.getId()).thenReturn(userId);
+            List<ProReservationSummaryDto> summaries = List.of(mock(ProReservationSummaryDto.class));
+            when(reservationService.getProConfirmedReservations(userId)).thenReturn(summaries);
+
+            ResponseEntity<List<ProReservationSummaryDto>> response = controller.getConfirmed();
+
+            assertThat(response.getBody()).isEqualTo(summaries);
+        }
+    }
+
     // -------------------------------------------------------------------------
     // getCounts
     // -------------------------------------------------------------------------

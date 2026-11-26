@@ -525,6 +525,40 @@ class ReservationServiceTest {
     }
 
     @Nested
+    class GetProReservationsToHandle {
+
+        @Test
+        void givenPrestataireUtilisateur_whenGetProReservationsToHandle_thenReturnsNewAndInDiscussion() {
+            UUID userId = UUID.randomUUID();
+            Reservation reservation = reservationWith(ReservationStatus.NEW);
+            ProReservationSummaryDto dto = mock(ProReservationSummaryDto.class);
+            when(reservationRepository.findByPrestataireUtilisateurIdAndStatusInOrderByStatus(
+                    userId, List.of(ReservationStatus.NEW, ReservationStatus.IN_DISCUSSION)))
+                    .thenReturn(List.of(reservation));
+            when(reservationMapper.toProReservationSummaryDto(reservation)).thenReturn(dto);
+
+            assertThat(reservationService.getProReservationsToHandle(userId)).containsExactly(dto);
+        }
+    }
+
+    @Nested
+    class GetProConfirmedReservations {
+
+        @Test
+        void givenPrestataireUtilisateur_whenGetProConfirmedReservations_thenReturnsConfirmed() {
+            UUID userId = UUID.randomUUID();
+            Reservation reservation = reservationWith(ReservationStatus.CONFIRMED);
+            ProReservationSummaryDto dto = mock(ProReservationSummaryDto.class);
+            when(reservationRepository.findByPrestataireUtilisateurIdAndStatusInOrderByStatus(
+                    userId, List.of(ReservationStatus.CONFIRMED)))
+                    .thenReturn(List.of(reservation));
+            when(reservationMapper.toProReservationSummaryDto(reservation)).thenReturn(dto);
+
+            assertThat(reservationService.getProConfirmedReservations(userId)).containsExactly(dto);
+        }
+    }
+
+    @Nested
     class GetProBoardCounts {
 
         @Test

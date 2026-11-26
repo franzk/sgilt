@@ -37,6 +37,22 @@ public class ProReservationController implements ProReservationApi {
 
     @Override
     @Transactional(readOnly = true)
+    public ResponseEntity<List<ProReservationSummaryDto>> getToHandle() {
+        UUID userId = currentUserService.getId();
+        log.info("GET /pro/reservations/to-handle");
+        return ResponseEntity.ok(reservationService.getProReservationsToHandle(userId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<List<ProReservationSummaryDto>> getConfirmed() {
+        UUID userId = currentUserService.getId();
+        log.info("GET /pro/reservations/confirmed");
+        return ResponseEntity.ok(reservationService.getProConfirmedReservations(userId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public ResponseEntity<ProBoardCountsDto> getCounts() {
         UUID userId = currentUserService.getId();
         log.info("GET /pro/reservations/counts");

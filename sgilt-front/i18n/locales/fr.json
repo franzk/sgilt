@@ -1043,7 +1043,6 @@
   },
   "reservation": {
     "statut": {
-      "toutes": "Toutes",
       "nouvelle": "Nouvelle demande",
       "en_discussion": "En discussion",
       "confirmee": "Confirmée",
@@ -1331,8 +1330,15 @@
       "empty-title": "Les premières demandes arrivent bientôt ✨",
       "empty-text": "Profitez-en pour {link} et mettre toutes les chances de votre côté.",
       "empty-link": "enrichir votre page Sgilt",
+      "error": "Vos réservations n'ont pas pu être chargées. Réessayez dans un instant.",
       "filters": {
-        "toutes": "Toutes"
+        "toutes": "Toutes",
+        "a-contacter": "À contacter",
+        "a-conclure": "À conclure"
+      },
+      "filters-empty": {
+        "a-contacter": "Aucun client à contacter pour le moment.",
+        "a-conclure": "Aucune réservation à conclure pour le moment."
       }
     },
     "board": {

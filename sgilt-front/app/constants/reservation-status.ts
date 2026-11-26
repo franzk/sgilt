@@ -1,3 +1,7 @@
+/**
+ * Constantes des statuts de réservation : liste des statuts, filtres de l'espace prestataire et
+ * couleurs par statut (côté prestataire et côté client).
+ */
 import type { ReservationStatus } from '~/types/event'
 
 // ── Statuts valides ───────────────────────────────────────────────────────────
@@ -13,28 +17,19 @@ export const RESERVATION_STATUTS = [
 
 export type ReservationStatut = (typeof RESERVATION_STATUTS)[number]
 
-// ── Listes statiques ─────────────────────────────────────────────────────────
+// ── Filtres de l'espace prestataire ───────────────────────────────────────────
+// Ce que le prestataire a à faire, plutôt que le statut brut : « à contacter » (nouvelle demande),
+// « à conclure » (en discussion), ou toutes ses réservations. L'id est la valeur de ?filtre=, le
+// premier est le filtre par défaut.
 
-export const ALL_RESERVATION_STATUTS: ReservationStatut[] = [
-  'nouvelle',
-  'en_discussion',
-  'confirmee',
-  'refusee',
-  'annulee',
-  'realisee',
-]
+export type ProReservationFilter = 'a-contacter' | 'a-conclure' | 'toutes'
 
-export const DEFAULT_ACTIVE_PILLS: ReservationStatut[] = ['nouvelle', 'en_discussion', 'confirmee']
-
-export const RESERVATION_STATUS_PILLS: { id: ReservationStatut | 'toutes' }[] = [
-  { id: 'toutes' },
-  { id: 'nouvelle' },
-  { id: 'en_discussion' },
-  { id: 'confirmee' },
-  { id: 'refusee' },
-  { id: 'annulee' },
-  { id: 'realisee' },
-]
+export const PRO_RESERVATION_FILTERS: { id: ProReservationFilter; statut: ReservationStatut | null }[] =
+  [
+    { id: 'a-contacter', statut: 'nouvelle' },
+    { id: 'a-conclure', statut: 'en_discussion' },
+    { id: 'toutes', statut: null },
+  ]
 
 // ── Config — source de vérité couleurs ───────────────────────────────────────
 

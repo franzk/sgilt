@@ -21,6 +21,12 @@ public interface ProReservationApi {
     @GetMapping
     ResponseEntity<List<ProReservationSummaryDto>> getAll();
 
+    @GetMapping("/to-handle")
+    ResponseEntity<List<ProReservationSummaryDto>> getToHandle();
+
+    @GetMapping("/confirmed")
+    ResponseEntity<List<ProReservationSummaryDto>> getConfirmed();
+
     @GetMapping("/counts")
     ResponseEntity<ProBoardCountsDto> getCounts();
 

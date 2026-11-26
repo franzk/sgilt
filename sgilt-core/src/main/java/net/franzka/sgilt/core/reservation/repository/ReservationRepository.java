@@ -5,6 +5,7 @@ import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,6 +56,16 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
      * @return la liste des réservations
      */
     List<Reservation> findByPrestataireUtilisateurIdOrderByStatus(UUID utilisateurId);
+
+    /**
+     * Retourne les réservations du prestataire lié à l'utilisateur donné, limitées aux statuts donnés.
+     *
+     * @param utilisateurId l'identifiant de l'utilisateur lié au prestataire
+     * @param statuses      les statuts retenus
+     * @return la liste des réservations
+     */
+    List<Reservation> findByPrestataireUtilisateurIdAndStatusInOrderByStatus(
+            UUID utilisateurId, Collection<ReservationStatus> statuses);
 
     /**
      * Retourne le compte de réservations par statut pour un prestataire.

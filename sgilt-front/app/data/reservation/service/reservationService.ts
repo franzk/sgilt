@@ -1,3 +1,7 @@
+/**
+ * Couche service — réservations côté client et côté prestataire : appels API et mapping vers le
+ * domaine.
+ */
 import {
   getReservationMetaApi,
   cancelReservationApi,
@@ -7,6 +11,8 @@ import {
 } from '../api/clientReservationApi'
 import {
   getProReservationsApi,
+  getProReservationsToHandleApi,
+  getProConfirmedReservationsApi,
   getProBoardCountsApi,
   getProReservationDetailApi,
   refuseReservationApi,
@@ -38,6 +44,15 @@ export async function cancelReservation(
 
 export async function fetchProReservations(): Promise<ProReservationSummary[]> {
   return (await getProReservationsApi()).map(mapProReservationSummary)
+}
+
+/** Réservations à traiter : nouvelles demandes (à contacter) et en discussion (à conclure). */
+export async function fetchProReservationsToHandle(): Promise<ProReservationSummary[]> {
+  return (await getProReservationsToHandleApi()).map(mapProReservationSummary)
+}
+
+export async function fetchProConfirmedReservations(): Promise<ProReservationSummary[]> {
+  return (await getProConfirmedReservationsApi()).map(mapProReservationSummary)
 }
 
 export async function fetchProBoardCounts(): Promise<ProBoardCounts> {

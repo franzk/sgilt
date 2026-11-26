@@ -271,7 +271,35 @@ public class ReservationService {
      * @return la liste des résumés de réservations pro
      */
     public List<ProReservationSummaryDto> getProReservations(UUID utilisateurId) {
-        return reservationRepository.findByPrestataireUtilisateurIdOrderByStatus(utilisateurId).stream()
+        return toProSummaries(reservationRepository.findByPrestataireUtilisateurIdOrderByStatus(utilisateurId));
+    }
+
+    /**
+     * Retourne les réservations que le prestataire a à traiter : nouvelles demandes (à contacter)
+     * et réservations en discussion (à conclure).
+     *
+     * @param utilisateurId l'identifiant de l'utilisateur lié au prestataire
+     * @return la liste des résumés de réservations pro à traiter
+     */
+    public List<ProReservationSummaryDto> getProReservationsToHandle(UUID utilisateurId) {
+        return toProSummaries(reservationRepository.findByPrestataireUtilisateurIdAndStatusInOrderByStatus(
+                utilisateurId, List.of(ReservationStatus.NEW, ReservationStatus.IN_DISCUSSION)));
+    }
+
+    /**
+     * Retourne les réservations confirmées du prestataire.
+     *
+     * @param utilisateurId l'identifiant de l'utilisateur lié au prestataire
+     * @return la liste des résumés de réservations pro confirmées
+     */
+    public List<ProReservationSummaryDto> getProConfirmedReservations(UUID utilisateurId) {
+        return toProSummaries(reservationRepository.findByPrestataireUtilisateurIdAndStatusInOrderByStatus(
+                utilisateurId, List.of(ReservationStatus.CONFIRMED)));
+    }
+
+    // Mappe des réservations vers leurs résumés côté prestataire.
+    private List<ProReservationSummaryDto> toProSummaries(List<Reservation> reservations) {
+        return reservations.stream()
                 .map(reservationMapper::toProReservationSummaryDto)
                 .toList();
     }

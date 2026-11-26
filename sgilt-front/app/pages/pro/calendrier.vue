@@ -62,12 +62,13 @@ import { Menu2Icon, CalendarIcon } from '@remixicons/vue/line'
 import SgiltDatePicker from '~/components/basics/inputs/SgiltDatePicker.vue'
 import ProBookingCard from '~/components/pro/ProBookingCard.vue'
 import { useProReservations } from '~/data/reservation/useProReservations'
+import { fetchProConfirmedReservations } from '~/data/reservation/service/reservationService'
 import type { ProReservationSummary } from '~/data/reservation/domain/ProReservationSummary'
 
 definePageMeta({ layout: 'pro' })
 
 const route = useRoute()
-const { reservations, loading, error } = useProReservations()
+const { reservations, loading, error } = useProReservations(fetchProConfirmedReservations)
 
 // ── Vue (URL) ──────────────────────────────────────────────────────────────────
 const isMonthView = computed<boolean>(() => route.query.vue === 'mois')
@@ -78,9 +79,7 @@ function setMonthView(month: boolean): void {
 
 // ── Données ────────────────────────────────────────────────────────────────────
 const confirmed = computed<ProReservationSummary[]>(() =>
-  reservations.value
-    .filter((r) => r.statut === 'confirmee')
-    .sort((a, b) => a.date.getTime() - b.date.getTime()),
+  [...reservations.value].sort((a, b) => a.date.getTime() - b.date.getTime()),
 )
 
 const bookedDates = computed<Date[]>(() => confirmed.value.map((r) => r.date))
