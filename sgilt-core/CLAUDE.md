@@ -18,8 +18,6 @@
 - Les setters sont accessibles — on modifie les entités directement via les setters.
 
 ## Code
-- **Pas de code dupliqué** — toute logique réutilisable est extraite dans un service ou une classe utilitaire.
-- **Une méthode = une responsabilité** — si une méthode fait deux choses, elle doit être découpée.
 - Les interfaces de service sont **optionnelles** — on ne crée pas d'interface si il n'y a pas plusieurs implémentations prévues.
 - On utilise les **records Java** pour les DTOs.
 - On utilise **Lombok** pour les entités JPA.
@@ -49,10 +47,6 @@
     - `409` — conflit avec l'état existant (ex. email déjà utilisé par un compte)
     - `410` — ressource expirée
     - `500` — erreur serveur inattendue
-
-## Architecture
-- Structure **feature-first** : chaque domaine a ses propres packages `api`, `controller`, `dto`, `service`, `domain`, `repository`, `exception`, `mailer`.
-- Les services techniques partagés (JWT, mailer client) sont dans des packages racine dédiés (`jwt/`, `mailer/`).
 
 ## Services et repositories
 - Un service ne manipule **jamais** le repository d'une autre entité.
