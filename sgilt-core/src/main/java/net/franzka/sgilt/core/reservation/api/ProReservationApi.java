@@ -1,7 +1,6 @@
 package net.franzka.sgilt.core.reservation.api;
 
 import net.franzka.sgilt.core.reservation.dto.CancelReservationRequest;
-import net.franzka.sgilt.core.reservation.dto.ProBoardCountsDto;
 import net.franzka.sgilt.core.reservation.dto.ProReservationDetailDto;
 import net.franzka.sgilt.core.reservation.dto.ProReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.dto.RefuseReservationRequest;
@@ -26,9 +25,6 @@ public interface ProReservationApi {
 
     @GetMapping("/confirmed")
     ResponseEntity<List<ProReservationSummaryDto>> getConfirmed();
-
-    @GetMapping("/counts")
-    ResponseEntity<ProBoardCountsDto> getCounts();
 
     @GetMapping("/{reservationId}")
     ResponseEntity<ProReservationDetailDto> getDetail(@PathVariable UUID reservationId);

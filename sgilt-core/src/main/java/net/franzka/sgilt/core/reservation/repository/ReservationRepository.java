@@ -68,14 +68,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
             UUID utilisateurId, Collection<ReservationStatus> statuses);
 
     /**
-     * Retourne le compte de réservations par statut pour un prestataire.
-     * @param status le statut des réservations à compter
-     * @param prestataireUtilisateurId l'identifiant de l'utilisateur lié au prestataire
-     * @return le compte de réservations correspondant
-     */
-    int countByStatusAndPrestataireUtilisateurId(ReservationStatus status, UUID prestataireUtilisateurId);
-
-    /**
      * Retourne toutes les réservations d'un prestataire.
      *
      * @param prestataireId l'identifiant du prestataire

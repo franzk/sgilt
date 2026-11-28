@@ -1,7 +1,6 @@
 package net.franzka.sgilt.core.reservation.controller;
 
 import net.franzka.sgilt.core.reservation.dto.CancelReservationRequest;
-import net.franzka.sgilt.core.reservation.dto.ProBoardCountsDto;
 import net.franzka.sgilt.core.reservation.dto.ProReservationDetailDto;
 import net.franzka.sgilt.core.reservation.dto.ProReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.dto.RefuseReservationRequest;
@@ -85,25 +84,6 @@ class ProReservationControllerTest {
             ResponseEntity<List<ProReservationSummaryDto>> response = controller.getConfirmed();
 
             assertThat(response.getBody()).isEqualTo(summaries);
-        }
-    }
-
-    // -------------------------------------------------------------------------
-    // getCounts
-    // -------------------------------------------------------------------------
-
-    @Nested
-    class GetCounts {
-
-        @Test
-        void givenCurrentUser_whenGetCounts_thenReturnsBoardCounts() {
-            when(currentUserService.getId()).thenReturn(userId);
-            ProBoardCountsDto dto = new ProBoardCountsDto(1, 2, 3);
-            when(reservationService.getProBoardCounts(userId)).thenReturn(dto);
-
-            ResponseEntity<ProBoardCountsDto> response = controller.getCounts();
-
-            assertThat(response.getBody()).isEqualTo(dto);
         }
     }
 

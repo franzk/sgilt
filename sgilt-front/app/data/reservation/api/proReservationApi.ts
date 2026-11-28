@@ -2,7 +2,6 @@
  * Appels HTTP de l'espace prestataire sur ses réservations (/pro/reservations).
  */
 import { apiFetch } from '~/composables/useApi'
-import type { ProBoardCountsDto } from '../dto/ProBoardCountsDto'
 import type { ProReservationDetailDto } from '../dto/ProReservationDetailDto'
 import type { ProReservationSummaryDto } from '../dto/ProReservationSummaryDto'
 
@@ -16,10 +15,6 @@ export async function getProReservationsToHandleApi(): Promise<ProReservationSum
 
 export async function getProConfirmedReservationsApi(): Promise<ProReservationSummaryDto[]> {
   return apiFetch<ProReservationSummaryDto[]>('/pro/reservations/confirmed')
-}
-
-export async function getProBoardCountsApi(): Promise<ProBoardCountsDto> {
-  return apiFetch<ProBoardCountsDto>('/pro/reservations/counts')
 }
 
 export async function getProReservationDetailApi(

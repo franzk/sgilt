@@ -27,6 +27,7 @@
 import { PencilIcon } from '@remixicons/vue/line'
 import Sk from '~/components/basics/Sk.vue'
 import SgiltButton from '~/components/basics/buttons/SgiltButton.vue'
+import { ficheCoverImageRef } from '~/data/prestataire/usePrestataire'
 
 definePageMeta({ layout: 'pro' })
 
@@ -34,10 +35,9 @@ const currentUser = useCurrentUser()
 const { prestataire, loadMaFiche } = usePrestataire()
 const { toUrl } = useImageUrl()
 
-// Première image des médias (une vidéo ne peut pas servir d'image de fond).
 const coverStyle = computed(() => {
-  const firstImage = prestataire.value?.medias.find((m) => m.type === 'IMAGE')
-  return firstImage ? { backgroundImage: `url(${toUrl(firstImage.ref)})` } : {}
+  const ref = prestataire.value ? ficheCoverImageRef(prestataire.value) : undefined
+  return ref ? { backgroundImage: `url(${toUrl(ref)})` } : {}
 })
 
 watch(

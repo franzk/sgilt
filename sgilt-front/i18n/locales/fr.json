@@ -1310,19 +1310,22 @@
     }
   },
   "pro": {
-    "greeting": {
-      "count": {
-        "nouvelle": {
-          "mobile": "À contacter",
-          "desktop": "demande à contacter | demandes à contacter"
+    "home": {
+      "see-all": "Tout voir",
+      "calendar-link": "Calendrier",
+      "error": "Vos réservations n'ont pas pu être chargées. Rechargez la page pour réessayer.",
+      "blocks": {
+        "a-contacter": {
+          "title": "À contacter",
+          "empty": "Aucun client à contacter pour le moment."
         },
-        "en-discussion": {
-          "mobile": "À confirmer",
-          "desktop": "demande à confirmer | demandes à confirmer"
+        "a-conclure": {
+          "title": "À conclure",
+          "empty": "Aucune réservation à conclure pour le moment."
         },
-        "confirmee": {
-          "mobile": "À venir",
-          "desktop": "prestation confirmée à venir | prestations confirmées à venir"
+        "prochaines": {
+          "title": "Vos prochaines prestations",
+          "empty": "Aucune prestation confirmée à venir."
         }
       }
     },
@@ -1330,7 +1333,7 @@
       "empty-title": "Les premières demandes arrivent bientôt ✨",
       "empty-text": "Profitez-en pour {link} et mettre toutes les chances de votre côté.",
       "empty-link": "enrichir votre page Sgilt",
-      "error": "Vos réservations n'ont pas pu être chargées. Réessayez dans un instant.",
+      "error": "Vos réservations n'ont pas pu être chargées. Rechargez la page pour réessayer.",
       "filters": {
         "toutes": "Toutes",
         "a-contacter": "À contacter",
@@ -1345,13 +1348,11 @@
       "greeting": {
         "title": "Bonjour !",
         "titleNamed": "Bonjour {name} !",
-        "counts": {
-          "nouvelle": "{count} demandes à contacter",
-          "en-discussion": "{count} demandes à confirmer",
-          "confirmee": "{count} prestations confirmées à venir",
-          "nouvelle-label": "À contacter",
-          "en-discussion-label": "À confirmer",
-          "confirmee-label": "À venir"
+        "subtitle": "Votre activité sur Sgilt",
+        "tiles": {
+          "a-contacter": "À contacter",
+          "a-conclure": "À conclure",
+          "ce-mois": "Ce mois-ci"
         }
       },
       "card": {
@@ -1367,7 +1368,7 @@
       "view-month": "Mois",
       "list-empty": "Aucune prestation à venir.",
       "month-empty": "Aucune prestation ce mois-ci.",
-      "error": "Vos prestations n'ont pas pu être chargées. Réessayez dans un instant."
+      "error": "Vos prestations n'ont pas pu être chargées. Rechargez la page pour réessayer."
     },
     "ma-page": {
       "edit": "Modifier ma page"

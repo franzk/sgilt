@@ -1,234 +1,190 @@
+<!--
+  En-tête de l'accueil prestataire (/pro) : « Bonjour {prénom} ! », sous-titre et trois tuiles de
+  compteurs, chacune menant à la liste correspondante — À contacter et À conclure vers l'onglet
+  Réservations filtré, Ce mois-ci (prestations confirmées du mois) vers la vue mensuelle du
+  Calendrier. L'image de la fiche, si fournie, s'affiche en filigrane en haut à droite.
+-->
 <template>
   <div class="pro-greeting">
-    <p class="title">
-      <template v-if="user.loading || !user.firstName">{{
-        $t('pro.board.greeting.title')
-      }}</template>
-      <template v-else>{{
-        $t('pro.board.greeting.titleNamed', { name: user.firstName })
-      }}</template>
-    </p>
-    <Sk v-if="loading" width="220px" height="0.8rem" radius="4px" style="margin-top: 6px" />
+    <div
+      v-if="backgroundImage"
+      class="watermark"
+      :style="{ backgroundImage: `url(${backgroundImage})` }"
+      aria-hidden="true"
+    />
 
-    <div v-if="!loading && hasCounts" class="counts">
-      <button
-        v-for="card in visibleCards"
-        :key="card.statut"
+    <div class="hello">
+      <p class="title">
+        <template v-if="user.loading || !user.firstName">{{ $t('pro.board.greeting.title') }}</template>
+        <template v-else>{{ $t('pro.board.greeting.titleNamed', { name: user.firstName }) }}</template>
+      </p>
+      <p class="subtitle">{{ $t('pro.board.greeting.subtitle') }}</p>
+    </div>
+
+    <div class="counts">
+      <NuxtLink
+        v-for="tile in tiles"
+        :key="tile.key"
+        :to="tile.to"
         class="count-card"
-        :style="{ '--card-color': card.color, '--card-bg': card.bg }"
-        type="button"
-        @click="$emit('filter', card.statut)"
+        :style="tile.color ? { '--card-color': tile.color } : {}"
       >
-        <component :is="card.icon" class="card-icon" />
-        <span class="number">{{ card.value }}</span>
-        <span class="label mobile-label">{{ card.labelMobile }}</span>
-        <span class="label desktop-label">{{ card.labelDesktop }}</span>
-      </button>
+        <component :is="tile.icon" class="card-icon" />
+        <Sk v-if="loading" width="1.5rem" height="1.6rem" radius="0.25rem" />
+        <span v-else class="number">{{ error ? '–' : tile.value }}</span>
+        <span class="label">{{ $t(`pro.board.greeting.tiles.${tile.key}`) }}</span>
+      </NuxtLink>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { ProBoardCounts } from '~/types/event'
-import type { ReservationStatut } from '~/constants/reservation-status'
-import { PhoneIcon, CheckboxCircleIcon, CalendarIcon } from '@remixicons/vue/line'
+import type { Component } from 'vue'
+import { PhoneIcon, ChatSmile2Icon, CalendarCheckIcon } from '@remixicons/vue/line'
 import Sk from '~/components/basics/Sk.vue'
+import { RESERVATION_STATUS_CONFIG } from '~/constants/reservation-status'
 
 const props = defineProps<{
   loading?: boolean
-  counts: ProBoardCounts
+  /** Chargement en échec : les nombres sont inconnus, un tiret les remplace. */
+  error?: boolean
+  /** URL de l'image affichée en filigrane derrière la salutation. */
+  backgroundImage?: string
+  counts: { aContacter: number; aConclure: number; ceMois: number }
 }>()
 
-defineEmits<{
-  filter: [statut: ReservationStatut]
-}>()
-
-const { t } = useI18n()
 const user = useCurrentUser()
 
-const hasCounts = computed(
-  () =>
-    props.counts.countNouvelle > 0 ||
-    props.counts.countEnDiscussion > 0 ||
-    props.counts.countConfirmee > 0,
-)
+interface Tile {
+  key: 'a-contacter' | 'a-conclure' | 'ce-mois'
+  icon: Component
+  value: number
+  to: string
+  /** Couleur de la tuile ; absente = neutre (couleur de texte), pour une info qui n'est pas une action. */
+  color?: string
+}
 
-const visibleCards = computed(() =>
-  [
-    {
-      statut: 'nouvelle' as ReservationStatut,
-      icon: PhoneIcon,
-      value: props.counts.countNouvelle,
-      labelMobile: t('pro.greeting.count.nouvelle.mobile'),
-      labelDesktop: t('pro.greeting.count.nouvelle.desktop', props.counts.countNouvelle),
-      color: '#dc2626',
-      bg: 'rgba(220, 38, 38, 0.1)',
-    },
-    {
-      statut: 'en_discussion' as ReservationStatut,
-      icon: CheckboxCircleIcon,
-      value: props.counts.countEnDiscussion,
-      labelMobile: t('pro.greeting.count.en-discussion.mobile'),
-      labelDesktop: t('pro.greeting.count.en-discussion.desktop', props.counts.countEnDiscussion),
-      color: '#ea580c',
-      bg: 'rgba(234, 88, 12, 0.1)',
-    },
-    {
-      statut: 'confirmee' as ReservationStatut,
-      icon: CalendarIcon,
-      value: props.counts.countConfirmee,
-      labelMobile: t('pro.greeting.count.confirmee.mobile'),
-      labelDesktop: t('pro.greeting.count.confirmee.desktop', props.counts.countConfirmee),
-      color: '#16a34a',
-      bg: 'rgba(22, 163, 74, 0.08)',
-    },
-  ].filter((c) => c.value > 0),
-)
+const tiles = computed<Tile[]>(() => [
+  {
+    key: 'a-contacter',
+    icon: PhoneIcon,
+    value: props.counts.aContacter,
+    to: '/pro/reservations',
+    color: RESERVATION_STATUS_CONFIG.nouvelle.color,
+  },
+  {
+    key: 'a-conclure',
+    icon: ChatSmile2Icon,
+    value: props.counts.aConclure,
+    to: '/pro/reservations?filtre=a-conclure',
+    color: RESERVATION_STATUS_CONFIG.en_discussion.color,
+  },
+  {
+    key: 'ce-mois',
+    icon: CalendarCheckIcon,
+    value: props.counts.ceMois,
+    to: '/pro/calendrier?vue=mois',
+  },
+])
 </script>
 
 <style scoped lang="scss">
 @use '@/assets/styles/base' as *;
 
+// Bandeau blanc pleine largeur : salutation et tuiles.
 .pro-greeting {
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
+  padding: $spacing-l $spacing-m;
+  background: $surface-white;
 
-  @media (min-width: $breakpoint-desktop) {
-    gap: $spacing-l;
+  // Image en filigrane, en haut à droite, fondue dans le blanc vers la gauche et vers le bas
+  // (deux dégradés combinés).
+  .watermark {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 70%;
+    height: 7.5rem;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.55;
+    pointer-events: none;
+    mask-image:
+      linear-gradient(to right, transparent, #000 65%),
+      linear-gradient(to bottom, #000 40%, transparent);
+    mask-composite: intersect;
+    -webkit-mask-image:
+      linear-gradient(to right, transparent, #000 65%),
+      linear-gradient(to bottom, #000 40%, transparent);
+    -webkit-mask-composite: source-in;
   }
 
-  .title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 2.1rem;
-    font-weight: 700;
-    color: $brand-primary;
-    margin: 0;
-    line-height: 1.1;
+  .hello {
+    position: relative;
+
+    .title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: $brand-primary;
+      margin: 0;
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      margin: 0.375rem 0 0;
+      font-size: 0.9375rem;
+      color: $text-secondary;
+    }
   }
 
-  .subtitle {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.8rem;
-    color: $text-secondary;
-    margin: 0;
-    margin-top: 4px;
-  }
-
-  // ── Cartes compteurs ────────────────────────────────────────────────────────
   .counts {
-    display: flex;
-    flex-direction: row;
-    gap: $spacing-xs;
-    margin-top: $spacing-s;
-    padding: 4px;
-    overflow-x: auto;
-    scrollbar-width: none;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    position: relative;
+    gap: $spacing-s;
+    margin-top: $spacing-l;
 
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
-    @media (min-width: $breakpoint-desktop) {
+    .count-card {
+      display: flex;
       flex-direction: column;
-      overflow-x: visible;
-      gap: $spacing-xs;
-      margin-top: 0;
-    }
-  }
+      align-items: center;
+      justify-content: center;
+      gap: 0.375rem;
+      min-height: 7.5rem;
+      padding: $spacing-m $spacing-xs;
+      border-radius: $radius-lg;
+      background: color-mix(in srgb, var(--card-color, #{$text-primary}) 8%, $surface-white);
+      border: 1px solid color-mix(in srgb, var(--card-color, #{$text-primary}) 12%, $surface-white);
+      box-shadow: 0 0.25rem 0.75rem $shadow-s;
+      text-decoration: none;
+      transition: transform 0.2s ease;
 
-  .count-card {
-    flex-shrink: 0;
-    width: 90px;
-    height: 90px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-
-    border-radius: $radius-md;
-    background: var(--card-bg);
-
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    box-shadow:
-      0 4px 12px -2px rgba(0, 0, 0, 0.08),
-      0 2px 6px -1px rgba(0, 0, 0, 0.04);
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease;
-
-    cursor: pointer;
-    padding: $spacing-xs;
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow:
-        0 4px 12px rgba(0, 0, 0, 0.12),
-        0 0 0 1px rgba(0, 0, 0, 0.06);
-    }
-
-    &:active {
-      transform: scale(0.98);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    @media (min-width: $breakpoint-desktop) {
-      width: 100%;
-      height: auto;
-      flex-direction: row;
-      justify-content: flex-start;
-      padding: $spacing-s $spacing-m;
-      gap: $spacing-s;
-    }
-
-    .card-icon {
-      font-size: 1rem;
-      color: var(--card-color);
-      line-height: 1;
-
-      @media (min-width: $breakpoint-desktop) {
-        height: 24px;
-        width: 24px;
+      &:active {
+        transform: scale(0.98);
       }
-    }
 
-    .number {
-      font-family: 'Inter', sans-serif;
-      font-size: 1.6rem;
-      font-weight: 600;
-      line-height: 1;
-      color: var(--card-color);
-
-      @media (min-width: $breakpoint-desktop) {
-        font-size: 1.6rem;
+      .card-icon {
+        width: 1.75rem;
+        height: 1.75rem;
+        color: var(--card-color, #{$text-primary});
       }
-    }
 
-    .label {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.65rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      color: var(--card-color);
-      text-align: center;
-
-      @media (min-width: $breakpoint-desktop) {
-        font-size: 0.78rem;
-        text-align: left;
+      .number {
+        font-size: 1.75rem;
+        font-weight: 600;
+        line-height: 1;
+        color: var(--card-color, #{$text-primary});
       }
-    }
 
-    .desktop-label {
-      display: none;
-
-      @media (min-width: $breakpoint-desktop) {
-        display: inline;
-      }
-    }
-
-    .mobile-label {
-      @media (min-width: $breakpoint-desktop) {
-        display: none;
+      .label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--card-color, #{$text-primary});
+        text-align: center;
       }
     }
   }

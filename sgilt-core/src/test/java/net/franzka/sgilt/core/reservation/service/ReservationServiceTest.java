@@ -9,7 +9,6 @@ import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.dto.ActiveReservationItemDto;
 import net.franzka.sgilt.core.reservation.dto.ActiveReservationsDto;
 import net.franzka.sgilt.core.reservation.dto.AdminReservationListItemDto;
-import net.franzka.sgilt.core.reservation.dto.ProBoardCountsDto;
 import net.franzka.sgilt.core.reservation.dto.ProReservationDetailDto;
 import net.franzka.sgilt.core.reservation.dto.ProReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.dto.RefuseReservationRequest;
@@ -506,7 +505,7 @@ class ReservationServiceTest {
     }
 
     // -------------------------------------------------------------------------
-    // getProReservations / getProBoardCounts
+    // getProReservations / getProReservationsToHandle / getProConfirmedReservations
     // -------------------------------------------------------------------------
 
     @Nested
@@ -555,22 +554,6 @@ class ReservationServiceTest {
             when(reservationMapper.toProReservationSummaryDto(reservation)).thenReturn(dto);
 
             assertThat(reservationService.getProConfirmedReservations(userId)).containsExactly(dto);
-        }
-    }
-
-    @Nested
-    class GetProBoardCounts {
-
-        @Test
-        void givenCountsByStatus_whenGetProBoardCounts_thenReturnsDtoWithThreeCounts() {
-            UUID userId = UUID.randomUUID();
-            when(reservationRepository.countByStatusAndPrestataireUtilisateurId(ReservationStatus.NEW, userId)).thenReturn(2);
-            when(reservationRepository.countByStatusAndPrestataireUtilisateurId(ReservationStatus.IN_DISCUSSION, userId)).thenReturn(1);
-            when(reservationRepository.countByStatusAndPrestataireUtilisateurId(ReservationStatus.CONFIRMED, userId)).thenReturn(3);
-
-            ProBoardCountsDto result = reservationService.getProBoardCounts(userId);
-
-            assertThat(result).isEqualTo(new ProBoardCountsDto(2, 1, 3));
         }
     }
 

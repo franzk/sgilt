@@ -13,7 +13,6 @@ import {
   getProReservationsApi,
   getProReservationsToHandleApi,
   getProConfirmedReservationsApi,
-  getProBoardCountsApi,
   getProReservationDetailApi,
   refuseReservationApi,
   cancelReservationByProApi,
@@ -24,7 +23,6 @@ import {
   mapProReservationDetail,
   mapActiveReservations,
 } from '../mapper/reservationMapper'
-import type { ProBoardCounts } from '../domain/ProBoardCounts'
 import type { ProReservationSummary } from '../domain/ProReservationSummary'
 import type { ProReservationDetail } from '../domain/ProReservationDetail'
 import type { ReservationMeta } from '../domain/ReservationMeta'
@@ -53,10 +51,6 @@ export async function fetchProReservationsToHandle(): Promise<ProReservationSumm
 
 export async function fetchProConfirmedReservations(): Promise<ProReservationSummary[]> {
   return (await getProConfirmedReservationsApi()).map(mapProReservationSummary)
-}
-
-export async function fetchProBoardCounts(): Promise<ProBoardCounts> {
-  return getProBoardCountsApi()
 }
 
 export async function fetchProReservationDetail(

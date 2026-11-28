@@ -11,7 +11,6 @@ import net.franzka.sgilt.core.reservation.domain.ReservationStatus;
 import net.franzka.sgilt.core.reservation.dto.ActiveReservationItemDto;
 import net.franzka.sgilt.core.reservation.dto.ActiveReservationsDto;
 import net.franzka.sgilt.core.reservation.dto.AdminReservationListItemDto;
-import net.franzka.sgilt.core.reservation.dto.ProBoardCountsDto;
 import net.franzka.sgilt.core.reservation.dto.ProReservationDetailDto;
 import net.franzka.sgilt.core.reservation.dto.ProReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.dto.ReservationCounts;
@@ -302,23 +301,6 @@ public class ReservationService {
         return reservations.stream()
                 .map(reservationMapper::toProReservationSummaryDto)
                 .toList();
-    }
-
-    /**
-     * Retourne les compteurs du tableau de bord pro (statuts actifs uniquement).
-     *
-     * @param utilisateurId l'identifiant de l'utilisateur lié au prestataire
-     * @return les compteurs par statut actif
-     */
-    public ProBoardCountsDto getProBoardCounts(UUID utilisateurId) {
-        return new ProBoardCountsDto(
-                reservationRepository
-                        .countByStatusAndPrestataireUtilisateurId(ReservationStatus.NEW, utilisateurId),
-                reservationRepository
-                        .countByStatusAndPrestataireUtilisateurId(ReservationStatus.IN_DISCUSSION, utilisateurId),
-                reservationRepository
-                        .countByStatusAndPrestataireUtilisateurId(ReservationStatus.CONFIRMED, utilisateurId)
-        );
     }
 
     /**

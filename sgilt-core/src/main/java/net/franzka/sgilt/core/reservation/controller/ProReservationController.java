@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.franzka.sgilt.core.reservation.api.ProReservationApi;
 import net.franzka.sgilt.core.reservation.dto.CancelReservationRequest;
-import net.franzka.sgilt.core.reservation.dto.ProBoardCountsDto;
 import net.franzka.sgilt.core.reservation.dto.ProReservationDetailDto;
 import net.franzka.sgilt.core.reservation.dto.ProReservationSummaryDto;
 import net.franzka.sgilt.core.reservation.dto.RefuseReservationRequest;
@@ -49,14 +48,6 @@ public class ProReservationController implements ProReservationApi {
         UUID userId = currentUserService.getId();
         log.info("GET /pro/reservations/confirmed");
         return ResponseEntity.ok(reservationService.getProConfirmedReservations(userId));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public ResponseEntity<ProBoardCountsDto> getCounts() {
-        UUID userId = currentUserService.getId();
-        log.info("GET /pro/reservations/counts");
-        return ResponseEntity.ok(reservationService.getProBoardCounts(userId));
     }
 
     @Override

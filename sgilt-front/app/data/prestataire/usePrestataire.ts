@@ -34,6 +34,14 @@ export function isEmptyPrestataireFiche(fiche: PrestataireDetail): boolean {
 }
 
 /**
+ * Référence de l'image à utiliser comme visuel de la fiche hors du hero (récap « Ma page », fond de
+ * l'accueil pro) : la première image des médias — une vidéo ne peut pas servir d'image de fond.
+ */
+export function ficheCoverImageRef(fiche: PrestataireDetail): string | undefined {
+  return fiche.medias.find((m) => m.type === 'IMAGE')?.ref
+}
+
+/**
  * Vérifie si la fiche du prestataire connecté est actuellement vide. Appel dédié, indépendant du
  * ref partagé `prestataire` — ne l'écrase pas, pour ne pas provoquer un flash de chargement chez
  * un consommateur qui l'aurait déjà peuplé (ex. page-edition.vue).
